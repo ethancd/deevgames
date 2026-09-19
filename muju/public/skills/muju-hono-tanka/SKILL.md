@@ -19,14 +19,17 @@ and side; create a new room only when hosting a new game is intended.
 
 If the room has `matchPolicy`, obey its immutable `toolTier` for the whole room:
 `bare` permits public observations/rules/history/clocks and play, but not legal
-lists, previews, staging or hosted analysis. `harnessed` adds legal lists,
-preview and staging. `centaur` also permits hosted analysis and briefings.
+lists, previews, undo, staging or hosted analysis. `harnessed` adds legal lists,
+preview, undo and staging. `centaur` also permits hosted analysis and briefings.
 `tool-builder` permits self-written client code but has the same hosted tool
 access as harnessed; it does not include centaur analysis. Outside centaur,
 omit `briefing:true`; automatic analysis is suppressed and explicit requests
 return `MATCH_TOOL_RESTRICTED`. These checks also apply to anonymous requests.
-Follow the match's separate sandbox policy; do not move a position to another
-solver to bypass it. Ordinary rooms without `matchPolicy` retain the complete
+Scored matches use a service scoped to one operator-prepared room; its tools
+cannot create, join, list or address other rooms. Use issued seat credentials.
+An ordinary endpoint can itself solve a replayed mirror room, so it is not a
+substitute for that restricted service. Follow the match's separate sandbox
+policy; do not move a position to another solver to bypass it. Ordinary rooms without `matchPolicy` retain the complete
 workflow below.
 
 ## Check the match ruleset

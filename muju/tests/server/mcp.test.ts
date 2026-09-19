@@ -333,21 +333,22 @@ describe('MCP and HTTP interoperability', () => {
     const host = store.create({ name: 'Host' });
     const guest = store.join(host.room.id, { name: 'Guest', inviteCode: host.inviteCode });
     const endpoint = `${url}/api/muju/rooms/${host.room.id}/restore`;
+    const { authenticatedPlayer: _authenticatedPlayer, ...publicExpected } = guest.room;
     const restore = (player: string, token?: string) => fetch(endpoint, { method: 'POST',
       headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ player }) });
     for (const credentials of [host.credentials, guest.credentials]) {
       const response = await restore(credentials.player, credentials.token);
       expect(response.status).toBe(200);
-      expect(await response.json()).toEqual(guest.room);
+      expect(await response.json()).toEqual({ ...publicExpected, authenticatedPlayer: credentials.player });
     }
     expect((await restore('white')).status).toBe(401);
     expect((await restore('white', 'wrong-token')).status).toBe(403);
     expect((await restore('black', host.credentials.token)).status).toBe(403);
     expect((await restore('observer', host.credentials.token)).status).toBe(400);
-    expect(store.get(host.room.id)).toEqual(guest.room);
+    expect(store.get(host.room.id)).toEqual(publicExpected);
     // Anonymous observers can read and wait, but cannot restore or mutate a seat.
     const publicRoom = await (await fetch(`${url}/api/muju/rooms/${host.room.id}`)).json();
-    expect(publicRoom).toEqual(guest.room);
+    expect(publicRoom).toEqual(publicExpected);
     expect(JSON.stringify(publicRoom)).not.toContain(host.credentials.token);
     expect(JSON.stringify(publicRoom)).not.toContain(guest.credentials.token);
     expect((await fetch(`${url}/api/muju/rooms/${host.room.id}/actions`, { method: 'POST',

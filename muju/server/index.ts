@@ -12,6 +12,7 @@ const databasePath = process.env.MUJU_DB_PATH ?? resolve(root, 'data/rooms.sqlit
 mkdirSync(dirname(databasePath), { recursive: true, mode: 0o700 });
 const store = new RoomStore(databasePath, Number(process.env.MUJU_MAX_ROOMS ?? 10000));
 const app = createApp(store, { publicUrl, distPath: resolve(root, 'dist'),
+  matchRoomId: process.env.MUJU_MATCH_ROOM_ID,
   allowedOrigins: (process.env.MUJU_ALLOWED_ORIGINS ?? '').split(',').filter(Boolean) });
 const listener = app.listen(port, host, error => {
   if (error) { console.error(`Could not start Muju: ${error.message}`); store.close(); process.exit(1); }

@@ -1,0 +1,12 @@
+{
+  "src/online/types.ts": "40e31f7f82cc6ac5afc413a0645ef3feb0923b93011e08b931a717b7681bc16f",
+  "server/rooms.ts": "b0c003a3b99b491f00a45c63f9d5fe240aefa627f921f35cf301d0153092522d",
+  "tools/engine-seat/contract.ts": "e7f43a26a8de6dc3f4e4148932005e7f45ba30da4f3bc85e75c242d2b3ea140e",
+  "tools/engine-seat/config.ts": "78a0821283a09613e4f68a4f1eb2869c5c6e99d5b67dbdcd5e2b6b908397e398",
+  "tools/engine-seat/runner.ts": "2e046b103563803547269ecbd2a853470ba68b97d108027e3cdf9c524d8b2240",
+  "tests/lab/engine-seat.test.ts": "3ed6fe100c789b690b7878278e123ce5047c2ec5eed5b44132791db6e872fa52",
+  "tests/server/engine-seat-binding.test.ts": "e542994649aa5f854c426a3a0822ffeedd78ecfc371a5faef7ba37c9d5e08f38",
+  "tests/server/mcp.test.ts": "8e46e4e11e759bc4aec71d49f174e14c07a21596d04464ef73987267d530693f",
+  "tests/server/rooms.test.ts": "2f2c7cf696d14debe12d8472106176ad9a37d0d79acedd6ba7b9e517751a7c0f",
+  "tests/server/room-lifecycle.test.ts": "9ede6fe59b3eef1cdc6e49cae28ea317900474196b083ece01254f8669d140cc"
+}

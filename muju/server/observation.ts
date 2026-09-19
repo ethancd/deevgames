@@ -5,12 +5,12 @@ import { getActionsPerTurn, isPhasing } from '../src/game/rules';
 import { INITIAL_MAP_RESOURCES, MAX_RESOURCE_RESERVE, RESOURCE_MAP_NAME, UNEQUAL_ROUTES_MAP } from '../src/game/resourceMap';
 import { getMovementRange, getMoveCost } from '../src/game/movement';
 import { calculateAttackPower, calculateDefense, getAttackCount, getValidAttacks } from '../src/game/combat';
-import { generatePlacePhaseActions } from '../src/ai/moves';
+import { getAffordablePurchases } from '../src/game/building';
 import { isLegalAction } from '../src/game/legality';
 import { UNIT_DEFINITIONS, getUnitDefinition } from '../src/game/units';
 import { defaultUpkeepAction, unitUpkeep, upkeepDue } from '../src/game/upkeep';
 import { projectedIncome } from '../src/game/mining';
-import { isValidSpawnPosition } from '../src/game/spawning';
+import { getAllSpawnPositions, isValidSpawnPosition } from '../src/game/spawning';
 import { getHomeOccupier } from '../src/game/victory';
 import { INACTIVITY_LIMIT } from '../src/game/inactivity';
 import { TIME_CONTROL_PRESETS } from '../src/online/timeControl';
@@ -29,7 +29,7 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
   return {
     ...(room.matchPolicy ? { matchPolicy: room.matchPolicy } : {}),
     roomId: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
-    canUndo: !!room.canUndo, archivedAt: room.archivedAt ?? null, lastMoveAt: room.lastMoveAt ?? null,
+    canUndo: !bare && !!room.canUndo, archivedAt: room.archivedAt ?? null, lastMoveAt: room.lastMoveAt ?? null,
     timeControl: room.timeControl ?? null, clock: room.clock ?? null, clockPressure: room.clockPressure ?? null,
     ...(room.staging ? { staging: room.staging } : {}),
     analysis: analysisService.headline(room, perspective),
@@ -73,7 +73,16 @@ export function legalActions(room: RoomSnapshot, options: { unitId?: string; typ
   let actions: RoomAction[] = [];
   if (room.ready && s.phase === 'playing') {
     if (s.upkeepPending) actions = [defaultUpkeepAction(s)];
-    else if (s.turn.phase === 'place') actions = generatePlacePhaseActions(s, player);
+    else if (s.turn.phase === 'place') {
+      // This is a rules oracle. AI move generators may prune strategically risky
+      // but legal purchases, so never use their candidate lists here.
+      actions = [
+        ...getAffordablePurchases(s.players[player].resources).flatMap(definition => getAllSpawnPositions(player, s.board)
+          .map(position => ({ type: 'BUY_UNIT' as const, definitionId: definition.id, position }))),
+        ...s.board.units.filter(unit => unit.owner === player).map(unit => ({ type: 'PROMOTE_UNIT' as const, unitId: unit.id })),
+        { type: 'END_PLACE_PHASE' },
+      ];
+    }
     else {
       for (const u of s.board.units.filter(u => u.owner === player && u.canActThisTurn)) {
         actions.push(...getValidAttacks(u, s.board).map(targetPosition => ({ type: 'ATTACK' as const, unitId: u.id, targetPosition })));

@@ -112,9 +112,10 @@ it('runs a complete verified engine turn over real HTTP with the issued private 
   const { runSeat } = await import('../../tools/engine-seat/runner');
   const { HardEngine } = await import('../../src/ai/hard/engine');
   const { hardEnginePatch } = await import('../../lab/hard-ai/bots/hard');
-  const host = store.create({ name: 'Human Black', side: 'black', matchPolicy: { version: 1, toolTier: 'harnessed', protocolId: 'transport-smoke' } });
+  const host = store.create({ name: 'Human Black', side: 'black' });
   const guest = await joinRoom(url, host.room.id, 'Engine', host.inviteCode!);
-  const journal = { version: 1 as const, seed: 42, connection: { ...guest.credentials, serverUrl: url } };
+  const journal = { version: 2 as const, admission: 'issued' as const, contract: { mode: 'standard-smoke' as const },
+    seed: 42, connection: { ...guest.credentials, serverUrl: url } };
   const controller = new AbortController(), logs: Record<string, unknown>[] = [];
   await runSeat({ journal, signal: controller.signal, save: saved => expect(saved.connection.token).toBe(guest.credentials.token),
     createEngine: seed => { const engine = new HardEngine(hardEnginePatch('desktop')); engine.setSeed(seed);

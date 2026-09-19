@@ -137,7 +137,7 @@
     },
     {
       "id": "server-runtime", "title": "Authoritative multiplayer host, schemas and online client", "depends_on": ["transitions", "persistence"],
-      "paths": ["muju/server/rooms.ts", "muju/server/schema.ts", "muju/server/http.ts", "muju/server/index.ts", "muju/server/clockPressure.ts", "muju/server/matchPolicy.ts", "muju/tools/engine-seat", "muju/docs/ENGINE-SEAT-MATCH-2026-09-19.md", "muju/src/online/", "muju/ONLINE.md"],
+      "paths": ["muju/server/rooms.ts", "muju/server/schema.ts", "muju/server/http.ts", "muju/server/index.ts", "muju/server/clockPressure.ts", "muju/server/matchPolicy.ts", "muju/server/matchScope.ts", "muju/tools/engine-seat", "muju/docs/ENGINE-SEAT-MATCH-2026-09-19.md", "muju/src/online/", "muju/ONLINE.md"],
       "update": ["Review room transitions, validation, clocks, staging, invitations, observations, persistence and client/server compatibility. Document any protocol change and handling of active games.", "Retiring a rule set: issue a new rulesVersion, state which stored versions upgrade in place and which become read-only archives, keep mutating calls on retired rooms returning RULES_CHANGED, and never reset or rewrite the production room database."],
       "verify": ["Check create/join/play, revision and idempotency handling, clocks/staging where relevant, persisted rooms and reconnects."]
     },

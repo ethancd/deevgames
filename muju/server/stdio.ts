@@ -4,6 +4,7 @@ import type { RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/type
 import type { RoomMoveHistory } from '../src/game/moveHistory';
 import { RoomError } from './schema';
 import type { StagingResult, StagingStatus } from '../src/online/staging';
+import { matchScopeSchema } from './matchScope';
 
 const serverUrl = (process.env.MUJU_SERVER_URL ?? 'http://localhost:3003').replace(/\/$/, '');
 async function request<T>(path: string, body?: unknown, token?: string, signal?: AbortSignal, timeoutMs = 10000): Promise<T> {
@@ -26,4 +27,14 @@ const backend: RoomBackend = {
   cancelStage: (id, token, input) => request<StagingResult>(`/${id}/stage/cancel`, input, token),
   staged: (id, token, stageId) => request<StagingStatus>(`/${id}/stage${stageId ? `?stageId=${encodeURIComponent(stageId)}` : ''}`, undefined, token),
 };
-await createMcpServer(backend, serverUrl).connect(new StdioServerTransport());
+// Learn the endpoint's instance-local capability boundary rather than exposing
+// ordinary-room tools through the local MCP bridge. The HTTP boundary remains
+// authoritative even if a client skips this discovery and sends raw requests.
+const healthResponse = await fetch(`${serverUrl}/api/muju/health`, { signal: AbortSignal.timeout(10000) });
+if (!healthResponse.ok) throw new Error('Cannot verify Muju endpoint capabilities.');
+const health = await healthResponse.json();
+const scope = health.matchScope === undefined ? undefined : matchScopeSchema.parse(health.matchScope);
+if (process.env.MUJU_MATCH_ROOM_ID !== undefined && process.env.MUJU_MATCH_ROOM_ID !== scope?.roomId) {
+  throw new Error("Requested match room is not the endpoint's restricted service scope.");
+}
+await createMcpServer(backend, serverUrl, scope).connect(new StdioServerTransport());

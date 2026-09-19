@@ -1,0 +1,88 @@
+{
+  "at": "2026-09-19T06:45:58.410Z",
+  "scope": "Issued seat token/player binding correction",
+  "queue": "Real shared default two-slot queue, no bypass",
+  "checks": [
+    {
+      "name": "tests",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "tests/server/engine-seat-binding.test.ts",
+        "tests/server/match-policy.test.ts",
+        "tests/server/match-policy-corrections.test.ts",
+        "tests/server/match-scope.test.ts",
+        "tests/lab/engine-seat.test.ts",
+        "tests/server/mcp.test.ts",
+        "tests/server/analysis.test.ts",
+        "tests/server/rooms.test.ts",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-engine-seat/muju/docs/changes/t6-seat-binding-2026-09-19/tests.json"
+      ],
+      "startedAt": "2026-09-19T06:45:33.344Z",
+      "finishedAt": "2026-09-19T06:45:53.226Z",
+      "exitCode": 1
+    },
+    {
+      "name": "types-server",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "server/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T06:45:53.226Z",
+      "finishedAt": "2026-09-19T06:45:54.317Z",
+      "exitCode": 0
+    },
+    {
+      "name": "types-hard-lab",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "lab/hard-ai/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T06:45:54.317Z",
+      "finishedAt": "2026-09-19T06:45:57.174Z",
+      "exitCode": 0
+    },
+    {
+      "name": "types-runner",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "tools/engine-seat/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T06:45:57.175Z",
+      "finishedAt": "2026-09-19T06:45:58.365Z",
+      "exitCode": 0
+    },
+    {
+      "name": "types-app",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "tsconfig.app.json"
+      ],
+      "startedAt": "2026-09-19T06:45:58.365Z",
+      "finishedAt": "2026-09-19T06:45:58.409Z",
+      "exitCode": 1
+    }
+  ],
+  "tests": {
+    "passed": 141,
+    "failed": 4,
+    "failedSuites": 4,
+    "success": false
+  },
+  "preservedUnchanged": true
+}

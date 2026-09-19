@@ -1,0 +1,12 @@
+{
+  "docs/changes/t6-engine-seat-2026-09-19/README.md": "972047733f938f13ee15d6fe96b460db00ce92756350330898246fa084c1975b",
+  "docs/changes/t6-engine-seat-2026-09-19/coordinator-review.md": "45250699016343db72ddd66015e4018e901a47b284e47f39ae26fbd010efb9e0",
+  "docs/changes/t6-engine-seat-2026-09-19/source-sha256.json": "e0527702d7efcd396ea7dd8d442b61349880a5ce07a87a325c8d851c61e72c18",
+  "docs/changes/t6-engine-seat-2026-09-19/tests.json": "a745a158403b7bfb8048998705af237d5a74b188aaa97bbc9db814278d3b6126",
+  "docs/changes/t6-engine-seat-2026-09-19/verification.json": "9eba4511fa1d5ac63c1b54092ca7972c1f6df8a81411f80203fd36d9c376cd00",
+  "docs/changes/t6-adversarial-corrections-2026-09-19/README.md": "f5b535720464bbccb686ef3f5844e4e773a8274f2f9d13b53ca2adf963303375",
+  "docs/changes/t6-adversarial-corrections-2026-09-19/source-sha256.json": "0bdb865a381a4fb58122ae26534894b6bded7bb5177d1d6f2eb83b2898b6e68d",
+  "docs/changes/t6-adversarial-corrections-2026-09-19/tests-final.json": "b07232b3346c6a759883b8a4b8ebd237977049bf4f3b7610e48626059f906666",
+  "docs/changes/t6-adversarial-corrections-2026-09-19/tests-initial.json": "5b314e227ca387633e8ac3095cbe531f64dff40fec9c9dbd7861583a83484410",
+  "docs/changes/t6-adversarial-corrections-2026-09-19/verification.json": "2a943f672b26f61b06e6670cd856a4fb9127dbc716e0b02a32ae8ed42c556b5b"
+}

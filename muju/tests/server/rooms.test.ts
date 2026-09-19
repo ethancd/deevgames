@@ -49,7 +49,7 @@ it('previews, commits, notifies and persists immediate checkmate without playing
   expect(store.act(id, host.credentials.token, command)).toEqual(won);
   expect(() => store.act(id, guest.credentials.token, request(2, [{ type: 'END_ACTION_PHASE' }], 'mate-no-reply'))).toThrow('illegal');
   const reconnect = new RoomStore(path); stores.push(reconnect);
-  expect(reconnect.restore(id, guest.credentials.token, 'black')).toEqual(won);
+  expect(reconnect.restore(id, guest.credentials.token, 'black')).toEqual({ ...won, authenticatedPlayer: 'black' });
 });
 
 describe('authoritative shared rooms', () => {
@@ -160,7 +160,7 @@ describe('authoritative shared rooms', () => {
     store.close(); stores.splice(stores.indexOf(store), 1);
     const reopened = new RoomStore(path); stores.push(reopened);
     const second = new RoomStore(path); stores.push(second);
-    expect(reopened.get(id, guest.credentials.token)).toEqual(result);
+    expect(reopened.get(id, guest.credentials.token)).toEqual({ ...result, authenticatedPlayer: 'black' });
     expect(reopened.act(id, host.credentials.token, input)).toEqual(result);
     second.act(id, guest.credentials.token, request(2, [{ type: 'END_ACTION_PHASE' }], 'black-request'));
     expect(() => reopened.act(id, guest.credentials.token, request(2, [{ type: 'END_ACTION_PHASE' }], 'stale-request'))).toThrow('revision 3');
@@ -241,7 +241,7 @@ it('undo restores placement, promotion and phase changes, survives reconnects an
   expect(reconnect.get(id).canUndo).toBe(true);
   const undo = request(room.revision, [{ type: 'UNDO' }], 'reconnect-undo');
   expect(reconnect.act(id, host.credentials.token, undo, true).state).toEqual(promoted);
-  expect(reconnect.get(id)).toEqual(room);
+  expect(reconnect.get(id, host.credentials.token)).toEqual(room);
   room = reconnect.act(id, host.credentials.token, undo);
   expect(room.state).toEqual(promoted);
   expect(reconnect.act(id, host.credentials.token, undo)).toEqual(room);

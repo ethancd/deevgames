@@ -1,9 +1,13 @@
-# Engine seat and LLM match protocol — 2026-09-19, preparation v1
+# Engine seat and LLM match protocol — 2026-09-19, preparation v2
 
 Prepared infrastructure, **not a completed match or strength result**. No Phasing
 Hard game is authorized by this document. The seat has an unconditional Standard
 check; the Hard parity/search work and M7 gates must land before a separately
 reviewed change admits Phasing. Do not remove that guard merely to run a match.
+This correction closes v1's same-endpoint mirror-room and bare play/undo
+bypasses, removes AI purchase pruning from the rules oracle, and pins runner
+expectations. The original commit and evidence remain preserved.
+
 Standard smoke tests test transport and verification only; they cannot establish
 Phasing strength. This protocol does not change the frozen Phasing ladder gates
 or consume its sealed corpus.
@@ -22,7 +26,7 @@ staging. Existing rooms without the field retain their current behavior. There
 is no privileged seat exemption: these are room capabilities, not a model-name
 or seat-token allowlist.
 
-| Tier | Public rules, board/history, clocks, play | Legal actions, preview, stage | Hosted analysis, automatic headlines and briefings | Self-written analysis code |
+| Tier | Public rules, board/history, clocks, play | Legal actions, preview, undo, stage | Hosted analysis, automatic headlines and briefings | Self-written analysis code |
 | --- | --- | --- | --- | --- |
 | bare | yes | no | no | no |
 | harnessed | yes | yes | no | no |
@@ -32,13 +36,15 @@ or seat-token allowlist.
 Tool-builder is a separate category, **not a tier above centaur**. It may use its
 own code but does not receive the hosted engine or analysis implementation.
 Raw room snapshots and history are public, including for the engine opponent.
-Bare formatted observations omit income forecasts, upkeep totals and summon
+Bare rooms reject every action batch containing `UNDO` at the RoomStore boundary
+and advertise `canUndo: false`. A successful play therefore cannot be rolled back
+into a forbidden preview. Bare formatted observations omit income forecasts, upkeep totals and summon
 validity hints as well as all automatic analysis. Public unit/catalogue facts,
 current damage/defense, the turn phase and rule descriptions remain available.
 A real play command still returns authoritative legality errors; failed commands
 are recorded in the transcript and are not secretly unlimited previews.
 
-Enforcement lives in `RoomStore.act(preview)`, `RoomStore.stage`, the legal-actions
+Enforcement lives in `RoomStore.act(preview or any UNDO)`, `RoomStore.stage`, the legal-actions
 service and `AnalysisService` before any cache hit. Anonymous `muju_analyze` is
 rejected. Observation, admission, play, preview, error snapshots and wait replies
 all suppress automatic analysis outside centaur. Explicit `briefing:true` returns
@@ -46,12 +52,63 @@ all suppress automatic analysis outside centaur. Explicit `briefing:true` return
 stdio proxy use those same checks. Direct HTTP preview/stage cannot bypass them.
 Ordinary rooms and centaur match rooms retain their existing hosted assistance.
 
-This service cannot prevent a client from copying public state to an external
-solver. Run the LLM in an isolated authenticated match environment with only the
-approved Muju endpoint and permitted tools; no repo checkout, engine artifacts,
-ordinary-room solver endpoint, shell or network except tool-builder's separately
-reviewed sandbox. Record that sandbox and tool allowlist before starting. Never
-claim that a room flag alone enforces model-side code/network isolation.
+The Phasing legal-actions endpoint now enumerates all affordable catalogue
+purchases on every currently legal spawn square, filters only through canonical
+legality, and paginates that full set. It never calls the AI candidate generator
+or its next-turn disruption/reach heuristic. Legal risky summons are included;
+`total` counts them. Promotions and action outcomes are rules consequences.
+Pending upkeep still explicitly shows one valid affordable keep-set and accepts
+other affordable choices, as documented by `upkeepNote`; it does not claim to
+enumerate the entire upkeep powerset.
+
+## Single-room service boundary
+
+**An ordinary approved Muju endpoint is itself a solver.** A room flag alone lets
+a client create an unrestricted mirror, replay the public transcript and analyze
+the same board without leaving that endpoint. Scored use must therefore run the
+implemented single-room service, not merely hide tools from an LLM prompt.
+
+The operator creates the room and admits both seats out of band, retains the
+SQLite database, and issues each participant only its own private credential.
+Start a separate listener with `MUJU_MATCH_ROOM_ID` and that `MUJU_DB_PATH` using
+`node --import tsx server/index.ts`. Its `createApp` instance pins the configured
+room ID and stored v1 match policy at startup; absent, unadmitted, archived,
+terminal or ordinary rooms fail startup. No process-global policy is modified.
+The ordinary server remains available as a separate default mode, and must be
+unreachable from the match participant sandbox.
+
+The single-room listener's complete HTTP allowlist is GET health, POST MCP,
+GET the configured room/history/positions/changes, POST its actions, plus its
+preview/stage/stage-cancel/private-stage reads when the tier permits rules-oracle
+assistance. Every other route is denied, including create, join, restore, listing,
+archives, invitation/watch lookup, static app routes and all other room IDs.
+Seat-token authentication on mutations remains unchanged; observations of the
+one room remain public. There is no participant-accessible operator endpoint.
+
+MCP discovery exposes only rules/time-awareness, observe, clock, history, play
+and wait; harnessed/tool-builder also expose legal actions, preview and staging
+operations; centaur also exposes analyze. Create and join are absent in every
+scoped tier. A backend wrapper rejects all cross-room arguments even if a caller
+knows another valid room ID and its token. Explicit briefing outside centaur is
+rejected, and the ordinary automatic analysis fields remain suppressed.
+
+`/api/muju/health` advertises the pinned `matchScope`. The stdio bridge discovers
+and adopts that same scope before exposing tools; optional `MUJU_MATCH_ROOM_ID`
+on the bridge additionally requires that exact restricted scope or refuses to
+start. Direct HTTP requests cannot bypass the listener's allowlist, so the bridge
+is not the sole control. Record the health scope and fresh negative probes for
+create/join/listing/cross-room/analysis access in the frozen run manifest.
+
+The actual OS/network sandbox still has to be provisioned and verified before a
+study: allow only this restricted listener, deny all ordinary Muju ports/hosts,
+repo checkout, engine artifacts, other solvers and general shell/network access
+except tool-builder's separately reviewed code sandbox. Record the policy and
+probe results. This change implements the service capability boundary; it does
+not claim that a model sandbox, per-turn/token controller or scored run exists.
+The operator must retain before/after room inventory and move-history audit
+outside the participant surface, checking for unregistered/mirrored games and
+recording denied-route probes. A client with access to another unrestricted
+service or its own solver could still copy public state there.
 
 ## Fixed study, registered before any scored game
 
@@ -124,12 +181,33 @@ Run from `muju/` with Node supporting `node:sqlite` and existing dependencies:
 node --import tsx tools/engine-seat/main.ts /private/path/seat-config.json
 ```
 
-The JSON file contains `serverUrl`, `roomId`, `name`, `inviteCode`, integer `seed`,
-and absolute `stateFile`. Keep config and state outside git in a private directory
-(`chmod 700` directory, `chmod 600` config). The runner joins the invited seat only
-when the state file does not exist. It writes the newly issued credential before
-search; subsequent starts reuse it, never rejoin and revoke it. Do not point an
-existing state file at another server/room/seed.
+The private JSON contains `serverUrl`, `roomId`, integer `seed`, absolute
+`stateFile`, and an explicit mode. `mode: "standard-smoke"` requires an ordinary
+Standard room without a match policy. It accepts either `name`/`inviteCode` or
+already issued `credentials`, never both admission methods. Only this smoke mode
+can call join. It is not a substitute for a pinned match.
+
+`mode: "pinned"` requires issued `credentials` (`roomId`, `player`, `token`) and
+all three expectations: `expectedMatchPolicy` with exact version/toolTier/
+protocolId, `expectedTimeControl` with exact delaySeconds/bankSeconds, and
+`expectedHandicap`. It authenticates a read and never joins or rotates a token.
+The pinned mode still refuses Phasing until M7; today it can only exercise
+restricted Standard infrastructure. A preregistered Phasing study cannot run yet.
+
+The runner compares every received snapshot to its expected room, policy,
+time control and handicap, checks a valid running clock in pinned mode, and
+re-reads before submission/uncertain retry. Wrong/absent expectations stop before
+search or submission; a changed revision stops without a second search. The
+room-contract-verified log records the values read from the server. This does not
+replace the separate health-scope and endpoint-isolation verification above.
+
+Journal v2 persists the mode, exact expected contract, seed, credential and
+admission method. Resume rejects omission or changes rather than silently
+turning a pinned match into smoke. Legacy v1 journals are explicitly rejected;
+inspect and retain them rather than rewriting old evidence. Keep config/state
+outside git in a private directory (`chmod 700` directory, `chmod 600` config).
+Existing credentials are reused, never rejoined. Do not point an existing journal
+at another server/room/seed or alter its expected contract.
 
 The state file and atomic temporary file are mode 0600; the sibling `.jsonl` log
 contains source hashes, room ID, moves and search measurements, never credentials
@@ -138,7 +216,7 @@ one journal. A crash may leave `.lock`/`.tmp`; inspect the process and pending
 request before manually recovering them. An empty reserved state file after an
 uncertain join is an explicit recovery condition, not permission to auto-join.
 
-The runner acquires the real shared heavy-work slot **before joining**, uses
+The runner acquires the real shared heavy-work slot **before initialization or joining**, uses
 public revision long-polling between turns and one HardEngine per process/game,
 sets the seed once, and calls `verifyTurn` again against the returned end key. It
 requires the complete player turn (or terminal result) to fit in one atomic HTTP

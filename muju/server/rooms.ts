@@ -17,7 +17,7 @@ import { projectClock, type ClockSnapshot } from '../src/online/timeControl';
 import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema, historyQuerySchema,
   stageRequestSchema, cancelStageSchema, stageIdSchema, shortInviteSchema } from './schema';
 import type { PendingStage, SeatStaging, StageAcknowledgement, StageReceipt, StagingResult, StagingStatus } from '../src/online/staging';
-import { assertMatchCapability } from './matchPolicy';
+import { assertMatchCapability, allowsMatchCapability } from './matchPolicy';
 import { completeClockTurn, newClockHistory, projectClockPressure, type ClockHistory } from './clockPressure';
 
 const RULES_VERSION = 'muju-online-4';
@@ -241,6 +241,7 @@ export class RoomStore {
   private snapshot(room: StoredRoom, player?: PlayerId): RoomSnapshot {
     const clock = room.clockBase ? projectClock(room.clockBase, Date.now()) : null;
     return structuredClone({ ...(room.matchPolicy ? { matchPolicy: room.matchPolicy } : {}), createdAt: room.createdAt, lastMoveAt: room.lastMoveAt, archivedAt: room.archivedAt, invitedPlayer: room.invitedPlayer, id: room.id, watchCode: this.watchCode(room.id), revision: room.revision, ready: room.ready, seats: room.seats,
+      ...(player ? { authenticatedPlayer: player } : {}),
       timeControl: room.timeControl ?? null, clock,
       clockPressure: clock && room.clockHistory ? projectClockPressure(room.clockHistory, clock) : null,
       ...(player && room.clockBase ? { staging: this.seatStaging(room, player) } : {}),
@@ -248,7 +249,7 @@ export class RoomStore {
   }
   private canUndo(room: StoredRoom): boolean {
     const previous = room.undoHistory?.at(-1);
-    return room.ready && room.state.phase === 'playing' && !!previous &&
+    return allowsMatchCapability(room, 'rules-oracle') && room.ready && room.state.phase === 'playing' && !!previous &&
       previous.turn.currentPlayer === room.state.turn.currentPlayer &&
       previous.turn.turnNumber === room.state.turn.turnNumber;
   }
@@ -353,8 +354,8 @@ export class RoomStore {
   }
   restore(id: string, token: string, player: PlayerId, inviteCode?: string): RoomSnapshot {
     return this.transaction(() => {
-      const room = this.read(id);
-      if (this.authenticate(room, token) !== player) {
+      const room = this.read(id), authenticatedPlayer = this.authenticate(room, token);
+      if (authenticatedPlayer !== player) {
         throw new RoomError(403, 'SEAT_MISMATCH', 'The token belongs to the other side. Copy the complete original credentials.');
       }
       this.settle(room, Date.now());
@@ -364,7 +365,7 @@ export class RoomStore {
         room.inviteHash = digest(inviteCode);
         this.save(room);
       }
-      return this.snapshot(room, player);
+      return this.snapshot(room, authenticatedPlayer);
     });
   }
   async wait(id: string, afterRevision: number, timeoutMs: number, signal?: AbortSignal, token?: string): Promise<RoomChange> {
@@ -457,7 +458,7 @@ export class RoomStore {
         room.ready = true; room.revision++; room.updatedAt = new Date(now).toISOString();
         if (firstJoin) this.startClock(room, now);
         this.save(room);
-        return { credentials: { roomId: id, player, token }, inviteCode, room: this.snapshot(room, player) };
+        return { credentials: { roomId: id, player, token }, inviteCode, room: this.snapshot(room, this.authenticate(room, token)) };
       } catch (error) {
         if (error instanceof RoomError) return error;
         throw error;
@@ -675,7 +676,7 @@ export class RoomStore {
   act(id: string, token: string, input: unknown, preview = false): RoomSnapshot {
     const request: ActionRequest = actionRequestSchema.parse(input);
     return this.withSeat(id, token, (settled, player) => {
-      if (preview) assertMatchCapability(settled, 'rules-oracle');
+      if (preview || request.actions.some(action => action.type === 'UNDO')) assertMatchCapability(settled, 'rules-oracle');
       const receivedAt = Date.now();
       this.expire(settled, receivedAt);
       const room = structuredClone(settled);

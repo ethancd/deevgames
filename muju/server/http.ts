@@ -7,8 +7,10 @@ import { RoomStore } from './rooms';
 import { RoomError, stageIdSchema, shortInviteSchema, joinSchema } from './schema';
 import { createMcpServer } from './mcp';
 import { historyQuerySchema } from './schema';
+import { assertScopeRoom, matchHttpAllowed, matchScopeFor } from './matchScope';
 
-export function createApp(store: RoomStore, options: { publicUrl: string; distPath?: string; allowedOrigins?: string[]; rateLimit?: number }) {
+export function createApp(store: RoomStore, options: { publicUrl: string; distPath?: string; allowedOrigins?: string[]; rateLimit?: number; matchRoomId?: string }) {
+  const scope = options.matchRoomId === undefined ? undefined : matchScopeFor(store.get(options.matchRoomId));
   const app = express();
   app.disable('x-powered-by');
   const origins = new Set([new URL(options.publicUrl).origin, ...(options.allowedOrigins ?? [])]);
@@ -35,8 +37,15 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
     if (req.method === 'POST' && !req.is('application/json')) return res.status(415).json({ error: 'Use application/json.' });
     next();
   });
+  // The complete single-room HTTP surface is allowlisted before all routes and
+  // static content. A mirror room cannot be created, listed or addressed here.
+  if (scope) app.use((req, _res, next) => {
+    if (!matchHttpAllowed(req.method, req.path, scope)) throw new RoomError(403, 'MATCH_SERVICE_RESTRICTED', 'This match service exposes only its configured room and permitted play tools.');
+    assertScopeRoom(scope, store.get(scope.roomId));
+    next();
+  });
   app.use(express.json({ limit: '64kb' }));
-  app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Tanka', protocol: 1 }));
+  app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Tanka', protocol: 1, ...(scope ? { matchScope: scope } : {}) }));
   app.post('/api/muju/rooms', (req, res) => res.status(201).json(store.create(req.body)));
   app.get('/api/muju/rooms', (_req, res) => res.json({ rooms: store.listActive() }));
   app.get('/api/muju/rooms/invitations/:code', (req, res) => res.json(store.resolveInvitation(req.params.code)));
@@ -95,7 +104,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
     });
   }
   app.post('/mcp', async (req, res, next) => {
-    const server = createMcpServer(store, options.publicUrl);
+    const server = createMcpServer(store, options.publicUrl, scope);
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
     res.on('close', () => { void transport.close(); void server.close(); });
     try { await server.connect(transport); await transport.handleRequest(req, res, req.body); }
