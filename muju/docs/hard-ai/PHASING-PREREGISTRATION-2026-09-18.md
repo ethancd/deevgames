@@ -195,3 +195,46 @@ source/config identity and retain failure honestly. Gate2/sealed allocation,
 no-rerun rule and all guard-unlock prerequisites are unchanged; no sealed corpus
 was read for this amendment. Runner evidence must identify A2 and hash this
 appended document, while historical A1 evidence remains unchanged.
+
+
+### A3 — 2026-09-19: Gate 1 must measure independent games at a calibrated budget; reclassify row A2
+
+Written by Claude after Codex's quota ended, BEFORE any change to the Gate 1 runner and before any further Gate 1 game is
+played. Every requirement below is a property of the measurement that can be checked without reading a score.
+
+**What was wrong with the A2 design (seed 20260958, 1,024 games, fixed checkout 32f83b88).** The replay audit was clean and
+the row stays preserved, but an independent diagnosis of its replays found: (1) the run used no opening book and the
+per-task seed never reaches a V2 engine decision, so both engines are deterministic at fixed work — the two `aiv2-medium`
+cells each contain ONE distinct pair of games replicated 64 times (effective n = 1), and every Elo interval in its summary
+shrinks with the replication count rather than with information; (2) the fixed-work budgets (hard 6,000 / medium 3,000
+units per own turn) were asserted, not calibrated: they are roughly 3–15% of what either engine consumes at its shipped
+pace, and the 2.0 ratio does not match the shipped 10 s : 3 s allowance ratio, so the row measured a crippled baseline and
+crippled the two arms unequally.
+
+**Reclassification of A2.** The two `aiv2-medium` cells are **INVALID (not measured)**, not failures. The Expand h0 cell
+(0 wins / 128 draws / 0 losses, all by inactivity) is a **genuine failure** of A1's strength and behaviour conditions and
+stays recorded as one. Gate 1 therefore remains NOT PASSED. No A2 game may be pooled into any later row.
+
+**Requirements for every future Gate 1 row.**
+1. *Independent starting positions.* Each seat-mirrored pair starts from a distinct opening drawn, in file order, from
+   the frozen scripted-bot DEV book `muju/lab/hard-ai/ladder/openings/p1-dev.jsonl` (sha256 `a58ca9d8…5c7`, 48 rows).
+   Never `p1-val`, never the sealed book. 48 pairs per cell (one per opening) replaces 64.
+2. *Effective sample size is reported and enforced.* The report hashes every game's action sequence. A cell whose number
+   of distinct games is below 90% of its game count is INVALID and cannot pass or fail a strength condition. Intervals
+   are computed over distinct pairs only.
+3. *Calibrated fixed work.* Before the row, on the same dev openings, measure the median search work each engine consumes
+   per own turn in WALL mode at its shipped quick allowance (hard 10,000 ms, medium 3,000 ms) on the measurement machine
+   while otherwise idle; record machine, load and the two medians in the row's manifest; use those medians as the row's
+   fixed-work budgets. Fixed work stays the primary mode so results do not depend on machine load.
+4. *Seed plumbing is verified.* Any randomness an engine or bot uses must be derived from the recorded pair seed; a test
+   must show two different pair seeds can produce different games from the same opening, and the same seed reproduces.
+5. A1's acceptance conditions are otherwise unchanged (beat Expand, Balanced and `aiv2-medium`; Rush report-only; frozen
+   purchase/inactivity bands; must keep buying). New row seed: **20260960**. A 16-game pilot (seed 20260961) checks the
+   plumbing only and is ineligible.
+
+**A design fact surfaced by A2, recorded for the owner, not a gate change.** Under Phasing the inactivity clock is reset
+only by an attack that removes a unit (`src/ai/simulate.ts` is the only writer of `progressThisTurn`); buying, summoning,
+promoting, mining new ground or contesting a home rectangle do not reset it, and the limit is ten plies. Two players who
+both decline the first trade therefore draw in five turns each regardless of material or territory. Whether that is the
+intended game is the owner's decision; this gate will keep reporting inactivity rates so the effect stays visible.
+
