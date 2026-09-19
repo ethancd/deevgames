@@ -67,6 +67,7 @@ import {
   proverStats,
 } from '../../../src/ai/hard/tactics/prover';
 import { tacticalFixtures } from '../../ai/fixtures';
+import { PROVER_ORDER_CAPS, compareIncrementalProver, newProverOrderCounters } from './differential';
 
 const VERDICT_NAME: readonly string[] = ['rescue', 'mate', 'unknown'];
 
@@ -570,6 +571,30 @@ export interface GatePreservationMetrics {
   proofsSuppressed: number;
   /** Games decided by `home-checkmate`. */
   homeCheckmates: number;
+  /**
+   * THE INCREMENTAL PROVER COMPARISON (round 6). This walk is the only one that
+   * holds a replica state built entirely by `make` over a real invasion-biased
+   * game, so it is where an ordering defect that only a cap-truncated search can
+   * see is most likely to show. `compareIncrementalProver` compares verdict AND
+   * node count against canonical at tight caps and at `PROOF_NODES`, with a fresh
+   * pack as the control, and records the node-count distribution behind the
+   * key-soundness argument (M2-STATUS §2.6).
+   */
+  incrementalProverCases: number;
+  incrementalProverVerdictMismatches: number;
+  incrementalProverNodeMismatches: number;
+  freshPackProverMismatches: number;
+  incrementalProverCapHits: number;
+  /** Gate proofs inside `make` that ended at `PROOF_NODES`. Expected 0. */
+  gateProverCapHits: number;
+  proverPositions: number;
+  proverMaxNodes: number;
+  proverNodeBuckets: Record<string, number>;
+  /** Comparisons whose position has slot order != canonical order. Coverage. */
+  proverOrderPermuted: number;
+  /** §2.6.5: positions re-proved with the birth sequence reversed, and violations. */
+  proverOrderInvarianceCases: number;
+  proverOrderInvarianceViolations: number;
   terminals: Record<string, number>;
   elapsedMs: number;
 }
@@ -686,6 +711,10 @@ export function runGatePreservation(options: GatePreservationOptions): GatePrese
   const keep = newKeepSetTable();
   const genBuffer = new Int32Array(GEN_CAPACITY);
   const divergences: GateDivergence[] = [];
+  const proverFresh = allocState();
+  const proverScratch = new Scratch(1, 0, 0, 1);
+  const proverOrder = newProverOrderCounters();
+  const cappedBefore = replica.cappedProverCalls;
 
   const metrics: GatePreservationMetrics = {
     seed: options.seed,
@@ -695,6 +724,18 @@ export function runGatePreservation(options: GatePreservationOptions): GatePrese
     proofsCompared: 0,
     proofsSuppressed: 0,
     homeCheckmates: 0,
+    incrementalProverCases: 0,
+    incrementalProverVerdictMismatches: 0,
+    incrementalProverNodeMismatches: 0,
+    freshPackProverMismatches: 0,
+    incrementalProverCapHits: 0,
+    gateProverCapHits: 0,
+    proverPositions: 0,
+    proverMaxNodes: 0,
+    proverNodeBuckets: {},
+    proverOrderPermuted: 0,
+    proverOrderInvarianceCases: 0,
+    proverOrderInvarianceViolations: 0,
     terminals: {},
     elapsedMs: 0,
   };
@@ -758,6 +799,16 @@ export function runGatePreservation(options: GatePreservationOptions): GatePrese
       if (needsProof(p)) metrics.proofsCompared++;
       else if (cornerOccupied(p) && p.result === Result.ONGOING) metrics.proofsSuppressed++;
 
+      // The INCREMENTAL prover comparison, on the state `make` just produced.
+      const proverField = compareIncrementalProver(replica, p, next, proverFresh, proverScratch, PROVER_ORDER_CAPS, proverOrder);
+      if (proverField !== null) {
+        metrics.mismatches++;
+        if (divergences.length < 16) {
+          divergences.push({ seed: options.seed, game, ply, action, replica: proverField, canonical: 'canonical prover (see replica field)', prefix: [...prefix], state: next });
+        }
+        break;
+      }
+
       const mine = replicaOutcome(p);
       const theirs = canonicalOutcome(next);
       if (mine !== theirs) {
@@ -781,6 +832,18 @@ export function runGatePreservation(options: GatePreservationOptions): GatePrese
     game++;
   }
 
+  metrics.incrementalProverCases = proverOrder.cases;
+  metrics.incrementalProverVerdictMismatches = proverOrder.verdictMismatches;
+  metrics.incrementalProverNodeMismatches = proverOrder.nodeMismatches;
+  metrics.freshPackProverMismatches = proverOrder.freshPackMismatches;
+  metrics.incrementalProverCapHits = proverOrder.capHits;
+  metrics.gateProverCapHits = replica.cappedProverCalls - cappedBefore;
+  metrics.proverPositions = proverOrder.positions;
+  metrics.proverMaxNodes = proverOrder.maxNodes;
+  metrics.proverNodeBuckets = proverOrder.nodeBuckets;
+  metrics.proverOrderPermuted = proverOrder.orderPermuted;
+  metrics.proverOrderInvarianceCases = proverOrder.orderInvarianceCases;
+  metrics.proverOrderInvarianceViolations = proverOrder.orderInvarianceViolations;
   writeRepros(options.reproDir, 'gate-divergence', divergences);
   metrics.elapsedMs = Date.now() - started;
   return metrics;

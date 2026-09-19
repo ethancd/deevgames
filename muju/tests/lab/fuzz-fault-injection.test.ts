@@ -34,7 +34,7 @@
  * | gate preservation | `replicaOutcome(p)` against `canonicalOutcome(next)` after every action | `make` awards a draw on the 50th call |
  */
 import { describe, expect, it, vi } from 'vitest';
-import { Replica, type Undo } from '../../src/ai/hard/core/state';
+import { DEAD, MAX_SLOTS, Replica, type Undo } from '../../src/ai/hard/core/state';
 import type { KeepSetTable, PA } from '../../src/ai/hard/core/action';
 import { PEND_STRIDE, Result, type PackedState } from '../../src/ai/hard/types';
 import type { GameState } from '../../src/game/types';
@@ -129,6 +129,61 @@ class GenFault extends Replica {
   }
 }
 
+/**
+ * THE ROUND-5 DEFECT ITSELF, through the public seam: canonical `board.units`
+ * order taken from the SLOT INDEX instead of from the birth sequence. Round 4
+ * wrote exactly this into `tactics/prover.ts buildOwned`, and 28.55M fuzzed
+ * actions did not notice, because the only surface that ran the prover packed
+ * every case fresh and so could not tell the two orders apart.
+ *
+ * `unmake` does NOT restore this, which is deliberate: the gate-preservation
+ * walk never unmakes, and a fault that also tripped the unmake check would prove
+ * the wrong detector.
+ */
+class SlotOrderFault extends Replica {
+  override make(p: PackedState, a: PA, u: Undo, keep?: KeepSetTable): void {
+    super.make(p, a, u, keep);
+    for (let slot = 0; slot < MAX_SLOTS; slot++) if (p.sq[slot] !== DEAD) p.ord[slot] = slot;
+  }
+}
+
+/** Swaps the birth sequence of the two lowest living slots on the SECOND `make`
+ * of each action, so the fault reaches the transition comparison (which now
+ * includes canonical ORDER) rather than the unmake check. */
+class OrderSwapFault extends Replica {
+  private calls = 0;
+
+  override make(p: PackedState, a: PA, u: Undo, keep?: KeepSetTable): void {
+    super.make(p, a, u, keep);
+    if (++this.calls % 2 !== 0) return;
+    let x = -1;
+    let y = -1;
+    for (let slot = 0; slot < MAX_SLOTS && y < 0; slot++) {
+      if (p.sq[slot] === DEAD) continue;
+      if (x < 0) x = slot;
+      else y = slot;
+    }
+    if (y < 0) return;
+    const t = p.ord[x];
+    p.ord[x] = p.ord[y];
+    p.ord[y] = t;
+  }
+}
+
+/** Replaces an id plane with a fresh copy, which the id lanes of
+ * `PackedSnapshot` used to compare past (they read the CACHED array). */
+class IdArrayReplaceFault extends Replica {
+  constructor(private readonly lane: 'originIds' | 'pendIds') {
+    super();
+  }
+
+  override unmake(p: PackedState, u: Undo): void {
+    super.unmake(p, u);
+    if (this.lane === 'originIds') p.originIds = [...p.originIds];
+    else p.pendIds = [...p.pendIds];
+  }
+}
+
 class GateFault extends Replica {
   private calls = 0;
 
@@ -159,6 +214,13 @@ describe('the fuzz surfaces can fail', () => {
       ['slotCount', true, q => void (q.slotCount = q.slotCount + 1)],
       ['proverMode', true, q => void (q.proverMode = q.proverMode === 2 ? 1 : 2)],
       ['catalogSignature', true, q => void (q.catalogSignature = q.catalogSignature ^ 1)],
+      // The canonical ORDER plane (round 6). `digest` is order-BLIND on purpose —
+      // the search is entitled to transpose buy-order permutations — so these
+      // four are blind here and seen by the snapshot, exactly like the lanes above.
+      ['ord', true, q => void (q.ord[0] = q.ord[0] + 1)],
+      ['ordNext', true, q => void (q.ordNext = q.ordNext + 1)],
+      ['pendOrd', true, q => void (q.pendOrd[0] = q.pendOrd[0] + 1)],
+      ['pendOrdNext', true, q => void (q.pendOrdNext = q.pendOrdNext + 1)],
       // The control group: fields the digest DOES carry, so the old check was
       // not blind to everything and this test is measuring a real boundary.
       ['gained', false, q => void (q.gained[0] = q.gained[0] + 1)],
@@ -180,7 +242,7 @@ describe('the fuzz surfaces can fail', () => {
       expect(snap.firstDifference(p), name).not.toBeNull();
       snap.capture(p); // re-baseline, so each corruption is independent
     }
-    expect(blindCount).toBe(8);
+    expect(blindCount).toBe(12);
   });
 
   it.each(['occTier', 'occBy', 'pendBB', 'uflags'] as const)(
@@ -238,6 +300,41 @@ describe('the fuzz surfaces can fail', () => {
     expect(clean.mismatches).toBe(0);
     const faulty = runGatePreservation({ seed: 11, actions: 2000, plies: 200, reproDir: null, replica: new GateFault() });
     expect(faulty.mismatches).toBeGreaterThan(0);
+  });
+
+  it('the transition comparison catches a perturbed canonical ORDER', () => {
+    const clean = runFuzz(options(400, ['transition'], new Replica()));
+    expect(clean.metrics.divergences).toBe(0);
+    const faulty = runFuzz(options(400, ['transition'], new OrderSwapFault()));
+    expect(faulty.metrics.divergences).toBeGreaterThan(0);
+    // ...and it is the ORDER that was reported, not some collateral field.
+    expect(faulty.metrics.unmakeMismatches).toBe(0);
+  });
+
+  it('the INCREMENTAL PROVER surface catches board order taken from the slot index', () => {
+    // The clean run also proves the surface is not vacuous: it must reach states
+    // whose slot order really differs from canonical order.
+    const clean = runGatePreservation({ seed: 11, actions: 8000, plies: 200, reproDir: null });
+    expect(clean.incrementalProverVerdictMismatches).toBe(0);
+    expect(clean.incrementalProverNodeMismatches).toBe(0);
+    expect(clean.freshPackProverMismatches).toBe(0);
+    expect(clean.incrementalProverCases).toBeGreaterThan(1000);
+    expect(clean.proverOrderPermuted).toBeGreaterThan(0);
+    // No gate proof inside `make` reached the cap, which is what makes the zeros
+    // above an order-INDEPENDENCE claim rather than a coincidence.
+    expect(clean.gateProverCapHits).toBe(0);
+
+    const faulty = runGatePreservation({ seed: 11, actions: 8000, plies: 200, reproDir: null, replica: new SlotOrderFault() });
+    expect(faulty.incrementalProverVerdictMismatches + faulty.incrementalProverNodeMismatches).toBeGreaterThan(0);
+    // The FRESH-PACK control stays clean, which is the whole point: a fresh pack
+    // restores canonical order by construction, so the surface that only ever
+    // packed fresh could not have seen this.
+    expect(faulty.freshPackProverMismatches).toBe(0);
+  });
+
+  it.each(['originIds', 'pendIds'] as const)('the snapshot catches %s being replaced wholesale', lane => {
+    const faulty = runFuzz(options(400, ['transition'], new IdArrayReplaceFault(lane)));
+    expect(faulty.metrics.unmakeMismatches).toBeGreaterThan(0);
   });
 
   it('the PROVER surface catches a flipped verdict and a wrong node count', () => {

@@ -87,7 +87,7 @@ describe('pack / unpack', () => {
     expect(withPendings).toBeGreaterThan(500);
   });
 
-  it('unpack emits ruleset "phasing" and the commitments, square ascending per side', () => {
+  it('unpack emits ruleset "phasing" and the commitments in CANONICAL COMMIT ORDER', () => {
     const state = buildState({
       units: [
         { def: 'plant_1', owner: 'white', x: 0, y: 1, id: 'w0' },
@@ -105,11 +105,15 @@ describe('pack / unpack', () => {
     const p = replica.pack(state);
     const back = replica.unpack(p);
     expect(back.ruleset).toBe('phasing');
-    // Buy ORDER is deliberately forgotten: the plane is square-keyed, so the
-    // commitments come back white-then-black, square ascending.
+    // Buy ORDER is CARRIED (round 6, `pendOrd`), not forgotten. The plane itself
+    // is still square-keyed — no rule reads commit order — but `resolveSummons`
+    // APPENDS the arrivals in it (`summoning.ts:24`), so it decides
+    // `board.units` order one hand-off later, and `analyzeHomeDefense` reads
+    // `board.units` order under a node cap. Here `water_1@11` was committed
+    // FIRST and comes back first, ahead of `fire_1@0` on the lower square.
     expect((back.pendingSummons ?? []).map(s => `${s.owner}.${s.position.y * 10 + s.position.x}.${s.definitionId}.${s.cost}.${s.id}`)).toEqual([
-      'white.0.fire_1.3.earlier',
       'white.11.water_1.4.later',
+      'white.0.fire_1.3.earlier',
       'black.99.metal_1.5.theirs',
     ]);
     // The ids are carried purely for fidelity; a commitment the search created
@@ -117,8 +121,8 @@ describe('pack / unpack', () => {
     const anonymous = replica.pack(state, allocState());
     anonymous.pendIds.length = 0;
     expect((replica.unpack(anonymous).pendingSummons ?? []).map(s => s.id)).toEqual([
-      'pending-white-0',
       'pending-white-11',
+      'pending-white-0',
       'pending-black-99',
     ]);
   });

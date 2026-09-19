@@ -134,9 +134,11 @@ export interface Undo {
 /**
  * DESIGN §3.4: one `Int32Array(8192)` per search, with a stack pointer.
  *
- * M2 note: `END_PLACE` is now the widest record — nine words per resolved
- * commitment plus `resetUnitActions`'s four per healed unit. A side can hold at
- * most 100 commitments and 100 units, so the worst case is ~1,300 words, and a
+ * M2 note: `END_PLACE` is now the widest record — ELEVEN words per resolved
+ * commitment (nine, plus the reused dead slot's stale `ord` and the
+ * commitment's own `pendOrd`) plus `resetUnitActions`'s four per healed unit. A
+ * side can hold at most 100 commitments and 100 units, so the worst case is
+ * ~1,510 words, and a
  * line that stacked several of those without unwinding would overflow. Every
  * current driver either unwinds in lock step (the search) or resets `top` per
  * applied action (the fuzzer, `unpack` tooling); real commitment counts are a
@@ -168,12 +170,16 @@ export function allocState(): PackedState {
     atkCount: new Uint8Array(MAX_SLOTS),
     uflags: new Uint8Array(MAX_SLOTS),
     slotCount: 0,
+    ord: new Int32Array(MAX_SLOTS),
+    ordNext: 0,
     pieceAt: new Uint8Array(BOARD).fill(NO_SLOT),
     occ: new Uint32Array(4),
     occBy: new Uint32Array(8),
     occTier: new Uint32Array(12),
     pendDef: new Uint8Array(2 * PEND_STRIDE),
     pendCost: new Uint8Array(2 * PEND_STRIDE),
+    pendOrd: new Int32Array(2 * PEND_STRIDE),
+    pendOrdNext: 0,
     pendBB: new Uint32Array(8),
     pendCount: new Uint8Array(2),
     pendCostSum: new Int32Array(2),
@@ -215,12 +221,14 @@ export function copyState(dst: PackedState, src: PackedState): void {
   dst.damage.set(src.damage);
   dst.atkCount.set(src.atkCount);
   dst.uflags.set(src.uflags);
+  dst.ord.set(src.ord);
   dst.pieceAt.set(src.pieceAt);
   dst.occ.set(src.occ);
   dst.occBy.set(src.occBy);
   dst.occTier.set(src.occTier);
   dst.pendDef.set(src.pendDef);
   dst.pendCost.set(src.pendCost);
+  dst.pendOrd.set(src.pendOrd);
   dst.pendBB.set(src.pendBB);
   dst.pendCount.set(src.pendCount);
   dst.pendCostSum.set(src.pendCostSum);
@@ -232,6 +240,8 @@ export function copyState(dst: PackedState, src: PackedState): void {
   dst.materialCc.set(src.materialCc);
   dst.pstSumCc.set(src.pstSumCc);
   dst.slotCount = src.slotCount;
+  dst.ordNext = src.ordNext;
+  dst.pendOrdNext = src.pendOrdNext;
   dst.side = src.side;
   dst.phase = src.phase;
   dst.actions = src.actions;
@@ -431,9 +441,10 @@ function unlinkSquare(cat: Catalog, p: PackedState, slot: Slot, s: Square): void
  * link. Never called on a square that already carries one of `side`'s
  * commitments (`isLegal` and `genPlace` both mask those out).
  */
-function addPending(p: PackedState, side: Side, s: Square, def: number, cost: number): void {
+function addPending(p: PackedState, side: Side, s: Square, def: number, cost: number, ord: number): void {
   p.pendDef[side * PEND_STRIDE + s] = def + 1;
   p.pendCost[side * PEND_STRIDE + s] = cost;
+  p.pendOrd[side * PEND_STRIDE + s] = ord;
   p.pendBB[side * 4 + (s >>> 5)] |= 1 << (s & 31);
   p.pendCount[side] += 1;
   p.pendCostSum[side] += cost;
@@ -450,6 +461,7 @@ function removePending(p: PackedState, side: Side, s: Square): number {
   p.pendBB[side * 4 + (s >>> 5)] &= ~(1 << (s & 31));
   p.pendDef[i] = 0;
   p.pendCost[i] = 0;
+  p.pendOrd[i] = 0;
   return def;
 }
 
@@ -500,6 +512,18 @@ const KEEP_WORK = new Uint32Array(KEEP_WORDS);
 const PLACE_MASK = bbNew();
 /** One side's `pendBB` lanes, so `bbNext` can walk them without a subarray. */
 const PEND_LANES = bbNew();
+/**
+ * `resolveArrivals`'s pre-pass: the arriving squares, sorted by commit sequence,
+ * and the resulting rank per square. Canonical appends the arrivals to
+ * `board.units` in `pendingSummons` order (`summoning.ts:24`), so their BIRTH
+ * ORDER is the commit order of the ones that survive — which has to be known
+ * before the walk starts, because the walk clears each `pendOrd` as it consumes
+ * it. Sized for the plane's capacity (one commitment per square).
+ */
+const ARRIVAL_SQ = new Int32Array(BOARD);
+const ARRIVAL_RANK = new Int32Array(BOARD);
+/** `check`'s duplicate-sequence scratch (units, then commitments). */
+const ORD_SEEN = new Int32Array(MAX_SLOTS > 2 * PEND_STRIDE ? MAX_SLOTS : 2 * PEND_STRIDE);
 
 // --- the replica -------------------------------------------------------------
 
@@ -536,6 +560,21 @@ export class Replica {
    * determinism. Added by M14; see DEVIATIONS.
    */
   fullProverCalls = 0;
+  /**
+   * How many of those full-prover calls ended AT THE CAP (`HomeVerdict.UNKNOWN`,
+   * canonical `cutoffReason: 'node_limit'`).
+   *
+   * This is the order-exposure meter (M2-STATUS §2.6, the key-soundness
+   * argument). A completed prover search has an order-INDEPENDENT verdict, and
+   * MATE is only ever returned by a completed search — so a capped call cannot
+   * change the adjudicated result, only the RESCUE/UNKNOWN label and the node
+   * count the differential compares. Any run in which this is non-zero is a run
+   * where the replica's candidate ORDER was load-bearing for something, and can
+   * be vetoed on that basis rather than on trust. Accounted exactly like
+   * `fullProverCalls`: monotone, never reset by `unmake`, a pure function of the
+   * positions the caller applied.
+   */
+  cappedProverCalls = 0;
 
   /** `memo` is E4.3 candidate C's shared reach memo (`searchFix.reachCache`),
    * `null` for every existing caller and for the champion. */
@@ -567,9 +606,11 @@ export class Replica {
     out.damage.fill(0);
     out.atkCount.fill(0);
     out.uflags.fill(0);
+    out.ord.fill(0);
     out.originIds.length = 0;
     out.pendDef.fill(0);
     out.pendCost.fill(0);
+    out.pendOrd.fill(0);
     out.pendIds.length = 0;
 
     for (let y = 0; y < 10; y++) {
@@ -600,13 +641,20 @@ export class Replica {
         (u.lastAttackKilled ? F_LAST_KILLED : 0) |
         (u.placedThisTurn ? F_PLACED : 0) |
         (u.promotedThisPlacement ? F_PROMOTED : 0);
+      // Slot `i` holds `board.units[i]`, so at pack time the birth sequence IS
+      // the slot index. It stops being the slot index at the first arrival that
+      // reuses a dead slot, which is why it is carried as state from here on.
+      out.ord[i] = i;
       out.originIds[i] = u.id;
     }
     out.slotCount = units.length;
+    out.ordNext = units.length;
 
     // Pending summons, square-keyed. `rehash` derives `pendBB`/`pendCount`/
     // `pendCostSum` from these two planes, so only they are written here.
-    for (const summon of state.pendingSummons ?? []) {
+    const pendings = state.pendingSummons ?? [];
+    let pendRank = 0;
+    for (const summon of pendings) {
       const def = DEF_INDEX.get(summon.definitionId);
       if (def === undefined) throw new PackError(`pack: pending summon ${summon.id} has unknown definitionId "${summon.definitionId}"`);
       const s = summon.position.y * 10 + summon.position.x;
@@ -626,8 +674,11 @@ export class Replica {
       if (out.pendDef[i] !== 0) throw new PackError(`pack: ${summon.owner} has two pending summons on square ${s}`);
       out.pendDef[i] = def + 1;
       out.pendCost[i] = summon.cost;
+      // The commit sequence, straight off the canonical array index.
+      out.pendOrd[i] = pendRank++;
       out.pendIds[i] = summon.id;
     }
+    out.pendOrdNext = pendRank;
 
     out.bank[0] = state.players.white.resources;
     out.bank[1] = state.players.black.resources;
@@ -671,10 +722,18 @@ export class Replica {
       for (let x = 0; x < 10; x++) row[x] = { position: { x, y }, resourceLayers: p.reserve[y * 10 + x] };
       cells[y] = row;
     }
+    // CANONICAL ORDER, not slot order: `board.units` is a birth sequence
+    // (`summoning.ts:24` appends, every removal is a `filter`), and slot order
+    // stops agreeing with it at the first arrival into a reused dead slot. An
+    // order-sensitive canonical consumer — `analyzeHomeDefense`'s candidate
+    // lists under the node cap, `incomingPlayback`'s `JSON.stringify` board
+    // comparison — would otherwise read a permuted army out of the replica.
+    const order: number[] = [];
+    for (let slot = 0; slot < MAX_SLOTS; slot++) if (p.sq[slot] !== DEAD) order.push(slot);
+    order.sort((a, b) => p.ord[a] - p.ord[b]);
     const units: Unit[] = [];
-    for (let slot = 0; slot < MAX_SLOTS; slot++) {
+    for (const slot of order) {
       const s = p.sq[slot];
-      if (s === DEAD) continue;
       const owner = PLAYER_OF_SIDE[p.owner[slot]];
       const flags = p.uflags[slot];
       const count = p.atkCount[slot];
@@ -701,25 +760,26 @@ export class Replica {
     const initialResourceLayers: number[] = new Array<number>(BOARD);
     for (let s = 0; s < BOARD; s++) initialResourceLayers[s] = p.initialReserve[s];
 
-    // Commitments come out white-then-black, square ascending. The canonical
-    // array is in buy order, which the square-keyed plane deliberately forgets
-    // (nothing in the rules reads it: `resolveSummons` checks every commitment
-    // against the same board, summoning.ts:17-22).
+    // Commitments come out in CANONICAL COMMIT ORDER (`pendOrd`), one array for
+    // both sides, exactly as `applyBuyUnit` built it (`simulate.ts:131`). No rule
+    // reads that order — `resolveSummons` checks every commitment against the
+    // same board (summoning.ts:17-22) — but `resolveSummons` then APPENDS the
+    // arrivals in it, so it decides `board.units` order one hand-off later.
+    const pendOrder: number[] = [];
+    for (let i = 0; i < 2 * PEND_STRIDE; i++) if (p.pendDef[i] !== 0) pendOrder.push(i);
+    pendOrder.sort((a, b) => p.pendOrd[a] - p.pendOrd[b]);
     const pendingSummons: PendingSummon[] = [];
-    for (let side = 0; side < 2; side++) {
-      for (let s = 0; s < BOARD; s++) {
-        const i = side * PEND_STRIDE + s;
-        const def = p.pendDef[i];
-        if (def === 0) continue;
-        const stored = p.pendIds[i];
-        pendingSummons.push({
-          id: stored !== undefined && stored !== '' ? stored : `pending-${PLAYER_OF_SIDE[side]}-${s}`,
-          owner: PLAYER_OF_SIDE[side],
-          definitionId: DEF_ID[def - 1],
-          position: { x: s % 10, y: (s / 10) | 0 },
-          cost: p.pendCost[i],
-        });
-      }
+    for (const i of pendOrder) {
+      const side = (i / PEND_STRIDE) | 0;
+      const s = i % PEND_STRIDE;
+      const stored = p.pendIds[i];
+      pendingSummons.push({
+        id: stored !== undefined && stored !== '' ? stored : `pending-${PLAYER_OF_SIDE[side]}-${s}`,
+        owner: PLAYER_OF_SIDE[side],
+        definitionId: DEF_ID[p.pendDef[i] - 1],
+        position: { x: s % 10, y: (s / 10) | 0 },
+        cost: p.pendCost[i],
+      });
     }
 
     return {
@@ -1195,9 +1255,14 @@ export class Replica {
     const base = openRecord(u, AKind.BUY, p);
     u.w[u.top++] = s;
     u.w[u.top++] = cost;
+    // `applyBuyUnit` APPENDS to `pendingSummons`, so the commitment takes the
+    // next commit sequence number. Restored explicitly rather than by
+    // decrementing, so a driver that unwinds out of order fails loudly.
+    u.w[u.top++] = p.pendOrdNext;
     closeRecord(u, base);
 
-    addPending(p, side, s, def, cost);
+    addPending(p, side, s, def, cost, p.pendOrdNext);
+    p.pendOrdNext += 1;
     setBank(p, side, p.bank[side] - cost);
     this.resolveHomeCheckmate(p);
   }
@@ -1254,6 +1319,7 @@ export class Replica {
     u.w[u.top++] = p.progress;
     u.w[u.top++] = p.turnNumber;
     u.w[u.top++] = p.slotCount;
+    u.w[u.top++] = p.ordNext;
     const pendCountSlot = u.top++;
     u.w[pendCountSlot] = 0;
 
@@ -1318,10 +1384,18 @@ export class Replica {
 
   /**
    * `resolveSummons(state, side)`: materialise or refund each of `side`'s
-   * commitments against a single snapshot, clearing the plane. Squares are
-   * visited ASCENDING; the order is free, because the snapshot is taken before
-   * the first arrival lands. Appends nine words per commitment and returns how
-   * many it wrote. Cost is O(pendCount), not O(board).
+   * commitments against a single snapshot, clearing the plane.
+   *
+   * SLOT allocation walks squares ASCENDING and takes the lowest dead slot —
+   * a slot is a handle and the snapshot predates the first arrival, so that
+   * choice is free. The arrivals' BIRTH ORDER is NOT free: canonical appends
+   * them to `board.units` in `pendingSummons` order (`summoning.ts:24`), so each
+   * one's `ord` comes from its rank in the commit sequence, computed in the
+   * pre-pass below and independent of the square it happens to sit on. Getting
+   * this from the slot index instead was the round-5 defect (§2.6).
+   *
+   * Appends ELEVEN words per commitment and returns how many it wrote. Cost is
+   * O(pendCount), not O(board).
    */
   private resolveArrivals(p: PackedState, side: Side, u: Undo): number {
     if (p.pendCount[side] === 0) return 0;
@@ -1331,11 +1405,33 @@ export class Replica {
     PEND_LANES[1] = p.pendBB[lanes + 1];
     PEND_LANES[2] = p.pendBB[lanes + 2];
     PEND_LANES[3] = p.pendBB[lanes + 3];
+
+    // Pre-pass: the arriving squares in COMMIT order, so each one's birth rank
+    // is its index. It has to happen first — the walk below clears `pendOrd` as
+    // it consumes each commitment.
+    let arrivals = 0;
+    for (let s = bbNext(PEND_LANES, -1); s >= 0; s = bbNext(PEND_LANES, s)) {
+      if (bbHas(legal, s)) ARRIVAL_SQ[arrivals++] = s;
+    }
+    for (let a = 1; a < arrivals; a++) {
+      const value = ARRIVAL_SQ[a];
+      const key = p.pendOrd[side * PEND_STRIDE + value];
+      let b = a - 1;
+      while (b >= 0 && p.pendOrd[side * PEND_STRIDE + ARRIVAL_SQ[b]] > key) {
+        ARRIVAL_SQ[b + 1] = ARRIVAL_SQ[b];
+        b--;
+      }
+      ARRIVAL_SQ[b + 1] = value;
+    }
+    for (let a = 0; a < arrivals; a++) ARRIVAL_RANK[ARRIVAL_SQ[a]] = a;
+    const ordBase = p.ordNext;
+
     let count = 0;
     for (let s = bbNext(PEND_LANES, -1); s >= 0; s = bbNext(PEND_LANES, s)) {
       const i = side * PEND_STRIDE + s;
       const def = p.pendDef[i] - 1;
       const cost = p.pendCost[i];
+      const pendOrd = p.pendOrd[i];
       // `isValidSpawnPosition(position, side, snapshotBoard)`: empty and inside
       // at least one unblocked rectangle — exactly `spawnInfo().legal`.
       const arrives = bbHas(legal, s);
@@ -1358,11 +1454,18 @@ export class Replica {
       u.w[u.top++] = slot < 0 ? 0 : p.damage[slot];
       u.w[u.top++] = slot < 0 ? 0 : p.atkCount[slot];
       u.w[u.top++] = slot < 0 ? 0 : p.uflags[slot];
+      // The reused dead slot's stale birth sequence, and the commitment's own
+      // commit sequence: both have to come back byte-for-byte, because `unmake`
+      // of an earlier ATTACK/PAY_UPKEEP resurrects that slot into the array
+      // position it held before it died.
+      u.w[u.top++] = slot < 0 ? 0 : p.ord[slot];
+      u.w[u.top++] = pendOrd;
       count++;
 
       if (slot >= 0) {
         this.idStack.push(p.originIds[slot] ?? '');
         p.originIds[slot] = p.pendIds[i] ?? '';
+        p.ord[slot] = ordBase + ARRIVAL_RANK[s];
         p.sq[slot] = s;
         p.defId[slot] = def;
         p.owner[slot] = side;
@@ -1383,6 +1486,7 @@ export class Replica {
       p.pendIds[i] = '';
       removePending(p, side, s);
     }
+    p.ordNext = ordBase + arrivals;
     return count;
   }
 
@@ -1592,7 +1696,9 @@ export class Replica {
     // one. `proverMode = 2` runs the full packed replica of the prover.
     if (p.proverMode === 1) return !damageBound(p, p.side, this.proverScratch, 0);
     this.fullProverCalls++;
-    return homeVerdict(p, p.side, PROOF_NODES, this.proverScratch, 0) === HomeVerdict.MATE;
+    const verdict = homeVerdict(p, p.side, PROOF_NODES, this.proverScratch, 0);
+    if (verdict === HomeVerdict.UNKNOWN) this.cappedProverCalls++;
+    return verdict === HomeVerdict.MATE;
   }
 
   private resolveHomeCheckmate(p: PackedState): void {
@@ -1647,7 +1753,9 @@ export class Replica {
       case AKind.BUY: {
         const s = u.w[r++];
         const cost = u.w[r++];
+        const pendOrdNextBefore = u.w[r++];
         removePending(p, p.side, s);
+        p.pendOrdNext = pendOrdNextBefore;
         setBank(p, p.side, p.bank[p.side] + cost);
         break;
       }
@@ -1672,15 +1780,16 @@ export class Replica {
         const progressBefore = u.w[r++] as 0 | 1;
         const turnNumberBefore = u.w[r++];
         const slotCountBefore = u.w[r++];
+        const ordNextBefore = u.w[r++];
         const pendN = u.w[r++];
         const pendBase = r;
-        r += pendN * 9;
+        r += pendN * 11;
         const restores = u.w[r++];
         this.undoResetUnitActions(p, u, r, restores);
         const next = (1 - mover) as Side;
         // Reverse the arrivals/refunds, and the two id-stack pushes each made.
         for (let i = pendN - 1; i >= 0; i--) {
-          const at = pendBase + i * 9;
+          const at = pendBase + i * 11;
           const s = u.w[at];
           const def = u.w[at + 1];
           const cost = u.w[at + 2];
@@ -1697,12 +1806,14 @@ export class Replica {
             p.damage[slot] = u.w[at + 6];
             p.atkCount[slot] = u.w[at + 7];
             p.uflags[slot] = u.w[at + 8];
+            p.ord[slot] = u.w[at + 9];
             p.originIds[slot] = displacedId;
           } else {
             setBank(p, next, p.bank[next] - cost);
           }
-          addPending(p, next, s, def, cost);
+          addPending(p, next, s, def, cost, u.w[at + 10]);
         }
+        p.ordNext = ordNextBefore;
         p.slotCount = slotCountBefore;
         setSide(p, mover);
         setPhase(p, 0);
@@ -1860,6 +1971,33 @@ export class Replica {
     if (p.bank[0] < 0 || p.bank[1] < 0) throw new Error('check: negative bank');
     if (bbCount(occ) !== unitCount(p, 0) + unitCount(p, 1)) throw new Error('check: occupancy count mismatch');
 
+    // The canonical array order (M2-STATUS §2.6): every living slot carries a
+    // distinct birth sequence below the counter. A duplicate would make
+    // `unpack`'s and the prover's sort order depend on the tie-break — which is
+    // slot order, the very thing this plane exists to stop being load-bearing.
+    let live = 0;
+    for (let slot = 0; slot < MAX_SLOTS; slot++) {
+      if (p.sq[slot] === DEAD) continue;
+      const ord = p.ord[slot];
+      if (ord < 0 || ord >= p.ordNext) throw new Error(`check: ord[${slot}] ${ord} outside 0..${p.ordNext - 1}`);
+      ORD_SEEN[live++] = ord;
+    }
+    insertionSort(ORD_SEEN, live, (x, y) => x - y);
+    for (let i = 1; i < live; i++) {
+      if (ORD_SEEN[i] === ORD_SEEN[i - 1]) throw new Error(`check: two living slots share ord ${ORD_SEEN[i]}`);
+    }
+    let pendLive = 0;
+    for (let i = 0; i < 2 * PEND_STRIDE; i++) {
+      if (p.pendDef[i] === 0) continue;
+      const ord = p.pendOrd[i];
+      if (ord < 0 || ord >= p.pendOrdNext) throw new Error(`check: pendOrd[${i}] ${ord} outside 0..${p.pendOrdNext - 1}`);
+      ORD_SEEN[pendLive++] = ord;
+    }
+    insertionSort(ORD_SEEN, pendLive, (x, y) => x - y);
+    for (let i = 1; i < pendLive; i++) {
+      if (ORD_SEEN[i] === ORD_SEEN[i - 1]) throw new Error(`check: two commitments share pendOrd ${ORD_SEEN[i]}`);
+    }
+
     // Pending summons: the plane, the bitboard and the two counters agree, and
     // every stored cost is still the catalogue cost `pack` admitted.
     const pend = bbNew();
@@ -1947,6 +2085,33 @@ export class Replica {
     ].join('|');
   }
 
+}
+
+/**
+ * The canonical ORDER of a packed state, as a comparable string: the living
+ * units' squares in `board.units` order, then the commitments as `side.square`
+ * in `pendingSummons` order.
+ *
+ * RANK-NORMALISED deliberately. `pack` numbers the birth sequence from 0 while
+ * an incrementally reached state numbers from wherever its arrivals landed, so
+ * two states that agree on ORDER disagree on the raw sequence VALUES, and the
+ * contract is the order. A square identifies a living unit uniquely (two never
+ * share one) and `(side, square)` identifies a commitment uniquely
+ * (`hasPendingSummon`, summoning.ts:5-7), so these two lists are the canonical
+ * arrays with everything the square-keyed comparisons already cover stripped
+ * out. `digest` stays order-BLIND — the search is entitled to transpose
+ * buy-order permutations — and this is the separate surface that is not.
+ */
+export function orderKey(p: PackedState): string {
+  const slots: number[] = [];
+  for (let slot = 0; slot < MAX_SLOTS; slot++) if (p.sq[slot] !== DEAD) slots.push(slot);
+  slots.sort((a, b) => p.ord[a] - p.ord[b]);
+  const pend: number[] = [];
+  for (let i = 0; i < 2 * PEND_STRIDE; i++) if (p.pendDef[i] !== 0) pend.push(i);
+  pend.sort((a, b) => p.pendOrd[a] - p.pendOrd[b]);
+  return `${slots.map(slot => p.sq[slot]).join(',')}|${pend
+    .map(i => `${(i / PEND_STRIDE) | 0}.${i % PEND_STRIDE}`)
+    .join(',')}`;
 }
 
 // --- helpers -----------------------------------------------------------------

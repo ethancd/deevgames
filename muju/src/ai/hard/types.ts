@@ -116,6 +116,25 @@ export interface PackedState {
   uflags: Uint8Array;
   /** High-water mark of used slots. */
   slotCount: number;
+  /**
+   * [MAX_SLOTS] the slot's rank in canonical `board.units` (M2-STATUS §2.6).
+   *
+   * A slot is a HANDLE, not an identity: `pack` hands out slot `i` to
+   * `board.units[i]`, but an arrival reuses the lowest DEAD slot, so after one
+   * death-and-arrival the two orders part company. Canonical appends arrivals to
+   * `board.units` in `pendingSummons` order (`summoning.ts:24`) and removes with
+   * `filter`, which preserves the survivors' relative order — so canonical order
+   * is a per-unit BIRTH SEQUENCE and nothing else. That sequence lives here,
+   * assigned by `pack` from the array index and by `resolveArrivals` from
+   * `pendOrd`, restored byte-for-byte by `unmake`, and read by every
+   * ORDER-SENSITIVE consumer (`tactics/prover.ts buildOwned`, `unpack`).
+   *
+   * Only meaningful for a LIVING slot; a dead slot keeps its stale value until
+   * an arrival overwrites it (and `unmake` puts the stale value back).
+   */
+  ord: Int32Array;
+  /** The next birth sequence number; `unmake` restores it. */
+  ordNext: number;
   /** [100] slot or `NO_SLOT`. */
   pieceAt: Uint8Array;
 
@@ -137,6 +156,20 @@ export interface PackedState {
   pendDef: Uint8Array;
   /** [2 * PEND_STRIDE] the exact cost paid, refunded verbatim on disruption. */
   pendCost: Uint8Array;
+  /**
+   * [2 * PEND_STRIDE] the commitment's rank in canonical `pendingSummons`
+   * (M2-STATUS §2.6). `applyBuyUnit` APPENDS (`simulate.ts:131`) and
+   * `resolveSummons` REMOVES with `filter` (`summoning.ts:22`), so canonical
+   * pending order is a commit sequence — which the square-keyed plane above
+   * cannot express on its own. `resolveArrivals` consumes it to decide the order
+   * arrivals take in `board.units`; nothing in the RULES reads it (every
+   * commitment is judged against the same snapshot).
+   *
+   * One global sequence for both sides, exactly like the single canonical array.
+   */
+  pendOrd: Int32Array;
+  /** The next commit sequence number; `unmake` restores it. */
+  pendOrdNext: number;
   /** [8] lanes 0..3 white, 4..7 black — squares carrying a commitment. */
   pendBB: Uint32Array;
   /** [2] `popcount(pendBB[side])`. */

@@ -52,7 +52,15 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { runArrivalSurface, runFuzz, type Surface } from './differential';
 import { runGatePreservation, runProverSurface } from './prover-surface';
+import { PROOF_NODES } from '../../../src/ai/hard/tactics/prover';
 import { writePositions } from '../positions/corpus';
+
+/**
+ * Below this many gate actions a run is too short to expect an order-permuted
+ * prover comparison; at 20,000 the observed rate is ~1,800. See
+ * `ProverOrderCounters.orderPermuted`.
+ */
+const ORDER_PERMUTED_EXPECTED_ACTIONS = 4000;
 
 const REPO_ROOT = path.resolve(import.meta.dirname, '../../..');
 const DEFAULT_OUT = path.resolve(REPO_ROOT, 'lab/results/hard-ai-verify/fuzz.json');
@@ -234,13 +242,41 @@ function proverSurface(args: Args, reproDir: string | null): { metrics: Record<s
 function gateSurface(args: Args, reproDir: string | null): { metrics: Record<string, unknown>; failed: boolean } {
   const metrics = runGatePreservation({ seed: args.seed, actions: args.actions, plies: args.plies, reproDir });
   console.log(JSON.stringify(metrics));
-  const failed = metrics.mismatches > 0 || metrics.actions < args.actions || metrics.proofsCompared === 0;
+  const failed =
+    metrics.mismatches > 0 ||
+    metrics.actions < args.actions ||
+    metrics.proofsCompared === 0 ||
+    metrics.incrementalProverVerdictMismatches > 0 ||
+    metrics.incrementalProverNodeMismatches > 0 ||
+    metrics.freshPackProverMismatches > 0 ||
+    metrics.proverOrderInvarianceViolations > 0 ||
+    (metrics.proverOrderPermuted === 0 && args.actions >= ORDER_PERMUTED_EXPECTED_ACTIONS);
   if (failed) {
     console.error(
       `hard:fuzz: gate-preservation FAILED (mismatches ${metrics.mismatches}, ` +
-        `actions ${metrics.actions}/${args.actions}, proofsCompared ${metrics.proofsCompared})`,
+        `actions ${metrics.actions}/${args.actions}, proofsCompared ${metrics.proofsCompared}, ` +
+        `incrementalProverVerdictMismatches ${metrics.incrementalProverVerdictMismatches}, ` +
+        `incrementalProverNodeMismatches ${metrics.incrementalProverNodeMismatches}, ` +
+        `freshPackProverMismatches ${metrics.freshPackProverMismatches})`,
     );
   }
+  // COVERAGE, and it is a failure condition: zero order-permuted comparisons
+  // would mean this surface never built a state whose slot order differs from
+  // canonical order, which is the exact shape 28.55M actions of round-4 fuzz
+  // walked past. A zero mismatch count is only worth reading beside it.
+  if (metrics.proverOrderPermuted === 0 && args.actions >= ORDER_PERMUTED_EXPECTED_ACTIONS) {
+    console.error(
+      `hard:fuzz: gate-preservation made ${metrics.incrementalProverCases} prover comparisons but NONE on an ` +
+        'order-permuted state; the incremental prover surface is vacuous for this run',
+    );
+  }
+  // The order-exposure line. Reported ALWAYS, pass or fail: a capped gate proof
+  // is the only route by which candidate order could have changed an adjudicated
+  // result, so "0" here is what makes the rest of the zeros mean what they claim.
+  console.error(
+    `hard:fuzz: gate-preservation order exposure — gateProverCapHits ${metrics.gateProverCapHits}, ` +
+      `proverMaxNodes ${metrics.proverMaxNodes} of ${PROOF_NODES} over ${metrics.proverPositions} positions`,
+  );
   return { metrics: metrics as unknown as Record<string, unknown>, failed };
 }
 
@@ -333,7 +369,22 @@ function main(): void {
       walk.unmakeMismatches > 0 ||
       walk.rehashMismatches > 0 ||
       walk.roundTripMismatches > 0 ||
-      walk.invariantViolations > 0;
+      walk.invariantViolations > 0 ||
+      // THE INCREMENTAL PROVER SURFACE (round 6). The prover surface proper packs
+      // every case fresh, which restores canonical `board.units` order by
+      // construction and is why it could not see the arrival-order defect. These
+      // comparisons run on the state the walk actually built.
+      walk.incrementalProverVerdictMismatches > 0 ||
+      walk.incrementalProverNodeMismatches > 0 ||
+      walk.freshPackProverMismatches > 0 ||
+      walk.proverOrderInvarianceViolations > 0;
+    if (walk.gateProverCapHits > 0) {
+      console.error(
+        `hard:fuzz: ${walk.gateProverCapHits} gate proof(s) inside make() ended AT the ${PROOF_NODES}-node cap. ` +
+          'A capped proof is the only way candidate ORDER can change a prover answer (M2-STATUS §2.6); ' +
+          'this run needs its examples inspected before its zeros are read as order-independence.',
+      );
+    }
 
     // A Phasing walk that never committed a summon, or never saw one arrive,
     // has not exercised anything Phasing-specific: fail rather than report a
@@ -368,7 +419,8 @@ function main(): void {
       arrival.arrivalFlagMismatches > 0 ||
       arrival.refundBankMismatches > 0 ||
       arrival.planeNotClearedMismatches > 0 ||
-      arrival.survivorMismatches > 0;
+      arrival.survivorMismatches > 0 ||
+      arrival.incrementalProverMismatches > 0;
     if (arrival.cases >= BOTH_OUTCOMES_EXPECTED_CASES && (arrival.casesWithArrival === 0 || arrival.casesWithRefund === 0)) {
       console.error(
         `hard:fuzz: arrival surface produced no ${arrival.casesWithArrival === 0 ? 'arrivals' : 'refunds'} ` +

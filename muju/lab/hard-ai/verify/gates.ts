@@ -340,7 +340,29 @@ export const GATES: Gate[] = [
         // (c) the gate-preservation proof over 100,000 played actions.
         gate?.actions === 100_000 &&
         gate?.mismatches === 0 &&
-        (gate?.proofsCompared as number) > 0
+        (gate?.proofsCompared as number) > 0 &&
+        // (e) M2 round 6: the prover compared on the state the walk ACTUALLY
+        // BUILT, not only on a fresh pack of it. The prover surface above packs
+        // every case fresh, which restores canonical `board.units` order by
+        // construction — which is why 60,000 of its cases could not see the
+        // arrival-order defect (M2-STATUS §2.6.2). `freshPackProver` is the
+        // control: it agreed even before the fix.
+        gate?.incrementalProverVerdictMismatches === 0 &&
+        gate?.incrementalProverNodeMismatches === 0 &&
+        gate?.freshPackProverMismatches === 0 &&
+        // ...and it is only meaningful if the walk reached order-permuted states,
+        // which is the non-vacuity condition round 4's evidence failed.
+        (gate?.proverOrderPermuted as number) > 0 &&
+        // (f) the key-soundness measurement (§2.6.5): re-proving with the birth
+        // sequence REVERSED never moves the MATE classification, which is what
+        // makes it sound to leave order out of `Kpos`/`Kturn`.
+        gate?.proverOrderInvarianceViolations === 0 &&
+        (gate?.proverOrderInvarianceCases as number) > 0 &&
+        // (g) TRIPWIRE, not a soundness proof: a gate proof that ends AT
+        // `PROOF_NODES` is the only regime in which candidate order could change
+        // any prover answer. It has never happened in >1M measured positions, so a
+        // run where it does needs its examples looked at before it is accepted.
+        gate?.gateProverCapHits === 0
       );
     },
     timeoutMs: 10 * MIN,

@@ -124,7 +124,13 @@ export class PackedSnapshot {
       if (record[this.scalarKeys[i]] !== this.scalars[i]) return this.scalarKeys[i];
     }
     for (const lane of this.ids) {
-      const src = lane.src;
+      // The LIVE field, not the cached view of it. `derive` binds `lane.src`
+      // once, so reading the cached array would compare the pre-`make` contents
+      // against `saved`, match, and report `null` for any `unmake` that put a
+      // WHOLE NEW ARRAY on the state — the same blind spot the typed-array loop
+      // above guards against, and the reason that guard is spelled out twice.
+      const src = (p as unknown as Record<string, readonly string[]>)[lane.key];
+      if (src !== lane.src) return `${lane.key}-array-replaced`;
       // Compared over the UNION of the two lengths, with an out-of-range or
       // `undefined` entry read as `''`. The id planes are `string[]`, not typed
       // arrays: `make` grows one by writing at an index past its end when an

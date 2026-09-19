@@ -31,12 +31,16 @@ export function allocPacked(): PackedState {
     atkCount: new Uint8Array(MAX_SLOTS),
     uflags: new Uint8Array(MAX_SLOTS),
     slotCount: 0,
+    ord: new Int32Array(MAX_SLOTS),
+    ordNext: 0,
     pieceAt: new Uint8Array(100).fill(NO_SLOT),
     occ: new Uint32Array(4),
     occBy: new Uint32Array(8),
     occTier: new Uint32Array(12),
     pendDef: new Uint8Array(2 * PEND_STRIDE),
     pendCost: new Uint8Array(2 * PEND_STRIDE),
+    pendOrd: new Int32Array(2 * PEND_STRIDE),
+    pendOrdNext: 0,
     pendBB: new Uint32Array(8),
     pendCount: new Uint8Array(2),
     pendCostSum: new Int32Array(2),
@@ -92,6 +96,10 @@ export function putUnit(p: PackedState, spec: UnitSpec): PackedState {
   p.uflags[spec.slot] = spec.uflags ?? 0;
   p.pieceAt[spec.sq] = spec.slot;
   if (spec.slot >= p.slotCount) p.slotCount = spec.slot + 1;
+  // Slot order IS the birth sequence for a hand-built fixture; `Replica.check`
+  // only demands the living sequences be distinct and below the counter.
+  p.ord[spec.slot] = spec.slot;
+  if (spec.slot >= p.ordNext) p.ordNext = spec.slot + 1;
   if (spec.originId !== undefined && spec.originId !== '') p.originIds[spec.slot] = spec.originId;
   return p;
 }
@@ -105,12 +113,14 @@ export function clonePacked(p: PackedState): PackedState {
     damage: Uint8Array.from(p.damage),
     atkCount: Uint8Array.from(p.atkCount),
     uflags: Uint8Array.from(p.uflags),
+    ord: Int32Array.from(p.ord),
     pieceAt: Uint8Array.from(p.pieceAt),
     occ: Uint32Array.from(p.occ),
     occBy: Uint32Array.from(p.occBy),
     occTier: Uint32Array.from(p.occTier),
     pendDef: Uint8Array.from(p.pendDef),
     pendCost: Uint8Array.from(p.pendCost),
+    pendOrd: Int32Array.from(p.pendOrd),
     pendBB: Uint32Array.from(p.pendBB),
     pendCount: Uint8Array.from(p.pendCount),
     pendCostSum: Int32Array.from(p.pendCostSum),
@@ -142,6 +152,9 @@ export function putPending(p: PackedState, spec: PendingSpec): PackedState {
   p.pendBB[spec.side * 4 + (spec.sq >>> 5)] |= 1 << (spec.sq & 31);
   p.pendCount[spec.side] += 1;
   p.pendCostSum[spec.side] += spec.cost ?? 0;
+  // Commitments are numbered in the order the fixture adds them, which is what
+  // `applyBuyUnit`'s append does.
+  p.pendOrd[i] = p.pendOrdNext++;
   if (spec.pendId !== undefined && spec.pendId !== '') p.pendIds[i] = spec.pendId;
   return p;
 }

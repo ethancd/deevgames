@@ -69,6 +69,25 @@ export interface HardSearchStats {
   seldepth: number;
   byClass: Int32Array;
   proverCalls: number;
+  /**
+   * `Replica.cappedProverCalls` as this search last saw it: full-prover calls
+   * inside `make` that ended AT `PROOF_NODES` (canonical
+   * `cutoffReason: 'node_limit'`).
+   *
+   * The ORDER-EXPOSURE meter (M2-STATUS §2.6.5). A completed home-defence search
+   * has an order-independent verdict, and MATE is only ever returned by a
+   * completed search, so a capped call is the only route by which the replica's
+   * candidate ORDER could make any prover answer differ from canonical's. `0` is
+   * therefore a positive claim — order could not have mattered anywhere under
+   * this search — and a non-zero value is not a failure but a reason to look.
+   *
+   * A LIFETIME GAUGE, like `Replica.fullProverCalls` itself, not a per-search
+   * delta: the counter is monotone and never reset by `unmake`, so a caller that
+   * wants one search's share diffs it the way `chargeProver`'s callers diff
+   * `fullProverCalls`. It stays 0 for the whole life of an engine that never
+   * capped a proof, which is the assertion that matters.
+   */
+  cappedProverCalls: number;
   dfpnCalls: number;
   catalogRebuilds: number;
   replicaDivergences: number;
@@ -144,6 +163,7 @@ export function newSearchStats(): HardSearchStats {
     seldepth: 0,
     byClass: new Int32Array(9),
     proverCalls: 0,
+    cappedProverCalls: 0,
     dfpnCalls: 0,
     catalogRebuilds: 0,
     replicaDivergences: 0,
@@ -338,6 +358,9 @@ export function chargeProver(s: SearchContext, before: number): void {
   const calls = s.rep.fullProverCalls - before;
   if (calls <= 0) return;
   s.stats.proverCalls += calls;
+  // The order-exposure gauge, published wherever prover work is charged (see
+  // `HardSearchStats.cappedProverCalls`): a lifetime total, not a delta.
+  s.stats.cappedProverCalls = s.rep.cappedProverCalls;
   s.meter.spend(WorkClass.PROVER, calls);
 }
 
@@ -361,6 +384,7 @@ export function countProver(s: SearchContext, before: number): void {
   const calls = s.rep.fullProverCalls - before;
   if (calls <= 0) return;
   s.stats.proverCalls += calls;
+  s.stats.cappedProverCalls = s.rep.cappedProverCalls;
   s.meter.count(WorkClass.PROVER, calls);
 }
 

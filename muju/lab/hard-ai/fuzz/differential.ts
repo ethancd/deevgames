@@ -73,9 +73,12 @@ import { isLegalAction } from '../../../src/game/legality';
 import { upkeepActions } from '../../../src/game/upkeep';
 import { getAllSpawnPositions } from '../../../src/game/spawning';
 import { generateAllActions } from '../../../src/ai/moves';
-import { applyAction } from '../../../src/ai/simulate';
+import { applyAction, transitionWithoutCheckmate } from '../../../src/ai/simulate';
+import { analyzeHomeDefenseEvidence } from '../../../src/game/homeCheckmate';
 import { seededRandom } from '../../../src/ai/runtime';
-import { F_CAN_ACT, F_PLACED, MAX_SLOTS, NO_SLOT, Result, type PackedState } from '../../../src/ai/hard/types';
+import { Scratch } from '../../../src/ai/hard/core/bits';
+import { PROOF_NODES, homeVerdict, proverStats } from '../../../src/ai/hard/tactics/prover';
+import { DEAD, F_CAN_ACT, F_PLACED, MAX_SLOTS, NO_SLOT, Result, type PackedState, type Side } from '../../../src/ai/hard/types';
 import {
   AKind,
   KEEP_SET_CAPACITY,
@@ -86,8 +89,9 @@ import {
   type KeepSetTable,
   type PA,
 } from '../../../src/ai/hard/core/action';
+import { CORNER } from '../../../src/ai/hard/core/tables';
 import { DEF_INDEX } from '../../../src/ai/hard/core/catalog';
-import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
+import { Replica, allocState, newUndo, orderKey } from '../../../src/ai/hard/core/state';
 import { recomputeKpos, recomputeKturn, recomputeOccHash } from '../../../src/ai/hard/core/zobrist';
 import { pendKeyReplica } from '../../../src/ai/hard/verify/perft';
 import { checkInvariants } from '../../harness/invariants';
@@ -154,6 +158,34 @@ export interface FuzzMetrics {
   rehashMismatches: number;
   roundTripMismatches: number;
   invariantViolations: number;
+  /**
+   * THE INCREMENTAL PROVER SURFACE (round 6). `(state, cap)` comparisons run on
+   * the state the walk actually built, not on a fresh pack of it — the blind spot
+   * that hid the arrival-order defect. `incrementalProverCapHits` is the
+   * order-EXPOSURE meter: a completed prover search has an order-independent
+   * verdict, so only these comparisons could have been order-sensitive at all.
+   */
+  incrementalProverCases: number;
+  incrementalProverVerdictMismatches: number;
+  incrementalProverNodeMismatches: number;
+  /** The fresh-pack control, which agreed with canonical even before the fix. */
+  freshPackProverMismatches: number;
+  incrementalProverCapHits: number;
+  /**
+   * `Replica.cappedProverCalls` over the run: full-prover calls INSIDE `make`
+   * that ended at `PROOF_NODES`. Expected 0 — real Phasing positions are orders
+   * of magnitude from the cap (M2-STATUS §2.6).
+   */
+  gateProverCapHits: number;
+  /** Positions measured at `PROOF_NODES`, their max node count and the bands. */
+  proverPositions: number;
+  proverMaxNodes: number;
+  proverNodeBuckets: Record<string, number>;
+  /** Comparisons whose position has slot order != canonical order. Coverage. */
+  proverOrderPermuted: number;
+  /** §2.6.5: positions re-proved with the birth sequence REVERSED, and violations. */
+  proverOrderInvarianceCases: number;
+  proverOrderInvarianceViolations: number;
   // --- Phasing commitment coverage: a run with zeroes here proves nothing ---
   buys: number;
   arrivals: number;
@@ -191,10 +223,17 @@ export interface FuzzResult {
 /** Per-action buffer: 4 attacks + 100 destinations per slot, plus the phase-ender. */
 const GEN_CAPACITY = 4 + MAX_SLOTS * 104;
 
+/**
+ * Caps for the incremental prover comparison. 1..8 is the order-sensitive band
+ * (the two retained reproductions split at 3); `PROOF_NODES` is the cap
+ * adjudication actually uses.
+ */
+export const PROVER_ORDER_CAPS: readonly number[] = [1, 2, 3, 5, 8, PROOF_NODES];
+
 const TIER1_DEFS = UNIT_DEFINITIONS.filter(d => d.tier === 1);
 
 interface Divergence {
-  kind: 'transition' | 'unmake' | 'rehash' | 'legality' | 'pending' | 'invariant' | 'roundtrip';
+  kind: 'transition' | 'unmake' | 'rehash' | 'legality' | 'pending' | 'invariant' | 'roundtrip' | 'prover';
   seed: number;
   game: number;
   ply: number;
@@ -349,7 +388,212 @@ function firstDifference(a: PackedState, b: PackedState): string | null {
   for (const [name, x, y] of scalars) {
     if (x !== y) return name;
   }
+  // CANONICAL ORDER (M2-STATUS §2.6), and it has to be its own comparison.
+  // Everything above dereferences through each state's OWN `pieceAt` and its own
+  // square-keyed planes, so it is slot-permutation blind BY DESIGN — which is
+  // exactly what let an incrementally reached state hold the same board in a
+  // different canonical `board.units` order than `pack` gives the same position,
+  // unseen through 28.55M fuzzed actions. `orderKey` is rank-normalised, so this
+  // compares the ORDER and not the raw sequence values, which legitimately
+  // differ between a walk and a fresh pack.
+  if (orderKey(a) !== orderKey(b)) return 'canonicalOrder';
   return null;
+}
+
+/**
+ * The home-defence prover on the INCREMENTALLY REACHED replica state, against
+ * canonical, at several caps — and the freshly packed state as a control.
+ *
+ * The prover surface (`prover-surface.ts`) packs every case fresh immediately
+ * before comparing, which restores canonical `board.units` order by construction
+ * and is why it could not see the round-5 order defect. This is the comparison
+ * that can: `p` is whatever the walk actually built, `fresh` is what `pack`
+ * would have built, and canonical is the oracle for both.
+ *
+ * SMALL caps are the point. A completed search has an order-independent verdict;
+ * only a cap-truncated one is order-dependent, so a cap of 1..8 is where an
+ * ordering difference shows as a verdict split rather than only as a node count.
+ * Returns the first mismatch, or null.
+ */
+export interface ProverOrderCounters {
+  cases: number;
+  verdictMismatches: number;
+  nodeMismatches: number;
+  freshPackMismatches: number;
+  /** Comparisons in which the INCREMENTAL search stopped at the cap. */
+  capHits: number;
+  /**
+   * The node-count distribution at the PRODUCTION cap, which is the measurement
+   * behind the key-soundness argument: order can only change a result through a
+   * cap-truncated search, so how far real positions sit from `PROOF_NODES`
+   * is how much exposure there is. `positions` counts distinct positions
+   * measured at the production cap; the buckets are `[2^k, 2^(k+1))` bands.
+   */
+  positions: number;
+  maxNodes: number;
+  nodeBuckets: Record<string, number>;
+  /**
+   * COVERAGE, not a failure: comparisons whose position actually has slot order
+   * DIFFERENT from canonical order among the living units. Zero mismatches means
+   * nothing next to a zero here — it would only say the walk never built an
+   * order-distinct state, which is precisely what happened for 28.55M actions.
+   */
+  orderPermuted: number;
+  /**
+   * The §2.6.5 measurement: positions on which the prover was re-run with the
+   * birth sequence REVERSED, and how often that moved the MATE classification (or
+   * a mate's node count). A non-zero `orderInvarianceViolations` would FALSIFY the
+   * argument that leaves order out of `Kpos`/`Kturn`.
+   */
+  orderInvarianceCases: number;
+  orderInvarianceViolations: number;
+}
+
+export function newProverOrderCounters(): ProverOrderCounters {
+  return {
+    cases: 0,
+    verdictMismatches: 0,
+    nodeMismatches: 0,
+    freshPackMismatches: 0,
+    capHits: 0,
+    positions: 0,
+    maxNodes: 0,
+    nodeBuckets: {},
+    orderPermuted: 0,
+    orderInvarianceCases: 0,
+    orderInvarianceViolations: 0,
+  };
+}
+
+/**
+ * Runs the prover on `p` with its birth sequence REVERSED and reports whether the
+ * MATE classification (and, for a mate, the node count) moved.
+ *
+ * This is M2-STATUS §2.6.5's key-soundness argument as a MEASUREMENT instead of
+ * an argument. The claim is that a MATE verdict is order-INDEPENDENT — it is only
+ * ever returned by a search that ran to completion, and a completed search
+ * expands every reachable key exactly once whatever order it does so in — and
+ * that is what makes it sound to leave order OUT of `Kpos`/`Kturn` while two
+ * order-distinct states share a key. Reversal is the maximal permutation
+ * available, and `homeVerdict` copies the position into its own arrays, so `p` is
+ * restored exactly.
+ */
+function mateVerdictIsOrderInvariant(
+  p: PackedState,
+  invaderSide: Side,
+  cap: number,
+  sc: Scratch,
+  canonicalMate: boolean,
+  canonicalNodes: number,
+): boolean {
+  const slots: number[] = [];
+  for (let slot = 0; slot < MAX_SLOTS; slot++) if (p.sq[slot] !== DEAD) slots.push(slot);
+  if (slots.length < 2) return true;
+  const original = slots.map(slot => p.ord[slot]);
+  const byOrd = [...slots].sort((a, b) => p.ord[a] - p.ord[b]);
+  const values = [...original].sort((a, b) => a - b);
+  for (let k = 0; k < byOrd.length; k++) p.ord[byOrd[k]] = values[values.length - 1 - k];
+  const verdict = homeVerdict(p, invaderSide, cap, sc, 0);
+  const nodes = proverStats().nodes;
+  for (let k = 0; k < slots.length; k++) p.ord[slots[k]] = original[k];
+  if ((VERDICT_NAME[verdict] === 'mate') !== canonicalMate) return false;
+  // A mate is a COMPLETED search, so its node total is order-free as well.
+  return !canonicalMate || nodes === canonicalNodes;
+}
+
+/** `true` when ascending slot order is NOT ascending `ord` order among the living. */
+function orderPermuted(p: PackedState): boolean {
+  let last = -1;
+  for (let slot = 0; slot < MAX_SLOTS; slot++) {
+    if (p.sq[slot] === DEAD) continue;
+    if (p.ord[slot] < last) return true;
+    last = p.ord[slot];
+  }
+  return false;
+}
+
+/** `[2^k, 2^(k+1))`, with `0` and `>=PROOF_NODES` as their own buckets. */
+function nodeBucket(nodes: number): string {
+  if (nodes >= PROOF_NODES) return `>=${PROOF_NODES}`;
+  if (nodes === 0) return '0';
+  let lo = 1;
+  while (lo * 2 <= nodes) lo *= 2;
+  return lo === 1 ? '1' : `${lo}-${lo * 2 - 1}`;
+}
+
+const VERDICT_NAME = ['rescue', 'mate', 'unknown'] as const;
+
+export function compareIncrementalProver(
+  replica: Replica,
+  p: PackedState,
+  state: GameState,
+  fresh: PackedState,
+  sc: Scratch,
+  caps: readonly number[],
+  counters: ProverOrderCounters,
+): string | null {
+  // BOTH sides, not just the mover. `searchHomeDefense` takes the invader as a
+  // parameter and builds its own `ready` turn from it (`homeCheckmate.ts:73-75`),
+  // exactly as `loadReady` does, so the comparison is exact for either side —
+  // and the arrival surface, whose hand-off flips the side away from the one the
+  // intrusion was built against, registers nothing at all if only `p.side` runs.
+  let first: string | null = null;
+  if (p.result !== Result.ONGOING) return null;
+  replica.pack(state, fresh);
+  const permuted = orderPermuted(p);
+  for (let side = 0; side < 2; side++) {
+    const slot = p.pieceAt[CORNER[1 - side]];
+    if (slot === NO_SLOT || p.owner[slot] !== side) continue;
+    if (permuted) counters.orderPermuted++;
+    first ??= compareOneInvader(p, state, fresh, sc, caps, counters, side as Side);
+  }
+  return first;
+}
+
+function compareOneInvader(
+  p: PackedState,
+  state: GameState,
+  fresh: PackedState,
+  sc: Scratch,
+  caps: readonly number[],
+  counters: ProverOrderCounters,
+  invaderSide: Side,
+): string | null {
+  const invader: PlayerId = invaderSide === 0 ? 'white' : 'black';
+  let first: string | null = null;
+  for (const cap of caps) {
+    const canonical = analyzeHomeDefenseEvidence(state, invader, transitionWithoutCheckmate, cap);
+    const verdict = homeVerdict(p, invaderSide, cap, sc, 0);
+    const nodes = proverStats().nodes;
+    const cutoff = proverStats().cutoff;
+    const freshVerdict = homeVerdict(fresh, invaderSide, cap, sc, 0);
+    const freshNodes = proverStats().nodes;
+    counters.cases++;
+    if (cutoff) counters.capHits++;
+    if (cap === PROOF_NODES) {
+      counters.positions++;
+      if (canonical.nodes > counters.maxNodes) counters.maxNodes = canonical.nodes;
+      const bucket = nodeBucket(canonical.nodes);
+      counters.nodeBuckets[bucket] = (counters.nodeBuckets[bucket] ?? 0) + 1;
+      counters.orderInvarianceCases++;
+      if (!mateVerdictIsOrderInvariant(p, invaderSide, cap, sc, canonical.result === 'mate', canonical.nodes)) {
+        counters.orderInvarianceViolations++;
+        first ??= `mateVerdictNotOrderInvariant@cap${cap}`;
+      }
+    }
+    if (VERDICT_NAME[verdict] !== canonical.result) {
+      counters.verdictMismatches++;
+      first ??= `incrementalProverVerdict@cap${cap}:${VERDICT_NAME[verdict]}!=${canonical.result}`;
+    } else if (nodes !== canonical.nodes) {
+      counters.nodeMismatches++;
+      first ??= `incrementalProverNodes@cap${cap}:${nodes}!=${canonical.nodes}`;
+    }
+    if (VERDICT_NAME[freshVerdict] !== canonical.result || freshNodes !== canonical.nodes) {
+      counters.freshPackMismatches++;
+      first ??= `freshPackProver@cap${cap}:${VERDICT_NAME[freshVerdict]}/${freshNodes}!=${canonical.result}/${canonical.nodes}`;
+    }
+  }
+  return first;
 }
 
 /**
@@ -435,6 +679,18 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
     rehashMismatches: 0,
     roundTripMismatches: 0,
     invariantViolations: 0,
+    incrementalProverCases: 0,
+    incrementalProverVerdictMismatches: 0,
+    incrementalProverNodeMismatches: 0,
+    freshPackProverMismatches: 0,
+    incrementalProverCapHits: 0,
+    gateProverCapHits: 0,
+    proverPositions: 0,
+    proverMaxNodes: 0,
+    proverNodeBuckets: {},
+    proverOrderPermuted: 0,
+    proverOrderInvarianceCases: 0,
+    proverOrderInvarianceViolations: 0,
     buys: 0,
     arrivals: 0,
     refunds: 0,
@@ -464,8 +720,22 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
     else if (d.kind === 'roundtrip') metrics.roundTripMismatches++;
     else if (d.kind === 'legality') metrics.legalitySetMismatches++;
     else if (d.kind === 'pending') metrics.pendingLegalityMismatches++;
-    else metrics.invariantViolations++;
+    // `prover` divergences are counted by `ProverOrderCounters` inside
+    // `compareIncrementalProver`, which splits verdict from node count; this only
+    // gets them into the reproducer list.
+    else if (d.kind !== 'prover') metrics.invariantViolations++;
   };
+
+  // The incremental prover surface. TIGHT caps plus the production cap: a
+  // completed search is order-independent, so the tight ones are where an
+  // ordering difference is visible as a verdict split and not only as a node
+  // count. The production cap runs on every case too — it is what adjudication
+  // uses, and `analyzeHomeDefenseEvidence` at 20,000 nodes is only expensive on
+  // positions that are nowhere near it.
+  const proverOrder = newProverOrderCounters();
+  const proverScratch = new Scratch(1, 0, 0, 1);
+  const proverFresh = allocState();
+  const cappedBefore = replica.cappedProverCalls;
 
   let game = 0;
   // A divergence ABANDONS the game before `metrics.actions` is incremented, so
@@ -629,6 +899,27 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
         }
       }
 
+      // The INCREMENTAL prover comparison, on `p` as the walk built it.
+      if (options.surfaces.has('transition')) {
+        const field = compareIncrementalProver(replica, p, next, proverFresh, proverScratch, PROVER_ORDER_CAPS, proverOrder);
+        if (field !== null) {
+          record({
+            kind: 'prover',
+            seed: options.seed,
+            game,
+            ply,
+            field,
+            action,
+            prefix: [...prefix],
+            rules,
+            replica: `${fuzzDigest(replica, p)}||O:${orderKey(p)}`,
+            canonical: `${fuzzDigest(replica, proverFresh)}||O:${orderKey(proverFresh)}`,
+            state: next,
+          });
+          break;
+        }
+      }
+
       metrics.actions++;
       metrics.plies++;
       prefix.push(action);
@@ -764,6 +1055,18 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
   metrics.sampled = samples.length;
   metrics.arrivalRefundGameFraction =
     metrics.games > 0 ? Math.round((metrics.gamesWithArrivalAndRefund / metrics.games) * 1000) / 1000 : 0;
+  metrics.incrementalProverCases = proverOrder.cases;
+  metrics.incrementalProverVerdictMismatches = proverOrder.verdictMismatches;
+  metrics.incrementalProverNodeMismatches = proverOrder.nodeMismatches;
+  metrics.freshPackProverMismatches = proverOrder.freshPackMismatches;
+  metrics.incrementalProverCapHits = proverOrder.capHits;
+  metrics.gateProverCapHits = replica.cappedProverCalls - cappedBefore;
+  metrics.proverPositions = proverOrder.positions;
+  metrics.proverMaxNodes = proverOrder.maxNodes;
+  metrics.proverNodeBuckets = proverOrder.nodeBuckets;
+  metrics.proverOrderPermuted = proverOrder.orderPermuted;
+  metrics.proverOrderInvarianceCases = proverOrder.orderInvarianceCases;
+  metrics.proverOrderInvarianceViolations = proverOrder.orderInvarianceViolations;
   metrics.elapsedMs = Date.now() - started;
 
   if (options.reproDir !== null && divergences.length > 0) {
@@ -1039,6 +1342,30 @@ export interface ArrivalMetrics {
   refundBankMismatches: number;
   planeNotClearedMismatches: number;
   survivorMismatches: number;
+  /**
+   * The INCREMENTAL prover comparison on the state `make(END_PLACE)` produced —
+   * the arrival is exactly the transition that permutes canonical order, so this
+   * is the surface where an ordering defect bites hardest.
+   */
+  incrementalProverCases: number;
+  incrementalProverMismatches: number;
+  incrementalProverCapHits: number;
+  /**
+   * STRUCTURALLY ZERO on this surface, and that is the honest reading: every case
+   * is synthesised as a canonical `GameState` and then PACKED, which renumbers the
+   * slots densely in canonical order, so the single `END_PLACE` that follows has
+   * no dead slot below the high-water mark to reuse and its arrivals land at the
+   * top of both orders. Order-permuted coverage belongs to the gate-preservation
+   * walk (`prover-surface.ts`), which is incremental for whole games.
+   */
+  proverPositions: number;
+  proverMaxNodes: number;
+  proverNodeBuckets: Record<string, number>;
+  /** Comparisons whose position has slot order != canonical order. Coverage. */
+  proverOrderPermuted: number;
+  /** §2.6.5: positions re-proved with the birth sequence REVERSED, and violations. */
+  proverOrderInvarianceCases: number;
+  proverOrderInvarianceViolations: number;
   elapsedMs: number;
 }
 
@@ -1243,6 +1570,10 @@ export function runArrivalSurface(options: ArrivalOptions): ArrivalMetrics {
   const keep = newKeepSetTable();
   const canonicalPacked = allocState();
   const roundTripPacked = allocState();
+  const proverFresh = allocState();
+  const proverScratch = new Scratch(1, 0, 0, 1);
+  const proverOrder = newProverOrderCounters();
+  const cappedBefore = replica.cappedProverCalls;
 
   const metrics: ArrivalMetrics = {
     seed: options.seed,
@@ -1266,6 +1597,15 @@ export function runArrivalSurface(options: ArrivalOptions): ArrivalMetrics {
     refundBankMismatches: 0,
     planeNotClearedMismatches: 0,
     survivorMismatches: 0,
+    incrementalProverCases: 0,
+    incrementalProverMismatches: 0,
+    incrementalProverCapHits: 0,
+    proverPositions: 0,
+    proverMaxNodes: 0,
+    proverNodeBuckets: {},
+    proverOrderPermuted: 0,
+    proverOrderInvarianceCases: 0,
+    proverOrderInvarianceViolations: 0,
     elapsedMs: 0,
   };
   const divergences: ArrivalDivergence[] = [];
@@ -1397,6 +1737,11 @@ export function runArrivalSurface(options: ArrivalOptions): ArrivalMetrics {
       push('transition', field, fuzzDigest(replica, p), fuzzDigest(replica, canonicalPacked));
     }
 
+    const proverField = compareIncrementalProver(replica, p, after, proverFresh, proverScratch, PROVER_ORDER_CAPS, proverOrder);
+    if (proverField !== null) {
+      push('incremental-prover', proverField, `${fuzzDigest(replica, p)}||O:${orderKey(p)}`, `O:${orderKey(proverFresh)}`);
+    }
+
     // Replica-side assertions that do not go through the canonical pack, so a
     // shared misunderstanding of the rule cannot hide behind a matching digest.
     {
@@ -1462,6 +1807,19 @@ export function runArrivalSurface(options: ArrivalOptions): ArrivalMetrics {
     }
   }
 
+  metrics.incrementalProverCases = proverOrder.cases;
+  metrics.incrementalProverMismatches =
+    proverOrder.verdictMismatches +
+    proverOrder.nodeMismatches +
+    proverOrder.freshPackMismatches +
+    proverOrder.orderInvarianceViolations;
+  metrics.incrementalProverCapHits = proverOrder.capHits + (replica.cappedProverCalls - cappedBefore);
+  metrics.proverPositions = proverOrder.positions;
+  metrics.proverMaxNodes = proverOrder.maxNodes;
+  metrics.proverNodeBuckets = proverOrder.nodeBuckets;
+  metrics.proverOrderPermuted = proverOrder.orderPermuted;
+  metrics.proverOrderInvarianceCases = proverOrder.orderInvarianceCases;
+  metrics.proverOrderInvarianceViolations = proverOrder.orderInvarianceViolations;
   metrics.elapsedMs = Date.now() - started;
   if (options.reproDir !== null && divergences.length > 0) writeRepros(options.reproDir, 'arrival', divergences);
   return metrics;

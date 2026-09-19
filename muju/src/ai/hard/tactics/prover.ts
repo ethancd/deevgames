@@ -45,12 +45,14 @@
  *   - the admissible damage bound (`enoughPossibleDamage`, `preparing = false`)
  *     as `damageBound`, whose failure is an immediate MATE (`damage_bound`);
  *   - `act(ready, [])` directly, with the defender's units in BOARD ORDER —
- *     which is slot order, because `pack` assigns slot `i` to
- *     `state.board.units[i]` and `unpack` emits them back in ascending slot
- *     order. Standard's distance sort of the owned list was an artefact of
+ *     which is `PackedState.ord`, the canonical birth sequence, and NOT the slot
+ *     index. Slot order agrees with the canonical array only until the first
+ *     arrival reuses a dead slot; taking board order from the slot index instead
+ *     was the round-5 defect (M2-STATUS §2.6), and it moved capped verdicts.
+ *     Standard's distance sort of the owned list was a separate artefact of
  *     `prepare` rebuilding the board as `[...enemy, ...kept]`; Phasing's `act`
- *     sees the original array, so sorting it here would reorder the candidate
- *     lists and move the node count;
+ *     sees the original array, so sorting it by anything here would reorder the
+ *     candidate lists and move the node count;
  *   - inside `act`: the damage bound again, a transposition check, then every
  *     legal ATTACK (owned order, then stable-sorted by the target's distance to
  *     the occupied corner) and, while `actionsRemaining > 1`, every legal
@@ -154,9 +156,10 @@ const P_AT = new Uint8Array(BOARD);
 
 /**
  * The defender's units in `act`'s own order — `s.board.units.filter(owner ===
- * defender)`, which is ascending slot order (see the module header). It is NOT
- * sorted: Standard's distance sort belonged to `prepare`, which Phasing never
- * enters, and sorting it here would reorder every candidate list below it.
+ * defender)`, which is canonical array order, i.e. ascending `PackedState.ord`
+ * (see the module header). It is not sorted by anything ELSE: Standard's
+ * distance sort belonged to `prepare`, which Phasing never enters, and imposing
+ * any other order here would reorder every candidate list below it.
  */
 const OWNED = new Int32Array(MAX_SLOTS);
 
@@ -300,10 +303,18 @@ function mix(table: Uint32Array, index: number): void {
 /**
  * The packed equivalent of `searchHomeDefense`'s `key(s)`: `actionsRemaining`
  * and, per living unit, (slot, definition, square, damage, attack count,
- * `lastAttackKilled`, ordered attacked slots). The canonical string is keyed by
- * the unit's index in `state.board.units`, which `unpack` emits in ascending
- * slot order, so slot and index are related by a fixed bijection and the two
- * keys distinguish exactly the same pairs of nodes.
+ * `lastAttackKilled`, ordered attacked slots).
+ *
+ * The canonical key is keyed by `indices` — the unit's index in the ROOT
+ * position's `state.board.units` (homeCheckmate.ts:90), fixed for the whole
+ * search — and this one is keyed by the slot, also fixed for the whole search.
+ * Slot and canonical index are therefore related by a bijection (`ord`), and
+ * BOTH keys are invariant under relabelling through it, so the two sets
+ * distinguish exactly the same pairs of nodes and fold exactly the same
+ * transpositions. Note this key is an XOR and so does not depend on the
+ * iteration ORDER either; canonical's is a `join` over the current array, which
+ * within one search differs from this only by a fixed permutation. The one place
+ * canonical order is genuinely load-bearing is `buildOwned`'s candidate order.
  */
 function computeKey(): void {
   keyLo = 0;
@@ -495,16 +506,36 @@ function loadReady(p: PackedState, invader: Side): void {
 
 /**
  * `owned = s.board.units.filter(u => u.owner === defender)` (homeCheckmate.ts:101)
- * — slot order, UNSORTED. `act` recomputes this filter at every node; the list
- * is built once here instead because no defender unit is ever added or removed
- * inside `act` (only the invader's bodies die there), and the `DEAD` guards at
- * the use sites keep that assumption honest.
+ * — CANONICAL ARRAY ORDER, and no distance sort (Standard's belonged to
+ * `prepare`, which Phasing never enters). `act` recomputes this filter at every
+ * node; the list is built once here instead because no defender unit is ever
+ * added or removed inside `act` (only the invader's bodies die there), and the
+ * `DEAD` guards at the use sites keep that assumption honest.
+ *
+ * Canonical array order is `PackedState.ord`, NOT the slot index. Round 4 used
+ * the slot index on the argument that "`pack` assigns slot `i` to
+ * `board.units[i]`", which is true of a freshly packed state and false of every
+ * state reached incrementally through an arrival that reused a dead slot — the
+ * round-5 defect. Only the ORDER is read here, so the sort is by `ord` and never
+ * by the slot that breaks a tie (`Replica.check` forbids a tie).
  */
-function buildOwned(): void {
+function buildOwned(p: PackedState): void {
   ownedCount = 0;
   for (let slot = 0; slot < slotLimit; slot++) {
     if (P_SQ[slot] === DEAD || P_OWN[slot] !== defenderSide) continue;
     OWNED[ownedCount++] = slot;
+  }
+  // Insertion sort: `ownedCount` is a side's living army (≤ 100, in practice a
+  // handful) and this runs once per full-prover call, not once per node.
+  for (let i = 1; i < ownedCount; i++) {
+    const value = OWNED[i];
+    const key = p.ord[value];
+    let j = i - 1;
+    while (j >= 0 && p.ord[OWNED[j]] > key) {
+      OWNED[j + 1] = OWNED[j];
+      j--;
+    }
+    OWNED[j + 1] = value;
   }
 }
 
@@ -688,7 +719,7 @@ function runProver(p: PackedState, invader: Side, maxNodes: number, dp: Int32Arr
   }
 
   STATS.method = 2;
-  buildOwned();
+  buildOwned(p);
   nodes = 0;
   nodeLimit = maxNodes;
   exhausted = false;
