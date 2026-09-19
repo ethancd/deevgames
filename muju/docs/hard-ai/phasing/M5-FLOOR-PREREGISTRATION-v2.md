@@ -72,11 +72,18 @@ Reproduced canonically in this worktree by
   no White rescue, and the macro endpoint is `victory/home-checkmate`. The
   accept predicate is `all(game-phase playing, army ≥ 1 both sides,
   summon-resolution disrupted)`. Winning the game scores **zero**.
-- **The ninth, `M5-SD-28`, converts one hand-off later.** The occupation is
-  answerable, so v1's `first-handoff-or-terminal` horizon ends at `playing` and
-  hides it. Under the intruder-survival horizon required below it resolves as
-  `victory/home-occupation` at the mover's next turn start, and again scores
-  zero.
+- **The ninth, `M5-SD-28`, is worse than first recorded.** The earlier text
+  here said the occupation was answerable and only converted to
+  `victory/home-occupation` one hand-off later, under the intruder-survival
+  horizon. That was an artefact of the narrow probe. With the two-stage
+  enumeration below, `M5-SD-28` **mates at v1's own `first-handoff-or-terminal`
+  horizon**: the raider reaches A1 in three moves, `END_ACTION_PHASE` settles
+  into Prepare, and **one promotion of the raider** puts it beyond White's
+  reply, so `resolveHomeCheckmate` awards `victory/home-checkmate` on the
+  promotion. Six such lines exist from that root. The conversion at the
+  extended horizon is still there as well. This is the one v1 macro-decision
+  the wider enumeration flags that the narrow one did not; re-running the probe
+  over all 131 v1 macro-decisions found no other, and removed none.
 
 ### 2. Four tactics decisions carried the same free win
 
@@ -109,10 +116,7 @@ These are requirements on the v2 bundle, not on v1.
 ### Free-win veto (author-time, mandatory)
 
 Every `macro-decision` is refused unless the root mover has **no** winning line
-its own accept predicate would leave uncredited. `veto.ts` enumerates the
-mover's own Act (and a Prepare root's promotions) with canonical legality and
-de-duplication, settles each reached state to the case's declared macro
-endpoint and horizon, and flags a line when either
+its own accept predicate would leave uncredited. A line is flagged when either
 
 - the settled endpoint is `victory` with `winner === root mover`, or
 - the state establishes a home occupation whose Prepare snapshot is `mate`
@@ -121,20 +125,104 @@ endpoint and horizon, and flags a line when either
 **and** `evaluateDecision` does not score that line as a pass. Cases declaring
 `terminalPolicy: 'allow-root-mover-win'` pass by construction, not by
 exemption: their accept credits the win, so `evaluateDecision` returns pass and
-nothing is flagged. Exhausting the 200 000-state probe budget is a refusal, not
-a clean result.
+nothing is flagged.
 
-Out of scope, stated so it is not mistaken for coverage: a win produced by the
-scripted pass-only continuation starving the defender's upkeep is not searched.
+**The enumeration has two stages, because a Phasing turn has two phases.** A
+turn is Act (four AP of MOVE/ATTACK) → `END_ACTION_PHASE` → income and upkeep →
+Prepare (`turn.phase === 'place'`, `actionsRemaining === 0`) →
+`END_PLACE_PHASE` → hand-off, and `resolveHomeCheckmate` refuses to award a
+mate while `turn.phase !== 'place'`. **Every** home-checkmate win is therefore
+awarded at the Prepare boundary, after the mover's own upkeep has had its
+chance to release the occupier.
+
+The first implementation of this veto was a single BFS bounded by
+`root.turn.actionsRemaining` over MOVE and ATTACK, completing each line with
+pass-only phase ends. An independent review found it blind in two ways, and
+both are fixed here:
+
+1. On a **Prepare root** it expanded nothing at all — canonical Phasing sets
+   `actionsRemaining` to 0 on entering Prepare, all six v1 Prepare roots have
+   AP 0, and the loop `continue`d at `depth === actionsRemaining`, so its
+   `PROMOTE_UNIT` branch was dead code.
+2. From an **Act root** it never tried enter-the-corner-then-promote (the
+   HOME_FORTIFY motif), because the pass-only completion never promotes.
+
+**Stage 1** is the Act BFS over MOVE/ATTACK, bounded by `actionsRemaining`
+(sound, because no legal MOVE or ATTACK costs zero AP). **Stage 2** takes every
+Act endpoint at which the mover occupies the enemy corner — and a Prepare root
+directly — applies `END_ACTION_PHASE`, and then the canonical upkeep: when a
+`PAY_UPKEEP` choice is pending it enumerates **every affordable keep-set**
+(`upkeepActions`), because *releasing* a unit is how a mover frees the crystals
+a mating promotion costs. **Stage 3** searches the legal `PROMOTE_UNIT` subsets
+of the resulting Prepare snapshot. Canonical allows at most one promotion per
+unit per placement phase (`canPromote` refuses `promotedThisPlacement`), so a
+subset is a choice of units; `applyAction` re-adjudicates home checkmate after
+every one of them, so the probe tests for a win **after each promotion** and
+again at `END_PLACE_PHASE`, not only at the end of a subset. Elimination wins
+and wins by the defender having no legal rescue are both covered: the first at
+the Act node, the second by the Prepare adjudication.
+
+Stage 2/3 runs exactly where the mover occupies the enemy corner. That is a
+completeness claim, and it is this: inside the mover's own turn the canonical
+routes to a mover win are elimination by an Act ATTACK (seen at the Act node),
+home checkmate at the Prepare boundary, and home occupation at the mover's next
+`startTurn` under the declared horizon. The last two both require a mover home
+occupier, and upkeep only ever releases the *mover's own* units, so neither
+upkeep nor promotion can eliminate the defender.
+
+**Bounds, all of which fail closed.** Hitting any of them refuses the case; an
+exhausted probe is never read as a clean bill of health.
+
+| Bound | Value | On exhaustion |
+|---|---:|---|
+| canonical states expanded | 200 000 | refuse, naming the budget |
+| home-defence proof nodes | 20 000 | canonical `unknown` ⇒ not a mate |
+| rent-bearing units for keep-set enumeration | 12 | refuse, naming the bound |
+| promotable units for promotion subsets | 12 | refuse, naming the bound |
+
+The two 12-unit bounds match canonical `upkeepActions`, which is exhaustive up
+to twelve rent-bearing units and degrades to four heuristic sets above it; the
+probe refuses rather than search a proper subset of the mover's own choices.
+Re-run over all 131 v1 macro-decisions, no case hit any bound.
+
+**Re-run over v1 (code only; no fixture byte changed).** Old probe: 20 roots
+flagged. New probe: **21** — the same 20, plus `M5-SD-28-home-blocks-all-
+rectangles`, whose six flagged lines are all `stage: 'prepare'`,
+`reason: 'home-checkmate'`, each ending in a `PROMOTE_UNIT`. Nothing was
+un-flagged.
+
+Out of scope, stated so it is not mistaken for coverage: `BUY_UNIT` in Prepare
+(a commitment cannot arrive before the mover's next turn, and home blocks every
+purchase rectangle), and a win produced by the scripted pass-only continuation
+starving the defender's upkeep.
+
+Implemented in `lab/hard-ai/suites/phasing/veto.ts`; pinned by
+`tests/lab/suites-phasing-veto.test.ts`, which carries four constructed roots
+(a Prepare root with a one-promotion mate, an Act root that enters then
+promotes, a two-promotion fortify mate whose one-promotion variant is provably
+still a `rescue`, and a root whose mate is only affordable after an upkeep
+release), each of which the previous implementation reported as clean.
 
 ### Intruder survival (summon-disruption)
 
 Every disruption decision takes a scripted `pass-only@1` horizon of **at least
 one additional hand-off**, and its accept requires the intruding unit to be
-**present at the endpoint**. A raid that disrupts a commitment and is captured
-on the reply no longer scores. Note the interaction the veto makes visible:
-extending the horizon is what exposes `M5-SD-28`, so the two requirements must
-be satisfied together, not one after the other.
+**present at the endpoint**. A raid that disrupts a commitment and is then
+released by its own upkeep, or answered, no longer scores.
+
+The support exists in `format.ts` as `INTRUDER_SURVIVAL_HANDOFFS`,
+`intruderSurvivalHorizon()`, `intruderPresentFact()`,
+`requiresUnitAtEndpoint()` and `assertsIntruderSurvival()`. It is deliberately
+**not** enforced inside `validateSuiteDocument`: the v1 documents must keep
+loading byte-identically and no v1 disruption case carries it, so a v2 builder
+calls the checker per case instead. Both halves are required together —
+`assertsIntruderSurvival` is false for a horizon without the fact and for the
+fact without the horizon — and inside an `any-of@1` accept the fact must appear
+in **every** branch, or one branch would score a raid whose intruder is gone.
+
+Note the correction the two-stage veto forces on the earlier text: `M5-SD-28`
+is refused at v1's own horizon, so extending the horizon is not what exposes
+it. The two requirements are still independent and both still apply.
 
 ### Multi-answer tactics cases
 
@@ -143,6 +231,13 @@ targets scored as if one were canonical. v2 either widens accept to an any-of
 over the equally valid targets, or states the canonical argument for uniqueness
 in the case rationale. Scoring one of several correct answers as the only
 correct answer is not permitted to stand.
+
+`any-of@1` is implemented in the predicate schema and evaluator. It passes when
+**any** branch passes; with no passing branch, an unresolved branch makes the
+whole predicate `indeterminate`, so an exhausted proof can never be silently
+read as a miss. A budget proof may not hide inside one — `containsBudgetProbe`
+recurses through `any-of@1`, so a decision or a scored pair that smuggles one
+in is refused exactly as before.
 
 ### Invariants: split into a gating searched part and a non-gating diagnostic part
 
@@ -175,6 +270,37 @@ Structural invariants 15 and 18 keep `primaryMetric: 'none'` and earn nothing,
 unchanged. Invariants offered falls 18 → 15; the allowed-miss budget stays 1,
 so the invariants floor becomes 14 of 15.
 
+**What "diagnostic" means mechanically.** `classification: 'diagnostic'` is a
+third value on an invariant pair, alongside `preference` and `structural`, and
+it is now implemented end to end:
+
+- `decisionUnits` returns 0, so `describeCase` writes `offered: 0` and
+  `validateManifestShape` **refuses** a manifest that gives a diagnostic an
+  offered unit. It cannot enter any family denominator.
+- `scoreCase` still records the reading — `metrics.evalGap`, `metrics.searchGap`
+  when searched, `metrics.primary`, `metrics.work`, `metrics.classification`
+  and `metrics.gating: false` — and does **not** convert it into a pass/fail
+  predicate. The identical negative gap that makes a `preference` a miss leaves
+  a `diagnostic` passing on its premises alone, and a positive gap earns it
+  nothing either: it is outside the denominator in both directions.
+- `aggregate` collects those readings into `summary.diagnostics` so a demoted
+  pair stays visible in the summary, and refuses any result that claims
+  `metrics.gating` under a diagnostic descriptor.
+- The **premises are unchanged gates.** A diagnostic pair whose canonical
+  premise is false still fails author evidence and still invalidates the run.
+  Demotion drops the preference claim, not the canonical content.
+
+`validateSuiteDocument` requires a diagnostic to name a metric (a diagnostic is
+measured, so `primaryMetric: 'none'` is refused), requires a `search-gap`
+metric — preference or diagnostic — to name the **fixed work per member** it is
+measured at, keeps invariants 15 and 18 structural, and refuses a budget proof
+in the premise of anything that carries a metric.
+
+`search-gap` scoring follows the search and not the static evaluator: a
+positive `eval-gap` cannot rescue a negative `searchGap`, and a missing search
+reading is `status: 'error'` with `primary-search-missing`, never a skipped
+row. This is wiring only — no measurement is taken here.
+
 ### Floor-contract integrity
 
 `declaredAt` is a string written by whoever writes the contract and proves
@@ -193,6 +319,69 @@ nothing. v2 binds the contract to git. Before any case runs, `measure.ts`:
 A v2 contract additionally **preregisters the build**: `engineSourceSha256` and
 `weightsSha256` must equal the adapter's identity or the run is refused. A
 floor declared against one build cannot be met by another.
+
+#### What that list does NOT prove, and what was added
+
+An independent review found the binding above defeatable, and it is right.
+`%cI` is whatever `GIT_COMMITTER_DATE` said, so check 3 is an assertion by the
+person being checked; an `amend` or `rebase` after an off-record run produces a
+new commit that passes checks 1, 2 and 4 unchanged; and nothing above stops the
+contract being committed in the same commit as the numbers it is supposed to
+predate. None of that is fixable by looking harder at dates.
+
+There is **no remote push permission in this task**, so a remote-tracking
+witness cannot be *required*. It is implemented as the strongest available
+tier, and the tier is recorded and printed rather than assumed:
+
+| Tier | Condition | What it proves | What it does **not** prove |
+|---|---|---|---|
+| **A — `remote-tracking`** | `git branch -r --contains <contract commit>` is non-empty | A copy of that exact commit object exists in a fetched remote-tracking ref. An amend or rebase yields a different id that the ref no longer contains, and the mismatch is visible to anyone who fetches. | **When** the remote received it. That no measurement was run before the push. That the remote is trustworthy. |
+| **B — `local-only`** | otherwise | That the bytes measured are the bytes committed, and that the commit is an ancestor of the measured HEAD. | **Anything about time.** An amend or rebase after an off-record run passes every check in this tier. |
+
+`result.json` carries `witnessTier` and a `witness` sentence at the **top** of
+the record, not buried inside `contractCommit`, and the runner prints
+`WITNESS: local only` for tier B before its JSON summary.
+
+**Defences that do not depend on trusting the clock**, all refusals:
+
+- **Blob identity.** The contract's working-tree blob hash (`git hash-object`)
+  must equal `git rev-parse <commit>:<path>`, in addition to the byte compare.
+- **No results in the contract commit.** `git show --name-only` on the contract
+  commit must touch no path under a `results/` directory and no
+  `result.json` / `cases.jsonl` / `started.json` / `failure.json` /
+  `measurement-ledger.jsonl`. A preregistration may not be committed together
+  with its own numbers. The same contract committed on its own, with the
+  results in a later commit, is accepted.
+- **First measurement only.** If a `result.json` for the same manifest hash and
+  the same contract file already exists anywhere under a `results/` directory,
+  or if the ledger already carries this manifest under this contract commit,
+  the run is refused. A re-run needs a new contract version.
+- **Build identity.** The engine source hash and weights hash must equal those
+  named in the contract (`assertContractBuild`), as above.
+- **Append-only hash-chained ledger.** Every measurement that produces a
+  `result.json` — including an invalid one and one that misses its floors —
+  appends one line to
+  `lab/hard-ai/suites/phasing/measurement-ledger.jsonl` carrying the manifest
+  hash, contract commit, contract blob hash, contract file hash, engine source
+  hash, weights hash, witness tier, start time and result hash, plus `prev`
+  (the previous line's chain value, or `GENESIS`) and `chain =
+  sha256(prev + stableJson(entry))`. `measure.ts` re-derives every earlier
+  line's chain **before** the run and refuses on any break — an altered,
+  reordered, removed or non-JSON line. The file is a `.jsonl` inside the suite
+  directory precisely because `artifactPins()` walks only `.ts` there, so
+  recording a measurement cannot invalidate the manifest of the measurement
+  being recorded.
+
+Each refusal is pinned by `tests/lab/suites-phasing-contract.test.ts` against a
+throwaway git repository the test creates in a temp directory; none of those
+tests runs git against the working repository.
+
+**Stated plainly: no tier available here proves that no measurement was run
+before the contract was committed.** Tier A makes rewriting the contract commit
+detectable by a third party who fetches; tier B does not. Everything else above
+narrows what a rewrite could usefully achieve — it cannot change the bytes, it
+cannot carry the numbers, and it cannot produce a second reading of the same
+preregistration without either a new contract version or a broken ledger chain.
 
 ## Scoring, unchanged from v1 and restated because it is load-bearing
 
@@ -254,3 +443,21 @@ machine-checked in `contract.ts`. The contract file is filled in as:
 and must be committed before `hard:suite:phasing:measure` is run against it.
 Writing it with invented hashes, or with `allowedMiss` values other than the
 table above, is refused by `validateFloorContract`.
+
+It must be committed **alone**, with no `result.json`, `cases.jsonl`,
+`started.json`, `failure.json`, ledger line, or any path under a `results/`
+directory in the same commit; `resolveContractCommit` refuses that commit
+otherwise. Push it before measuring if the coordinator can, so the run records
+witness tier A; otherwise the run records tier B and prints `WITNESS: local
+only`, and the reader should treat the floor's *timing* as unwitnessed.
+
+The measurement is a **first-measurement instrument**: once one run has
+recorded a `result.json` for this manifest under this contract file, or a
+ledger line for this manifest under this contract commit, a second run against
+the same pair is refused. A re-measurement is a new contract version with its
+own rationale.
+
+One more thing is still missing before v2 can be measured, and this document
+does not pretend otherwise: **no root has been re-authored and `fixtures/v2`
+does not exist.** The veto, the scoring contract and the contract integrity
+machinery are code; the cases they will be applied to are not written.

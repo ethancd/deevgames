@@ -5,8 +5,14 @@ import type { Family, PhasingCase, PositionRef, SuiteDocument } from './format';
 
 export const RELEASE_COUNTS: Readonly<Record<Family, number>> = Object.freeze({ tactics: 79, invariants: 20, 'home-mate': 56, economy: 30, 'summon-disruption': 30, 'home-fortify': 10 });
 export interface SuiteFilePin { family: Family; path: string; sha256: string }
+/** `diagnostic` is a measured, reported, NON-GATING invariant pair: it carries a
+ * primary metric and its premises still have to hold, but `offered` is 0, so it
+ * can never move a family floor. The offered/classification agreement is
+ * machine-checked in validateManifestShape below. */
+export type CaseClassification = 'decision' | 'coverage' | 'preference' | 'structural' | 'diagnostic';
+export const GATING_CLASSIFICATIONS: readonly CaseClassification[] = Object.freeze(['decision', 'preference']);
 export interface ManifestCase {
-  id: string; family: Family; kind: PhasingCase['kind']; classification: 'decision' | 'coverage' | 'preference' | 'structural';
+  id: string; family: Family; kind: PhasingCase['kind']; classification: CaseClassification;
   sha256: string; members: PositionRef[]; offered: 0 | 1;
 }
 export interface ReleaseManifest {
@@ -23,7 +29,7 @@ export const REQUIRED_SHARED_ARTIFACTS = ['format.ts', 'canonical.ts', 'predicat
 const digest = z.string().regex(/^[a-f0-9]{64}$/);
 const pathSchema = z.string().refine(safeRelativePath, 'unsafe relative path');
 const pinSchema = z.object({ family: z.enum(FAMILIES), path: pathSchema, sha256: digest }).strict();
-const descriptorSchema = z.object({ id: z.string().min(1), family: z.enum(FAMILIES), kind: z.enum(['macro-decision', 'canonical-coverage', 'invariant-pair']), classification: z.enum(['decision', 'coverage', 'preference', 'structural']), sha256: digest, members: z.array(z.object({ id: z.string().min(1), sha256: digest }).strict()).min(1).max(2), offered: z.union([z.literal(0), z.literal(1)]) }).strict();
+const descriptorSchema = z.object({ id: z.string().min(1), family: z.enum(FAMILIES), kind: z.enum(['macro-decision', 'canonical-coverage', 'invariant-pair']), classification: z.enum(['decision', 'coverage', 'preference', 'structural', 'diagnostic']), sha256: digest, members: z.array(z.object({ id: z.string().min(1), sha256: digest }).strict()).min(1).max(2), offered: z.union([z.literal(0), z.literal(1)]) }).strict();
 const manifestSchema = z.object({ schema: z.literal('muju-phasing-suite-manifest-v1'), scope: z.literal('release'), caseCount: z.literal(225), memberCount: z.literal(245), files: z.array(pinSchema).length(6), cases: z.array(descriptorSchema).length(225), artifacts: z.record(pathSchema, digest) }).strict();
 
 /** No subset/reduced denominator switch exists here. Tests use describeCase directly. */
@@ -48,8 +54,10 @@ export function validateManifestShape(input: unknown): ReleaseManifest {
   for (const path of REQUIRED_SHARED_ARTIFACTS) if (!manifest.artifacts[path]) throw new Error(`missing shared artifact pin ${path}`);
   for (const family of FAMILIES) if (manifest.cases.filter(c => c.family === family).length !== RELEASE_COUNTS[family]) throw new Error(`manifest family count mismatch ${family}`);
   for (const c of manifest.cases) {
-    if (c.kind === 'invariant-pair' ? c.family !== 'invariants' || c.members.length !== 2 || !['preference', 'structural'].includes(c.classification) : c.family === 'invariants' || c.members.length !== 1 || c.classification !== (c.kind === 'macro-decision' ? 'decision' : 'coverage')) throw new Error('manifest case classification mismatch');
-    if (c.offered !== (['decision', 'preference'].includes(c.classification) ? 1 : 0)) throw new Error('manifest score membership mismatch');
+    if (c.kind === 'invariant-pair' ? c.family !== 'invariants' || c.members.length !== 2 || !['preference', 'structural', 'diagnostic'].includes(c.classification) : c.family === 'invariants' || c.members.length !== 1 || c.classification !== (c.kind === 'macro-decision' ? 'decision' : 'coverage')) throw new Error('manifest case classification mismatch');
+    // A diagnostic pair is measured and reported but offers nothing, so this is
+    // what keeps it out of every family denominator.
+    if (c.offered !== (GATING_CLASSIFICATIONS.includes(c.classification) ? 1 : 0)) throw new Error('manifest score membership mismatch');
   }
   return manifest;
 }

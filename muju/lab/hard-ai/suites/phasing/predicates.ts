@@ -96,6 +96,18 @@ export function evaluatePredicate(spec: PredicateSpec, trace: CanonicalTrace): P
       const children = spec.predicates.map(p => evaluatePredicate(p, trace));
       return { status: children.some(p => p.status === 'indeterminate') ? 'indeterminate' : children.some(p => p.status === 'fail') ? 'fail' : 'pass', facts: children };
     }
+    case 'any-of@1': {
+      // Several canonically correct answers, any one of which scores. Scoring
+      // one of several equally valid targets as the only correct answer is the
+      // v1 defect this exists to remove. A passing branch settles the case even
+      // when a sibling could not be proved: the sibling is an alternative
+      // answer, not an additional requirement. With no passing branch an
+      // unresolved one still makes the whole predicate indeterminate, so an
+      // exhausted proof can never be silently read as a miss.
+      if (!spec.predicates.length) throw new Error('empty disjunction');
+      const children = spec.predicates.map(p => evaluatePredicate(p, trace));
+      return { status: children.some(p => p.status === 'pass') ? 'pass' : children.some(p => p.status === 'indeterminate') ? 'indeterminate' : 'fail', facts: children };
+    }
     case 'state-facts@1': { if (!spec.facts.length) throw new Error('empty facts'); const facts = spec.facts.map(f => stateFact(f, at(trace, spec.at))); return result(facts.every(f => f.pass), ...facts); }
     case 'target-removed@1': {
       const target = trace.root.board.units.find(u => u.id === spec.targetId); if (!target) throw new Error('target must bind root unit');

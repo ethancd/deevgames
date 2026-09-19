@@ -68,17 +68,48 @@
       "path": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
       "sha256": "a58ca9d8aad304d82824ef38d7b12c776ea1547ba61a10cbfba1e387e78335c7",
       "rows": 48,
-      "rule": "One distinct opening per seat-mirrored pair, in file order; 48 pairs per opponent/handicap cell (768 games). lab/ai/gate1-openings.ts refuses p1-val.jsonl, p1-sealed.jsonl and every other corpus before a game is played."
+      "rule": "One distinct opening per seat-mirrored pair, in file order; 48 pairs per opponent/handicap cell (768 games). lab/ai/gate1-openings.ts refuses p1-val.jsonl, p1-sealed.jsonl and every other corpus before a game is played.",
+      "distinctStartPositions": 47,
+      "transposition": {
+        "openingIds": [
+          "p1-g5-s245",
+          "p1-g3-s3"
+        ],
+        "handicaps": [
+          0,
+          3
+        ],
+        "finding": "p1-g5-s245 moves a unit 1,0->3,0 and back before ending its phases; p1-g3-s3 just ends them. The only field the round trip leaves behind is hasMoved, which no rule reads (src/ai/hard/types.ts, PackedState, RE 1.5), so both ids replay to the SAME playable position at both handicaps: 48 rows, 47 start positions.",
+        "consequence": "A cell plays 48 pairs from 47 independent starting points, and because AIEngineV2 is deterministic at a fixed work budget, in each aiv2-medium cell those two pairs are one game counted twice. lab/ai/gate1-trace.ts keys a game by its SEMANTIC start position plus its actions, never by the opening id, so the report counts that pair once; lab/ai/gate1-openings.ts pins the collision set. The frozen book is not edited and no opening is dropped."
+      }
     },
     "effectiveSampleSize": {
       "minDistinctFraction": 0.9,
-      "rule": "Every game is hashed over its id-independent action sequence. A cell with fewer than 90% distinct games is INVALID: it can neither pass nor fail a strength condition, and the row cannot pass while a gating cell is INVALID. Elo intervals are computed over distinct pairs only."
+      "rule": "Every game is hashed over its id-independent action sequence. A cell with fewer than 90% distinct games is INVALID: it can neither pass nor fail a strength condition, and the row cannot pass while a gating cell is INVALID. Elo intervals are computed over distinct pairs only.",
+      "digest": "sha256 over the semantic start position (units by square/definition/owner/damage and the flags a rule reads, banks, reserves, pending summons, side to move, phase, clock, handicap) plus the id-independent action sequence. An opening id is never part of it: under an id-keyed digest 'distinct pairs only' is a no-op in a full row, since every pair has its own opening."
     },
     "budgets": {
-      "withdrawn": { "hard": 6000, "medium": 3000 },
-      "rule": "Fixed work per own turn comes from a calibration manifest (lab/ai/gate1-calibrate.ts): the median SearchBudget work each engine consumes per own turn in WALL mode at its shipped quick allowance (hard 10,000 ms, medium 3,000 ms), measured on the dev openings on the measurement machine. No default budget remains in the code."
+      "withdrawn": {
+        "hard": 6000,
+        "medium": 3000
+      },
+      "rule": "Fixed work per own turn comes from a calibration manifest (lab/ai/gate1-calibrate.ts): the median SearchBudget work each engine consumes per own turn in WALL mode at its shipped quick allowance (hard 10,000 ms, medium 3,000 ms), measured on the dev openings on the measurement machine. No default budget remains in the code.",
+      "measurement": {
+        "schema": "muju-gate1-calibration-v2",
+        "sample": "Full-length games (maxTurns >= 20 or termination) over all 48 dev openings at both handicaps, both seats at the engine under test, WALL mode at the shipped quick allowance.",
+        "budget": "The OVERALL median work per own turn, per engine. Stage medians (opening/middle/late, by terciles of each seat's own-turn index) are reported for context and are used by nothing.",
+        "refused": "lab/ai/gate1-calibrate.ts#loadCalibration refuses a manifest whose 1-minute load average at start or end exceeds 1.5, whose machine identity differs from the host running the row, that is older than 24 hours, or whose source identity differs from the row's, unless the row is run with --accept-loaded-calibration; every overridden reason is then stamped into the row manifest and the report header.",
+        "supersededMeasurement": "The first calibration sampled turnsPerEngine 16 / openings 8 / maxTurns 2 at a 5-minute load average near 10 on 12 cores: game turns 1-2 only, n=16 per engine, hard 33,963..146,675 around a median of 53,155. Opening-only and contended, so not a row budget; v1 manifests are refused."
+      }
     },
-    "seeds": { "row": 20260960, "pilot": 20260961 }
+    "seeds": {
+      "row": 20260960,
+      "pilot": 20260961
+    },
+    "sharding": {
+      "rule": "A full row may be played as deterministic shards: gate1 --mode full --shard i/n --out DIR, then gate1 --merge DIR. Shard membership is a pure function of (cell, pair index, n) and a game's seed of (row seed, cell, pair index), so a game's record does not depend on which shard or order ran it. Re-running a shard resumes from its own content-hashed file; the merge refuses a row whose shards disagree about identity, calibration, seed, source tree or layout, or in which any scheduled game is missing or duplicated.",
+      "launcher": "lab/ai/gate1-launch.ts (prints by default). Throughput is capped by the shared heavy queue (lab/hard-ai/ladder/heavy.ts, 2 slots), not by the shard count: wall ~= ceil(shards/slots) * max(games per shard) * seconds per game, floored by games*seconds/slots. More shards buy restart granularity."
+    }
   },
   "supersededProposal": {
     "proposedElo": {
