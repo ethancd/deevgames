@@ -1,0 +1,86 @@
+{
+  "rulesVersion": "muju-phasing-1",
+  "strata": [
+    {
+      "bot": "Rush",
+      "handicap": 0,
+      "games": 56,
+      "purchasesPerGame": 86.60714285714286,
+      "inactivityDraws": 11,
+      "inactivityWilson": {
+        "p": 0.19642857142857142,
+        "lo": 0.11338480016444107,
+        "hi": 0.3184485732747718
+      }
+    },
+    {
+      "bot": "Rush",
+      "handicap": 3,
+      "games": 56,
+      "purchasesPerGame": 93.46428571428571,
+      "inactivityDraws": 4,
+      "inactivityWilson": {
+        "p": 0.07142857142857142,
+        "lo": 0.028125581246379636,
+        "hi": 0.16975682831486205
+      }
+    },
+    {
+      "bot": "Expand",
+      "handicap": 0,
+      "games": 56,
+      "purchasesPerGame": 2.767857142857143,
+      "inactivityDraws": 39,
+      "inactivityWilson": {
+        "p": 0.6964285714285714,
+        "lo": 0.5666388751588567,
+        "hi": 0.8009983537922407
+      }
+    },
+    {
+      "bot": "Expand",
+      "handicap": 3,
+      "games": 56,
+      "purchasesPerGame": 3.1964285714285716,
+      "inactivityDraws": 40,
+      "inactivityWilson": {
+        "p": 0.7142857142857143,
+        "lo": 0.5852450091364125,
+        "hi": 0.8158137860829666
+      }
+    },
+    {
+      "bot": "Balanced",
+      "handicap": 0,
+      "games": 56,
+      "purchasesPerGame": 3.142857142857143,
+      "inactivityDraws": 38,
+      "inactivityWilson": {
+        "p": 0.6785714285714286,
+        "lo": 0.548223941560039,
+        "hi": 0.7859917211227772
+      }
+    },
+    {
+      "bot": "Balanced",
+      "handicap": 3,
+      "games": 56,
+      "purchasesPerGame": 2.8035714285714284,
+      "inactivityDraws": 36,
+      "inactivityWilson": {
+        "p": 0.6428571428571429,
+        "lo": 0.5119364571733127,
+        "hi": 0.7554360729729401
+      }
+    }
+  ],
+  "purchaseRatePerSeat": [
+    1.3839285714285714,
+    186.92857142857142
+  ],
+  "inactivityDrawRate": [
+    0,
+    0.8658137860829667
+  ],
+  "application": "Apply separately to each aiv2-hard vs Rush/Expand/Balanced row, each h0/h3 stratum; count only aiv2-hard purchases. This is only the purchase/draw part of Gate 1."
+}
