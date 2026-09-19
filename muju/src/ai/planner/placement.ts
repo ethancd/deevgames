@@ -8,12 +8,22 @@ import {getUnitDefinition} from '../../game/units';
 import {unitEndOfTurnTake} from '../../game/mining';
 import {scorePartialPlan,tagPlan} from './scoring';
 import type {SearchBudget} from '../runtime';
+import {summonDisruptable} from './summons';
+
+/** V2 candidate policy only: never narrow the shared rules-legal inventory.
+ * Reach estimates disruption, not a forced outcome. If no legal safe buy is
+ * left (including after pending reservations), retain all refundable buys so
+ * the economy cannot freeze. Non-purchase actions keep their original order. */
+export function preferSafePurchases(state:GameState,player:PlayerId,actions:AIAction[]):AIAction[] {
+ const safe=new Set(actions.filter(a=>a.type==='BUY_UNIT'&&!summonDisruptable(state,player,a.position)));
+ return safe.size?actions.filter(a=>a.type!=='BUY_UNIT'||safe.has(a)):actions;
+}
 
 /** Bounded Prepare plans buy delayed miners and next-turn defenders.
  * Pending pieces cannot strike, block, mine or extend a spawn rectangle now. */
 export function placementPlans(state:GameState,player:PlayerId,budget?:SearchBudget):TurnPlan[] {
  if(state.turn.phase!=='place'||state.upkeepPending)return [];
- const purchases=generatePlaceActions(state,player).filter(a=>a.type==='BUY_UNIT');
+ const purchases=preferSafePurchases(state,player,generatePlaceActions(state,player)).filter(a=>a.type==='BUY_UNIT');
  const plans:TurnPlan[]=[];
  function add(actions:AIAction[]) {
   if(budget?.exhausted())return;
@@ -40,7 +50,7 @@ export function placementPlans(state:GameState,player:PlayerId,budget?:SearchBud
  for(const a of generatePromoteActions(state,player))add([a]);
  for(const enemy of state.board.units.filter(u=>u.owner!==player).slice(0,8)) {
   // A NEXT-turn blocker, preferring safe commitments. If none are safe the
-  // generator retains risky, refundable buys; these never block immediately.
+  // planner retains risky, refundable buys; these never block immediately.
   for(const id of ['water_1','metal_1']) {
    const block=purchases.filter(a=>a.definitionId===id).sort((a,b)=>
     (Math.abs(a.position.x-enemy.position.x)+Math.abs(a.position.y-enemy.position.y))-(Math.abs(b.position.x-enemy.position.x)+Math.abs(b.position.y-enemy.position.y)))[0];

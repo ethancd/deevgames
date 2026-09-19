@@ -7,7 +7,7 @@ import { applyAction } from '../../src/ai/simulate';
 import { defaultUpkeepAction } from '../../src/game/upkeep';
 import { instantiateTactics, type TacticalSolver } from '../../src/ai/wasm/kernel';
 import { createGateBot, workSlice, type Searcher } from '../../lab/ai/gate1-bot';
-import { schedule, summarize, type Entry, type Mode } from '../../lab/ai/gate1-report';
+import { schedule, summarize, SEEDS, type Entry, type Mode } from '../../lab/ai/gate1-report';
 import { adoptedProtocol, parseArgs, resolvedConfigs, runTask } from '../../lab/ai/gate1';
 import { DEFAULT_MATCH_OPTIONS, type GameRecord } from '../../lab/harness/types';
 
@@ -30,6 +30,7 @@ function synthetic(mode: Mode): Entry[] {
 
 describe('allocation and reporting', () => {
   it('fixes 16 pilot and 1,024 full games with two seats sharing each pair seed', () => {
+    expect(SEEDS).toEqual({ pilot: 20260959, full: 20260958 });
     expect(schedule('pilot')).toHaveLength(16);
     const full = schedule('full');
     expect(full).toHaveLength(1024);
@@ -42,14 +43,17 @@ describe('allocation and reporting', () => {
     expect(new Set(full.map(t => t.seed)).size).toBe(512);
     expect(schedule('pilot').some(t => full.some(f => f.seed === t.seed))).toBe(false);
   });
-  it('passes A1 full evidence without historical references and never passes a pilot', () => {
+  it('passes A2 full evidence with unchanged A1 acceptance without historical references and never passes a pilot', () => {
     const full = summarize(synthetic('full'), 'full', 'identity', bands);
     expect(full.errors).toEqual([]);
     expect(full.gate1).toBe('passed');
-    expect(full.amendment).toBe('A1');
+    expect(full.amendment).toBe('A2');
     expect(full.rows.every(r => r.strengthMet)).toBe(true);
     expect(summarize(synthetic('pilot'), 'pilot', 'identity', bands).gate1).toBe('pilot-ineligible');
-    expect(adoptedProtocol().amendment.id).toBe('A1');
+    expect(adoptedProtocol().amendment).toMatchObject({
+      id: 'A2', commit: '04097f0e5a78b54432de9363a9fee648b5a863d6',
+      sha256: '3140974aa223b820d084c83453a1cf88ea067cabc4b2b003d19f65fa1b08202d',
+    });
   });
   it('reports a Rush loss without gating strength, but gates every other opponent and handicap', () => {
     const entries = synthetic('full');
@@ -88,10 +92,12 @@ describe('allocation and reporting', () => {
     game.record.players.black.unitsPlaced = 1;
     expect(summarize(entries, 'full', 'identity', bands).gate1).toBe('passed');
   });
-  it('identifies the historical zero-buy Rush game using completed player turns, not rounds', () => {
+  it('keeps the historical zero-buy failure visible but rejects the A1 allocation as A2 evidence', () => {
     const entries = readFileSync('lab/ai/results/t2b-gate1-pilot-2026-09-19/games.jsonl', 'utf8').trim().split('\n').map(line => JSON.parse(line)) as Entry[];
     const report = summarize(entries, 'pilot', entries[0].identityHash, bands);
-    expect(report.gate1).toBe('pilot-ineligible');
+    expect(report.gate1).toBe('invalid');
+    expect(report.errors).toHaveLength(entries.length);
+    expect(report.errors.every(error => error.startsWith('Schedule mismatch '))).toBe(true);
     expect(report.criteriaMet).toBe(false);
     expect(report.rows.flatMap(r => r.mustBuyFailures)).toEqual(['Rush-h0-p0-black']);
   });

@@ -1,5 +1,5 @@
 import { isPhasing } from '../../game/rules';
-import { incomeMovePriority } from './placement';
+import { incomeMovePriority, preferSafePurchases } from './placement';
 import type { GameState, PlayerId } from '../../game/types';
 import type { TurnPlan } from './types';
 import { applyAction } from '../simulate';
@@ -31,7 +31,7 @@ export function beamSearchPlans(state: GameState, player: PlayerId, options: Bea
     const candidates: Prefix[] = [];
     outer: for (const prefix of beam) {
       if (prefix.state.turn.currentPlayer !== player || prefix.state.phase !== 'playing') { candidates.push(prefix); continue; }
-      for (const action of generateAllActions(prefix.state, player).sort((a,b)=>incomeMovePriority(prefix.state,b)-incomeMovePriority(prefix.state,a))) {
+      for (const action of preferSafePurchases(prefix.state, player, generateAllActions(prefix.state, player)).sort((a,b)=>incomeMovePriority(prefix.state,b)-incomeMovePriority(prefix.state,a))) {
         if (exhausted() || (budget && !budget.spend())) break outer;
         generated++;
         const next = applyAction(prefix.state, action), actions = [...prefix.plan.actions, action];

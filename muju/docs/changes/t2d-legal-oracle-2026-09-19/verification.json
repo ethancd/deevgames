@@ -1,0 +1,96 @@
+{
+  "queue": {
+    "directory": "/Users/ashkie/.local/state/muju-heavy",
+    "slots": 2
+  },
+  "results": [
+    {
+      "label": "tests",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-gate1-legal-oracle/muju/docs/changes/t2d-legal-oracle-2026-09-19/tests.json",
+        "tests/ai/prepare-legality.test.ts",
+        "tests/ai/phasing.test.ts",
+        "tests/ai/placement.test.ts",
+        "tests/ai/moves.test.ts",
+        "tests/ai/correctness.test.ts",
+        "tests/ai/simulate-ids.test.ts",
+        "tests/server/prepare-legality.test.ts",
+        "tests/server/phasing.test.ts",
+        "tests/lab/gate1.test.ts"
+      ],
+      "startedAt": "2026-09-19T06:42:40.348Z",
+      "finishedAt": "2026-09-19T06:44:39.330Z",
+      "exitCode": 0
+    },
+    {
+      "label": "app-types",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "startedAt": "2026-09-19T06:44:39.330Z",
+      "finishedAt": "2026-09-19T06:44:41.258Z",
+      "exitCode": 0
+    },
+    {
+      "label": "lab-types",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "lab/tsconfig.json",
+        "--noEmit"
+      ],
+      "startedAt": "2026-09-19T06:44:41.258Z",
+      "finishedAt": "2026-09-19T06:44:42.457Z",
+      "exitCode": 0
+    },
+    {
+      "label": "ai-lab-types",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "lab/ai/tsconfig.json",
+        "--noEmit"
+      ],
+      "startedAt": "2026-09-19T06:44:42.457Z",
+      "finishedAt": "2026-09-19T06:44:43.549Z",
+      "exitCode": 0
+    },
+    {
+      "label": "server-types",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "-p",
+        "server/tsconfig.json",
+        "--noEmit"
+      ],
+      "startedAt": "2026-09-19T06:44:43.549Z",
+      "finishedAt": "2026-09-19T06:44:44.614Z",
+      "exitCode": 0
+    },
+    {
+      "label": "gate1-plan",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "--import",
+        "tsx",
+        "lab/ai/gate1.ts",
+        "--mode",
+        "full",
+        "--plan"
+      ],
+      "startedAt": "2026-09-19T06:44:44.615Z",
+      "finishedAt": "2026-09-19T06:44:44.821Z",
+      "exitCode": 0
+    }
+  ]
+}

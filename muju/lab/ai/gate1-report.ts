@@ -7,8 +7,8 @@ export const OPPONENTS = ['Rush', 'Expand', 'Balanced', 'aiv2-medium'] as const;
 export type Opponent = typeof OPPONENTS[number];
 export type Mode = 'pilot' | 'full';
 export const FULL_PAIRS = 64; // PER opponent AND handicap: 1,024 full-row games.
-export const SEEDS = { pilot: 20260956, full: 20260957 } as const;
-export const AMENDMENT = 'A1' as const;
+export const SEEDS = { pilot: 20260959, full: 20260958 } as const;
+export const AMENDMENT = 'A2' as const;
 export interface Task {
   id: string; pairId: string; opponent: Opponent; handicap: 0 | 3;
   pair: number; seed: number; hardSeat: PlayerId;

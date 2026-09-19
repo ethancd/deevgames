@@ -1,0 +1,150 @@
+{
+  "t1Commit": "fc376c94a09d0d87b0e0012e03bfb0cc3108174d",
+  "sourceHashes": {
+    "muju/src/ai/moves.ts": "1217f57af09098d679ed0933ab020bb7588919624226d901f61517d67f957fd1",
+    "muju/lab/harness/legal.ts": "ce0262c97dc96744a6220e13b6013d3469fc06feb5a3905d7cec21eb70fa254e"
+  },
+  "note": "Frozen T1 purchase generator followed by its harness canonical filter; no disruption heuristic, no sealed data.",
+  "cases": [
+    {
+      "ruleset": "standard",
+      "player": "white",
+      "cash": 0,
+      "purchases": 0,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "standard",
+      "player": "white",
+      "cash": 2,
+      "purchases": 0,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "standard",
+      "player": "white",
+      "cash": 3,
+      "purchases": 44,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "standard",
+      "player": "white",
+      "cash": 5,
+      "purchases": 132,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "standard",
+      "player": "white",
+      "cash": 20,
+      "purchases": 132,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "standard",
+      "player": "black",
+      "cash": 0,
+      "purchases": 0,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "standard",
+      "player": "black",
+      "cash": 2,
+      "purchases": 0,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "standard",
+      "player": "black",
+      "cash": 3,
+      "purchases": 44,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "standard",
+      "player": "black",
+      "cash": 5,
+      "purchases": 132,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "standard",
+      "player": "black",
+      "cash": 20,
+      "purchases": 132,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "phasing",
+      "player": "white",
+      "cash": 0,
+      "purchases": 0,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "phasing",
+      "player": "white",
+      "cash": 2,
+      "purchases": 0,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "phasing",
+      "player": "white",
+      "cash": 3,
+      "purchases": 42,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "phasing",
+      "player": "white",
+      "cash": 5,
+      "purchases": 126,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "phasing",
+      "player": "white",
+      "cash": 20,
+      "purchases": 126,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "phasing",
+      "player": "black",
+      "cash": 0,
+      "purchases": 0,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "phasing",
+      "player": "black",
+      "cash": 2,
+      "purchases": 0,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "phasing",
+      "player": "black",
+      "cash": 3,
+      "purchases": 42,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "phasing",
+      "player": "black",
+      "cash": 5,
+      "purchases": 126,
+      "orderedInventoryEqual": true
+    },
+    {
+      "ruleset": "phasing",
+      "player": "black",
+      "cash": 20,
+      "purchases": 126,
+      "orderedInventoryEqual": true
+    }
+  ]
+}

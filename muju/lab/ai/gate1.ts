@@ -1,5 +1,5 @@
 /** From muju/: node --import tsx lab/ai/gate1.ts --mode pilot --out <NEW directory>
- * --plan prints the adopted A1 allocation without playing. Full rows are opt-in.
+ * --plan prints the adopted A2 allocation without playing. Full rows are opt-in.
  */
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -22,13 +22,13 @@ export const REFERENCE_PATH = 'lab/ai/gate1-references.json';
 export const sha = (s: string | Buffer) => createHash('sha256').update(s).digest('hex');
 const json = (s: unknown) => JSON.stringify(s, null, 2) + '\n';
 const git = (...args: string[]) => execFileSync('git', args, { encoding: 'utf8' }).trim();
-/** Read the adopted document by commit: this branch's working copy predates A1.
+/** Read the adopted document by commit, independently of later working-copy edits.
  * Historical calibration hashes are audit metadata, no longer prerequisites. */
 export function adoptedProtocol() {
   const references = JSON.parse(readFileSync(REFERENCE_PATH, 'utf8'));
   const amendment = references.amendment;
   if (references.status !== 'adopted' || references.rulesVersion !== 'muju-phasing-1' || amendment?.id !== AMENDMENT) {
-    throw new Error('Gate 1 requires adopted amendment A1');
+    throw new Error(`Gate 1 requires adopted amendment ${AMENDMENT}`);
   }
   const document = execFileSync('git', ['show', `${amendment.commit}:${amendment.path}`], { encoding: 'utf8' });
   if (sha(document) !== amendment.sha256) throw new Error('Adopted preregistration hash mismatch');
@@ -75,7 +75,7 @@ export async function runTask(task: Task, solver: TacticalSolver, identityHash: 
   const arrivals = { white: 0, black: 0 }, refunds = { white: 0, black: 0 };
   const startLoad = loadavg();
   const { record, replay } = await playGame({ bots, seed: task.seed, runId, engineHash: identityHash,
-    experiment: 'gate1-A1', initialState: initial(task.handicap),
+    experiment: `gate1-${AMENDMENT}`, initialState: initial(task.handicap),
     options: { ...DEFAULT_MATCH_OPTIONS, blackCrystalHandicap: task.handicap,
       actionsPerTurn: 4, upkeep: 'shipped', inactivityRule: 'on', recordReplay: true },
     onAction(before, after, action) {
@@ -144,7 +144,7 @@ export async function main(args: string[]) {
       git: git('rev-parse', 'HEAD'), gitStatus: git('status', '--porcelain'),
       node: process.version, device: `${cpus()[0]?.model} / ${platform()}/${arch()}`, cpuCount: cpus().length,
       loadBefore: loadavg(), queue: { directory: heavyDir(), slots: slotCount() },
-      note: 'A1 acceptance; pilots are ineligible. No worker unlock or responsiveness claim.' };
+      note: 'A2 allocation with unchanged A1 acceptance; pilots are ineligible. No worker unlock or responsiveness claim.' };
     writeFileSync(manifestPath, json(manifest));
     const entries: Entry[] = [];
     let activeTask: Task | undefined;
@@ -154,7 +154,7 @@ export async function main(args: string[]) {
       const configs = await resolvedConfigs(solver);
       const { references, amendment, document } = adoptedProtocol();
       if (references.bandsSha256 !== fileHashes[BANDS_PATH]) throw new Error('Frozen band hash mismatch');
-      writeFileSync(`${out}/preregistration-A1.md`, document);
+      writeFileSync(`${out}/preregistration-${AMENDMENT}.md`, document);
       const identity = { rulesVersion: 'muju-phasing-1', preregistration: amendment, abi: 7, files: fileHashes, configs,
         configHashes: Object.fromEntries(Object.entries(configs).map(([k, v]) => [k, sha(json(v))])),
         weights: DEFAULT_WEIGHTS, hardWeightsVersion: null, hardBookMagic: null,

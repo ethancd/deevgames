@@ -1,4 +1,3 @@
-import { summonDisruptable } from './planner/summons';
 import { upkeepActions } from '../game/upkeep';
 import type { GameState, PlayerId } from '../game/types';
 import type { AIAction } from './types';
@@ -50,16 +49,12 @@ export function generateAttackActions(state: GameState, player: PlayerId): AIAct
 
 export function generatePlaceActions(state: GameState, player: PlayerId): AIAction[] {
   if (state.turn.phase !== 'place') return [];
-  const legal = getAffordablePurchases(state.players[player].resources).flatMap(def =>
+  // Rules inventory shared with scripted opponents, the server and parity checks.
+  // Heuristic purchase pruning belongs exclusively in the V2 planner.
+  return getAffordablePurchases(state.players[player].resources).flatMap(def =>
     getAllSpawnPositions(player, state.board)
       .map(position => ({ type: 'BUY_UNIT' as const, definitionId: def.id, position })))
     .filter(a => isLegalAction(state, a, player));
-  const safe = legal.filter(a => !summonDisruptable(state, player, a.position));
-  // Reach is a risk estimate, not forced disruption. When all legal squares are
-  // threatened, keep refundable commitments in the search instead of freezing
-  // the economy. Filter legality first so reserved pending squares cannot hide
-  // this fallback. Pending evaluation still discounts their value and income.
-  return safe.length ? safe : legal;
 }
 
 export function generatePromoteActions(state: GameState, player: PlayerId): AIAction[] {

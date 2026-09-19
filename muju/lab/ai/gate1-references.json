@@ -50,10 +50,10 @@
     "resolution": "A1 withdraws the historical-margin condition. Historical sources and the superseded proposal are retained for audit only, never used as pass thresholds or run prerequisites."
   },
   "amendment": {
-    "id": "A1",
-    "commit": "0a6f8db5827356a27f6e62b2ab6a2f82f131d945",
+    "id": "A2",
+    "commit": "04097f0e5a78b54432de9363a9fee648b5a863d6",
     "path": "muju/docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md",
-    "sha256": "18bc4579c51a009cb6413b3109afc8dd8422ef1d3b0215228fa38d71758bb499"
+    "sha256": "3140974aa223b820d084c83453a1cf88ea067cabc4b2b003d19f65fa1b08202d"
   },
   "supersededProposal": {
     "proposedElo": {

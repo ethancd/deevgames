@@ -6,7 +6,7 @@ import { getUnitDefinition } from '../../src/game/units';
 import { isLegalAction } from '../../src/game/legality';
 import { applyAction, applyActions } from '../../src/ai/simulate';
 import { passTurn } from '../../src/ai/planner/turn';
-import { placementPlans } from '../../src/ai/planner/placement';
+import { placementPlans, preferSafePurchases } from '../../src/ai/planner/placement';
 import { summonDisruptable, pendingMaterial, pendingIncome, disruptionPressure } from '../../src/ai/planner/summons';
 import { evaluatePosition, quickEvaluate } from '../../src/ai/evaluation';
 import { scorePartialPlan } from '../../src/ai/planner/scoring';
@@ -71,13 +71,15 @@ it('does not count Prepare income a second time', () => {
   expect(score).toBeCloseTo(evaluatePosition(next, 'white') - 0.1);
 });
 
-it('filters reachable commitment squares using next-turn flags and values disruption as tempo', () => {
+it('prunes reachable commitments only in the planner using next-turn flags and values disruption as tempo', () => {
   const state = initial(); state.turn.phase = 'place'; state.players.white.resources = 20;
   state.board.units = [createUnit('plant_1', 'white', { x: 4, y: 4 }), createUnit('fire_1', 'black', { x: 5, y: 4 })];
   state.board.units[1].canActThisTurn = false;
   const sq = { x: 3, y: 3 };
   expect(summonDisruptable(state, 'white', sq)).toBe(true);
-  expect(generateAllActions(state, 'white').some(a => a.type === 'BUY_UNIT' && a.position.x === sq.x && a.position.y === sq.y)).toBe(false);
+  const legal = generateAllActions(state, 'white');
+  expect(legal.some(a => a.type === 'BUY_UNIT' && a.position.x === sq.x && a.position.y === sq.y)).toBe(true);
+  expect(preferSafePurchases(state, 'white', legal).some(a => a.type === 'BUY_UNIT' && a.position.x === sq.x && a.position.y === sq.y)).toBe(false);
   const pending = { id: 'pending', owner: 'white' as const, definitionId: 'fire_1', position: sq, cost: 3 };
   state.pendingSummons = [pending];
   expect(pendingMaterial(state, 'white')).toBe(1.5);
@@ -121,11 +123,11 @@ it('uses risky legal squares after the last safe square is reserved by a pending
     if (step.ply === 14) break;
     state = applyAction(state, step.action);
   }
-  const safe = generatePlaceActions(state, 'black');
+  const safe = preferSafePurchases(state, 'black', generatePlaceActions(state, 'black'));
   expect(safe).toHaveLength(6);
   for (const a of safe) if (a.type === 'BUY_UNIT') expect(summonDisruptable(state, 'black', a.position)).toBe(false);
   const next = applyAction(state, safe.find(a => a.type === 'BUY_UNIT' && a.definitionId === 'fire_1')!);
-  const fallback = generatePlaceActions(next, 'black');
+  const fallback = preferSafePurchases(next, 'black', generatePlaceActions(next, 'black'));
   expect(fallback.length).toBeGreaterThan(0);
   for (const a of fallback) {
     expect(isLegalAction(next, a)).toBe(true);

@@ -1,0 +1,5 @@
+(node:97030) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:97033) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+JSON report written to /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-gate1-legal-oracle/muju/docs/changes/t2d-legal-oracle-2026-09-19/tests.json
