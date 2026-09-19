@@ -1,0 +1,97 @@
+
+> elemental-tactics@0.1.0 pretest
+> npm run ai:wasm
+
+
+> elemental-tactics@0.1.0 ai:wasm
+> asc --config asconfig.json
+
+
+> elemental-tactics@0.1.0 test
+> vitest run --maxWorkers=2
+
+
+ RUN  v4.1.11 /private/tmp/muju-metal-deploy/muju
+
+eval-audit five: 5 positions, 0 side-swap, 0 rot180, 0 score-identity -> /var/folders/kk/7qns2vhs0w52c7_v6c0_6npc0000gn/T/muju-eval-audit-fmxiai/eval-audit/five
+(node:82592) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:82880) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:82913) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:82920) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:82922) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/ai/hard/promote.test.ts (10 tests | 1 failed) 24ms
+   × REACH: stationary Yan can promote for movement alone 5ms
+(node:83029) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:83282) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:83300) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:83302) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:83308) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:84164) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:84171) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:84173) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ tests/ai/hard/p8-rescue-cap.test.ts (5 tests | 1 failed) 321476ms
+     × returns a real, legally replayable plan at the P8 rung with the flag ON 124640ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/ai/hard/p8-rescue-cap.test.ts > P8: the rescue injection is capped, metered and truncating > returns a real, legally replayable plan at the P8 rung with the flag ON
+AssertionError: expected { work: 100216, depth: 2, nodes: 550 } to deeply equal { work: 100160, depth: 2, nodes: 550 }
+
+- Expected
++ Received
+
+  {
+    "depth": 2,
+    "nodes": 550,
+-   "work": 100160,
++   "work": 100216,
+  }
+
+ ❯ tests/ai/hard/p8-rescue-cap.test.ts:186:68
+    184|
+    185|     // The arm's fixed-work re-pin at the P8 rung (see the doc's §5).
+    186|     expect({ work: r.work, depth: r.depth, nodes: r.stats.nodes }).toE…
+       |                                                                    ^
+    187|       work: 100_160,
+    188|       depth: 2,
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/ai/hard/promote.test.ts > REACH: stationary Yan can promote for movement alone
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/ai/hard/promote.test.ts:265:64
+    263|       {def:'plant_1',owner:'black',x:8,y:8},
+    264|     ]}));
+    265|   expect(promotionsOf(p,t).some(c=>c.mission===Mission.REACH)).toBe(tr…
+       |                                                                ^
+    266| });
+    267|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 151 passed (153)
+      Tests  2 failed | 2178 passed (2180)
+   Start at  13:42:58
+   Duration  738.39s (transform 2.83s, setup 3.99s, import 30.52s, tests 1277.21s, environment 12.87s)
+

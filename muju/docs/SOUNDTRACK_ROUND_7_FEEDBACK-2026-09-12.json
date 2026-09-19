@@ -1,0 +1,26 @@
+{
+  "date": "2026-09-12",
+  "round": 7,
+  "source": "Visible favorite checkboxes and listening notes on the comparison page, read after the request to remove the voice entering at 30-31 seconds.",
+  "tracks": [
+    {
+      "id": "umeme-held-charge-elevenlabs-take-1",
+      "label": "19A",
+      "favorite": true,
+      "notes": "This is fun and bright! Oh god then the woodwind comes in and ruins it at 31sec in"
+    },
+    {
+      "id": "umeme-held-charge-elevenlabs-take-2",
+      "label": "19B",
+      "favorite": false,
+      "notes": "A little too aggressive, percussive, and x-files-y"
+    },
+    {
+      "id": "umeme-held-charge-elevenlabs-take-3",
+      "label": "19C",
+      "favorite": false,
+      "notes": ""
+    }
+  ],
+  "requested_edit": "Branch from 19A; remove the woodwind-like instrument entering at 30-31 seconds."
+}

@@ -1,0 +1,61 @@
+{
+  "gameCommit": "17dc8894d1539824b203c2dc388bd15e50d4a9e7",
+  "gameImplementationCommit": "845b87a277b08b989550ae054bea3ec9b5b8f47d",
+  "gameSourceBase": "57a70c1a7914bba649df0d8fcf30d16ebf5b34b7",
+  "pagesDeployment": "https://e4d2bc77.deevgames.pages.dev",
+  "pagesProduction": "https://deevgames.pages.dev/muju/",
+  "renderDeployment": "dep-damoke6k1f9s73bjqc40",
+  "renderService": "srv-dahbp4ht0dsc73fdqn10",
+  "renderPersistentDisk": "/app/data (1 GB)",
+  "academyCommit": "3b67c3e32b2b8eb10fb08540a6ee79c51a3f958c",
+  "academyWorkflow": 35381455284,
+  "academyProduction": "https://ashkie.com/muju-academy/",
+  "rules": "v2.9",
+  "metal": [
+    [
+      "Yan",
+      1,
+      3,
+      0,
+      3
+    ],
+    [
+      "Mazask",
+      1,
+      4,
+      1,
+      4
+    ],
+    [
+      "Tanka",
+      2,
+      5,
+      2,
+      5
+    ]
+  ],
+  "phasing": "preserved; Academy teaches Standard",
+  "tests": {
+    "fullInitial": {
+      "passed": 2178,
+      "failed": 2,
+      "total": 2180
+    },
+    "failedFilesAfterCorrections": {
+      "passed": 15,
+      "failed": 0
+    },
+    "additionalYanAndPromotion": {
+      "passed": 12,
+      "failed": 0
+    },
+    "deadlineCIRegression": {
+      "passed": 11,
+      "failed": 0
+    },
+    "online": 72,
+    "livePages": 9,
+    "liveRender": 2
+  },
+  "allAffectedLiveSurfacesVerified": true
+}

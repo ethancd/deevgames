@@ -1,0 +1,68 @@
+{
+  "status": "completed",
+  "usage": {
+    "total_tokens": 1975,
+    "total_input_tokens": 1215,
+    "input_tokens_by_modality": [
+      {
+        "modality": "audio",
+        "tokens": 1126
+      },
+      {
+        "modality": "text",
+        "tokens": 89
+      }
+    ],
+    "total_cached_tokens": 0,
+    "total_output_tokens": 255,
+    "total_tool_use_tokens": 0,
+    "total_thought_tokens": 505,
+    "raw_prompt_token": 1568,
+    "model_invocation_token_counts": [
+      {
+        "prompt_tokens_details": [
+          {
+            "modality": "text",
+            "tokens": 212
+          },
+          {
+            "modality": "audio",
+            "tokens": 1126
+          }
+        ],
+        "candidates_tokens_details": [
+          {
+            "modality": "text",
+            "tokens": 259
+          }
+        ],
+        "thoughts_tokens_details": [
+          {
+            "modality": "text",
+            "tokens": 505
+          }
+        ]
+      }
+    ]
+  },
+  "created": "2026-09-12T15:14:02Z",
+  "updated": "2026-09-12T15:14:02Z",
+  "service_tier": "standard",
+  "steps": [
+    {
+      "signature": "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",
+      "type": "thought"
+    },
+    {
+      "content": [
+        {
+          "text": "The foreground melody is carried by a plucked string sound (which may be synthetic or a plucked string instrument such as a harp, lute, or acoustic guitar). Its articulation is predominantly **short and staccato**, characterized by crisp, repeating melodic phrases rather than sustained tones.\n\nPercussion is absent during the introductory atmospheric swell, but becomes **continuous** starting at **0:13**, driving a steady, mid-tempo downtempo/breakbeat groove composed of a punchy kick drum, crisp snare, and rhythmic hi-hats/shakers. \n\nThe piece features the following instrumental families and elements:\n- **Plucked Strings / Synthetic Tones:** Provide the central foreground melodic motif and counterpoint (heard clearly from **0:14** onward).\n- **Percussion / Drum Programming:** Sustains a solid, looped rhythmic backbeat from **0:13** through the end of the clip (e.g., driving the groove at **0:28**).\n- **Synthesizers / Electronic Elements:** Low-frequency synth bass provides harmonic foundation underneath the groove, while ambient synth pads, risers, and textured atmospheric effects shape the introduction (**0:00–0:12**) and background bed.",
+          "type": "text"
+        }
+      ],
+      "type": "model_output"
+    }
+  ],
+  "object": "interaction",
+  "model": "gemini-3.8-flash"
+}

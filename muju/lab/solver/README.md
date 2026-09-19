@@ -50,3 +50,8 @@ and preserve a sole-cheapest witness per unit. `balance:check` currently finds
 18 distinct profiles, zero same-tier dominance and zero missing sole witnesses.
 No stat was tuned to obtain these results. The frozen `lab/maps` study is not
 rerun or rewritten; its old well model must be used at its recorded commit.
+
+The v2.9 Metal catalogue includes Speed 0. Adjacent attacks still cost one;
+positive-distance movement is unreachable. Mean strike actions and marginal
+action savings are `null` when the reporting grid includes unreachable trips,
+rather than serializing Infinity/NaN as if they were measured savings.

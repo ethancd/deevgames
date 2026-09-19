@@ -1,0 +1,93 @@
+{
+  "date": "2026-09-12",
+  "round": 6,
+  "source": "Visible browser favorite checkboxes and note fields on http://127.0.0.1:8766/round-6/; captured after the user explicitly confirmed the late favorite on 15A.",
+  "user_addendum": "incl 15A, 15A got faved late but it's good",
+  "tracks": [
+    {
+      "id": "baseline-hono-koto",
+      "favorite": false,
+      "notes": ""
+    },
+    {
+      "id": "hono-koto-elevenlabs-take-1",
+      "label": "14A",
+      "favorite": true,
+      "notes": "Fire is all good, this one is a good choice"
+    },
+    {
+      "id": "hono-koto-elevenlabs-take-2",
+      "label": "14B",
+      "favorite": false,
+      "notes": ""
+    },
+    {
+      "id": "baseline-muju-charango",
+      "favorite": false,
+      "notes": ""
+    },
+    {
+      "id": "muju-charango-elevenlabs-take-1",
+      "label": "15A",
+      "favorite": true,
+      "notes": ""
+    },
+    {
+      "id": "muju-charango-elevenlabs-take-2",
+      "label": "15B",
+      "favorite": false,
+      "notes": "lol harp is too much"
+    },
+    {
+      "id": "baseline-golge-baglama",
+      "favorite": false,
+      "notes": ""
+    },
+    {
+      "id": "golge-baglama-elevenlabs-take-1",
+      "label": "16A",
+      "favorite": true,
+      "notes": "The shadowy woodwind in the middle is awesome."
+    },
+    {
+      "id": "golge-baglama-elevenlabs-take-2",
+      "label": "16B",
+      "favorite": false,
+      "notes": "The dubby backbeat is too much."
+    },
+    {
+      "id": "baseline-tanka-flute",
+      "favorite": false,
+      "notes": ""
+    },
+    {
+      "id": "tanka-flute-elevenlabs-take-1",
+      "label": "17A",
+      "favorite": true,
+      "notes": ""
+    },
+    {
+      "id": "tanka-flute-elevenlabs-take-2",
+      "label": "17B",
+      "favorite": false,
+      "notes": "Too bobby and bouncy"
+    },
+    {
+      "id": "baseline-straumr-hardanger",
+      "favorite": false,
+      "notes": ""
+    },
+    {
+      "id": "straumr-hardanger-elevenlabs-take-1",
+      "label": "18A",
+      "favorite": true,
+      "notes": ""
+    },
+    {
+      "id": "straumr-hardanger-elevenlabs-take-2",
+      "label": "18B",
+      "favorite": false,
+      "notes": "Way too active lol"
+    }
+  ]
+}

@@ -25,3 +25,5 @@ The runner refuses to overwrite existing main results, including compressed file
 Results are under `lab/results/four-actions-2026-09-12/`: `paired-*.jsonl.gz` contain full game records, `replay-paired-*.json.gz` preserve the first seed of each matchup/color, `probes-*.json` contain tactical states and witnesses, and `summary.json` contains all matchup results. `analyze.py` and baseline verification read compressed or uncompressed game records.
 
 Round numbers are the engine's white/black round counter. First-kill medians exclude the few games without an attack kill. Draws are included in game-length statistics. No confidence claims are inferred from this fixed and heterogeneous policy mix. Telemetry is supplementary: whole-game action totals include terminal partial turns, whereas `completedTurns` counts explicit turn endings; dividing those fields is not an exact per-turn rate.
+
+`sandbox-board.ts.txt` is an evidence copy of the generated `.sandbox/src/game/board.ts`, kept as `.txt` because `.sandbox/` stays ignored; it shows the `MAX_ACTIONS_PER_TURN`/`MUJU_ACTIONS=4|6` toggle that `prepare.py` installs.

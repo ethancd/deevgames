@@ -1,0 +1,734 @@
+{
+  "branches": [
+    {
+      "branch": "claude/e2e-linux-diag",
+      "unique_commits": 5,
+      "muju_commits": 3,
+      "not_on_any_remote": 0
+    },
+    {
+      "branch": "claude/hard-ai-e0",
+      "unique_commits": 45,
+      "muju_commits": 42,
+      "not_on_any_remote": 22
+    },
+    {
+      "branch": "claude/hard-ai-e0-laneA",
+      "unique_commits": 25,
+      "muju_commits": 24,
+      "not_on_any_remote": 2
+    },
+    {
+      "branch": "claude/hard-ai-e0-laneB",
+      "unique_commits": 25,
+      "muju_commits": 24,
+      "not_on_any_remote": 2
+    },
+    {
+      "branch": "claude/hard-ai-e0-laneC",
+      "unique_commits": 25,
+      "muju_commits": 24,
+      "not_on_any_remote": 2
+    },
+    {
+      "branch": "claude/hard-ai-e0-laneD",
+      "unique_commits": 25,
+      "muju_commits": 24,
+      "not_on_any_remote": 2
+    },
+    {
+      "branch": "claude/hard-ai-e0-laneE",
+      "unique_commits": 25,
+      "muju_commits": 24,
+      "not_on_any_remote": 2
+    },
+    {
+      "branch": "claude/hard-ai-e0-laneF",
+      "unique_commits": 25,
+      "muju_commits": 24,
+      "not_on_any_remote": 2
+    },
+    {
+      "branch": "claude/hard-ai-e1",
+      "unique_commits": 104,
+      "muju_commits": 98,
+      "not_on_any_remote": 81
+    },
+    {
+      "branch": "claude/hard-ai-e1-lane1",
+      "unique_commits": 65,
+      "muju_commits": 61,
+      "not_on_any_remote": 42
+    },
+    {
+      "branch": "claude/hard-ai-e1-lane2",
+      "unique_commits": 66,
+      "muju_commits": 62,
+      "not_on_any_remote": 43
+    },
+    {
+      "branch": "claude/hard-ai-e1-lane3",
+      "unique_commits": 47,
+      "muju_commits": 44,
+      "not_on_any_remote": 24
+    },
+    {
+      "branch": "claude/hard-ai-e1-lane4",
+      "unique_commits": 66,
+      "muju_commits": 62,
+      "not_on_any_remote": 43
+    },
+    {
+      "branch": "claude/hard-ai-e1-lane6",
+      "unique_commits": 81,
+      "muju_commits": 76,
+      "not_on_any_remote": 58
+    },
+    {
+      "branch": "claude/hard-ai-e1-lane7",
+      "unique_commits": 65,
+      "muju_commits": 61,
+      "not_on_any_remote": 42
+    },
+    {
+      "branch": "claude/hard-ai-e1-lane8",
+      "unique_commits": 91,
+      "muju_commits": 86,
+      "not_on_any_remote": 68
+    },
+    {
+      "branch": "claude/hard-ai-e1-lane9",
+      "unique_commits": 92,
+      "muju_commits": 87,
+      "not_on_any_remote": 69
+    },
+    {
+      "branch": "claude/hard-ai-e2",
+      "unique_commits": 156,
+      "muju_commits": 145,
+      "not_on_any_remote": 133
+    },
+    {
+      "branch": "claude/hard-ai-e2-lane1",
+      "unique_commits": 148,
+      "muju_commits": 138,
+      "not_on_any_remote": 125
+    },
+    {
+      "branch": "claude/hard-ai-e2-lane2",
+      "unique_commits": 140,
+      "muju_commits": 131,
+      "not_on_any_remote": 117
+    },
+    {
+      "branch": "claude/hard-ai-e2-lane3",
+      "unique_commits": 105,
+      "muju_commits": 99,
+      "not_on_any_remote": 82
+    },
+    {
+      "branch": "claude/hard-ai-e2-lane4",
+      "unique_commits": 121,
+      "muju_commits": 114,
+      "not_on_any_remote": 98
+    },
+    {
+      "branch": "claude/hard-ai-e3",
+      "unique_commits": 236,
+      "muju_commits": 222,
+      "not_on_any_remote": 213
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane1",
+      "unique_commits": 158,
+      "muju_commits": 147,
+      "not_on_any_remote": 135
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane10",
+      "unique_commits": 175,
+      "muju_commits": 164,
+      "not_on_any_remote": 152
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane11",
+      "unique_commits": 177,
+      "muju_commits": 166,
+      "not_on_any_remote": 154
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane12",
+      "unique_commits": 178,
+      "muju_commits": 167,
+      "not_on_any_remote": 155
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane13",
+      "unique_commits": 206,
+      "muju_commits": 193,
+      "not_on_any_remote": 183
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane14",
+      "unique_commits": 201,
+      "muju_commits": 188,
+      "not_on_any_remote": 178
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane15",
+      "unique_commits": 218,
+      "muju_commits": 204,
+      "not_on_any_remote": 195
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane16",
+      "unique_commits": 225,
+      "muju_commits": 211,
+      "not_on_any_remote": 202
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane2",
+      "unique_commits": 158,
+      "muju_commits": 147,
+      "not_on_any_remote": 135
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane3",
+      "unique_commits": 158,
+      "muju_commits": 147,
+      "not_on_any_remote": 135
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane4",
+      "unique_commits": 159,
+      "muju_commits": 148,
+      "not_on_any_remote": 136
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane5",
+      "unique_commits": 158,
+      "muju_commits": 147,
+      "not_on_any_remote": 135
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane6",
+      "unique_commits": 160,
+      "muju_commits": 149,
+      "not_on_any_remote": 137
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane7",
+      "unique_commits": 160,
+      "muju_commits": 149,
+      "not_on_any_remote": 137
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane8",
+      "unique_commits": 158,
+      "muju_commits": 147,
+      "not_on_any_remote": 135
+    },
+    {
+      "branch": "claude/hard-ai-e3-lane9",
+      "unique_commits": 179,
+      "muju_commits": 168,
+      "not_on_any_remote": 156
+    },
+    {
+      "branch": "claude/hard-ai-e4",
+      "unique_commits": 282,
+      "muju_commits": 266,
+      "not_on_any_remote": 259
+    },
+    {
+      "branch": "claude/hard-ai-e4-lane1",
+      "unique_commits": 240,
+      "muju_commits": 226,
+      "not_on_any_remote": 217
+    },
+    {
+      "branch": "claude/hard-ai-e4-lane2",
+      "unique_commits": 239,
+      "muju_commits": 225,
+      "not_on_any_remote": 216
+    },
+    {
+      "branch": "claude/hard-ai-e4-lane3",
+      "unique_commits": 239,
+      "muju_commits": 225,
+      "not_on_any_remote": 216
+    },
+    {
+      "branch": "claude/hard-ai-e4-lane4",
+      "unique_commits": 239,
+      "muju_commits": 225,
+      "not_on_any_remote": 216
+    },
+    {
+      "branch": "claude/hard-ai-e4-lane5",
+      "unique_commits": 239,
+      "muju_commits": 225,
+      "not_on_any_remote": 216
+    },
+    {
+      "branch": "claude/hard-ai-e4-lane6",
+      "unique_commits": 239,
+      "muju_commits": 225,
+      "not_on_any_remote": 216
+    },
+    {
+      "branch": "claude/hard-ai-e4-lane7",
+      "unique_commits": 240,
+      "muju_commits": 226,
+      "not_on_any_remote": 217
+    },
+    {
+      "branch": "claude/hard-ai-e4-lane8",
+      "unique_commits": 261,
+      "muju_commits": 246,
+      "not_on_any_remote": 238
+    },
+    {
+      "branch": "claude/hard-ai-e4-lane9",
+      "unique_commits": 265,
+      "muju_commits": 249,
+      "not_on_any_remote": 242
+    },
+    {
+      "branch": "claude/muju-hard-ai",
+      "unique_commits": 20,
+      "muju_commits": 20,
+      "not_on_any_remote": 0
+    },
+    {
+      "branch": "codex/muju-hard-ai-recovery",
+      "unique_commits": 24,
+      "muju_commits": 23,
+      "not_on_any_remote": 1
+    },
+    {
+      "branch": "codex/muju-home-victory",
+      "unique_commits": 2,
+      "muju_commits": 2,
+      "not_on_any_remote": 0
+    }
+  ],
+  "worktrees": [
+    {
+      "path": "/Users/ashkie/src/deevgames",
+      "branch": "refs/heads/codex/muju-local-wip-2026-09-16",
+      "tracked_dirty": 96,
+      "muju_tracked_dirty": 52,
+      "muju_untracked": 1494,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/private/tmp/muju-active-lobby-release",
+      "branch": "refs/heads/codex/muju-active-lobby",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": false
+    },
+    {
+      "path": "/private/tmp/muju-central-map-release",
+      "branch": "refs/heads/codex/muju-central-map",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": false
+    },
+    {
+      "path": "/private/tmp/muju-crystal-handicap-release",
+      "branch": "refs/heads/codex/muju-crystal-handicap",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": false
+    },
+    {
+      "path": "/private/tmp/muju-end-analysis-release",
+      "branch": "refs/heads/codex/muju-end-analysis",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": false
+    },
+    {
+      "path": "/private/tmp/muju-expansion-economy",
+      "branch": "refs/heads/codex/muju-expansion-economy",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": false
+    },
+    {
+      "path": "/private/tmp/muju-four-action-standard",
+      "branch": "refs/heads/codex/muju-four-action-standard",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": false
+    },
+    {
+      "path": "/private/tmp/muju-mcp-tools-release",
+      "branch": "refs/heads/codex/muju-mcp-tools-release",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": false
+    },
+    {
+      "path": "/private/tmp/muju-phasing-variant",
+      "branch": "refs/heads/codex/muju-phasing-variant",
+      "tracked_dirty": 38,
+      "muju_tracked_dirty": 38,
+      "muju_untracked": 113,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/private/tmp/muju-phone-release-20260917",
+      "branch": "refs/heads/codex/muju-phone-release-20260917",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/private/tmp/muju-room-music",
+      "branch": "refs/heads/codex/muju-room-music",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": false
+    },
+    {
+      "path": "/private/tmp/muju-short-links-release",
+      "branch": "refs/heads/codex/muju-short-links",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/private/tmp/muju-time-controls-release",
+      "branch": "refs/heads/codex/muju-time-controls",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": false
+    },
+    {
+      "path": "/Users/ashkie/.claude-worktrees/oracle/gallant-khorana",
+      "branch": "refs/heads/gallant-khorana",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/.claude-worktrees/oracle/vibrant-jepsen",
+      "branch": "refs/heads/vibrant-jepsen",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e0",
+      "branch": "refs/heads/claude/hard-ai-e2",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 2,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e1-run",
+      "branch": "detached",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 109,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e2-run",
+      "branch": "detached",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 72,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e2-run2",
+      "branch": "detached",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 318,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e2e-diag",
+      "branch": "refs/heads/claude/e2e-linux-diag",
+      "tracked_dirty": 1,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e3",
+      "branch": "refs/heads/claude/hard-ai-e3",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e3-run",
+      "branch": "detached",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 195,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e3-run2",
+      "branch": "detached",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 72,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4",
+      "branch": "refs/heads/claude/hard-ai-e4",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4-lane1",
+      "branch": "refs/heads/claude/hard-ai-e4-lane1",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4-lane2",
+      "branch": "refs/heads/claude/hard-ai-e4-lane2",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4-lane3",
+      "branch": "refs/heads/claude/hard-ai-e4-lane3",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4-lane4",
+      "branch": "refs/heads/claude/hard-ai-e4-lane4",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4-lane5",
+      "branch": "refs/heads/claude/hard-ai-e4-lane5",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4-lane6",
+      "branch": "refs/heads/claude/hard-ai-e4-lane6",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4-lane7",
+      "branch": "refs/heads/claude/hard-ai-e4-lane7",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4-lane8",
+      "branch": "refs/heads/claude/hard-ai-e4-lane8",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4-lane9",
+      "branch": "refs/heads/claude/hard-ai-e4-lane9",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-e4-run",
+      "branch": "detached",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 278,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-fix",
+      "branch": "refs/heads/fix/ci-engine-test-gates",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-home-victory",
+      "branch": "refs/heads/codex/muju-home-victory",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-hono-tanka",
+      "branch": "refs/heads/claude/muju-hono-tanka-prep",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-map-d",
+      "branch": "refs/heads/codex/muju-map-d-launch",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-maps",
+      "branch": "refs/heads/codex/muju-map-study",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-muju-ai",
+      "branch": "refs/heads/codex/muju-wasm-ai",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-muju-balance",
+      "branch": "refs/heads/codex/muju-static-balance",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-muju-correctness",
+      "branch": "refs/heads/codex/muju-correctness-balance",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-muju-hardai",
+      "branch": "refs/heads/claude/muju-hard-ai",
+      "tracked_dirty": 2,
+      "muju_tracked_dirty": 2,
+      "muju_untracked": 23,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-muju-hardai-next",
+      "branch": "refs/heads/codex/muju-hard-ai-recovery",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-muju-main",
+      "branch": "refs/heads/master",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-phasing-analysis",
+      "branch": "refs/heads/codex/muju-phasing-analysis",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-release",
+      "branch": "detached",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames-release2",
+      "branch": "refs/heads/release/hard-ai",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames/.claude/worktrees/agent-a1fa4ff16e2039a09",
+      "branch": "refs/heads/leyline/mms-spells-artifacts",
+      "tracked_dirty": 1,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames/.claude/worktrees/agent-a620c110e57635985",
+      "branch": "refs/heads/worktree-agent-a620c110e57635985",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames/.claude/worktrees/agent-ab060141f6436e825",
+      "branch": "refs/heads/worktree-agent-ab060141f6436e825",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    },
+    {
+      "path": "/Users/ashkie/src/deevgames/forge-ai",
+      "branch": "refs/heads/claude-forge-ai",
+      "tracked_dirty": 0,
+      "muju_tracked_dirty": 0,
+      "muju_untracked": 0,
+      "git_worktree_present": true
+    }
+  ]
+}

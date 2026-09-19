@@ -1,0 +1,84 @@
+```json
+{
+  "clips": [
+    {
+      "label": "Clip A",
+      "audible_texture": "Sparse intro with sustained bass pad and simple woodblock/click, followed at 0:14 by a steady drum groove (kick, rim/cross-stick, shakers), resonant bass synth, and an acoustic plucked string instrument (acoustic guitar or steel-string zither) playing a syncopated riff with light reverb.",
+      "rhythm_and_melodic_behavior": "Moderate mid-tempo 4/4 meter. The plucked chordal pattern follows a repetitive syncopated two-chord harmonic loop with melodic ornamentation, locked to a standard pop/downtempo backbeat percussion pattern.",
+      "cultural_associations": [],
+      "generic_alternatives": "Generic downtempo pop, contemporary acoustic lounge, or modern synthetic game exploration cue.",
+      "audible_vocals": false,
+      "timestamped_observations": [
+        "00:08 - Low sustained synth bass note enters beneath sparse percussive clicks.",
+        "00:15 - Plucked acoustic string instrument introduces the main syncopated rhythm alongside drums."
+      ]
+    },
+    {
+      "label": "Clip B",
+      "audible_texture": "Fast, driving percussive texture led by rapid hand drums (slaps, open tones, rim clicks), metallic shakers, an acoustic nylon/steel-string guitar strumming percussively, and a crisp, high-register plucked lead (lute/dulcimer timbre) over warm low-end bass pulses.",
+      "rhythm_and_melodic_behavior": "Uptempo, highly syncopated continuous groove in quick 4/4 or 12/8 feel with prominent sixteenth-note percussion subdivisions. The melodic pluck provides rapid decorative fills and arpeggios over active rhythmic vamps.",
+      "cultural_associations": [
+        {
+          "association": "Latin American / Flamenco / Mediterranean fusion",
+          "specific_audible_evidence": "Rasgueado-style rhythmic guitar strumming and bongo/conga-like syncopated hand-drum slap patterns.",
+          "confidence": "low"
+        }
+      ],
+      "generic_alternatives": "High-energy adventure video game chase music, generic tropical action cue, or world-pop hybrid stock music.",
+      "audible_vocals": false,
+      "timestamped_observations": [
+        "00:05 - Strummed acoustic guitar joins the rapid hand percussion ensemble.",
+        "00:23 - High-register plucked string fills accent the syncopated groove."
+      ]
+    },
+    {
+      "label": "Clip C",
+      "audible_texture": "Dense mid-tempo texture featuring a bright, plucked zither or hammered dulcimer, sustained ambient synth strings/pads, low warm bass, a prominent acoustic wood flute melody, and light percussive frame drum/shaker rhythm.",
+      "rhythm_and_melodic_behavior": "Steady, relaxed 4/4 meter. The flute plays a sustained, lyrical pentatonic melody characterized by grace notes, pitch bends, and gentle vibrato over rolling arpeggiated pluck figures.",
+      "cultural_associations": [
+        {
+          "association": "East Asian (specifically traditional Chinese folk/cinematic style)",
+          "specific_audible_evidence": "Pentatonic melodic phrasing with characteristic portamento and ornaments on a side-blown bamboo flute (dizi timbre) accompanied by guzheng/yangqin-style plucked arpeggios.",
+          "confidence": "high"
+        }
+      ],
+      "generic_alternatives": "Cinematic fantasy game village cue, relaxation/meditation synthetic soundtrack.",
+      "audible_vocals": false,
+      "timestamped_observations": [
+        "00:04 - Acoustic wood flute enters playing an expressive pentatonic melodic phrase.",
+        "00:28 - Flute holds an extended sustained tone with subtle dynamic vibrato."
+      ]
+    },
+    {
+      "label": "Clip D",
+      "audible_texture": "Spacious, atmospheric drone and bowed string texture (synthetic or acoustic cello/double bass) joined by sparse, resonant frame drum pulses, subtle bell-like chimes, and a distinct double-reed woodwind melody with heavy reverb.",
+      "rhythm_and_melodic_behavior": "Slow, rubato/unmetered beginning moving into a slow, loose pulse. The lead reed instrument performs modal melodies featuring prominent microtonal inflection, chromatic turns, and deliberate portamento over a static bass pedal tone.",
+      "cultural_associations": [
+        {
+          "association": "Middle Eastern / Armenian / West Asian modal music",
+          "specific_audible_evidence": "Double-reed woodwind timbre characteristic of a duduk or zurna, playing modal microtonal inflections, wide vibrato, and weeping melodic ornaments over a drone.",
+          "confidence": "high"
+        }
+      ],
+      "generic_alternatives": "Hollywood desert/ancient ambient underscore, synthetic fantasy stealth/wasteland cue.",
+      "audible_vocals": false,
+      "timestamped_observations": [
+        "00:09 - Reedy double-reed woodwind enters with a mournful, sliding pitch.",
+        "00:21 - Low frame drum pulse strikes beneath the sustained drone and reed melody."
+      ]
+    },
+    {
+      "label": "Clip E",
+      "audible_texture": "Dark, tense cinematic synthetic/orchestral hybrid with low cello/bass stabs, sub-bass drones, metallic ticking/shaker percussion, and an acoustic plucked/struck instrument (cimbalom, dulcimer, or muted acoustic guitar) playing sharp, rapid runs.",
+      "rhythm_and_melodic_behavior": "Fast, relentless 4/4 meter driven by continuous straight sixteenth-note percussive ostinatos. Melodic content is minimal, focusing on staccato rhythmic ostinatos and minor-second dissonant accents creating urgency.",
+      "cultural_associations": [],
+      "generic_alternatives": "Generic action/thriller video game combat cue, suspense cinematic score, modern hybrid trailer music.",
+      "audible_vocals": false,
+      "timestamped_observations": [
+        "00:06 - Fast metallic percussive ticking locks in to establish the driving pulse.",
+        "00:22 - Heavy, low orchestral/synth bass impacts accent the downbeats."
+      ]
+    }
+  ]
+}
+```

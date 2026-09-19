@@ -1,0 +1,202 @@
+{
+  "full_length": true,
+  "round_number": 8,
+  "save_key": "muju-soundtrack-full-versions-v1",
+  "title": "Full versions — Muju soundtrack",
+  "eyebrow": "Muju Hono Tanka · Full versions · ElevenLabs",
+  "heading": "The favorites, with room to grow.",
+  "intro": "The chosen element themes and non-element favorites, developed for longer listening. Revised mixes blend active phrases across the former pause; new extensions continue before the audition fades. Use “Check transition” to jump to each join.",
+  "status": "9 of 9 full versions ready · 3:14–3:30 · Six element themes, lobby, match and rematch.",
+  "footer_text": "“Even volume” uses approximate RMS matching while preserving the audio files. Favorites and notes stay in this browser. These full listening versions have endings; seamless game loops are a separate edit.",
+  "navigation": [
+    {
+      "label": "Listen as a playlist",
+      "url": "../playlist/"
+    },
+    {
+      "label": "Umeme candidates",
+      "url": "../round-7/"
+    },
+    {
+      "label": "Selected auditions",
+      "url": "../round-6/"
+    },
+    {
+      "label": "Earlier songs",
+      "url": "../round-2/"
+    }
+  ],
+  "directions": [
+    {
+      "name": "Hono / Banked Fire",
+      "description": "The koto favorite grows into a warm, unhurried piece with an exposed bent-note passage and a gentle return.",
+      "tracks": [
+        {
+          "id": "hono-koto-full-v1",
+          "label": "Fire · Full version",
+          "duration": 197.59020408163266,
+          "variant": "From your pick 14A · blended mix",
+          "provider_label": "ElevenLabs",
+          "model": "music_v2",
+          "take": 1,
+          "file": "hono-koto-full-v2-blended.mp3",
+          "match_gain": 0.659328,
+          "transition_preview_seconds": 34.31,
+          "prompt": "The audition fade and quiet restart are removed, with active phrases overlapped at the first join.\n\nContinue the warm koto hook into a longer answering phrase. Retain the same bass movement and quiet broken beat; make the transition from the kept opening continuous.\n\nThin the accompaniment slightly while the koto gives an intimate, exposed version of the same melody. Let a clear post-attack bend ring, with gentle electric-piano support and the pulse still quietly present.\n\nReturn to the opening hook and original groove. A low electric-piano answer adds one new conversational detail, with the same calm energy and no crescendo.\n\nGive one final familiar koto phrase, settle the harmony softly, then leave time for its natural string decay. A complete gentle ending, no abrupt cutoff."
+        }
+      ]
+    },
+    {
+      "name": "Muju / A Field of Small Decisions",
+      "description": "Springy bass and charango carry a longer melody, with room between phrases and a lighter middle passage.",
+      "tracks": [
+        {
+          "id": "muju-charango-full-v1",
+          "label": "Plant · Full version",
+          "duration": 193.9330612244898,
+          "variant": "From your pick 15A · blended mix",
+          "provider_label": "ElevenLabs",
+          "model": "music_v2",
+          "take": 1,
+          "file": "muju-charango-full-v2-blended.mp3",
+          "match_gain": 0.648046,
+          "transition_preview_seconds": 32.132,
+          "prompt": "The audition fade and quiet restart are removed, with active phrases overlapped at the first join.\n\nContinue the charango tune and springy bass without a restart. Develop the answering half of the melody while preserving the source's comfortable rhythmic lift.\n\nLet charango and bass carry a lighter passage using the same tune with small rhythmic changes. Leave room between whole melodic phrases; keep the paired-string sound clear and avoid adding a harp feature.\n\nBring back the original charango hook, bass line and understated huayno accent. One simple lower plucked response may answer the tune; keep it quieter and sparser than the lead.\n\nGive a final sunny statement of the main melody, settle the bass and let the charango chord ring out naturally. Gentle complete cadence, no big finish."
+        }
+      ]
+    },
+    {
+      "name": "Gölge / One Square Out of Sight",
+      "description": "The dry bağlama hook opens into a low woodwind passage, then returns to the original sly groove.",
+      "tracks": [
+        {
+          "id": "golge-baglama-full-v1",
+          "label": "Shadow · Full version",
+          "duration": 201.43020408163267,
+          "variant": "From your pick 16A · blended mix",
+          "provider_label": "ElevenLabs",
+          "model": "music_v2",
+          "take": 1,
+          "file": "golge-baglama-full-v2-blended.mp3",
+          "match_gain": 0.446165,
+          "transition_preview_seconds": 35.172,
+          "prompt": "The audition fade and quiet restart are removed, with active phrases overlapped at the first join.\n\nContinue the existing bağlama hook with a short low-clarinet answer, retaining the exact feel of the restrained groove. Let dry attacks and brief phrase-ending echoes create the sly atmosphere.\n\nFeature the shadowy low woodwind that made the selected take distinctive. Give it a complete memorable middle-register melody related to the main hook, with sparse bağlama replies. Keep the bass supple and the backbeat quiet.\n\nReturn clearly to the opening bağlama hook. Now the woodwind answers in a short counterphrase, preserving the same sly mood and restrained energy.\n\nLet the bağlama and woodwind trade one last short answer, settle the harmony and leave a small trailing phrase-ending echo. Gentle ending without a dramatic flourish."
+        }
+      ]
+    },
+    {
+      "name": "Tanka / Weight Without Hurry",
+      "description": "Wooden flute, sparse drum and dark bronze resonance develop through long suspensions and broad descending phrases.",
+      "tracks": [
+        {
+          "id": "tanka-flute-full-v1",
+          "label": "Metal · Full version",
+          "duration": 198.0081632653061,
+          "variant": "From your pick 17A · low-mid passage revision",
+          "provider_label": "ElevenLabs",
+          "model": "music_v2",
+          "take": 1,
+          "file": "tanka-flute-full-v3-low-mid.mp3",
+          "match_gain": 0.92,
+          "transition_preview_seconds": 114,
+          "prompt": "The 1:59–2:28 passage is recomposed with sustained bass and bronze accompaniment beneath the flute, maintaining low-medium intensity. Two-second edge blends at 1:57–1:59 and 2:28–2:30."
+        }
+      ]
+    },
+    {
+      "name": "Straumr / Under the Current",
+      "description": "A dark bowed current carries the bass melody and slow Hardanger answers through a restrained, continuous arc.",
+      "tracks": [
+        {
+          "id": "straumr-hardanger-full-v1",
+          "label": "Water · Full version",
+          "duration": 200.88163265306122,
+          "variant": "From your pick 18A · blended mix",
+          "provider_label": "ElevenLabs",
+          "model": "music_v2",
+          "take": 1,
+          "file": "straumr-hardanger-full-v2-blended.mp3",
+          "match_gain": 0.380225,
+          "transition_preview_seconds": 31.0,
+          "prompt": "The audition fade and quiet restart are removed, with active phrases overlapped at the first join.\n\nContinue the recognizable bowed-bass melody and slow Hardanger answer with long connected bow strokes. Carry the momentum through the bass harmony, with no additional rhythmic layer.\n\nLet the Hardanger fiddle give a sustained low-middle-register answer against an open drone while the bowed bass remains melodically present. Change the harmonic depth gradually; maintain continuous throughflow and restrained activity.\n\nReturn clearly to the opening bass melody. The Hardanger resonance overlaps its long phrase endings, while the cello supports a closely related slow counterline. Keep the texture transparent and drumless.\n\nLet the final bowed phrase settle slowly into E minor. Sustain the low bass and sympathetic-string halo into a soft natural ending, preserving the cold atmosphere without a dramatic swell."
+        }
+      ]
+    },
+    {
+      "name": "Umeme / Held Charge",
+      "description": "The chosen 19D theme develops its charged pauses and answering hook through electric synth, udi and kanuni.",
+      "tracks": [
+        {
+          "id": "umeme-held-charge-full-v1",
+          "label": "Electricity · Full version",
+          "duration": 210.0,
+          "variant": "From your pick 19D",
+          "provider_label": "ElevenLabs",
+          "model": "music_v2",
+          "take": 1,
+          "file": "umeme-held-charge-full-v1.mp3",
+          "match_gain": 0.541406,
+          "transition_preview_seconds": 32.5,
+          "prompt": "Continue from the selected opening 19D.\n\nContinue the active groove directly from the reference, already at normal musical level from the first moment. Develop the same charged question and answering hook with the existing electric synth, udi and kanuni. No fade, silence, new introduction or new melodic instrument at the join.\n\nKeep the pulse and bass moving through a more spacious conversation between udi and kanuni. The electric voice holds a gentle local suspension, leaves a short deliberate gap and makes one precise leap. The gaps belong to the melody; the whole track never stops.\n\nReturn clearly to the bright opening hook and original groove. Vary the timing of its familiar answer and one bass reply. Keep the same light, confident energy without adding layers, a wind instrument or a large drop.\n\nGive a final recognizable statement of the hook, with udi and kanuni completing its answer. Keep the groove present until the last phrase, then allow a gentle resolved ending and short natural decay only in the final seconds."
+        }
+      ]
+    },
+    {
+      "name": "Open Room, Lantern On",
+      "description": "The welcoming piano-and-guitar favorite opens into a longer, companionable groove.",
+      "tracks": [
+        {
+          "id": "open-room-full-v1",
+          "label": "Lobby · Full version",
+          "duration": 210.0,
+          "variant": "From your pick 03C",
+          "provider_label": "ElevenLabs",
+          "model": "music_v2",
+          "take": 1,
+          "file": "open-room-full-v1.mp3",
+          "match_gain": 0.597175,
+          "transition_preview_seconds": 33.0,
+          "prompt": "Continue from the selected opening 03C.\n\nContinue directly from the active source phrase at full musical level, keeping the same piano melody and patient guitar reply. Extend the bass conversation without a restart, fade, silence or new intro at the join.\n\nGive the piano a lyrical related phrase over a small wistful minor-chord turn, then guide it back to the original warm harmony. Guitar answers patiently and the elastic bass maintains a living pulse.\n\nReturn to the recognizable opening hook with one complementary guitar response and the original bass movement. Let a held analog-synth answer make the room feel wider; keep the drums understated and the volume steady.\n\nGive a final warm piano-and-guitar exchange over the moving bass. Resolve gently with a small smile, letting the groove relax only in the last few seconds. No triumphant finale."
+        }
+      ]
+    },
+    {
+      "name": "Unequal Routes",
+      "description": "Two familiar melodic paths develop separately, then meet again in the same warm cadence.",
+      "tracks": [
+        {
+          "id": "unequal-routes-full-v1",
+          "label": "Match · Full version",
+          "duration": 210.0,
+          "variant": "From your pick 04C",
+          "provider_label": "ElevenLabs",
+          "model": "music_v2",
+          "take": 1,
+          "file": "unequal-routes-full-v1.mp3",
+          "match_gain": 0.485939,
+          "transition_preview_seconds": 35.0,
+          "prompt": "Continue from the selected opening 04C.\n\nContinue the active phrase from the kept source at normal level with no fade, silence or restart. Keep the synth melody long-breathed and let guitar resolve slightly later, supported by the same flowing bass.\n\nExplore the guitar route more fully while the synth provides long quiet answers. An unexpected but warm chord opens the harmony; preserve recognizable melodic material and a soft continuous pulse.\n\nBring the synth and guitar melodies together in clear counterpoint. Return to the source harmonic home and let the fit between the two tunes provide the payoff, keeping percussion at the original comfortable level.\n\nGive one final joined statement of the two melodies, then a spacious shared cadence. Keep the bass moving until the last phrase and allow a gentle natural ending only at the close."
+        }
+      ]
+    },
+    {
+      "name": "Another Game Before Dawn",
+      "description": "The favored instrumental closer keeps its bass momentum and hopeful, slightly wistful melody.",
+      "tracks": [
+        {
+          "id": "before-dawn-full-v1",
+          "label": "Rematch & closer · Full version",
+          "duration": 210.0,
+          "variant": "From your pick 05B",
+          "provider_label": "ElevenLabs",
+          "model": "music_v2",
+          "take": 1,
+          "file": "before-dawn-full-v1.mp3",
+          "match_gain": 0.524327,
+          "transition_preview_seconds": 31.5,
+          "prompt": "Continue from the selected opening 05B.\n\nContinue directly from the active source before its fade, preserving the piano question, synth answer and warm moving bass. Keep musical level and momentum through the join with no silence, restart or new intro.\n\nLet the harmony climb gradually while the familiar tune appears in a more open register. A small clean-guitar counterline answers the piano, and the bass keeps the piece moving without becoming busy.\n\nReturn to the opening melody with a slightly warmer harmonic resolution. Allow a restrained string layer to enter briefly, then withdraw again so the piano and synth conversation remain clear.\n\nGive a final recognizably related piano question and hopeful synth answer. Let the bass carry the last phrase into a gentle settled cadence, with a small natural decay at the end. Entirely instrumental."
+        }
+      ]
+    }
+  ]
+}

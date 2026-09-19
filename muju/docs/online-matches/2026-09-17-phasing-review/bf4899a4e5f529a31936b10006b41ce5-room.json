@@ -1,0 +1,3217 @@
+{
+  "createdAt": "2026-09-17T05:01:50.045Z",
+  "lastMoveAt": "2026-09-17T05:01:50.045Z",
+  "invitedPlayer": "black",
+  "id": "bf4899a4e5f529a31936b10006b41ce5",
+  "watchCode": "<redacted>",
+  "revision": 60,
+  "ready": true,
+  "seats": {
+    "white": "Codex",
+    "black": "Player"
+  },
+  "timeControl": {
+    "delaySeconds": 30,
+    "bankSeconds": 600
+  },
+  "clock": {
+    "serverNowMs": 1789697528662,
+    "runningPlayer": null,
+    "turnStartedAtMs": 1789621300614,
+    "deadlineAtMs": null,
+    "delayRemainingMs": 20571,
+    "bankRemainingMs": {
+      "white": 372051,
+      "black": 52977
+    }
+  },
+  "clockPressure": {
+    "sampling": {
+      "window": "all_tracked_completed_turns",
+      "startedAtMs": 1789619967456,
+      "startedRevision": 0,
+      "completeFromGameStart": true,
+      "terminalTurns": "excluded"
+    },
+    "projectionBasis": "if historical pace continues; not turns left in the game",
+    "players": {
+      "white": {
+        "completedTurns": 8,
+        "totalElapsedMs": 450334,
+        "totalBankSpentMs": 227949,
+        "firstTurnStartedAtMs": 1789620112530,
+        "lastTurnCompletedAtMs": 1789621300613,
+        "meanElapsedMs": 56291.75,
+        "meanBankSpentMs": 28493.625,
+        "remainingBankMs": 372051,
+        "projection": {
+          "status": "estimated",
+          "turnsCovered": 13.057341773817827
+        }
+      },
+      "black": {
+        "completedTurns": 7,
+        "totalElapsedMs": 737706,
+        "totalBankSpentMs": 547023,
+        "firstTurnStartedAtMs": 1789620129655,
+        "lastTurnCompletedAtMs": 1789621255870,
+        "meanElapsedMs": 105386.57142857143,
+        "meanBankSpentMs": 78146.14285714286,
+        "remainingBankMs": 52977,
+        "projection": {
+          "status": "estimated",
+          "turnsCovered": 0.6779221349010919
+        }
+      }
+    }
+  },
+  "lastTurnReplay": {
+    "player": "black",
+    "turnNumber": 8,
+    "initialBoard": {
+      "cells": [
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 0
+            },
+            "resourceLayers": 5
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 0
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 1
+            },
+            "resourceLayers": 6
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 1
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 1
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 1
+            },
+            "resourceLayers": 13
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 1
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 2
+            },
+            "resourceLayers": 1
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 2
+            },
+            "resourceLayers": 15
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 2
+            },
+            "resourceLayers": 14
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 2
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 3
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 4
+            },
+            "resourceLayers": 7
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 4
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 4
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 5
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 6
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 6
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 6
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 7
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 7
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 7
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 7
+            },
+            "resourceLayers": 0
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 8
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 8
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 8
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 8
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 8
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 9
+            },
+            "resourceLayers": 1
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 9
+            },
+            "resourceLayers": 8
+          }
+        ]
+      ],
+      "units": [
+        {
+          "id": "white_water_1_1789619967456_p7it9",
+          "definitionId": "water_1",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 1
+          },
+          "hasMoved": true,
+          "hasAttacked": true,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": [
+            "black_water_1_1789619967456_79h7n"
+          ]
+        },
+        {
+          "id": "white_plant_1_1789619967456_3maxm",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "black_plant_1_1789619967456_gx2g5",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 7
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-1-0",
+          "definitionId": "plant_3",
+          "owner": "white",
+          "position": {
+            "x": 4,
+            "y": 4
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-2-0",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 8,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-3-0",
+          "definitionId": "fire_2",
+          "owner": "black",
+          "position": {
+            "x": 8,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-5-1",
+          "definitionId": "shadow_1",
+          "owner": "white",
+          "position": {
+            "x": 5,
+            "y": 6
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-5-3",
+          "definitionId": "fire_3",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-6-1",
+          "definitionId": "shadow_1",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 0
+          },
+          "hasMoved": true,
+          "hasAttacked": true,
+          "lastAttackKilled": true,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": [
+            "black_water_1_1789619967456_79h7n"
+          ]
+        },
+        {
+          "id": "unit-white-6-2",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-7-0",
+          "definitionId": "water_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        }
+      ],
+      "initialResourceLayers": [
+        8,
+        8,
+        8,
+        0,
+        0,
+        0,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        4,
+        0,
+        0,
+        0,
+        4,
+        16,
+        16,
+        4,
+        8,
+        4,
+        4,
+        0,
+        0,
+        0,
+        4,
+        16,
+        16,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        16,
+        16,
+        4,
+        0,
+        0,
+        0,
+        4,
+        4,
+        8,
+        4,
+        16,
+        16,
+        4,
+        0,
+        0,
+        0,
+        4,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        8,
+        8,
+        8
+      ]
+    },
+    "initialPendingSummons": [],
+    "frames": []
+  },
+  "canUndo": false,
+  "state": {
+    "actionsPerTurn": 4,
+    "ruleset": "phasing",
+    "pendingSummons": [],
+    "blackCrystalHandicap": 0,
+    "phase": "victory",
+    "inactivityPlies": 0,
+    "progressThisTurn": false,
+    "board": {
+      "cells": [
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 0
+            },
+            "resourceLayers": 5
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 0
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 1
+            },
+            "resourceLayers": 6
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 1
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 1
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 1
+            },
+            "resourceLayers": 13
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 1
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 2
+            },
+            "resourceLayers": 1
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 2
+            },
+            "resourceLayers": 15
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 2
+            },
+            "resourceLayers": 14
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 2
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 3
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 4
+            },
+            "resourceLayers": 7
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 4
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 4
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 5
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 6
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 6
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 6
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 7
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 7
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 7
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 7
+            },
+            "resourceLayers": 0
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 8
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 8
+            },
+            "resourceLayers": 16
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 8
+            },
+            "resourceLayers": 3
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 8
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 8
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 9
+            },
+            "resourceLayers": 1
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 9
+            },
+            "resourceLayers": 8
+          }
+        ]
+      ],
+      "units": [
+        {
+          "id": "white_water_1_1789619967456_p7it9",
+          "definitionId": "water_1",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 1
+          },
+          "hasMoved": true,
+          "hasAttacked": true,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": [
+            "black_water_1_1789619967456_79h7n"
+          ]
+        },
+        {
+          "id": "white_plant_1_1789619967456_3maxm",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "black_plant_1_1789619967456_gx2g5",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 7
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-1-0",
+          "definitionId": "plant_3",
+          "owner": "white",
+          "position": {
+            "x": 4,
+            "y": 4
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-2-0",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 8,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-3-0",
+          "definitionId": "fire_2",
+          "owner": "black",
+          "position": {
+            "x": 8,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-5-1",
+          "definitionId": "shadow_1",
+          "owner": "white",
+          "position": {
+            "x": 5,
+            "y": 6
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-5-3",
+          "definitionId": "fire_3",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-6-1",
+          "definitionId": "shadow_1",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 0
+          },
+          "hasMoved": true,
+          "hasAttacked": true,
+          "lastAttackKilled": true,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": [
+            "black_water_1_1789619967456_79h7n"
+          ]
+        },
+        {
+          "id": "unit-white-6-2",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-7-0",
+          "definitionId": "water_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        }
+      ],
+      "initialResourceLayers": [
+        8,
+        8,
+        8,
+        0,
+        0,
+        0,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        4,
+        0,
+        0,
+        0,
+        4,
+        16,
+        16,
+        4,
+        8,
+        4,
+        4,
+        0,
+        0,
+        0,
+        4,
+        16,
+        16,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        16,
+        16,
+        4,
+        0,
+        0,
+        0,
+        4,
+        4,
+        8,
+        4,
+        16,
+        16,
+        4,
+        0,
+        0,
+        0,
+        4,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        8,
+        8,
+        8
+      ]
+    },
+    "players": {
+      "white": {
+        "id": "white",
+        "resources": 1,
+        "startCorner": {
+          "x": 0,
+          "y": 0
+        },
+        "resourcesGained": 94,
+        "resourcesUpkeep": 19
+      },
+      "black": {
+        "id": "black",
+        "resources": 0,
+        "startCorner": {
+          "x": 9,
+          "y": 9
+        },
+        "resourcesGained": 46,
+        "resourcesUpkeep": 14
+      }
+    },
+    "turn": {
+      "currentPlayer": "black",
+      "phase": "action",
+      "actionsRemaining": 4,
+      "turnNumber": 8
+    },
+    "winner": "white",
+    "selectedUnit": null,
+    "validMoves": [],
+    "validAttacks": [],
+    "lastIncome": {
+      "player": "white",
+      "turnNumber": 8,
+      "total": 5,
+      "takes": [
+        {
+          "unitId": "white_water_1_1789619967456_p7it9",
+          "definitionId": "water_1",
+          "position": {
+            "x": 2,
+            "y": 1
+          },
+          "amount": 2
+        },
+        {
+          "unitId": "white_plant_1_1789619967456_3maxm",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "amount": 2
+        },
+        {
+          "unitId": "unit-white-1-0",
+          "definitionId": "plant_3",
+          "position": {
+            "x": 4,
+            "y": 4
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-5-1",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 5,
+            "y": 6
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-5-3",
+          "definitionId": "fire_3",
+          "position": {
+            "x": 1,
+            "y": 2
+          },
+          "amount": 1
+        },
+        {
+          "unitId": "unit-white-6-1",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 1,
+            "y": 0
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-6-2",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 0,
+            "y": 1
+          },
+          "amount": 0
+        }
+      ]
+    },
+    "upkeepPending": false,
+    "lastUpkeep": {
+      "player": "white",
+      "paid": 4,
+      "released": [],
+      "turnNumber": 8
+    },
+    "lastSummoning": {
+      "player": "black",
+      "turnNumber": 8,
+      "summoned": [
+        {
+          "id": "unit-black-7-0",
+          "owner": "black",
+          "definitionId": "water_1",
+          "position": {
+            "x": 9,
+            "y": 9
+          },
+          "cost": 4
+        }
+      ],
+      "disrupted": []
+    },
+    "victoryReason": "resignation"
+  },
+  "updatedAt": "2026-09-17T05:01:50.045Z",
+  "history": [
+    {
+      "revision": 2,
+      "player": "white",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "white_fire_1_1789619967456_2zk3c",
+          "to": {
+            "x": 5,
+            "y": 4
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 5,
+            "y": 3
+          }
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 3,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "to": {
+            "x": 6,
+            "y": 6
+          }
+        }
+      ]
+    },
+    {
+      "revision": 4,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 5,
+      "player": "black",
+      "actions": [
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "black_water_1_1789619967456_79h7n"
+        }
+      ]
+    },
+    {
+      "revision": 6,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 7,
+      "player": "white",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "white_fire_1_1789619967456_2zk3c",
+          "to": {
+            "x": 7,
+            "y": 2
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "white_water_1_1789619967456_p7it9",
+          "to": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 7,
+            "y": 1
+          }
+        },
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-1-0"
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 8,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "to": {
+            "x": 7,
+            "y": 5
+          }
+        }
+      ]
+    },
+    {
+      "revision": 9,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_fire_1_1789619967456_3snzi",
+          "to": {
+            "x": 7,
+            "y": 8
+          }
+        }
+      ]
+    },
+    {
+      "revision": 10,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "to": {
+            "x": 7,
+            "y": 4
+          }
+        }
+      ]
+    },
+    {
+      "revision": 11,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 12,
+      "player": "black",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 7,
+            "y": 9
+          }
+        }
+      ]
+    },
+    {
+      "revision": 13,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 14,
+      "player": "white",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "white_fire_1_1789619967456_2zk3c",
+          "to": {
+            "x": 9,
+            "y": 1
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "white_plant_1_1789619967456_3maxm",
+          "to": {
+            "x": 0,
+            "y": 2
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "white_water_1_1789619967456_p7it9",
+          "to": {
+            "x": 2,
+            "y": 3
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        },
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-1-0"
+        },
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-2-0"
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 15,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "to": {
+            "x": 9,
+            "y": 4
+          }
+        }
+      ]
+    },
+    {
+      "revision": 16,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_plant_1_1789619967456_gx2g5",
+          "to": {
+            "x": 9,
+            "y": 7
+          }
+        }
+      ]
+    },
+    {
+      "revision": 17,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_fire_1_1789619967456_3snzi",
+          "to": {
+            "x": 7,
+            "y": 6
+          }
+        }
+      ]
+    },
+    {
+      "revision": 18,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 19,
+      "player": "black",
+      "actions": [
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "black_fire_1_1789619967456_3snzi"
+        }
+      ]
+    },
+    {
+      "revision": 20,
+      "player": "black",
+      "actions": [
+        {
+          "type": "UNDO"
+        }
+      ]
+    },
+    {
+      "revision": 21,
+      "player": "black",
+      "actions": [
+        {
+          "type": "UNDO"
+        }
+      ]
+    },
+    {
+      "revision": 22,
+      "player": "black",
+      "actions": [
+        {
+          "type": "UNDO"
+        }
+      ]
+    },
+    {
+      "revision": 23,
+      "player": "black",
+      "actions": [
+        {
+          "type": "UNDO"
+        }
+      ]
+    },
+    {
+      "revision": 24,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_fire_1_1789619967456_3snzi",
+          "to": {
+            "x": 7,
+            "y": 7
+          }
+        }
+      ]
+    },
+    {
+      "revision": 25,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_plant_1_1789619967456_gx2g5",
+          "to": {
+            "x": 9,
+            "y": 7
+          }
+        }
+      ]
+    },
+    {
+      "revision": 26,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 27,
+      "player": "black",
+      "actions": [
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "black_fire_1_1789619967456_3snzi"
+        }
+      ]
+    },
+    {
+      "revision": 28,
+      "player": "black",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 9,
+            "y": 5
+          }
+        }
+      ]
+    },
+    {
+      "revision": 29,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 30,
+      "player": "white",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-1-0",
+          "to": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-2-0",
+          "to": {
+            "x": 8,
+            "y": 0
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        },
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-2-0"
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 6,
+            "y": 0
+          }
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 31,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "to": {
+            "x": 9,
+            "y": 2
+          }
+        }
+      ]
+    },
+    {
+      "revision": 32,
+      "player": "black",
+      "actions": [
+        {
+          "type": "ATTACK",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "targetPosition": {
+            "x": 9,
+            "y": 1
+          }
+        }
+      ]
+    },
+    {
+      "revision": 33,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_fire_1_1789619967456_3snzi",
+          "to": {
+            "x": 5,
+            "y": 7
+          }
+        }
+      ]
+    },
+    {
+      "revision": 34,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 35,
+      "player": "black",
+      "actions": [
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "black_water_1_1789619967456_79h7n"
+        }
+      ]
+    },
+    {
+      "revision": 36,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 37,
+      "player": "white",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-1-0",
+          "to": {
+            "x": 3,
+            "y": 4
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-2-0",
+          "to": {
+            "x": 8,
+            "y": 1
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-4-0",
+          "to": {
+            "x": 4,
+            "y": 0
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "white_water_1_1789619967456_p7it9",
+          "to": {
+            "x": 2,
+            "y": 2
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 3,
+            "y": 1
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 7,
+            "y": 0
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 1,
+            "y": 2
+          }
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 38,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_fire_1_1789619967456_3snzi",
+          "to": {
+            "x": 3,
+            "y": 5
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "black_fire_1_1789619967456_3snzi",
+          "targetPosition": {
+            "x": 3,
+            "y": 4
+          }
+        }
+      ]
+    },
+    {
+      "revision": 39,
+      "player": "black",
+      "actions": [
+        {
+          "type": "UNDO"
+        }
+      ]
+    },
+    {
+      "revision": 40,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "to": {
+            "x": 5,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "revision": 41,
+      "player": "black",
+      "actions": [
+        {
+          "type": "ATTACK",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "targetPosition": {
+            "x": 4,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "revision": 42,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 43,
+      "player": "black",
+      "actions": [
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-black-3-0"
+        }
+      ]
+    },
+    {
+      "revision": 44,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 45,
+      "player": "white",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "white_plant_1_1789619967456_3maxm",
+          "to": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-5-1",
+          "to": {
+            "x": 3,
+            "y": 3
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-1-0",
+          "to": {
+            "x": 4,
+            "y": 4
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        },
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-5-3"
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 2,
+            "y": 0
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 1,
+            "y": 1
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 46,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-3-0",
+          "to": {
+            "x": 8,
+            "y": 2
+          }
+        }
+      ]
+    },
+    {
+      "revision": 47,
+      "player": "black",
+      "actions": [
+        {
+          "type": "ATTACK",
+          "unitId": "unit-black-3-0",
+          "targetPosition": {
+            "x": 8,
+            "y": 1
+          }
+        }
+      ]
+    },
+    {
+      "revision": 48,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-2-0",
+          "to": {
+            "x": 8,
+            "y": 9
+          }
+        }
+      ]
+    },
+    {
+      "revision": 49,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 50,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 51,
+      "player": "white",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-5-1",
+          "to": {
+            "x": 5,
+            "y": 6
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-5-1",
+          "targetPosition": {
+            "x": 5,
+            "y": 7
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        },
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-5-3"
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 52,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "to": {
+            "x": 3,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "revision": 53,
+      "player": "black",
+      "actions": [
+        {
+          "type": "ATTACK",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "targetPosition": {
+            "x": 2,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "revision": 54,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "to": {
+            "x": 2,
+            "y": 0
+          }
+        }
+      ]
+    },
+    {
+      "revision": 55,
+      "player": "black",
+      "actions": [
+        {
+          "type": "ATTACK",
+          "unitId": "black_water_1_1789619967456_79h7n",
+          "targetPosition": {
+            "x": 2,
+            "y": 1
+          }
+        }
+      ]
+    },
+    {
+      "revision": 56,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 57,
+      "player": "black",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "water_1",
+          "position": {
+            "x": 9,
+            "y": 9
+          }
+        }
+      ]
+    },
+    {
+      "revision": 58,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 59,
+      "player": "white",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "white_water_1_1789619967456_p7it9",
+          "to": {
+            "x": 2,
+            "y": 1
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "white_water_1_1789619967456_p7it9",
+          "targetPosition": {
+            "x": 2,
+            "y": 0
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-6-1",
+          "to": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-6-1",
+          "targetPosition": {
+            "x": 2,
+            "y": 0
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 60,
+      "player": "black",
+      "actions": [
+        {
+          "type": "RESIGN"
+        }
+      ]
+    }
+  ]
+}

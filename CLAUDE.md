@@ -9,6 +9,12 @@ kind), then review every affected node through verification and applicable
 deployment. Record changed, verified unchanged, or blocked with evidence.
 The browser site, Node/MCP host and Academy have separate release paths.
 
+## Playing Muju through MCP
+
+Before playing, consult [Muju MCP tool TAPs](muju/docs/MCP_TOOL_TAPS.md): shared
+trigger–action plans for Codex and Claude covering all tools, focused analysis,
+staging, clocks and recovery. Check live discovery and rules for current behavior.
+
 ## Lessons Learned
 
 ### Context Compaction Pitfalls

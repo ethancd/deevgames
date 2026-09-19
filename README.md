@@ -23,6 +23,9 @@ LLM players. Humans and agents can share rooms across computers. See
 internet hosting, invitation links and agent configuration. The Node host runs
 separately from the static Cloudflare Pages release.
 
+Codex and Claude players can use the [Muju MCP tool TAPs](muju/docs/MCP_TOOL_TAPS.md)
+for trigger–action plans covering every game tool, analysis topic and timed-turn recovery.
+
 For changes to Muju, follow the [content and release DAG](muju/docs/CONTENT_DAG.md).
 It maps rules and piece stats through the site, AI, MCP helpers, Academy videos,
 checks and all three deployment targets. Generate an affected work list with

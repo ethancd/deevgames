@@ -1,0 +1,79 @@
+{
+  "status": "completed",
+  "model": "gemini-3.8-flash",
+  "sources": [
+    {
+      "label": "A",
+      "title": "Fire E",
+      "path": "music-auditions/round-1/hono-lantern-elevenlabs-take-1.mp3",
+      "sha256": "23f884a433f92a37b9060bc2db25e4a32dc7008e095c1809e72ef67cb198b93f"
+    },
+    {
+      "label": "B",
+      "title": "Plant 01A",
+      "path": "music-auditions/round-2/muju-field-elevenlabs-take-1.mp3",
+      "sha256": "dbd9762a14b259cdf261447810e7a52daaf92e82dfb6fb0aaff984f2761a21c6"
+    },
+    {
+      "label": "C",
+      "title": "Shadow 02A",
+      "path": "music-auditions/round-2/golge-square-elevenlabs-take-1.mp3",
+      "sha256": "242673e6e0eecd732b2c85ad1eb77f551d54023b4e3c77aa12ff2b3eb2644795"
+    },
+    {
+      "label": "D",
+      "title": "Metal 10A",
+      "path": "music-auditions/round-4/tanka-pressure-elevenlabs-take-1.mp3",
+      "sha256": "0d8ad3968201bc8e9c6e8ca7e582ce6c4cf0516656bda70fd2b5e9e964508600"
+    },
+    {
+      "label": "E",
+      "title": "Water 13B",
+      "path": "music-auditions/round-5/straumr-arco-elevenlabs-take-2.mp3",
+      "sha256": "a7b902059a1d5a7d95c5560238d4e85f2fdc35bdc3bd3afdf5d17df0f782a3d6"
+    }
+  ],
+  "prompt": "Listen to the five attached instrumental music clips, labeled A through E. Their titles and generation prompts are deliberately withheld. Describe what is AUDIBLY present, not what an imagined brief might intend. Do not identify a specific ethnic instrument from a generic synthetic pluck, or infer a culture from mood alone. Distinguish confident instrument families from uncertain exact instruments. No listening claims without the audio; if you cannot access audio, say so.\nReturn a JSON object with a clips array. For each clip give: label; audible_texture (under 65 words); rhythm_and_melodic_behavior (under 65 words); cultural_associations (array of objects with association, specific_audible_evidence, confidence low/medium/high; empty array if none defensible); generic_alternatives; audible_vocals boolean; two short timestamped_observations with MM:SS. Do not force a cultural association or a one-to-one mapping between clips and cultures. These are modern synthetic game cues, so \"not culturally specific\" is a valid and useful conclusion. Maximum 1100 words total.",
+  "max_output_tokens": 5000,
+  "http_status": 200,
+  "usage": {
+    "total_tokens": 6946,
+    "total_input_tokens": 5494,
+    "input_tokens_by_modality": [
+      {
+        "modality": "audio",
+        "tokens": 5255
+      },
+      {
+        "modality": "text",
+        "tokens": 239
+      }
+    ],
+    "total_cached_tokens": 0,
+    "total_output_tokens": 1452,
+    "total_tool_use_tokens": 0,
+    "total_thought_tokens": 0,
+    "raw_prompt_token": 7030,
+    "model_invocation_token_counts": [
+      {
+        "prompt_tokens_details": [
+          {
+            "modality": "text",
+            "tokens": 700
+          },
+          {
+            "modality": "audio",
+            "tokens": 5255
+          }
+        ],
+        "candidates_tokens_details": [
+          {
+            "modality": "text",
+            "tokens": 1456
+          }
+        ]
+      }
+    ]
+  },
+  "result_file": "blind-review-result.txt"
+}

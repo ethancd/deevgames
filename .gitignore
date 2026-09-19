@@ -48,3 +48,7 @@ forge-ai/
 # and ARE repo content (docs/hard-ai/e2/E2.2-COVERAGE-TRACE.md).
 !muju/lab/hard-ai/coverage/
 !muju/lab/results/hard-ai-e2/coverage/
+
+# Python bytecode cache
+__pycache__/
+*.pyc

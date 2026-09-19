@@ -1,0 +1,11 @@
+set -e
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/0e14cf259eddc8ae334c68ec640f499c -o outputs/online-match-review/0e14cf259eddc8ae334c68ec640f499c-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/0e14cf259eddc8ae334c68ec640f499c/history?after=0&limit=200' -o outputs/online-match-review/0e14cf259eddc8ae334c68ec640f499c-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/bf4899a4e5f529a31936b10006b41ce5 -o outputs/online-match-review/bf4899a4e5f529a31936b10006b41ce5-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/bf4899a4e5f529a31936b10006b41ce5/history?after=0&limit=200' -o outputs/online-match-review/bf4899a4e5f529a31936b10006b41ce5-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/61c6853f1826b358e06cbc02b289b0f3 -o outputs/online-match-review/61c6853f1826b358e06cbc02b289b0f3-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/61c6853f1826b358e06cbc02b289b0f3/history?after=0&limit=200' -o outputs/online-match-review/61c6853f1826b358e06cbc02b289b0f3-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/730c4576533e31b003069d06ad2d8aec -o outputs/online-match-review/730c4576533e31b003069d06ad2d8aec-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/730c4576533e31b003069d06ad2d8aec/history?after=0&limit=200' -o outputs/online-match-review/730c4576533e31b003069d06ad2d8aec-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/dbdf02e15688c80cc63286f1f68c20df -o outputs/online-match-review/dbdf02e15688c80cc63286f1f68c20df-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/dbdf02e15688c80cc63286f1f68c20df/history?after=0&limit=200' -o outputs/online-match-review/dbdf02e15688c80cc63286f1f68c20df-history.json

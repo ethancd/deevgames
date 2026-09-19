@@ -1,0 +1,22 @@
+
+> elemental-tactics@0.1.0 test:e2e
+> playwright test --output=/private/tmp/muju-metal-pages-live e2e/metal.spec.ts e2e/ai-worker.spec.ts
+
+
+Running 9 tests using 2 workers
+
+(node:85701) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:85702) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 e2e/ai-worker.spec.ts:28:1 › menu responds during Hard search; mode switch terminates the old worker (1.3s)
+  ✓  1 e2e/ai-worker.spec.ts:13:1 › built worker loads hashed WASM and performs a coordinated home rescue (2.7s)
+  ✓  3 e2e/ai-worker.spec.ts:43:1 › restart during search cannot dispatch an old result into the new game (1.4s)
+  ✓  4 e2e/ai-worker.spec.ts:53:1 › WASM fetch failure stays in the worker and exposes a usable JS fallback (795ms)
+  ✓  5 e2e/ai-worker.spec.ts:60:1 › pause terminates native computation and resume starts a fresh worker (774ms)
+  ✓  6 e2e/ai-worker.spec.ts:67:1 › Hard worker executes kill, paid move, Cleave to clear home (2.6s)
+  ✓  8 e2e/metal.spec.ts:5:33 › Yan's stationary moves, stats and adjacent attack at 1280px (1.2s)
+  ✓  9 e2e/metal.spec.ts:5:33 › Yan's stationary moves, stats and adjacent attack at 390px (981ms)
+  ✓  7 e2e/ai-worker.spec.ts:83:1 › Hard worker spends its fourth action on a capture before handing the turn back (10.8s)
+
+  9 passed (15.4s)

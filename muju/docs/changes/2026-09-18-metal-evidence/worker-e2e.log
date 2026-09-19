@@ -1,0 +1,20 @@
+
+> elemental-tactics@0.1.0 test:e2e
+> playwright test e2e/ai-worker.spec.ts
+
+
+Running 7 tests using 2 workers
+
+(node:51637) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:51636) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 e2e/ai-worker.spec.ts:13:1 › built worker loads hashed WASM and performs a coordinated home rescue (1.7s)
+  ✓  1 e2e/ai-worker.spec.ts:28:1 › menu responds during Hard search; mode switch terminates the old worker (2.8s)
+  ✓  4 e2e/ai-worker.spec.ts:53:1 › WASM fetch failure stays in the worker and exposes a usable JS fallback (1.3s)
+  ✓  3 e2e/ai-worker.spec.ts:43:1 › restart during search cannot dispatch an old result into the new game (3.2s)
+  ✓  5 e2e/ai-worker.spec.ts:60:1 › pause terminates native computation and resume starts a fresh worker (2.5s)
+  ✓  6 e2e/ai-worker.spec.ts:67:1 › Hard worker executes kill, paid move, Cleave to clear home (2.4s)
+  ✓  7 e2e/ai-worker.spec.ts:83:1 › Hard worker spends its fourth action on a capture before handing the turn back (11.4s)
+
+  7 passed (19.1s)

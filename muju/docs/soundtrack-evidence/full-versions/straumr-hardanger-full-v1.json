@@ -1,0 +1,235 @@
+{
+  "id": "straumr-hardanger",
+  "title": "Straumr / Under the Current",
+  "element": "Water",
+  "source_label": "18A",
+  "source_audio": "music-auditions/round-6/straumr-hardanger-elevenlabs-take-1.mp3",
+  "source_sha256": "8923502c592c54a3b13e154a7983ebc824e8dfc685325d4384180b016bbbe4f1",
+  "description": "A dark bowed current carries the bass melody and slow Hardanger answers through a restrained, continuous arc.",
+  "sections": [
+    "Continue the recognizable bowed-bass melody and slow Hardanger answer with long connected bow strokes. Carry the momentum through the bass harmony, with no additional rhythmic layer.",
+    "Let the Hardanger fiddle give a sustained low-middle-register answer against an open drone while the bowed bass remains melodically present. Change the harmonic depth gradually; maintain continuous throughflow and restrained activity.",
+    "Return clearly to the opening bass melody. The Hardanger resonance overlaps its long phrase endings, while the cello supports a closely related slow counterline. Keep the texture transparent and drumless.",
+    "Let the final bowed phrase settle slowly into E minor. Sustain the low bass and sympathetic-string halo into a soft natural ending, preserving the cold atmosphere without a dramatic swell."
+  ],
+  "duration_seconds": 210,
+  "kept_seconds": 45,
+  "request": {
+    "model_id": "music_v2",
+    "composition_plan": {
+      "chunks": [
+        {
+          "song_id": "hbOQHoRjWT7PAkRxw0lV",
+          "range": {
+            "start_ms": 0,
+            "end_ms": 45000
+          }
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "E minor, internal phrase pace 96 BPM",
+            "entirely drumless throughout",
+            "singing bowed double bass and low cello from the selected recording",
+            "long connected legato melody and slowly moving sustained bass",
+            "lower-middle-register Norwegian Hardanger fiddle with slow double-stops, open-string drone and sympathetic resonance",
+            "dark cool imposing mood with continuous harmonic throughflow",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Continue the recognizable bowed-bass melody and slow Hardanger answer with long connected bow strokes. Carry the momentum through the bass harmony, with no additional rhythmic layer."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "percussion",
+            "ticking",
+            "rhythmic delay",
+            "pulsing sidechain",
+            "fast-note ostinato",
+            "sixteenth notes",
+            "jig",
+            "reel",
+            "high fiddle solo",
+            "cheerful major lift",
+            "large orchestral swell"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "hbOQHoRjWT7PAkRxw0lV",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "xhigh"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "E minor, internal phrase pace 96 BPM",
+            "entirely drumless throughout",
+            "singing bowed double bass and low cello from the selected recording",
+            "long connected legato melody and slowly moving sustained bass",
+            "lower-middle-register Norwegian Hardanger fiddle with slow double-stops, open-string drone and sympathetic resonance",
+            "dark cool imposing mood with continuous harmonic throughflow",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Let the Hardanger fiddle give a sustained low-middle-register answer against an open drone while the bowed bass remains melodically present. Change the harmonic depth gradually; maintain continuous throughflow and restrained activity."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "percussion",
+            "ticking",
+            "rhythmic delay",
+            "pulsing sidechain",
+            "fast-note ostinato",
+            "sixteenth notes",
+            "jig",
+            "reel",
+            "high fiddle solo",
+            "cheerful major lift",
+            "large orchestral swell"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "hbOQHoRjWT7PAkRxw0lV",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "high"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "E minor, internal phrase pace 96 BPM",
+            "entirely drumless throughout",
+            "singing bowed double bass and low cello from the selected recording",
+            "long connected legato melody and slowly moving sustained bass",
+            "lower-middle-register Norwegian Hardanger fiddle with slow double-stops, open-string drone and sympathetic resonance",
+            "dark cool imposing mood with continuous harmonic throughflow",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Return clearly to the opening bass melody. The Hardanger resonance overlaps its long phrase endings, while the cello supports a closely related slow counterline. Keep the texture transparent and drumless."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "percussion",
+            "ticking",
+            "rhythmic delay",
+            "pulsing sidechain",
+            "fast-note ostinato",
+            "sixteenth notes",
+            "jig",
+            "reel",
+            "high fiddle solo",
+            "cheerful major lift",
+            "large orchestral swell"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "hbOQHoRjWT7PAkRxw0lV",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "xhigh"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 30000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "E minor, internal phrase pace 96 BPM",
+            "entirely drumless throughout",
+            "singing bowed double bass and low cello from the selected recording",
+            "long connected legato melody and slowly moving sustained bass",
+            "lower-middle-register Norwegian Hardanger fiddle with slow double-stops, open-string drone and sympathetic resonance",
+            "dark cool imposing mood with continuous harmonic throughflow",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Let the final bowed phrase settle slowly into E minor. Sustain the low bass and sympathetic-string halo into a soft natural ending, preserving the cold atmosphere without a dramatic swell."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "percussion",
+            "ticking",
+            "rhythmic delay",
+            "pulsing sidechain",
+            "fast-note ostinato",
+            "sixteenth notes",
+            "jig",
+            "reel",
+            "high fiddle solo",
+            "cheerful major lift",
+            "large orchestral swell"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "hbOQHoRjWT7PAkRxw0lV",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "high"
+        }
+      ]
+    },
+    "seed": 6142805,
+    "store_for_inpainting": true
+  },
+  "job": "straumr-hardanger-full-v1",
+  "status": "verified",
+  "estimated_usd_at_full_output_rate": 0.525,
+  "audio_file": "straumr-hardanger-full-v1.mp3",
+  "audio_bytes": 5040621,
+  "sha256": "6d2830e4bebdfabe01cf9df5b6b31c49af0f8262cbb224f61d75b101e4270edb",
+  "http_status": 200,
+  "response_headers": {
+    "song-id": "<redacted>",
+    "content-type": "audio/mpeg"
+  },
+  "audio_check": {
+    "decode": "passed",
+    "duration_seconds": 210.0,
+    "rms_amplitude": 0.20341,
+    "rms_dbfs": -13.83,
+    "sample_peak": 0.925974,
+    "listening_review": "pending",
+    "opening_and_body_check": {
+      "method": "Time-aligned short-time magnitude spectra, first 44 seconds; 4 kHz mono, 512-sample Hann window, 128-sample hop",
+      "spectral_cosine_median": 0.985183,
+      "spectral_cosine_mean": 0.979061,
+      "interpretation": "A similarity diagnostic, not proof of identical waveforms or a by-ear assessment. The service reconstructs referenced audio; do not claim bit-exact preservation.",
+      "source_file_hash_unchanged": true,
+      "player_copy_hash_matches": true,
+      "new_body_minimum_5_second_rms": 0.17295,
+      "new_body_5_second_windows_below_minus_60_db": 0
+    }
+  },
+  "elapsed_seconds": 21.63
+}

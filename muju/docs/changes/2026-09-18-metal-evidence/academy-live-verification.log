@@ -1,0 +1,41 @@
+PASS exact video, poster, transcript, and three seek ranges R01
+PASS exact video, poster, transcript, and three seek ranges R03
+PASS exact video, poster, transcript, and three seek ranges R02
+PASS exact video, poster, transcript, and three seek ranges R04
+PASS exact video, poster, transcript, and three seek ranges R06
+PASS exact video, poster, transcript, and three seek ranges R05
+PASS exact video, poster, transcript, and three seek ranges R09
+PASS exact video, poster, transcript, and three seek ranges R07
+PASS exact video, poster, transcript, and three seek ranges R08
+PASS exact video, poster, transcript, and three seek ranges R11
+PASS exact video, poster, transcript, and three seek ranges R10
+PASS exact video, poster, transcript, and three seek ranges R13
+PASS exact video, poster, transcript, and three seek ranges R12
+PASS exact video, poster, transcript, and three seek ranges R15
+PASS exact video, poster, transcript, and three seek ranges R14
+PASS exact video, poster, transcript, and three seek ranges R16
+{
+  "live": "https://ashkie.com/muju-academy/",
+  "episodesVerified": [
+    "R01",
+    "R02",
+    "R03",
+    "R04",
+    "R05",
+    "R06",
+    "R07",
+    "R08",
+    "R09",
+    "R10",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16"
+  ],
+  "musicTracks": 9,
+  "retiredStrategyAssetsVerified": 33,
+  "oldAssetsRedirected": 120,
+  "allChecksPassed": true
+}

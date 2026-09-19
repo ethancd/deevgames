@@ -1,0 +1,20 @@
+{
+  "date": "2026-09-12",
+  "user_authorization": "Approve uploads and extensions",
+  "scope": {
+    "provider": "ElevenLabs",
+    "source_auditions": [
+      "03C",
+      "04C",
+      "05B"
+    ],
+    "source_jobs": [
+      "open-room-elevenlabs-take-3",
+      "unequal-routes-elevenlabs-take-3",
+      "before-dawn-elevenlabs-take-2"
+    ],
+    "target_seconds_each": 210,
+    "estimated_additional_usd": 1.9125
+  },
+  "reason_explicit_confirmation_was_requested": "Automatic approval review required specific permission for these source MP3 uploads."
+}

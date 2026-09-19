@@ -1,0 +1,239 @@
+{
+  "id": "hono-koto",
+  "title": "Hono / Banked Fire",
+  "element": "Fire",
+  "source_label": "14A",
+  "source_audio": "music-auditions/round-6/hono-koto-elevenlabs-take-1.mp3",
+  "source_sha256": "a3267e7c343235253ae88099e2b0f3ec5d1626c5c5d8787fe9ccd2d1229f8fb1",
+  "description": "The koto favorite grows into a warm, unhurried piece with an exposed bent-note passage and a gentle return.",
+  "sections": [
+    "Continue the warm koto hook into a longer answering phrase. Retain the same bass movement and quiet broken beat; make the transition from the kept opening continuous.",
+    "Thin the accompaniment slightly while the koto gives an intimate, exposed version of the same melody. Let a clear post-attack bend ring, with gentle electric-piano support and the pulse still quietly present.",
+    "Return to the opening hook and original groove. A low electric-piano answer adds one new conversational detail, with the same calm energy and no crescendo.",
+    "Give one final familiar koto phrase, settle the harmony softly, then leave time for its natural string decay. A complete gentle ending, no abrupt cutoff."
+  ],
+  "duration_seconds": 197.59020408163266,
+  "kept_seconds": 45,
+  "request": {
+    "model_id": "music_v2",
+    "composition_plan": {
+      "chunks": [
+        {
+          "song_id": "NCYmMi6OYXosr5sgBQuE",
+          "range": {
+            "start_ms": 0,
+            "end_ms": 45000
+          }
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "116 BPM, steady 4/4",
+            "calm intimate warm electronica",
+            "prominent natural Japanese koto, firm pluck and expressive post-attack pitch bend",
+            "rounded electric bass, mellow electric piano, quiet broken-beat drums",
+            "the selected recording's melodic identity, harmony and spacious phrasing",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Continue the warm koto hook into a longer answering phrase. Retain the same bass movement and quiet broken beat; make the transition from the kept opening continuous."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "busy arpeggios",
+            "huge taiko drums",
+            "exposed 8-bit solo",
+            "cartoon mallets"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "NCYmMi6OYXosr5sgBQuE",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "xhigh"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "116 BPM, steady 4/4",
+            "calm intimate warm electronica",
+            "prominent natural Japanese koto, firm pluck and expressive post-attack pitch bend",
+            "rounded electric bass, mellow electric piano, quiet broken-beat drums",
+            "the selected recording's melodic identity, harmony and spacious phrasing",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Thin the accompaniment slightly while the koto gives an intimate, exposed version of the same melody. Let a clear post-attack bend ring, with gentle electric-piano support and the pulse still quietly present."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "busy arpeggios",
+            "huge taiko drums",
+            "exposed 8-bit solo",
+            "cartoon mallets"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "NCYmMi6OYXosr5sgBQuE",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "high"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "116 BPM, steady 4/4",
+            "calm intimate warm electronica",
+            "prominent natural Japanese koto, firm pluck and expressive post-attack pitch bend",
+            "rounded electric bass, mellow electric piano, quiet broken-beat drums",
+            "the selected recording's melodic identity, harmony and spacious phrasing",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Return to the opening hook and original groove. A low electric-piano answer adds one new conversational detail, with the same calm energy and no crescendo."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "busy arpeggios",
+            "huge taiko drums",
+            "exposed 8-bit solo",
+            "cartoon mallets"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "NCYmMi6OYXosr5sgBQuE",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "xhigh"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 30000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "116 BPM, steady 4/4",
+            "calm intimate warm electronica",
+            "prominent natural Japanese koto, firm pluck and expressive post-attack pitch bend",
+            "rounded electric bass, mellow electric piano, quiet broken-beat drums",
+            "the selected recording's melodic identity, harmony and spacious phrasing",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Give one final familiar koto phrase, settle the harmony softly, then leave time for its natural string decay. A complete gentle ending, no abrupt cutoff."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "busy arpeggios",
+            "huge taiko drums",
+            "exposed 8-bit solo",
+            "cartoon mallets"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "NCYmMi6OYXosr5sgBQuE",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "high"
+        }
+      ]
+    },
+    "seed": 6142801,
+    "store_for_inpainting": true
+  },
+  "job": "hono-koto-full-v2-blended",
+  "status": "verified",
+  "estimated_usd_at_full_output_rate": 0.525,
+  "audio_file": "hono-koto-full-v2-blended.mp3",
+  "audio_bytes": 7904653,
+  "sha256": "8681f8c0f31e8147e72ec99ed68d245d7e533124bb8ddf44406a70d65c7f7651",
+  "http_status": 200,
+  "audio_check": {
+    "decode": "passed",
+    "duration_seconds": 197.59020408163266,
+    "rms_amplitude": 0.11856316539296624,
+    "rms_dbfs": -18.52,
+    "sample_peak": 0.9133520722389221,
+    "listening_review": "pending",
+    "pcm_outside_overlap_preserved_before_encoding": true,
+    "transition_gap_check": "passed at 100 ms resolution",
+    "all_join_checks": {
+      "method": "Stereo RMS in 100ms windows, three seconds either side of every composition boundary or repaired overlap midpoint",
+      "joins": [
+        {
+          "join_seconds": 40.345,
+          "longest_below_minus45_db_seconds": 0.0,
+          "minimum_100ms_db": -21.9
+        },
+        {
+          "join_seconds": 77.58,
+          "longest_below_minus45_db_seconds": 0.0,
+          "minimum_100ms_db": -21.7
+        },
+        {
+          "join_seconds": 122.58,
+          "longest_below_minus45_db_seconds": 0.0,
+          "minimum_100ms_db": -22.3
+        },
+        {
+          "join_seconds": 167.58,
+          "longest_below_minus45_db_seconds": 0.0,
+          "minimum_100ms_db": -21.3
+        }
+      ],
+      "no_silence_at_joins": true,
+      "by_ear_review": "pending"
+    }
+  },
+  "elapsed_seconds": 21.97,
+  "review_id": "hono-koto-full-v1",
+  "revision": 2,
+  "source_full_mix": "hono-koto-full-v1.mp3",
+  "source_full_mix_sha256": "a94095cb1dd070bfa4b43166a5bf2fbdf511830f1f0dd2f8613233ff61ab8b06",
+  "processing": "Local PCM edit and 320 kbps MP3 encode; no new generation request.",
+  "transition_preview_seconds": 34.31,
+  "edit": {
+    "out_start": 39.31,
+    "in_start": 51.73,
+    "overlap": 2.07,
+    "reason": "One bar overlap; 12.42-second shift aligns the measured 116 BPM pulse and skips both fade and sparse restart.",
+    "crossfade_curve": "equal power, cosine/sine",
+    "seconds_removed": 12.42,
+    "global_gain_db": 0.0,
+    "original_40_49_longest_below_minus45_db_seconds": 2.3,
+    "repaired_transition_longest_below_minus45_db_seconds": 0.0
+  },
+  "original_generation_response_headers": {
+    "song-id": "<redacted>",
+    "content-type": "audio/mpeg"
+  }
+}

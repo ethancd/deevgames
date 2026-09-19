@@ -1,0 +1,102 @@
+{
+  "tracks": [
+    {
+      "id": "open-room",
+      "title": "Open Room, Lantern On",
+      "category": "Lobby",
+      "duration": 210.0,
+      "file": "../full-versions/open-room-full-v1.mp3",
+      "gain": 0.597175,
+      "color": "#e5bc77",
+      "source_label": "From your pick 03C"
+    },
+    {
+      "id": "hono-koto",
+      "title": "Hono / Banked Fire",
+      "category": "Fire",
+      "duration": 197.59020408163266,
+      "file": "../full-versions/hono-koto-full-v2-blended.mp3",
+      "gain": 0.659328,
+      "color": "#ee9b69",
+      "source_label": "From your pick 14A · blended mix"
+    },
+    {
+      "id": "umeme-held-charge",
+      "title": "Umeme / Held Charge",
+      "category": "Electricity",
+      "duration": 210.0,
+      "file": "../full-versions/umeme-held-charge-full-v1.mp3",
+      "gain": 0.541406,
+      "color": "#e6d877",
+      "source_label": "From your pick 19D"
+    },
+    {
+      "id": "muju-charango",
+      "title": "Muju / A Field of Small Decisions",
+      "category": "Plant",
+      "duration": 193.9330612244898,
+      "file": "../full-versions/muju-charango-full-v2-blended.mp3",
+      "gain": 0.648046,
+      "color": "#91cba0",
+      "source_label": "From your pick 15A · blended mix"
+    },
+    {
+      "id": "tanka-flute",
+      "title": "Tanka / Weight Without Hurry",
+      "category": "Metal",
+      "duration": 198.0081632653061,
+      "file": "../full-versions/tanka-flute-full-v3-low-mid.mp3",
+      "gain": 0.92,
+      "color": "#b8b6d7",
+      "source_label": "From your pick 17A · low-mid passage revision",
+      "review_cues": [
+        {
+          "label": "Check revised passage · 1:59–2:28",
+          "start": 114
+        }
+      ],
+      "cue_help": "Starts at 1:54, five seconds before the affected passage."
+    },
+    {
+      "id": "straumr-hardanger",
+      "title": "Straumr / Under the Current",
+      "category": "Water",
+      "duration": 200.88163265306122,
+      "file": "../full-versions/straumr-hardanger-full-v2-blended.mp3",
+      "gain": 0.380225,
+      "color": "#83bfd2",
+      "source_label": "From your pick 18A · blended mix"
+    },
+    {
+      "id": "golge-baglama",
+      "title": "Gölge / One Square Out of Sight",
+      "category": "Shadow",
+      "duration": 201.43020408163267,
+      "file": "../full-versions/golge-baglama-full-v2-blended.mp3",
+      "gain": 0.446165,
+      "color": "#b89bcc",
+      "source_label": "From your pick 16A · blended mix"
+    },
+    {
+      "id": "unequal-routes",
+      "title": "Unequal Routes",
+      "category": "Match",
+      "duration": 210.0,
+      "file": "../full-versions/unequal-routes-full-v1.mp3",
+      "gain": 0.485939,
+      "color": "#91b9db",
+      "source_label": "From your pick 04C"
+    },
+    {
+      "id": "before-dawn",
+      "title": "Another Game Before Dawn",
+      "category": "Rematch & closer",
+      "duration": 210.0,
+      "file": "../full-versions/before-dawn-full-v1.mp3",
+      "gain": 0.524327,
+      "color": "#e1b6b0",
+      "source_label": "From your pick 05B"
+    }
+  ],
+  "total_seconds": 1831.8432653061225
+}

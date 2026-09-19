@@ -1,0 +1,3550 @@
+{
+  "createdAt": "2026-09-13T02:24:20.242Z",
+  "lastMoveAt": "2026-09-13T02:24:20.242Z",
+  "archivedAt": "2026-09-14T02:24:20.242Z",
+  "invitedPlayer": "black",
+  "id": "99488f4d2a3abfd187a9c88713d13c34",
+  "watchCode": "<redacted>",
+  "revision": 24,
+  "ready": true,
+  "seats": {
+    "white": "Codex",
+    "black": "Claude (Fable)"
+  },
+  "timeControl": {
+    "delaySeconds": 30,
+    "bankSeconds": 600
+  },
+  "clock": {
+    "serverNowMs": 1789696536468,
+    "runningPlayer": null,
+    "turnStartedAtMs": 1789266255033,
+    "deadlineAtMs": null,
+    "delayRemainingMs": 24793,
+    "bankRemainingMs": {
+      "white": 413567,
+      "black": 229047
+    }
+  },
+  "clockPressure": {
+    "sampling": {
+      "window": "all_tracked_completed_turns",
+      "startedAtMs": 1789264765393,
+      "startedRevision": 0,
+      "completeFromGameStart": true,
+      "terminalTurns": "excluded"
+    },
+    "projectionBasis": "if historical pace continues; not turns left in the game",
+    "players": {
+      "white": {
+        "completedTurns": 11,
+        "totalElapsedMs": 511048,
+        "totalBankSpentMs": 186433,
+        "firstTurnStartedAtMs": 1789265072983,
+        "lastTurnCompletedAtMs": 1789266255031,
+        "meanElapsedMs": 46458.90909090909,
+        "meanBankSpentMs": 16948.454545454544,
+        "remainingBankMs": 413567,
+        "projection": {
+          "status": "estimated",
+          "turnsCovered": 24.401457896402462
+        }
+      },
+      "black": {
+        "completedTurns": 10,
+        "totalElapsedMs": 670953,
+        "totalBankSpentMs": 370953,
+        "firstTurnStartedAtMs": 1789265119771,
+        "lastTurnCompletedAtMs": 1789266222896,
+        "meanElapsedMs": 67095.3,
+        "meanBankSpentMs": 37095.3,
+        "remainingBankMs": 229047,
+        "projection": {
+          "status": "estimated",
+          "turnsCovered": 6.1745558062611705
+        }
+      }
+    }
+  },
+  "lastTurnReplay": {
+    "player": "black",
+    "turnNumber": 11,
+    "initialBoard": {
+      "cells": [
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 0
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 1
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 1
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 2
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 3
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 3
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 3
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 4
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 4
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 4
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 5
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 6
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 6
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 7
+            },
+            "resourceLayers": 7
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 7
+            },
+            "resourceLayers": 1
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 7
+            },
+            "resourceLayers": 7
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 8
+            },
+            "resourceLayers": 10
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 8
+            },
+            "resourceLayers": 10
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 8
+            },
+            "resourceLayers": 0
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 9
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 9
+            },
+            "resourceLayers": 0
+          }
+        ]
+      ],
+      "units": [
+        {
+          "id": "white_fire_1_1789264765392_o56et",
+          "definitionId": "fire_2",
+          "owner": "white",
+          "position": {
+            "x": 7,
+            "y": 3
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "white_water_1_1789264765392_0fsvb",
+          "definitionId": "water_1",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "white_plant_1_1789264765392_p0nsj",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "black_plant_1_1789264765392_mg2wq",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-2-0",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 5,
+            "y": 4
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-3-1",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 7,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-4-1",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-4-2",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-5-1",
+          "definitionId": "water_1",
+          "owner": "white",
+          "position": {
+            "x": 7,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-5-2",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 6,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-5-2",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 8,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-6-0",
+          "definitionId": "metal_3",
+          "owner": "white",
+          "position": {
+            "x": 6,
+            "y": 7
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-6-1",
+          "definitionId": "metal_3",
+          "owner": "white",
+          "position": {
+            "x": 8,
+            "y": 5
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-6-3",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 8,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-7-0",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-7-1",
+          "definitionId": "water_1",
+          "owner": "white",
+          "position": {
+            "x": 8,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-9-0",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 5,
+            "y": 5
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-10-0",
+          "definitionId": "fire_2",
+          "owner": "white",
+          "position": {
+            "x": 9,
+            "y": 8
+          },
+          "hasMoved": true,
+          "hasAttacked": true,
+          "lastAttackKilled": true,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": true,
+          "placedThisTurn": false,
+          "attackedThisTurn": [
+            "unit-black-7-1",
+            "unit-black-8-0"
+          ]
+        },
+        {
+          "id": "unit-white-10-1",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 7
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-11-0",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 7
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": true
+        }
+      ],
+      "initialResourceLayers": [
+        10,
+        10,
+        10,
+        0,
+        0,
+        0,
+        4,
+        4,
+        4,
+        4,
+        10,
+        10,
+        4,
+        0,
+        0,
+        0,
+        4,
+        10,
+        10,
+        4,
+        10,
+        4,
+        4,
+        0,
+        0,
+        0,
+        4,
+        10,
+        10,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        10,
+        10,
+        4,
+        0,
+        0,
+        0,
+        4,
+        4,
+        10,
+        4,
+        10,
+        10,
+        4,
+        0,
+        0,
+        0,
+        4,
+        10,
+        10,
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        10,
+        10,
+        10
+      ]
+    },
+    "frames": []
+  },
+  "canUndo": false,
+  "state": {
+    "actionsPerTurn": 4,
+    "phase": "victory",
+    "inactivityPlies": 0,
+    "progressThisTurn": false,
+    "board": {
+      "cells": [
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 0
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 0
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 0
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 1
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 1
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 1
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 2
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 2
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 2
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 3
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 3
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 3
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 3
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 3
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 4
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 4
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 4
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 4
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 4
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 5
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 5
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 5
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 5
+            },
+            "resourceLayers": 2
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 6
+            },
+            "resourceLayers": 8
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 6
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 6
+            },
+            "resourceLayers": 4
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 7
+            },
+            "resourceLayers": 7
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 7
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 7
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 7
+            },
+            "resourceLayers": 1
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 7
+            },
+            "resourceLayers": 7
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 8
+            },
+            "resourceLayers": 10
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 8
+            },
+            "resourceLayers": 10
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 8
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 8
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 8
+            },
+            "resourceLayers": 0
+          }
+        ],
+        [
+          {
+            "position": {
+              "x": 0,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 1,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 2,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 3,
+              "y": 9
+            },
+            "resourceLayers": 4
+          },
+          {
+            "position": {
+              "x": 4,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 5,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 6,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 7,
+              "y": 9
+            },
+            "resourceLayers": 2
+          },
+          {
+            "position": {
+              "x": 8,
+              "y": 9
+            },
+            "resourceLayers": 0
+          },
+          {
+            "position": {
+              "x": 9,
+              "y": 9
+            },
+            "resourceLayers": 0
+          }
+        ]
+      ],
+      "units": [
+        {
+          "id": "white_fire_1_1789264765392_o56et",
+          "definitionId": "fire_2",
+          "owner": "white",
+          "position": {
+            "x": 7,
+            "y": 3
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "white_water_1_1789264765392_0fsvb",
+          "definitionId": "water_1",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "white_plant_1_1789264765392_p0nsj",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "black_plant_1_1789264765392_mg2wq",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 9,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-2-0",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 5,
+            "y": 4
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-3-1",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 7,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-4-1",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-4-2",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-5-1",
+          "definitionId": "water_1",
+          "owner": "white",
+          "position": {
+            "x": 7,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-5-2",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 6,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-black-5-2",
+          "definitionId": "plant_1",
+          "owner": "black",
+          "position": {
+            "x": 8,
+            "y": 9
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-6-0",
+          "definitionId": "metal_3",
+          "owner": "white",
+          "position": {
+            "x": 6,
+            "y": 7
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-6-1",
+          "definitionId": "metal_3",
+          "owner": "white",
+          "position": {
+            "x": 8,
+            "y": 5
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-6-3",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 8,
+            "y": 1
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-7-0",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 0
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-7-1",
+          "definitionId": "water_1",
+          "owner": "white",
+          "position": {
+            "x": 8,
+            "y": 2
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-9-0",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 5,
+            "y": 5
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-10-0",
+          "definitionId": "fire_2",
+          "owner": "white",
+          "position": {
+            "x": 9,
+            "y": 8
+          },
+          "hasMoved": true,
+          "hasAttacked": true,
+          "lastAttackKilled": true,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": true,
+          "placedThisTurn": false,
+          "attackedThisTurn": [
+            "unit-black-7-1",
+            "unit-black-8-0"
+          ]
+        },
+        {
+          "id": "unit-white-10-1",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 1,
+            "y": 7
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": false,
+          "attackedThisTurn": []
+        },
+        {
+          "id": "unit-white-11-0",
+          "definitionId": "plant_1",
+          "owner": "white",
+          "position": {
+            "x": 2,
+            "y": 7
+          },
+          "hasMoved": false,
+          "hasAttacked": false,
+          "lastAttackKilled": false,
+          "canActThisTurn": true,
+          "damageTaken": 0,
+          "promotedThisPlacement": false,
+          "placedThisTurn": true
+        }
+      ],
+      "initialResourceLayers": [
+        10,
+        10,
+        10,
+        0,
+        0,
+        0,
+        4,
+        4,
+        4,
+        4,
+        10,
+        10,
+        4,
+        0,
+        0,
+        0,
+        4,
+        10,
+        10,
+        4,
+        10,
+        4,
+        4,
+        0,
+        0,
+        0,
+        4,
+        10,
+        10,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        8,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        8,
+        4,
+        4,
+        4,
+        4,
+        4,
+        4,
+        10,
+        10,
+        4,
+        0,
+        0,
+        0,
+        4,
+        4,
+        10,
+        4,
+        10,
+        10,
+        4,
+        0,
+        0,
+        0,
+        4,
+        10,
+        10,
+        4,
+        4,
+        4,
+        4,
+        0,
+        0,
+        0,
+        10,
+        10,
+        10
+      ]
+    },
+    "players": {
+      "white": {
+        "id": "white",
+        "resources": 13,
+        "startCorner": {
+          "x": 0,
+          "y": 0
+        },
+        "resourcesGained": 156,
+        "resourcesUpkeep": 16
+      },
+      "black": {
+        "id": "black",
+        "resources": 17,
+        "startCorner": {
+          "x": 9,
+          "y": 9
+        },
+        "resourcesGained": 61,
+        "resourcesUpkeep": 0
+      }
+    },
+    "turn": {
+      "currentPlayer": "black",
+      "phase": "place",
+      "actionsRemaining": 4,
+      "turnNumber": 11
+    },
+    "winner": "white",
+    "selectedUnit": null,
+    "validMoves": [],
+    "validAttacks": [],
+    "lastIncome": {
+      "player": "white",
+      "turnNumber": 11,
+      "total": 11,
+      "takes": [
+        {
+          "unitId": "white_fire_1_1789264765392_o56et",
+          "definitionId": "fire_2",
+          "position": {
+            "x": 7,
+            "y": 3
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "white_water_1_1789264765392_0fsvb",
+          "definitionId": "water_1",
+          "position": {
+            "x": 1,
+            "y": 1
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "white_plant_1_1789264765392_p0nsj",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 0,
+            "y": 2
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-2-0",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 5,
+            "y": 4
+          },
+          "amount": 1
+        },
+        {
+          "unitId": "unit-white-3-1",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 7,
+            "y": 1
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-4-1",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 0,
+            "y": 0
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-4-2",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 2,
+            "y": 0
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-5-1",
+          "definitionId": "water_1",
+          "position": {
+            "x": 7,
+            "y": 2
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-5-2",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 6,
+            "y": 1
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-6-0",
+          "definitionId": "metal_3",
+          "position": {
+            "x": 6,
+            "y": 7
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-6-1",
+          "definitionId": "metal_3",
+          "position": {
+            "x": 8,
+            "y": 5
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-6-3",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 8,
+            "y": 1
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-7-0",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 1,
+            "y": 0
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-7-1",
+          "definitionId": "water_1",
+          "position": {
+            "x": 8,
+            "y": 2
+          },
+          "amount": 2
+        },
+        {
+          "unitId": "unit-white-9-0",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 5,
+            "y": 5
+          },
+          "amount": 2
+        },
+        {
+          "unitId": "unit-white-10-0",
+          "definitionId": "fire_2",
+          "position": {
+            "x": 9,
+            "y": 8
+          },
+          "amount": 0
+        },
+        {
+          "unitId": "unit-white-10-1",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 1,
+            "y": 7
+          },
+          "amount": 3
+        },
+        {
+          "unitId": "unit-white-11-0",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 2,
+            "y": 7
+          },
+          "amount": 3
+        }
+      ]
+    },
+    "upkeepPending": false,
+    "lastUpkeep": {
+      "player": "black",
+      "paid": 0,
+      "released": [],
+      "turnNumber": 11
+    },
+    "victoryReason": "resignation"
+  },
+  "updatedAt": "2026-09-14T02:24:20.242Z",
+  "history": [
+    {
+      "revision": 2,
+      "player": "white",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "white_fire_1_1789264765392_o56et",
+          "to": {
+            "x": 5,
+            "y": 4
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 3,
+      "player": "black",
+      "actions": [
+        {
+          "type": "MOVE",
+          "unitId": "black_fire_1_1789264765392_joqk8",
+          "to": {
+            "x": 9,
+            "y": 9
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789264765392_oiqd8",
+          "to": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 4,
+      "player": "white",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 4,
+            "y": 4
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "white_fire_1_1789264765392_o56et",
+          "to": {
+            "x": 7,
+            "y": 3
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 5,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        },
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789264765392_oiqd8",
+          "to": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "black_fire_1_1789264765392_joqk8",
+          "to": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "black_plant_1_1789264765392_mg2wq",
+          "to": {
+            "x": 9,
+            "y": 9
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 6,
+      "player": "white",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "lightning_1",
+          "position": {
+            "x": 7,
+            "y": 2
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 7,
+            "y": 1
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-3-0",
+          "to": {
+            "x": 7,
+            "y": 9
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-3-0",
+          "targetPosition": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 7,
+      "player": "black",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "water_1",
+          "position": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        },
+        {
+          "type": "MOVE",
+          "unitId": "black_water_1_1789264765392_oiqd8",
+          "to": {
+            "x": 7,
+            "y": 8
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "black_water_1_1789264765392_oiqd8",
+          "targetPosition": {
+            "x": 7,
+            "y": 9
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 8,
+      "player": "white",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 6,
+            "y": 3
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 2,
+            "y": 0
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-4-0",
+          "to": {
+            "x": 6,
+            "y": 8
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-4-0",
+          "targetPosition": {
+            "x": 7,
+            "y": 8
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 9,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-3-1",
+          "to": {
+            "x": 7,
+            "y": 8
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-black-3-1",
+          "targetPosition": {
+            "x": 6,
+            "y": 8
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-3-0",
+          "to": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 10,
+      "player": "white",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "lightning_1",
+          "position": {
+            "x": 6,
+            "y": 3
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "water_1",
+          "position": {
+            "x": 7,
+            "y": 2
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 6,
+            "y": 1
+          }
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-5-0",
+          "to": {
+            "x": 8,
+            "y": 7
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-5-0",
+          "targetPosition": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-5-0",
+          "to": {
+            "x": 8,
+            "y": 4
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 11,
+      "player": "black",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "water_1",
+          "position": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 8,
+            "y": 9
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "water_1",
+          "position": {
+            "x": 7,
+            "y": 9
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-3-1",
+          "to": {
+            "x": 7,
+            "y": 7
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 12,
+      "player": "white",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "metal_1",
+          "position": {
+            "x": 7,
+            "y": 4
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "metal_1",
+          "position": {
+            "x": 8,
+            "y": 3
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "shadow_1",
+          "position": {
+            "x": 6,
+            "y": 4
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 8,
+            "y": 1
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-6-2",
+          "to": {
+            "x": 6,
+            "y": 7
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-6-2",
+          "targetPosition": {
+            "x": 7,
+            "y": 7
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "white_plant_1_1789264765392_p0nsj",
+          "to": {
+            "x": 0,
+            "y": 2
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 13,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-5-0",
+          "to": {
+            "x": 6,
+            "y": 8
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-black-5-0",
+          "targetPosition": {
+            "x": 6,
+            "y": 7
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-5-1",
+          "to": {
+            "x": 9,
+            "y": 7
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 14,
+      "player": "white",
+      "actions": [
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-6-0"
+        },
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-6-1"
+        },
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-5-0"
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "water_1",
+          "position": {
+            "x": 8,
+            "y": 2
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-5-0",
+          "to": {
+            "x": 9,
+            "y": 4
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-6-1",
+          "to": {
+            "x": 8,
+            "y": 5
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-6-0",
+          "to": {
+            "x": 7,
+            "y": 5
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 15,
+      "player": "black",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 7,
+            "y": 8
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-5-1",
+          "to": {
+            "x": 9,
+            "y": 5
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-black-5-1",
+          "targetPosition": {
+            "x": 9,
+            "y": 4
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-5-0",
+          "to": {
+            "x": 6,
+            "y": 9
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 16,
+      "player": "white",
+      "actions": [
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-6-0"
+        },
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-6-1"
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 8,
+            "y": 4
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-6-1",
+          "targetPosition": {
+            "x": 9,
+            "y": 5
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-8-0",
+          "to": {
+            "x": 9,
+            "y": 7
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-8-0",
+          "targetPosition": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 17,
+      "player": "black",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-5-0",
+          "to": {
+            "x": 8,
+            "y": 7
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-black-5-0",
+          "targetPosition": {
+            "x": 9,
+            "y": 7
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 18,
+      "player": "white",
+      "actions": [
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "white_fire_1_1789264765392_o56et"
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 6,
+            "y": 5
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-6-0",
+          "to": {
+            "x": 7,
+            "y": 7
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-6-0",
+          "targetPosition": {
+            "x": 8,
+            "y": 7
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-9-1",
+          "to": {
+            "x": 6,
+            "y": 7
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-2-0",
+          "to": {
+            "x": 5,
+            "y": 4
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 19,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-5-3",
+          "to": {
+            "x": 6,
+            "y": 8
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-black-5-3",
+          "targetPosition": {
+            "x": 6,
+            "y": 7
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 20,
+      "player": "white",
+      "actions": [
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "fire_1",
+          "position": {
+            "x": 7,
+            "y": 6
+          }
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 1,
+            "y": 7
+          }
+        },
+        {
+          "type": "END_PLACE_PHASE"
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-6-0",
+          "to": {
+            "x": 6,
+            "y": 7
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-6-0",
+          "targetPosition": {
+            "x": 6,
+            "y": 8
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-10-0",
+          "to": {
+            "x": 7,
+            "y": 7
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-10-0",
+          "targetPosition": {
+            "x": 7,
+            "y": 8
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 21,
+      "player": "black",
+      "actions": [
+        {
+          "type": "END_PLACE_PHASE"
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-black-7-1",
+          "to": {
+            "x": 8,
+            "y": 7
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 22,
+      "player": "white",
+      "actions": [
+        {
+          "type": "PROMOTE_UNIT",
+          "unitId": "unit-white-10-0"
+        },
+        {
+          "type": "BUY_UNIT",
+          "definitionId": "plant_1",
+          "position": {
+            "x": 2,
+            "y": 7
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-10-0",
+          "targetPosition": {
+            "x": 8,
+            "y": 7
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-10-0",
+          "to": {
+            "x": 8,
+            "y": 8
+          }
+        },
+        {
+          "type": "ATTACK",
+          "unitId": "unit-white-10-0",
+          "targetPosition": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "type": "MOVE",
+          "unitId": "unit-white-10-0",
+          "to": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "type": "END_ACTION_PHASE"
+        }
+      ]
+    },
+    {
+      "revision": 23,
+      "player": "black",
+      "actions": [
+        {
+          "type": "RESIGN"
+        }
+      ]
+    }
+  ]
+}

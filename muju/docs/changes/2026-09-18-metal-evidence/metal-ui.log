@@ -1,0 +1,15 @@
+
+> elemental-tactics@0.1.0 test:e2e
+> playwright test e2e/metal.spec.ts
+
+
+Running 2 tests using 2 workers
+
+(node:52912) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:52911) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 e2e/metal.spec.ts:5:33 › Yan's stationary moves, stats and adjacent attack at 390px (1.0s)
+  ✓  1 e2e/metal.spec.ts:5:33 › Yan's stationary moves, stats and adjacent attack at 1280px (1.1s)
+
+  2 passed (1.8s)

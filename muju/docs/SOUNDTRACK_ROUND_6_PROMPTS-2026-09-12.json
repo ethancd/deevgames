@@ -1,0 +1,658 @@
+{
+  "date": "2026-09-12",
+  "label_offset": 13,
+  "status": "Complete: ten source-conditioned 45-second variants, five original references retained.",
+  "execution": {
+    "cards": [
+      "hono-koto",
+      "muju-charango",
+      "golge-baglama",
+      "tanka-flute",
+      "straumr-hardanger"
+    ],
+    "takes_per_card": 2,
+    "total_audio_requests": 10,
+    "duration_seconds": 45,
+    "total_requested_minutes": 7.5,
+    "reference_uploads": 5,
+    "estimated_generation_usd": 1.125,
+    "estimated_reference_upload_usd": 0.375
+  },
+  "page": {
+    "title": "Cultural accents — Muju soundtrack auditions",
+    "eyebrow": "Muju Hono Tanka · Round six · ElevenLabs",
+    "heading": "Familiar favorites. Clearer accents.",
+    "intro": "Compare each source recording with two variations featuring a prominent cultural instrument. Audio references guide the new performances; exact melody preservation is not guaranteed. Scores assess the written briefs: the automated listening analysis proved inconsistent. Lightning remains in development.",
+    "save_key": "muju-soundtrack-round-six-v1"
+  },
+  "cards": [
+    {
+      "id": "hono-koto",
+      "title": "Hono / Banked Fire",
+      "direction": "Fire · Japanese koto",
+      "bpm": 116,
+      "source_round": 1,
+      "source_job": "hono-lantern-elevenlabs-take-1",
+      "source_label": "E",
+      "description": "The calm Fire take, with an exposed koto phrase and an unmistakable bend after its held note.",
+      "sources": [
+        "https://www.senzoku-online.jp/TMDL/e/01-koto.html",
+        "https://museostrumentimusicali.cultura.gov.it/strum/koto-cetra-2/"
+      ],
+      "source_audio": "music-auditions/round-1/hono-lantern-elevenlabs-take-1.mp3",
+      "source_sha256": "23f884a433f92a37b9060bc2db25e4a32dc7008e095c1809e72ef67cb198b93f",
+      "listen_for": "A prominent natural Japanese koto carries the existing lead contour. Hear its firm plucked attack, resonant string decay, and a clear left-hand pitch bend AFTER the held note begins. Expose one short solo koto phrase, then bring the same koto hook back into the original warm groove. The acoustic gesture must be clearly audible rather than buried as a decorative texture.",
+      "take_names": {
+        "1": "Koto at the hearth",
+        "2": "The bent-note reply"
+      },
+      "conditioning": "Audio reference from the selected source; high / xhigh adherence. New compositions, not exact audio edits.",
+      "providers": {
+        "elevenlabs": {
+          "url": "https://api.elevenlabs.io/v1/music",
+          "take_bodies": {
+            "1": {
+              "model_id": "music_v2",
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 45000,
+                    "positive_styles": [
+                      "entirely instrumental, no voices",
+                      "116 BPM, steady 4/4",
+                      "calm intimate warm electronica",
+                      "rounded electric bass and mellow electric piano",
+                      "quiet broken-beat drums",
+                      "the source recording's melodic contour and low reply",
+                      "room around every phrase",
+                      "closely retain the reference arrangement, melodic contour, harmony, bass movement and sound",
+                      "A prominent natural Japanese koto carries the existing lead contour. Hear its firm plucked attack, resonant string decay, and a clear left-hand pitch bend AFTER the held note begins. Expose one short solo koto phrase, then bring the same koto hook back into the original warm groove. The acoustic gesture must be clearly audible rather than buried as a decorative texture.",
+                      "the named cultural instrument is a prominent musical voice, audible in the first phrase and at the return",
+                      "comfortable treble, clear mix, suitable for repeated background listening"
+                    ],
+                    "negative_styles": [
+                      "vocals",
+                      "speech",
+                      "chanting",
+                      "humming",
+                      "choir",
+                      "huge drop",
+                      "cartoon xylophone",
+                      "busy arpeggios",
+                      "exposed 8-bit lead",
+                      "huge taiko drums"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "GtplWYRd9ayGWGzU9nK0_upload",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 30000
+                      }
+                    },
+                    "condition_strength": "high"
+                  }
+                ]
+              },
+              "seed": 6142701,
+              "store_for_inpainting": true
+            },
+            "2": {
+              "model_id": "music_v2",
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 45000,
+                    "positive_styles": [
+                      "entirely instrumental, no voices",
+                      "116 BPM, steady 4/4",
+                      "calm intimate warm electronica",
+                      "rounded electric bass and mellow electric piano",
+                      "quiet broken-beat drums",
+                      "the source recording's melodic contour and low reply",
+                      "room around every phrase",
+                      "closely retain the reference arrangement, melodic contour, harmony, bass movement and sound",
+                      "Keep most of the melody on the original lead, but let a foreground koto take over every answering phrase. Give its held reply a slow expressive post-attack bend and return to the same rounded bass.",
+                      "the named cultural instrument is a prominent musical voice, audible in the first phrase and at the return",
+                      "comfortable treble, clear mix, suitable for repeated background listening"
+                    ],
+                    "negative_styles": [
+                      "vocals",
+                      "speech",
+                      "chanting",
+                      "humming",
+                      "choir",
+                      "huge drop",
+                      "cartoon xylophone",
+                      "busy arpeggios",
+                      "exposed 8-bit lead",
+                      "huge taiko drums"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "GtplWYRd9ayGWGzU9nK0_upload",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 30000
+                      }
+                    },
+                    "condition_strength": "xhigh"
+                  }
+                ]
+              },
+              "seed": 6142702,
+              "store_for_inpainting": true
+            }
+          }
+        }
+      },
+      "assessment": "Cultural grounding in the source brief: 3/5. Japanese koto pluck-and-bend phrasing was requested; the new accent puts it clearly in front. These are brief-based scores, not verified listening ratings."
+    },
+    {
+      "id": "muju-charango",
+      "title": "Muju / A Field of Small Decisions",
+      "direction": "Plant · Andean huayno",
+      "bpm": 108,
+      "source_round": 2,
+      "source_job": "muju-field-elevenlabs-take-1",
+      "source_label": "01A",
+      "description": "Keep the springy Plant groove; let ringing charango and the huayno long-short-short accent come forward.",
+      "sources": [
+        "https://clas.osu.edu/andean-music-teacher-guide",
+        "https://folkways.si.edu/playlist/a-field-guide-to-peru"
+      ],
+      "source_audio": "music-auditions/round-2/muju-field-elevenlabs-take-1.mp3",
+      "source_sha256": "dbd9762a14b259cdf261447810e7a52daaf92e82dfb6fb0aaff984f2761a21c6",
+      "listen_for": "Foreground a natural Andean charango with its bright paired-string shimmer and recognizable crisp strummed long-short-short huayno accent. Alternate the notes of the main tune between the charango and a lower Andean harp-like pluck. The charango should be unmistakable and confident while the original springy bass stays intact.",
+      "take_names": {
+        "1": "Charango in the sun",
+        "2": "Charango and harp conversation"
+      },
+      "conditioning": "Audio reference from the selected source; high / xhigh adherence. New compositions, not exact audio edits.",
+      "providers": {
+        "elevenlabs": {
+          "url": "https://api.elevenlabs.io/v1/music",
+          "take_bodies": {
+            "1": {
+              "model_id": "music_v2",
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 45000,
+                    "positive_styles": [
+                      "entirely instrumental, no voices",
+                      "108 BPM in duple meter",
+                      "the source's springy buoyant bass and harmonic movement",
+                      "warm plucked call and reply",
+                      "gentle electronic accompaniment",
+                      "clear complete memorable melody",
+                      "closely retain the reference arrangement, melodic contour, harmony, bass movement and sound",
+                      "Foreground a natural Andean charango with its bright paired-string shimmer and recognizable crisp strummed long-short-short huayno accent. Alternate the notes of the main tune between the charango and a lower Andean harp-like pluck. The charango should be unmistakable and confident while the original springy bass stays intact.",
+                      "the named cultural instrument is a prominent musical voice, audible in the first phrase and at the return",
+                      "comfortable treble, clear mix, suitable for repeated background listening"
+                    ],
+                    "negative_styles": [
+                      "vocals",
+                      "speech",
+                      "chanting",
+                      "humming",
+                      "choir",
+                      "huge drop",
+                      "panpipe tourism montage",
+                      "pounding festival drums",
+                      "generic ukulele pop",
+                      "cartoon mallets"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "pT4NWps7GKOxvIRgq3pW_upload",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 30000
+                      }
+                    },
+                    "condition_strength": "high"
+                  }
+                ]
+              },
+              "seed": 6142703,
+              "store_for_inpainting": true
+            },
+            "2": {
+              "model_id": "music_v2",
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 45000,
+                    "positive_styles": [
+                      "entirely instrumental, no voices",
+                      "108 BPM in duple meter",
+                      "the source's springy buoyant bass and harmonic movement",
+                      "warm plucked call and reply",
+                      "gentle electronic accompaniment",
+                      "clear complete memorable melody",
+                      "closely retain the reference arrangement, melodic contour, harmony, bass movement and sound",
+                      "Give the charango a bold four-bar statement of the original hook with a restrained huayno long-short-short strum under it. A resonant lower harp answers whole phrases. Preserve the boingy bass and the source's gentle rhythmic lift.",
+                      "the named cultural instrument is a prominent musical voice, audible in the first phrase and at the return",
+                      "comfortable treble, clear mix, suitable for repeated background listening"
+                    ],
+                    "negative_styles": [
+                      "vocals",
+                      "speech",
+                      "chanting",
+                      "humming",
+                      "choir",
+                      "huge drop",
+                      "panpipe tourism montage",
+                      "pounding festival drums",
+                      "generic ukulele pop",
+                      "cartoon mallets"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "pT4NWps7GKOxvIRgq3pW_upload",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 30000
+                      }
+                    },
+                    "condition_strength": "xhigh"
+                  }
+                ]
+              },
+              "seed": 6142704,
+              "store_for_inpainting": true
+            }
+          }
+        }
+      },
+      "assessment": "Cultural grounding in the source brief: 4/5. Huayno rhythm and interlocking charango/harp ideas survived in the selected brief. These are brief-based scores, not verified listening ratings."
+    },
+    {
+      "id": "golge-baglama",
+      "title": "Gölge / One Square Out of Sight",
+      "direction": "Shadow · Turkish bağlama",
+      "bpm": 112,
+      "source_round": 2,
+      "source_job": "golge-square-elevenlabs-take-1",
+      "source_label": "02A",
+      "description": "Preserve the sly 4/4 groove, with a dry, wiry bağlama taking the melodic foreground.",
+      "sources": [
+        "https://corum.ktb.gov.tr/TR-58740/muzik-kulturu-halk-muziği.html",
+        "https://isparta.ktb.gov.tr/TR-71007/isparta-turkuleri-hakkinda.html"
+      ],
+      "source_audio": "music-auditions/round-2/golge-square-elevenlabs-take-1.mp3",
+      "source_sha256": "242673e6e0eecd732b2c85ad1eb77f551d54023b4e3c77aa12ff2b3eb2644795",
+      "listen_for": "A clearly foregrounded Turkish bağlama saz takes the existing melody: hear the wiry long-necked lute resonance, crisp plectrum attack, expressive hammer-ons and pull-offs, and a short lower-neighbor ornament before the upward leap. Let the bağlama be dry and close, with only its phrase endings echoed. Preserve tonal clarity and the original sly character.",
+      "take_names": {
+        "1": "Bağlama in the doorway",
+        "2": "The saz answers late"
+      },
+      "conditioning": "Audio reference from the selected source; high / xhigh adherence. New compositions, not exact audio edits.",
+      "providers": {
+        "elevenlabs": {
+          "url": "https://api.elevenlabs.io/v1/music",
+          "take_bodies": {
+            "1": {
+              "model_id": "music_v2",
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 45000,
+                    "positive_styles": [
+                      "entirely instrumental, no voices",
+                      "112 BPM, retain 4/4",
+                      "the source's sly restrained tonal mood",
+                      "supple deep bass and quiet skipping groove",
+                      "low clarinet answers",
+                      "same short recurring hook and spacious phrasing",
+                      "closely retain the reference arrangement, melodic contour, harmony, bass movement and sound",
+                      "A clearly foregrounded Turkish bağlama saz takes the existing melody: hear the wiry long-necked lute resonance, crisp plectrum attack, expressive hammer-ons and pull-offs, and a short lower-neighbor ornament before the upward leap. Let the bağlama be dry and close, with only its phrase endings echoed. Preserve tonal clarity and the original sly character.",
+                      "the named cultural instrument is a prominent musical voice, audible in the first phrase and at the return",
+                      "comfortable treble, clear mix, suitable for repeated background listening"
+                    ],
+                    "negative_styles": [
+                      "vocals",
+                      "speech",
+                      "chanting",
+                      "humming",
+                      "choir",
+                      "huge drop",
+                      "atonal solo",
+                      "bright cheerful lift",
+                      "snake-charmer caricature",
+                      "new time signature",
+                      "busy continuous ornaments"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "fZPb8nUKeyzv8Kr42RFK_upload",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 30000
+                      }
+                    },
+                    "condition_strength": "high"
+                  }
+                ]
+              },
+              "seed": 6142705,
+              "store_for_inpainting": true
+            },
+            "2": {
+              "model_id": "music_v2",
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 45000,
+                    "positive_styles": [
+                      "entirely instrumental, no voices",
+                      "112 BPM, retain 4/4",
+                      "the source's sly restrained tonal mood",
+                      "supple deep bass and quiet skipping groove",
+                      "low clarinet answers",
+                      "same short recurring hook and spacious phrasing",
+                      "closely retain the reference arrangement, melodic contour, harmony, bass movement and sound",
+                      "Make a dry solo bağlama statement audible at the start and again at the return. It trades the source hook with the low clarinet, using brief characteristic picked ornaments around held melody notes. Preserve the original 4/4 groove throughout.",
+                      "the named cultural instrument is a prominent musical voice, audible in the first phrase and at the return",
+                      "comfortable treble, clear mix, suitable for repeated background listening"
+                    ],
+                    "negative_styles": [
+                      "vocals",
+                      "speech",
+                      "chanting",
+                      "humming",
+                      "choir",
+                      "huge drop",
+                      "atonal solo",
+                      "bright cheerful lift",
+                      "snake-charmer caricature",
+                      "new time signature",
+                      "busy continuous ornaments"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "fZPb8nUKeyzv8Kr42RFK_upload",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 30000
+                      }
+                    },
+                    "condition_strength": "xhigh"
+                  }
+                ]
+              },
+              "seed": 6142706,
+              "store_for_inpainting": true
+            }
+          }
+        }
+      },
+      "assessment": "Cultural grounding in the source brief: 3/5. Bağlama ornaments survived; the original optional 9/8 idea was replaced with 4/4. These are brief-based scores, not verified listening ratings."
+    },
+    {
+      "id": "tanka-flute",
+      "title": "Tanka / Weight Without Hurry",
+      "direction": "Metal · Lakota/Dakota flute connection",
+      "bpm": 80,
+      "source_round": 4,
+      "source_job": "tanka-pressure-elevenlabs-take-1",
+      "source_label": "10A",
+      "description": "Keep Metal’s held weight; a clear wooden-flute voice traces the broad descending melody over a sparse deep drum.",
+      "sources": [
+        "https://www.arts.gov/honors/heritage/kevin-locke",
+        "https://folkways.si.edu/lakota-drumming/american-indian/music/video/smithsonian",
+        "https://www.loc.gov/collections/songs-of-america/articles-and-essays/musical-styles/american-indian-and-native-alaskan/"
+      ],
+      "source_audio": "music-auditions/round-4/tanka-pressure-elevenlabs-take-1.mp3",
+      "source_sha256": "0d8ad3968201bc8e9c6e8ca7e582ce6c4cf0516656bda70fd2b5e9e964508600",
+      "listen_for": "Add a foreground solo traditional wooden Plains flute as an instrumental connection to the Lakota/Dakota flute tradition. Give it an original broad descending phrase with a high opening, long unhurried tones, and a repeated low landing. The tone is clear, rounded and breath-shaped, with restrained natural vibrato. Keep the existing dark sustained synth underneath and the deep drum very sparse. The flute adds a distinct human voice to the source's weight without making it pastoral.",
+      "take_names": {
+        "1": "Wooden flute over held weight",
+        "2": "Drum and descending breath"
+      },
+      "conditioning": "Audio reference from the selected source; high / xhigh adherence. New compositions, not exact audio edits.",
+      "providers": {
+        "elevenlabs": {
+          "url": "https://api.elevenlabs.io/v1/music",
+          "take_bodies": {
+            "1": {
+              "model_id": "music_v2",
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 45000,
+                    "positive_styles": [
+                      "entirely instrumental, no voices",
+                      "80 BPM, straight 4/4",
+                      "the source's slow held weight and long suspensions",
+                      "whole-note bass and generous silence",
+                      "dark bronze resonance",
+                      "descending melody with repeated low landing",
+                      "sparse low drum, at most beats one and three",
+                      "closely retain the reference arrangement, melodic contour, harmony, bass movement and sound",
+                      "Add a foreground solo traditional wooden Plains flute as an instrumental connection to the Lakota/Dakota flute tradition. Give it an original broad descending phrase with a high opening, long unhurried tones, and a repeated low landing. The tone is clear, rounded and breath-shaped, with restrained natural vibrato. Keep the existing dark sustained synth underneath and the deep drum very sparse. The flute adds a distinct human voice to the source's weight without making it pastoral.",
+                      "the named cultural instrument is a prominent musical voice, audible in the first phrase and at the return",
+                      "comfortable treble, clear mix, suitable for repeated background listening"
+                    ],
+                    "negative_styles": [
+                      "vocals",
+                      "speech",
+                      "chanting",
+                      "humming",
+                      "choir",
+                      "huge drop",
+                      "generic new-age relaxation",
+                      "pastoral flute runs",
+                      "eighth-note groove",
+                      "tresillo",
+                      "chant imitation",
+                      "ceremonial-song quotation"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "WF7kp5q9egw4hnRNpheu_upload",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 30000
+                      }
+                    },
+                    "condition_strength": "high"
+                  }
+                ]
+              },
+              "seed": 6142707,
+              "store_for_inpainting": true
+            },
+            "2": {
+              "model_id": "music_v2",
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 45000,
+                    "positive_styles": [
+                      "entirely instrumental, no voices",
+                      "80 BPM, straight 4/4",
+                      "the source's slow held weight and long suspensions",
+                      "whole-note bass and generous silence",
+                      "dark bronze resonance",
+                      "descending melody with repeated low landing",
+                      "sparse low drum, at most beats one and three",
+                      "closely retain the reference arrangement, melodic contour, harmony, bass movement and sound",
+                      "Make the low acoustic drum more physically present on beat one, with long silence after each stroke. A rounded wooden Plains flute gives the source's descending motif in half notes and whole notes over the same dark bronze sustain. Preserve the pressure, register contrast and delayed resolution.",
+                      "the named cultural instrument is a prominent musical voice, audible in the first phrase and at the return",
+                      "comfortable treble, clear mix, suitable for repeated background listening"
+                    ],
+                    "negative_styles": [
+                      "vocals",
+                      "speech",
+                      "chanting",
+                      "humming",
+                      "choir",
+                      "huge drop",
+                      "generic new-age relaxation",
+                      "pastoral flute runs",
+                      "eighth-note groove",
+                      "tresillo",
+                      "chant imitation",
+                      "ceremonial-song quotation"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "WF7kp5q9egw4hnRNpheu_upload",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 30000
+                      }
+                    },
+                    "condition_strength": "xhigh"
+                  }
+                ]
+              },
+              "seed": 6142708,
+              "store_for_inpainting": true
+            }
+          }
+        }
+      },
+      "assessment": "Cultural grounding in the source brief: 1/5. Drum weight and descending contour alone are nonspecific. The new wooden-flute accent adds a documented Lakota/Dakota connection. These are brief-based scores, not verified listening ratings."
+    },
+    {
+      "id": "straumr-hardanger",
+      "title": "Straumr / Under the Current",
+      "direction": "Water · Norwegian Hardanger resonance",
+      "bpm": 96,
+      "source_round": 5,
+      "source_job": "straumr-arco-elevenlabs-take-2",
+      "source_label": "13B",
+      "description": "Keep the dark bowed-bass melody; a slow Hardanger-fiddle answer adds open-string drone and lingering sympathetic resonance.",
+      "sources": [
+        "https://folkways-media.si.edu/docs/folkways/artwork/FW04008.pdf"
+      ],
+      "source_audio": "music-auditions/round-5/straumr-arco-elevenlabs-take-2.mp3",
+      "source_sha256": "a7b902059a1d5a7d95c5560238d4e85f2fdc35bdc3bd3afdf5d17df0f782a3d6",
+      "listen_for": "Add a clearly audible Norwegian Hardanger fiddle in its lower and middle register, playing a slow, sustained answer to the source bass melody. Feature bowed double-stops against an open-string drone and the halo of sympathetic strings ringing after the bow moves on. Give the fiddle one exposed long answering phrase, then weave its resonance around the existing bowed bass. Use long bows with no dance rhythm or rapid ornaments.",
+      "take_names": {
+        "1": "Hardanger undercurrent",
+        "2": "The ringing double-stop"
+      },
+      "conditioning": "Audio reference from the selected source; high / xhigh adherence. New compositions, not exact audio edits.",
+      "providers": {
+        "elevenlabs": {
+          "url": "https://api.elevenlabs.io/v1/music",
+          "take_bodies": {
+            "1": {
+              "model_id": "music_v2",
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 45000,
+                    "positive_styles": [
+                      "original entirely instrumental chamber-electronic music",
+                      "variation on my own supplied generated recording, keeping its slow harmonic motion and connected bass melody",
+                      "96 BPM internal phrasing, E minor, flowing 4/4 without any percussion",
+                      "singing bowed double bass and low cello remain the foreground melody",
+                      "dark cool mood, rich low strings, long connected bow strokes",
+                      "add one prominent acoustic Norwegian Hardanger fiddle in low and middle register",
+                      "the new fiddle answers the bass in long notes with open-string drone and resonant bowed double-stops",
+                      "sympathetic strings ring audibly into the next phrase",
+                      "retain the supplied recording's shape and dynamics while giving the new fiddle an exposed sustained answering phrase",
+                      "clear controlled low end, comfortable treble, original melodic material"
+                    ],
+                    "negative_styles": [
+                      "vocals",
+                      "speech",
+                      "singing",
+                      "chanting",
+                      "choir",
+                      "percussion",
+                      "clicks",
+                      "drum machine",
+                      "fast repeated notes",
+                      "jig",
+                      "reel",
+                      "cheerful pastoral mood",
+                      "huge orchestral swell"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "aHMefgzQjPqKuwizUXtz_upload",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 30000
+                      }
+                    },
+                    "condition_strength": "high"
+                  }
+                ]
+              },
+              "seed": 6142709,
+              "store_for_inpainting": true
+            },
+            "2": {
+              "model_id": "music_v2",
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 45000,
+                    "positive_styles": [
+                      "original entirely instrumental chamber-electronic music",
+                      "variation on my own supplied generated recording, keeping its slow harmonic motion and connected bass melody",
+                      "96 BPM internal phrasing, E minor, flowing 4/4 without any percussion",
+                      "singing bowed double bass and low cello remain the foreground melody",
+                      "dark cool mood, rich low strings, long connected bow strokes",
+                      "add one prominent acoustic Norwegian Hardanger fiddle in low and middle register",
+                      "the new fiddle answers the bass in long notes with open-string drone and resonant bowed double-stops",
+                      "sympathetic strings ring audibly into the next phrase",
+                      "retain the supplied recording's shape and dynamics while giving the new fiddle an exposed sustained answering phrase",
+                      "clear controlled low end, comfortable treble, original melodic material",
+                      "Give the new fiddle a clearly heard sustained double-stop at the opening, then answer the bass's returning melody with the same ringing tone"
+                    ],
+                    "negative_styles": [
+                      "vocals",
+                      "speech",
+                      "singing",
+                      "chanting",
+                      "choir",
+                      "percussion",
+                      "clicks",
+                      "drum machine",
+                      "fast repeated notes",
+                      "jig",
+                      "reel",
+                      "cheerful pastoral mood",
+                      "huge orchestral swell"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "aHMefgzQjPqKuwizUXtz_upload",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 30000
+                      }
+                    },
+                    "condition_strength": "xhigh"
+                  }
+                ]
+              },
+              "seed": 6142710,
+              "store_for_inpainting": true
+            }
+          }
+        }
+      },
+      "assessment": "Cultural grounding in the source brief: 1/5. Cello and bowed bass retained the mood, with only an abstract trace of Norwegian sympathetic resonance. These are brief-based scores, not verified listening ratings."
+    }
+  ],
+  "revision_note": "Water A received explicit HTTP 400 copyrighted_material_detected. Revised both Water briefs to state the owned-source context and original composition, removed cinematic references, retained the requested instrument and source conditioning. One revised retry only."
+}

@@ -1,0 +1,237 @@
+{
+  "id": "open-room",
+  "title": "Open Room, Lantern On",
+  "element": "Lobby",
+  "source_label": "03C",
+  "source_audio": "music-auditions/round-2/open-room-elevenlabs-take-3.mp3",
+  "source_sha256": "1bc05c85dc1113b2d21785a16f49376243ba5257b1ad517a6f5da7f9b4ede6d0",
+  "description": "The welcoming piano-and-guitar favorite opens into a longer, companionable groove.",
+  "source_requires_upload": true,
+  "sections": [
+    "Continue directly from the active source phrase at full musical level, keeping the same piano melody and patient guitar reply. Extend the bass conversation without a restart, fade, silence or new intro at the join.",
+    "Give the piano a lyrical related phrase over a small wistful minor-chord turn, then guide it back to the original warm harmony. Guitar answers patiently and the elastic bass maintains a living pulse.",
+    "Return to the recognizable opening hook with one complementary guitar response and the original bass movement. Let a held analog-synth answer make the room feel wider; keep the drums understated and the volume steady.",
+    "Give a final warm piano-and-guitar exchange over the moving bass. Resolve gently with a small smile, letting the groove relax only in the last few seconds. No triumphant finale."
+  ],
+  "duration_seconds": 210,
+  "kept_seconds": 38.0,
+  "request": {
+    "model_id": "music_v2",
+    "composition_plan": {
+      "chunks": [
+        {
+          "song_id": "YumiBZB9jpvJWsigu7dR_upload",
+          "range": {
+            "start_ms": 0,
+            "end_ms": 38000
+          }
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "116 BPM, retain the source 4/4 pulse",
+            "welcoming melodic electronica, warm major-sixth colors and gently resolving suspended chords",
+            "the selected source melody: lyrical electric piano question and patient muted clean-guitar answer",
+            "elastic tuneful electric bass with a gentle almost-disco bounce",
+            "dry understated drums, warm kick, quiet rim and tiny closed-hat accents",
+            "rounded analog synth that supports held answers, clear mix and comfortable treble",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Continue directly from the active source phrase at full musical level, keeping the same piano melody and patient guitar reply. Extend the bass conversation without a restart, fade, silence or new intro at the join."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "exposed 8-bit solo",
+            "continuous arpeggios",
+            "cartoon mallets",
+            "vinyl crackle",
+            "piercing cymbals",
+            "loud drum build",
+            "empty ambient drift"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "YumiBZB9jpvJWsigu7dR_upload",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 38000
+            }
+          },
+          "condition_strength": "xhigh"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "116 BPM, retain the source 4/4 pulse",
+            "welcoming melodic electronica, warm major-sixth colors and gently resolving suspended chords",
+            "the selected source melody: lyrical electric piano question and patient muted clean-guitar answer",
+            "elastic tuneful electric bass with a gentle almost-disco bounce",
+            "dry understated drums, warm kick, quiet rim and tiny closed-hat accents",
+            "rounded analog synth that supports held answers, clear mix and comfortable treble",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Give the piano a lyrical related phrase over a small wistful minor-chord turn, then guide it back to the original warm harmony. Guitar answers patiently and the elastic bass maintains a living pulse."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "exposed 8-bit solo",
+            "continuous arpeggios",
+            "cartoon mallets",
+            "vinyl crackle",
+            "piercing cymbals",
+            "loud drum build",
+            "empty ambient drift"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "YumiBZB9jpvJWsigu7dR_upload",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 38000
+            }
+          },
+          "condition_strength": "high"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 52000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "116 BPM, retain the source 4/4 pulse",
+            "welcoming melodic electronica, warm major-sixth colors and gently resolving suspended chords",
+            "the selected source melody: lyrical electric piano question and patient muted clean-guitar answer",
+            "elastic tuneful electric bass with a gentle almost-disco bounce",
+            "dry understated drums, warm kick, quiet rim and tiny closed-hat accents",
+            "rounded analog synth that supports held answers, clear mix and comfortable treble",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Return to the recognizable opening hook with one complementary guitar response and the original bass movement. Let a held analog-synth answer make the room feel wider; keep the drums understated and the volume steady."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "exposed 8-bit solo",
+            "continuous arpeggios",
+            "cartoon mallets",
+            "vinyl crackle",
+            "piercing cymbals",
+            "loud drum build",
+            "empty ambient drift"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "YumiBZB9jpvJWsigu7dR_upload",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 38000
+            }
+          },
+          "condition_strength": "xhigh"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 30000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "116 BPM, retain the source 4/4 pulse",
+            "welcoming melodic electronica, warm major-sixth colors and gently resolving suspended chords",
+            "the selected source melody: lyrical electric piano question and patient muted clean-guitar answer",
+            "elastic tuneful electric bass with a gentle almost-disco bounce",
+            "dry understated drums, warm kick, quiet rim and tiny closed-hat accents",
+            "rounded analog synth that supports held answers, clear mix and comfortable treble",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Give a final warm piano-and-guitar exchange over the moving bass. Resolve gently with a small smile, letting the groove relax only in the last few seconds. No triumphant finale."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "exposed 8-bit solo",
+            "continuous arpeggios",
+            "cartoon mallets",
+            "vinyl crackle",
+            "piercing cymbals",
+            "loud drum build",
+            "empty ambient drift"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "YumiBZB9jpvJWsigu7dR_upload",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 38000
+            }
+          },
+          "condition_strength": "high"
+        }
+      ]
+    },
+    "seed": 6142807,
+    "store_for_inpainting": true
+  },
+  "job": "open-room-full-v1",
+  "status": "verified",
+  "estimated_usd_at_full_output_rate": 0.525,
+  "audio_file": "open-room-full-v1.mp3",
+  "audio_bytes": 5040621,
+  "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42",
+  "http_status": 200,
+  "response_headers": {
+    "song-id": "<redacted>",
+    "content-type": "audio/mpeg"
+  },
+  "audio_check": {
+    "decode": "passed",
+    "duration_seconds": 210.0,
+    "rms_amplitude": 0.130903,
+    "rms_dbfs": -17.66,
+    "sample_peak": 0.867839,
+    "listening_review": "pending",
+    "all_join_checks": {
+      "method": "Stereo RMS in 100ms windows, three seconds either side of every composition boundary or repaired overlap midpoint",
+      "joins": [
+        {
+          "join_seconds": 38.0,
+          "longest_below_minus45_db_seconds": 0.0,
+          "minimum_100ms_db": -21.7
+        },
+        {
+          "join_seconds": 83.0,
+          "longest_below_minus45_db_seconds": 0.0,
+          "minimum_100ms_db": -22.8
+        },
+        {
+          "join_seconds": 128.0,
+          "longest_below_minus45_db_seconds": 0.0,
+          "minimum_100ms_db": -21.3
+        },
+        {
+          "join_seconds": 180.0,
+          "longest_below_minus45_db_seconds": 0.0,
+          "minimum_100ms_db": -21.3
+        }
+      ],
+      "no_silence_at_joins": true,
+      "by_ear_review": "pending"
+    }
+  },
+  "elapsed_seconds": 24.89
+}

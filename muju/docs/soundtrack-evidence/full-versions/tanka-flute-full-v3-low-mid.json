@@ -1,0 +1,366 @@
+{
+  "id": "tanka-flute",
+  "title": "Tanka / Weight Without Hurry",
+  "element": "Metal",
+  "source_label": "17A",
+  "source_audio": "music-auditions/round-6/tanka-flute-elevenlabs-take-1.mp3",
+  "source_sha256": "1358494bef7202f013c7f523e7fb7daaf8e710a2c2c295264cda1b24bdca026f",
+  "description": "Wooden flute, sparse drum and dark bronze resonance develop through long suspensions and broad descending phrases.",
+  "sections": [
+    "Continue the broad descending flute melody over long bass tones. Let an unresolved harmony hold its weight before the low landing; do not add rhythmic activity.",
+    "Make a quieter but still imposing passage with the same slow flute contour and a subtly deeper bronze harmony. The low pulse stays sparse, and the melody continues in long breath-shaped notes.",
+    "Return to the opening descending melody and original low bass landing. Let the pressure resolve a little later within each phrase; maintain the same slow weight rather than making a climax.",
+    "Give the flute one final broad descending phrase, land on a long low tone and allow bronze resonance to decay. Finish with measured stillness and a clear gentle resolution."
+  ],
+  "duration_seconds": 198.0081632653061,
+  "kept_seconds": 45,
+  "job": "tanka-flute-full-v3-low-mid",
+  "status": "verified",
+  "estimated_usd_at_full_output_rate": 0.525,
+  "audio_file": "tanka-flute-full-v3-low-mid.mp3",
+  "audio_bytes": 7921371,
+  "sha256": "94b0c4739e3f301ef7ac06d55505819fdf521c8f052cfd61d30336383799f8b6",
+  "http_status": 200,
+  "audio_check": {
+    "decode": "passed",
+    "duration_seconds": 198.0081632653061,
+    "rms_amplitude": 0.08496953421001689,
+    "rms_dbfs": -21.41,
+    "sample_peak": 0.594086229801178,
+    "outside_passage_pcm_preserved_before_encoding": true,
+    "new_join_checks": [
+      {
+        "join_seconds": 118,
+        "longest_below_minus45_db_seconds": 0.0
+      },
+      {
+        "join_seconds": 149,
+        "longest_below_minus45_db_seconds": 0.0
+      }
+    ],
+    "passage_levels": [
+      {
+        "range_seconds": [
+          105,
+          117
+        ],
+        "old_rms_dbfs": -20.98,
+        "new_rms_dbfs": -20.98
+      },
+      {
+        "range_seconds": [
+          119,
+          130
+        ],
+        "old_rms_dbfs": -21.65,
+        "new_rms_dbfs": -21.34
+      },
+      {
+        "range_seconds": [
+          130,
+          140
+        ],
+        "old_rms_dbfs": -21.59,
+        "new_rms_dbfs": -21.0
+      },
+      {
+        "range_seconds": [
+          140,
+          148
+        ],
+        "old_rms_dbfs": -23.67,
+        "new_rms_dbfs": -22.4
+      },
+      {
+        "range_seconds": [
+          150,
+          162
+        ],
+        "old_rms_dbfs": -20.81,
+        "new_rms_dbfs": -20.81
+      }
+    ],
+    "listening_review": "pending user review; no subjective listening claim"
+  },
+  "elapsed_seconds": 23.51,
+  "review_id": "tanka-flute-full-v1",
+  "revision": 3,
+  "source_full_mix": "tanka-flute-full-v2-blended.mp3",
+  "source_full_mix_sha256": "952efac275c4eb42e017e6167d5a5aceb16b100144efbd586245bf2c843610f6",
+  "processing": "ElevenLabs targeted inpaint; local replacement of 1:57–2:30; all outside PCM retained before 320 kbps MP3 encoding.",
+  "transition_preview_seconds": 114,
+  "edit": {
+    "start_seconds": 117,
+    "end_seconds": 150,
+    "fade_seconds": 2,
+    "curve": "complementary raised cosine",
+    "patch_gain_db": -0.677,
+    "generation_receipt": "tanka-middle-low-mid-v3.json"
+  },
+  "original_generation_response_headers": {
+    "song-id": "<redacted>",
+    "content-type": "audio/mpeg"
+  },
+  "revision_label": "low-mid passage revision",
+  "revision_description": "The 1:59–2:28 passage is recomposed with sustained bass and bronze accompaniment beneath the flute, maintaining low-medium intensity. Two-second edge blends at 1:57–1:59 and 2:28–2:30.",
+  "previous_edit": {
+    "out_start": 35.9,
+    "in_start": 47.9,
+    "overlap": 3.0,
+    "reason": "One slow bar overlap; the strong attacks at 36.042 and 48.042 seconds align across the 12-second shift.",
+    "crossfade_curve": "equal power, cosine/sine",
+    "seconds_removed": 12.0,
+    "global_gain_db": 0.0,
+    "original_40_49_longest_below_minus45_db_seconds": 3.0,
+    "repaired_transition_longest_below_minus45_db_seconds": 0.0
+  },
+  "original_full_generation_request": {
+    "model_id": "music_v2",
+    "composition_plan": {
+      "chunks": [
+        {
+          "song_id": "DLwWg04ZKjXdmCB2g3LT",
+          "range": {
+            "start_ms": 0,
+            "end_ms": 45000
+          }
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "80 BPM, straight 4/4",
+            "slow held weight and long harmonic suspensions from the selected recording",
+            "foreground rounded traditional wooden Plains flute with broad descending phrases and repeated low landings",
+            "whole-note bass and dark bronze synth resonance",
+            "generous silence and a deep drum at most on beats one and three",
+            "half notes and whole notes, restrained natural vibrato, clear register contrast",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Continue the broad descending flute melody over long bass tones. Let an unresolved harmony hold its weight before the low landing; do not add rhythmic activity."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "bouncy groove",
+            "busy percussion",
+            "eighth-note ostinato",
+            "tresillo",
+            "pastoral flute runs",
+            "generic new-age relaxation",
+            "chanting",
+            "ceremonial-song quotation"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "DLwWg04ZKjXdmCB2g3LT",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "xhigh"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "80 BPM, straight 4/4",
+            "slow held weight and long harmonic suspensions from the selected recording",
+            "foreground rounded traditional wooden Plains flute with broad descending phrases and repeated low landings",
+            "whole-note bass and dark bronze synth resonance",
+            "generous silence and a deep drum at most on beats one and three",
+            "half notes and whole notes, restrained natural vibrato, clear register contrast",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Make a quieter but still imposing passage with the same slow flute contour and a subtly deeper bronze harmony. The low pulse stays sparse, and the melody continues in long breath-shaped notes."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "bouncy groove",
+            "busy percussion",
+            "eighth-note ostinato",
+            "tresillo",
+            "pastoral flute runs",
+            "generic new-age relaxation",
+            "chanting",
+            "ceremonial-song quotation"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "DLwWg04ZKjXdmCB2g3LT",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "high"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 45000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "80 BPM, straight 4/4",
+            "slow held weight and long harmonic suspensions from the selected recording",
+            "foreground rounded traditional wooden Plains flute with broad descending phrases and repeated low landings",
+            "whole-note bass and dark bronze synth resonance",
+            "generous silence and a deep drum at most on beats one and three",
+            "half notes and whole notes, restrained natural vibrato, clear register contrast",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Return to the opening descending melody and original low bass landing. Let the pressure resolve a little later within each phrase; maintain the same slow weight rather than making a climax."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "bouncy groove",
+            "busy percussion",
+            "eighth-note ostinato",
+            "tresillo",
+            "pastoral flute runs",
+            "generic new-age relaxation",
+            "chanting",
+            "ceremonial-song quotation"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "DLwWg04ZKjXdmCB2g3LT",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "xhigh"
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 30000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "80 BPM, straight 4/4",
+            "slow held weight and long harmonic suspensions from the selected recording",
+            "foreground rounded traditional wooden Plains flute with broad descending phrases and repeated low landings",
+            "whole-note bass and dark bronze synth resonance",
+            "generous silence and a deep drum at most on beats one and three",
+            "half notes and whole notes, restrained natural vibrato, clear register contrast",
+            "a continuous extension of the kept opening: retain its tune, tempo, key, instrument identities and listening level",
+            "comfortable treble and controlled low end, suitable for repeated background listening",
+            "Give the flute one final broad descending phrase, land on a long low tone and allow bronze resonance to decay. Finish with measured stillness and a clear gentle resolution."
+          ],
+          "negative_styles": [
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "huge drop",
+            "bouncy groove",
+            "busy percussion",
+            "eighth-note ostinato",
+            "tresillo",
+            "pastoral flute runs",
+            "generic new-age relaxation",
+            "chanting",
+            "ceremonial-song quotation"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "DLwWg04ZKjXdmCB2g3LT",
+            "range": {
+              "start_ms": 10000,
+              "end_ms": 40000
+            }
+          },
+          "condition_strength": "high"
+        }
+      ]
+    },
+    "seed": 6142804,
+    "store_for_inpainting": true
+  },
+  "revision_request": {
+    "model_id": "music_v2",
+    "seed": 6142913,
+    "store_for_inpainting": true,
+    "composition_plan": {
+      "chunks": [
+        {
+          "song_id": "dRvme4hpnDt1wSG3EZxG",
+          "range": {
+            "start_ms": 111000,
+            "end_ms": 129000
+          }
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 33000,
+          "positive_styles": [
+            "entirely instrumental",
+            "continue the existing Tanka melody, key, 80 BPM straight 4/4 and slow imposing weight",
+            "LOW-MEDIUM ENERGY THROUGHOUT THIS MIDDLE PASSAGE: an established ensemble quietly continues, comfortably supported and present for the full passage",
+            "foreground rounded wooden Plains flute retains broad descending half-note and whole-note phrases and its original tone",
+            "sustained whole-note bass remains clearly audible through every flute breath",
+            "dark bronze synth harmony remains present in the low middle register, gently overlapping chord changes to maintain body and harmonic pressure",
+            "retain the quiet deep drum on widely spaced downbeats, at most beats one and three; a slow felt pulse under the flute",
+            "keep the ongoing harmony moving through the familiar suspended chords and low landings rather than returning to an opening drone",
+            "the melody may leave breathing room while bass and bronze continue underneath; retain accompaniment for the entire passage",
+            "a modest dip in intensity within an already developed piece, one step below the surrounding passages, above the very quiet opening",
+            "carry this low-medium intensity from the first moment to the last; match both neighboring musical phrases smoothly",
+            "intimate, chill but quietly energizing fantasy game background music with comfortable treble and controlled bass"
+          ],
+          "negative_styles": [
+            "vocals",
+            "chanting",
+            "humming",
+            "speech",
+            "ceremonial-song quotation",
+            "new intro",
+            "fade out",
+            "fade in",
+            "near silence",
+            "empty breakdown",
+            "solo flute without accompaniment",
+            "accompaniment dropping out",
+            "ambient reset",
+            "huge climax",
+            "busy percussion",
+            "bouncy groove",
+            "fast arpeggios",
+            "eighth-note ostinato",
+            "pastoral flute runs",
+            "new lead instrument"
+          ],
+          "context_adherence": "high",
+          "condition_strength": "high",
+          "conditioning_ref": {
+            "song_id": "dRvme4hpnDt1wSG3EZxG",
+            "range": {
+              "start_ms": 95000,
+              "end_ms": 125000
+            }
+          }
+        },
+        {
+          "song_id": "dRvme4hpnDt1wSG3EZxG",
+          "range": {
+            "start_ms": 162000,
+            "end_ms": 180000
+          }
+        }
+      ]
+    }
+  },
+  "estimated_revision_usd_at_prior_full_output_rate": 0.1725
+}

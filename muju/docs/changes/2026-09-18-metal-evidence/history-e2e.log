@@ -1,0 +1,17 @@
+
+> elemental-tactics@0.1.0 test:online:e2e
+> playwright test --config playwright.online.config.ts e2e/history.spec.ts
+
+[WebServer] (node:51069) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:51069) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[WebServer] Muju Hono Tanka: http://127.0.0.1:8928/muju/ · MCP: http://127.0.0.1:8928/mcp
+
+Running 2 tests using 1 worker
+
+(node:51071) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/history.spec.ts:5:3 › observer history follows moves, undo, income, upkeep and victory at 1280px (5.0s)
+  ✓  2 e2e/history.spec.ts:5:3 › observer history follows moves, undo, income, upkeep and victory at 390px (4.7s)
+
+  2 passed (11.1s)

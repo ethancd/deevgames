@@ -1,0 +1,17 @@
+set -e
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/f584383b1fcae8a1b6acefb7eb135965 -o outputs/online-match-review/f584383b1fcae8a1b6acefb7eb135965-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/f584383b1fcae8a1b6acefb7eb135965/history?after=0&limit=200' -o outputs/online-match-review/f584383b1fcae8a1b6acefb7eb135965-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/9f822d246a9703680edc35193f7f78c6 -o outputs/online-match-review/9f822d246a9703680edc35193f7f78c6-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/9f822d246a9703680edc35193f7f78c6/history?after=0&limit=200' -o outputs/online-match-review/9f822d246a9703680edc35193f7f78c6-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/99488f4d2a3abfd187a9c88713d13c34 -o outputs/online-match-review/99488f4d2a3abfd187a9c88713d13c34-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/99488f4d2a3abfd187a9c88713d13c34/history?after=0&limit=200' -o outputs/online-match-review/99488f4d2a3abfd187a9c88713d13c34-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/0a56f850c8050113da84aefac5007810 -o outputs/online-match-review/0a56f850c8050113da84aefac5007810-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/0a56f850c8050113da84aefac5007810/history?after=0&limit=200' -o outputs/online-match-review/0a56f850c8050113da84aefac5007810-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/b788338977b9ccb39970967bfdfbbeaf -o outputs/online-match-review/b788338977b9ccb39970967bfdfbbeaf-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/b788338977b9ccb39970967bfdfbbeaf/history?after=0&limit=200' -o outputs/online-match-review/b788338977b9ccb39970967bfdfbbeaf-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/f15547d98439793042d759d029298eb7 -o outputs/online-match-review/f15547d98439793042d759d029298eb7-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/f15547d98439793042d759d029298eb7/history?after=0&limit=200' -o outputs/online-match-review/f15547d98439793042d759d029298eb7-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/7446336c2672068e793f086e732897cc -o outputs/online-match-review/7446336c2672068e793f086e732897cc-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/7446336c2672068e793f086e732897cc/history?after=0&limit=200' -o outputs/online-match-review/7446336c2672068e793f086e732897cc-history.json
+curl --fail --silent --show-error --max-time 30 https://deevgames-muju.onrender.com/api/muju/rooms/c0041933790a0365636e3bc3d8b86dc3 -o outputs/online-match-review/c0041933790a0365636e3bc3d8b86dc3-room.json
+curl --fail --silent --show-error --max-time 30 'https://deevgames-muju.onrender.com/api/muju/rooms/c0041933790a0365636e3bc3d8b86dc3/history?after=0&limit=200' -o outputs/online-match-review/c0041933790a0365636e3bc3d8b86dc3-history.json

@@ -1,0 +1,14 @@
+{
+  "health": true,
+  "activeRooms": 0,
+  "archivePageSize": 27,
+  "moreArchived": false,
+  "reviewedRoom": "5acccc46db2f678dc864f8860f589e33",
+  "ruleset": "standard",
+  "archivedAt": "2026-09-14T00:28:17.230Z",
+  "latestResult": "Room archived · no moves for 24 hours",
+  "historyRetained": 1,
+  "startingUnits": 6,
+  "productionBundle": "/muju/assets/index-VwPmN3JY.js",
+  "newFrontendVerified": true
+}

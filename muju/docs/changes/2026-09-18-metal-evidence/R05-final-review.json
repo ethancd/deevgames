@@ -1,0 +1,28 @@
+{
+  "videoSha256": "3bb724eee1adcc7be9ac1022ed365a019cac1d36816cb97315ccd01a5b4e9592",
+  "timelineSha256": "42c08955486442a3f40c4827ea4a98829eae1de4c74d5f38e1c47563510208f4",
+  "speechComplete": true,
+  "captionTiming": true,
+  "numericCoordinates": true,
+  "visuals": true,
+  "musicBalance": true,
+  "quietHolds": true,
+  "evidence": {
+    "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+    "newSpeechClips": 3,
+    "exportedSpeechClips": 33,
+    "minimumAudioCorrelation": 0.97571,
+    "maximumSpeechOffsetSeconds": 0.048,
+    "finalLUFS": -16.51,
+    "truePeakDB": -1.6,
+    "thinkingHolds": [
+      {
+        "line": null,
+        "middleRmsDB": -60.97
+      }
+    ],
+    "reviewedFrames": {
+      "final-representative.png": "c6122f91c4b31ffd02eb543182bcd191367213e1e4abb2ba1e46eaf2b183ed03"
+    }
+  }
+}

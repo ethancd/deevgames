@@ -1,0 +1,9 @@
+{
+  "muju/src/game/units.ts": "44bdcbf152b1f641b8b066bd0e1f6e7155f63ada9aa26226a364164127ba2603",
+  "muju/src/ai/wasm/tactics.wasm": "ee6a4053dec1e46f5fc7e25e897d7a862e6e40e67d103567719f201c3f146d7e",
+  "muju/lab/results/current-static/current.json": "979fd852b1f3c58a070a3b69fed1ebab10ba698f84c3a6d9a8789d4cccabd8af",
+  "_site/muju/assets/entry-DSLElzXx.js": "f3231f16ddd437e34427089404a5d630e3447d2554511300affe474b65b94629",
+  "_site/muju/assets/index-BjsS7TF7.css": "0886ad37f169932406c254bdc56daff83ab3e9b9d46c72e467551368f274dcd6",
+  "_site/muju/assets/index-CByGFS4Y.js": "d614c4a46b5c3bd7b7c1b5c94a955fdd013d880f71007f1155b54258b09ab9b0",
+  "_site/muju/assets/tactics-Cv55RSU9.wasm": "ee6a4053dec1e46f5fc7e25e897d7a862e6e40e67d103567719f201c3f146d7e"
+}

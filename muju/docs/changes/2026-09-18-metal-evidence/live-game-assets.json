@@ -1,0 +1,23 @@
+{
+  "https://deevgames.pages.dev": {
+    "htmlSha256": "1db7813040a0e131facbe74c26f3cfcff96345acb8aaef0ec1f8963de78b44f3",
+    "assets": {
+      "/muju/assets/index-DvxegQEU.js": "390fc83d678cf0e9434e32f4b559468d1e2ec7c96e468d0bc82b7567a881e9f3",
+      "/muju/assets/index-D1_8EDnj.css": "e5256c713eb7315cbfc00f1c511e4577070e5271a48faa4d756fadd61a4ed190"
+    },
+    "skillSha256": "658d2f85fb24d7a85b40236d2bd5420b3e22e38eb859940a6da72cbbc04d582d"
+  },
+  "https://deevgames-muju.onrender.com": {
+    "htmlSha256": "ec528a0a421e2c44d66eae95c69b2752c790c45ac3854d8371e81978f3026b13",
+    "assets": {
+      "/muju/assets/index-Dz-XuAR2.css": "5d2e6a691b0bb51a32c66354a0739815169d0d063cad4d9bf7006fb3c31bb8ab",
+      "/muju/assets/index-DZDjDlyV.js": "390fc83d678cf0e9434e32f4b559468d1e2ec7c96e468d0bc82b7567a881e9f3"
+    },
+    "skillSha256": "658d2f85fb24d7a85b40236d2bd5420b3e22e38eb859940a6da72cbbc04d582d",
+    "health": {
+      "ok": true,
+      "game": "Muju Hono Tanka",
+      "protocol": 1
+    }
+  }
+}

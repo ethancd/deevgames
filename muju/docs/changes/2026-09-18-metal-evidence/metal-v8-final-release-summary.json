@@ -1,0 +1,295 @@
+{
+  "release": "v8-metal-yan",
+  "date": "2026-09-18",
+  "status": "prepared locally; not deployed",
+  "revisedEpisodes": [
+    "R05",
+    "R06",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R15",
+    "R16"
+  ],
+  "changedSpeechClips": 32,
+  "repairedSpeechClips": 7,
+  "exportedSpeechClips": 324,
+  "minimumAudioCorrelation": 0.90994,
+  "maximumSpeechOffsetSeconds": 0.048,
+  "reviewedFinalFrames": 30,
+  "all16PackageChecksPassed": true,
+  "assetsVerified": 48,
+  "seekRangesVerified": 48,
+  "historicalRedirectsVerified": 120,
+  "retiredAssetsVerified": 33,
+  "manifestUrls": 7681,
+  "manifestAdded": 16,
+  "manifestRemoved": 16,
+  "siteSnapshot": "/private/tmp/muju-academy-v8-metal-site",
+  "siteSourceCommit": "6145c0f6025c80fc08bc4da293182defa8dd24ca",
+  "siteArtifactHashes": {
+    "muju-academy/index.html": "8c5169ca51c7c20c77733583ce81fec41666f33ef3803132bfe8ff3b271d25d7",
+    "muju-academy/release.json": "ecc5769225645b985d6713d2c0f7c7b6bd98fbc479edcf2c031e9f34133d555c",
+    "offline-manifest.json": "911628c3d5c0aab753515b46add579683417cda5c3f64eea33579a5b5f7a326c",
+    "_redirects": "6878767e116ff67d64c86500328050e9cbec9d68cfc4708fcb467474a195dd5b"
+  },
+  "phasing": "Current Pay / Place / Act / Mine retained; separate phasing variant excluded",
+  "cacheTestNote": "Existing VM harness lacked AbortController and timer globals. A temporary harness supplied browser globals; online freshness/offline fallback passed without changing website source.",
+  "exports": {
+    "R05": {
+      "videoSha256": "3bb724eee1adcc7be9ac1022ed365a019cac1d36816cb97315ccd01a5b4e9592",
+      "timelineSha256": "42c08955486442a3f40c4827ea4a98829eae1de4c74d5f38e1c47563510208f4",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 0,
+        "verifiedSpeechClips": 3,
+        "exportedSpeechClips": 33,
+        "minimumAudioCorrelation": 0.97571,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.51,
+        "truePeakDB": -1.6,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -60.97
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "c6122f91c4b31ffd02eb543182bcd191367213e1e4abb2ba1e46eaf2b183ed03"
+        }
+      }
+    },
+    "R06": {
+      "videoSha256": "39ce234fb9fb3fe643997a52fff7f21b7db89a4547824838816f6e240c710e20",
+      "timelineSha256": "087b3a12b0c60667474001f98078ad5ae8f2d0501bcde851c6dd9bf41f433ae9",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 1,
+        "verifiedSpeechClips": 2,
+        "exportedSpeechClips": 31,
+        "minimumAudioCorrelation": 0.97581,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.69,
+        "truePeakDB": -1.61,
+        "thinkingHolds": [
+          {
+            "line": null,
+            "middleRmsDB": -61.85
+          }
+        ],
+        "reviewedFrames": {
+          "final-representative.png": "b3d264298ff33b089f5b34677be8f1bad557aa9db7554ffb4e02c8738511b874",
+          "final-metal-26.png": "a42a987d35312c9f06cd9617ac33bc96591b0f92ca6c891aadc4bdd0d88949d8"
+        }
+      }
+    },
+    "R11": {
+      "videoSha256": "b89d6bd4f5c858130a391d24b07a90f7234e2825f8a62514fabb9ef4075cfcb9",
+      "timelineSha256": "eecadf12e103f0e4c97518f5e204b2fac478644bb76ef5527725995cc62ce813",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 6,
+        "verifiedSpeechClips": 19,
+        "exportedSpeechClips": 44,
+        "minimumAudioCorrelation": 0.98884,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.5,
+        "truePeakDB": -1.76,
+        "thinkingHolds": [
+          {
+            "line": "17",
+            "middleRmsDB": -61.31
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "c5169b1a6beba2d8030ba1ef1dd066b512e74e894cd8f809134268e07200c345",
+          "final-matrix-2.png": "54ac8b06cc7c2cc2ea724dceee77232fb28eca45d4ca2dda4b1bc50d2c3aeb10",
+          "final-matrix-3.png": "b9040c7afd67c651bb87e4bd31ea56781fbb9c54502496ce5df7a7b9ce7e0ce2",
+          "final-metal-07.png": "a1cbbbfe058616d44ebdf05d2f9c577f8e3268432de60b44aca264dff07e69c9"
+        }
+      }
+    },
+    "R12": {
+      "videoSha256": "dfe58bb38c83f2e87e4b8ca799f3f52562cccefbe9e979b9e730cf577291303b",
+      "timelineSha256": "ffd3de6a1b3f09ecba7e7bed458662927b33423a1d3b6599857603b10777396c",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 8,
+        "verifiedSpeechClips": 17,
+        "exportedSpeechClips": 47,
+        "minimumAudioCorrelation": 0.98177,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.5,
+        "truePeakDB": -1.75,
+        "thinkingHolds": [
+          {
+            "line": "11",
+            "middleRmsDB": -62.57
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "96793e9bfc643c7ad55a161d9c09e64598254165048772adef25ddda4b70be0b",
+          "final-matrix-2.png": "8d00e749e4bda466a163ec917f6223aa8af98761dec9387e00a4e115b94c1f72",
+          "final-matrix-3.png": "2a74ffd1ed19b9c32ab6e5553c854aea08e82c117786c164d01ada4f613a1de6",
+          "final-metal-28.png": "7ad9aaa2a9cb923c00f40cdaf5227108501b2010a7dad8a3008d7f78fbbf9813",
+          "final-metal-29.png": "b8457be724fc87b55acb663690250d7a9f895a827300199abf3da84cc36419ba"
+        }
+      }
+    },
+    "R13": {
+      "videoSha256": "5c8378a3c74809c64b59f8c8d0b4f753a1188fa65cab4b077c1173f560ec0807",
+      "timelineSha256": "2316aca0fdccc5283cb02a73d3af01493d4ca956fcb76363a6fc53e621f64ef5",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 3,
+        "verifiedSpeechClips": 14,
+        "exportedSpeechClips": 42,
+        "minimumAudioCorrelation": 0.99233,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.42,
+        "truePeakDB": -1.73,
+        "thinkingHolds": [
+          {
+            "line": "12",
+            "middleRmsDB": -62.92
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "cbd0f04ec18f4162056cd73947e0ecca87906ccef8a7ad5bca680bf5aa8fba1d",
+          "final-matrix-2.png": "4e4d3c824a22aff9c86cc0368dfb143880ae0a95a0c67db1b4f7d59a4b225c73",
+          "final-matrix-3.png": "b681cf4d63c7de9fba747a855f169e1f9d773884099024d4a2b872feef9db60d",
+          "final-metal-04.png": "924dca61355884d68d0a48c8b1938730ad8114ad2082525513af4b816877a453"
+        }
+      }
+    },
+    "R14": {
+      "videoSha256": "7503b111511db415058fcbc0b5e06702fd533a4c82a0bd20794250a015018af0",
+      "timelineSha256": "5b6b15d35917a8dd08e02146b1f1e649056ca7a0525ceb546c3898bd4b24377d",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 4,
+        "verifiedSpeechClips": 13,
+        "exportedSpeechClips": 44,
+        "minimumAudioCorrelation": 0.90994,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.74,
+        "truePeakDB": -1.89,
+        "thinkingHolds": [
+          {
+            "line": "15",
+            "middleRmsDB": -61.35
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "845245ff51d2f99b509e2ab340853bd08aa5349c6a0d968bb2c32c56c9a66b04",
+          "final-matrix-2.png": "79120e0a65af4e48c8e2f14b9b2683da2fb901f36eb610098431c2b162390f57",
+          "final-matrix-3.png": "99602d91e3377642c7a51677f2e1cb61647db1b7c6e8777b87db0302a01b83d7"
+        }
+      }
+    },
+    "R15": {
+      "videoSha256": "661c7add5513ea8076904605cac2f8c92c91589522b412aa7841612986a89870",
+      "timelineSha256": "69f457a5c711ab87a3823ee50a44433cadd5486b0b4d29182f0d35cc8e4f8c4c",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 0,
+        "verifiedSpeechClips": 20,
+        "exportedSpeechClips": 41,
+        "minimumAudioCorrelation": 0.96362,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.76,
+        "truePeakDB": -1.57,
+        "thinkingHolds": [
+          {
+            "line": "12",
+            "middleRmsDB": -59.98
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "73591612a77decc2d08dcde34cf96465ad45f2bdfe197248138194e04cda986b",
+          "final-matrix-2.png": "7c57ba69b46ab1d780bfa9d3c1b2e0892a8b1d4187cdf40e61f06a519e34339d",
+          "final-matrix-3.png": "37b1316caa9a85a021e5bb5664adb7f989b8e9aa5097bfd39c8b8a1d78efa445"
+        }
+      }
+    },
+    "R16": {
+      "videoSha256": "c2fdfb5f47de904ee230c9f83516741108934d7d3b96f347204de1e612e10500",
+      "timelineSha256": "2be042e49cca4b51d9fa4ee4eecc72090ccfcb95c01ba095afa64f8c2579f05a",
+      "speechComplete": true,
+      "captionTiming": true,
+      "numericCoordinates": true,
+      "visuals": true,
+      "musicBalance": true,
+      "quietHolds": true,
+      "evidence": {
+        "speechVerification": "Local small.en/medium.en word timestamps; phonetic unit-name and number normalization; no unresolved differences. Unchanged takes retain prior verified timings.",
+        "newSpeechClips": 10,
+        "verifiedSpeechClips": 22,
+        "exportedSpeechClips": 42,
+        "minimumAudioCorrelation": 0.97769,
+        "maximumSpeechOffsetSeconds": 0.048,
+        "finalLUFS": -16.5,
+        "truePeakDB": -1.56,
+        "thinkingHolds": [
+          {
+            "line": "15",
+            "middleRmsDB": -61.94
+          }
+        ],
+        "reviewedFrames": {
+          "final-matrix-1.png": "02e5adda5a395885aa7a336af3396a3879e169694b0e2c237a9dcef91f2ab205",
+          "final-matrix-2.png": "869dd45e1e5cd5ab1cb8e3a4f061aa06c7798c5238d97df85247de5e1a00aa66",
+          "final-matrix-3.png": "3226d85edf9112f0fcae4fead1af906204c1c6319651081711d75ca33c46329a",
+          "final-metal-11.png": "a1053a140cc33e7edc88565eaa882f1226fb8e28dfc468f1e6a43f9d46d8b630",
+          "final-metal-21.png": "016ac70b18cfa28382352efbb5b23f0defa8c29ba37f942b1122e4b500e0c7ef",
+          "final-metal-22.png": "d532086372163525c1d6532cac7e9ff6a9af190ced5a576cab73640a2a31e0c3",
+          "final-metal-23.png": "b93c764f7f0216ac389989bedaea058040bfdf0dc6005fc1f070a89e8690e5cf",
+          "final-metal-26.png": "0d3cbace209e060d7dda1ef27dfb46112027c43da01c80c04b92e5bbd2ab69c5"
+        }
+      }
+    }
+  }
+}

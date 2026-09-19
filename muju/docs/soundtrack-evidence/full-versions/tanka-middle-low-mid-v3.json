@@ -1,0 +1,96 @@
+{
+  "user_feedback": "Tanka 1:59–2:28 returns to extremely low opening energy; should dip only to low-mid.",
+  "source_file": "tanka-flute-full-v1.mp3",
+  "source_sha256": "d7749c1aa5d5fcabf2fad368afb9bfe62b335d779713f78430a8002329ae21ab",
+  "current_file": "tanka-flute-full-v2-blended.mp3",
+  "current_sha256": "952efac275c4eb42e017e6167d5a5aceb16b100144efbd586245bf2c843610f6",
+  "method": "33-second inpaint with 18 seconds of existing context on each side; insert into current mix at 1:57–2:30 with two-second edge blends.",
+  "generation_seconds": 33,
+  "output_seconds": 69,
+  "reference_uploads": 0,
+  "estimated_usd_at_prior_full_output_rate": 0.1725,
+  "documentation": "https://elevenlabs.io/docs/eleven-api/guides/how-to/music/inpainting",
+  "request": {
+    "model_id": "music_v2",
+    "seed": 6142913,
+    "store_for_inpainting": true,
+    "composition_plan": {
+      "chunks": [
+        {
+          "song_id": "dRvme4hpnDt1wSG3EZxG",
+          "range": {
+            "start_ms": 111000,
+            "end_ms": 129000
+          }
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 33000,
+          "positive_styles": [
+            "entirely instrumental",
+            "continue the existing Tanka melody, key, 80 BPM straight 4/4 and slow imposing weight",
+            "LOW-MEDIUM ENERGY THROUGHOUT THIS MIDDLE PASSAGE: an established ensemble quietly continues, comfortably supported and present for the full passage",
+            "foreground rounded wooden Plains flute retains broad descending half-note and whole-note phrases and its original tone",
+            "sustained whole-note bass remains clearly audible through every flute breath",
+            "dark bronze synth harmony remains present in the low middle register, gently overlapping chord changes to maintain body and harmonic pressure",
+            "retain the quiet deep drum on widely spaced downbeats, at most beats one and three; a slow felt pulse under the flute",
+            "keep the ongoing harmony moving through the familiar suspended chords and low landings rather than returning to an opening drone",
+            "the melody may leave breathing room while bass and bronze continue underneath; retain accompaniment for the entire passage",
+            "a modest dip in intensity within an already developed piece, one step below the surrounding passages, above the very quiet opening",
+            "carry this low-medium intensity from the first moment to the last; match both neighboring musical phrases smoothly",
+            "intimate, chill but quietly energizing fantasy game background music with comfortable treble and controlled bass"
+          ],
+          "negative_styles": [
+            "vocals",
+            "chanting",
+            "humming",
+            "speech",
+            "ceremonial-song quotation",
+            "new intro",
+            "fade out",
+            "fade in",
+            "near silence",
+            "empty breakdown",
+            "solo flute without accompaniment",
+            "accompaniment dropping out",
+            "ambient reset",
+            "huge climax",
+            "busy percussion",
+            "bouncy groove",
+            "fast arpeggios",
+            "eighth-note ostinato",
+            "pastoral flute runs",
+            "new lead instrument"
+          ],
+          "context_adherence": "high",
+          "condition_strength": "high",
+          "conditioning_ref": {
+            "song_id": "dRvme4hpnDt1wSG3EZxG",
+            "range": {
+              "start_ms": 95000,
+              "end_ms": 125000
+            }
+          }
+        },
+        {
+          "song_id": "dRvme4hpnDt1wSG3EZxG",
+          "range": {
+            "start_ms": 162000,
+            "end_ms": 180000
+          }
+        }
+      ]
+    }
+  },
+  "job": "tanka-middle-low-mid-v3",
+  "status": "verified",
+  "started_at": "2026-09-12T20:53:11.288824+00:00",
+  "audio_file": "tanka-middle-low-mid-v3.mp3",
+  "sha256": "633a61690ff2dbb296f9e46acb5bbe4cfaacecfcaa1deb711aee979c05d68058",
+  "duration_seconds": 69.0,
+  "response_headers": {
+    "song-id": "<redacted>",
+    "content-type": "audio/mpeg"
+  },
+  "elapsed_seconds": 7.15
+}

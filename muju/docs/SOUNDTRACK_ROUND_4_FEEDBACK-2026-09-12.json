@@ -1,0 +1,22 @@
+{
+  "source": "Visible round-four notes and favorites, plus the user's explicit acceptance of 10A, on 2026-09-12.",
+  "url": "http://127.0.0.1:8766/round-4/",
+  "favorites": ["10A"],
+  "accepted": {"element":"Metal","label":"10A","id":"tanka-pressure-elevenlabs-take-1","user_statement":"10a is good enough, I'm picky on the others, next round!"},
+  "takes": [
+    {"label":"09A","id":"umeme-plucked-elevenlabs-take-1","favorite":false,"notes":"Nice and fun but not very electric or electrifying!"},
+    {"label":"09B","id":"umeme-plucked-elevenlabs-take-2","favorite":false,"notes":"Maybe needs some more rhythmic variation."},
+    {"label":"09C","id":"umeme-plucked-elevenlabs-take-3","favorite":false,"notes":""},
+    {"label":"10A","id":"tanka-pressure-elevenlabs-take-1","favorite":true,"notes":"Pretty good!"},
+    {"label":"10B","id":"tanka-pressure-elevenlabs-take-2","favorite":false,"notes":"A little boring"},
+    {"label":"10C","id":"tanka-pressure-elevenlabs-take-3","favorite":false,"notes":"The starting point doesn't have enough motion or texture, too slow"},
+    {"label":"11A","id":"straumr-deep-elevenlabs-take-1","favorite":false,"notes":"I think the doot-doot-doot-doot- 16th notes that come in after 20-25s take away from the coolness"},
+    {"label":"11B","id":"straumr-deep-elevenlabs-take-2","favorite":false,"notes":"Not quite coherent enough, then the metronome comes in at 20 and makes it feel annoying"},
+    {"label":"11C","id":"straumr-deep-elevenlabs-take-3","favorite":false,"notes":"Not quite melodic or memorable enough, there should more throughflow compared to metal, like sustanato and drawn string cello or standup bass."}
+  ],
+  "redirect": {
+    "metal":"Accepted 10A; do not spend this round regenerating Metal.",
+    "lightning":"Keep major-key plucks but add unmistakably electric timbre and purposeful rhythmic variation.",
+    "water":"Keep dark coolness; add a coherent memorable sostenuto cello or bowed double-bass melody, with continuous phrasing instead of fast patterns or a newly entering metronomic beat."
+  }
+}

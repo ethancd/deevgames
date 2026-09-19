@@ -1,0 +1,9 @@
+
+ RUN  v4.1.11 /private/tmp/muju-metal-deploy/muju
+
+
+ Test Files  1 passed (1)
+      Tests  11 passed (11)
+   Start at  13:51:42
+   Duration  17.78s (transform 268ms, setup 37ms, import 308ms, tests 17.36s, environment 0ms)
+
