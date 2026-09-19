@@ -1,13 +1,6 @@
 {
-  "status": "proposal; not adopted",
+  "status": "adopted",
   "rulesVersion": "muju-phasing-1",
-  "proposedElo": {
-    "Rush": 458.45121427129516,
-    "Expand": null,
-    "Balanced": null
-  },
-  "retentionFraction": 0.6,
-  "rushFloor": 275.0707285627771,
   "bandsSha256": "f9c1a7669cbc12031ef4227faa9915104972ac650f8bb47c89cc2b4735a537a2",
   "sourceHashes": {
     "lab/docs/EXPERIMENTS.md": "4399040ab9e1e7b00921cd8362d0830b7d20349b99902de67e47cc5cf9f0adbd",
@@ -54,6 +47,34 @@
       "Balanced"
     ],
     "search": "Searched EXPERIMENTS.md, result summary CSV/Markdown/JSON, all 27 lab/**/results/**/games.jsonl files; examined e8 engine and alternate-map ai results. Aware:Balanced is a different policy and the map study uses medium-fast, so it is not the requested reference. No sealed opening corpus read.",
-    "resolution": "Claude must adopt a qualified reference or authorize a Standard calibration using the historical engine/kernel checkout; do not substitute zero or reuse the Rush margin for other opponents."
+    "resolution": "A1 withdraws the historical-margin condition. Historical sources and the superseded proposal are retained for audit only, never used as pass thresholds or run prerequisites."
+  },
+  "amendment": {
+    "id": "A1",
+    "commit": "0a6f8db5827356a27f6e62b2ab6a2f82f131d945",
+    "path": "muju/docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md",
+    "sha256": "18bc4579c51a009cb6413b3109afc8dd8422ef1d3b0215228fa38d71758bb499"
+  },
+  "supersededProposal": {
+    "proposedElo": {
+      "Rush": 458.45121427129516,
+      "Expand": null,
+      "Balanced": null
+    },
+    "retentionFraction": 0.6,
+    "rushFloor": 275.0707285627771
+  },
+  "policy": {
+    "strengthGated": [
+      "Expand",
+      "Balanced",
+      "aiv2-medium"
+    ],
+    "strengthReportOnly": [
+      "Rush"
+    ],
+    "strength": "score > 0.5 and Elo lower confidence bound > 0 in each h0/h3 cell",
+    "behavioralBands": "unchanged; each scripted opponent/h cell, including Rush",
+    "mustBuy": "at least one aiv2-hard purchase in every game with more than 10 completed player turns"
   }
 }

@@ -1,5 +1,5 @@
 /** From muju/: node --import tsx lab/ai/gate1.ts --mode pilot --out <NEW directory>
- * --plan prints the proposed allocation without playing. Full rows are opt-in.
+ * --plan prints the adopted A1 allocation without playing. Full rows are opt-in.
  */
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -14,7 +14,7 @@ import { createRushBot, createExpandBot, createBalancedBot } from '../harness/bo
 import { DEFAULT_MATCH_OPTIONS } from '../harness/types';
 import { withHeavySlot, heavyBypassed, heavyDir, slotCount } from '../hard-ai/ladder/heavy';
 import { createGateBot, TURN_WORK, type GateDifficulty } from './gate1-bot';
-import { schedule, summarize, FULL_PAIRS, SEEDS, type Task, type Mode, type Entry, type Bands } from './gate1-report';
+import { schedule, summarize, AMENDMENT, FULL_PAIRS, SEEDS, type Task, type Mode, type Entry, type Bands } from './gate1-report';
 
 export const BANDS_PATH = 'lab/harness/results/p1-scripted-2026-09-18/sanity-bands.json';
 export const PROPOSAL_PATH = 'lab/docs/GATE1-AMENDMENT-PROPOSAL-2026-09-19.md';
@@ -22,6 +22,18 @@ export const REFERENCE_PATH = 'lab/ai/gate1-references.json';
 export const sha = (s: string | Buffer) => createHash('sha256').update(s).digest('hex');
 const json = (s: unknown) => JSON.stringify(s, null, 2) + '\n';
 const git = (...args: string[]) => execFileSync('git', args, { encoding: 'utf8' }).trim();
+/** Read the adopted document by commit: this branch's working copy predates A1.
+ * Historical calibration hashes are audit metadata, no longer prerequisites. */
+export function adoptedProtocol() {
+  const references = JSON.parse(readFileSync(REFERENCE_PATH, 'utf8'));
+  const amendment = references.amendment;
+  if (references.status !== 'adopted' || references.rulesVersion !== 'muju-phasing-1' || amendment?.id !== AMENDMENT) {
+    throw new Error('Gate 1 requires adopted amendment A1');
+  }
+  const document = execFileSync('git', ['show', `${amendment.commit}:${amendment.path}`], { encoding: 'utf8' });
+  if (sha(document) !== amendment.sha256) throw new Error('Adopted preregistration hash mismatch');
+  return { references, amendment, document };
+}
 const initial = (handicap: number) => {
   const state = createInitialGameState(undefined, 4, handicap, 'phasing');
   state.board.units.forEach((u, i) => { u.id = `initial-${i}`; });
@@ -63,7 +75,7 @@ export async function runTask(task: Task, solver: TacticalSolver, identityHash: 
   const arrivals = { white: 0, black: 0 }, refunds = { white: 0, black: 0 };
   const startLoad = loadavg();
   const { record, replay } = await playGame({ bots, seed: task.seed, runId, engineHash: identityHash,
-    experiment: 'gate1-proposal', initialState: initial(task.handicap),
+    experiment: 'gate1-A1', initialState: initial(task.handicap),
     options: { ...DEFAULT_MATCH_OPTIONS, blackCrystalHandicap: task.handicap,
       actionsPerTurn: 4, upkeep: 'shipped', inactivityRule: 'on', recordReplay: true },
     onAction(before, after, action) {
@@ -114,8 +126,9 @@ export function parseArgs(args: string[]) {
 export async function main(args: string[]) {
   const { mode, out, plan } = parseArgs(args);
   const tasks = schedule(mode);
+  const protocol = adoptedProtocol();
   if (plan) {
-    console.log(json({ status: 'proposal; not adopted', mode, games: tasks.length,
+    console.log(json({ status: 'adopted', amendment: protocol.amendment, mode, games: tasks.length,
       pairsPerOpponentAndHandicap: mode === 'pilot' ? 1 : FULL_PAIRS, seed: SEEDS[mode],
       workPerTurn: TURN_WORK, openings: 'canonical initial Phasing state; no corpus', schedule: tasks }));
     return;
@@ -126,12 +139,12 @@ export async function main(args: string[]) {
     mkdirSync(out!);
     mkdirSync(`${out}/replays`);
     const manifestPath = `${out}/manifest.json`;
-    const manifest: Record<string, unknown> = { schema: 'muju-gate1-v1', status: 'initializing',
+    const manifest: Record<string, unknown> = { schema: 'muju-gate1-v2', status: 'initializing', amendment: AMENDMENT,
       startedAt: new Date().toISOString(), mode, expectedGames: tasks.length, schedule: tasks,
       git: git('rev-parse', 'HEAD'), gitStatus: git('status', '--porcelain'),
       node: process.version, device: `${cpus()[0]?.model} / ${platform()}/${arch()}`, cpuCount: cpus().length,
       loadBefore: loadavg(), queue: { directory: heavyDir(), slots: slotCount() },
-      note: 'Pilot/proposal only. No Gate 1 pass, worker unlock, or responsiveness claim.' };
+      note: 'A1 acceptance; pilots are ineligible. No worker unlock or responsiveness claim.' };
     writeFileSync(manifestPath, json(manifest));
     const entries: Entry[] = [];
     let activeTask: Task | undefined;
@@ -139,12 +152,10 @@ export async function main(args: string[]) {
       const fileHashes = sources();
       const solver = await instantiateTactics(readFileSync('src/ai/wasm/tactics.wasm'));
       const configs = await resolvedConfigs(solver);
-      const references = JSON.parse(readFileSync(REFERENCE_PATH, 'utf8'));
+      const { references, amendment, document } = adoptedProtocol();
       if (references.bandsSha256 !== fileHashes[BANDS_PATH]) throw new Error('Frozen band hash mismatch');
-      for (const [path, expected] of Object.entries(references.sourceHashes)) {
-        if (sha(readFileSync(path)) !== expected) throw new Error(`Historical source hash mismatch: ${path}`);
-      }
-      const identity = { rulesVersion: 'muju-phasing-1', abi: 7, files: fileHashes, configs,
+      writeFileSync(`${out}/preregistration-A1.md`, document);
+      const identity = { rulesVersion: 'muju-phasing-1', preregistration: amendment, abi: 7, files: fileHashes, configs,
         configHashes: Object.fromEntries(Object.entries(configs).map(([k, v]) => [k, sha(json(v))])),
         weights: DEFAULT_WEIGHTS, hardWeightsVersion: null, hardBookMagic: null,
         hardIdentityNote: 'Hard replica is not an arm in Gate 1 and is never instantiated',
@@ -168,7 +179,7 @@ export async function main(args: string[]) {
         }
       }
       if (JSON.stringify(sources()) !== JSON.stringify(fileHashes)) throw new Error('Sources changed during row; row void');
-      const summary = summarize(entries, mode, identityHash, bands, references.proposedElo);
+      const summary = summarize(entries, mode, identityHash, bands);
       writeFileSync(`${out}/summary.json`, json(summary));
       if (summary.errors.length) throw new Error(summary.errors.join('\n'));
       Object.assign(manifest, { status: 'complete', completedGames: entries.length, gate1: summary.gate1 });

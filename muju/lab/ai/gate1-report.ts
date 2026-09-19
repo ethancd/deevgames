@@ -8,6 +8,7 @@ export type Opponent = typeof OPPONENTS[number];
 export type Mode = 'pilot' | 'full';
 export const FULL_PAIRS = 64; // PER opponent AND handicap: 1,024 full-row games.
 export const SEEDS = { pilot: 20260956, full: 20260957 } as const;
+export const AMENDMENT = 'A1' as const;
 export interface Task {
   id: string; pairId: string; opponent: Opponent; handicap: 0 | 3;
   pair: number; seed: number; hardSeat: PlayerId;
@@ -27,13 +28,12 @@ export function schedule(mode: Mode): Task[] {
 }
 export interface Entry { task: Task; identityHash: string; record: GameRecord }
 export interface Bands { rulesVersion: string; purchaseRatePerSeat: number[]; inactivityDrawRate: number[] }
-export interface References { Rush: number | null; Expand: number | null; Balanced: number | null }
 const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
 const inBand = (v: number, band: number[]) => v >= band[0] && v <= band[1];
 const score = (e: Entry) => e.record.winner === null ? 0.5 : Number(e.record.winner === e.task.hardSeat);
 
 /** Exact schedule/identity validation precedes statistics. Missing cells cannot pass. */
-export function summarize(entries: Entry[], mode: Mode, identityHash: string, bands: Bands, refs: References) {
+export function summarize(entries: Entry[], mode: Mode, identityHash: string, bands: Bands) {
   const planned = schedule(mode);
   const byId = new Map(planned.map(t => [t.id, t]));
   const seen = new Set<string>(), errors: string[] = [];
@@ -44,6 +44,10 @@ export function summarize(entries: Entry[], mode: Mode, identityHash: string, ba
     if (JSON.stringify(byId.get(e.task.id)) !== JSON.stringify(e.task)) errors.push(`Schedule mismatch ${e.task.id}`);
     if (e.identityHash !== identityHash) errors.push(`Mixed identity ${e.task.id}`);
     const r = e.record;
+    if (r.completedTurns === undefined || !Number.isSafeInteger(r.completedTurns) || r.completedTurns < 0 ||
+      !Number.isSafeInteger(r.players[e.task.hardSeat].unitsPlaced) || r.players[e.task.hardSeat].unitsPlaced < 0) {
+      errors.push(`Invalid purchase/turn evidence ${e.task.id}`);
+    }
     const other = e.task.hardSeat === 'white' ? 'black' : 'white';
     if (r.rulesVersion !== 'muju-phasing-1' || r.seed !== e.task.seed || r.handicap !== e.task.handicap ||
       r.players[e.task.hardSeat].bot !== 'aiv2-hard' || r.players[other].bot !== e.task.opponent ||
@@ -61,9 +65,8 @@ export function summarize(entries: Entry[], mode: Mode, identityHash: string, ba
     const purchases = mean(group.map(e => e.record.players[e.task.hardSeat].unitsPlaced));
     const inactivity = mean(group.map(e => Number(e.record.inactivityDraw)));
     const adjudications = mean(group.map(e => Number(Boolean(e.record.adjudicated || e.record.capReason))));
-    const reference = opponent === 'aiv2-medium' ? null : refs[opponent];
-    const historical = opponent === 'aiv2-medium' ? 'not-applicable' : reference === null ? 'blocked-missing-reference'
-      : elo.elo >= 0.6 * reference ? 'meets-proposed-floor' : 'below-proposed-floor';
+    const mustBuyFailures = group.filter(e => (e.record.completedTurns ?? 0) > 10 &&
+      e.record.players[e.task.hardSeat].unitsPlaced === 0).map(e => e.task.id);
     const behavior = opponent === 'aiv2-medium' ? null
       : inBand(purchases, bands.purchaseRatePerSeat) && inBand(inactivity, bands.inactivityDrawRate);
     return { opponent, handicap, games: group.length, pairs: complete.length,
@@ -73,13 +76,16 @@ export function summarize(entries: Entry[], mode: Mode, identityHash: string, ba
         group.filter(e => e.task.hardSeat === seat && score(e) === 1).length])),
       meanCompletedTurns: mean(group.map(e => e.record.completedTurns ?? NaN)),
       purchasesPerHardSeat: purchases, inactivityDrawRate: inactivity, adjudicationRate: adjudications,
-      behavioralBandsMet: behavior, historicalReferenceElo: reference, historical,
+      behavioralBandsMet: behavior, mustBuyMet: mustBuyFailures.length === 0, mustBuyFailures,
+      strengthGated: opponent !== 'Rush',
       strengthMet: elo.muRaw > 0.5 && elo.eloLo > 0, adjudicationMet: adjudications <= 0.01,
     };
   }));
-  return { rulesVersion: 'muju-phasing-1', mode, identityHash, games: entries.length,
+  const criteriaMet = rows.every(r => (!r.strengthGated || r.strengthMet) &&
+    r.behavioralBandsMet !== false && r.mustBuyMet && r.adjudicationMet);
+  return { rulesVersion: 'muju-phasing-1', amendment: AMENDMENT, mode, identityHash, games: entries.length,
     expectedGames: planned.length, errors,
-    // This implementation is a PROPOSAL; adoption requires Claude's dated amendment.
-    gate1: errors.length ? 'invalid' : mode === 'pilot' ? 'pilot-ineligible' : 'blocked-unadopted-amendment',
-    missingHistoricalReferences: (['Rush', 'Expand', 'Balanced'] as const).filter(o => refs[o] === null), rows };
+    criteriaMet,
+    gate1: errors.length ? 'invalid' : mode === 'pilot' ? 'pilot-ineligible' : criteriaMet ? 'passed' : 'failed',
+    rows };
 }

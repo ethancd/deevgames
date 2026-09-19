@@ -8,14 +8,13 @@ import { defaultUpkeepAction } from '../../src/game/upkeep';
 import { instantiateTactics, type TacticalSolver } from '../../src/ai/wasm/kernel';
 import { createGateBot, workSlice, type Searcher } from '../../lab/ai/gate1-bot';
 import { schedule, summarize, type Entry, type Mode } from '../../lab/ai/gate1-report';
-import { parseArgs, resolvedConfigs, runTask } from '../../lab/ai/gate1';
+import { adoptedProtocol, parseArgs, resolvedConfigs, runTask } from '../../lab/ai/gate1';
 import { DEFAULT_MATCH_OPTIONS, type GameRecord } from '../../lab/harness/types';
 
 let solver: TacticalSolver;
 beforeAll(async () => { solver = await instantiateTactics(readFileSync('src/ai/wasm/tactics.wasm')); });
 const initial = () => createInitialGameState(undefined, 4, 0, 'phasing');
 const bands = JSON.parse(readFileSync('lab/harness/results/p1-scripted-2026-09-18/sanity-bands.json', 'utf8'));
-const refs = { Rush: 458.45121427129516, Expand: null, Balanced: null };
 
 function synthetic(mode: Mode): Entry[] {
   return schedule(mode).map(task => ({ task, identityHash: 'identity', record: {
@@ -43,16 +42,69 @@ describe('allocation and reporting', () => {
     expect(new Set(full.map(t => t.seed)).size).toBe(512);
     expect(schedule('pilot').some(t => full.some(f => f.seed === t.seed))).toBe(false);
   });
-  it('cannot pass on a pilot, missing historical margins, or an unadopted proposal', () => {
-    const full = summarize(synthetic('full'), 'full', 'identity', bands, refs);
+  it('passes A1 full evidence without historical references and never passes a pilot', () => {
+    const full = summarize(synthetic('full'), 'full', 'identity', bands);
     expect(full.errors).toEqual([]);
-    expect(full.gate1).toBe('blocked-unadopted-amendment');
-    expect(full.missingHistoricalReferences).toEqual(['Expand', 'Balanced']);
+    expect(full.gate1).toBe('passed');
+    expect(full.amendment).toBe('A1');
     expect(full.rows.every(r => r.strengthMet)).toBe(true);
-    expect(full.rows.filter(r => r.opponent === 'Expand').every(r => r.historical === 'blocked-missing-reference')).toBe(true);
-    expect(summarize(synthetic('pilot'), 'pilot', 'identity', bands, refs).gate1).toBe('pilot-ineligible');
+    expect(summarize(synthetic('pilot'), 'pilot', 'identity', bands).gate1).toBe('pilot-ineligible');
+    expect(adoptedProtocol().amendment.id).toBe('A1');
   });
-  it.each(['missing', 'duplicate', 'identity', 'seed', 'seat', 'illegal', 'invariant', 'anomaly'] as const)
+  it('reports a Rush loss without gating strength, but gates every other opponent and handicap', () => {
+    const entries = synthetic('full');
+    for (const e of entries.filter(e => e.task.opponent === 'Rush')) {
+      e.record.winner = e.task.hardSeat === 'white' ? 'black' : 'white';
+    }
+    const report = summarize(entries, 'full', 'identity', bands);
+    expect(report.gate1).toBe('passed');
+    expect(report.rows.filter(r => r.opponent === 'Rush').every(r => !r.strengthGated && !r.strengthMet)).toBe(true);
+    for (const opponent of ['Expand', 'Balanced', 'aiv2-medium']) for (const handicap of [0, 3]) {
+      const failed = structuredClone(entries);
+      for (const e of failed.filter(e => e.task.opponent === opponent && e.task.handicap === handicap)) e.record.winner = null;
+      expect(summarize(failed, 'full', 'identity', bands).gate1).toBe('failed');
+    }
+  });
+  it('requires an interval excluding zero, not only a positive score', () => {
+    const entries = synthetic('full');
+    const cell = entries.filter(e => e.task.opponent === 'Expand' && e.task.handicap === 0);
+    cell.forEach((e, i) => { if (i >= 66) e.record.winner = e.task.hardSeat === 'white' ? 'black' : 'white'; });
+    const report = summarize(entries, 'full', 'identity', bands);
+    const row = report.rows.find(r => r.opponent === 'Expand' && r.handicap === 0)!;
+    expect(row.elo.muRaw).toBeGreaterThan(0.5);
+    expect(row.elo.eloLo).toBeLessThan(0);
+    expect(report.gate1).toBe('failed');
+  });
+  it.each(['Rush', 'Expand', 'Balanced', 'aiv2-medium'])('requires a purchase after ten completed turns vs %s', opponent => {
+    const entries = synthetic('full');
+    const game = entries.find(e => e.task.opponent === opponent && e.task.hardSeat === 'black')!;
+    game.record.players.black.unitsPlaced = 0;
+    game.record.completedTurns = 10;
+    expect(summarize(entries, 'full', 'identity', bands).gate1).toBe('passed');
+    game.record.completedTurns = 11;
+    const failed = summarize(entries, 'full', 'identity', bands);
+    expect(failed.gate1).toBe('failed');
+    expect(failed.rows.flatMap(r => r.mustBuyFailures)).toEqual([game.task.id]);
+    game.record.players.black.unitsPlaced = 1;
+    expect(summarize(entries, 'full', 'identity', bands).gate1).toBe('passed');
+  });
+  it('identifies the historical zero-buy Rush game using completed player turns, not rounds', () => {
+    const entries = readFileSync('lab/ai/results/t2b-gate1-pilot-2026-09-19/games.jsonl', 'utf8').trim().split('\n').map(line => JSON.parse(line)) as Entry[];
+    const report = summarize(entries, 'pilot', entries[0].identityHash, bands);
+    expect(report.gate1).toBe('pilot-ineligible');
+    expect(report.criteriaMet).toBe(false);
+    expect(report.rows.flatMap(r => r.mustBuyFailures)).toEqual(['Rush-h0-p0-black']);
+  });
+  it.each(['purchases', 'inactivity', 'adjudication'])('still gates Rush %s behavior', field => {
+    const entries = synthetic('full');
+    for (const e of entries.filter(e => e.task.opponent === 'Rush' && e.task.handicap === 3)) {
+      if (field === 'purchases') e.record.players[e.task.hardSeat].unitsPlaced = 1;
+      if (field === 'inactivity') e.record.inactivityDraw = true;
+      if (field === 'adjudication') e.record.adjudicated = true;
+    }
+    expect(summarize(entries, 'full', 'identity', bands).gate1).toBe('failed');
+  });
+  it.each(['missing', 'duplicate', 'identity', 'seed', 'seat', 'illegal', 'invariant', 'anomaly', 'turns', 'buys'] as const)
   ('voids a row with %s evidence', kind => {
     const entries = synthetic('pilot');
     if (kind === 'missing') entries.pop();
@@ -62,8 +114,10 @@ describe('allocation and reporting', () => {
     if (kind === 'seat') entries[0].record.players.white.bot = 'aiv2-medium';
     if (kind === 'illegal') entries[0].record.players.black.illegalActions++;
     if (kind === 'invariant') entries[0].record.invariantViolation = 'bad';
+    if (kind === 'turns') entries[0].record.completedTurns = NaN;
+    if (kind === 'buys') entries[0].record.players.white.unitsPlaced = -1;
     if (kind === 'anomaly') entries[0].record.anomalies.push('no-op');
-    expect(summarize(entries, 'pilot', 'identity', bands, refs).gate1).toBe('invalid');
+    expect(summarize(entries, 'pilot', 'identity', bands).gate1).toBe('invalid');
   });
   it('checks purchase, inactivity, adjudication and score per handicap, not pooled', () => {
     const entries = synthetic('full');
@@ -71,7 +125,7 @@ describe('allocation and reporting', () => {
       e.record.players[e.task.hardSeat].unitsPlaced = 0;
       e.record.inactivityDraw = true; e.record.winner = null; e.record.adjudicated = true;
     }
-    const rows = summarize(entries, 'full', 'identity', bands, refs).rows;
+    const rows = summarize(entries, 'full', 'identity', bands).rows;
     expect(rows[0].behavioralBandsMet).toBe(true);
     expect(rows[1].behavioralBandsMet).toBe(false);
     expect(rows[1].strengthMet).toBe(false);
