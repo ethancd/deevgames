@@ -10,6 +10,7 @@ import { AI_PACES, AI_PACE_LABEL, AI_TURN_SECONDS, formatTurnSeconds, type AIPac
 import { getActionsPerTurn } from '../game/rules';
 import { INACTIVITY_LIMIT } from '../game/inactivity';
 import { loadAIPace, loadGameState } from '../utils/persistence';
+import { readPhasingAiPreview } from '../ai/phasingPreview';
 
 const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
 
@@ -43,6 +44,18 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   const [savedGame] = useState(loadGameState);
   const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
   const [ruleset, setRuleset] = useState<Ruleset>('standard');
+  /**
+   * THE PHASING AI PREVIEW, read once when the mode screen mounts. Without it
+   * this screen behaves exactly as it always has: the ruleset control appears
+   * for Pass & Play only, the AI modes say "AI plays Standard rules", and
+   * `handleStart` refuses to start a Phasing game in any other mode. With it,
+   * the AI modes get the same control, badged as an unreleased preview.
+   * See `src/ai/phasingPreview.ts`.
+   */
+  const [previewOptIn] = useState(readPhasingAiPreview);
+  /** Which modes may choose a ruleset at all. */
+  const aiMode = selectedMode === 'vs-ai' || selectedMode === 'ai-vs-ai';
+  const canChooseRuleset = selectedMode === 'pass-play' || (previewOptIn && aiMode);
 
   const handleSideChange = (side: PlayerId) => {
     setPlayerSide(side);
@@ -93,8 +106,11 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         break;
     }
 
-    const chosenRules = newGame ? (selectedMode === 'pass-play' ? ruleset : 'standard') : savedGame?.ruleset ?? 'standard';
-    if (chosenRules === 'phasing' && selectedMode !== 'pass-play') return;
+    const chosenRules = newGame ? (canChooseRuleset ? ruleset : 'standard') : savedGame?.ruleset ?? 'standard';
+    // THE GUARD, unchanged without the opt-in: a Phasing game may only start in
+    // Pass & Play, because the AI seats of the other modes have no release gate
+    // under those rules. The preview opt-in is the only thing that widens it.
+    if (chosenRules === 'phasing' && selectedMode !== 'pass-play' && !previewOptIn) return;
     onStartGame({ ...config, ruleset: chosenRules, blackCrystalHandicap, newGame });
   };
 
@@ -261,10 +277,10 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
           </div>
         )}
 
-        {selectedMode === 'pass-play' && <RulesetSelect value={ruleset} onChange={setRuleset} />}
-        {(selectedMode === 'vs-ai' || selectedMode === 'ai-vs-ai') && <p className="text-sm text-gray-400">Difficulty is how well the AI understands the game; thinking time is how long it looks before moving. It plays as soon as it is ready.</p>}
-        {(selectedMode === 'vs-ai' || selectedMode === 'ai-vs-ai') && <p className="text-sm text-gray-400">AI plays Standard rules. Try Phasing in Pass & Play or online.</p>}
-        {selectedMode && <BlackCrystalHandicap phasing={selectedMode === 'pass-play' && ruleset === 'phasing'} value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
+        {canChooseRuleset && <RulesetSelect value={ruleset} onChange={setRuleset} aiPreview={previewOptIn && aiMode} />}
+        {aiMode && <p className="text-sm text-gray-400">Difficulty is how well the AI understands the game; thinking time is how long it looks before moving. It plays as soon as it is ready.</p>}
+        {aiMode && !previewOptIn && <p className="text-sm text-gray-400">AI plays Standard rules. Try Phasing in Pass &amp; Play or online.</p>}
+        {selectedMode && <BlackCrystalHandicap phasing={canChooseRuleset && ruleset === 'phasing'} value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
 
         {/* Start button */}
         {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · Draw after {INACTIVITY_LIMIT} consecutive turns without a kill.</p>}
@@ -279,7 +295,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         >
           Start Game
         </button>
-        {savedGame && <button disabled={!selectedMode || (savedGame.ruleset === 'phasing' && selectedMode !== 'pass-play')} onClick={() => handleStart(false)}
+        {savedGame && <button disabled={!selectedMode || (savedGame.ruleset === 'phasing' && selectedMode !== 'pass-play' && !previewOptIn)} onClick={() => handleStart(false)}
           className="w-full p-3 rounded-lg border border-gray-600 disabled:text-gray-500">
           Continue saved game · {rulesetLabel(savedGame)} · {getActionsPerTurn(savedGame)} actions
         </button>}
