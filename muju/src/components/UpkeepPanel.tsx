@@ -4,7 +4,7 @@ import type { GameState } from '../game/types';
 import { getUnitDefinition } from '../game/units';
 import { unitUpkeep } from '../game/upkeep';
 
-export function UpkeepPanel({state,onConfirm,disabled=false,inline=false}:{state:GameState;onConfirm:(ids:string[])=>void;disabled?:boolean;inline?:boolean}) {
+export function UpkeepPanel({state,onConfirm,onUndo,disabled=false,inline=false}:{state:GameState;onConfirm:(ids:string[])=>void;onUndo?:()=>void;disabled?:boolean;inline?:boolean}) {
   const units=state.board.units.filter(u=>u.owner===state.turn.currentPlayer);
   const [kept,setKept]=useState(()=>units.map(u=>u.id));
   const dialog=useRef<HTMLDialogElement>(null);
@@ -19,6 +19,9 @@ export function UpkeepPanel({state,onConfirm,disabled=false,inline=false}:{state
       </label>;})}</div>
       <p role="status" className={cost>cash?'rent-warning':''}>Upkeep {cost} / {cash} crystals · {units.length-kept.length} released</p>
       <button className="primary" disabled={disabled||cost>cash} onClick={()=>onConfirm(kept)}>{disabled ? 'Confirming upkeep…' : 'Pay upkeep & continue'}</button>
+      {onUndo && <button disabled={disabled} onClick={onUndo}>Undo last step</button>}
     </div>;
-  return inline ? <section aria-label="Choose upkeep">{content}</section> : <dialog ref={dialog} className="play-dialog upkeep-dialog" aria-label="Choose upkeep" aria-busy={disabled} onCancel={e=>e.preventDefault()}>{content}</dialog>;
+  return inline ? <section aria-label="Choose upkeep">{content}</section> : <dialog ref={dialog} className="play-dialog upkeep-dialog" aria-label="Choose upkeep" aria-busy={disabled} onCancel={e=>e.preventDefault()}
+    onClose={e=>{if(e.currentTarget.isConnected)e.currentTarget.showModal();}}
+    onKeyDown={e=>{if(e.key==='Enter'&&!e.repeat&&!(e.target as HTMLElement).closest('button')&&!disabled&&cost<=cash){e.preventDefault();onConfirm(kept);}}}>{content}</dialog>;
 }

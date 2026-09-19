@@ -38,7 +38,7 @@ import { getSpawnInvalidReason } from '../game/spawning';
 import { findAttackApproach, getMovementRange, getAttackFrontier, type MovementRangePosition } from '../game/movement';
 import { calculateAttackPower, calculateDefense } from '../game/combat';
 import { PlayDialog } from './PlayDialog';
-import type { Position, GameConfig, PlayerId, Element } from '../game/types';
+import type { Position, GameConfig, PlayerId, Element, Unit } from '../game/types';
 import type { ReactNode } from 'react';
 import type { IncomingFrame } from '../online/incomingPlayback';
 
@@ -156,6 +156,9 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   const isCurrentPlayerHuman = !analysis?.reviewing && config.controls[state.turn.currentPlayer] === 'human' &&
     (!online || (state.turn.currentPlayer === online.player && online.ready && !online.busy));
   const inspectOnly = !!online && (!isCurrentPlayerHuman || !!online.playingIncoming);
+  // The modal makes the action bar inert, so it carries its own way back.
+  const choosingUpkeep = state.upkeepPending && !analysis && config.controls[state.turn.currentPlayer] === 'human' &&
+    (!online || (online.player === state.turn.currentPlayer && online.ready)) && !showPassOverlay && !showReplay && !online?.playingIncoming;
   useEffect(() => {
     if (!inspectOnly) {
       setViewedEnemyUnitId(null); setViewedSummonId(null); setShowEnemyRange(false);
@@ -557,15 +560,41 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       if (e.key === 'Escape') { e.preventDefault(); closeReplay(); }
       return;
     }
+    if (choosingUpkeep && (e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      if (canUndo && !online?.busy) undo();
+      return;
+    }
+    // === Unit guide: U opens it on anyone's turn; inside, 1–3 pick the tier, A S D F G H
+    // the element, and Tab walks F1 L1 W1 S1 P1 M1 F2 … ===
+    const plainKey = !e.metaKey && !e.ctrlKey && !e.altKey && !(e.target instanceof HTMLElement && e.target.closest('select, textarea, input:not([type=checkbox], [type=radio])'));
+    if (showUnitShopInspection) {
+      if (!plainKey) return;
+      const shown = getUnitDefinition(shopSelectedId ?? 'fire_1'), guideKey = e.key.toLowerCase();
+      const guide = [...UNIT_DEFINITIONS].sort((a, b) => a.tier - b.tier || ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element));
+      const element = ELEMENT_ORDER['asdfgh'.indexOf(guideKey)];
+      const next = guideKey === 'tab' ? guide[(guide.findIndex(d => d.id === shown.id) + (e.shiftKey ? -1 : 1) + guide.length) % guide.length]
+        : guideKey === 'u' ? null
+        : guide.find(d => guideKey.length === 1 && (element ? d.element === element && d.tier === shown.tier : d.element === shown.element && String(d.tier) === guideKey));
+      if (next === undefined) return;
+      e.preventDefault();
+      if (next) setShopSelectedId(next.id); else setShowUnitShopInspection(false);
+      return;
+    }
+    if (plainKey && e.key.toLowerCase() === 'u' && !state.upkeepPending && !showPassOverlay && !showMenu && !showInstructions && !showInsights && !showVisualKey && state.phase === 'playing') {
+      e.preventDefault();
+      setShowUnitShopInspection(true);
+      return;
+    }
     if (inspectOnly || !isCurrentPlayerHuman || isThinking || state.upkeepPending || showPassOverlay || showMenu || showInstructions || showUnitShopInspection || showInsights || showVisualKey) return;
     const control = e.target instanceof HTMLElement ? e.target.closest('button, select, a, input, textarea') : null;
-    if (control?.matches('select, input, textarea')) return;
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !control?.matches('textarea, input:not([type=checkbox], [type=radio])')) {
       e.preventDefault();
       setPreview(null); setPendingMovePath([]);
       if (canUndo) undo();
       return;
     }
+    if (control?.matches('select, input, textarea')) return;
     if (preview) {
       if (e.key === 'Escape') { e.preventDefault(); setPreview(null); }
       if (e.key === 'Enter' && (!control || control.matches('.board-cell'))) { e.preventDefault(); commitPreview(); }
@@ -575,14 +604,15 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
     const key = e.key.toLowerCase();
-    // Native button activation and Tab navigation keep their normal behavior.
-    if (control && (key === 'enter' || key === ' ' || (key.startsWith('arrow') && !control.matches('.board-cell')))) return;
+    // Enter and Tab are game shortcuts wherever focus rests; Space still activates a focused button.
+    if (control && (key === ' ' || (key.startsWith('arrow') && !control.matches('.board-cell')))) return;
     const currentPlayer = state.turn.currentPlayer;
     const currentPlayerState = state.players[currentPlayer];
 
     // === Enter: End current phase ===
     if (key === 'enter') {
       e.preventDefault();
+      if (e.repeat) return;
       // Commit any pending move first
       if (pendingMovePath.length > 0 && state.selectedUnit) {
         const finalPosition = pendingMovePath[pendingMovePath.length - 1];
@@ -594,6 +624,31 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       } else if (state.turn.phase === 'action') {
         endActionPhase();
       }
+      return;
+    }
+
+    // === Tab: Cycle all pieces, own first, each side in A–J then 1–10 order ===
+    if (key === 'tab') {
+      e.preventDefault();
+      if (pendingMovePath.length > 0 && state.selectedUnit) {
+        moveUnit(state.selectedUnit, pendingMovePath[pendingMovePath.length - 1]);
+        setPendingMovePath([]);
+      }
+      const byCoordinate = (a: Unit, b: Unit) => a.position.x - b.position.x || a.position.y - b.position.y;
+      const order = [...[...playerOwnUnits].sort(byCoordinate),
+        ...state.board.units.filter(u => u.owner !== currentPlayer).sort(byCoordinate)];
+      if (order.length === 0) return;
+      const currentId = viewedEnemyUnitId ?? (state.turn.phase === 'action' ? state.selectedUnit : selectedPlaceUnitId);
+      const index = order.findIndex(u => u.id === currentId);
+      const next = order[index < 0 ? (e.shiftKey ? order.length - 1 : 0) : (index + (e.shiftKey ? -1 : 1) + order.length) % order.length];
+      setViewedSummonId(null); setSelectedPurchaseId(null);
+      if (next.owner === currentPlayer) {
+        setViewedEnemyUnitId(null);
+        if (state.turn.phase === 'action') selectUnit(next.id); else setSelectedPlaceUnitId(next.id);
+      } else {
+        deselect(); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(next.id);
+      }
+      document.querySelector<HTMLElement>(`[data-testid="cell-${next.position.x}-${next.position.y}"]`)?.focus();
       return;
     }
 
@@ -631,16 +686,18 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       return;
     }
 
-    if (state.turn.phase === 'place' && ['1','2','3','4','5','6'].includes(key)) {
-      const def = UNIT_DEFINITIONS.find(d => d.element === ELEMENT_ORDER[Number(key)-1] && d.tier === 1)!;
+    // 1–6, or A S D F G H as in the unit guide, choose a tier-1 purchase by element.
+    const purchaseIndex = key.length === 1 ? Math.max('123456'.indexOf(key), 'asdfgh'.indexOf(key)) : -1;
+    if (state.turn.phase === 'place' && purchaseIndex >= 0) {
+      const def = UNIT_DEFINITIONS.find(d => d.element === ELEMENT_ORDER[purchaseIndex] && d.tier === 1)!;
       if (def.cost <= currentPlayerState.resources) { setSelectedPurchaseId(def.id); setSelectedPlaceUnitId(null); }
       e.preventDefault(); return;
     }
 
     // === Place phase shortcuts ===
     if (state.turn.phase === 'place') {
-      // U: Upgrade/promote selected unit
-      if (key === 'u' && selectedPlaceUnitId) {
+      // P: Promote the selected unit
+      if (key === 'p' && selectedPlaceUnitId) {
         e.preventDefault();
         const unit = getUnitById(state.board, selectedPlaceUnitId);
         if (unit) {
@@ -652,6 +709,13 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         }
         return;
       }
+    }
+
+    // Escape: Clear the current selection or inspection, after any pending movement
+    if (key === 'escape' && pendingMovePath.length === 0 && (state.selectedUnit || selectedPlaceUnitId || selectedPurchaseId || viewedEnemyUnitId || viewedSummonId)) {
+      e.preventDefault();
+      deselect(); setSelectedPlaceUnitId(null); setSelectedPurchaseId(null); setViewedEnemyUnitId(null); setViewedSummonId(null);
+      return;
     }
 
     // === Action phase shortcuts ===
@@ -710,8 +774,8 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     }
   }, [
     inspectOnly, isCurrentPlayerHuman, isThinking, showPassOverlay, state, playerOwnUnits,
-    selectUnit, selectedPlaceUnitId, promoteUnit, moveUnit, moveAndAttack, attackWith,
-    showReplay, closeReplay, canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights, showVisualKey
+    selectUnit, deselect, selectedPlaceUnitId, selectedPurchaseId, viewedEnemyUnitId, viewedSummonId, promoteUnit, moveUnit, moveAndAttack, attackWith,
+    shopSelectedId, showReplay, closeReplay, choosingUpkeep, online?.busy, canUndo, undo, endPlacePhase, endActionPhase, pendingMovePath, preview, showMenu, showInstructions, showUnitShopInspection, showInsights, showVisualKey
   ]);
 
   // Attach keyboard listener
@@ -817,9 +881,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     <main className={`game-shell${phasing ? ' game-shell-phasing' : ''}${online ? ' game-shell-online' : ''}${observing ? ' game-shell-observer' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
       {state.phase === 'victory' && !analysis && !online?.playingIncoming && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? '/muju/analysis?local=1'} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} />}
       {showPassOverlay && state.phase === 'playing' && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
-      {state.upkeepPending && !analysis && config.controls[state.turn.currentPlayer] === 'human' &&
-        (!online || (online.player === state.turn.currentPlayer && online.ready)) && !showPassOverlay && !showReplay && !online?.playingIncoming &&
-        <UpkeepPanel state={state} onConfirm={payUpkeep} disabled={online?.busy} />}
+      {choosingUpkeep && <UpkeepPanel state={state} onConfirm={payUpkeep} onUndo={canUndo ? undo : undefined} disabled={online?.busy} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} phasing={phasing} />
       <aside className="game-overview" aria-label="Match overview">
         {online?.banner}
