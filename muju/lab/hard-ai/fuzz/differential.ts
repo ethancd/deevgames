@@ -92,6 +92,7 @@ import { recomputeKpos, recomputeKturn, recomputeOccHash } from '../../../src/ai
 import { pendKeyReplica } from '../../../src/ai/hard/verify/perft';
 import { checkInvariants } from '../../harness/invariants';
 import { DEFAULT_RULES, type RulesBlock, type StoredPosition } from '../positions/corpus';
+import { PackedSnapshot } from './statesnap';
 
 export type Surface = 'transition' | 'legality' | 'arrival';
 
@@ -115,6 +116,14 @@ export interface FuzzOptions {
    * how the seeds of earlier converger rounds are re-run as true repros.
    */
   resignRate: number;
+  /**
+   * TEST SEAM. The `Replica` the walk drives; a fresh one when omitted. The
+   * production replica carries no fault hooks — `tests/lab/fuzz-fault-injection.test.ts`
+   * passes a SUBCLASS whose `unmake` (or `rehash`, or `unpack`, or `genActions`)
+   * corrupts one lane, and asserts the counter the corruption belongs to moves.
+   * Nothing in `lab/**` or `src/**` ever sets it.
+   */
+  replica?: Replica;
 }
 
 export interface FuzzMetrics {
@@ -261,7 +270,7 @@ function canonicalLegalSet(state: GameState): string[] {
  * the digest stays complete whatever `Replica.digest` currently carries — a
  * commitment and its cost are exactly the state a dropped field would hide.
  */
-function fuzzDigest(replica: Replica, p: PackedState): string {
+export function fuzzDigest(replica: Replica, p: PackedState): string {
   const counts = `${p.pendCount[0]}.${p.pendCount[1]}.${p.pendCostSum[0]}.${p.pendCostSum[1]}`;
   return `${replica.digest(p)}||P:${pendKeyReplica(p)}||C:${counts}||B:${p.bank[0]}.${p.bank[1]}`;
 }
@@ -397,7 +406,8 @@ function adoptNewUnitIds(p: PackedState, before: GameState, after: GameState): v
 
 export function runFuzz(options: FuzzOptions): FuzzResult {
   const started = Date.now();
-  const replica = new Replica();
+  const replica = options.replica ?? new Replica();
+  const snapshot = new PackedSnapshot();
   const undo = newUndo();
   const keep = newKeepSetTable();
   const canonicalPacked = allocState();
@@ -458,7 +468,13 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
   };
 
   let game = 0;
-  while (metrics.actions < options.actions) {
+  // A divergence ABANDONS the game before `metrics.actions` is incremented, so
+  // a SYSTEMATIC one (every game, from its first action) leaves the action
+  // budget untouched and this loop would start games forever. Stop at the
+  // reproducer cap instead: 32 recorded divergences is already a failing run,
+  // and nothing after them is read. Found by round 5's fault injection, which
+  // is exactly the systematic case.
+  while (metrics.actions < options.actions && divergences.length < 32) {
     const rng = seededRandom((options.seed + game * 7919) >>> 0);
     // A SEPARATE stream, so the injection below cannot shift `rng` and every seed
     // of an earlier round replays identically at `resignRate: 0`.
@@ -545,25 +561,34 @@ export function runFuzz(options: FuzzOptions): FuzzResult {
       }
 
       const next = applyAction(state, action);
-      const digestBefore = fuzzDigest(replica, p);
+      // FULL-STATE unmake identity: every typed array, every scalar and both id
+      // planes are captured byte for byte BEFORE `make` and compared byte for
+      // byte immediately after `unmake`, before the action is made again. The
+      // digest this used to compare walks `pieceAt` and cannot see `occ`,
+      // `occBy`, `occTier`, `initialReserve`, `gained`, `materialCc`,
+      // `pstSumCc`, `slotCount` or the id planes; and `firstDifference`'s
+      // occupancy loops run only after the RE-make, which repairs any lane
+      // `make` overwrites unconditionally. See `statesnap.ts`.
+      snapshot.capture(p);
       undo.top = 0;
       replica.resetUndoScratch();
       replica.make(p, chosen, undo, keep);
 
       // unmake identity
       replica.unmake(p, undo);
-      if (fuzzDigest(replica, p) !== digestBefore) {
+      const restored = snapshot.firstDifference(p);
+      if (restored !== null) {
         record({
           kind: 'unmake',
           seed: options.seed,
           game,
           ply,
-          field: 'digest',
+          field: restored,
           action,
           prefix: [...prefix],
           rules,
           replica: fuzzDigest(replica, p),
-          canonical: digestBefore,
+          canonical: 'pre-make snapshot (see field)',
           state,
         });
         break;
@@ -982,6 +1007,8 @@ export interface ArrivalOptions {
   /** Plies to walk before synthesising commitments (upper bound; randomised). */
   plies: number;
   reproDir: string | null;
+  /** TEST SEAM; see `FuzzOptions.replica`. */
+  replica?: Replica;
 }
 
 export interface ArrivalMetrics {
@@ -1210,7 +1237,8 @@ function unusableReason(state: GameState): string | null {
  */
 export function runArrivalSurface(options: ArrivalOptions): ArrivalMetrics {
   const started = Date.now();
-  const replica = new Replica();
+  const replica = options.replica ?? new Replica();
+  const snapshot = new PackedSnapshot();
   const undo = newUndo();
   const keep = newKeepSetTable();
   const canonicalPacked = allocState();
@@ -1309,23 +1337,29 @@ export function runArrivalSurface(options: ArrivalOptions): ArrivalMetrics {
       continue;
     }
     const bankBefore = p.bank[other === 'white' ? 0 : 1];
-    const digestBefore = fuzzDigest(replica, p);
     const endPlace = paMake(AKind.END_PLACE, 0, 0, 0);
 
+    // FULL-STATE unmake identity, exactly as in the walk above: every typed
+    // array, scalar and id plane, captured before `make` and compared before
+    // the action is made again. The hand-off is the WIDEST make in the replica
+    // (arrivals, refunds, slot resurrection, income, upkeep, adjudication), so
+    // it is the one whose restoration a digest was least able to police.
+    snapshot.capture(p);
     undo.top = 0;
     replica.resetUndoScratch();
     replica.make(p, endPlace, undo, keep);
     replica.unmake(p, undo);
-    if (fuzzDigest(replica, p) !== digestBefore) {
+    const restored = snapshot.firstDifference(p);
+    if (restored !== null) {
       metrics.unmakeMismatches++;
       divergences.push({
         kind: 'unmake',
         seed: options.seed,
         case: caseIndex,
-        field: 'digest',
+        field: restored,
         intrusion: kind,
         replica: fuzzDigest(replica, p),
-        canonical: digestBefore,
+        canonical: 'pre-make snapshot (see field)',
         before,
         after,
       });

@@ -549,6 +549,13 @@ export interface GatePreservationOptions {
   /** Plies per game before the game is abandoned. */
   plies: number;
   reproDir: string | null;
+  /**
+   * TEST SEAM (see `FuzzOptions.replica`): the `Replica` the walk drives, a
+   * fresh one when omitted. `tests/lab/fuzz-fault-injection.test.ts` passes a
+   * subclass whose `make` corrupts the adjudicated `result`/`reason`, and
+   * asserts `mismatches` moves — i.e. that this surface can fail at all.
+   */
+  replica?: Replica;
 }
 
 export interface GatePreservationMetrics {
@@ -674,7 +681,7 @@ function cornerOccupied(p: PackedState): boolean {
 
 export function runGatePreservation(options: GatePreservationOptions): GatePreservationMetrics {
   const started = Date.now();
-  const replica = new Replica();
+  const replica = options.replica ?? new Replica();
   const undo = newUndo();
   const keep = newKeepSetTable();
   const genBuffer = new Int32Array(GEN_CAPACITY);
@@ -693,7 +700,9 @@ export function runGatePreservation(options: GatePreservationOptions): GatePrese
   };
 
   let game = 0;
-  while (metrics.actions < options.actions) {
+  // Same guard as the transition walk: a mismatch abandons the game before the
+  // action counter moves, so a systematic one would start games forever.
+  while (metrics.actions < options.actions && divergences.length < 16) {
     const rng = seededRandom((options.seed + game * 7919) >>> 0);
     const handicap = rng() < 0.5 ? 3 : 0;
     // `victoryRule: 'elimination'` switches the gate OFF entirely

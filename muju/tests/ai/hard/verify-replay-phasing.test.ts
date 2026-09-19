@@ -23,16 +23,31 @@
  * one of those is a position `pack` has to agree about, and the `Kpos`
  * comparison is the only check that can see a pending-plane divergence.
  *
- * ONE known divergence is tolerated, and only one: `tactics/prover.ts` still
- * searches STANDARD's rescue (upkeep releases plus pre-action promotions), which
- * is a strictly LARGER rescue set than Phasing's act-only four actions, so the
- * packed prover can only ever UNDER-claim a Phasing home checkmate. When it
- * does, the replica walks on past a boundary at which the canonical engine has
- * already awarded the game, and `isLegalAction` then refuses the next action
- * because `state.phase !== 'playing'` (`legality.ts:18`). `knownProverGap`
- * recognises exactly that shape — a canonical `home-checkmate` victory reached
- * inside the line — counts it, and every test caps it. Anything else is a
- * failure. The prover is out of M2 scope and is restored in M4.
+ * NOTHING IS TOLERATED. Every qualifying walked turn must verify: the canonical
+ * engine must accept every action of the line and must land on the exact `Kpos`
+ * the replica recorded. There is no allowance, no counter and no cap.
+ *
+ * This file used to carry one — `knownProverGap`, which excused a failed
+ * `verifyTurn` whenever the canonical engine had awarded a `home-checkmate`
+ * victory somewhere inside the line, and let the first test through with up to
+ * 11 such failures. That exemption existed because `tactics/prover.ts` searched
+ * STANDARD's rescue (upkeep releases plus pre-action promotions) while the
+ * replica was already Phasing, so the packed prover adjudicated home checkmate
+ * at the wrong boundary and the replica walked on past a decided position.
+ * Round 4 ported the prover to Phasing's act-only rescue
+ * (`homeCheckmate.ts:160`), which removed the cause, and round 5 removes the
+ * allowance: measured on these seeds, ZERO turns fail, and the exemption was
+ * only ever hiding the fact that the two engines disagreed about when the game
+ * was over.
+ *
+ * So what this file now proves is the whole contract, adjudication included:
+ * for a line the replica's own generators produced, the canonical engine agrees
+ * action for action — including that the game is NOT over at each step and IS
+ * over where the replica says it is — and ends in the same packed position. The
+ * first test additionally counts the turns whose line reaches a canonical
+ * VICTORY (home-checkmate among them, which is precisely the class the old
+ * exemption absorbed) and requires at least one, so "no failures" cannot be
+ * true vacuously by never reaching the boundary.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { AKind, newKeepSetTable, paMake, paKind } from '../../../src/ai/hard/core/action';
@@ -62,23 +77,6 @@ interface Walked {
   turn: Turn;
   kinds: number[];
   ended: boolean;
-}
-
-/**
- * True when the ONLY thing wrong with `check` is the Standard prover's
- * under-claim: the canonical engine awarded a `home-checkmate` victory somewhere
- * inside the line, so every later action is refused for a reason that has
- * nothing to do with the replica's transitions. See the file header. Any other
- * refusal — a different victory reason, a `Kpos` mismatch, a decode failure —
- * returns false and fails the test.
- */
-function knownProverGap(check: ReturnType<typeof verifyTurn>): boolean {
-  return (
-    !check.verified &&
-    check.divergedAt >= 0 &&
-    check.endState.phase !== 'playing' &&
-    check.endState.victoryReason === 'home-checkmate'
-  );
 }
 
 /**
@@ -145,7 +143,9 @@ describe('verify/replay.ts under Phasing', () => {
   it('verifies a hand-built macro turn that crosses END_ACTION and END_PLACE', () => {
     const rng = seededRandom(0x56455231);
     let crossed = 0;
-    let proverGaps = 0;
+    let verifiedTurns = 0;
+    let terminalLines = 0;
+    let homeCheckmates = 0;
     for (let trial = 0; trial < 120; trial++) {
       const state = randomState(rng, 3 + Math.floor(rng() * 6), {
         phase: 'action',
@@ -155,21 +155,27 @@ describe('verify/replay.ts under Phasing', () => {
       const { keep, root, walked } = prepareWalk(state, rng, null);
       if (walked.turn.count === 0) continue;
       const check = verifyTurn(replica, state, root, walked.turn, keep);
-      if (knownProverGap(check)) {
-        proverGaps++;
-        continue;
-      }
       expect(check.reason).toBeUndefined();
       expect(check.divergedAt).toBe(-1);
       expect(check.verified).toBe(true);
       expect(check.actions.length).toBe(walked.turn.count);
+      verifiedTurns++;
+      if (check.endState.phase !== 'playing') {
+        terminalLines++;
+        if (check.endState.victoryReason === 'home-checkmate') homeCheckmates++;
+      }
       if (walked.kinds.includes(AKind.END_ACTION) && walked.kinds.includes(AKind.END_PLACE)) crossed++;
     }
     // The shape this file exists for: most walked turns really do cross both
     // phase boundaries, so the assertions above are not all about short lines.
+    expect(verifiedTurns).toBe(120);
     expect(crossed).toBeGreaterThan(50);
-    // The prover gap is a handful of random boards, not the bulk of them.
-    expect(proverGaps).toBeLessThan(12);
+    // Not vacuous: some of those lines run INTO a canonical victory, and the
+    // replica agreed about where it was. Measured on this seed: 13 terminal
+    // lines, of which 2 are `home-checkmate` — the exact class the deleted
+    // `knownProverGap` allowance used to absorb.
+    expect(terminalLines).toBeGreaterThanOrEqual(5);
+    expect(homeCheckmates).toBeGreaterThanOrEqual(1);
   });
 
   it('verifies a turn whose Prepare phase records a commitment', () => {
@@ -185,7 +191,6 @@ describe('verify/replay.ts under Phasing', () => {
       const { keep, root, walked } = prepareWalk(state, rng, AKind.BUY);
       if (!walked.kinds.includes(AKind.BUY)) continue;
       const check = verifyTurn(replica, state, root, walked.turn, keep);
-      if (knownProverGap(check)) continue;
       withBuy++;
       expect(check.reason).toBeUndefined();
       expect(check.verified).toBe(true);
@@ -216,7 +221,6 @@ describe('verify/replay.ts under Phasing', () => {
       const { keep, root, walked } = prepareWalk(state, rng, null);
       if (!walked.kinds.includes(AKind.END_PLACE) || walked.ended) continue;
       const check = verifyTurn(replica, state, root, walked.turn, keep);
-      if (knownProverGap(check)) continue;
       expect(check.reason).toBeUndefined();
       expect(check.verified).toBe(true);
       // Black's plane is empty afterwards: each commitment either materialised

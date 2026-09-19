@@ -1,9 +1,15 @@
 # M2 — the packed replica becomes Phasing-only
 
 Status of the M2 exit criteria on `claude/hard-phasing-m2`, worktree
-`/Users/ashkie/src/deevgames-claude-hard-m2`, after **round 4**, which widened the
-lane to `src/ai/hard/tactics/prover.ts` and closed every divergence class rounds
-1-3 had documented as debt.
+`/Users/ashkie/src/deevgames-claude-hard-m2`, after **round 5**.
+
+Round 4 widened the lane to `src/ai/hard/tactics/prover.ts` and closed every
+divergence class rounds 1-3 had documented as debt. Round 5 closed something
+else: two places where the EVIDENCE could not have seen a bug, found by an
+independent review (Codex) which, for the second one, did not argue the point
+but proved it with a fault-injection probe. Round 5 found no new replica defect
+— it made two green checks mean what they had been claimed to mean, and it is
+now shown, test by test, that each surface's counter can move. §2.5.
 
 **Spec**: `muju/docs/PHASING-2026-09-16.md`.
 **Oracle**: `src/game/{rules,turn,summoning,legality,homeCheckmate,board}.ts` and
@@ -18,10 +24,11 @@ canonical engine wins.
 |---|---|---|
 | 1 | `npm run hard:types` and `npx tsc --noEmit -p .` clean | **PASS** |
 | 2 | `npm run hard:deps` clean | **PASS** (44 files, 0 violations) |
-| 3 | `hard:fuzz` on **all five** surfaces — transition, legality, arrival, **prover**, **gate-preservation** — 0 divergences of every kind | **PASS**, over 28.55M walk actions + 10M gate actions + 60,000 prover cases + 17,200 arrival cases |
-| 4 | `hard:perft --check` under both engines equal, counts frozen | **PASS**, nothing moved |
-| 5 | Full `npx vitest run` green | **PASS**, 135 files / 1,891 tests (`hard:test`: 41 files / 525) |
+| 3 | `hard:fuzz` on **all five** surfaces — transition, legality, arrival, **prover**, **gate-preservation** — 0 divergences of every kind | **PASS**. Round 4: 28.55M walk actions. Round 5, with the new FULL-STATE unmake comparison: a further 6.5M walk actions + 6.5M gate actions + 39,000 prover cases + 3,120 arrival cases, all zero (§3.1) |
+| 4 | `hard:perft --check` under both engines equal, counts frozen | **PASS**, nothing moved; `fixtures.json` byte-identical (sha256 `76db5122…`) |
+| 5 | Full `npx vitest run` green | **PASS**, 137 files / 1,908 tests (`hard:test`: 41 files / 525) |
 | — | Upper layers kept compiling, their tests quarantined in one place | **PASS**, one file fewer |
+| — | Every surface's zero counter is shown to be able to MOVE | **PASS**, 13 fault-injection cases in `tests/lab/fuzz-fault-injection.test.ts` (§2.5) |
 
 **Round 4 is the round in which criterion 3 became clean.** Rounds 1-3 ended with
 49 transition divergences, all of them the same out-of-scope file — the packed
@@ -239,6 +246,116 @@ are all **deleted**. `--allow-standard-surfaces` and the boxed skip it guarded a
 deleted too: the prover and gate-preservation surfaces are in the default surface
 set and run on every invocation.
 
+## 2.5 Round 5: two validation blind spots, and what closed them
+
+Neither was a wrong answer. Both were checks that could not have reported one.
+
+### 2.5.1 The Phasing replay test exempted its own failures
+
+`tests/ai/hard/verify-replay-phasing.test.ts` is the ONLY active Phasing
+coverage of `verify/replay.ts` (`tests/ai/hard/replay.test.ts` is quarantined
+until the turn generator is ported), and it carried a `knownProverGap`
+allowance: a failed `verifyTurn` was silently accepted whenever the canonical
+engine had awarded a `home-checkmate` victory somewhere inside the line, and its
+first test tolerated up to **11** such failures out of 120. The allowance was
+written for round 3's Standard prover and its header still described the gap as
+one-sided ("the packed prover can only ever UNDER-claim"), which round 4 had
+already shown to be false of the damage BOUND.
+
+Round 4 removed the cause. Round 5 removes the allowance, the predicate and the
+cap: **every** qualifying replayed turn must now verify — canonical accepts
+every action AND lands on the exact `Kpos` the replica recorded.
+
+Measured after the removal, with no other change: **0 failures**, on all three
+walks — 120/120 turns in the crossing-both-boundaries test, 66/66 in the
+commitment test, 83/83 in the arrivals test, 269 verified turns in all. The
+exemption had been excusing nothing since round 4; it was excusing the *shape*
+of a failure, and would have gone on excusing a real one.
+
+Two assertions were ADDED so "no failures" cannot become true vacuously by the
+walk never reaching an adjudication: the first test now counts the lines that
+run into a canonical victory (**13**, of which **2** are `home-checkmate` — the
+exact class the allowance used to absorb) and requires at least one of each.
+
+### 2.5.2 The unmake check could not see occupancy corruption
+
+The reviewer's finding, and the sharper of the two. In
+`lab/hard-ai/fuzz/differential.ts` the immediate unmake identity check compared
+`fuzzDigest` — `Replica.digest` (which walks `pieceAt`) plus the pending plane,
+the pending counts and both banks. That digest omits `occ`, `occBy`, `occTier`,
+`initialReserve`, `gained`, `slotCount`, `catalogSignature`, `proverMode` and
+both id planes. Round 4's occupancy comparisons live in `firstDifference`, which
+runs only AFTER the action is made a second time — and re-making repairs any
+lane `make` writes unconditionally.
+
+It was demonstrated, not argued: a bounded 400-action in-memory probe that
+replaced `unmake`'s restored `occTier` with the POST-action values produced
+**164 incorrect restorations** while divergences, unmake, legality, rehash,
+round-trip and invariant counters all stayed **0**, even at
+`--legality-every 1`.
+
+**The fix, at the cause.** `lab/hard-ai/fuzz/statesnap.ts` (new) is a
+`PackedSnapshot` driven by the SHAPE of the state rather than by a field list:
+every own enumerable property that is an `ArrayBuffer`-backed view is copied and
+compared byte for byte, every `number` property is copied and compared, the two
+`string[]` id planes are compared entry by entry, and **any other kind of field
+is a hard error** — so a field added to `PackedState` later cannot be silently
+skipped. It is captured immediately before `make` and compared immediately after
+`unmake`, before the re-make. `tests/lab/state-snapshot.test.ts` (new, 4 cases)
+asserts the covered key set is exactly `Object.keys(allocState())`, that an
+unknown field throws, and — field by field, all 45 of them — that a one-byte
+corruption of each is reported.
+
+Applied in **both** places the fuzzer checks unmake: the transition walk and the
+ARRIVAL surface (whose `END_PLACE` is the widest `make` in the replica, and so
+the one a digest was least able to police). `tests/ai/hard/make-unmake.test.ts`
+had the same weakness — 20-odd `expect(replica.digest(p)).toBe(before)` sites —
+and every one of them is now a full-state `expectRestores`, including the 1,211-position
+sweep and both action-by-action unwind stacks.
+
+**What the stricter check found: no replica defect.** Over 6.5M actions the
+full-state comparison reports 0. The one field `make`/`unmake` does not restore
+literally is the LENGTH of the two cold id arrays: an arrival taking a slot index
+past the current end grows `originIds`, and `unmake` writes `''` back there
+rather than shortening it. That is a length with no information in it (`unpack`
+reads `''` and absent identically, `core/state.ts:687,714`), so the snapshot
+compares the two planes over the UNION of the lengths with absent read as `''` —
+which still reports an id LEFT BEHIND at a grown index. Recorded as REMAINING 16.
+
+**A real harness defect it did find.** Injecting a systematic fault hung the
+fuzzer: a divergence abandons the game BEFORE `metrics.actions` is incremented,
+so a fault present in every game leaves the action budget untouched and
+`runFuzz`'s outer loop starts games forever. Both walk loops now stop at their
+reproducer cap (32 divergences for the transition walk, 16 for gate
+preservation), which a failing run has already reached.
+
+### 2.5.3 Can this check actually fail? — every surface
+
+The general form of the reviewer's question, answered per surface by a test that
+injects a fault and watches the counter move. The faults go in through a lab-only
+`replica?: Replica` option on `FuzzOptions`/`ArrivalOptions`/`GatePreservationOptions`
+that the test fills with a `Replica` SUBCLASS, or through a vitest mock of
+`tactics/prover.ts` that is inert until a test arms it: **the production
+`Replica` carries no test hooks.**
+
+| surface | what it compares | how we know it can fail |
+|---|---|---|
+| unmake identity | EVERY field of `PackedState`, byte for byte, captured before `make` and compared after `unmake` | 4 cases: `unmake` leaves `occTier` / `occBy` / `pendBB` / a `uflags` bit wrong → `unmakeMismatches > 0` in a 400-action walk. Reverted to the old `fuzzDigest` comparison, the first three report **0** and only `uflags` is caught — the blind spot, reproduced on demand |
+| unmake, ARRIVAL surface | same, around the `END_PLACE` hand-off | `occTier` fault → `unmakeMismatches > 0` in 40 cases; **0** under the old digest |
+| digest blindness itself | — | 11 single-field corruptions: `occ`, `occBy`, `occTier`, `pendBB`, `initialReserve`, `slotCount`, `proverMode`, `catalogSignature` leave `fuzzDigest` bit-identical (8 of 8), while `gained`, `materialCc` and `bank` change it (the control group). The snapshot names all 11 |
+| transition | `firstDifference(p, pack(applyAction(...)))`, occupancy lanes included | the second `make` of each action corrupts `occTier` → `divergences > 0` |
+| rehash | `recompute{Kpos,Kturn,OccHash}` against the incrementally maintained keys, every 64 actions | `make` flips a bit of `kposLo` that survives the re-make → `rehashMismatches > 0` |
+| `pack(unpack(p))` round trip | `firstDifference(p, roundTripPacked)`, every 64 actions | `unpack` reports one crystal too many → `roundTripMismatches > 0` |
+| legality multiset | replica's generated set vs `generateAllActions` + expanded MOVEs | `genActions` drops its last candidate → `legalitySetMismatches > 0` |
+| prover verdict | `homeVerdict` vs `analyzeHomeDefenseEvidence` | the mock flips MATE↔RESCUE after case 40 → `fuzzVerdictMismatch > 0` |
+| prover node count | `proverStats().nodes` vs `evidence.nodes` | the mock adds ONE node → `nodeMismatch > 0` (this is the sharp one: it moves before the verdict does) |
+| gate preservation | `replicaOutcome(p)` vs `canonicalOutcome(next)` after every action | `make` awards a draw on its 50th call → `mismatches > 0` |
+| harness invariants | `checkInvariants(next)` | already fault-sensitive: it is canonical-side and throws; rounds 1-3 recorded real hits |
+| perft | frozen counts under both engines | already fault-sensitive: `fixturesMismatch`/`digestMismatches` are what caught the M1 regressions |
+
+Each faulty run is paired with a clean run of the same shape reporting zero, so
+the counter is not merely non-zero by construction.
+
 ## 3. Differential fuzz
 
 `hard:fuzz`'s default surface set is now all five. The prover and gate-preservation
@@ -277,6 +394,52 @@ reported a divergence now reports **0**.
 The two keep-set truncations are in batch D, on seeds 76 and 87 — the same two
 nodes round 3 found, which is independent evidence that `--resign-rate 0` really
 does replay the old walk.
+
+### 3.1 Round 5, with the full-state unmake comparison
+
+Re-run from scratch after §2.5.2, because the round-4 batches above were taken
+with a check that could not see three of the lanes. Two batches, 26 seeds, all
+five surfaces on every seed, 0 tolerated divergences of any kind:
+
+| batch | seeds | per seed | walk actions | games |
+|---|---|---|---|---|
+| A | 300-319 (fresh) | 250,000 actions, 1,500 prover cases, 120 arrival cases, 250,000 gate actions | 5,000,000 | 28,679 |
+| C | 7, 14, 15, 38, 104, 145 — seeds that diverged in rounds 1-3, at `--resign-rate 0` so each replays its ORIGINAL walk | as A | 1,500,000 | 8,116 |
+| | **total** | | **6,500,000** | **36,795** |
+
+| counter | A | C | total |
+|---|---|---|---|
+| transition divergences | 0 | 0 | **0** |
+| unmake mismatches (FULL STATE, every field) | 0 | 0 | **0** |
+| rehash / round-trip mismatches | 0 | 0 | **0** |
+| legality-set mismatches | 0 | 0 | **0** (812,500 checks) |
+| pending-legality mismatches | 0 | 0 | **0** (1,695,284 probes) |
+| keep-set truncations (designed cap) | 0 | 0 | **0** |
+| harness invariant violations | 0 | 0 | **0** |
+| `Replica.check` calls | 78,120 | 23,436 | **101,556** |
+| buys / arrivals / refunds | 600,092 / 544,507 / 27,887 | 176,963 / 160,740 / 8,336 | **777,055 / 705,247 / 36,223** |
+| ARRIVAL surface: cases, mismatches of all eight kinds | 2,400, 0 | 720, 0 | **3,120, 0** |
+| PROVER surface: fuzz cases / verdict / node / witness mismatches | 30,000 / 0 / 0 / 0 | 9,000 / 0 / 0 / 0 | **39,000 / 0 / 0 / 0** (25,521 witnesses replayed, 588 cutoff cases, `clockFixtureOk` on all 26) |
+| GATE PRESERVATION: actions, mismatches | 5,000,000, 0 | 1,500,000, 0 | **6,500,000, 0** (244,253 proofs compared, 15,782 home checkmates) |
+
+The six batch-C seeds are a subset of rounds 1-3's divergent seeds, chosen to
+span both original classes (the seed-7 bound over-claim and the seed-38 release
+under-claim) and both later rounds. They are re-run as true repros: at
+`--resign-rate 0` the walk is bit-identical to the one that found the
+divergence.
+
+**Artifacts.** `lab/results/hard-ai-verify/fuzz.json` is REGENERATED from the
+current source (batch A's first seed, all five surfaces) — it had been a stale
+seed-4242 run from a round that was still failing, carrying dead
+`knownProverGapDivergences` fields and `legalitySetMismatches: 1`, with nothing
+in the file to say so. The 26 per-seed artifacts are NOT checked in: they are
+near-identical files whose entire content is zeros. They are represented by
+`lab/results/hard-ai-verify/fuzz-round5-campaign.json`, a manifest carrying the
+seeds, the exact invocations, the aggregate counters and the provenance. Both
+now record provenance honestly: `hard:fuzz` writes `gitDirtyFiles` and
+`treeMatchesCommit` beside `git`, because an artifact that names only a commit
+is MISLEADING when the code under test is uncommitted — which is how every
+converger round runs.
 
 **Prover surface** (batches A+B): **60,000 fuzz cases + 40x28 authored fixtures**,
 `fuzzVerdictMismatch 0`, `nodeMismatch 0`, `fixtureMismatch 0`,
@@ -324,14 +487,38 @@ only once `replica == canonical`; that did not arise.
 ## 5. Tests
 
 ```
-npx vitest run       ->  135 files, 1,891 tests, 0 failures, exit 0
+npx vitest run       ->  137 files, 1,908 tests, 0 failures, exit 0
 npm run hard:test    ->   41 files,   525 tests, 0 failures
 ```
 
-Round 3 ended at 132 files / 1,861 tests (`hard:test` 38 / 497). The three new files are
-`tests/ai/hard/prover.test.ts` (out of quarantine, 19 cases),
-`tests/ai/hard/distance-cache-collision.test.ts` (new, 5) and
-`tests/ai/hard/progress-key.test.ts` (new, 4).
+Round 3 ended at 132 files / 1,861 tests (`hard:test` 38 / 497); round 4 at
+135 / 1,891. Round 4's three new files are `tests/ai/hard/prover.test.ts` (out of
+quarantine, 19 cases), `tests/ai/hard/distance-cache-collision.test.ts` (new, 5)
+and `tests/ai/hard/progress-key.test.ts` (new, 4).
+
+Round 5 adds two files and 17 cases, both under `tests/lab` (they drive the lab
+harness, not `src/ai/hard/**`, which is why `hard:test` is unchanged at 41/525):
+
+- **`tests/lab/fuzz-fault-injection.test.ts`** (new, 13) — the §2.5.3 table,
+  executable. One case per surface, each paired with a clean run of the same
+  shape reporting zero.
+- **`tests/lab/state-snapshot.test.ts`** (new, 4) — `PackedSnapshot` covers
+  exactly `Object.keys(allocState())`, throws on a field of an unknown kind,
+  reports a one-byte corruption of every field one at a time, and refuses to
+  compare a state it did not capture.
+
+And it rewrote two:
+
+- **`tests/ai/hard/verify-replay-phasing.test.ts`** — the `knownProverGap`
+  allowance, the `proverGaps` counters and the `< 12` cap are DELETED, the header
+  rewritten to state what the file now proves, and two non-vacuity assertions
+  added (§2.5.1). 269 replayed turns, 0 tolerated failures.
+- **`tests/ai/hard/make-unmake.test.ts`** — every "unmade back to where it
+  started" assertion moved from `replica.digest` to a full-state
+  `PackedSnapshot`, including the 1,211-position sweep (one capture per
+  position, compared after each of its ~20,000 actions) and both unwind stacks.
+  The `digest` comparisons that remain are make-side: replica against
+  `applyAction`.
 
 ### Rewritten from the canonical Phasing engine, not relaxed
 
@@ -358,7 +545,7 @@ Round 3 ended at 132 files / 1,861 tests (`hard:test` 38 / 497). The three new f
 - **`tests/ai/hard/phasing-prover-underclaim.test.ts`** — was the under-claim
   tripwire, both arms. Same positions; both wrong-answer cases now assert
   canonical's mate.
-- **`tests/ai/hard/fuzz-known-gap.test.ts`** — pinned `classifyKnownProverGap`,
+- **`tests/ai/hard/fuzz-reduced-positions.test.ts`** — pinned `classifyKnownProverGap`,
   which no longer exists. The file was KEPT rather than removed, because its
   positions are the evidence: all three (the seed-7 bound repro, the promotion
   arm, the seed-38 release arm) now assert full `digest` equality between replica
@@ -551,18 +738,74 @@ are none left — they are branches no surface exercises.
     blob `a96e09d7` at commit `2922375e`, recorded in a comment at the top of
     `lab/hard-ai/perft/phasing-fixtures.ts`.
 
+16. **`make`/`unmake` do not restore the LENGTH of `originIds`/`pendIds`.** They
+    are `string[]`, not typed arrays: an arrival taking a slot index past the
+    current end grows the array, and `unmake` writes `''` back at that index
+    rather than shortening it. Found by round 5's full-state comparison, which
+    is why that comparison reads absent and `''` as the same thing and compares
+    the two planes over the union of their lengths — an id LEFT BEHIND at a
+    grown index is still reported. Inert: `unpack` treats `''` and absent
+    identically (`core/state.ts:687,714`), the planes are cold data no search
+    reads, and no key hashes them. Fixing it at the cause would mean recording
+    two array lengths in every undo record for a field the search never touches.
+    Owner: whoever next opens `resolveArrivals`.
+
+
 No disagreement with `docs/PHASING-2026-09-16.md` was found in the canonical
 engine in any round. The canonical engine was right in all 71 divergences rounds
 1-3 measured, and round 4 fixed the replica to match it rather than adjusting any
 expectation toward the replica. No round edited the canonical engine or
-`src/game/**`. Round 4 touched
+`src/game/**`, and round 5 edited no `src/**` file at all: its whole surface is
+`lab/hard-ai/fuzz/{statesnap.ts (new),differential.ts,prover-surface.ts,run.ts}`,
+`tests/lab/{fuzz-fault-injection,state-snapshot}.test.ts` (new),
+`tests/ai/hard/{verify-replay-phasing,make-unmake}.test.ts`,
+`lab/results/hard-ai-verify/{fuzz.json,fuzz-round5-campaign.json (new),perft.json}`
+and this document. It ran no `git add/commit/stash/checkout/reset`. Round 4 touched
 `src/ai/hard/{tactics/prover,core/movement,core/state,core/zobrist,gen/generate,search/root}.ts`,
 `lab/hard-ai/fuzz/{differential,prover-surface,run}.ts`,
-`tests/ai/hard/{prover,phasing-prover-debt,phasing-prover-underclaim,fuzz-known-gap,make-unmake,zobrist,distance-cache-collision,progress-key}.test.ts`,
+`tests/ai/hard/{prover,phasing-prover-debt,phasing-prover-underclaim,fuzz-reduced-positions,make-unmake,zobrist,distance-cache-collision,progress-key}.test.ts`,
 `tests/lab/hard-fuzz.test.ts`, `vitest.config.ts` and this document, and ran no
 `git add/commit/stash/checkout/reset`.
 
 ---
+
+## Reproducing round 5
+
+```
+cd muju
+npm run hard:types
+npx tsc --noEmit -p .
+npm run hard:deps
+npx vitest run
+npx tsx lab/hard-ai/perft/run.ts --check
+npx tsx lab/hard-ai/perft/run.ts --check --engine replica
+
+# the two rewritten tests and the two new ones, on their own
+npx vitest run tests/ai/hard/verify-replay-phasing.test.ts \
+               tests/ai/hard/make-unmake.test.ts \
+               tests/lab/fuzz-fault-injection.test.ts \
+               tests/lab/state-snapshot.test.ts
+
+# batch A: 20 fresh seeds, all five surfaces, ~12 s each
+for s in $(seq 300 319); do
+  npx tsx lab/hard-ai/fuzz/run.ts --actions 250000 --arrival-cases 120 --cases 1500 \
+    --seed $s --no-repro --out lab/results/hard-ai-fuzz-round5/s$s.json
+done
+
+# batch C: rounds 1-3's divergent seeds, replaying their ORIGINAL walks
+for s in 7 14 15 38 104 145; do
+  npx tsx lab/hard-ai/fuzz/run.ts --actions 250000 --arrival-cases 120 --cases 1500 \
+    --seed $s --resign-rate 0 --no-repro --out lab/results/hard-ai-fuzz-round5/s$s.json
+done
+```
+
+Expected: every command exits 0, with `divergences: 0` and every other mismatch
+counter 0 on every seed — including `unmakeMismatches`, which is now the
+full-state comparison. To see the blind spot itself rather than take §2.5.2 on
+trust, revert `runFuzz`'s unmake check to `fuzzDigest(replica, p) !== digestBefore`
+and re-run `tests/lab/fuzz-fault-injection.test.ts`: the `occTier`, `occBy`,
+`pendBB` and ARRIVAL cases report **0** and fail, while the `uflags` case still
+passes.
 
 ## Reproducing round 4
 
@@ -608,7 +851,7 @@ The three former debt reproductions need no fuzzing:
 ```
 npx vitest run tests/ai/hard/phasing-prover-debt.test.ts \
                tests/ai/hard/phasing-prover-underclaim.test.ts \
-               tests/ai/hard/fuzz-known-gap.test.ts \
+               tests/ai/hard/fuzz-reduced-positions.test.ts \
                tests/ai/hard/progress-key.test.ts \
                tests/ai/hard/distance-cache-collision.test.ts
 ```

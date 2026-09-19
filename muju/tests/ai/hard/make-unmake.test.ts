@@ -29,11 +29,12 @@ import { applyAction } from '../../../src/ai/simulate';
 import { generateAllActions } from '../../../src/ai/moves';
 import { isLegalAction } from '../../../src/game/legality';
 import { seededRandom } from '../../../src/ai/runtime';
-import { F_CAN_ACT, MAX_SLOTS, PEND_STRIDE, Reason, Result } from '../../../src/ai/hard/types';
+import { F_CAN_ACT, MAX_SLOTS, PEND_STRIDE, Reason, Result, type PackedState } from '../../../src/ai/hard/types';
 import { AKind, fromAIAction, newKeepSetTable, paMake, toAIAction } from '../../../src/ai/hard/core/action';
 import { DEF_INDEX } from '../../../src/ai/hard/core/catalog';
 import { Replica, allocState, newUndo } from '../../../src/ai/hard/core/state';
 import { readPositions } from '../../../lab/hard-ai/positions/corpus';
+import { PackedSnapshot } from '../../../lab/hard-ai/fuzz/statesnap';
 import { asPhasing, buildState, randomState } from './game-fixture';
 
 // E0.5 timeout budget: slowest test 3.1 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 20 s is this file's explicit ceiling.
@@ -45,6 +46,29 @@ const GEN = new Int32Array(4 + MAX_SLOTS * 104);
 
 function defId(id: string): number {
   return DEF_INDEX.get(id) as number;
+}
+
+/**
+ * FULL-STATE unmake identity. `digest` walks `pieceAt`, so on its own it cannot
+ * see `occ`, `occBy`, `occTier`, `initialReserve`, `gained`, `materialCc`,
+ * `pstSumCc`, `slotCount`, `catalogSignature`, `proverMode` or the two cold id
+ * planes — exactly the lanes a wrong restoration hides in, and exactly the hole
+ * an independent review demonstrated in the fuzzer's own unmake check. Every
+ * "unmade back to where it started" assertion in this file goes through
+ * `PackedSnapshot` (`lab/hard-ai/fuzz/statesnap.ts`), which copies EVERY own
+ * field of the state before the make and compares every one of them, byte for
+ * byte, after the unmake. The `digest` comparisons that remain are make-side:
+ * replica against `applyAction`, where `firstDifference`-grade equality is the
+ * differential's job and this file's job is the mutation table.
+ */
+function captureAll(p: PackedState): PackedSnapshot {
+  const snap = new PackedSnapshot();
+  snap.capture(p);
+  return snap;
+}
+
+function expectRestores(snap: PackedSnapshot, p: PackedState): void {
+  expect(snap.firstDifference(p)).toBeNull();
 }
 
 /**
@@ -117,7 +141,7 @@ describe('make / unmake', () => {
       // A Phasing turn ends in Prepare with no action budget left; a corpus
       // 'place' position carries the Standard four, which nothing here reads.
       const p = replica.pack(state);
-      const digestBefore = replica.digest(p);
+      const before = captureAll(p);
       // `authored.jsonl#endgame-dry` is a hand-authored position whose reserves
       // do not conserve, so `check` cannot run on its descendants.
       let conserves = true;
@@ -147,7 +171,7 @@ describe('make / unmake', () => {
           void resolved;
         }
         replica.unmake(p, undo);
-        expect(replica.digest(p)).toBe(digestBefore);
+        expectRestores(before, p);
         applied++;
       }
     }
@@ -182,11 +206,11 @@ describe('make / unmake', () => {
         ],
       });
       const p = replica.pack(state);
-      const root = replica.digest(p);
+      const root = captureAll(p);
       undo.top = 0;
       replica.resetUndoScratch();
 
-      const stack: string[] = [];
+      const stack: PackedSnapshot[] = [];
       for (let depth = 0; depth < 10; depth++) {
         let n: number;
         if (p.upkeepPending === 1) {
@@ -198,15 +222,15 @@ describe('make / unmake', () => {
           n = replica.genActions(p, GEN);
         }
         if (n === 0) break;
-        stack.push(replica.digest(p));
+        stack.push(captureAll(p));
         replica.make(p, GEN[Math.floor(rng() * n)], undo, keep);
         if (p.result !== Result.ONGOING) break;
       }
       while (stack.length > 0) {
         replica.unmake(p, undo);
-        expect(replica.digest(p)).toBe(stack.pop());
+        expectRestores(stack.pop() as PackedSnapshot, p);
       }
-      expect(replica.digest(p)).toBe(root);
+      expectRestores(root, p);
       expect(undo.top).toBe(0);
     }
   });
@@ -222,6 +246,7 @@ describe('make / unmake', () => {
     const p = replica.pack(state);
     const undo = newUndo();
     const pstBefore = p.pstSumCc[0];
+    const before = captureAll(p);
     replica.make(p, paMake(AKind.MOVE, 0, 60), undo);
     expect(p.sq[0]).toBe(60);
     expect(p.pieceAt[0]).toBe(255);
@@ -230,6 +255,7 @@ describe('make / unmake', () => {
     expect(p.materialCc[0]).toBe(300);
     expect(p.pstSumCc[0]).toBe(pstBefore); // lightning never mines
     replica.unmake(p, undo);
+    expectRestores(before, p);
     expect(p.sq[0]).toBe(0);
     expect(p.actions).toBe(4);
   });
@@ -247,6 +273,7 @@ describe('make / unmake', () => {
     const attack = paMake(AKind.ATTACK, 0, 1);
 
     // Hi (ATK 2, fire) vs Kinzoku (DEF 5, metal): fire beats metal, so 3 damage.
+    const before = captureAll(p);
     replica.make(p, attack, undo);
     expect(p.damage[1]).toBe(3);
     expect(p.atkCount[0]).toBe(1);
@@ -257,6 +284,7 @@ describe('make / unmake', () => {
     // A tier-1 unit whose attack did not kill cannot attack again.
     expect(replica.isLegal(p, attack)).toBe(false);
     replica.unmake(p, undo);
+    expectRestores(before, p);
     expect(p.damage[1]).toBe(0);
     expect(p.clock).toBe(5);
 
@@ -272,6 +300,7 @@ describe('make / unmake', () => {
       allocState(),
     );
     const materialBefore = wounded.materialCc[1];
+    const beforeKill = captureAll(wounded);
     replica.make(wounded, attack, undo);
     expect(wounded.sq[1]).toBe(255);
     expect(wounded.materialCc[1]).toBe(materialBefore - defCost('metal_3') * 100);
@@ -280,6 +309,7 @@ describe('make / unmake', () => {
     expect(wounded.progress).toBe(1);
     expect(wounded.result).toBe(Result.ONGOING);
     replica.unmake(wounded, undo);
+    expectRestores(beforeKill, wounded);
     expect(wounded.sq[1]).toBe(1);
     expect(wounded.damage[1]).toBe(3);
     expect(wounded.clock).toBe(5);
@@ -296,6 +326,7 @@ describe('make / unmake', () => {
     });
     const p = replica.pack(state);
     const undo = newUndo();
+    const before = captureAll(p);
     replica.make(p, paMake(AKind.ATTACK, 0, 1), undo);
     expect(p.result).toBe(Result.WHITE_WIN);
     expect(p.reason).toBe(Reason.ELIMINATION);
@@ -303,6 +334,7 @@ describe('make / unmake', () => {
     expect(canonical.phase).toBe('victory');
     expect(canonical.victoryReason).toBe('elimination');
     replica.unmake(p, undo);
+    expectRestores(before, p);
     expect(p.result).toBe(Result.ONGOING);
     expect(p.reason).toBe(Reason.NONE);
   });
@@ -318,7 +350,7 @@ describe('make / unmake', () => {
     });
     const p = replica.pack(state);
     const undo = newUndo();
-    const before = replica.digest(p);
+    const before = captureAll(p);
     expect(p.slotCount).toBe(2);
     const buy = paMake(AKind.BUY, defId('fire_1'), 0);
 
@@ -345,7 +377,7 @@ describe('make / unmake', () => {
     expect(replica.isLegal(p, paMake(AKind.BUY, defId('fire_1'), 0))).toBe(false);
 
     replica.unmake(p, undo);
-    expect(replica.digest(p)).toBe(before);
+    expectRestores(before, p);
     expect([...p.pendCount]).toEqual([0, 0]);
     expect(p.pendDef[0]).toBe(0);
     expect(p.bank[0]).toBe(3);
@@ -385,6 +417,7 @@ describe('make / unmake', () => {
     const undo = newUndo();
     const promote = paMake(AKind.PROMOTE, 0);
     expect(replica.isLegal(p, promote)).toBe(true);
+    const before = captureAll(p);
     replica.make(p, promote, undo);
     expect(p.defId[0]).toBe(defId('water_2'));
     expect(p.bank[0]).toBe(12 - 4);
@@ -392,6 +425,7 @@ describe('make / unmake', () => {
     expect(p.uflags[0] & 8).toBe(8);
     expect(replica.isLegal(p, promote)).toBe(false);
     replica.unmake(p, undo);
+    expectRestores(before, p);
     expect(p.defId[0]).toBe(defId('water_1'));
     expect(p.bank[0]).toBe(12);
     expect(p.uflags[0] & 8).toBe(0);
@@ -411,6 +445,7 @@ describe('make / unmake', () => {
     const p = replica.pack(state);
     const undo = newUndo();
     const reserveBefore = p.reserve[10];
+    const before = captureAll(p);
     replica.make(p, paMake(AKind.END_ACTION), undo);
     // White's Muju mines 3 from A2 into White's own bank...
     expect(p.reserve[10]).toBe(reserveBefore - 3);
@@ -435,6 +470,7 @@ describe('make / unmake', () => {
     expect(replica.isLegal(p, paMake(AKind.BUY, defId('fire_1'), 0))).toBe(true);
 
     replica.unmake(p, undo);
+    expectRestores(before, p);
     expect(p.reserve[10]).toBe(reserveBefore);
     expect(p.phase).toBe(1);
     expect(p.actions).toBe(4);
@@ -459,6 +495,7 @@ describe('make / unmake', () => {
     });
     const p = replica.pack(rich);
     const undo = newUndo();
+    const beforeRich = captureAll(p);
     replica.make(p, paMake(AKind.END_ACTION), undo);
     // White's own rent, out of White's own bank — Standard charged the INCOMING
     // side here; Phasing charges the mover, before it hands off at all.
@@ -468,6 +505,7 @@ describe('make / unmake', () => {
     expect(p.phase).toBe(0);
     expect(replica.digest(p)).toBe(replica.digest(replica.pack(applyAction(rich, { type: 'END_ACTION_PHASE' }), allocState())));
     replica.unmake(p, undo);
+    expectRestores(beforeRich, p);
     expect(p.bank[0]).toBe(4);
     expect(p.upkeepPending).toBe(0);
     expect(p.phase).toBe(1);
@@ -476,6 +514,7 @@ describe('make / unmake', () => {
     // node stands in Prepare with the keep-set choice still to be made.
     const brokeState = { ...rich, players: { ...rich.players, white: { ...rich.players.white, resources: 0 } } };
     const broke = replica.pack(brokeState, allocState());
+    const beforeBroke = captureAll(broke);
     replica.make(broke, paMake(AKind.END_ACTION), undo);
     expect(broke.upkeepPending).toBe(1);
     expect(broke.side).toBe(0);
@@ -484,14 +523,17 @@ describe('make / unmake', () => {
     expect(broke.actions).toBe(0);
     expect(replica.digest(broke)).toBe(replica.digest(replica.pack(applyAction(brokeState, { type: 'END_ACTION_PHASE' }), allocState())));
     replica.unmake(broke, undo);
+    expectRestores(beforeBroke, broke);
     expect(broke.upkeepPending).toBe(0);
     expect(broke.actions).toBe(4);
 
     const reviewing = replica.pack({ ...rich, reviewUpkeep: { white: true, black: false } }, allocState());
+    const beforeReviewing = captureAll(reviewing);
     replica.make(reviewing, paMake(AKind.END_ACTION), undo);
     expect(reviewing.upkeepPending).toBe(1);
     expect(reviewing.bank[0]).toBe(4);
     replica.unmake(reviewing, undo);
+    expectRestores(beforeReviewing, reviewing);
     expect(reviewing.upkeepPending).toBe(0);
   });
 
@@ -516,7 +558,7 @@ describe('make / unmake', () => {
     });
     const p = replica.pack(state);
     const undo = newUndo();
-    const before = replica.digest(p);
+    const before = captureAll(p);
     expect([...p.pendCount]).toEqual([0, 2]);
 
     const canonical = applyAction(state, { type: 'END_PLACE_PHASE' });
@@ -551,7 +593,7 @@ describe('make / unmake', () => {
     expect(replica.isLegal(p, paMake(AKind.MOVE, arrival, 89))).toBe(true);
 
     replica.unmake(p, undo);
-    expect(replica.digest(p)).toBe(before);
+    expectRestores(before, p);
     expect(p.side).toBe(0);
     expect(p.bank[1]).toBe(7);
     expect([...p.pendCount]).toEqual([0, 2]);
@@ -582,14 +624,14 @@ describe('make / unmake', () => {
 
     const p = replica.pack(state);
     const undo = newUndo();
-    const before = replica.digest(p);
+    const before = captureAll(p);
     replica.make(p, paMake(AKind.END_PLACE), undo);
     expect(p.pieceAt[99]).not.toBe(255);
     expect(p.pieceAt[88]).toBe(255);
     expect(p.bank[1]).toBe(3); // the disrupted fire_1 refunded its 3
     expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonical, allocState())));
     replica.unmake(p, undo);
-    expect(replica.digest(p)).toBe(before);
+    expectRestores(before, p);
   });
 
   it('END_PLACE: an arrival may promote on its arrival turn', () => {
@@ -606,6 +648,7 @@ describe('make / unmake', () => {
     });
     const p = replica.pack(state);
     const undo = newUndo();
+    const before = captureAll(p);
     replica.make(p, paMake(AKind.END_PLACE), undo);
     const arrival = p.pieceAt[99];
     // ACT first: promotion lives in Prepare, at the far end of the same turn.
@@ -621,6 +664,7 @@ describe('make / unmake', () => {
     expect(p.defId[arrival]).toBe(defId('fire_2'));
     replica.check(p);
     for (let i = 0; i < 3; i++) replica.unmake(p, undo);
+    expectRestores(before, p);
     expect(p.pieceAt[99]).toBe(255);
   });
 
@@ -648,16 +692,16 @@ describe('make / unmake', () => {
     const p = replica.pack(state);
     const undo = newUndo();
     const keep = newKeepSetTable();
-    const root = replica.digest(p);
+    const root = captureAll(p);
     replica.resetUndoScratch();
     expect(p.sq[1]).toBe(79);
 
     const line = [paMake(AKind.ATTACK, 0, 79), paMake(AKind.END_ACTION), paMake(AKind.END_PLACE)];
-    const stack: string[] = [];
+    const stack: PackedSnapshot[] = [];
     let canonical = state;
     for (const pa of line) {
       expect(replica.isLegal(p, pa, keep), String(pa)).toBe(true);
-      stack.push(replica.digest(p));
+      stack.push(captureAll(p));
       canonical = applyAction(canonical, toAIAction(p, pa, keep));
       replica.make(p, pa, undo, keep);
       expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonical, allocState())));
@@ -672,9 +716,9 @@ describe('make / unmake', () => {
 
     while (stack.length > 0) {
       replica.unmake(p, undo);
-      expect(replica.digest(p)).toBe(stack.pop());
+      expectRestores(stack.pop() as PackedSnapshot, p);
     }
-    expect(replica.digest(p)).toBe(root);
+    expectRestores(root, p);
     expect(undo.top).toBe(0);
     // The corpse's own fields are back, so the ATTACK's own undo could still
     // have resurrected it.

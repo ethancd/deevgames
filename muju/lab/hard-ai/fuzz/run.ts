@@ -140,6 +140,22 @@ function gitRevision(): string | null {
 }
 
 /**
+ * How many tracked files differ from `git` above. An artifact that records only
+ * the commit is MISLEADING when the run was made from a working tree — which is
+ * how every converger round runs — because the commit does not contain the code
+ * that produced the numbers. Round 5 found the checked-in `fuzz.json` was an
+ * older failing run with no way to tell from the file itself.
+ */
+function gitDirtyFiles(): number | null {
+  try {
+    const out = execFileSync('git', ['status', '--porcelain'], { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
+    return out === '' ? 0 : out.split('\n').length;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Sibling artifacts of the same gate merge into one file, the way
  * `perft/run.ts` and `verify/determinism.ts` do it: writing
  * `<dir>/M10-gate.json` folds `<dir>/M10-prover.json` in under `prover`, so a
@@ -176,7 +192,16 @@ function siblingMerges(outPath: string): Record<string, unknown> {
 }
 
 function write(outPath: string, metrics: Record<string, unknown>): void {
-  const artifact = { ...siblingMerges(outPath), ...metrics, git: gitRevision(), node: process.version, at: new Date().toISOString() };
+  const dirty = gitDirtyFiles();
+  const artifact = {
+    ...siblingMerges(outPath),
+    ...metrics,
+    git: gitRevision(),
+    gitDirtyFiles: dirty,
+    treeMatchesCommit: dirty === 0,
+    node: process.version,
+    at: new Date().toISOString(),
+  };
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, JSON.stringify(artifact, null, 2) + '\n');
   console.log(`hard:fuzz: wrote ${outPath}`);
