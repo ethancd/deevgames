@@ -7,7 +7,15 @@ import type { TacticalSolver } from '../../src/ai/wasm/kernel';
 import type { EngineBot } from '../harness/types';
 
 export type GateDifficulty = 'hard' | 'medium';
-export const TURN_WORK = { hard: 6000, medium: 3000 } as const;
+/**
+ * Per-own-turn fixed work, per engine. A3 §3 removed the hard-coded
+ * `{ hard: 6000, medium: 3000 }` of A1/A2 — those were asserted, never measured,
+ * and an independent diagnosis put them at 3–15% of what the two engines consume
+ * at their shipped pace, unequally between the arms. The budgets now come from a
+ * calibration manifest (`gate1-calibrate.ts`) and there is no default: a row
+ * without a calibration cannot be configured at all.
+ */
+export type GateBudgets = Record<GateDifficulty, number>;
 export type Searcher = Pick<AIEngineV2, 'setConfig' | 'setSeed' | 'setTacticalSolver' | 'findBestAction'>;
 export interface DecisionWork {
   turn: number; phase: 'action' | 'place' | 'upkeep';
@@ -23,7 +31,7 @@ export function workSlice(state: GameState, remaining: number): number {
 }
 
 export function createGateBot(difficulty: GateDifficulty, solver: TacticalSolver,
-  workPerTurn: number = TURN_WORK[difficulty], factory: () => Searcher = () => new AIEngineV2(difficulty)) {
+  workPerTurn: number, factory: () => Searcher = () => new AIEngineV2(difficulty)) {
   if (!Number.isSafeInteger(workPerTurn) || workPerTurn < 1) throw new Error('Positive integer turn work required');
   let engine: Searcher, turnKey = '', remaining = 0;
   let resolved: Record<string, unknown> | undefined;

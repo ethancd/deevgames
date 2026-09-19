@@ -1,0 +1,421 @@
+{
+  "schema": "muju-gate1-calibration-v1",
+  "amendment": "A3",
+  "startedAt": "2026-09-19T13:22:05.156Z",
+  "finishedAt": "2026-09-19T13:23:48.779Z",
+  "book": {
+    "path": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
+    "sha256": "a58ca9d8aad304d82824ef38d7b12c776ea1547ba61a10cbfba1e387e78335c7",
+    "openingsUsed": [
+      "p1-g6-s2",
+      "p1-g5-s85",
+      "p1-g6-s310",
+      "p1-g5-s17",
+      "p1-g4-s420",
+      "p1-g7-s75",
+      "p1-g5-s135",
+      "p1-g8-s15"
+    ]
+  },
+  "options": {
+    "turnsPerEngine": 16,
+    "openings": 8,
+    "maxTurns": 2,
+    "seed": 20260960
+  },
+  "machine": {
+    "device": "Apple M2 Max / darwin/arm64",
+    "cpuCount": 12,
+    "memoryGB": 103,
+    "node": "v24.11.1"
+  },
+  "load": {
+    "before": [
+      2.76123046875,
+      11.56494140625,
+      14.27734375
+    ],
+    "during": {
+      "hard": [
+        3.01171875,
+        9.78955078125,
+        13.38916015625
+      ],
+      "medium": [
+        3.8271484375,
+        9.2177734375,
+        13.03369140625
+      ]
+    },
+    "after": [
+      3.8271484375,
+      9.2177734375,
+      13.03369140625
+    ],
+    "note": "A3 asks for an otherwise idle machine; the row manifest carries these numbers so a loaded calibration is visible."
+  },
+  "git": "a0551c8c274bfdebb32ca309e49fd7a98657de73",
+  "gitStatus": "M muju/lab/ai/gate1-bot.ts\n M muju/lab/ai/gate1-references.json\n M muju/lab/ai/gate1-report.ts\n M muju/lab/ai/gate1.ts\n M muju/lab/hard-ai/ablate/arms.ts\n M muju/tests/ai/hard/generate.test.ts\n M muju/tests/ai/hard/interfaces.test.ts\n M muju/tests/ai/hard/quiesce.test.ts\n M muju/tests/lab/ablate.test.ts\n?? muju/lab/ai/gate1-calibrate.ts\n?? muju/lab/ai/gate1-openings.ts\n?? muju/lab/ai/gate1-trace.ts\n?? muju/lab/hard-ai/suites/phasing/veto.ts\n?? muju/tests/ai/hard/zz-probe.test.ts\n?? muju/tests/lab/gate1-openings.test.ts",
+  "queue": {
+    "directory": "/Users/ashkie/.local/state/muju-heavy",
+    "slots": 2
+  },
+  "engines": {
+    "hard": {
+      "allowanceMs": 10000,
+      "pace": "quick",
+      "ownTurns": 16,
+      "medianWorkPerTurn": 53155,
+      "meanWorkPerTurn": 66187,
+      "minWorkPerTurn": 33963,
+      "maxWorkPerTurn": 146675,
+      "p25WorkPerTurn": 50108,
+      "p75WorkPerTurn": 56778,
+      "medianSearchMsPerTurn": 3004,
+      "medianSearchesPerTurn": 1,
+      "samples": [
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 1,
+          "seat": "black",
+          "work": 50108,
+          "searchMs": 3003.3189169999996,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "white",
+          "work": 100706,
+          "searchMs": 6000.944417000001,
+          "searches": 2
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "black",
+          "work": 50323,
+          "searchMs": 3000.4574580000008,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g5-s85",
+          "handicap": 3,
+          "turn": 1,
+          "seat": "black",
+          "work": 42691,
+          "searchMs": 3007.414541,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g5-s85",
+          "handicap": 3,
+          "turn": 2,
+          "seat": "white",
+          "work": 33963,
+          "searchMs": 3004.8823749999992,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g5-s85",
+          "handicap": 3,
+          "turn": 2,
+          "seat": "black",
+          "work": 146675,
+          "searchMs": 9008.146582000001,
+          "searches": 3
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s310",
+          "handicap": 0,
+          "turn": 1,
+          "seat": "black",
+          "work": 55597,
+          "searchMs": 3000.8547080000026,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s310",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "white",
+          "work": 55555,
+          "searchMs": 3002.965082999999,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g6-s310",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "black",
+          "work": 56778,
+          "searchMs": 3001.1933340000032,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g5-s17",
+          "handicap": 3,
+          "turn": 1,
+          "seat": "black",
+          "work": 50949,
+          "searchMs": 3004.999499999998,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g5-s17",
+          "handicap": 3,
+          "turn": 2,
+          "seat": "white",
+          "work": 100396,
+          "searchMs": 6011.27000099999,
+          "searches": 2
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g5-s17",
+          "handicap": 3,
+          "turn": 2,
+          "seat": "black",
+          "work": 46248,
+          "searchMs": 3003.7182089999988,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g4-s420",
+          "handicap": 0,
+          "turn": 1,
+          "seat": "black",
+          "work": 52487,
+          "searchMs": 3001.011040999998,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g4-s420",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "white",
+          "work": 53823,
+          "searchMs": 3002.0882500000007,
+          "searches": 1
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g4-s420",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "black",
+          "work": 113571,
+          "searchMs": 6003.821125999995,
+          "searches": 2
+        },
+        {
+          "difficulty": "hard",
+          "opening": "p1-g7-s75",
+          "handicap": 3,
+          "turn": 1,
+          "seat": "black",
+          "work": 49127,
+          "searchMs": 3002.045625000006,
+          "searches": 1
+        }
+      ]
+    },
+    "medium": {
+      "allowanceMs": 3000,
+      "pace": "quick",
+      "ownTurns": 16,
+      "medianWorkPerTurn": 27297,
+      "meanWorkPerTurn": 34022,
+      "minWorkPerTurn": 17770,
+      "maxWorkPerTurn": 59684,
+      "p25WorkPerTurn": 25984,
+      "p75WorkPerTurn": 44394,
+      "medianSearchMsPerTurn": 1503,
+      "medianSearchesPerTurn": 1,
+      "samples": [
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 1,
+          "seat": "black",
+          "work": 27454,
+          "searchMs": 1502.2275000000081,
+          "searches": 1
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "white",
+          "work": 52616,
+          "searchMs": 3000.117957999988,
+          "searches": 2
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s2",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "black",
+          "work": 24765,
+          "searchMs": 1500.512499999997,
+          "searches": 1
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g5-s85",
+          "handicap": 3,
+          "turn": 1,
+          "seat": "black",
+          "work": 23317,
+          "searchMs": 1503.2327500000101,
+          "searches": 1
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g5-s85",
+          "handicap": 3,
+          "turn": 2,
+          "seat": "white",
+          "work": 17770,
+          "searchMs": 1503.1518339999893,
+          "searches": 1
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g5-s85",
+          "handicap": 3,
+          "turn": 2,
+          "seat": "black",
+          "work": 51181,
+          "searchMs": 3002.394125000006,
+          "searches": 3
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s310",
+          "handicap": 0,
+          "turn": 1,
+          "seat": "black",
+          "work": 28616,
+          "searchMs": 1500.791333000001,
+          "searches": 1
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s310",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "white",
+          "work": 27583,
+          "searchMs": 1501.0733750000072,
+          "searches": 1
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g6-s310",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "black",
+          "work": 59684,
+          "searchMs": 3000.2233750000014,
+          "searches": 2
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g5-s17",
+          "handicap": 3,
+          "turn": 1,
+          "seat": "black",
+          "work": 25984,
+          "searchMs": 1500.1889170000068,
+          "searches": 1
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g5-s17",
+          "handicap": 3,
+          "turn": 2,
+          "seat": "white",
+          "work": 44394,
+          "searchMs": 3005.15733300001,
+          "searches": 2
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g5-s17",
+          "handicap": 3,
+          "turn": 2,
+          "seat": "black",
+          "work": 21925,
+          "searchMs": 1503.755999999994,
+          "searches": 1
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g4-s420",
+          "handicap": 0,
+          "turn": 1,
+          "seat": "black",
+          "work": 26395,
+          "searchMs": 1500.3004999999976,
+          "searches": 1
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g4-s420",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "white",
+          "work": 27139,
+          "searchMs": 1500.5128340000083,
+          "searches": 1
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g4-s420",
+          "handicap": 0,
+          "turn": 2,
+          "seat": "black",
+          "work": 59375,
+          "searchMs": 3000.285415999999,
+          "searches": 2
+        },
+        {
+          "difficulty": "medium",
+          "opening": "p1-g7-s75",
+          "handicap": 3,
+          "turn": 1,
+          "seat": "black",
+          "work": 26156,
+          "searchMs": 1503.2086659999914,
+          "searches": 1
+        }
+      ]
+    }
+  },
+  "budgets": {
+    "hard": 53155,
+    "medium": 27297
+  },
+  "workDefinition": "SearchBudget#spend units (src/ai/runtime.ts); the same counter fixedWork caps.",
+  "mode": "WALL, shipped whole-turn loop, scaleToBudget on, quick pace (hard 10,000 ms / medium 3,000 ms)."
+}

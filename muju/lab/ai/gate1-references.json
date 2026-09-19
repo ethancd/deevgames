@@ -50,10 +50,35 @@
     "resolution": "A1 withdraws the historical-margin condition. Historical sources and the superseded proposal are retained for audit only, never used as pass thresholds or run prerequisites."
   },
   "amendment": {
-    "id": "A2",
-    "commit": "04097f0e5a78b54432de9363a9fee648b5a863d6",
+    "id": "A3",
+    "commit": "a0551c8c274bfdebb32ca309e49fd7a98657de73",
     "path": "muju/docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md",
-    "sha256": "3140974aa223b820d084c83453a1cf88ea067cabc4b2b003d19f65fa1b08202d"
+    "sha256": "8242433d727638abf41b1006b9fcff645564200b92eadc9bbc887eb2b72f60f4"
+  },
+  "supersededAmendments": [
+    {
+      "id": "A2",
+      "commit": "04097f0e5a78b54432de9363a9fee648b5a863d6",
+      "sha256": "3140974aa223b820d084c83453a1cf88ea067cabc4b2b003d19f65fa1b08202d",
+      "note": "Adopted allocation for the seed-20260958 row. A3 reclassified that row's two aiv2-medium cells as INVALID (not measured) and keeps its Expand h0 cell recorded as a genuine failure. Gate 1 remains NOT PASSED; no A2 game may be pooled into a later row."
+    }
+  ],
+  "a3": {
+    "openings": {
+      "path": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
+      "sha256": "a58ca9d8aad304d82824ef38d7b12c776ea1547ba61a10cbfba1e387e78335c7",
+      "rows": 48,
+      "rule": "One distinct opening per seat-mirrored pair, in file order; 48 pairs per opponent/handicap cell (768 games). lab/ai/gate1-openings.ts refuses p1-val.jsonl, p1-sealed.jsonl and every other corpus before a game is played."
+    },
+    "effectiveSampleSize": {
+      "minDistinctFraction": 0.9,
+      "rule": "Every game is hashed over its id-independent action sequence. A cell with fewer than 90% distinct games is INVALID: it can neither pass nor fail a strength condition, and the row cannot pass while a gating cell is INVALID. Elo intervals are computed over distinct pairs only."
+    },
+    "budgets": {
+      "withdrawn": { "hard": 6000, "medium": 3000 },
+      "rule": "Fixed work per own turn comes from a calibration manifest (lab/ai/gate1-calibrate.ts): the median SearchBudget work each engine consumes per own turn in WALL mode at its shipped quick allowance (hard 10,000 ms, medium 3,000 ms), measured on the dev openings on the measurement machine. No default budget remains in the code."
+    },
+    "seeds": { "row": 20260960, "pilot": 20260961 }
   },
   "supersededProposal": {
     "proposedElo": {

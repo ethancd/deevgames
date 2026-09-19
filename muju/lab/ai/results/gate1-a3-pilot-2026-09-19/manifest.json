@@ -1,0 +1,255 @@
+{
+  "schema": "muju-gate1-v3",
+  "status": "invalid",
+  "amendment": "A3",
+  "startedAt": "2026-09-19T13:24:29.533Z",
+  "mode": "pilot",
+  "expectedGames": 16,
+  "schedule": [
+    {
+      "id": "Rush-h0-p0-white",
+      "pairId": "Rush-h0-p0",
+      "opponent": "Rush",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 526468117,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Rush-h0-p0-black",
+      "pairId": "Rush-h0-p0",
+      "opponent": "Rush",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 526468117,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Rush-h3-p0-white",
+      "pairId": "Rush-h3-p0",
+      "opponent": "Rush",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 673482265,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Rush-h3-p0-black",
+      "pairId": "Rush-h3-p0",
+      "opponent": "Rush",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 673482265,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Expand-h0-p0-white",
+      "pairId": "Expand-h0-p0",
+      "opponent": "Expand",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 1095326478,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Expand-h0-p0-black",
+      "pairId": "Expand-h0-p0",
+      "opponent": "Expand",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 1095326478,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Expand-h3-p0-white",
+      "pairId": "Expand-h3-p0",
+      "opponent": "Expand",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 19324963,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Expand-h3-p0-black",
+      "pairId": "Expand-h3-p0",
+      "opponent": "Expand",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 19324963,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Balanced-h0-p0-white",
+      "pairId": "Balanced-h0-p0",
+      "opponent": "Balanced",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 3903422931,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Balanced-h0-p0-black",
+      "pairId": "Balanced-h0-p0",
+      "opponent": "Balanced",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 3903422931,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Balanced-h3-p0-white",
+      "pairId": "Balanced-h3-p0",
+      "opponent": "Balanced",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 2715186522,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Balanced-h3-p0-black",
+      "pairId": "Balanced-h3-p0",
+      "opponent": "Balanced",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 2715186522,
+      "hardSeat": "black"
+    },
+    {
+      "id": "aiv2-medium-h0-p0-white",
+      "pairId": "aiv2-medium-h0-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 1746546726,
+      "hardSeat": "white"
+    },
+    {
+      "id": "aiv2-medium-h0-p0-black",
+      "pairId": "aiv2-medium-h0-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 0,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 1746546726,
+      "hardSeat": "black"
+    },
+    {
+      "id": "aiv2-medium-h3-p0-white",
+      "pairId": "aiv2-medium-h3-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 2026621341,
+      "hardSeat": "white"
+    },
+    {
+      "id": "aiv2-medium-h3-p0-black",
+      "pairId": "aiv2-medium-h3-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 3,
+      "pair": 0,
+      "openingIndex": 0,
+      "openingId": "p1-g6-s2",
+      "seed": 2026621341,
+      "hardSeat": "black"
+    }
+  ],
+  "openings": {
+    "path": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
+    "sha256": "a58ca9d8aad304d82824ef38d7b12c776ea1547ba61a10cbfba1e387e78335c7",
+    "rows": 48,
+    "digest": "313d73abcf2023affe7e824edc7b51a14eac01543d5bd75e32d0fe3283243c8d"
+  },
+  "calibration": {
+    "path": "lab/ai/results/gate1-calibration-2026-09-19/calibration.json",
+    "sha256": "aafd7bc3c703b3ae8361ef01f92655e4224235ac8483e4e636905e9cd1dcbd46",
+    "budgets": {
+      "hard": 53155,
+      "medium": 27297
+    },
+    "machine": {
+      "device": "Apple M2 Max / darwin/arm64",
+      "cpuCount": 12,
+      "memoryGB": 103,
+      "node": "v24.11.1"
+    },
+    "load": {
+      "before": [
+        2.76123046875,
+        11.56494140625,
+        14.27734375
+      ],
+      "during": {
+        "hard": [
+          3.01171875,
+          9.78955078125,
+          13.38916015625
+        ],
+        "medium": [
+          3.8271484375,
+          9.2177734375,
+          13.03369140625
+        ]
+      },
+      "after": [
+        3.8271484375,
+        9.2177734375,
+        13.03369140625
+      ],
+      "note": "A3 asks for an otherwise idle machine; the row manifest carries these numbers so a loaded calibration is visible."
+    }
+  },
+  "git": "a0551c8c274bfdebb32ca309e49fd7a98657de73",
+  "gitStatus": "M muju/lab/ai/gate1-bot.ts\n M muju/lab/ai/gate1-references.json\n M muju/lab/ai/gate1-report.ts\n M muju/lab/ai/gate1.ts\n M muju/lab/hard-ai/ablate/arms.ts\n M muju/tests/ai/hard/generate.test.ts\n M muju/tests/ai/hard/interfaces.test.ts\n M muju/tests/ai/hard/quiesce.test.ts\n M muju/tests/lab/ablate.test.ts\n?? muju/lab/ai/gate1-calibrate.ts\n?? muju/lab/ai/gate1-openings.ts\n?? muju/lab/ai/gate1-trace.ts\n?? muju/lab/ai/results/gate1-calibration-2026-09-19/\n?? muju/lab/hard-ai/suites/phasing/veto.ts\n?? muju/tests/ai/hard/zz-probe.test.ts\n?? muju/tests/lab/gate1-calibration.test.ts\n?? muju/tests/lab/gate1-openings.test.ts",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max / darwin/arm64",
+  "cpuCount": 12,
+  "loadBefore": [
+    3.7294921875,
+    8.51513671875,
+    12.60009765625
+  ],
+  "queue": {
+    "directory": "/Users/ashkie/.local/state/muju-heavy",
+    "slots": 2
+  },
+  "note": "A3 allocation (distinct dev openings, hashed games, calibrated budgets) with unchanged A1 acceptance; pilots are ineligible. No worker unlock or responsiveness claim.",
+  "identityHash": "e874a34aa0ede92dd4222c18f62ffd5e31a2fa21475c2fbec068659acf253c33",
+  "completedGames": 16,
+  "error": "Error: Sources changed during row; row void\n    at <anonymous> (/Users/ashkie/src/deevgames-claude-followup/muju/lab/ai/gate1.ts:221:75)\n    at async withHeavySlot (/Users/ashkie/src/deevgames-claude-followup/muju/lab/hard-ai/ladder/heavy.ts:368:12)\n    at async main (/Users/ashkie/src/deevgames-claude-followup/muju/lab/ai/gate1.ts:167:3)",
+  "finishedAt": "2026-09-19T13:42:36.991Z",
+  "loadAfter": [
+    5.1728515625,
+    12.466796875,
+    11.99658203125
+  ]
+}
