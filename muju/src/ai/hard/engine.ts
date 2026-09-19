@@ -51,6 +51,32 @@
  * same rung; it is a wall-mode-only behaviour of one ablation arm, and
  * fixed-work mode (every determinism gate) never probes.
  *
+ * THE TURN ALLOWANCE IS THE CALLER'S, NOT THE PROFILE'S (the turn paces,
+ * `src/ai/turnTime.ts`). A player picks how long the Hard seat may think per
+ * turn — 10 s, 30 s or 60 s — and that number arrives here as `opts.targetMs`
+ * (the worker sends the turn's REMAINING allowance as `decisionMs`,
+ * `worker/handler.ts`). An explicit `targetMs` is used VERBATIM: DESIGN
+ * §5.11.6's `targetMs(p, t, cfg, ...)` — the position multipliers and the
+ * `clamp(minMs, maxMs)` with them — is the default when the caller names no
+ * allowance, and the profile's `time.maxMs` (6,000 on desktop, 2,500 on a
+ * phone) is a default, never a ceiling on what was asked for. That has been
+ * true since A5 funded the release row at `wall:8000`
+ * (`tests/ai/hard/deadline.test.ts`); the paces make it load-bearing, and
+ * `tests/ai/hard/turn-pace.test.ts` pins it at all three Hard allowances.
+ * `deadlineMs` below moves the watchdog the same way, and the WORK LADDER now
+ * reaches 51,200,000 units so a long allowance can actually be spent
+ * (`search/time.ts WORK_LADDER`).
+ *
+ * AND THE DEFAULT SEAT IS STILL THE ONE THE RELEASE MEASURED. The allowance is
+ * the caller's, but an allowance AT OR BELOW `search/time.ts
+ * QUICK_TURN_ALLOWANCE_MS` (10,000 ms — default Hard, `?hardMs`, every
+ * profile's `time.maxMs`, every mid-turn re-request) may not select a rung above
+ * `RELEASE_TOP_RUNG` however fast the box measures itself, and so keeps the
+ * profile's own transposition table too. The bigger rungs, the √2 ladder and
+ * E4.3's iteration-cost rule are reachable only from `normal` and `deep`, where
+ * no release, golden or determinism row exists to contradict. `chooseTurnWork`
+ * is the one function that decides it; see `searchTurn` below.
+ *
  * DEADLINE (AMENDMENTS-DECIDED A11, option (b)). The watchdog fires at
  * `startedAt + abortFactor × targetMs` by default. A caller that knows the real
  * wall allowance — the lab adapter, which funds a TURN and not a search — passes
@@ -118,7 +144,17 @@ import { EMPTY_BOOK } from './book/format';
 import { canonicalKey } from './book/probe';
 import { ProofCache, TranspositionTable, newTTEntry } from './search/tt';
 import { newOrderTables, clearOrderTables } from './search/order';
-import { WORK_LADDER, WorkClass, WorkMeter, chooseWork, now, targetMs, updateProfile } from './search/time';
+import {
+  WORK_LADDER,
+  WorkClass,
+  WorkMeter,
+  chooseTurnWork,
+  isAboveQuickAllowance,
+  now,
+  targetMs,
+  ttBitsForRung,
+  updateProfile,
+} from './search/time';
 import { allocTurn, newSearchStats, type SearchContext } from './search/pvs';
 import { installRescueWitness, searchRoot, type RootOptions, type RootResult } from './search/root';
 import { DESKTOP, type Book, type DeviceProfile, type GenConfig, type HardConfig, type Weights } from './config';
@@ -435,6 +471,9 @@ export class HardEngine {
     this.deadlineMs = 0;
     const ctx = this.ctx;
     ctx.stats = newSearchStats();
+    // Cleared for EVERY search, so only the wall-funded above-quick branch
+    // below can turn it on and a fixed-work search is never touched by it.
+    ctx.wallFit = false;
     // E4.3 candidate A: one rescue budget per TURN, armed before the cold
     // probe so the probe spends out of the turn's allowance here too. `null`
     // on every profile.
@@ -553,10 +592,29 @@ export class HardEngine {
       }
       ctx.stats.calibratedMs = calibratedMs;
       ctx.stats.calibratedUnitsPerMs = calibratedUnitsPerMs;
-      // The ladder is `config.time`'s to choose (E2 lane 1's `work-fit` arm);
-      // unset, this is `chooseWork(profile, rungMs)` on the ×2 ladder exactly
-      // as before. Fixed-work mode never reaches here.
-      work = chooseWork(this.config.profile, rungMs, this.config.time);
+      // THE ALLOWANCE DECIDES WHICH ENGINE THIS IS (`search/time.ts
+      // chooseTurnWork`, which states the rule and the evidence). At or below
+      // `QUICK_TURN_ALLOWANCE_MS` — the default Hard seat, `?hardMs`, every
+      // profile's own `time.maxMs`, every mid-turn re-request — this is
+      // `chooseWork(profile, rungMs, config.time)` on the ladder the profile
+      // asks for, capped at `RELEASE_TOP_RUNG`: the engine the E6 release
+      // measured, whatever throughput the box reports. Above it — `normal` and
+      // `deep` — the rung comes off the √2 ladder and `wallFit` below funds the
+      // iterations to spend it. Fixed-work mode never reaches here.
+      const aboveQuick = isAboveQuickAllowance(tms);
+      work = chooseTurnWork(this.config.profile, rungMs, tms, this.config.time);
+      // E4.3 lane 5's iteration-cost rule (`searchFix.iterFit`), for an
+      // above-quick allowance only. DESIGN §5.11.2's gate refuses a new
+      // iteration once 45% of the rung is spent, so a `deep` turn stops around
+      // half of what the player paid for; the E4.3 probe measured the rule that
+      // replaces it taking 83.5% of the rung to 100.1% with completed
+      // iterations equal on 18 of 20 positions
+      // (`docs/hard-ai/e4/E4.3-ITER-FIT.md` §3). It publishes a partial
+      // iteration only under the principal-variation rule — meter-cut, PV
+      // complete, beaten by another fully searched candidate — so the watchdog
+      // still cannot alter a completed depth. An explicit `searchFix.iterFit`
+      // (either way) still wins; this only speaks where the champion is silent.
+      ctx.wallFit = aboveQuick;
       // E2 lane 1: the throughput the rung was chosen from. `unitsPerMsAfter`
       // is written below, once `updateProfile` has run.
       ctx.stats.unitsPerMsBefore = this.config.profile.unitsPerMs;
@@ -568,6 +626,8 @@ export class HardEngine {
       this.deadlineMs = (calibratedMs > 0 ? enteredAt : startedAt) + deadlineWindow;
       measured = true;
     }
+
+    this.growTT(work);
 
     let result: RootResult;
     try {
@@ -633,6 +693,53 @@ export class HardEngine {
     }
     this.deadlineMs = 0;
     return result;
+  }
+
+  /**
+   * Sizes the macro transposition table for the rung this search is funded at
+   * (`search/time.ts ttBitsForRung`), before `searchRoot` arms the meter.
+   *
+   * WHY IT IS SIZED PER SEARCH AND NOT PER ENGINE. `ttBitsMacro` is DESIGN
+   * §6.3's per-device constant, chosen for a rung that was never larger than
+   * 3.2e6; a 60 s allowance can now fund eight times that work, and a table
+   * sized for the old rung would spend the extra seconds evicting the entries
+   * the deeper iterations are looking for. The engine is built once per GAME
+   * and the allowance is a per-TURN choice, so the constructor cannot know it.
+   *
+   * IT IS NOT A CACHE THAT SURVIVES THE TURN. `searchTurn` clears the table at
+   * the top of every search (the module header's DETERMINISM note), so
+   * replacing it with a fresh, zeroed one of another size is exactly the clear
+   * that was going to happen; a 10 s turn after a 60 s one gets the 10 s
+   * table, not a lucky large one, which is what makes the rung — and so the
+   * move — the only thing the table's size depends on. A rung at or below the
+   * old ladder top asks for `ttBitsMacro` itself, the size the table already
+   * has, and nothing is allocated.
+   *
+   * DEGRADE THE TABLE, NEVER THE SEARCH. The top row is 67.1 MB on a profile
+   * whose default is 8.4 MB (`search/time.ts TT_GROWTH_MAX_BITS` states every
+   * row), and a phone the player has asked for `deep` on is the device most
+   * likely to refuse it. A refused allocation therefore steps the request down
+   * one bit at a time rather than propagating: the turn is searched on a
+   * smaller table, which costs nodes, not correctness. `ttBitsMacro` itself is
+   * the floor, and if even that cannot be allocated the search keeps the table
+   * it is already holding — which `searchTurn` has just cleared, so it is a
+   * correct table of the wrong size, and a search on the wrong-sized table
+   * beats no turn at all.
+   */
+  private growTT(work: number): void {
+    const base = this.config.ttBitsMacro;
+    for (let bits = ttBitsForRung(base, work); bits >= base; bits--) {
+      if (bits === this.ctx.tt.bits) return;
+      try {
+        this.ctx.tt = new TranspositionTable(bits);
+        return;
+      } catch {
+        // Out of memory at this size; try the next one down. A `RangeError`
+        // from the constructor's own bounds check cannot happen here — `bits`
+        // is between `ttBitsMacro` and `ttBitsMacro + 3` — so this is the
+        // allocator refusing, and the only useful answer is a smaller table.
+      }
+    }
   }
 
   /** DESIGN §4.17's legacy shim: search the whole turn, hand back its first

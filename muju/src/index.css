@@ -63,6 +63,16 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .preview-buttons { display: grid; grid-template-columns: 1fr 1.6fr; gap: 8px; }
 .selection-hint { justify-content: center; gap: 6px; }
 .selection-hint strong { font-size: 15px; } .selection-hint p { color: #c0ced9; font-size: 12px; } .selection-hint small { color: #91a5b7; font-size: 11px; }
+/* The AI's turn clock sits beside the thinking copy inside the fixed-height
+   decision panel, so it can appear and vanish without moving anything else. */
+.selection-hint.is-thinking { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 2px 10px; }
+.selection-hint.is-thinking .ai-thinking-timer { grid-row: 1 / span 2; }
+.ai-thinking-timer { display: block; flex: none; }
+.ai-timer-face { fill: #10202e; }
+.ai-timer-ring { fill: none; stroke: #45596c; stroke-width: 1.5px; }
+.ai-timer-hand { stroke: #eef6ff; stroke-width: 1px; stroke-linecap: round; }
+.ai-timer-hand-shadow { stroke: #0b141f; stroke-width: 2.75px; stroke-linecap: round; }
+.ai-timer-seconds { fill: #f2f8ff; stroke: #0e1a27; stroke-width: 3px; paint-order: stroke; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .play-footer { flex: none; }
 .context-status { min-height: 18px; font-size: 10px; color: #aebfcd; text-align: center; }
 .action-bar { display: flex; align-items: center; gap: 6px; }
@@ -298,6 +308,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
   .decision-panel, .is-placing .decision-panel { grid-column: 3; grid-row: 1; height: auto; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
   .decision-panel .unit-shop, .decision-panel .unit-detail, .decision-panel .action-preview, .decision-panel .selection-hint { height: auto; min-height: 100%; padding: 12px; gap: 16px; justify-content: flex-start; }
   .decision-panel .selection-hint { justify-content: center; }
+  /* The tall side panel has no width to spare: the turn clock stacks above the
+     thinking copy here instead of sitting beside it. */
+  .decision-panel .selection-hint.is-thinking { display: flex; align-items: center; text-align: center; }
   .decision-panel .purchase-shop { flex: 1; }
   .decision-panel .element-picker { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
   .game-shell .decision-panel .element-picker button { min-height: 66px; font-size: 11px; }

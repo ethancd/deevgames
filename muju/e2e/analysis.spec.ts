@@ -83,8 +83,10 @@ for (const scenario of [
     await page.goto('./');
     await page.getByRole('button', { name: new RegExp(`^${scenario.mode}`) }).click();
     if (scenario.mode === 'Watch AI') {
-      await page.getByRole('combobox').nth(0).selectOption('easy');
-      await page.getByRole('combobox').nth(1).selectOption('easy');
+      // By label, not by position: each AI seat now also has a thinking-time
+      // selector sitting between the two difficulties.
+      await page.getByLabel('Player 1 AI', { exact: true }).selectOption('easy');
+      await page.getByLabel('Player 2 AI', { exact: true }).selectOption('easy');
     }
     await page.getByRole('button', { name: /Continue saved game/ }).click();
     if (scenario.mode !== 'Watch AI') {

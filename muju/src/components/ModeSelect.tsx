@@ -6,10 +6,15 @@ import { BlackCrystalHandicap } from './BlackCrystalHandicap';
 import { MusicButton } from '../music/MusicPlayer';
 import type { GameMode, GameConfig, PlayerId } from '../game/types';
 import type { AIDifficulty } from '../ai/types';
+import { AI_PACES, AI_PACE_LABEL, AI_TURN_SECONDS, formatTurnSeconds, type AIPace } from '../ai/turnTime';
 import { getActionsPerTurn } from '../game/rules';
-import { loadGameState } from '../utils/persistence';
+import { loadAIPace, loadGameState } from '../utils/persistence';
 
 const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
+
+/** "Quick · 10 s", "Deep · 1 min" — the allowance depends on the difficulty. */
+const paceOptionLabel = (difficulty: AIDifficulty, pace: AIPace): string =>
+  `${AI_PACE_LABEL[pace]} · ${formatTurnSeconds(AI_TURN_SECONDS[difficulty][pace])}`;
 
 function loadPreferredSide(): PlayerId {
   try {
@@ -29,6 +34,11 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   const [playerSide, setPlayerSide] = useState<PlayerId>(loadPreferredSide);
   const [playerDifficulty, setPlayerDifficulty] = useState<AIDifficulty>('medium');
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('medium');
+  // Resuming a saved game keeps the thinking time it was played at; a pace the
+  // save never mentioned reads back as `DEFAULT_AI_PACE`.
+  const [savedPace] = useState(loadAIPace);
+  const [playerPace, setPlayerPace] = useState<AIPace>(savedPace.white);
+  const [aiPace, setAiPace] = useState<AIPace>(savedPace[playerSide === 'white' ? 'black' : 'white']);
   const [savedGame] = useState(loadGameState);
   const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
   const [ruleset, setRuleset] = useState<Ruleset>('standard');
@@ -60,6 +70,9 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
             white: playerSide === 'black' ? aiDifficulty : 'medium',
             black: playerSide === 'white' ? aiDifficulty : 'medium',
           },
+          // Only the AI seat's pace is ever read; the human's carries the same
+          // choice so that switching sides mid-menu cannot lose it.
+          aiPace: { white: aiPace, black: aiPace },
         };
         break;
       case 'pass-play':
@@ -74,6 +87,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
           mode: 'ai-vs-ai',
           controls: { white: 'ai', black: 'ai' },
           aiDifficulty: { white: playerDifficulty, black: aiDifficulty },
+          aiPace: { white: playerPace, black: aiPace },
         };
         break;
     }
@@ -183,14 +197,26 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
                 <option value="hard">Hard</option>
               </select>
             </div>
+            <div className="space-y-2">
+              <label htmlFor="vs-ai-pace" className="block text-sm text-gray-400">Thinking time</label>
+              <select
+                id="vs-ai-pace"
+                value={aiPace}
+                onChange={(e) => setAiPace(e.target.value as AIPace)}
+                className="w-full bg-gray-800 border border-gray-700 rounded p-2"
+              >
+                {AI_PACES.map((pace) => <option key={pace} value={pace}>{paceOptionLabel(aiDifficulty, pace)}</option>)}
+              </select>
+            </div>
           </div>
         )}
 
         {selectedMode === 'ai-vs-ai' && (
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="block text-sm text-gray-400">Player 1 AI</label>
+              <label htmlFor="ai-vs-ai-difficulty-1" className="block text-sm text-gray-400">Player 1 AI</label>
               <select
+                id="ai-vs-ai-difficulty-1"
                 value={playerDifficulty}
                 onChange={(e) => setPlayerDifficulty(e.target.value as AIDifficulty)}
                 className="w-full bg-gray-800 border border-gray-700 rounded p-2"
@@ -199,10 +225,20 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
               </select>
+              <label htmlFor="ai-vs-ai-pace-1" className="block text-sm text-gray-400">Player 1 thinking time</label>
+              <select
+                id="ai-vs-ai-pace-1"
+                value={playerPace}
+                onChange={(e) => setPlayerPace(e.target.value as AIPace)}
+                className="w-full bg-gray-800 border border-gray-700 rounded p-2"
+              >
+                {AI_PACES.map((pace) => <option key={pace} value={pace}>{paceOptionLabel(playerDifficulty, pace)}</option>)}
+              </select>
             </div>
             <div className="space-y-2">
-              <label className="block text-sm text-gray-400">Player 2 AI</label>
+              <label htmlFor="ai-vs-ai-difficulty-2" className="block text-sm text-gray-400">Player 2 AI</label>
               <select
+                id="ai-vs-ai-difficulty-2"
                 value={aiDifficulty}
                 onChange={(e) => setAiDifficulty(e.target.value as AIDifficulty)}
                 className="w-full bg-gray-800 border border-gray-700 rounded p-2"
@@ -211,11 +247,21 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
               </select>
+              <label htmlFor="ai-vs-ai-pace-2" className="block text-sm text-gray-400">Player 2 thinking time</label>
+              <select
+                id="ai-vs-ai-pace-2"
+                value={aiPace}
+                onChange={(e) => setAiPace(e.target.value as AIPace)}
+                className="w-full bg-gray-800 border border-gray-700 rounded p-2"
+              >
+                {AI_PACES.map((pace) => <option key={pace} value={pace}>{paceOptionLabel(aiDifficulty, pace)}</option>)}
+              </select>
             </div>
           </div>
         )}
 
         {selectedMode === 'pass-play' && <RulesetSelect value={ruleset} onChange={setRuleset} />}
+        {(selectedMode === 'vs-ai' || selectedMode === 'ai-vs-ai') && <p className="text-sm text-gray-400">Difficulty is how well the AI understands the game; thinking time is how long it looks before moving. It plays as soon as it is ready.</p>}
         {(selectedMode === 'vs-ai' || selectedMode === 'ai-vs-ai') && <p className="text-sm text-gray-400">AI plays Standard rules. Try Phasing in Pass & Play or online.</p>}
         {selectedMode && <BlackCrystalHandicap phasing={selectedMode === 'pass-play' && ruleset === 'phasing'} value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
 

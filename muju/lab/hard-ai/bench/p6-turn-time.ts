@@ -28,7 +28,10 @@
  *     number is the engine's root generation and not an unbounded one.
  *
  *   `--mode rung` — HOW ROOT GENERATION SCALES WITH THE RUNG. The same root
- *     generation at each `WORK_LADDER` rung from `--rung-from` up. This is the
+ *     generation at each `WORK_LADDER` rung between `--rung-from` and
+ *     `--rung-to` (which defaults to the ladder's pre-turn-pace top of
+ *     3,200,000, so an invocation written before the paces sweeps exactly the
+ *     rungs it always did — see `Args.rungTo`). This is the
  *     measurement that decides whether a phase the deadline cannot interrupt
  *     can reach 170 s at a rung the engine can actually pick: `generateAt`
  *     (`search/pvs.ts`) polls `s.meter.exhausted()` and NEVER `s.stop()`.
@@ -73,6 +76,14 @@ interface Args {
   from: number;
   to: number;
   rungFrom: number;
+  /**
+   * The top of `--mode rung`'s sweep, defaulting to the ladder's PRE-PACE top
+   * (3,200,000). `search/time.ts WORK_LADDER` now runs to 51,200,000 for the
+   * turn paces, and root generation at that rung is minutes of unmetered work
+   * per position — a measurement to ask for, not one an invocation written
+   * before the paces should inherit.
+   */
+  rungTo: number;
   dumpState: string | null;
   phases: 'gen' | 'search' | 'both';
   out: string | null;
@@ -89,6 +100,7 @@ function parseArgs(argv: string[]): Args {
     from: 0,
     to: Number.MAX_SAFE_INTEGER,
     rungFrom: 0,
+    rungTo: 3.2e6,
     dumpState: null,
     phases: 'both',
     out: null,
@@ -105,6 +117,7 @@ function parseArgs(argv: string[]): Args {
       case '--from': a.from = Number(v); i++; break;
       case '--to': a.to = Number(v); i++; break;
       case '--rung-from': a.rungFrom = Number(v); i++; break;
+      case '--rung-to': a.rungTo = Number(v); i++; break;
       case '--phases': a.phases = v as Args['phases']; i++; break;
       case '--dump-state': a.dumpState = v; i++; break;
       case '--out': a.out = v; i++; break;
@@ -284,7 +297,7 @@ async function main(): Promise<void> {
         say('| rung | root gen ms | candidates | gen work used | place plans |');
         say('| ---: | ---: | ---: | ---: | ---: |');
         for (const rung of WORK_LADDER) {
-          if (rung < args.rungFrom) continue;
+          if (rung < args.rungFrom || rung > args.rungTo) continue;
           const m = phases.measure(turn.startState, args.wall, rung);
           say(`| ${rung} | ${m.genMs} | ${m.candidates} | ${m.genWorkUsed} | ${m.placePlans} |`);
         }

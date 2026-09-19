@@ -11,6 +11,7 @@ import type { HardConfig } from '../../src/ai/hard/config';
 import type { GameState } from '../../src/game/types';
 import { instantiateTactics, type TacticalSolver } from '../../src/ai/wasm/kernel';
 import { AIEngineV2 } from '../../src/ai/engine-v2';
+import { AI_PACES, aiTurnBudgetMs } from '../../src/ai/turnTime';
 
 let solver: TacticalSolver;
 beforeAll(async () => { solver = await instantiateTactics(readFileSync('src/ai/wasm/tactics.wasm')); });
@@ -83,6 +84,26 @@ it('mode:"turn", engine:"hard" routes to the HardEngine, funds it with the turn 
   expect(stub.calls).toHaveLength(1);
   expect(stub.calls[0].opts).toEqual({ targetMs: 1234, deadlineMs: 1234 });
   expect(stub.seeds).toEqual([r.seed]);
+});
+
+/**
+ * THE PACED SEAM. `useAI.ts` funds one turn with `aiTurnBudgetMs(difficulty,
+ * pace)` and sends what is left of it as `decisionMs`; this is the other half
+ * of that sentence — the player's own allowance reaches `searchTurn` unmangled,
+ * all the way up to the deep 60 s the owner asked for on a phone. What the
+ * engine then BUYS with it (a bigger work rung on every device profile) is
+ * `tests/ai/hard/turn-pace.test.ts`; what is pinned here is that no layer
+ * between the menu and the engine re-invents the number.
+ */
+it('funds a hard turn with the pace the player chose, up to the deep 60 s', async () => {
+  const stub = hardStub();
+  const handler = createSearchHandler(solver, undefined, stub.factory);
+  for (const [index, pace] of AI_PACES.entries()) {
+    const ms = aiTurnBudgetMs('hard', pace);
+    await handler({ ...request(), mode: 'turn', engine: 'hard', requestId: index + 1, decisionMs: ms });
+    expect(stub.calls[index].opts).toEqual({ targetMs: ms, deadlineMs: ms });
+  }
+  expect(stub.calls.map(call => call.opts?.targetMs)).toEqual([10_000, 30_000, 60_000]);
 });
 
 it('a hard engine that fell back reports engineUsed:"hard" with the fallback reason', async () => {

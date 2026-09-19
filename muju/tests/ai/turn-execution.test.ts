@@ -5,7 +5,11 @@ import { createInitialGameState, createUnit } from '../../src/game/board';
 import { gameReducer } from '../../src/hooks/useGameState';
 import type { GameState, PlayerId, Position } from '../../src/game/types';
 import type { AIAction, AIDifficulty } from '../../src/ai/types';
-import { TURN_BUDGET_MS } from '../../src/ai/engine-v2';
+import { aiTurnBudgetMs } from '../../src/ai/turnTime';
+/** What the hook funds a turn with now: the seat's PACE, not `engine-v2`'s
+ * pre-pace `TURN_BUDGET_MS`. These tests drive `useAI` without a pace, so
+ * every allowance below is the default `quick` one (`ai/turnTime.ts`). */
+const QUICK_TURN_MS: Record<AIDifficulty, number> = { easy: aiTurnBudgetMs('easy'), medium: aiTurnBudgetMs('medium'), hard: aiTurnBudgetMs('hard') };
 const { choose, timeSpent, turnGate } = vi.hoisted(()=>({choose:vi.fn(),timeSpent:vi.fn((_allowance:number)=>0),turnGate:vi.fn()}));
 // `findBestTurn` (M3, the default path) and `findBestAction` (the per-action
 // fallback) share the same `choose`/`timeSpent` mocks — `findBestTurn` just
@@ -88,7 +92,7 @@ for (const player of ['white', 'black'] as const) for (const homeUnderAttack of 
   });
   expect(result.current.error).toBeNull();
   // One whole-turn search, funded by the whole-turn allowance — not one per action.
-  expect(allowances).toEqual([TURN_BUDGET_MS.hard]);
+  expect(allowances).toEqual([QUICK_TURN_MS.hard]);
   expect(seen).toEqual(planned);
   expect(real.board.units.some(unit => unit.id === target.id)).toBe(false);
   expect(real.turn.currentPlayer).toBe(opponent);
@@ -146,13 +150,13 @@ it('funds every action of the fallback loop and never overspends the turn budget
  // phase — a deliberate 1 ms of overspend, counted as `budgetExhausted`
  // (`tests/ai/hard-hook-fallback.test.ts` pins the counter). Nothing else may
  // exceed the turn's funding.
- expect(allowances.reduce((sum, a) => sum + a, 0)).toBeLessThanOrEqual(TURN_BUDGET_MS.hard + MIN_TURN_SEARCH_MS);
+ expect(allowances.reduce((sum, a) => sum + a, 0)).toBeLessThanOrEqual(QUICK_TURN_MS.hard + MIN_TURN_SEARCH_MS);
  expect(real.board.units.some(unit => unit.id === target.id)).toBe(false);
  expect(real.turn.currentPlayer).toBe('black');
  unmount();
 });
 
-// E0.2: `TURN_BUDGET_MS` funds a TURN, not a search. A plan that runs out
+// E0.2: `QUICK_TURN_MS` funds a TURN, not a search. A plan that runs out
 // mid-turn re-requests (`outcome === 'ok'` with the turn still ours), and that
 // re-request must draw on what the turn has LEFT — `remainingCPU`, already
 // debited by what each search reported spending. Before E0.2 every iteration
@@ -184,8 +188,8 @@ it('funds a mid-turn re-request from the turn remainder, not a fresh budget', as
  });
  expect(result.current.error).toBeNull();
  expect(seen).toEqual(plans.flat());
- expect(allowances).toEqual([TURN_BUDGET_MS.hard, TURN_BUDGET_MS.hard - 400, TURN_BUDGET_MS.hard - 800]);
- expect(allowances.reduce((max, a) => Math.max(max, a), 0)).toBeLessThanOrEqual(TURN_BUDGET_MS.hard);
+ expect(allowances).toEqual([QUICK_TURN_MS.hard, QUICK_TURN_MS.hard - 400, QUICK_TURN_MS.hard - 800]);
+ expect(allowances.reduce((max, a) => Math.max(max, a), 0)).toBeLessThanOrEqual(QUICK_TURN_MS.hard);
  unmount();
 });
 
@@ -216,7 +220,7 @@ it('drops to the per-action loop on the remainder the failed turn search left', 
  expect(seen.map(a => a.type)).toEqual(['END_ACTION_PHASE']);
  // The fallback's slice is `remainingCPU / decisionsRemaining` over what the
  // turn search left (4 actions remain), never over a refreshed budget.
- expect(allowances).toEqual([TURN_BUDGET_MS.hard, (TURN_BUDGET_MS.hard - 1000) / 4]);
+ expect(allowances).toEqual([QUICK_TURN_MS.hard, (QUICK_TURN_MS.hard - 1000) / 4]);
  expect(real.turn.currentPlayer).toBe('black');
  unmount();
 });

@@ -1016,9 +1016,36 @@ describe('DESIGN §4 declaration tests', () => {
     expect(declared).toHaveLength(45);
   });
 
-  it('DESIGN §8 freezes WORK_COST and WORK_LADDER', () => {
+  /**
+   * DESIGN §8's table is `25e3 × 2^k` for `k = 0..7`, and every one of those
+   * eight rungs is still here, in place and in order. The four above them are
+   * the TURN-PACE EXTENSION (`src/ai/turnTime.ts`, `search/time.ts
+   * WORK_LADDER`): a player may now fund a Hard turn with 30 s or 60 s, and
+   * `chooseWork` takes the largest rung at or under `unitsPerMs × targetMs`, so
+   * the old top of 3.2e6 was the engine's speed limit — ~5.3 s of search on
+   * DESIGN §6.3's desktop box, whatever the allowance said.
+   *
+   * THIS PIN MOVED; NO BEHAVIOURAL PIN DID — AND THE LADDER IS NOT WHAT KEEPS
+   * IT SO. A rung above the old top cannot change the answer for a budget below
+   * 6.4e6 units, but the budget is `MEASURED unitsPerMs × targetMs`: default
+   * Hard's 10,000 ms crosses 6.4e6 on any box at 640 units/ms or more, which is
+   * within reach of the desktop profile's own 600. So the guarantee is carried
+   * by the ALLOWANCE instead — `search/time.ts chooseTurnWork`, the one function
+   * `engine.ts` funds a wall-mode turn through, refuses any rung above
+   * `RELEASE_TOP_RUNG` for an allowance at or below `QUICK_TURN_ALLOWANCE_MS`
+   * (the release's 8,000 ms, `quick`'s 10,000 ms, `?hardMs`, every profile's
+   * `time.maxMs`, every mid-turn re-request), whatever the box measures. Every
+   * fixed-work golden (400,000 units and below) never reaches these rungs at
+   * all. `tests/ai/hard/turn-pace.test.ts` sweeps `unitsPerMs` from 50 to 5,000
+   * to pin both halves; the determinism, cross-commit, iter-fit and rescue-cap
+   * pins are untouched.
+   */
+  it('DESIGN §8 freezes WORK_COST, and WORK_LADDER extends it for the turn paces', () => {
     expect(Array.from(WORK_COST)).toEqual([4, 4, 1, 4, 8, 2, 2, 12, 40]);
-    expect(Array.from(WORK_LADDER)).toEqual([25e3, 50e3, 100e3, 200e3, 400e3, 800e3, 1.6e6, 3.2e6]);
+    expect(Array.from(WORK_LADDER)).toEqual([
+      25e3, 50e3, 100e3, 200e3, 400e3, 800e3, 1.6e6, 3.2e6, // DESIGN §8, k = 0..7
+      6.4e6, 12.8e6, 25.6e6, 51.2e6, // the turn-pace extension, k = 8..11
+    ]);
     expect(WorkClass).toEqual({
       MACRO: 0, QUIESCE: 1, TURN: 2, GEN: 3, KILLTABLE: 4, DFPN: 5, EVAL1: 6, EVAL2: 7, PROVER: 8,
     });

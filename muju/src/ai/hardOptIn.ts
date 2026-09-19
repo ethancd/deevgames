@@ -22,10 +22,22 @@
  *     `localStorage['muju.hardAi'] = '1'`.
  * Any other value is neither, and leaves `hardEnabled` to decide.
  *
- * TURN BUDGET. `?hardMs=<int>`, clamped to [1000, 120000], replaces
- * `TURN_BUDGET_MS.hard` for this game's Hard seat (`readHardTurnBudgetMs()`).
- * The release contract is the unchanged 8000 ms measured at `wall:8000`; this
- * is a page-URL override for demos and measurement, ignored on easy/medium.
+ * TURN BUDGET. `?hardMs=<int>`, clamped to [1000, 120000], replaces the Hard
+ * seat's whole-turn allowance for this game (`readHardTurnBudgetMs()`). The
+ * allowance it overrides is now the PLAYER's: `src/ai/turnTime.ts` gives Hard
+ * three paces — 10 s `quick`, 30 s `normal`, 60 s `deep` — where the release
+ * contract was a single 8000 ms measured at `wall:8000`. The clamp's ceiling
+ * is twice the deepest pace, so every pace passes through it untouched, and
+ * this stays what it always was: a page-URL override for demos and
+ * measurement, ignored on easy/medium.
+ *
+ * WHAT THE ENGINE DOES WITH IT. The allowance reaches `HardEngine.searchTurn`
+ * as `targetMs` (and, since A11, as `deadlineMs`), and an explicit `targetMs`
+ * is used verbatim — the device profile's `time.maxMs` is the default the
+ * engine would have chosen for itself, not a ceiling on what it was handed
+ * (`src/ai/hard/engine.ts`, `tests/ai/hard/turn-pace.test.ts`). The work ladder
+ * reaches 51,200,000 units so the longer paces buy a proportionally longer
+ * search rather than the same 5 s one (`search/time.ts WORK_LADDER`).
  *
  * Every one of these is read ONCE per game start (`useAI.ts` caches them and
  * clears the cache in `cancel`, which every new game / restart / difficulty
@@ -211,9 +223,10 @@ export function resolveHardAiRoute(): boolean {
 /**
  * `?hardMs=<int>` — the whole-turn budget this game funds the Hard seat with,
  * clamped to [`HARD_AI_MS_MIN`, `HARD_AI_MS_MAX`]. `null` means "no override",
- * and the shipped `TURN_BUDGET_MS.hard` (8000, the release contract measured
- * at `wall:8000`) stands. Logged once per game, like every other read here.
- * Anything that is not an integer is ignored rather than guessed at.
+ * and the allowance the PLAYER chose stands — the pace's `AI_TURN_SECONDS`
+ * (`src/ai/turnTime.ts`), where before the paces it was a single 8000 ms.
+ * Logged once per game, like every other read here. Anything that is not an
+ * integer is ignored rather than guessed at.
  */
 export function readHardTurnBudgetMs(): number | null {
   if (typeof window === 'undefined') return null;
@@ -224,6 +237,6 @@ export function readHardTurnBudgetMs(): number | null {
   if (raw === null || !/^[+-]?\d+$/.test(raw.trim())) return null;
   const requested = Number(raw);
   const ms = Math.min(HARD_AI_MS_MAX, Math.max(HARD_AI_MS_MIN, requested));
-  console.warn(`${HARD_AI_LOG_PREFIX} ${HARD_AI_MS_QUERY_PARAM}=${requested} — this game funds the hard seat's turn with ${ms} ms (clamped to [${HARD_AI_MS_MIN}, ${HARD_AI_MS_MAX}]; the shipped budget is 8000)`);
+  console.warn(`${HARD_AI_LOG_PREFIX} ${HARD_AI_MS_QUERY_PARAM}=${requested} — this game funds the hard seat's turn with ${ms} ms (clamped to [${HARD_AI_MS_MIN}, ${HARD_AI_MS_MAX}]; without it the seat gets the allowance of the pace the player picked)`);
   return ms;
 }

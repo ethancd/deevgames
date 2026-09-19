@@ -34,6 +34,10 @@ export interface GameConfig {
   mode: GameMode;
   controls: Record<PlayerId, ControlType>;
   aiDifficulty: Record<PlayerId, import('../ai/types').AIDifficulty>;
+  /** How long each AI seat may think per turn; omitted means `DEFAULT_AI_PACE`
+   * for both seats, so configs and saves written before paces existed keep
+   * working. Difficulty picks the engine, pace only its allowance. */
+  aiPace?: Record<PlayerId, import('../ai/turnTime').AIPace>;
 }
 
 // === Elements ===

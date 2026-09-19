@@ -5,7 +5,7 @@
  * unit is calibrated to ≈ 1 µs on the reference box (`hard:bench --calibrate`
  * measures the real ratio on the box it runs on and records it in the M14
  * artifact), and it stops when the budget is gone. The budget itself is one of
- * eight quantised rungs, so jitter in the only three clock reads in the whole
+ * twelve quantised rungs, so jitter in the only three clock reads in the whole
  * engine — `chooseWork`'s input, `updateProfile`'s measurement and the abort
  * watchdog — cannot move the rung and therefore cannot change the move.
  *
@@ -43,8 +43,39 @@ export const WORK_CLASS_COUNT = 9;
  * PROVER 40 per full-prover call`. */
 export const WORK_COST: readonly number[] = [4, 4, 1, 4, 8, 2, 2, 12, 40];
 
-/** `25e3 × 2^k, k = 0..7` (DESIGN §5.11.6). */
-export const WORK_LADDER: readonly number[] = [25e3, 50e3, 100e3, 200e3, 400e3, 800e3, 1.6e6, 3.2e6];
+/**
+ * `25e3 × 2^k, k = 0..11` (DESIGN §5.11.6, whose table stops at `k = 7`).
+ *
+ * THE FOUR TOP RUNGS ARE THE TURN-PACE EXTENSION (`src/ai/turnTime.ts`). A
+ * player now picks how long the seat may think per TURN — Hard is 10 s / 30 s /
+ * 60 s — and `chooseWork` takes the largest rung at or under
+ * `unitsPerMs × targetMs`, so the ladder's top IS the engine's speed limit: at
+ * the desktop profile's ~600 units/ms the old top of 3,200,000 is about 5.3 s
+ * of search, which is why the E6 release measured a mean turn of 4.9 s inside
+ * an 8,000 ms allowance no matter how much of it was left. A 60 s allowance
+ * asks for 36,000,000 units; without rungs above 3.2e6 it would buy exactly the
+ * same 5.3 s and the pace would be a lie.
+ *
+ * THE LADDER ALONE DOES NOT KEEP THE DEFAULT SEAT WHERE THE RELEASE MEASURED
+ * IT, and this comment used to claim that it did. `chooseWork` scans for the
+ * largest rung `≤ profile.unitsPerMs × targetMs`, and `unitsPerMs` is MEASURED
+ * (`updateProfile`'s EWMA), not a constant: the E6 release was measured at
+ * `wall:8000`, default Hard is now `quick`'s 10,000 ms, and any box measuring
+ * 640 units/ms or more therefore asks for 6,400,000 units and would select the
+ * first NEW rung — a silent change to default play that no release row covers.
+ * So the allowance itself carries the compatibility argument, not the ladder:
+ * `chooseTurnWork` (below) refuses any rung above `RELEASE_TOP_RUNG` for an
+ * allowance at or under `QUICK_TURN_ALLOWANCE_MS`, whatever the box measures,
+ * and `engine.ts` funds every wall-mode turn through it. The rungs above 3.2e6
+ * are reachable only from an allowance ABOVE quick — `normal` (30 s) and `deep`
+ * (60 s), which no release, golden or determinism row has ever measured.
+ * `tests/ai/hard/turn-pace.test.ts` sweeps `unitsPerMs` from 50 to 5,000 over
+ * 8,000 ms and 10,000 ms to pin that; the determinism goldens, which run at
+ * fixed work of 400,000 units and below, never reach the new rungs at all.
+ */
+export const WORK_LADDER: readonly number[] = [
+  25e3, 50e3, 100e3, 200e3, 400e3, 800e3, 1.6e6, 3.2e6, 6.4e6, 12.8e6, 25.6e6, 51.2e6,
+];
 
 /**
  * E2 lane 1's work-fit ladder: `WORK_LADDER` interleaved at √2, as integer
@@ -61,9 +92,25 @@ export const WORK_LADDER: readonly number[] = [25e3, 50e3, 100e3, 200e3, 400e3, 
  * 200,000 either stays there or moves one step to 283,000 — never further.
  *
  * WHAT IT GIVES UP is stated where the quantisation is: `chooseWork`'s header.
+ *
+ * It runs to the same top as `WORK_LADDER` and by the same rule — the eight
+ * entries above 3.2e6 are `25e3 × 2^(k/2)` continued to `k = 22`, so every
+ * ×2 rung the pace extension added (6.4e6, 12.8e6, 25.6e6, 51.2e6) is still a
+ * rung here (`tests/lab/ablate.test.ts` pins that containment). Rounded the
+ * same way: 4.52e6, 9.05e6, 18.1e6 and 36.2e6 are three-figure roundings of
+ * 4,525,483, 9,050,967, 18,101,934 and 36,203,867.
+ *
+ * ONE WINDOW MOVES ON THIS LADDER AND NOT ON THE ×2 ONE: a budget in
+ * [4.52e6, 6.4e6) used to be quantised down to 3.2e6 and now lands on 4.52e6,
+ * because the interleave below the first new ×2 rung is what keeps the 29%
+ * worst case true across the new range. Only `hard@ablate:work-fit` can reach
+ * it, and only on a profile warm enough to ask for 4.5 million units — E2
+ * measured that arm at `wall:3000` on profiles of 200-600 units/ms, i.e. from
+ * 600,000 to 1,800,000 units, so no recorded row of it sits in the window.
  */
 export const WORK_LADDER_FINE: readonly number[] = [
   25e3, 35e3, 50e3, 71e3, 100e3, 141e3, 200e3, 283e3, 400e3, 566e3, 800e3, 1.13e6, 1.6e6, 2.26e6, 3.2e6,
+  4.52e6, 6.4e6, 9.05e6, 12.8e6, 18.1e6, 25.6e6, 36.2e6, 51.2e6,
 ];
 
 /**
@@ -159,7 +206,7 @@ export function now(): number {
  * `targetMs`'s own multipliers. A ×2 ladder needs the profile to be wrong by
  * 2× before the rung moves, so a turn replayed on a loaded box picks the same
  * rung, spends the same work and returns the same move. It also keeps the
- * profile→rung→elapsed→profile loop coarse: the rung can only take eight
+ * profile→rung→elapsed→profile loop coarse: the rung can only take twelve
  * values, so a throughput measurement that drifts cannot walk the budget.
  *
  * WHAT A FINER LADDER GIVES UP is exactly that margin. At `ladderStep:
@@ -183,6 +230,137 @@ export function chooseWork(profile: DeviceProfile, targetMs: number, time?: Time
     if (ladder[i] <= budget) chosen = ladder[i];
   }
   return chosen;
+}
+
+/**
+ * The largest rung any allowance could select before the turn-pace extension:
+ * DESIGN §8's top, `25e3 × 2^7`. It is what the E6 release played at and what
+ * the macro transposition table is sized for (`TT_GROWTH_BASE_RUNG` below is
+ * this number, for that reason).
+ */
+export const RELEASE_TOP_RUNG = 3.2e6;
+
+/**
+ * THE DEFAULT SEAT'S ALLOWANCE, in milliseconds, and the line above which a
+ * wall-funded turn is allowed to leave the release's evidence behind.
+ *
+ * It MUST equal `aiTurnBudgetMs('hard', 'quick')` (`src/ai/turnTime.ts`), the
+ * allowance a Hard seat gets when the player chooses nothing. It is restated
+ * here as a literal because `lab/hard-ai/deps.ts` lets nothing under
+ * `src/ai/hard/` import `src/ai/turnTime.ts` — the engine may not read the UI's
+ * vocabulary — and `tests/ai/hard/turn-pace.test.ts` asserts the two numbers
+ * are the same, so the duplication cannot drift silently.
+ */
+export const QUICK_TURN_ALLOWANCE_MS = 10_000;
+
+/**
+ * Whether an allowance is longer than the default seat's, and so outside every
+ * row the release, the goldens and the determinism gates were measured on.
+ * At or below it, a wall-funded turn plays exactly the engine the release
+ * measured; above it, `chooseTurnWork` may spend the ladder and the schedule
+ * the pace paid for.
+ */
+export const isAboveQuickAllowance = (allowanceMs: number): boolean => allowanceMs > QUICK_TURN_ALLOWANCE_MS;
+
+/**
+ * THE RUNG A WALL-FUNDED TURN IS GIVEN — the one call `engine.ts` makes, and
+ * the only place the turn paces (`src/ai/turnTime.ts`) reach the search.
+ *
+ * `rungMs` is the clock the rung is sized from (the allowance less whatever a
+ * cold probe already spent); `allowanceMs` is what the caller asked for, and it
+ * alone decides WHICH ENGINE this is:
+ *
+ *   AT OR BELOW `QUICK_TURN_ALLOWANCE_MS` — the release's engine, bit for bit.
+ *     The ×2 ladder `config.time` asks for, and never a rung above
+ *     `RELEASE_TOP_RUNG` however fast the box measures. The cap is what makes
+ *     default Hard (10,000 ms) the seat the E6 release measured at 8,000 ms
+ *     rather than one rung deeper on a box at 640 units/ms or more; with it the
+ *     macro table stays the profile's own size too (`ttBitsForRung` returns
+ *     `baseBits` for every rung at or below this one).
+ *
+ *   ABOVE IT — `normal` (30 s) and `deep` (60 s), which nothing is pinned on.
+ *     Selection moves to `WORK_LADDER_FINE`, so the √2 step leaves at most 29%
+ *     of the allowance unbuyable instead of the ×2 ladder's 50% (that ladder's
+ *     own header carries the measurement), and the whole ladder is reachable.
+ *     A profile that already asked for the fine ladder keeps it.
+ *
+ * Pure, like `chooseWork`, which it does not replace: fixed-work mode never
+ * calls either, and a caller that only wants the quantiser still has it.
+ */
+export function chooseTurnWork(
+  profile: DeviceProfile,
+  rungMs: number,
+  allowanceMs: number,
+  time?: TimeConfig,
+): number {
+  if (!isAboveQuickAllowance(allowanceMs)) {
+    const chosen = chooseWork(profile, rungMs, time);
+    return chosen > RELEASE_TOP_RUNG ? RELEASE_TOP_RUNG : chosen;
+  }
+  return chooseWork(profile, rungMs, time === undefined ? { ladderStep: 'sqrt2' } as TimeConfig : { ...time, ladderStep: 'sqrt2' });
+}
+
+/**
+ * The rung at which the macro transposition table is exactly the size DESIGN
+ * §6.3's profile table asks for: the ladder's OLD top, the largest rung any
+ * allowance could select before the turn-pace extension.
+ */
+export const TT_GROWTH_BASE_RUNG = RELEASE_TOP_RUNG;
+
+/**
+ * How many times the macro table may DOUBLE above its profile's `ttBitsMacro`,
+ * and therefore the memory contract (an entry is 16 bytes,
+ * `search/tt.ts WORDS × BUCKET`):
+ *
+ *   desktop  2^19 → 2^22 entries:  8.4 MB →  67.1 MB
+ *   midrange 2^18 → 2^21 entries:  4.2 MB →  33.6 MB
+ *   phone    2^15 → 2^18 entries:  0.5 MB →   4.2 MB
+ *
+ * The browser builds every Hard seat from `DESKTOP` (`useAI.ts` sends no
+ * profile patch), so the phone that asks for `deep` is buying the 67.1 MB row,
+ * and only once its measured throughput reaches 427 units/ms — the rate at
+ * which a 60 s allowance selects the 25.6e6 rung. That is the number the owner
+ * is accepting heat and battery for; an out-of-memory tab is NOT acceptable, so
+ * `engine.ts#growTT` steps the request back down a bit at a time if the
+ * allocation throws, and a search always runs, at worst on the table its
+ * profile always had.
+ *
+ * WHY 3 AND NOT THE 4 THE LADDER COULD ASK FOR. The table is indexed by MACRO
+ * nodes, and those grow with the rung: measured at the 3.2e6 rung on a real
+ * mid-game turn, one search stored 29,535 macro nodes into the desktop table's
+ * 2^19 = 524,288 entries — 5.6% of it (`lab/hard-ai/bench/pace-allowance.ts`,
+ * `g2-s20_3_15-A-white` white t20). The same position at 6.4e6 stored 57,148,
+ * so the count really does scale with the rung rather than saturating.
+ * Extrapolated on that line, 25.6e6 is ~236,000 nodes (45% of the base table,
+ * where four-way buckets start losing
+ * entries a deeper iteration wants) and 51.2e6 is ~472,000, which fills it. So
+ * the last two rungs are the ones that need the room, three doublings put the
+ * top rung at 11% occupancy, and a fourth would buy a phone nothing but
+ * another 67 MB.
+ */
+export const TT_GROWTH_MAX_BITS = 3;
+
+/**
+ * The macro table's size, in bits, for a search funded at `rung` on a profile
+ * whose table is `baseBits`: one bit per DOUBLING of the rung above
+ * `TT_GROWTH_BASE_RUNG`, capped at `TT_GROWTH_MAX_BITS`.
+ *
+ * A PURE FUNCTION OF THE TWO INPUTS, which is what keeps the move a function of
+ * the position, the weights and the rung (DESIGN §7.4): the same rung always
+ * gets the same table, whatever the engine searched before it and whichever
+ * mode funded it. Every rung at or below the old ladder top returns `baseBits`
+ * unchanged, so no allowance that existed before the turn-pace extension — and
+ * no fixed-work golden, which run at 400,000 units and below — sees a different
+ * table than it always did.
+ */
+export function ttBitsForRung(baseBits: number, rung: number): number {
+  let extra = 0;
+  let step = TT_GROWTH_BASE_RUNG;
+  while (extra < TT_GROWTH_MAX_BITS && rung >= step * 2) {
+    step *= 2;
+    extra++;
+  }
+  return baseBits + extra;
 }
 
 /**

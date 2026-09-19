@@ -19,6 +19,9 @@ import { ElementLegend } from './ElementLegend';
 import { ReplayLauncher, TurnReplay, useReplayPlayback } from './TurnReplay';
 import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
+import { AIThinkingTimer, AI_TIMER_MIN_BUDGET_MS } from './AIThinkingTimer';
+import { formatTurnSeconds } from '../ai/turnTime';
+import { saveAIPace } from '../utils/persistence';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
 import { getUnitAt, getUnitById, getCell, isOccupied, isValidPosition } from '../game/board';
@@ -48,6 +51,9 @@ interface GameScreenProps {
 
 export function GameScreen({ config, onBackToMenu }: GameScreenProps) {
   const game = useGameState(config);
+  // Record the chosen thinking time on the save `useGameState` has just
+  // written (its effect runs first), so resuming this match resumes its pace.
+  useEffect(() => { if (config.aiPace) saveAIPace(config.aiPace); }, [config.aiPace]);
   return <GameView config={config} onBackToMenu={onBackToMenu} game={game} />;
 }
 
@@ -238,6 +244,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   // Either side can be AI-controlled in vs-ai and ai-vs-ai modes.
   const whiteAI = useAI({
     difficulty: config.aiDifficulty.white,
+    pace: config.aiPace?.white,
     thinkingDelay: 400,
     enabled: !phasing && config.controls.white === 'ai' && !isPaused && state.phase === 'playing',
     getCurrentState, state,
@@ -245,6 +252,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
   const blackAI = useAI({
     difficulty: config.aiDifficulty.black,
+    pace: config.aiPace?.black,
     thinkingDelay: 400,
     enabled: !phasing && config.controls.black === 'ai' && !isPaused && state.phase === 'playing',
     getCurrentState, state,
@@ -265,6 +273,19 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
   // Combined isThinking state
   const isThinking = whiteAI.isThinking || blackAI.isThinking;
+  // The seat whose allowance the stopwatch counts down: what it was funded
+  // with, what its searches have spent, and whether one is running right now
+  // (`useAI`'s `turnClock`). Only local AI seats ever have one — online and
+  // observer games leave both hooks disabled — and it clears the moment the AI
+  // commits its turn.
+  const thinkingSeat = whiteAI.isThinking ? whiteAI : blackAI.isThinking ? blackAI : null;
+  const turnClock = thinkingSeat?.turnBudgetMs != null && thinkingSeat.turnSpentMs != null
+    ? { budgetMs: thinkingSeat.turnBudgetMs, spentMs: thinkingSeat.turnSpentMs, searchingSince: thinkingSeat.turnSearchingSince } : null;
+  // NO DIAL FOR AN ALLOWANCE TOO SHORT TO COUNT DOWN (easy `quick` is one
+  // second): the countdown itself is still explained on the line below, but the
+  // panel keeps its static thinking copy rather than flickering a stopwatch
+  // through a whole revolution every turn (`AI_TIMER_MIN_BUDGET_MS`).
+  const showTurnTimer = turnClock !== null && turnClock.budgetMs >= AI_TIMER_MIN_BUDGET_MS;
 
   // Trigger AI turn for 'white' side.
   useEffect(() => {
@@ -813,8 +834,17 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
               resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView} inspectOnly={inspectOnly} showNextTier={observing}
               onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer}
               showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} />
-          : <div className="selection-hint"><strong>{observing ? 'Watching live' : isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? 'Place & upgrade' : 'Your next move'}</strong><p>{phaseHint}</p>
-              <small>Hold the enemy home until your next turn, or eliminate every enemy unit.</small></div>}
+          : <div className={`selection-hint${showTurnTimer ? ' is-thinking' : ''}`}>
+              {showTurnTimer && turnClock && <AIThinkingTimer budgetMs={turnClock.budgetMs} spentMs={turnClock.spentMs} searchingSince={turnClock.searchingSince} />}
+              <strong>{observing ? 'Watching live' : isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? 'Place & upgrade' : 'Your next move'}</strong>
+              {/* SAY WHAT THE CLOCK MEANS. While a turn clock is running the
+                  phase hint has nothing to do with the seat that is thinking,
+                  and the engines legitimately move with part of the wedge left —
+                  so this line states the allowance and that fact, in place of a
+                  third rephrasing of "thinking". */}
+              <p>{turnClock ? `Up to ${formatTurnSeconds(Math.round(turnClock.budgetMs / 1000))} · moves as soon as it's ready` : phaseHint}</p>
+              {/* The dial takes the third line's room; the advice returns with it. */}
+              {!showTurnTimer && <small>Hold the enemy home until your next turn, or eliminate every enemy unit.</small>}</div>}
         </section>
       </div>
       <footer className="play-footer">

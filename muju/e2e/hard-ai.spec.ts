@@ -50,8 +50,10 @@ async function instrumentWorker(page: Page, options: InstrumentOptions = {}): Pr
     proto.postMessage = function (this: Worker, message: unknown, transfer?: unknown) {
       const req = message as RecordedRequest;
       // Shrinking the per-turn allowance keeps a REAL `HardEngine` search
-      // inside an e2e's patience: `TURN_BUDGET_MS.hard` is 8 s per turn, and
-      // the engine spends what it is given. It changes only how long the
+      // inside an e2e's patience: the Hard seat is funded with the pace the
+      // player picked (`src/ai/turnTime.ts`, 10 s at the default `quick` and
+      // 60 s at `deep`), and the engine spends what it is given — the work
+      // ladder reaches far enough for all three. It changes only how long the
       // engine thinks, never which engine answers or how the result is
       // handled, which is what these cases are about. Device-profile budgets
       // and latency are E5.3's subject, measured on real hardware.
@@ -264,10 +266,12 @@ test('?hardAi=0 routes difficulty hard back to the legacy AIEngineV2', async ({ 
 });
 
 /**
- * `?hardMs` — the page-URL override of the Hard seat's whole-turn budget. The
- * shipped contract stays `TURN_BUDGET_MS.hard` (8000, measured at `wall:8000`);
- * this is what a demo or a measurement run uses to ask for less, and it is the
- * `decisionMs` the worker is actually handed.
+ * `?hardMs` — the page-URL override of the Hard seat's whole-turn budget. What
+ * it overrides is now the PLAYER's own choice of thinking time
+ * (`src/ai/turnTime.ts`: Hard is 10 s `quick`, 30 s `normal`, 60 s `deep`,
+ * where the E6 release measured a single 8000 at `wall:8000`); this is what a
+ * demo or a measurement run uses to ask for less, and it is the `decisionMs`
+ * the worker is actually handed.
  */
 test('?hardMs funds the hard turn, clamped, without touching the engine route', async ({ page }) => {
   test.setTimeout(120_000);

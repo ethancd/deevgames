@@ -134,9 +134,11 @@ export function createSearchHandler(solver?: TacticalSolver, warning?: string, c
             hardContexts.set(gameId, hard);
           }
           // THE TURN'S REMAINING ALLOWANCE, not a fresh budget: `decisionMs`
-          // is whatever `useAI` has left of `TURN_BUDGET_MS[difficulty]`
-          // after every earlier search of this same turn (E0.2). `work`
-          // overrides it entirely for CI/lab callers, which read no clock.
+          // is whatever `useAI` has left of the pace's whole-turn allowance
+          // (`aiTurnBudgetMs(difficulty, pace)`, `src/ai/turnTime.ts` — Hard's
+          // three paces are 10/30/60 s) after every earlier search of this
+          // same turn (E0.2). `work` overrides it entirely for CI/lab callers,
+          // which read no clock.
           //
           // `deadlineMs` (A11) is the SAME number, and that is the point. The
           // default watchdog fires at `abortFactor × targetMs` — E0.5 measured
@@ -157,6 +159,13 @@ export function createSearchHandler(solver?: TacticalSolver, warning?: string, c
           // required to count and make diagnosable.
           return { ...identity, type: 'turn', result, engineUsed: 'hard', warning };
         }
+        // A TURN request's `decisionMs` IS the turn's remaining wall allowance
+        // (`useAI.ts` funds one per turn and debits it), so the v2 search may
+        // size its own work to it — that is what makes the paced clocks of
+        // `src/ai/turnTime.ts` mean anything. An `action` request carries a
+        // per-decision SHARE of that allowance instead, so it keeps the preset
+        // and stays byte-for-byte the protocol-2 search it always was.
+        engine.setConfig({ scaleToBudget: !request.fixedWork });
         const result = await engine.findBestAction(request.state, request.decisionMs);
         const turnActions = legalPrefix(request.state, result.plan.actions);
         return { ...identity, type: 'result', result: { ...result, turnActions }, engineUsed: 'v2', warning };
