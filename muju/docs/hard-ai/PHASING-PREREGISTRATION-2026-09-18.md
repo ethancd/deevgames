@@ -238,3 +238,32 @@ promoting, mining new ground or contesting a home rectangle do not reset it, and
 both decline the first trade therefore draw in five turns each regardless of material or territory. Whether that is the
 intended game is the owner's decision; this gate will keep reporting inactivity rates so the effect stays visible.
 
+
+### A4 — 2026-09-19: rules revision `muju-phasing-2` — the inactivity draw clock is 20 plies
+
+**Owner decision (Ethan, 2026-09-19).** The inactivity limit changes from 10 plies to **20 plies** (ten hand-offs per
+player). What resets the clock is unchanged: only an attack that removes a unit. The in-game warning keeps its margin of
+three plies before the draw (threshold 7 -> 17). Nothing else in the rules changes. This is a change to the GAME, made for
+the game's sake after amendment A3 recorded that two players who decline the first trade drew in five turns each; it is
+not a change to any gate, threshold or acceptance condition in this document.
+
+**Why this needs an amendment.** "Fixed definitions" says any rules edit after sign-off voids rows measured before it. The
+rules revision therefore advances from `muju-phasing-1` to **`muju-phasing-2`**, and the identity hash carried by every
+ladder row, suite measurement and Gate 1 row changes with it, so evidence cannot be pooled across the two revisions.
+
+**What is void and must be redone under `muju-phasing-2` before it is relied on.**
+- The scripted-bot reference (840 games, `lab/harness/results/p1-scripted-2026-09-18`) and the purchase/inactivity
+  **bands frozen from it**: the inactivity rate is a direct function of the changed rule. A new reference is run with the
+  same bots, seeds policy and formula, and new bands are frozen from it BEFORE any Gate 1 row under this revision. The
+  band FORMULA is unchanged; only its inputs are re-measured.
+- Every Gate 1 game so far (rows A1, A2 and both pilots). None had passed.
+- Hard-engine replica parity evidence (perft fixtures, differential fuzz, prover comparisons): re-run in full; perft
+  counts are re-frozen only where canonical and replica agree and the change is explained by the longer clock.
+- The M5 v1 suite measurement (`m6-suite-measure-1`) and any suite case whose expected answer depends on the clock; v2
+  suites are authored under `muju-phasing-2`.
+**What remains valid.** The opening books `p1-dev`, `p1-val` and the sealed book: by their recorded stop rule every
+opening ends at Black's first Act root after a single hand-off, so no opening position carries a clock value the old and
+new limits treat differently, and the books' pinned hashes are unchanged (the sealed book is not opened to check this; it
+follows from the generator's stop rule recorded in `ALLOCATION-P1.md`). Amendments A1–A3 stand as written, including A3's
+row seed 20260960 and pilot seed 20260961, which have produced no eligible game.
+
