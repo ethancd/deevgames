@@ -159,7 +159,7 @@ it('archives without a connected client, survives restarts, and serializes multi
   expect(saved.archivedAt).toBeDefined();
   close(store);
   const reopened = open(path), second = open(path);
-  expect(second.restore(id, host.credentials.token, 'white')).toEqual(reopened.get(id));
+  expect(second.restore(id, host.credentials.token, 'white')).toEqual(reopened.get(id, host.credentials.token));
   expect(second.moveHistory(id).entries.filter(entry => entry.kind === 'result')).toHaveLength(1);
   expect(second.get(id).revision).toBe(saved.revision);
 });

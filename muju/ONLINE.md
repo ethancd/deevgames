@@ -1,5 +1,24 @@
 # Muju Hono Tanka: multiplayer and MCP
 
+## Restricted experiment rooms
+
+HTTP creation and `muju_create_room` accept immutable `matchPolicy` with
+`version: 1`, `toolTier` (`bare`, `harnessed`, `centaur`, or `tool-builder`), and a
+public `protocolId`. The policy covers both seats and anonymous observers.
+Only centaur permits hosted analysis and briefings; bare also rejects legal
+lists, previews, undo and staged play. Tool-builder permits custom client code but
+not hosted analysis. Ordinary rooms omit this field and retain all current
+behavior. See [engine seat and match protocol](docs/ENGINE-SEAT-MATCH-2026-09-19.md)
+for capabilities, isolation requirements and the guarded Standard-only Node seat.
+For a scored study, use the optional `MUJU_MATCH_ROOM_ID` single-room service on
+a dedicated listener/database after the operator admits both seats. That mode
+denies creation, joining, listing and every cross-room route/tool; stdio adopts
+its advertised health scope. Merely hiding tools on an ordinary endpoint permits
+mirror-room replay into its own unrestricted solver. The engine seat accepts
+issued credentials and pins expected policy/protocol, time control and handicap.
+This infrastructure is prepared; no Phasing Hard match or strength result is claimed.
+
+
 ## Optional Phasing games
 
 Choose **Phasing** while hosting, or pass `ruleset: "phasing"` to room creation.

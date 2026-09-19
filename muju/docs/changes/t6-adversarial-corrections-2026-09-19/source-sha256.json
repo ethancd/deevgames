@@ -1,0 +1,22 @@
+{
+  "muju/ONLINE.md": "b31d76c7743ee561dedb10b66b74ecb0ad758449c4059f51ca96cc29b500c471",
+  "muju/content-dag.json": "ec99659ce6c99ee0e3e919603efd1488a21c46e7287063fa5bba5f8638548ffd",
+  "muju/docs/ENGINE-SEAT-MATCH-2026-09-19.md": "d88cf1dbca7cf779723e8dd759af5bb17f23cad667e8f41fe8c6101f94e82415",
+  "muju/public/skills/muju-hono-tanka/SKILL.md": "338596cd2a7d53d4244bf5cc5135770dd94443496b21592030a32b9b3092203b",
+  "muju/server/http.ts": "6161b417943817efaf815046d62b8ac59ac7a5c4a6889236a6557af06c399fee",
+  "muju/server/index.ts": "2f4f58b2ab1f8f6a28048a9fb3f4389bb88455068d45347d1e6dcad1960ca301",
+  "muju/server/matchScope.ts": "d56b01fa9f2e52af230c6a20c8b9e1aa3f1058b5697db28f0101cd59669a7c52",
+  "muju/server/mcp.ts": "584e0b2bdb45fd93067ee03ff8d66ef943c0bc88b5699ba654e899ff19f2e48c",
+  "muju/server/observation.ts": "a9efe15c7a2dd82480388d1deb2e264715a83d1c7d8e7a0b595c3ab518929b66",
+  "muju/server/rooms.ts": "115347b1f69bdfce5490288dff43e40864fe48edc2a95c676b6ada02240fd5ea",
+  "muju/server/schema.ts": "96688d4d537b62bd0c0b678387dd006da986ff1d1557ca08d0108cfe2c8336ce",
+  "muju/server/stdio.ts": "036a2324359b32d115809b6b610da8dac5d0541a3a6fcf2e9d0fe391b48a6831",
+  "muju/tests/lab/engine-seat.test.ts": "b03a012145cbecec32cbb4ef41b2274262229378528697acaa75a48809769f15",
+  "muju/tests/server/match-policy-corrections.test.ts": "d17c12bd8b7741b22f5e98b2559d79eb0f63b075c509e6b7f373dc6c393e69a0",
+  "muju/tests/server/match-policy.test.ts": "818d71ff425d5b1504fa1cf530ecc643133309101b26fc15fa488f97acff76c4",
+  "muju/tests/server/match-scope.test.ts": "ea1898554a66d00c8af5a12622a6ba3e1de5669d29c893bca63f728b5494bb22",
+  "muju/tools/engine-seat/config.ts": "e3b3993f72c6f176e5c9b22b1b2aa4fa0790d9cf7130207562960020733492c4",
+  "muju/tools/engine-seat/contract.ts": "ca6ec578d0e89920b79d6318133132bdf99b6ac2be09429b0a8b53424a3d0371",
+  "muju/tools/engine-seat/main.ts": "220a766be7dfff230a5fed6d43eb039e11be018679081e850c40310492303033",
+  "muju/tools/engine-seat/runner.ts": "75924d148f1d558f8b19252d9ffa784e32a38b6824b94a0ab5caeeac1c09c432"
+}

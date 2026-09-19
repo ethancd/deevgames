@@ -1,0 +1,55 @@
+{
+  "at": "2026-09-19T06:33:33.979861+00:00",
+  "base": "5d3dc222d204aefce4d71f5d01b24f12b87d510a",
+  "branch": "codex/phasing-engine-seat",
+  "status": "prepared-uncommitted",
+  "tests": {
+    "command": "node node_modules/vitest/vitest.mjs run tests/server/match-policy.test.ts tests/server/match-policy-corrections.test.ts tests/server/match-scope.test.ts tests/lab/engine-seat.test.ts tests/server/mcp.test.ts tests/server/analysis.test.ts tests/server/rooms.test.ts --maxWorkers=1 --reporter=json --outputFile=<evidence>/tests-final.json",
+    "queue": "withHeavySlot(t6-correction-focused-tests), real default two-slot directory, no bypass",
+    "success": true,
+    "passed": 137,
+    "failed": 0,
+    "failedSuites": 0,
+    "initial": {
+      "success": false,
+      "passed": 135,
+      "failed": 2,
+      "failedSuites": 1,
+      "reason": "New UNDO test hardcoded the wrong starting square; corrected expected position only; initial report preserved."
+    }
+  },
+  "types": [
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit -p server/tsconfig.json",
+      "exitCode": 0
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit -p lab/hard-ai/tsconfig.json",
+      "exitCode": 0
+    },
+    {
+      "command": "node node_modules/typescript/bin/tsc --noEmit -p tools/engine-seat/tsconfig.json",
+      "exitCode": 0
+    }
+  ],
+  "dag": {
+    "valid": true,
+    "nodes": 27,
+    "edges": 49,
+    "preexistingMissingMediaGroups": 5
+  },
+  "preserved": [
+    "5d3dc222 original T6 evidence",
+    "src/ai/**",
+    "src/game/**",
+    "lab/hard-ai/**"
+  ],
+  "notRun": [
+    "full suite",
+    "production build/e2e",
+    "60-second match",
+    "Phasing Hard/LLM match",
+    "sealed run",
+    "deploy"
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "at": "2026-09-19T07:42:18.006Z",
+  "parents": [
+    "32f83b88541e8a63ecb9b9f62d468cf17219011e",
+    "5345b6bd36a1efc4b7202cd4698924a11e31a565"
+  ],
+  "queue": {
+    "directory": "/Users/ashkie/.local/state/muju-heavy",
+    "slots": 2
+  },
+  "checks": [
+    {
+      "label": "tests",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "tests/server/engine-seat-binding.test.ts",
+        "tests/server/match-policy.test.ts",
+        "tests/server/match-policy-corrections.test.ts",
+        "tests/server/match-scope.test.ts",
+        "tests/lab/engine-seat.test.ts",
+        "tests/server/mcp.test.ts",
+        "tests/server/analysis.test.ts",
+        "tests/server/rooms.test.ts",
+        "tests/server/room-lifecycle.test.ts",
+        "tests/server/prepare-legality.test.ts",
+        "tests/server/phasing.test.ts",
+        "tests/ai/prepare-legality.test.ts",
+        "tests/lab/gate1.test.ts",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-support-integration/muju/docs/changes/support-integration-2026-09-19/tests.json"
+      ],
+      "startedAt": "2026-09-19T07:39:52.156Z",
+      "finishedAt": "2026-09-19T07:42:08.327Z",
+      "exitCode": 0,
+      "error": null
+    },
+    {
+      "label": "types-app",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T07:42:08.328Z",
+      "finishedAt": "2026-09-19T07:42:10.328Z",
+      "exitCode": 0,
+      "error": null
+    },
+    {
+      "label": "types-server",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "server/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T07:42:10.328Z",
+      "finishedAt": "2026-09-19T07:42:11.447Z",
+      "exitCode": 0,
+      "error": null
+    },
+    {
+      "label": "types-lab",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "lab/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T07:42:11.447Z",
+      "finishedAt": "2026-09-19T07:42:12.655Z",
+      "exitCode": 0,
+      "error": null
+    },
+    {
+      "label": "types-ai-lab",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "lab/ai/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T07:42:12.655Z",
+      "finishedAt": "2026-09-19T07:42:13.817Z",
+      "exitCode": 0,
+      "error": null
+    },
+    {
+      "label": "types-hard-lab",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "lab/hard-ai/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T07:42:13.817Z",
+      "finishedAt": "2026-09-19T07:42:16.725Z",
+      "exitCode": 0,
+      "error": null
+    },
+    {
+      "label": "types-seat",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "tools/engine-seat/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T07:42:16.725Z",
+      "finishedAt": "2026-09-19T07:42:17.921Z",
+      "exitCode": 0,
+      "error": null
+    },
+    {
+      "label": "dag",
+      "command": [
+        "python3",
+        "tools/muju-content-dag.py",
+        "check"
+      ],
+      "startedAt": "2026-09-19T07:42:17.921Z",
+      "finishedAt": "2026-09-19T07:42:17.973Z",
+      "exitCode": 0,
+      "error": null
+    },
+    {
+      "label": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--check"
+      ],
+      "startedAt": "2026-09-19T07:42:17.973Z",
+      "finishedAt": "2026-09-19T07:42:18.005Z",
+      "exitCode": 0,
+      "error": null
+    }
+  ],
+  "tests": {
+    "passed": 199,
+    "failed": 0,
+    "failedSuites": 0,
+    "success": true
+  },
+  "scope": "Focused support integration. No new strength run, Gate0, M2/Hard acceptance, M8 cutover, actual match, deployment or full release claimed."
+}

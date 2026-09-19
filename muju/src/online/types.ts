@@ -21,7 +21,17 @@ export interface ArchivedRoom extends ActiveRoom {
   reason?: VictoryReason;
 }
 export interface RoomArchive { rooms: ArchivedRoom[]; nextCursor: string | null }
+export interface MatchPolicy {
+  version: 1;
+  toolTier: 'bare' | 'harnessed' | 'centaur' | 'tool-builder';
+  /** Public identifier for the frozen experiment protocol; not a credential. */
+  protocolId: string;
+}
 export interface RoomSnapshot {
+  /** Token-authenticated seat on private responses; absent from public snapshots and waits. */
+  authenticatedPlayer?: PlayerId;
+  /** Immutable, room-wide experiment assistance policy. Absent in ordinary rooms. */
+  matchPolicy?: MatchPolicy;
   /** Public spectator code, separate from the invitation that claims a seat. */
   watchCode?: string;
   createdAt?: string;

@@ -1,0 +1,110 @@
+{
+  "at": "2026-09-19T06:47:45.791Z",
+  "scope": "Issued seat token/player binding correction",
+  "queue": "Real shared default two-slot queue, no bypass",
+  "checks": [
+    {
+      "name": "tests",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "tests/server/engine-seat-binding.test.ts",
+        "tests/server/match-policy.test.ts",
+        "tests/server/match-policy-corrections.test.ts",
+        "tests/server/match-scope.test.ts",
+        "tests/lab/engine-seat.test.ts",
+        "tests/server/mcp.test.ts",
+        "tests/server/analysis.test.ts",
+        "tests/server/rooms.test.ts",
+        "--maxWorkers=1",
+        "--reporter=json",
+        "--outputFile=/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-engine-seat/muju/docs/changes/t6-seat-binding-2026-09-19/tests.json"
+      ],
+      "startedAt": "2026-09-19T06:47:18.804Z",
+      "finishedAt": "2026-09-19T06:47:38.793Z",
+      "exitCode": 0
+    },
+    {
+      "name": "types-server",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "server/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T06:47:38.793Z",
+      "finishedAt": "2026-09-19T06:47:39.872Z",
+      "exitCode": 0
+    },
+    {
+      "name": "types-hard-lab",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "lab/hard-ai/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T06:47:39.872Z",
+      "finishedAt": "2026-09-19T06:47:42.720Z",
+      "exitCode": 0
+    },
+    {
+      "name": "types-runner",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "tools/engine-seat/tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T06:47:42.720Z",
+      "finishedAt": "2026-09-19T06:47:43.883Z",
+      "exitCode": 0
+    },
+    {
+      "name": "types-app",
+      "command": [
+        "/Users/ashkie/.nvm/versions/node/v24.11.1/bin/node",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "-p",
+        "tsconfig.json"
+      ],
+      "startedAt": "2026-09-19T06:47:43.883Z",
+      "finishedAt": "2026-09-19T06:47:45.790Z",
+      "exitCode": 0
+    }
+  ],
+  "tests": {
+    "passed": 145,
+    "failed": 0,
+    "failedSuites": 0,
+    "success": true
+  },
+  "preservedUnchanged": true,
+  "dag": {
+    "valid": true,
+    "nodes": 27,
+    "edges": 49,
+    "preexistingMissingMediaGroups": 5
+  },
+  "diffCheckPassed": true,
+  "initial": {
+    "passed": 141,
+    "failed": 4,
+    "failedSuites": 4,
+    "report": "initial/tests.json",
+    "reason": "Existing cross-seat/public-private whole-snapshot assertions needed authenticatedPlayer expectations. Initial extra app type-check command used nonexistent tsconfig.app.json; corrected to actual tsconfig.json."
+  },
+  "supplementalLifecycle": {
+    "command": "node node_modules/vitest/vitest.mjs run tests/server/room-lifecycle.test.ts --maxWorkers=1 --reporter=json --outputFile=<evidence>/lifecycle-tests.json",
+    "queue": "Real shared default two-slot queue; withHeavySlot(t6-seat-binding-lifecycle)",
+    "passed": 14,
+    "failed": 0,
+    "failedSuites": 0,
+    "success": true
+  }
+}

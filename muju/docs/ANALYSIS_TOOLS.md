@@ -4,6 +4,14 @@ The MCP analysis layer removes economic arithmetic and tactical enumeration whil
 keeping all commits in the existing authoritative play path. No game balance,
 unit definitions, time controls, or victory rules change.
 
+Restricted experiment rooms may carry an immutable `matchPolicy`. Hosted
+analysis, automatic headlines and explicit briefings are available only for the
+`centaur` tier; other tiers receive an empty, labeled analysis envelope, and
+explicit analysis/briefing requests return `MATCH_TOOL_RESTRICTED` even without
+a seat token. This check precedes cache access on HTTP MCP and stdio. Existing
+ordinary rooms retain all layers below. See the
+[match protocol](ENGINE-SEAT-MATCH-2026-09-19.md).
+
 ## Interface and layers
 
 | Layer | Entry point | Content |
