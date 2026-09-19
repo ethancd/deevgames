@@ -1,0 +1,158 @@
+{
+  "replay": "lab/ai/results/t2b-gate1-pilot-2026-09-19/replays/Rush-h0-p0-black.json",
+  "replaySha256": "8525e14dd71ace88add1d66cd8d67bf3cd903530c480b92ab7d5388a02dce44e",
+  "seat": "black",
+  "completedTurns": 12,
+  "player": {
+    "bot": "aiv2-hard",
+    "upkeepPaid": 9,
+    "upkeepReleased": [],
+    "zeroStockpileTurns": 4,
+    "peakTier2Plus": 1,
+    "firstTier3Round": 2,
+    "finalResources": 7,
+    "resourcesGained": 28,
+    "resourcesSpent": 21,
+    "finalMaterial": 0,
+    "unitsPlaced": 0,
+    "promotions": 2,
+    "tierUsage": {
+      "1": 0,
+      "2": 1,
+      "3": 1,
+      "4": 0
+    },
+    "elementPurchased": {},
+    "unitsLost": 3,
+    "unitsKilled": 9,
+    "illegalActions": 0,
+    "plies": 38,
+    "decisionMs": 4477,
+    "turnsTaken": 6,
+    "turnMs": [
+      434,
+      656,
+      681,
+      749,
+      919,
+      1038
+    ],
+    "finalPendingCost": 0
+  },
+  "decisions": [
+    {
+      "ply": 14,
+      "turn": 1,
+      "bank": 6,
+      "gained": 6,
+      "legalBuys": 162,
+      "safeBuys": 6,
+      "generatedBuys": 6,
+      "placementPlans": 15,
+      "buyPlans": 12,
+      "chosen": {
+        "type": "PROMOTE_UNIT",
+        "unitId": "initial-5"
+      }
+    },
+    {
+      "ply": 15,
+      "turn": 1,
+      "bank": 2,
+      "gained": 6,
+      "legalBuys": 0,
+      "safeBuys": 0,
+      "generatedBuys": 0,
+      "placementPlans": 0,
+      "buyPlans": 0,
+      "chosen": {
+        "type": "END_PLACE_PHASE"
+      }
+    },
+    {
+      "ply": 29,
+      "turn": 2,
+      "bank": 8,
+      "gained": 13,
+      "legalBuys": 60,
+      "safeBuys": 0,
+      "generatedBuys": 60,
+      "placementPlans": 24,
+      "buyPlans": 22,
+      "chosen": {
+        "type": "PROMOTE_UNIT",
+        "unitId": "initial-5"
+      }
+    },
+    {
+      "ply": 30,
+      "turn": 2,
+      "bank": 0,
+      "gained": 13,
+      "legalBuys": 0,
+      "safeBuys": 0,
+      "generatedBuys": 0,
+      "placementPlans": 0,
+      "buyPlans": 0,
+      "chosen": {
+        "type": "END_PLACE_PHASE"
+      }
+    },
+    {
+      "ply": 45,
+      "turn": 3,
+      "bank": 0,
+      "gained": 15,
+      "legalBuys": 0,
+      "safeBuys": 0,
+      "generatedBuys": 0,
+      "placementPlans": 0,
+      "buyPlans": 0,
+      "chosen": {
+        "type": "END_PLACE_PHASE"
+      }
+    },
+    {
+      "ply": 63,
+      "turn": 4,
+      "bank": 0,
+      "gained": 17,
+      "legalBuys": 0,
+      "safeBuys": 0,
+      "generatedBuys": 0,
+      "placementPlans": 0,
+      "buyPlans": 0,
+      "chosen": {
+        "type": "END_PLACE_PHASE"
+      }
+    },
+    {
+      "ply": 79,
+      "turn": 5,
+      "bank": 4,
+      "gained": 23,
+      "legalBuys": 96,
+      "safeBuys": 0,
+      "generatedBuys": 96,
+      "placementPlans": 16,
+      "buyPlans": 16,
+      "chosen": {
+        "type": "END_PLACE_PHASE"
+      }
+    },
+    {
+      "ply": 96,
+      "turn": 6,
+      "bank": 7,
+      "gained": 28,
+      "legalBuys": 174,
+      "safeBuys": 0,
+      "generatedBuys": 174,
+      "placementPlans": 28,
+      "buyPlans": 28,
+      "chosen": {
+        "type": "END_PLACE_PHASE"
+      }
+    }
+  ]
+}

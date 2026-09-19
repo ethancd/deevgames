@@ -1,0 +1,178 @@
+{
+  "schema": "muju-gate1-v2",
+  "status": "complete",
+  "amendment": "A1",
+  "startedAt": "2026-09-19T04:45:11.208Z",
+  "mode": "pilot",
+  "expectedGames": 16,
+  "schedule": [
+    {
+      "id": "Rush-h0-p0-white",
+      "pairId": "Rush-h0-p0",
+      "opponent": "Rush",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 2113312924,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Rush-h0-p0-black",
+      "pairId": "Rush-h0-p0",
+      "opponent": "Rush",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 2113312924,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Rush-h3-p0-white",
+      "pairId": "Rush-h3-p0",
+      "opponent": "Rush",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 2338690898,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Rush-h3-p0-black",
+      "pairId": "Rush-h3-p0",
+      "opponent": "Rush",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 2338690898,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Expand-h0-p0-white",
+      "pairId": "Expand-h0-p0",
+      "opponent": "Expand",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 1521225995,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Expand-h0-p0-black",
+      "pairId": "Expand-h0-p0",
+      "opponent": "Expand",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 1521225995,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Expand-h3-p0-white",
+      "pairId": "Expand-h3-p0",
+      "opponent": "Expand",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 3055009897,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Expand-h3-p0-black",
+      "pairId": "Expand-h3-p0",
+      "opponent": "Expand",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 3055009897,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Balanced-h0-p0-white",
+      "pairId": "Balanced-h0-p0",
+      "opponent": "Balanced",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 4230238881,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Balanced-h0-p0-black",
+      "pairId": "Balanced-h0-p0",
+      "opponent": "Balanced",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 4230238881,
+      "hardSeat": "black"
+    },
+    {
+      "id": "Balanced-h3-p0-white",
+      "pairId": "Balanced-h3-p0",
+      "opponent": "Balanced",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 1705202679,
+      "hardSeat": "white"
+    },
+    {
+      "id": "Balanced-h3-p0-black",
+      "pairId": "Balanced-h3-p0",
+      "opponent": "Balanced",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 1705202679,
+      "hardSeat": "black"
+    },
+    {
+      "id": "aiv2-medium-h0-p0-white",
+      "pairId": "aiv2-medium-h0-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 2466615791,
+      "hardSeat": "white"
+    },
+    {
+      "id": "aiv2-medium-h0-p0-black",
+      "pairId": "aiv2-medium-h0-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 0,
+      "pair": 0,
+      "seed": 2466615791,
+      "hardSeat": "black"
+    },
+    {
+      "id": "aiv2-medium-h3-p0-white",
+      "pairId": "aiv2-medium-h3-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 4243411818,
+      "hardSeat": "white"
+    },
+    {
+      "id": "aiv2-medium-h3-p0-black",
+      "pairId": "aiv2-medium-h3-p0",
+      "opponent": "aiv2-medium",
+      "handicap": 3,
+      "pair": 0,
+      "seed": 4243411818,
+      "hardSeat": "black"
+    }
+  ],
+  "git": "c43c7280e0cfcae7e99b6c8339f0091801505e3f",
+  "gitStatus": "M muju/lab/ai/gate1-references.json\n M muju/lab/ai/gate1-report.ts\n M muju/lab/ai/gate1.ts\n M muju/src/ai/moves.ts\n M muju/src/ai/planner/placement.ts\n M muju/tests/ai/phasing.test.ts\n M muju/tests/lab/gate1.test.ts\n?? muju/lab/ai/diagnose-purchases.ts\n?? muju/lab/docs/GATE1-A1-2026-09-19.md",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max / darwin/arm64",
+  "cpuCount": 12,
+  "loadBefore": [
+    13.9541015625,
+    10.9306640625,
+    9.99658203125
+  ],
+  "queue": {
+    "directory": "/Users/ashkie/.local/state/muju-heavy",
+    "slots": 2
+  },
+  "note": "A1 acceptance; pilots are ineligible. No worker unlock or responsiveness claim.",
+  "identityHash": "bf4db2308ee2258763ff0d92acb92f2e8f0b0703b23f59479834103b8a3f5fad",
+  "completedGames": 16,
+  "gate1": "pilot-ineligible",
+  "finishedAt": "2026-09-19T04:48:24.273Z",
+  "loadAfter": [
+    8.912109375,
+    9.96240234375,
+    9.77587890625
+  ]
+}

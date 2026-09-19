@@ -1,0 +1,184 @@
+{
+  "typechecks": {
+    ".": "passed",
+    "lab/ai/tsconfig.json": "passed",
+    "lab/tsconfig.json": "passed",
+    "server/tsconfig.json": "passed"
+  },
+  "tests": {
+    "passed": 267,
+    "total": 267,
+    "files": 22,
+    "success": true,
+    "fileResults": [
+      {
+        "path": "tests/ai/correctness.test.ts",
+        "status": "passed",
+        "tests": 18
+      },
+      {
+        "path": "tests/ai/deadline.test.ts",
+        "status": "passed",
+        "tests": 11
+      },
+      {
+        "path": "tests/ai/engine.test.ts",
+        "status": "passed",
+        "tests": 12
+      },
+      {
+        "path": "tests/ai/evaluation.test.ts",
+        "status": "passed",
+        "tests": 14
+      },
+      {
+        "path": "tests/ai/hard-engine-fallback-elapsed.test.ts",
+        "status": "passed",
+        "tests": 3
+      },
+      {
+        "path": "tests/ai/hard-hook-fallback.test.ts",
+        "status": "passed",
+        "tests": 16
+      },
+      {
+        "path": "tests/ai/hard-opt-in.test.ts",
+        "status": "passed",
+        "tests": 16
+      },
+      {
+        "path": "tests/ai/moves.test.ts",
+        "status": "passed",
+        "tests": 15
+      },
+      {
+        "path": "tests/ai/phasing.test.ts",
+        "status": "passed",
+        "tests": 11
+      },
+      {
+        "path": "tests/ai/placement.test.ts",
+        "status": "passed",
+        "tests": 3
+      },
+      {
+        "path": "tests/ai/search-correctness.test.ts",
+        "status": "passed",
+        "tests": 5
+      },
+      {
+        "path": "tests/ai/simulate-ids.test.ts",
+        "status": "passed",
+        "tests": 1
+      },
+      {
+        "path": "tests/ai/simulate.test.ts",
+        "status": "passed",
+        "tests": 12
+      },
+      {
+        "path": "tests/ai/static-value.test.ts",
+        "status": "passed",
+        "tests": 12
+      },
+      {
+        "path": "tests/ai/turn-execution.test.ts",
+        "status": "passed",
+        "tests": 10
+      },
+      {
+        "path": "tests/ai/upkeep-clock.test.ts",
+        "status": "passed",
+        "tests": 3
+      },
+      {
+        "path": "tests/ai/wasm-tactics.test.ts",
+        "status": "passed",
+        "tests": 43
+      },
+      {
+        "path": "tests/ai/worker-turn.test.ts",
+        "status": "passed",
+        "tests": 15
+      },
+      {
+        "path": "tests/ai/worker.test.ts",
+        "status": "passed",
+        "tests": 5
+      },
+      {
+        "path": "tests/lab/gate1.test.ts",
+        "status": "passed",
+        "tests": 31
+      },
+      {
+        "path": "tests/lab/phasing-evidence.test.ts",
+        "status": "passed",
+        "tests": 2
+      },
+      {
+        "path": "tests/lab/phasing-harness.test.ts",
+        "status": "passed",
+        "tests": 9
+      }
+    ]
+  },
+  "serverConsumerTests": {
+    "passed": 59,
+    "total": 59,
+    "files": 4,
+    "success": true,
+    "fileResults": [
+      {
+        "path": "tests/server/analysis.test.ts",
+        "status": "passed",
+        "tests": 25
+      },
+      {
+        "path": "tests/server/mcp.test.ts",
+        "status": "passed",
+        "tests": 23
+      },
+      {
+        "path": "tests/server/phasing-analysis.test.ts",
+        "status": "passed",
+        "tests": 8
+      },
+      {
+        "path": "tests/server/phasing.test.ts",
+        "status": "passed",
+        "tests": 3
+      }
+    ]
+  },
+  "testCommand": "node --import tsx /private/tmp/muju-gate1-with-heavy.mjs node node_modules/vitest/vitest.mjs run tests/ai tests/lab/gate1.test.ts tests/lab/phasing-harness.test.ts tests/lab/phasing-evidence.test.ts --exclude tests/ai/hard/** --maxWorkers 1 --no-file-parallelism",
+  "serverTestCommand": "same shared-queue wrapper; vitest run tests/server/{analysis,mcp,phasing-analysis,phasing}.test.ts --maxWorkers 1 --no-file-parallelism",
+  "queue": "shared /Users/ashkie/.local/state/muju-heavy, default two slots, no bypass",
+  "build": "npx vite build (after four successful type configurations; existing ABI 7 binary unchanged)",
+  "wasmSha256": "6d3cf33382ff94d81ae32194c3af4849bff81115d1b6f7f4a9d4ac45c795573c",
+  "dag": {
+    "valid": true,
+    "nodes": 27,
+    "edges": 49,
+    "testsPassed": 14,
+    "unavailableLocalOnlyMediaGroups": 5
+  },
+  "fullPlanOnly": {
+    "status": "adopted",
+    "amendment": {
+      "id": "A1",
+      "commit": "0a6f8db5827356a27f6e62b2ab6a2f82f131d945",
+      "path": "muju/docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md",
+      "sha256": "18bc4579c51a009cb6413b3109afc8dd8422ef1d3b0215228fa38d71758bb499"
+    },
+    "mode": "full",
+    "games": 1024,
+    "pairsPerOpponentAndHandicap": 64,
+    "seed": 20260957,
+    "workPerTurn": {
+      "hard": 6000,
+      "medium": 3000
+    }
+  },
+  "fullRowExecuted": false
+}
