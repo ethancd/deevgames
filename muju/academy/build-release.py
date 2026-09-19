@@ -159,7 +159,8 @@ def main():
         shutil.copy2(source, site / name)
         require(digest(site / name) == digest(source), f'Release copy mismatch: {name}')
     esc = html.escape
-    notice = '''<p class="tip" style="margin:0 0 30px"><strong>Ten rules lessons and six element lessons. Current rules v2.9.</strong><br>Home squares hold 8 crystals; brighter expansions hold 16. Plant Mining is 3 / 5 / 8. Metal Mining is 3 / 4 / 5; Yan has Speed 0.<br>Unchanged lessons retain their verified v7 recordings.<br>Four actions, nine songs, and every tier’s bonk matrix are included.</p>
+    notice = '''<p class="tip" style="margin:0 0 30px"><strong>Ten rules lessons and six element lessons. Recordings use Standard rules v2.8 / v2.9.</strong><br>Home squares hold 8 crystals; brighter expansions hold 16. Plant Mining is 3 / 5 / 8. Metal Mining is 3 / 4 / 5; Yan has Speed 0.<br>Unchanged lessons retain their verified v7 recordings.<br>Four actions, nine songs, and every tier’s bonk matrix are included.</p>
+<p class="tip" id="phasing-notice" role="note" aria-label="Phasing rules update" style="margin:0 0 30px"><strong>Turn-order update</strong><br>Lessons R01, R04–R07, R09 and R10 teach the previous Standard turn order. Phasing uses Act → Mine + Upkeep → Prepare. Purchases are public summons that arrive on your next turn if undisturbed; disrupted summons refund their cost. These recordings have not yet been updated for Phasing.</p>
 <nav class="links" aria-label="Choose a learning path" style="justify-content:center;margin:0 0 30px"><a href="#episode-01">🌱 Start here</a><a href="#episode-10">✓ A whole turn</a><a href="#episode-11">🔥 The six elements</a></nav>
 <main aria-label="Video lessons">
 '''

@@ -102,3 +102,18 @@ The separate music-page task is orthogonal: Academy retains music mixed into
 videos and its existing streaming/download availability. Shared deevgames has
 unrelated work; none was staged or overwritten. The isolated website checkout is
 `/private/tmp/muju-academy-v6-release`.
+## Phasing course notice — prepared, not deployed — 2026-09-19
+
+T7's immediate notice is prepared in `codex/phasing-academy-notice`. The builder
+labels the existing recordings as Standard v2.8/v2.9, names the lessons with the
+previous turn order, and explains the Phasing sequence and delayed summons.
+The live verifier now requires that notice without changing media verification.
+The existing 16 lessons, v7/v8 labels, media, transcripts and release manifest are
+preserved. Desktop and phone notice renders were inspected with no overflow.
+
+The page-only patch is based on the clean published-release checkout at website
+commit `3b67c3e32b2b8eb10fb08540a6ee79c51a3f958c`. No website files were changed and
+no deployment occurred. Full media packaging and live checks were not rerun for
+this text-only preparation. Later v9 narration remains pending and requires its
+separate speech authorization. Exact hashes and deployment handoff are in
+`../docs/changes/2026-09-19-academy-phasing-notice.md`.

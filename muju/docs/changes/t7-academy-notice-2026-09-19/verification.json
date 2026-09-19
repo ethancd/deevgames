@@ -1,0 +1,38 @@
+{
+  "websiteBaseCommit": "3b67c3e32b2b8eb10fb08540a6ee79c51a3f958c",
+  "websiteBaseClean": true,
+  "oldPageSha256": "8c5169ca51c7c20c77733583ce81fec41666f33ef3803132bfe8ff3b271d25d7",
+  "preparedPageSha256": "207f1784cedf43e18576aeb0486bfe80a8da3c7dc6cfccfefb325d00c63c772c",
+  "pageAssertionsPassed": [
+    "assert source.count('id=\"phasing-notice\"') == 1, 'Missing or duplicated Phasing notice'",
+    "assert 'Lessons R01, R04–R07, R09 and R10 teach the previous Standard turn order.' in source",
+    "assert 'Act → Mine + Upkeep → Prepare' in source",
+    "assert 'These recordings have not yet been updated for Phasing.' in source",
+    "assert 'Current rules v2.9' not in source, 'Old recordings must not claim current Phasing rules'",
+    "assert source.count('Video version 7 · Rules v2.8') == 8",
+    "assert source.count('Video version 8 · Rules v2.9') == 8",
+    "assert all((f'id=\"episode-{i:02}\"' in source for i in range(1, 17)))",
+    "assert not any((f'id=\"episode-{i:02}\"' in source for i in range(17, 28)))",
+    "assert all(('autoplay' not in tag for tag in re.findall('<video\\\\b[^>]*>', source)))"
+  ],
+  "onlyIntroChanged": true,
+  "releaseManifestChanged": false,
+  "mediaChanged": false,
+  "pythonSyntax": "pass",
+  "preparedNotDeployed": true,
+  "browserLayouts": {
+    "desktop": {
+      "width": 1280,
+      "scrollWidth": 1280,
+      "noticeHeight": 156.375
+    },
+    "phone": {
+      "width": 390,
+      "scrollWidth": 390,
+      "noticeHeight": 281.96875
+    }
+  },
+  "screenshotsVisuallyInspected": true,
+  "gitApplyCheck": "pass against website 3b67c3e3",
+  "dag": "27 nodes,49 edges valid; 5 pre-existing local-only media groups absent"
+}
