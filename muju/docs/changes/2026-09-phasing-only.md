@@ -91,7 +91,7 @@ Paths: `muju/assembly/tactics.ts`, `muju/src/ai/wasm/`, `muju/asconfig.json`
 - Verify: Replay solver witnesses through canonical legality/transitions. Compare TS and WASM on changed combat/movement/promotion cases, including bounded-search unknown results.
 - Command (cwd `muju`): `npm run ai:wasm` — Rebuilds generated WASM; also runs automatically before npm test/build.
 
-Disposition: pending. Evidence: —
+Disposition: changed (T2, prepared/uncommitted). Evidence: ABI 7 removes resource/promotion inputs and uses Act-only target removal; `npm run ai:wasm` passed. JS/WASM Phasing parity, cutoff, catalogue/damage and witness tests passed in the 222-test non-Hard AI suite. `muju/lab/ai/results/t2-phasing-tactics-2026-09-18/` records 28 fixtures, 84 difficulty/fixture decisions, 36/36 expected rescues. WASM sha256 `6d3cf33382ff94d81ae32194c3af4849bff81115d1b6f7f4a9d4ac45c795573c`.
 
 ## 9. [ ] ai-search — Deterministic game AI, evaluation, planning and worker
 
@@ -103,7 +103,7 @@ Paths: `muju/src/ai/`, `muju/lab/ai/`, `muju/lab/docs/`, `muju/AI_ENGINE_PLAN.md
 - Verify: Check legal complete turns, reproducibility under fixed seeds/work budgets, worker execution and deadlines. Separate rule correctness from strength; run targeted matchups when balance claims are made.
 - Command (cwd `muju`): `npm run ai:tactics` — Runs tactical cases and writes a fresh lab result directory; inspect results.
 
-Disposition: pending. Evidence: —
+Disposition: changed (T2 direct-engine deliverables verified; M3 Gate 1 blocked on T1 integration). Evidence: full-turn reply simulation, Act-first beam, delayed purchase value/income and disruption filtering, mid-turn upkeep, no summon-and-strike. `npx tsc --noEmit -p .`, `npx tsc --noEmit -p lab/ai/tsconfig.json`, and all 222 non-Hard AI tests passed. `muju/lab/ai/results/t2-phasing-smoke-2026-09-18/` pins dirty-source identity and nine full games: 1,604 legal actions, 183 purchases, zero caps, one inactivity draw; fixed-work replay determinism is tested. MCTS/templates/eval sharpener reviewed for phase order and verified without edits; existing canonical transitions remain unchanged. Worker/protocol/hooks/components and difficulty presets/turn-budget constants remain unchanged under Claude ownership. Keep the Phasing guard closed until T1 bands and Gate 1 comparisons plus worker e2e pass. No release/deployment is claimed.
 
 ## 10. [ ] hard-ai — Hard engine: packed rules replica, turn generator, prover, evaluation and search
 

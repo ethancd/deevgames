@@ -1,3 +1,4 @@
+import { isPhasing } from '../../game/rules';
 import { getGameResult } from '../../game/victory';
 import type { GameState, PlayerId } from '../../game/types';
 import type { TurnPlan } from './types';
@@ -29,7 +30,7 @@ export function scorePartialPlan(plan: TurnPlan, state: GameState, forPlayer: Pl
     staticScore +
     killCount * 20 +
     damageScore * 0.5 +
-    (incomeDelta + (simState.turn.currentPlayer === forPlayer ? projectedIncome(simState, forPlayer) : 0)) * 1.5 -
+    (incomeDelta + (simState.turn.currentPlayer === forPlayer && (!isPhasing(simState) || simState.turn.phase === 'action') ? projectedIncome(simState, forPlayer) : 0)) * 1.5 -
     plan.actions.length * 0.1
   );
 }
@@ -49,6 +50,8 @@ export function tagPlan(plan: TurnPlan, state: GameState, forPlayer: PlayerId, s
   if (simState.players[forPlayer].resourcesGained > state.players[forPlayer].resourcesGained) {
     tags.push('mining');
   }
+
+  if (plan.actions.some(action => action.type === 'BUY_UNIT')) tags.push('expansion');
 
   if (plan.actions.some((action) => action.type === 'PROMOTE_UNIT')) {
     tags.push('promotion_play');

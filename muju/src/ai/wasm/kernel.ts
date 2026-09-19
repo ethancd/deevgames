@@ -1,6 +1,5 @@
 import { movementActionCost } from '../../game/movement';
 import type { GameState } from '../../game/types';
-import { getActionsPerTurn } from '../../game/rules';
 import { UNIT_DEFINITIONS, getUnitDefinition } from '../../game/units';
 import { calculateAttackPower, canAttack, getAttackCount } from '../../game/combat';
 import { transitionWithoutCheckmate as applyAction } from '../simulate';
@@ -11,10 +10,10 @@ import type { SearchBudget } from '../runtime';
 export interface TacticalResult {
   status: 'proved' | 'disproved' | 'unknown';
   actions: AIAction[]; nodes: number;
-  scope: 'current-turn target removal; all moves/attacks; home-blocked promotions';
+  scope: 'current-act target removal; all moves/attacks';
 }
 export type TacticalSolver = (state: GameState, targetId: string, maxNodes: number, budget: SearchBudget) => TacticalResult;
-const scope: TacticalResult['scope'] = 'current-turn target removal; all moves/attacks; home-blocked promotions';
+const scope: TacticalResult['scope'] = 'current-act target removal; all moves/attacks';
 interface Exports {
   memory: WebAssembly.Memory;
   abiVersion(): number; configureCatalogue(size: number): void; inputPtr(): number; cataloguePtr(): number; powersPtr(): number;
@@ -29,7 +28,7 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
     abort: () => { throw new Error('WASM tactical kernel trapped'); },
   } });
   const wasm = instance.exports as unknown as Exports;
-  if (wasm.abiVersion() !== 6) throw new Error('Muju WASM ABI/catalogue mismatch');
+  if (wasm.abiVersion() !== 7) throw new Error('Muju WASM ABI/catalogue mismatch');
   const defs = UNIT_DEFINITIONS;
   wasm.configureCatalogue(defs.length);
   return (state, targetId, maxNodes, budget) => {
@@ -37,13 +36,11 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
     const units = state.board.units, player = state.turn.currentPlayer;
     const target = units.findIndex(u => u.id === targetId);
     if (state.upkeepPending || state.phase !== 'playing' || target < 0 || units.length > 100) return unknown();
-    const corner = state.players[player].startCorner, victim = units[target];
-    const homeBlocked = victim.owner !== player && victim.position.x === corner.x && victim.position.y === corner.y;
-    if (state.turn.phase === 'place' && !homeBlocked) return unknown();
-    const catalog = new Int32Array(wasm.memory.buffer, wasm.cataloguePtr(), defs.length * 6);
+    if (state.turn.phase !== 'action' || units[target].owner === player) return unknown();
+    const catalog = new Int32Array(wasm.memory.buffer, wasm.cataloguePtr(), defs.length * 4);
     for (let i = 0; i < defs.length; i++) {
-      const d = defs[i], next = defs.findIndex(n => n.element === d.element && n.tier === d.tier + 1);
-      catalog.set([d.attack, d.defense, d.speed, next, next < 0 ? 0 : defs[next].cost - d.cost, d.tier], i * 6);
+      const d = defs[i];
+      catalog.set([d.attack, d.defense, d.speed, d.tier], i * 4);
     }
     const powers = new Int32Array(wasm.memory.buffer, wasm.powersPtr(), defs.length * defs.length);
     for (let a = 0; a < defs.length; a++) for (let b = 0; b < defs.length; b++) {
@@ -53,13 +50,12 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
         { definitionId: defs[b].id, owner: 'black' } as GameState['board']['units'][number]);
     }
     const input = new Int32Array(wasm.memory.buffer, wasm.inputPtr(), 1016); input.fill(0);
-    input.set([6, units.length, player === 'white' ? 0 : 1, state.turn.actionsRemaining,
-      state.turn.phase === 'place' ? 0 : 1, state.players[player].resources, getActionsPerTurn(state)]);
+    input.set([7, units.length, player === 'white' ? 0 : 1, state.turn.actionsRemaining]);
     for (let i = 0; i < units.length; i++) {
       const u = units[i], offset = 16 + i * 10;
       input.set([u.position.y * 10 + u.position.x, u.owner === 'white' ? 0 : 1,
         defs.findIndex(d => d.id === u.definitionId), u.damageTaken,
-        (u.canActThisTurn ? 1 : 0) | (u.promotedThisPlacement ? 2 : 0) | (u.placedThisTurn ? 4 : 0) | (u.lastAttackKilled ? 8 : 0)], offset);
+        (u.canActThisTurn ? 1 : 0) | (u.lastAttackKilled ? 8 : 0)], offset);
       input[offset + 9] = getAttackCount(u);
       for (const id of u.attackedThisTurn ?? []) { const j = units.findIndex(v => v.id === id); if (j >= 0) input[offset + 5 + (j >> 5)] |= 1 << (j & 31); }
     }
@@ -73,9 +69,9 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
     for (let i = 0; i < output.length; i += 3) {
       const kind = output[i], unitId = units[output[i + 1]].id, p = output[i + 2];
       const position = { x: p % 10, y: Math.floor(p / 10) };
-      const action: AIAction = kind === 1 ? { type: 'MOVE', unitId, to: position } : kind === 2 ? { type: 'ATTACK', unitId, targetPosition: position } : kind === 3 ? { type: 'PROMOTE_UNIT', unitId } : { type: 'END_PLACE_PHASE' };
-      // The canonical engine auto-ends placement after its final available promotion.
-      if (kind === 4 && current.turn.phase === 'action') continue;
+      if (kind !== 1 && kind !== 2) throw new Error('WASM returned a non-Act witness');
+      const action: AIAction = kind === 1 ? { type: 'MOVE', unitId, to: position }
+        : { type: 'ATTACK', unitId, targetPosition: position };
       if (!isLegalAction(current, action)) throw new Error('WASM returned an illegal tactical witness');
       actions.push(action); current = applyAction(current, action);
     }
