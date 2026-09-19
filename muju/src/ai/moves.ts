@@ -1,3 +1,4 @@
+import { summonDisruptable } from './planner/summons';
 import { upkeepActions } from '../game/upkeep';
 import type { GameState, PlayerId } from '../game/types';
 import type { AIAction } from './types';
@@ -50,7 +51,9 @@ export function generateAttackActions(state: GameState, player: PlayerId): AIAct
 export function generatePlaceActions(state: GameState, player: PlayerId): AIAction[] {
   if (state.turn.phase !== 'place') return [];
   return getAffordablePurchases(state.players[player].resources).flatMap(def =>
-    getAllSpawnPositions(player, state.board).map(position => ({ type: 'BUY_UNIT' as const, definitionId: def.id, position })));
+    getAllSpawnPositions(player, state.board).filter(position => !summonDisruptable(state, player, position))
+      .map(position => ({ type: 'BUY_UNIT' as const, definitionId: def.id, position })))
+    .filter(a => isLegalAction(state, a, player));
 }
 
 export function generatePromoteActions(state: GameState, player: PlayerId): AIAction[] {

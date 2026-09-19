@@ -1,3 +1,4 @@
+import { isPhasing } from '../../game/rules';
 import { incomeMovePriority } from './placement';
 import type { GameState, PlayerId } from '../../game/types';
 import type { TurnPlan } from './types';
@@ -19,7 +20,7 @@ export function beamSearchPlans(state: GameState, player: PlayerId, options: Bea
   let generated = 0;
   const exhausted = () => budget?.exhausted() || generated >= (options.maxCandidates ?? Infinity) ||
     (options.until !== undefined && budget!.now() >= options.until);
-  const maxSteps = options.maxSteps ?? (state.turn.phase === 'action' ? Math.max(1, state.turn.actionsRemaining + 1) : 8);
+  const maxSteps = options.maxSteps ?? (state.turn.phase === 'action' ? Math.max(1, state.turn.actionsRemaining + 1) + (isPhasing(state) ? 8 : 0) : 8);
   type Prefix = { plan: TurnPlan; state: GameState };
   let beam: Prefix[] = [{ plan: { id: 'root', actions: [], score: 0, tags: [] }, state }];
   // Root templates are injected by the engine once; repeated MCTS segments can

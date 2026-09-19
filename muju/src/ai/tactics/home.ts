@@ -1,11 +1,10 @@
 import type { GameState, PlayerId } from '../../game/types';
-import { getActionsPerTurn } from '../../game/rules';
 import type { AIAction } from '../types';
 import type { TacticalSolver, TacticalResult } from '../wasm/kernel';
 import { canPossiblyRemove } from '../wasm/kernel';
 import { getMovementRange } from '../../game/movement';
 import { getUnitDefinition } from '../../game/units';
-import { generateAttackActions, generatePromoteActions } from '../moves';
+import { generateAttackActions } from '../moves';
 import { transitionWithoutCheckmate as applyAction } from '../simulate';
 import { isLegalAction } from '../../game/legality';
 
@@ -14,26 +13,18 @@ export function homeInvader(state: GameState, player: PlayerId) {
   return state.board.units.find(u => u.owner !== player && u.position.x === home.x && u.position.y === home.y);
 }
 
-/** Authoritative-JS reference and bounded fallback. Passive income comes after
- * combat; purchases cannot happen while home is occupied. General purchase
- * search is outside this proof scope and returns unknown.
- */
+/** Act-only target removal. Prepare is after combat, so neither promotions
+ * nor purchases can rescue home during this turn. */
 export const referenceTactics: TacticalSolver = (state, targetId, maxNodes, budget) => {
   let nodes = 0, cutoff = false;
   const rootPlayer = state.turn.currentPlayer;
-  const result = (status: TacticalResult['status'], actions: AIAction[] = []): TacticalResult => ({ status, actions, nodes, scope: 'current-turn target removal; all moves/attacks; home-blocked promotions' });
+  const result = (status: TacticalResult['status'], actions: AIAction[] = []): TacticalResult => ({ status, actions, nodes, scope: 'current-act target removal; all moves/attacks' });
   if (state.upkeepPending || state.phase !== 'playing' ||
-    (state.turn.phase === 'place' && homeInvader(state, rootPlayer)?.id !== targetId)) return result('unknown');
+    state.turn.phase !== 'action' || !state.board.units.some(u => u.id === targetId && u.owner !== rootPlayer)) return result('unknown');
   const visit = (s: GameState, path: AIAction[], limit: number): AIAction[] | null => {
     if (!s.board.units.some(u => u.id === targetId)) return path;
     if (s.phase !== 'playing' || s.turn.currentPlayer !== rootPlayer) return null;
     if (nodes >= maxNodes || budget.exhausted()) { cutoff = true; return null; } nodes++;
-    if (s.turn.phase === 'place') {
-      for (const a of [...generatePromoteActions(s, rootPlayer), { type: 'END_PLACE_PHASE' } as AIAction]) {
-        const next = visit(applyAction(s, a), [...path, a], limit); if (next) return next; if (cutoff) return null;
-      }
-      return null;
-    }
     if (s.turn.phase !== 'action' || !limit || !canPossiblyRemove({ ...s, turn: { ...s.turn, actionsRemaining: limit } }, targetId)) return null;
     const actions = generateAttackActions(s, rootPlayer).map(a => ({ action: a, cost: 1 }));
     for (const u of s.board.units.filter(u => u.owner === rootPlayer && u.canActThisTurn)) {
@@ -48,7 +39,7 @@ export const referenceTactics: TacticalSolver = (state, targetId, maxNodes, budg
     }
     return null;
   };
-  const available = state.turn.phase === 'place' ? getActionsPerTurn(state) : state.turn.actionsRemaining;
+  const available = state.turn.actionsRemaining;
   for (let cost = 1; cost <= available; cost++) {
     const witness = visit(state, [], cost);
     if (witness) { budget.stats.tacticalNodes += nodes; return result('proved', witness); }
