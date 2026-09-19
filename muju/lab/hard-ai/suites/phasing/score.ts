@@ -23,7 +23,13 @@ export interface CaseResult {
   status: 'pass' | 'fail' | 'indeterminate' | 'error'; offered: 0 | 1; earned: 0 | 1;
   failureCodes: string[]; predicates: PredicateResult[];
   endpointSha256?: string; engineIdentity?: string;
-  metrics?: { evalGap: number; searchGap?: number; primary: 'eval-gap' | 'search-gap' | 'none' };
+  /** Both gaps are recorded whenever they were measured. `gating` says whether
+   * the primary metric was converted into a pass/fail predicate: a `diagnostic`
+   * pair is measured and reported at the same fixed work and is never
+   * converted, which is what makes it non-gating. `work` is the preregistered
+   * fixed work per member a search-gap reading was taken at. */
+  metrics?: { evalGap: number; searchGap?: number; primary: 'eval-gap' | 'search-gap' | 'none';
+    classification: 'preference' | 'structural' | 'diagnostic'; gating: boolean; work?: number };
 }
 function validateTurn(turn: EngineTurn, expectedIdentity: string): void {
   if (!turn || turn.error) throw new Error(`engine-error:${turn?.error ?? 'missing turn'}`);
@@ -72,7 +78,11 @@ export function scoreCase(c: PhasingCase, execution: CaseExecution, resolve: (re
         searchGap = normalized(execution.search.correct, c.perspective, engineIdentity) - normalized(execution.search.violating, c.perspective, engineIdentity);
       }
       if (c.primaryMetric === 'search-gap' && searchGap === undefined) throw new Error('primary-search-missing');
-      out.metrics = { evalGap, ...(searchGap === undefined ? {} : { searchGap }), primary: c.primaryMetric };
+      out.metrics = { evalGap, ...(searchGap === undefined ? {} : { searchGap }), primary: c.primaryMetric,
+        classification: c.classification, gating: c.classification === 'preference', ...(c.work === undefined ? {} : { work: c.work }) };
+      // ONLY a gating preference turns its metric into a scored predicate. A
+      // diagnostic keeps the reading on out.metrics and adds no predicate, so
+      // it can neither earn nor lose a point nor fail the run.
       if (c.classification === 'preference') { const actual = c.primaryMetric === 'eval-gap' ? evalGap : searchGap!; out.predicates.push({ status: actual > 0 ? 'pass' : 'fail', facts: [{ metric: c.primaryMetric, actual, required: 'strictly-positive' }] }); }
     }
     out.status = statusOf(out.predicates); out.earned = out.status === 'pass' ? out.offered : 0;
@@ -87,6 +97,10 @@ export interface SuiteResult {
   complete: boolean; valid: boolean; acceptance: 'not-established';
   offered: number; earned: number; expectedCases: 225; receivedCases: number;
   coverage: { expected: number; pass: number; fail: number; indeterminate: number; error: number; missing: number };
+  /** Measured, reported, NON-GATING readings from `diagnostic` pairs. They are
+   * here so a demoted pair stays visible in the summary without entering any
+   * denominator; nothing in assessFloors reads this list. */
+  diagnostics: { id: string; primary: 'eval-gap' | 'search-gap'; value: number; evalGap: number; searchGap?: number }[];
   failures: string[]; results: CaseResult[];
 }
 /** Missing results invalidate the run and retain their manifest-offered units. */
@@ -95,6 +109,7 @@ export function aggregate(manifestInput: ReleaseManifest, results: CaseResult[])
   let earned = 0;
   let engineIdentity: string | null = null;
   const coverage = { expected: manifest.cases.filter(c => c.offered === 0).length, pass: 0, fail: 0, indeterminate: 0, error: 0, missing: 0 };
+  const diagnostics: SuiteResult['diagnostics'] = [];
   for (const r of results) {
     const c = expected.get(r.id);
     if (!c || seen.has(r.id)) throw new Error(`extra/duplicate result ${r.id}`); seen.add(r.id);
@@ -103,9 +118,16 @@ export function aggregate(manifestInput: ReleaseManifest, results: CaseResult[])
     engineIdentity = r.engineIdentity;
     if (r.schema !== 'muju-phasing-case-result-v1' || r.caseSha256 !== c.sha256 || r.kind !== c.kind || r.offered !== c.offered || !['pass', 'fail', 'indeterminate', 'error'].includes(r.status) || r.earned !== (r.status === 'pass' ? c.offered : 0)) throw new Error(`result contract mismatch ${r.id}`);
     earned += r.earned;
+    if (c.classification === 'diagnostic') {
+      if (r.metrics?.gating) throw new Error(`diagnostic result claims to gate ${r.id}`);
+      const primary = r.metrics?.primary === 'search-gap' ? 'search-gap' as const : 'eval-gap' as const;
+      const value = r.metrics && (primary === 'search-gap' ? r.metrics.searchGap : r.metrics.evalGap);
+      if (r.metrics && typeof value === 'number' && Number.isFinite(value))
+        diagnostics.push({ id: r.id, primary, value, evalGap: r.metrics.evalGap, ...(r.metrics.searchGap === undefined ? {} : { searchGap: r.metrics.searchGap }) });
+    }
     if (!c.offered) coverage[r.status]++;
     if (r.status === 'error' || r.status === 'indeterminate' || (!c.offered && r.status === 'fail') || r.failureCodes.includes('author-evidence-not-established')) failures.push(`${r.id}:${r.status}`);
   }
   for (const c of manifest.cases) if (!seen.has(c.id)) { failures.push(`${c.id}:missing`); if (!c.offered) coverage.missing++; }
-  return { schema: 'muju-phasing-suite-result-v1', manifestSha256: hashJson(manifest), scope: 'release', engineIdentity, complete: seen.size === 225, valid: failures.length === 0, acceptance: 'not-established', offered: manifest.cases.reduce((n, c) => n + c.offered, 0), earned, expectedCases: 225, receivedCases: results.length, coverage, failures, results: [...results].sort((a, b) => a.id.localeCompare(b.id)) };
+  return { schema: 'muju-phasing-suite-result-v1', manifestSha256: hashJson(manifest), scope: 'release', engineIdentity, complete: seen.size === 225, valid: failures.length === 0, acceptance: 'not-established', offered: manifest.cases.reduce((n, c) => n + c.offered, 0), earned, expectedCases: 225, receivedCases: results.length, coverage, diagnostics: diagnostics.sort((a, b) => a.id.localeCompare(b.id)), failures, results: [...results].sort((a, b) => a.id.localeCompare(b.id)) };
 }

@@ -12,9 +12,13 @@ import { describe, expect, it } from 'vitest';
 import { buildNewFamilies } from '../../lab/hard-ai/suites/phasing/build-new-families';
 import { buildTacticsSuite } from '../../lab/hard-ai/suites/phasing/build-tactics';
 import { buildHomeMateSuite } from '../../lab/hard-ai/suites/phasing/build-home-mate';
-import { positionRef, withRules } from '../../lab/hard-ai/suites/phasing/canonical';
-import { assertNoUncreditedWin, uncreditedMoverWins, VetoError } from '../../lab/hard-ai/suites/phasing/veto';
-import type { Horizon, MacroDecision, SuiteDocument } from '../../lab/hard-ai/suites/phasing/format';
+import { positionRef, sourceBinding, withRules } from '../../lab/hard-ai/suites/phasing/canonical';
+import { DEFAULT_RULES } from '../../lab/hard-ai/positions/corpus';
+import { applyAction, transitionWithoutCheckmate } from '../../src/ai/simulate';
+import { analyzeHomeDefense } from '../../src/game/homeCheckmate';
+import { assertNoUncreditedWin, uncreditedMoverWins, VetoError, VETO_BOUNDS, VETO_PROMOTION_UNIT_BOUND, VETO_PROOF_NODES, VETO_STATE_BUDGET, VETO_UPKEEP_UNIT_BOUND } from '../../lab/hard-ai/suites/phasing/veto';
+import type { AIAction, GameState, Horizon, MacroDecision, PlayerId, SuiteDocument } from '../../lab/hard-ai/suites/phasing/format';
+import type { Unit } from '../../src/game/types';
 
 /** The horizon item (3) gives every summon-disruption decision in v2: one more
  * scripted hand-off, so "disrupts and is immediately captured" cannot score. */
@@ -27,9 +31,12 @@ const MATE_IN_ACT = [
   'M5-SD-04-inclusive-edge', 'M5-SD-06-temporary-intrusion', 'M5-SD-07-split-rectangles',
   'M5-SD-09-shared-intersection', 'M5-SD-18-arrival-immediate-attack',
 ];
-/** The ninth: the occupation is answerable, so it is not a win at the v1
- * first-hand-off horizon, but it converts to home-occupation as soon as the
- * intruder-survival horizon of item (3) is applied. */
+/** The ninth. The single-stage probe found nothing here at v1's first-hand-off
+ * horizon, and only saw the conversion to home-occupation once the
+ * intruder-survival horizon was applied. The two-stage probe shows the case is
+ * worse than that: the raider reaches White's corner in three moves and MATES
+ * at v1's own horizon after one Prepare promotion, which is the HOME_FORTIFY
+ * motif a BFS bounded by `actionsRemaining` structurally cannot reach. */
 const CONVERTS_AT_EXTENDED_HORIZON = 'M5-SD-28-home-blocks-all-rectangles';
 /** Sound disruption decisions: no mover unit can reach the defender's corner. */
 const SOUND_DISRUPTION = [
@@ -86,13 +93,24 @@ describe('author-time free-win veto', () => {
     }, binding);
   }, 240_000);
 
-  it('refuses the ninth disruption root once the intruder-survival horizon is applied', () => {
+  it('refuses the ninth disruption root at v1’s own horizon, via a Prepare promotion', () => {
     const binding = disruption.positions[0].binding;
     withRules(binding, () => {
       const [{ c, state }] = decisions(disruption, [CONVERTS_AT_EXTENDED_HORIZON]);
-      // v1's first-hand-off horizon hides the conversion: the endpoint is still
-      // 'playing', so the v1 probe alone cannot see it.
-      expect(uncreditedMoverWins(c, state).wins).toHaveLength(0);
+      // The single-stage probe found nothing here at the declared horizon: the
+      // endpoint is 'playing' and the occupation is answerable. The two-stage
+      // probe crosses END_ACTION_PHASE and promotes the raider in Prepare,
+      // where canonical re-adjudication awards home-checkmate outright. This is
+      // the one v1 case the wider enumeration flags that the narrow one did not.
+      const declared = uncreditedMoverWins(c, state);
+      expect(declared.exhausted, declared.exhaustedReason).toBe(false);
+      expect(declared.wins.length).toBeGreaterThan(0);
+      expect(declared.wins.every(w => w.stage === 'prepare')).toBe(true);
+      expect(declared.wins.every(w => w.reason === 'home-checkmate')).toBe(true);
+      expect(declared.wins.every(w => w.actions.some(a => a.type === 'PROMOTE_UNIT'))).toBe(true);
+      expect(() => assertNoUncreditedWin(c, state)).toThrow(VetoError);
+      // And it is still refused under the intruder-survival horizon, where the
+      // same occupation additionally converts to home-occupation.
       const extended: MacroDecision = { ...c, horizon: INTRUDER_HORIZON };
       const outcome = uncreditedMoverWins(extended, state);
       expect(outcome.exhausted).toBe(false);
@@ -100,7 +118,7 @@ describe('author-time free-win veto', () => {
       expect(outcome.wins.some(w => w.reason === 'home-occupation')).toBe(true);
       expect(() => assertNoUncreditedWin(extended, state)).toThrow(VetoError);
     }, binding);
-  }, 120_000);
+  }, 240_000);
 
   it('does not refuse the disruption decisions whose roots hand the mover nothing', () => {
     const binding = disruption.positions[0].binding;
@@ -152,4 +170,188 @@ describe('author-time free-win veto', () => {
       }
     }, binding);
   }, 240_000);
+});
+
+/** ------------------------------------------------------------------------
+ * Two-stage enumeration: wins that need the mover's own Prepare phase.
+ *
+ * The single-stage probe this replaces bounded its BFS by
+ * `root.turn.actionsRemaining` and `continue`d at that depth, so on a Prepare
+ * root (canonical Phasing sets `actionsRemaining` to 0 on entering Prepare,
+ * and all six v1 Prepare roots have AP 0) it expanded nothing at all and its
+ * PROMOTE_UNIT branch was dead code; from an Act root it only ever emitted
+ * MOVE and ATTACK, completing the turn with pass-only phase ends, so a line
+ * that enters the corner and then BUYS the occupier's survival with a
+ * promotion was never tried.
+ *
+ * Each root below is constructed, not taken from v1, and each was confirmed to
+ * produce ZERO wins under the previous implementation (`git show
+ * HEAD:...veto.ts`, same probe calls, same states) and to be vetoed here. The
+ * structural assertion that stands in for that check in CI is `stage ===
+ * 'prepare'` together with a PROMOTE_UNIT/PAY_UPKEEP in the winning line:
+ * neither could be produced by an enumeration over MOVE/ATTACK alone.
+ * ------------------------------------------------------------------------ */
+const EMPTY_BOARD = () => Array.from({ length: 10 }, (_, y) =>
+  Array.from({ length: 10 }, (_, x) => ({ position: { x, y }, resourceLayers: 0 })));
+const piece = (id: string, definitionId: string, owner: PlayerId, x: number, y: number): Unit =>
+  ({ id, definitionId, owner, position: { x, y }, hasMoved: false, hasAttacked: false, canActThisTurn: true, damageTaken: 0 });
+/** A minimal canonical Phasing state with White to move and no reserves, so
+ * end-of-turn income cannot quietly change what White can afford. */
+function constructed(o: { units: Unit[]; white: number; phase: 'action' | 'place'; ap: number; upkeepPending?: boolean }): GameState {
+  return {
+    ruleset: 'phasing', actionsPerTurn: 4, blackCrystalHandicap: 0, pendingSummons: [],
+    victoryRule: 'home-or-elimination', inactivityRule: 'on', inactivityPlies: 0,
+    upkeepPending: !!o.upkeepPending, phase: 'playing',
+    board: { cells: EMPTY_BOARD(), units: o.units },
+    players: { white: { id: 'white', resources: o.white, startCorner: { x: 0, y: 0 }, resourcesGained: 0 },
+      black: { id: 'black', resources: 0, startCorner: { x: 9, y: 9 }, resourcesGained: 0 } },
+    turn: { currentPlayer: 'white', phase: o.phase, actionsRemaining: o.ap, turnNumber: 3 },
+    winner: null, selectedUnit: null, validMoves: [], validAttacks: [],
+  };
+}
+/** Accept demands a non-terminal endpoint, exactly like the v1 disruption and
+ * tactics predicates: winning the game therefore scores zero. */
+const uncredited = (id: string): MacroDecision => ({
+  id, family: 'summon-disruption', kind: 'macro-decision', rationale: 'constructed veto regression root', tags: [],
+  authoredFrom: { id, revision: 'veto-regression', disposition: 'new' },
+  evidence: { positive: [], negative: [], rationale: 'probe-only; never authored into a bundle', exposure: 'constructed in this test' },
+  root: { id: 'constructed', sha256: '0'.repeat(64) }, work: 1, horizon: { kind: 'first-handoff-or-terminal' },
+  terminalPolicy: 'predicate-only',
+  accept: { kind: 'state-facts@1', at: 'endpoint', facts: [{ kind: 'game-phase', value: 'playing' }] },
+});
+const lineOf = (w: { actions: AIAction[] }) => w.actions.map(a => a.type);
+
+describe('free-win veto: wins that need the mover’s Prepare phase', () => {
+  const binding = sourceBinding(DEFAULT_RULES);
+  const scoped = <T>(body: () => T): T => withRules(binding, body, binding);
+
+  it('vetoes a Prepare root whose occupier mates after one promotion', () => scoped(() => {
+    // White already sits on Black's corner with a Water-I (defense 2), which
+    // Black's Metal-I removes (attack 1, +1 against water). Promoting to
+    // Water-II (defense 3) puts it out of a single tier-1 attack's reach, and
+    // canonical re-adjudicates home checkmate on that promotion.
+    const root = constructed({ phase: 'place', ap: 0, white: 4,
+      units: [piece('w-occ', 'water_1', 'white', 9, 9), piece('b-def', 'metal_1', 'black', 8, 9)] });
+    // The root itself is NOT a mate: the probe must find the promotion.
+    expect(analyzeHomeDefense(root, 'white', transitionWithoutCheckmate)).toBe('rescue');
+    const outcome = uncreditedMoverWins(uncredited('prepare-one-promotion'), root);
+    expect(outcome.exhausted, outcome.exhaustedReason).toBe(false);
+    expect(outcome.wins.length).toBeGreaterThan(0);
+    expect(outcome.wins.every(w => w.stage === 'prepare')).toBe(true);
+    expect(outcome.wins.some(w => w.reason === 'home-checkmate')).toBe(true);
+    expect(outcome.wins.map(lineOf)).toContainEqual(['PROMOTE_UNIT']);
+    expect(() => assertNoUncreditedWin(uncredited('prepare-one-promotion'), root)).toThrow(VetoError);
+  }), 120_000);
+
+  it('vetoes an Act root that enters the corner and then promotes', () => scoped(() => {
+    const root = constructed({ phase: 'action', ap: 4, white: 4,
+      units: [piece('w-occ', 'water_1', 'white', 9, 8), piece('b-def', 'metal_1', 'black', 8, 9)] });
+    const outcome = uncreditedMoverWins(uncredited('act-enter-then-promote'), root);
+    expect(outcome.exhausted, outcome.exhaustedReason).toBe(false);
+    expect(outcome.wins.length).toBeGreaterThan(0);
+    // Every win needs the Act->Prepare boundary and a promotion after it: the
+    // pass-only completion of the same entry is only 'rescue'.
+    expect(outcome.wins.every(w => w.stage === 'prepare')).toBe(true);
+    expect(outcome.wins.every(w => lineOf(w).includes('END_ACTION_PHASE') && lineOf(w).includes('PROMOTE_UNIT'))).toBe(true);
+    expect(outcome.wins.map(lineOf)).toContainEqual(['MOVE', 'END_ACTION_PHASE', 'PROMOTE_UNIT']);
+    expect(() => assertNoUncreditedWin(uncredited('act-enter-then-promote'), root)).toThrow(VetoError);
+  }), 120_000);
+
+  it('vetoes a fortify mate that needs two promotions, and one alone does not mate', () => scoped(() => {
+    // Black's Water-I on (9,8) can chip the occupier; its Fire-II on (7,9) can
+    // clear the (8,9) blocker, step in and finish. Promoting only the occupier
+    // leaves that second route open; promoting the blocker as well closes it.
+    const root = constructed({ phase: 'place', ap: 0, white: 8,
+      units: [piece('w-occ', 'water_1', 'white', 9, 9), piece('w-block', 'water_1', 'white', 8, 9),
+        piece('b1', 'water_1', 'black', 9, 8), piece('b2', 'fire_2', 'black', 7, 9)] });
+    expect(analyzeHomeDefense(root, 'white', transitionWithoutCheckmate)).toBe('rescue');
+    const onePromotion = applyAction(root, { type: 'PROMOTE_UNIT', unitId: 'w-occ' });
+    expect(onePromotion.phase).toBe('playing');
+    expect(analyzeHomeDefense(onePromotion, 'white', transitionWithoutCheckmate)).toBe('rescue');
+    const outcome = uncreditedMoverWins(uncredited('two-promotion-fortify'), root);
+    expect(outcome.exhausted, outcome.exhaustedReason).toBe(false);
+    expect(outcome.wins.length).toBeGreaterThan(0);
+    expect(outcome.wins.every(w => lineOf(w).filter(type => type === 'PROMOTE_UNIT').length === 2)).toBe(true);
+    expect(() => assertNoUncreditedWin(uncredited('two-promotion-fortify'), root)).toThrow(VetoError);
+  }), 120_000);
+
+  it('vetoes a root whose mate is only affordable after an upkeep release', () => scoped(() => {
+    // White owes 1 rent on its Fire-II and holds exactly the 4 crystals the
+    // promotion costs. Keeping the whole army pays the rent and the promotion
+    // becomes unaffordable, so only a keep-set that RELEASES the renter wins:
+    // the default "keep everything you can afford" upkeep never finds it.
+    const root = constructed({ phase: 'place', ap: 0, white: 4, upkeepPending: true,
+      units: [piece('w-occ', 'water_1', 'white', 9, 9), piece('w-rent', 'fire_2', 'white', 1, 0),
+        piece('b-def', 'water_1', 'black', 9, 8)] });
+    const outcome = uncreditedMoverWins(uncredited('upkeep-release-then-promote'), root);
+    expect(outcome.exhausted, outcome.exhaustedReason).toBe(false);
+    expect(outcome.wins.length).toBeGreaterThan(0);
+    expect(outcome.wins.every(w => lineOf(w).join(',') === 'PAY_UPKEEP,PROMOTE_UNIT')).toBe(true);
+    for (const win of outcome.wins) {
+      const upkeep = win.actions[0];
+      if (upkeep.type !== 'PAY_UPKEEP') throw new Error('expected an upkeep choice');
+      // The winning line releases the renter rather than paying for it.
+      expect(upkeep.keepUnitIds).not.toContain('w-rent');
+    }
+    expect(() => assertNoUncreditedWin(uncredited('upkeep-release-then-promote'), root)).toThrow(VetoError);
+  }), 120_000);
+
+  it('does not refuse the same Prepare root when the promotion is unaffordable', () => scoped(() => {
+    // The control for all four: one crystal short, and nothing is flagged, so
+    // the refusals above come from the promotion and not from the new stages
+    // flagging every occupation they see.
+    const root = constructed({ phase: 'place', ap: 0, white: 3,
+      units: [piece('w-occ', 'water_1', 'white', 9, 9), piece('b-def', 'metal_1', 'black', 8, 9)] });
+    const outcome = uncreditedMoverWins(uncredited('prepare-unaffordable'), root);
+    expect(outcome.exhausted, outcome.exhaustedReason).toBe(false);
+    expect(outcome.wins).toHaveLength(0);
+    expect(() => assertNoUncreditedWin(uncredited('prepare-unaffordable'), root)).not.toThrow();
+  }), 120_000);
+
+  it('credits the same promotion mate when the case says the mover may win', () => scoped(() => {
+    const root = constructed({ phase: 'place', ap: 0, white: 4,
+      units: [piece('w-occ', 'water_1', 'white', 9, 9), piece('b-def', 'metal_1', 'black', 8, 9)] });
+    const allowed: MacroDecision = { ...uncredited('prepare-allowed-win'), terminalPolicy: 'allow-root-mover-win' };
+    expect(uncreditedMoverWins(allowed, root).wins).toHaveLength(0);
+    expect(() => assertNoUncreditedWin(allowed, root)).not.toThrow();
+  }), 120_000);
+});
+
+describe('free-win veto: every declared bound fails closed', () => {
+  const binding = sourceBinding(DEFAULT_RULES);
+  const scoped = <T>(body: () => T): T => withRules(binding, body, binding);
+
+  it('reports the bounds it enforces', () => {
+    expect(VETO_BOUNDS).toEqual({ states: VETO_STATE_BUDGET, proofNodes: VETO_PROOF_NODES,
+      upkeepUnits: VETO_UPKEEP_UNIT_BOUND, promotableUnits: VETO_PROMOTION_UNIT_BOUND });
+  });
+
+  it('refuses rather than clears when the state budget runs out', () => scoped(() => {
+    const root = constructed({ phase: 'action', ap: 4, white: 4,
+      units: [piece('w-occ', 'water_1', 'white', 9, 8), piece('b-def', 'metal_1', 'black', 8, 9)] });
+    const outcome = uncreditedMoverWins(uncredited('budget'), root, 1);
+    expect(outcome.exhausted).toBe(true);
+    expect(outcome.exhaustedReason).toMatch(/state budget 1/);
+    expect(() => assertNoUncreditedWin(uncredited('budget'), root, 1)).toThrow(/probe bound/);
+  }), 60_000);
+
+  it('refuses a Prepare root with more promotable units than the subset bound', () => scoped(() => {
+    const many = Array.from({ length: VETO_PROMOTION_UNIT_BOUND + 1 }, (_, i) => piece(`w${i}`, 'water_1', 'white', i, 0));
+    const root = constructed({ phase: 'place', ap: 0, white: 400,
+      units: [...many, piece('b-def', 'metal_1', 'black', 0, 5)] });
+    const outcome = uncreditedMoverWins(uncredited('promotion-bound'), root);
+    expect(outcome.exhausted).toBe(true);
+    expect(outcome.exhaustedReason).toMatch(/promotable units 13 exceeds/);
+    expect(() => assertNoUncreditedWin(uncredited('promotion-bound'), root)).toThrow(VetoError);
+  }), 60_000);
+
+  it('refuses a pending upkeep with more rent-bearing units than the keep-set bound', () => scoped(() => {
+    const many = Array.from({ length: VETO_UPKEEP_UNIT_BOUND + 1 }, (_, i) => piece(`w${i}`, 'fire_2', 'white', i, 0));
+    const root = constructed({ phase: 'place', ap: 0, white: 2, upkeepPending: true,
+      units: [...many, piece('b-def', 'metal_1', 'black', 0, 5)] });
+    const outcome = uncreditedMoverWins(uncredited('upkeep-bound'), root);
+    expect(outcome.exhausted).toBe(true);
+    expect(outcome.exhaustedReason).toMatch(/rent-bearing units 13 exceeds/);
+    expect(() => assertNoUncreditedWin(uncredited('upkeep-bound'), root)).toThrow(VetoError);
+  }), 60_000);
 });

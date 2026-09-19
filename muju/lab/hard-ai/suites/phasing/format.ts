@@ -46,6 +46,11 @@ export interface LedgerFact { player: PlayerId; metric: LedgerMetric; value: Com
 export type CommitmentSelector = { kind: 'root'; id: string } | { kind: 'buy-event'; /** Zero-based action index in the full canonical trace. */ actionIndex: number; owner: PlayerId; definitionId: string; position: Position };
 export type PredicateSpec =
   | { kind: 'all@1'; predicates: PredicateSpec[] }
+  /** Multi-answer accept: several canonically correct answers, any one of which
+   * scores. Authored for tactics positions with equally valid targets, where v1
+   * scored one of them as if it were the only correct answer. An any-of is only
+   * indeterminate when no branch passes and at least one is indeterminate. */
+  | { kind: 'any-of@1'; predicates: PredicateSpec[] }
   | { kind: 'action-legality@1'; at: 'root' | 'endpoint'; action: AIAction; expected: boolean }
   | { kind: 'state-facts@1'; at: 'root' | 'endpoint'; facts: StateFact[] }
   | { kind: 'target-removed@1'; targetId: string; cause?: 'own-act-attack'; survivingIds?: string[]; survivingSides?: PlayerId[] }
@@ -85,13 +90,55 @@ export interface InvariantPair extends CommonCase {
   violating: PositionRef; correct: PositionRef; perspective: PlayerId;
   premise: { violating: PredicateSpec; correct: PredicateSpec };
   probes?: { violating: ProbeSpec[]; correct: ProbeSpec[] };
-  classification: 'preference' | 'structural'; primaryMetric: 'eval-gap' | 'search-gap' | 'none';
-  /** Required for search-gap or optional searched diagnostics. */ work?: number;
+  /** How the pair participates in the floor.
+   * - `preference` gates: it offers one point and the primary metric must be
+   *   strictly positive for the correct member.
+   * - `diagnostic` is measured and reported at the same fixed work, and its
+   *   premises still have to hold, but it OFFERS ZERO POINTS: the metric is
+   *   recorded on the case result and never converted into a pass/fail
+   *   predicate, so a pair whose own rationale refuses to claim a strict
+   *   preference cannot gate a release.
+   * - `structural` carries no metric at all and earns nothing. */
+  classification: 'preference' | 'structural' | 'diagnostic';
+  primaryMetric: 'eval-gap' | 'search-gap' | 'none';
+  /** The fixed work a `search-gap` metric is measured at, per member. Required
+   * for search-gap (preference or diagnostic); optional for a searched
+   * eval-gap pair that also wants a reported search reading. */ work?: number;
 }
 export type PhasingCase = MacroDecision | CanonicalCoverage | InvariantPair;
 export interface SuiteDocument {
   schema: 'muju-phasing-suite-v1'; family: Family; positions: PhasingPosition[]; cases: PhasingCase[];
 }
+
+/** The minimum intruder-survival continuation the v2 summon-disruption family
+ * requires: one further pass-only hand-off past the mover's macro endpoint, so
+ * a raider that disrupts a commitment and is then released by its own upkeep,
+ * or answered, no longer scores. */
+export const INTRUDER_SURVIVAL_HANDOFFS = 1;
+export const intruderSurvivalHorizon = (homeFirst = true, additionalHandoffs: number = INTRUDER_SURVIVAL_HANDOFFS): Horizon =>
+  ({ kind: 'scripted', policy: 'pass-only@1', additionalHandoffs, homeFirst });
+/** The endpoint fact that makes the horizon load-bearing: the named intruder is
+ * still on the board, still owned by the raider, once the horizon has run. */
+export const intruderPresentFact = (unitId: string, owner: PlayerId): StateFact =>
+  ({ kind: 'unit', id: unitId, present: true, owner });
+export const hasIntruderSurvivalHorizon = (c: MacroDecision): boolean =>
+  c.horizon.kind === 'scripted' && c.horizon.policy === 'pass-only@1' && c.horizon.additionalHandoffs >= INTRUDER_SURVIVAL_HANDOFFS;
+/** Does this predicate demand the named unit at the endpoint on every branch it
+ * can accept on? An `all@1` needs one such conjunct; an `any-of@1` needs the
+ * fact in EVERY branch, or the multi-answer accept would have a branch that
+ * scores a raid whose intruder is gone. */
+export function requiresUnitAtEndpoint(p: PredicateSpec, unitId: string, owner?: PlayerId): boolean {
+  if (p.kind === 'all@1') return p.predicates.some(child => requiresUnitAtEndpoint(child, unitId, owner));
+  if (p.kind === 'any-of@1') return p.predicates.length > 0 && p.predicates.every(child => requiresUnitAtEndpoint(child, unitId, owner));
+  return p.kind === 'state-facts@1' && p.at === 'endpoint'
+    && p.facts.some(f => f.kind === 'unit' && f.id === unitId && f.present && (owner === undefined || f.owner === owner));
+}
+/** The v2 summon-disruption authoring rule, as a checkable predicate. It is
+ * deliberately NOT enforced inside validateSuiteDocument: the v1 documents must
+ * keep loading byte-identically, and no v1 disruption case carries it. A v2
+ * builder calls this per case instead. */
+export const assertsIntruderSurvival = (c: MacroDecision, unitId: string, owner: PlayerId): boolean =>
+  hasIntruderSurvivalHorizon(c) && requiresUnitAtEndpoint(c.accept, unitId, owner);
 
 const text = z.string().min(1), side = z.enum(['white', 'black']);
 const integer = z.number().int().nonnegative(), amount = z.number().finite().nonnegative();
@@ -140,6 +187,7 @@ const ledgerFact = z.object({ player: side, metric: z.enum(['bank', 'mined', 'up
 const commitment = z.union([z.object({ kind: z.literal('root'), id: text }).strict(), z.object({ kind: z.literal('buy-event'), actionIndex: integer.max(511), owner: side, definitionId: definition, position: square }).strict()]);
 export const predicateSchema: z.ZodType<PredicateSpec> = z.lazy(() => z.union([
   z.object({ kind: z.literal('all@1'), predicates: z.array(predicateSchema).min(1).max(64) }).strict(),
+  z.object({ kind: z.literal('any-of@1'), predicates: z.array(predicateSchema).min(1).max(64) }).strict(),
   z.object({ kind: z.literal('action-legality@1'), at: z.enum(['root', 'endpoint']), action: actionSchema, expected: z.boolean() }).strict(),
   z.object({ kind: z.literal('state-facts@1'), at: z.enum(['root', 'endpoint']), facts: z.array(factSchema).min(1).max(512) }).strict(),
   z.object({ kind: z.literal('target-removed@1'), targetId: text, cause: z.literal('own-act-attack').optional(), survivingIds: z.array(text).optional(), survivingSides: z.array(side).optional() }).strict(),
@@ -160,14 +208,17 @@ const common = { id: text, family: z.enum(FAMILIES), rationale: text, tags: z.ar
 const caseSchema: z.ZodType<PhasingCase> = z.union([
   z.object({ ...common, kind: z.literal('macro-decision'), root: ref, work: integer.min(1), horizon: horizonSchema, terminalPolicy: z.enum(['predicate-only', 'allow-root-mover-win']), accept: predicateSchema }).strict(),
   z.object({ ...common, kind: z.literal('canonical-coverage'), root: ref, probes: z.array(probeSchema).min(1), engineReplay: z.union([z.object({ required: z.literal(false) }).strict(), z.object({ required: z.literal(true), work: integer.min(1) }).strict()]) }).strict(),
-  z.object({ ...common, kind: z.literal('invariant-pair'), family: z.literal('invariants'), invariant: integer.min(1).max(20), violating: ref, correct: ref, perspective: side, premise: z.object({ violating: predicateSchema, correct: predicateSchema }).strict(), probes: z.object({ violating: z.array(probeSchema), correct: z.array(probeSchema) }).strict().optional(), classification: z.enum(['preference', 'structural']), primaryMetric: z.enum(['eval-gap', 'search-gap', 'none']), work: integer.min(1).optional() }).strict(),
+  z.object({ ...common, kind: z.literal('invariant-pair'), family: z.literal('invariants'), invariant: integer.min(1).max(20), violating: ref, correct: ref, perspective: side, premise: z.object({ violating: predicateSchema, correct: predicateSchema }).strict(), probes: z.object({ violating: z.array(probeSchema), correct: z.array(probeSchema) }).strict().optional(), classification: z.enum(['preference', 'structural', 'diagnostic']), primaryMetric: z.enum(['eval-gap', 'search-gap', 'none']), work: integer.min(1).optional() }).strict(),
 ]);
 const positionSchema = z.object({ schema: z.literal('muju-phasing-position-v1'), id: text, binding, boundary: z.object({ kind: z.enum(['act', 'prepare', 'terminal']), currentPlayer: side, actionsRemaining: integer.max(4), upkeepPending: z.boolean() }).strict(), state, origin: z.union([z.object({ kind: z.literal('authored-diagram'), rationale: text }).strict(), z.object({ kind: z.literal('counterfactual-defense'), rationale: text }).strict(), z.object({ kind: z.literal('legal-prefix'), seed: ref, actions: z.array(actionSchema).min(1).max(512), seedReachability: z.enum(['authored-diagram', 'initial-game']) }).strict()]) }).strict();
 
 export const caseMembers = (c: PhasingCase): PositionRef[] => c.kind === 'invariant-pair' ? [c.violating, c.correct] : [c.root];
+/** Scored units a case offers. Only a macro-decision and a GATING preference
+ * pair offer one; `diagnostic` and `structural` pairs and coverage offer zero,
+ * which is what makes a diagnostic measured-and-reported but non-gating. */
 export const decisionUnits = (c: PhasingCase): 0 | 1 => c.kind === 'macro-decision' || (c.kind === 'invariant-pair' && c.classification === 'preference') ? 1 : 0;
-export function containsBudgetProbe(p: PredicateSpec): boolean { return p.kind === 'home-proof-budget@1' || (p.kind === 'all@1' && p.predicates.some(containsBudgetProbe)); }
-function predicateDepth(p: PredicateSpec, depth = 0): void { if (depth > 8) throw new Error('predicate nesting exceeds 8'); if (p.kind === 'all@1') p.predicates.forEach(child => predicateDepth(child, depth + 1)); }
+export function containsBudgetProbe(p: PredicateSpec): boolean { return p.kind === 'home-proof-budget@1' || ((p.kind === 'all@1' || p.kind === 'any-of@1') && p.predicates.some(containsBudgetProbe)); }
+function predicateDepth(p: PredicateSpec, depth = 0): void { if (depth > 8) throw new Error('predicate nesting exceeds 8'); if (p.kind === 'all@1' || p.kind === 'any-of@1') p.predicates.forEach(child => predicateDepth(child, depth + 1)); }
 
 export function validateSuiteDocument(input: unknown): SuiteDocument {
   // Bound recursive input before z.lazy traverses it.
@@ -213,9 +264,12 @@ export function validateSuiteDocument(input: unknown): SuiteDocument {
     if (c.kind === 'invariant-pair') {
       if (hashJson(members[0].binding) !== hashJson(members[1].binding) || hashJson(members[0].boundary) !== hashJson(members[1].boundary)) throw new Error(`pair context mismatch ${c.id}`);
       if (evidence.some(p => !p.member)) throw new Error('pair evidence requires member');
+      // structural <-> no metric. A preference and a diagnostic are both
+      // measured, so both must name a metric, and a search-gap metric must name
+      // the fixed work per member it is measured at.
       if ((c.classification === 'structural') !== (c.primaryMetric === 'none') || (c.primaryMetric === 'search-gap' && !c.work)) throw new Error('invalid pair scoring contract');
       if ([15, 18].includes(c.invariant) && c.classification !== 'structural') throw new Error('invariants 15/18 are structural');
-      if (c.classification === 'preference' && [c.premise.correct, c.premise.violating].some(containsBudgetProbe)) throw new Error('budget proof cannot define a preference');
+      if (c.classification !== 'structural' && [c.premise.correct, c.premise.violating].some(containsBudgetProbe)) throw new Error('budget proof cannot define a preference');
       predicateDepth(c.premise.correct); predicateDepth(c.premise.violating);
     } else if (evidence.some(p => p.member)) throw new Error('non-pair evidence cannot select pair member');
     if (c.kind === 'macro-decision') {
