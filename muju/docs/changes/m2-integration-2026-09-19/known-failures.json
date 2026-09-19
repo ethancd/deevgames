@@ -1,0 +1,130 @@
+{
+  "cause": "T6 still accepts only Standard, while M2 Hard packs only Phasing; dependencies not ported yet",
+  "failures": [
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "canonical whole-turn verification checks the supplied end key, and rejects partial, illegal, fallback, and cross-turn lines",
+      "failure": "PackError: pack: ruleset \"standard\" is not \"phasing\" (the replica is Phasing-only)\n    at Replica.pack (/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/src/ai/hard/core/state.ts:595:13)\n    at resultFor (/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:18:71)\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:33:43\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "long-polls, searches at exactly 60s, durably saves before submission, and retries the identical batch",
+      "failure": "PackError: pack: ruleset \"standard\" is not \"phasing\" (the replica is Phasing-only)\n    at Replica.pack (/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/src/ai/hard/core/state.ts:595:13)\n    at resultFor (/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:18:71)\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:52:48\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "stops on stale revisions while preserving the pending request and credentials",
+      "failure": "Error: expected [Function] to throw error including 'Stale' but got 'pack: ruleset \"standard\" is not \"phas\u2026'\n    at _Assertion.__VITEST_REJECTS__ (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/expect/dist/index.js:1747:17)\n    at _Assertion.propertyGetter (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1570:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1659:22)\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:80:144\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "logs a fallback and never sends a partial or unverified replacement",
+      "failure": "Error: expected [Function] to throw error including 'fallback' but got 'pack: ruleset \"standard\" is not \"phas\u2026'\n    at _Assertion.__VITEST_REJECTS__ (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/expect/dist/index.js:1747:17)\n    at _Assertion.propertyGetter (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1570:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1659:22)\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:86:187\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract keeps the fixed 60s allowance, verifies the server contract again before submission, and recovers an identical pending batch",
+      "failure": "PackError: pack: ruleset \"standard\" is not \"phasing\" (the replica is Phasing-only)\n    at Replica.pack (/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/src/ai/hard/core/state.ts:595:13)\n    at resultFor (/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:18:71)\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:136:50\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects room identity after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects absent policy after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects policy version after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects tool tier after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects protocol after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects absent time control after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects untimed room after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects clock delay after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects clock bank after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects absent handicap after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects handicap after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects absent clock after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects stopped clock after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract re-reads and rejects wrong running player after search before sending the durable batch",
+      "failure": "AssertionError: expected undefined to be 1 // Object.is equality\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:154:94\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract rechecks the contract before an uncertain retry and preserves the original pending batch",
+      "failure": "Error: expected [Function] to throw error matching /policy/ but got 'pack: ruleset \"standard\" is not \"phas\u2026'\n    at _Assertion.__VITEST_REJECTS__ (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/expect/dist/index.js:1747:17)\n    at _Assertion.propertyGetter (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1570:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1659:22)\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:167:146\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract retains pending after an acknowledgement from the wrong room",
+      "failure": "Error: expected [Function] to throw error matching /identity/ but got 'pack: ruleset \"standard\" is not \"phas\u2026'\n    at _Assertion.__VITEST_REJECTS__ (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/expect/dist/index.js:1747:17)\n    at _Assertion.propertyGetter (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1570:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1659:22)\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:173:146\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract rejects a stale revision found before submission without discarding the pending batch",
+      "failure": "Error: expected PackError: pack: ruleset \"standard\" is no\u2026 to match object { code: 'STALE_REVISION' }\n(1 matching property omitted from actual)\n    at _Assertion.__VITEST_REJECTS__ (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/expect/dist/index.js:1747:17)\n    at _Assertion.propertyGetter (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1570:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1659:22)\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:179:146\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "pinned room contract retains the durable batch if authenticated identity changes before submission",
+      "failure": "Error: expected [Function] to throw error matching /authenticated seat/ but got 'pack: ruleset \"standard\" is not \"phas\u2026'\n    at _Assertion.__VITEST_REJECTS__ (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/expect/dist/index.js:1747:17)\n    at _Assertion.propertyGetter (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1570:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/chai/index.js:1659:22)\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:205:137\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)"
+    },
+    {
+      "file": "tests/lab/engine-seat.test.ts",
+      "name": "re-verifies an actual bounded Standard HardEngine search",
+      "failure": "AssertionError: expected 'pack-error' to be undefined\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/lab/engine-seat.test.ts:274:27\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)"
+    },
+    {
+      "file": "tests/server/match-policy.test.ts",
+      "name": "runs a complete verified engine turn over real HTTP with the issued private credential",
+      "failure": "Error: Engine fallback: pack-error\n    at verifySeatTurn (/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tools/engine-seat/verify.ts:13:62)\n    at runSeat (/Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tools/engine-seat/runner.ts:88:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at /Users/ashkie/Documents/Codex/2026-09-18/wba/work/deevgames-m2-integration/muju/tests/server/match-policy.test.ts:120:3\n    at file:///Users/ashkie/src/deevgames-phasing-only/muju/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+    }
+  ]
+}

@@ -115,14 +115,13 @@ export function newGenStats(): GenStats {
  * need not import `tactics` (DESIGN §2 layering). A bound
  * `tactics/prover.ts homeWitness` satisfies it.
  *
- * `keep` is this node's keep-set table. The prover's witness line opens with
- * its OWN `PAY_UPKEEP` indexing the prover's private keep-set table
- * (DESIGN §4.14), so the installer has to copy that set into the node's table
- * and re-index the action — or drop it when no upkeep is pending. It cannot do
- * either without the table, which is why it is a parameter. Added by M14; see
- * DEVIATIONS.
+ * M2: the witness no longer carries a keep-set. Under Phasing the prover is
+ * ACT-ONLY (`tactics/prover.ts`), so its line is MOVEs and ATTACKs from the
+ * defender's `ready` position with no `PAY_UPKEEP` in it — there is nothing for
+ * the installer to adopt into this node's table, and the `keep` parameter that
+ * existed only for that adoption is gone. Added by M14; see DEVIATIONS.
  */
-export type RescueWitness = (p: PackedState, invader: Side, out: Int32Array, keep: KeepSetTable) => number;
+export type RescueWitness = (p: PackedState, invader: Side, out: Int32Array) => number;
 
 /** `WorkClass.PROVER` (DESIGN §4.16), spelled here so `gen` need not import
  * `search` — the convention `gen/actionsearch.ts` uses for `WorkClass.TURN`. */
@@ -1033,7 +1032,7 @@ export class TurnGenerator {
       }
       ctx.meter.spend(WORK_CLASS_PROVER, 1);
     }
-    const n = source(p, (1 - side) as Side, this.witnessLine, ctx.keep);
+    const n = source(p, (1 - side) as Side, this.witnessLine);
     if (n <= 0) return;
     // The witness carries its own place-phase structure — promotions, then
     // `END_PLACE` when the phase will not auto-advance (DESIGN §4.14) — so

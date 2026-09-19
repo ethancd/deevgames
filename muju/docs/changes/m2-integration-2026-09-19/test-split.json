@@ -1,0 +1,29 @@
+{
+  "testsExecuted": false,
+  "runtimeEdited": false,
+  "quarantineEdited": false,
+  "moves": [
+    {
+      "from": "muju/tests/lab/analyze.test.ts",
+      "to": "muju/tests/lab/analyze-phasing.test.ts",
+      "blockCopiedByteForByte": true,
+      "blockSha256": "7599659d7f4f9ff515ba12fb73607eb1879f429e5faf21ce5bcf7ac929fc74d7",
+      "testNames": [
+        "rebuilds a real Phasing game, matches its meta, and segments one turn per seat turn",
+        "REFUSES a Phasing replay whose recorded pending summons the rebuild does not reproduce",
+        "reads the rule set off the record and refuses a revision it has not been taught"
+      ],
+      "expectCallCount": 16
+    },
+    {
+      "from": "muju/tests/lab/profile.test.ts",
+      "to": "muju/tests/lab/profile-phasing.test.ts",
+      "blockCopiedByteForByte": true,
+      "blockSha256": "b37442d6659cd4c6bfa1f3e97fbcea5c1a38fc555aadb3e2fc41264ea52a95aa",
+      "testNames": [
+        "builds p1-dev positions at game turn 6 for a small opening set"
+      ],
+      "expectCallCount": 11
+    }
+  ]
+}

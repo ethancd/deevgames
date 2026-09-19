@@ -51,9 +51,8 @@ import { phaseEndAction } from '../../../game/legality';
 import type { AIAction } from '../../types';
 import { MATE_PLY_CC, Result, WIN_CC, type Centi, type PackedState, type Side } from '../types';
 import { PackError } from '../core/state';
-import { AKind, KEEP_SET_CAPACITY, paKind, paMake, type KeepSetTable } from '../core/action';
 import { buildTables } from '../tables/context';
-import { PROOF_NODES, WITNESS_KEEP, homeWitness } from '../tactics/prover';
+import { PROOF_NODES, homeWitness } from '../tactics/prover';
 import { TurnFlag, type Turn } from '../gen/turn';
 import { endKeyAfter } from './order';
 import type { TurnGenerator } from '../gen/generate';
@@ -136,89 +135,22 @@ function keyHex(hi: number, lo: number): string {
   return `${(hi >>> 0).toString(16).padStart(8, '0')}${(lo >>> 0).toString(16).padStart(8, '0')}`;
 }
 
-/** Words per keep-set in `core/action.ts`'s layout (one 128-bit slot mask).
- * Derived rather than written down, so a change to `MAX_SLOTS` cannot make the
- * copy below read half a mask. */
-const KEEP_WORDS = WITNESS_KEEP.masks.length / KEEP_SET_CAPACITY;
-
-/**
- * Makes the node's keep-set table carry the prover's witness keep-set and
- * returns its index there, or -1 when the table is full.
- *
- * `tactics/prover.ts` writes the witness's keep-set into its own private
- * `WITNESS_KEEP` at index 0 and emits `PAY_UPKEEP 0` against it (DESIGN §4.14).
- * The generator replays the line against the NODE's table, where index 0 is
- * whatever `gen/upkeep.ts` ranked first — a different set of units, so the
- * witness would release the very bodies it is about to rescue with and the rest
- * of the line would not be legal. An identical set already in the table is
- * reused; otherwise the set is appended past the node's own, where the beam's
- * `PAY_UPKEEP` loop (which iterates the count `genKeepSets` returned, not
- * `keep.count`) will not walk into it.
- */
-function adoptWitnessKeepSet(keep: KeepSetTable): number {
-  const src = WITNESS_KEEP.masks;
-  const dst = keep.masks;
-  for (let i = 0; i < keep.count; i++) {
-    let same = true;
-    for (let w = 0; w < KEEP_WORDS; w++) {
-      if (dst[i * KEEP_WORDS + w] !== src[w]) {
-        same = false;
-        break;
-      }
-    }
-    if (same) return i;
-  }
-  if (keep.count >= KEEP_SET_CAPACITY) return -1;
-  const index = keep.count;
-  for (let w = 0; w < KEEP_WORDS; w++) dst[index * KEEP_WORDS + w] = src[w];
-  keep.count = index + 1;
-  return index;
-}
-
 /**
  * Wires DESIGN §5.6's injection 4 — the prover's rescue witness — into a
  * generator. `gen` may not import `tactics` (DESIGN §2), so the root owns the
  * connection; call it once per generator when the engine is built.
  *
- * The prover's line is written for the position at the DEFENDER'S UPKEEP, so it
- * always opens with `PAY_UPKEEP` (`tactics/prover.ts homeWitness`). Two
- * adjustments make it a line the generator's node can actually play, and
- * without them injection 4 is dead in every position:
- *
- *   - no upkeep pending: `PAY_UPKEEP` is illegal, and `injectLine` aborts a
- *     line on the first illegal action that is not a phase terminator — so the
- *     whole witness was being dropped. The opening action is removed instead.
- *   - upkeep pending: the action's keep-set index points into the prover's own
- *     table, so the set is adopted into the node's (`adoptWitnessKeepSet`) and
- *     the action re-indexed.
- *
- * See DEVIATIONS under M14.
+ * Under Phasing the prover's line is pure ACT: MOVEs and ATTACKs from the
+ * defender's `ready` position, with no `PAY_UPKEEP`, no promotion prefix and no
+ * `END_PLACE` (`tactics/prover.ts homeWitness`). The keep-set adoption this
+ * function used to do — copying the prover's private witness keep-set into the
+ * node's table and re-indexing the leading `PAY_UPKEEP` — has nothing left to
+ * adopt, so it is gone along with Standard's `prepare`. See DEVIATIONS under
+ * M14 and `docs/hard-ai/phasing/M2-STATUS.md` §2.
  */
 export function installRescueWitness(gen: TurnGenerator): void {
-  gen.setRescueWitness((p, invader, out, keep) => {
-    const n = homeWitness(p, invader, PROOF_NODES, out);
-    if (n <= 0) return 0;
-    if (p.upkeepPending !== 1) {
-      // Drop the leading `PAY_UPKEEP` (and any other, though the witness emits
-      // exactly one) rather than let it abort the line.
-      let len = 0;
-      for (let i = 0; i < n; i++) {
-        if (paKind(out[i]) === AKind.PAY_UPKEEP) continue;
-        out[len++] = out[i];
-      }
-      return len;
-    }
-    const index = adoptWitnessKeepSet(keep);
-    if (index < 0) return 0;
-    for (let i = 0; i < n; i++) {
-      if (paKind(out[i]) === AKind.PAY_UPKEEP) out[i] = paMake(AKind.PAY_UPKEEP, index, 0, 0);
-    }
-    return n;
-  });
+  gen.setRescueWitness((p, invader, out) => homeWitness(p, invader, PROOF_NODES, out));
 }
-
-/** The keep-set table the rescue witness's `PAY_UPKEEP` indexes into. */
-export { WITNESS_KEEP };
 
 /** The canonical engine's own verdict: the game is over and `mover` won. */
 function canonicalWin(end: GameState, mover: Side): boolean {

@@ -315,9 +315,22 @@ class DirectMappedDistanceCache implements DistanceCache {
   private readonly memo: ReachMemo | null;
   private readonly mask: number;
   private readonly slots: (Int8Array | null)[];
-  /** `occHash` of the state the slot was filled from; `keyOrigin` disambiguates. */
+  /**
+   * `occHash` of the state the slot was filled from: an ADVISORY tiebreaker
+   * baked into the bucket index below, never itself proof of a hit (`occHash`
+   * is a 32-bit XOR fold — see `recomputeOccHash`, `core/zobrist.ts` — and two
+   * different occupancies can and do share one). `keyOrigin === -1` marks an
+   * empty/invalidated slot. `keyOcc0..3` hold the FULL four-word occupancy the
+   * slot was filled from; a hit requires the origin AND all four words to
+   * match, exactly like `MemoTable.load` below verifies its whole key rather
+   * than a hash of it.
+   */
   private readonly keyHash: Int32Array;
   private readonly keyOrigin: Int32Array;
+  private readonly keyOcc0: Int32Array;
+  private readonly keyOcc1: Int32Array;
+  private readonly keyOcc2: Int32Array;
+  private readonly keyOcc3: Int32Array;
   private readonly occ: BB = bbNew();
   private hitCount = 0;
   private missCount = 0;
@@ -329,6 +342,10 @@ class DirectMappedDistanceCache implements DistanceCache {
     this.slots = new Array<Int8Array | null>(size).fill(null);
     this.keyHash = new Int32Array(size);
     this.keyOrigin = new Int32Array(size).fill(-1);
+    this.keyOcc0 = new Int32Array(size);
+    this.keyOcc1 = new Int32Array(size);
+    this.keyOcc2 = new Int32Array(size);
+    this.keyOcc3 = new Int32Array(size);
   }
 
   get hits(): number {
@@ -345,9 +362,20 @@ class DirectMappedDistanceCache implements DistanceCache {
 
   get(p: PackedState, origin: Square): Int8Array {
     const hash = p.occHash | 0;
+    const o0 = p.occ[0] | 0;
+    const o1 = p.occ[1] | 0;
+    const o2 = p.occ[2] | 0;
+    const o3 = p.occ[3] | 0;
     const index = (Math.imul(hash, 0x9e3779b1) ^ Math.imul(origin + 1, 0x85ebca6b)) >>> 0 & this.mask;
     let entry = this.slots[index];
-    if (entry !== null && this.keyOrigin[index] === origin && this.keyHash[index] === hash) {
+    if (
+      entry !== null &&
+      this.keyOrigin[index] === origin &&
+      this.keyOcc0[index] === o0 &&
+      this.keyOcc1[index] === o1 &&
+      this.keyOcc2[index] === o2 &&
+      this.keyOcc3[index] === o3
+    ) {
       this.hitCount++;
       return entry;
     }
@@ -369,6 +397,10 @@ class DirectMappedDistanceCache implements DistanceCache {
     }
     this.keyHash[index] = hash;
     this.keyOrigin[index] = origin;
+    this.keyOcc0[index] = o0;
+    this.keyOcc1[index] = o1;
+    this.keyOcc2[index] = o2;
+    this.keyOcc3[index] = o3;
     return entry;
   }
 

@@ -1,12 +1,16 @@
 /**
- * Canonical `GameState` builders for the M5 replica tests. Everything here
+ * Canonical `GameState` builders for the replica tests. Everything here
  * produces REAL `GameState`s that `src/game` accepts, so a test can compare
  * the replica against the canonical engine on the same position rather than
  * against a hand-written expectation.
+ *
+ * Every state is `ruleset: 'phasing'` by default, because the replica is
+ * Phasing-only as of M2 and `pack` refuses anything else. `ruleset: 'standard'`
+ * is still buildable, for the tests that pin that refusal.
  */
-import type { BoardState, Cell, GameState, PlayerId, Position, Unit } from '../../../src/game/types';
+import type { BoardState, Cell, GameState, PendingSummon, PlayerId, Position, Ruleset, Unit } from '../../../src/game/types';
 import { UNEQUAL_ROUTES_MAP } from '../../../src/game/resourceMap';
-import { UNIT_DEFINITIONS } from '../../../src/game/units';
+import { UNIT_DEFINITIONS, getUnitDefinition } from '../../../src/game/units';
 
 export interface UnitSpec {
   def: string;
@@ -22,8 +26,22 @@ export interface UnitSpec {
   id?: string;
 }
 
+/** A public Phasing commitment. `cost` defaults to the catalogue cost, which is
+ * the only value `pack` accepts (DESIGN M2 item A). */
+export interface SummonSpec {
+  def: string;
+  owner: PlayerId;
+  x: number;
+  y: number;
+  cost?: number;
+  id?: string;
+}
+
 export interface StateSpec {
   units: UnitSpec[];
+  /** Defaults to `'phasing'`; only the pack-refusal tests pass anything else. */
+  ruleset?: Ruleset;
+  pendingSummons?: SummonSpec[];
   white?: number;
   black?: number;
   whiteGained?: number;
@@ -73,6 +91,16 @@ export function buildUnit(spec: UnitSpec, index: number): Unit {
   };
 }
 
+export function buildSummon(spec: SummonSpec, index: number): PendingSummon {
+  return {
+    id: spec.id ?? `pend${index}`,
+    owner: spec.owner,
+    definitionId: spec.def,
+    position: { x: spec.x, y: spec.y },
+    cost: spec.cost ?? getUnitDefinition(spec.def).cost,
+  };
+}
+
 export function buildState(spec: StateSpec): GameState {
   const reserves = spec.reserves ?? UNEQUAL_ROUTES_MAP;
   const board: BoardState = {
@@ -82,6 +110,8 @@ export function buildState(spec: StateSpec): GameState {
   };
   return {
     actionsPerTurn: 4,
+    ruleset: spec.ruleset ?? 'phasing',
+    pendingSummons: (spec.pendingSummons ?? []).map((s, i) => buildSummon(s, i)),
     blackCrystalHandicap: spec.handicap ?? 0,
     victoryRule: spec.victoryRule ?? 'home-or-elimination',
     inactivityRule: spec.inactivityRule ?? 'on',
@@ -141,4 +171,18 @@ export function randomState(rng: () => number, count: number, spec: Partial<Stat
 
 export function positionsOf(list: readonly Position[]): number[] {
   return list.map(p => p.y * 10 + p.x).sort((a, b) => a - b);
+}
+
+/**
+ * A Phasing position over the same BOARD as `state`, with the commitments given.
+ *
+ * This is not a ruleset conversion — `pack` refuses those on purpose, and no
+ * saved match is ever reinterpreted (`docs/PHASING-2026-09-16.md`). It is how
+ * the ruleset-agnostic corpus (a board, a bank, a phase and a side) is reused to
+ * build Phasing positions: boards, units, reserves, banks and the 4-action
+ * budget are identical between the rulesets, and the canonical engine is asked
+ * for its own verdict on the resulting state, never on the original.
+ */
+export function asPhasing(state: GameState, pendingSummons: PendingSummon[] = []): GameState {
+  return { ...state, ruleset: 'phasing', pendingSummons };
 }

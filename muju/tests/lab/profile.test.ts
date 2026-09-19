@@ -2,10 +2,9 @@
 import "../fixtures/metal-v28-catalogue";
 import { describe, it, expect, vi } from 'vitest';
 
-// Corpus builders touch real replay files under `lab/results/` and one of
-// them (`buildP1DevPositions`) plays short scripted games; generous but still
-// bounded (E4.1-PROFILE.md's own runs are the timed evidence, this is a shape
-// check).
+// Corpus builders touch real replay files under `lab/results/`.
+// The Phasing builder's scripted-game check now lives in profile-phasing.test.ts.
+// Keep the original generous but bounded timeout for the legacy shape checks.
 vi.setConfig({ testTimeout: 300_000 });
 
 import { HardEngine } from '../../src/ai/hard/engine';
@@ -18,7 +17,6 @@ import {
   profileOnePosition,
   buildP8Positions,
   buildE1LossPositions,
-  buildP1DevPositions,
   type Position,
 } from '../../lab/hard-ai/bench/profile';
 
@@ -172,28 +170,5 @@ describe('corpus builders', () => {
     for (const s of fixed400k.skipped) expect(s.reason).toContain('not attempted');
   });
 
-  // Was `buildE1DevPositions` over `e1-dev.jsonl` (the E1 STANDARD book). That
-  // set cannot be built any more: `lab/harness/runner.ts` refuses a non-Phasing
-  // `initialState`, so the expectation is rewritten against the canonical
-  // Phasing engine and the P1 DEV book (`p1-dev.jsonl`). The shape asserted is
-  // the same one, plus the two facts that are new and load-bearing under
-  // Phasing: the position is an ACT-phase root (the Hard engine searches whole
-  // turns from Act), and the set label says which corpus it came from so a
-  // profile artifact can never be mistaken for a Standard one.
-  it('builds p1-dev positions at game turn 6 for a small opening set', async () => {
-    const { positions, skipped } = await buildP1DevPositions(2);
-    expect(positions.length + skipped.length).toBe(2);
-    expect(positions.length).toBeGreaterThan(0);
-    for (const p of positions) {
-      expect(p.turnNumber).toBe(6);
-      expect(p.side).toBe('white');
-      expect(p.startState.turn.turnNumber).toBe(6);
-      expect(p.startState.ruleset).toBe('phasing');
-      expect(p.startState.turn.currentPlayer).toBe('white');
-      expect(p.startState.turn.phase).toBe('action');
-      expect(p.set).toBe('p1-dev');
-      expect(p.label).toMatch(/^p1-/);
-      expect(p.id).toBe(`p1-dev:${p.label}:turn6`);
-    }
-  });
+
 });

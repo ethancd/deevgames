@@ -13,24 +13,55 @@
  * and exhaustion is reported as `UNKNOWN`, never as a win. Two provers that
  * explore the same tree in a different ORDER, or that deduplicate with a
  * different transposition key, burn their 20,000 nodes on different subtrees
- * and disagree exactly on the positions where the cap bites. So this module
- * reproduces, in order:
+ * and disagree exactly on the positions where the cap bites.
+ *
+ * ## PHASING IS ACT-ONLY (M2)
+ *
+ * Canonical home defence has two shapes and this module implements exactly one
+ * of them, the Phasing one:
+ *
+ * ```
+ * bound   = enoughPossibleDamage(ready, target, !isPhasing(state))   homeCheckmate.ts:78
+ * rescued = isPhasing(state) ? act(ready, []) : prepare(0, cash, [], [])  homeCheckmate.ts:160
+ * ```
+ *
+ * Under Phasing the defender ACTS BEFORE it pays: `resolveHomeCheckmate`
+ * refuses to adjudicate before the invader's own `END_ACTION` has settled
+ * upkeep (`homeCheckmate.ts:179`, the phase gate `needsProof` mirrors), so the
+ * reply the prover has to refute is four actions with the defender's PRESENT
+ * army — **no purchase budget, no pre-action promotions, no upkeep releases**.
+ * `preparing` is therefore constantly `false` here, and there is no `prepare`
+ * recursion at all. Both halves of Standard's `preparing = true` used to leak
+ * into the replica's transitions (`make` consults this module), in opposite
+ * directions: the rent term in the BOUND invented mates against a defender
+ * that could not afford its own upkeep, and the promote/release arms of the
+ * SEARCH invented defences that let real mates go unclaimed. See
+ * `docs/hard-ai/phasing/M2-STATUS.md` §2.
+ *
+ * So this module reproduces, in order:
  *
  *   - `ready`: heal + reset the defender, `upkeepPending = 0`, action phase,
  *     `actionsRemaining = 4` (`getActionsPerTurn`, frozen at 4);
- *   - the admissible damage bound (`enoughPossibleDamage`, `preparing = true`)
+ *   - the admissible damage bound (`enoughPossibleDamage`, `preparing = false`)
  *     as `damageBound`, whose failure is an immediate MATE (`damage_bound`);
- *   - `prepare`: the defender's units sorted by Manhattan distance to the
- *     occupier, each visited once as keep / keep+promote / release (tier > 1
- *     only), charging rent at the OLD tier and then the promotion;
- *   - `act`: the damage bound again (`preparing = false`), a transposition
- *     check, then every legal ATTACK (defender order, then stable-sorted by
- *     the target's distance to the occupied corner) and, while
- *     `actionsRemaining > 1`, every legal one-action MOVE (same ordering,
- *     destinations in canonical BFS discovery order);
- *   - the node accounting: one node per `prepare` entry and one per `act`
- *     node that survives the bound and the transposition set, with exhaustion
- *     sticky and never a win.
+ *   - `act(ready, [])` directly, with the defender's units in BOARD ORDER —
+ *     which is `PackedState.ord`, the canonical birth sequence, and NOT the slot
+ *     index. Slot order agrees with the canonical array only until the first
+ *     arrival reuses a dead slot; taking board order from the slot index instead
+ *     was the round-5 defect (M2-STATUS §2.6), and it moved capped verdicts.
+ *     Standard's distance sort of the owned list was a separate artefact of
+ *     `prepare` rebuilding the board as `[...enemy, ...kept]`; Phasing's `act`
+ *     sees the original array, so sorting it by anything here would reorder the
+ *     candidate lists and move the node count;
+ *   - inside `act`: the damage bound again, a transposition check, then every
+ *     legal ATTACK (owned order, then stable-sorted by the target's distance to
+ *     the occupied corner) and, while `actionsRemaining > 1`, every legal
+ *     one-action MOVE (same ordering, destinations in canonical BFS discovery
+ *     order);
+ *   - the node accounting: ONE node per `act` node that survives the bound and
+ *     the transposition set, and none for anything else — canonical spends a
+ *     node only in `act` under Phasing, because `prepare` is never entered —
+ *     with exhaustion sticky and never a win.
  *
  * The transposition key is the packed equivalent of `searchHomeDefense`'s
  * `key(s)` string: `actionsRemaining` plus, per living unit, its slot,
@@ -53,7 +84,6 @@ import {
   F_LAST_KILLED,
   MAX_SLOTS,
   NO_SLOT,
-  Reason,
   Result,
   type PackedState,
   type Side,
@@ -64,15 +94,7 @@ import { seededRandom } from '../../runtime';
 import { Scratch } from '../core/bits';
 import { ADJ_LIST, BOARD, CORNER, MANHATTAN } from '../core/tables';
 import { NDEF, activeCatalog, powerIndex, type Catalog } from '../core/catalog';
-import {
-  AKind,
-  keepSetAdd,
-  keepSetReset,
-  newKeepSetTable,
-  paMake,
-  type KeepSetTable,
-} from '../core/action';
-import { newSpawnInfo, spawnInfo, type SpawnInfo } from '../core/spawn';
+import { AKind, paMake } from '../core/action';
 
 /** `HomeDefense` as an integer (DESIGN §4.14). */
 export const HomeVerdict = { RESCUE: 0, MATE: 1, UNKNOWN: 2 } as const;
@@ -119,17 +141,6 @@ export function proverStats(): Readonly<ProverStats> {
   return STATS;
 }
 
-/**
- * The keep-set the last `homeWitness` line's `PAY_UPKEEP` names, at index 0.
- *
- * DESIGN §4.14 freezes `homeWitness(p, invader, maxNodes, out)` with no
- * `KeepSetTable` parameter, but `PAY_UPKEEP` carries only a keep-set INDEX in
- * `paA` (DESIGN §3.2) and the prover's keep-set is an arbitrary affordable
- * subset that no node-local table is guaranteed to hold. The line's index is
- * always 0 into this table. See DEVIATIONS.md under M10.
- */
-export const WITNESS_KEEP: KeepSetTable = newKeepSetTable();
-
 // --- the working position ----------------------------------------------------
 
 /** `sq` of every slot in the position under search; `DEAD` for released/killed. */
@@ -142,12 +153,15 @@ const P_LK = new Uint8Array(MAX_SLOTS);
 /** `P_VICTIM[slot * MAX_ATTACKS + k]` = the slot this unit's k-th attack hit. */
 const P_VICTIM = new Uint8Array(MAX_SLOTS * MAX_ATTACKS);
 const P_AT = new Uint8Array(BOARD);
-/** Slots this branch promoted — `promotedThisPlacement` on the leaf board. */
-const P_PROMOTED = new Uint8Array(MAX_SLOTS);
 
-/** The defender's units in `prepare` order (Manhattan distance to the occupier). */
+/**
+ * The defender's units in `act`'s own order — `s.board.units.filter(owner ===
+ * defender)`, which is canonical array order, i.e. ascending `PackedState.ord`
+ * (see the module header). It is not sorted by anything ELSE: Standard's
+ * distance sort belonged to `prepare`, which Phasing never enters, and imposing
+ * any other order here would reorder every candidate list below it.
+ */
 const OWNED = new Int32Array(MAX_SLOTS);
-const OWNED_KEY = new Int32Array(MAX_SLOTS);
 
 const MAX_ATTACK_CANDIDATES = MAX_SLOTS * 4;
 const MAX_MOVE_CANDIDATES = MAX_SLOTS * BOARD;
@@ -165,17 +179,12 @@ const BFS_ORDER = new Int32Array(BOARD);
 const ACT_LINE = new Int32Array(MAX_ACT_DEPTH);
 /** The act line of the successful branch, copied out by `homeWitness`. */
 const WITNESS_ACT = new Int32Array(MAX_ACT_DEPTH);
-/** The kept / promoted slots of the successful `prepare` leaf, in owned order. */
-const WITNESS_KEPT_SLOTS = new Int32Array(MAX_SLOTS);
-const WITNESS_PROMO_SLOTS = new Int32Array(MAX_SLOTS);
 
 /** `enoughPossibleDamage`'s knapsack: 3 rows (0..2 hits) x 5 columns (0..4 actions). */
 const DP_ROWS = 3;
 const DP_COLS = READY_ACTIONS + 1;
 const DP_NEG = -0x40000000;
 const DP_SCRATCH = new Int32Array(2 * DP_ROWS * DP_COLS);
-
-const SPAWN_SCRATCH: SpawnInfo = newSpawnInfo();
 
 // --- search state (module-level; the search is not reentrant) -----------------
 
@@ -184,7 +193,6 @@ let occupierSlot = NO_SLOT;
 let occupierSq = 0;
 let defenderSide: Side = 0;
 let actionsLeft = 0;
-let defenderCash = 0;
 let slotLimit = 0;
 let phasePlaying = true;
 let nodes = 0;
@@ -192,9 +200,6 @@ let nodeLimit = 0;
 let exhausted = false;
 let collectWitness = false;
 let witnessActLength = 0;
-let witnessKeptCount = 0;
-let witnessPromoCount = 0;
-let witnessCash = 0;
 let ownedCount = 0;
 
 // --- the transposition set ---------------------------------------------------
@@ -298,10 +303,18 @@ function mix(table: Uint32Array, index: number): void {
 /**
  * The packed equivalent of `searchHomeDefense`'s `key(s)`: `actionsRemaining`
  * and, per living unit, (slot, definition, square, damage, attack count,
- * `lastAttackKilled`, ordered attacked slots). The canonical string is keyed by
- * the unit's index in `state.board.units`, which `unpack` emits in ascending
- * slot order, so slot and index are related by a fixed bijection and the two
- * keys distinguish exactly the same pairs of nodes.
+ * `lastAttackKilled`, ordered attacked slots).
+ *
+ * The canonical key is keyed by `indices` — the unit's index in the ROOT
+ * position's `state.board.units` (homeCheckmate.ts:90), fixed for the whole
+ * search — and this one is keyed by the slot, also fixed for the whole search.
+ * Slot and canonical index are therefore related by a bijection (`ord`), and
+ * BOTH keys are invariant under relabelling through it, so the two sets
+ * distinguish exactly the same pairs of nodes and fold exactly the same
+ * transpositions. Note this key is an XOR and so does not depend on the
+ * iteration ORDER either; canonical's is a `join` over the current array, which
+ * within one search differs from this only by a fixed permutation. The one place
+ * canonical order is genuinely load-bearing is `buildOwned`'s candidate order.
  */
 function computeKey(): void {
   keyLo = 0;
@@ -394,15 +407,22 @@ function reachableFrom(origin: Square): number {
 // --- the damage bound --------------------------------------------------------
 
 /**
- * `enoughPossibleDamage` (homeCheckmate.ts:27-49) on the working position.
+ * `enoughPossibleDamage(state, target, false)` (homeCheckmate.ts:28-50) on the
+ * working position.
+ *
+ * The third argument is `!isPhasing(state)` at the one canonical call site
+ * (homeCheckmate.ts:78) and this replica is Phasing-only, so it is constantly
+ * `false` and the `preparing` arms are not written down: `rent` is 0 (and so
+ * never exceeds a non-negative bank, which `check` guarantees), and the
+ * promoted-attacker choice does not exist. What remains of the canonical
+ * function with `preparing === false` is exactly the loop below.
  *
  * `dp` holds two 3x5 knapsack planes (`power` and `updated`); the caller owns
  * it so the public `damageBound` can take its buffer from the per-ply
  * `Scratch` DESIGN §4.14 hands it.
  */
-function damageBoundCore(dp: Int32Array, preparing: boolean): boolean {
+function damageBoundCore(dp: Int32Array): boolean {
   const actions = actionsLeft;
-  const cash = defenderCash;
   const cur = 0;
   const next = DP_ROWS * DP_COLS;
   for (let i = 0; i < DP_ROWS * DP_COLS; i++) dp[cur + i] = DP_NEG;
@@ -411,29 +431,22 @@ function damageBoundCore(dp: Int32Array, preparing: boolean): boolean {
   const victimDef = P_DEF[occupierSlot];
   for (let slot = 0; slot < slotLimit; slot++) {
     if (P_SQ[slot] === DEAD || P_OWN[slot] !== defenderSide) continue;
-    if (!preparing && (!canAttack(slot) || alreadyAttacked(slot, occupierSlot))) continue;
+    if (!canAttack(slot) || alreadyAttacked(slot, occupierSlot)) continue;
     const def = P_DEF[slot];
-    const rent = preparing ? cat.upkeep[def] : 0;
-    if (rent > cash) continue;
     for (let i = 0; i < DP_ROWS * DP_COLS; i++) dp[next + i] = dp[cur + i];
 
-    const promoted = cat.nextDef[def];
-    const choices = preparing && promoted >= 0 && rent + cat.promoCost[def] <= cash ? 2 : 1;
     const s = P_SQ[slot];
-    for (let c = 0; c < choices; c++) {
-      const attackerDef = c === 0 ? def : promoted;
-      const raw = MANHATTAN[s * BOARD + occupierSq] - 1;
-      const distance = raw > 0 ? raw : 0;
-      const speed = cat.spd[attackerDef];
-      const cost = distance === 0 ? 1 : speed > 0 ? (((distance + speed - 1) / speed) | 0) + 1 : Infinity;
-      const power = cat.power[powerIndex(defenderSide, attackerDef, victimDef)];
-      for (let hits = 1; hits <= 2; hits++) {
-        for (let used = cost; used <= actions; used++) {
-          const from = dp[cur + (hits - 1) * DP_COLS + (used - cost)];
-          if (from === DP_NEG) continue;
-          const candidate = from + power;
-          if (candidate > dp[next + hits * DP_COLS + used]) dp[next + hits * DP_COLS + used] = candidate;
-        }
+    const raw = MANHATTAN[s * BOARD + occupierSq] - 1;
+    const distance = raw > 0 ? raw : 0;
+    const speed = cat.spd[def];
+    const cost = distance === 0 ? 1 : speed > 0 ? (((distance + speed - 1) / speed) | 0) + 1 : Infinity;
+    const power = cat.power[powerIndex(defenderSide, def, victimDef)];
+    for (let hits = 1; hits <= 2; hits++) {
+      for (let used = cost; used <= actions; used++) {
+        const from = dp[cur + (hits - 1) * DP_COLS + (used - cost)];
+        if (from === DP_NEG) continue;
+        const candidate = from + power;
+        if (candidate > dp[next + hits * DP_COLS + used]) dp[next + hits * DP_COLS + used] = candidate;
       }
     }
     for (let i = 0; i < DP_ROWS * DP_COLS; i++) dp[cur + i] = dp[next + i];
@@ -469,13 +482,11 @@ function loadReady(p: PackedState, invader: Side): void {
   defenderSide = (1 - invader) as Side;
   slotLimit = p.slotCount < MAX_SLOTS ? p.slotCount : MAX_SLOTS;
   actionsLeft = READY_ACTIONS;
-  defenderCash = p.bank[defenderSide];
   phasePlaying = p.result === Result.ONGOING;
   P_AT.fill(NO_SLOT);
   for (let slot = 0; slot < slotLimit; slot++) {
     const s = p.sq[slot];
     P_SQ[slot] = s;
-    P_PROMOTED[slot] = 0;
     if (s === DEAD) continue;
     const owner = p.owner[slot];
     P_DEF[slot] = p.defId[slot];
@@ -493,16 +504,39 @@ function loadReady(p: PackedState, invader: Side): void {
   }
 }
 
-/** The defender's units in `prepare` order: slot order, stable by distance. */
-function buildOwned(): void {
+/**
+ * `owned = s.board.units.filter(u => u.owner === defender)` (homeCheckmate.ts:101)
+ * — CANONICAL ARRAY ORDER, and no distance sort (Standard's belonged to
+ * `prepare`, which Phasing never enters). `act` recomputes this filter at every
+ * node; the list is built once here instead because no defender unit is ever
+ * added or removed inside `act` (only the invader's bodies die there), and the
+ * `DEAD` guards at the use sites keep that assumption honest.
+ *
+ * Canonical array order is `PackedState.ord`, NOT the slot index. Round 4 used
+ * the slot index on the argument that "`pack` assigns slot `i` to
+ * `board.units[i]`", which is true of a freshly packed state and false of every
+ * state reached incrementally through an arrival that reused a dead slot — the
+ * round-5 defect. Only the ORDER is read here, so the sort is by `ord` and never
+ * by the slot that breaks a tie (`Replica.check` forbids a tie).
+ */
+function buildOwned(p: PackedState): void {
   ownedCount = 0;
   for (let slot = 0; slot < slotLimit; slot++) {
     if (P_SQ[slot] === DEAD || P_OWN[slot] !== defenderSide) continue;
-    OWNED[ownedCount] = slot;
-    OWNED_KEY[ownedCount] = MANHATTAN[P_SQ[slot] * BOARD + occupierSq];
-    ownedCount++;
+    OWNED[ownedCount++] = slot;
   }
-  stableSort(OWNED, OWNED_KEY, 0, ownedCount);
+  // Insertion sort: `ownedCount` is a side's living army (≤ 100, in practice a
+  // handful) and this runs once per full-prover call, not once per node.
+  for (let i = 1; i < ownedCount; i++) {
+    const value = OWNED[i];
+    const key = p.ord[value];
+    let j = i - 1;
+    while (j >= 0 && p.ord[OWNED[j]] > key) {
+      OWNED[j + 1] = OWNED[j];
+      j--;
+    }
+    OWNED[j + 1] = value;
+  }
 }
 
 // --- act ---------------------------------------------------------------------
@@ -525,7 +559,7 @@ function act(depth: number): boolean {
     }
     return true;
   }
-  if (!phasePlaying || !damageBoundCore(DP_SCRATCH, false)) return false;
+  if (!phasePlaying || !damageBoundCore(DP_SCRATCH)) return false;
   computeKey();
   const lo = keyLo;
   const hi = keyHi;
@@ -636,58 +670,6 @@ function act(depth: number): boolean {
   return false;
 }
 
-// --- prepare -----------------------------------------------------------------
-
-/** Snapshots the winning leaf's keep / promote decisions for `homeWitness`. */
-function recordPrepareLeaf(cash: number): void {
-  witnessCash = cash;
-  witnessKeptCount = 0;
-  witnessPromoCount = 0;
-  for (let i = 0; i < ownedCount; i++) {
-    const slot = OWNED[i];
-    if (P_SQ[slot] === DEAD) continue;
-    WITNESS_KEPT_SLOTS[witnessKeptCount++] = slot;
-    if (P_PROMOTED[slot] !== 0) WITNESS_PROMO_SLOTS[witnessPromoCount++] = slot;
-  }
-}
-
-function prepare(index: number, cash: number): boolean {
-  if (!spend()) return false;
-  if (index === ownedCount) {
-    defenderCash = cash;
-    const rescued = act(0);
-    if (rescued && collectWitness) recordPrepareLeaf(cash);
-    return rescued;
-  }
-  const slot = OWNED[index];
-  const def = P_DEF[slot];
-  const rent = cat.upkeep[def];
-  if (rent <= cash) {
-    if (prepare(index + 1, cash - rent)) return true;
-    if (exhausted) return false;
-    const promoted = cat.nextDef[def];
-    const cost = cat.promoCost[def];
-    if (promoted >= 0 && rent + cost <= cash) {
-      P_DEF[slot] = promoted;
-      P_PROMOTED[slot] = 1;
-      const rescued = prepare(index + 1, cash - rent - cost);
-      P_DEF[slot] = def;
-      P_PROMOTED[slot] = 0;
-      if (rescued) return true;
-      if (exhausted) return false;
-    }
-  }
-  // Tier 1 is mandatory, even when it blocks a rescuing attacker (upkeep.ts:25).
-  if (cat.tier[def] <= 1) return false;
-  const square = P_SQ[slot];
-  P_SQ[slot] = DEAD;
-  P_AT[square] = NO_SLOT;
-  const rescued = prepare(index + 1, cash);
-  P_SQ[slot] = square;
-  P_AT[square] = slot;
-  return rescued;
-}
-
 // --- the public surface ------------------------------------------------------
 
 /**
@@ -704,11 +686,11 @@ export function needsProof(p: PackedState): boolean {
 }
 
 /**
- * `enoughPossibleDamage(ready, occupier, true)` (homeCheckmate.ts:27-49): the
- * optimistic bound whose FAILURE proves the mate. `true` when the defender
- * could conceivably remove the occupier, so it can only ever under-claim a
- * mate. With no occupier there is nothing to remove and the bound is trivially
- * satisfied.
+ * `enoughPossibleDamage(ready, occupier, !isPhasing(state))`
+ * (homeCheckmate.ts:78, third argument FALSE under Phasing): the optimistic
+ * bound whose FAILURE proves the mate. `true` when the defender could
+ * conceivably remove the occupier, so it can only ever under-claim a mate. With
+ * no occupier there is nothing to remove and the bound is trivially satisfied.
  */
 export function damageBound(p: PackedState, invader: Side, sc: Scratch, ply: number): boolean {
   const slot = occupierOf(p, invader);
@@ -716,7 +698,7 @@ export function damageBound(p: PackedState, invader: Side, sc: Scratch, ply: num
   loadReady(p, invader);
   occupierSlot = slot;
   occupierSq = P_SQ[slot];
-  return damageBoundCore(sc.i32(ply, 0), true);
+  return damageBoundCore(sc.i32(ply, 0));
 }
 
 function runProver(p: PackedState, invader: Side, maxNodes: number, dp: Int32Array): number {
@@ -724,9 +706,6 @@ function runProver(p: PackedState, invader: Side, maxNodes: number, dp: Int32Arr
   STATS.cutoff = false;
   STATS.method = 0;
   witnessActLength = 0;
-  witnessKeptCount = 0;
-  witnessPromoCount = 0;
-  witnessCash = 0;
 
   const slot = occupierOf(p, invader);
   if (slot === NO_SLOT) return HomeVerdict.RESCUE;
@@ -734,19 +713,22 @@ function runProver(p: PackedState, invader: Side, maxNodes: number, dp: Int32Arr
   loadReady(p, invader);
   occupierSlot = slot;
   occupierSq = P_SQ[slot];
-  if (!damageBoundCore(dp, true)) {
+  if (!damageBoundCore(dp)) {
     STATS.method = 1;
     return HomeVerdict.MATE;
   }
 
   STATS.method = 2;
-  buildOwned();
+  buildOwned(p);
   nodes = 0;
   nodeLimit = maxNodes;
   exhausted = false;
   FAILED.ensure(maxNodes);
   FAILED.reset();
-  const rescued = prepare(0, defenderCash);
+  // `isPhasing(state) ? act(ready, []) : prepare(...)` (homeCheckmate.ts:160).
+  // ACT-ONLY, and no node is spent getting here: canonical's `spend()` is called
+  // from `prepare` and from `act`, and Phasing never enters `prepare`.
+  const rescued = act(0);
   STATS.nodes = nodes;
   STATS.cutoff = exhausted;
   return rescued ? HomeVerdict.RESCUE : exhausted ? HomeVerdict.UNKNOWN : HomeVerdict.MATE;
@@ -774,15 +756,15 @@ export function homeVerdict(
 
 /**
  * The defender's rescuing line as PAs, or 0 when no rescue is proved
- * (`analyzeHomeDefenseEvidence`'s `witness`, homeCheckmate.ts:63).
+ * (`analyzeHomeDefenseEvidence`'s `witness`, homeCheckmate.ts:64).
  *
- * The line starts BEFORE the defender's upkeep, exactly as the canonical
- * witness does: `PAY_UPKEEP` (keep-set `WITNESS_KEEP` index 0), the branch's
- * promotions in `prepare` order, `END_PLACE` when the place phase has not
- * auto-advanced, then the act line. Replayed from
- * `{...state, upkeepPending: true, turn: {currentPlayer: defender,
- * phase: 'place', actionsRemaining: 4}}` it is legal action by action and
- * removes the occupier.
+ * Under Phasing the canonical witness is the ACT LINE and nothing else:
+ * `witness = line` is assigned inside `act` (homeCheckmate.ts:96) and Phasing
+ * calls `act(ready, [])` with no wrapper, so there is no `PAY_UPKEEP`, no
+ * promotion prefix and no `END_PLACE`. Replayed from
+ * `{...state, board: resetUnitActions(board, defender), upkeepPending: false,
+ * turn: {currentPlayer: defender, phase: 'action', actionsRemaining: 4}}` —
+ * canonical's `ready` — it is legal action by action and removes the occupier.
  */
 export function homeWitness(p: PackedState, invader: Side, maxNodes: number, out: Int32Array): number {
   collectWitness = true;
@@ -790,138 +772,6 @@ export function homeWitness(p: PackedState, invader: Side, maxNodes: number, out
   collectWitness = false;
   // A `RESCUE` from `method: 'no_occupier'` has nothing to rescue and no line.
   if (verdict !== HomeVerdict.RESCUE || STATS.method !== 2) return 0;
-
-  // `prepare` unwinds on the way out, so rebuild the winning leaf's board from
-  // the snapshot `recordPrepareLeaf` took: everything not in
-  // `WITNESS_KEPT_SLOTS` was released, and `WITNESS_PROMO_SLOTS` was promoted.
-  loadReady(p, invader);
-  occupierSlot = occupierOf(p, invader);
-  occupierSq = P_SQ[occupierSlot];
-  for (let slot = 0; slot < slotLimit; slot++) {
-    if (P_SQ[slot] === DEAD || P_OWN[slot] !== defenderSide) continue;
-    let kept = false;
-    for (let i = 0; i < witnessKeptCount; i++) {
-      if (WITNESS_KEPT_SLOTS[i] === slot) {
-        kept = true;
-        break;
-      }
-    }
-    if (kept) continue;
-    P_AT[P_SQ[slot]] = NO_SLOT;
-    P_SQ[slot] = DEAD;
-  }
-
-  keepSetReset(WITNESS_KEEP);
-  for (let i = 0; i < witnessKeptCount; i++) keepSetAdd(WITNESS_KEEP, 0, WITNESS_KEPT_SLOTS[i]);
-  WITNESS_KEEP.count = 1;
-
-  let length = 0;
-  out[length++] = paMake(AKind.PAY_UPKEEP, 0);
-  for (let i = 0; i < witnessPromoCount; i++) {
-    const slot = WITNESS_PROMO_SLOTS[i];
-    out[length++] = paMake(AKind.PROMOTE, slot, 0, 0);
-    P_DEF[slot] = cat.nextDef[P_DEF[slot]];
-    P_PROMOTED[slot] = 1;
-  }
-  // `finishPlacement` (simulate.ts:118-120) auto-advances the place phase as
-  // soon as nothing is left to buy or promote; END_PLACE is legal only when it
-  // did not (`canActInPlacePhase`, turn.ts:141-145).
-  if (canActInPlace(p, witnessCash)) out[length++] = paMake(AKind.END_PLACE, 0, 0, 0);
-  for (let i = 0; i < witnessActLength; i++) out[length++] = WITNESS_ACT[i];
-  return length;
-}
-
-/** `canActInPlacePhase(state, defender)` (turn.ts:141-145) on the leaf board. */
-function canActInPlace(p: PackedState, cash: number): boolean {
-  for (let slot = 0; slot < slotLimit; slot++) {
-    if (P_SQ[slot] === DEAD || P_OWN[slot] !== defenderSide) continue;
-    if (P_PROMOTED[slot] !== 0) continue;
-    const def = P_DEF[slot];
-    if (cat.nextDef[def] >= 0 && cat.promoCost[def] <= cash) return true;
-  }
-  let affordable = false;
-  for (let i = 0; i < cat.tier1.length; i++) {
-    if (cat.cost[cat.tier1[i]] <= cash) {
-      affordable = true;
-      break;
-    }
-  }
-  if (!affordable) return false;
-  spawnInfo(leafView(p), defenderSide, SPAWN_SCRATCH);
-  return SPAWN_SCRATCH.area > 0;
-}
-
-/**
- * A `PackedState` view of the working position for `core/spawn.ts spawnInfo`,
- * the one helper `canActInPlace` borrows rather than reimplements. Only the
- * arrays `spawnInfo` reads are maintained; every other field keeps a fixed
- * zero value and is never read. The object is built once and rewritten in
- * place — `canActInPlace` runs at most once per `homeWitness` call.
- */
-let leaf: PackedState | null = null;
-
-function newLeafView(): PackedState {
-  return {
-    sq: new Uint8Array(MAX_SLOTS).fill(DEAD),
-    defId: new Uint8Array(MAX_SLOTS),
-    owner: new Uint8Array(MAX_SLOTS),
-    damage: new Uint8Array(MAX_SLOTS),
-    atkCount: new Uint8Array(MAX_SLOTS),
-    uflags: new Uint8Array(MAX_SLOTS),
-    slotCount: 0,
-    pieceAt: new Uint8Array(BOARD).fill(NO_SLOT),
-    occ: new Uint32Array(4),
-    occBy: new Uint32Array(8),
-    occTier: new Uint32Array(12),
-    reserve: new Uint8Array(BOARD),
-    initialReserve: new Uint8Array(BOARD),
-    bank: new Int32Array(2),
-    gained: new Int32Array(2),
-    side: 0,
-    phase: 0,
-    actions: 0,
-    turnNumber: 1,
-    upkeepPending: 0,
-    clock: 0,
-    progress: 0,
-    handicap: 0,
-    victoryHome: 1,
-    drawRuleOn: 1,
-    reviewUpkeep: new Uint8Array(2),
-    result: Result.ONGOING,
-    reason: Reason.NONE,
-    kposLo: 0,
-    kposHi: 0,
-    kturnLo: 0,
-    kturnHi: 0,
-    occHash: 0,
-    catalogSignature: 0,
-    materialCc: new Int32Array(2),
-    pstSumCc: new Int32Array(2),
-    proverMode: 0,
-    originIds: [],
-  };
-}
-
-function leafView(p: PackedState): PackedState {
-  if (leaf === null) leaf = newLeafView();
-  const q = leaf;
-  q.reserve.set(p.reserve);
-  q.slotCount = slotLimit;
-  q.sq.fill(DEAD);
-  q.pieceAt.fill(NO_SLOT);
-  q.occ.fill(0);
-  q.occBy.fill(0);
-  for (let slot = 0; slot < slotLimit; slot++) {
-    const s = P_SQ[slot];
-    if (s === DEAD) continue;
-    const owner = P_OWN[slot];
-    q.sq[slot] = s;
-    q.defId[slot] = P_DEF[slot];
-    q.owner[slot] = owner;
-    q.pieceAt[s] = slot;
-    q.occ[s >>> 5] |= 1 << (s & 31);
-    q.occBy[owner * 4 + (s >>> 5)] |= 1 << (s & 31);
-  }
-  return q;
+  for (let i = 0; i < witnessActLength; i++) out[i] = WITNESS_ACT[i];
+  return witnessActLength;
 }

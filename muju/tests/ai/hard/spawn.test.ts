@@ -11,6 +11,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { getAllSpawnPositions, isValidSpawnPosition } from '../../../src/game/spawning';
+import { getPurchasePositions } from '../../../src/game/summoning';
 import type { PlayerId } from '../../../src/game/types';
 import { seededRandom } from '../../../src/ai/runtime';
 import { bbNew, bbNext, bbCount } from '../../../src/ai/hard/core/bits';
@@ -239,5 +240,67 @@ describe('core/spawn.ts', () => {
       covers++;
     }
     expect(covers).toBeGreaterThan(100);
+  });
+
+  it('is commitment-blind: a pending summon neither anchors, blocks nor occupies', () => {
+    // "They are not actual units: they cannot occupy squares, block movement,
+    // attack, be attacked, mine, promote, anchor or block rectangles"
+    // (`docs/PHASING-2026-09-16.md`). `core/spawn.ts` therefore reads `occBy`
+    // and nothing else — the pending MASK is `genPlace`'s business, not the
+    // geometry's.
+    const spec = {
+      units: [
+        { def: 'plant_1', owner: 'white' as const, x: 1, y: 1, id: 'w0' },
+        { def: 'plant_1', owner: 'black' as const, x: 8, y: 8, id: 'b0' },
+      ],
+    };
+    const bare = replica.pack(buildState(spec));
+    const info = newSpawnInfo();
+    const withInfo = newSpawnInfo();
+    spawnInfo(bare, 0, info);
+    const baseline = squaresOf(info.legal);
+    expect(baseline).toContain(0);
+
+    for (const owner of ['white', 'black'] as const) {
+      // A commitment ON a legal spawn square, and one FAR OUTSIDE White's
+      // rectangles: neither changes the geometry for either side.
+      const committed = replica.pack(
+        buildState({
+          ...spec,
+          white: 20,
+          black: 20,
+          pendingSummons: [
+            { def: 'fire_1', owner, x: 0, y: 0 },
+            { def: 'fire_1', owner, x: 5, y: 5 },
+          ],
+        }),
+      );
+      for (const side of [0, 1] as const) {
+        spawnInfo(bare, side, info);
+        spawnInfo(committed, side, withInfo);
+        expect(squaresOf(withInfo.legal), `${owner} / side ${side}`).toEqual(squaresOf(info.legal));
+        expect(squaresOf(withInfo.anchors)).toEqual(squaresOf(info.anchors));
+        expect(withInfo.depth).toBe(info.depth);
+        expect(withInfo.reserveSum).toBe(info.reserveSum);
+        // ...and `isLegalSpawn` still says yes on the very square the commitment
+        // sits on: it remains a valid SPAWN position, and is only no longer a
+        // valid BUY for its own owner. That split is the whole reason the mask
+        // lives in `genPlace` instead of here.
+        expect(isLegalSpawn(committed, side, 0)).toBe(isLegalSpawn(bare, side, 0));
+      }
+      // The canonical purchase set is the geometry MINUS the side's own
+      // commitments (`getPurchasePositions`, summoning.ts:9-11).
+      const state = buildState({
+        ...spec,
+        white: 20,
+        pendingSummons: [
+          { def: 'fire_1', owner, x: 0, y: 0 },
+          { def: 'fire_1', owner, x: 5, y: 5 },
+        ],
+      });
+      const purchasable = positionsOf(getPurchasePositions(state, 'white'));
+      const expected = owner === 'white' ? baseline.filter(sq => sq !== 0) : baseline;
+      expect(purchasable, owner).toEqual(expected);
+    }
   });
 });

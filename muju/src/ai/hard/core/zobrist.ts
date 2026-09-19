@@ -6,9 +6,10 @@
  * Everything is keyed BY SQUARE, never by slot (JF §2.3), so buy-order
  * permutations transpose:
  *
- *   Kpos  = piece ⊕ reserve ⊕ damage ⊕ side ⊕ clock ⊕ bank ⊕ upkeepPending
- *           ⊕ rules ⊕ handicap                      (macro TT, book, suites)
- *   Kturn = Kpos ⊕ phase ⊕ actions ⊕ atkCount ⊕ uflags        (within-turn TT)
+ *   Kpos  = piece ⊕ pend ⊕ reserve ⊕ damage ⊕ side ⊕ clock ⊕ bank
+ *           ⊕ upkeepPending ⊕ rules ⊕ handicap      (macro TT, book, suites)
+ *   Kturn = Kpos ⊕ phase ⊕ actions ⊕ atkCount ⊕ uflags ⊕ progress
+ *                                                            (within-turn TT)
  *   occHash = XOR over occupied squares of piece[white][def 0][sq], lane 0
  *             (owner/def independent; keys the BFS distance cache)
  *
@@ -21,7 +22,7 @@
  * target for the incremental keys `make`/`unmake` maintain (M5), not hot-path
  * code, so they may allocate the returned `Key`.
  */
-import { DEAD, MAX_SLOTS, UFLAGS_MASK, type Key, type PackedState, type Side, type Square } from '../types';
+import { DEAD, MAX_SLOTS, PEND_STRIDE, UFLAGS_MASK, type Key, type PackedState, type Side, type Square } from '../types';
 import { seededRandom } from '../../runtime';
 import { BOARD } from './tables';
 import { NDEF } from './catalog';
@@ -75,6 +76,39 @@ export interface ZobristTables {
   rules: Uint32Array;
   /** [21 * 2]. */
   handicap: Uint32Array;
+  /**
+   * [2 owners * 18 defs * 100 squares * 2 lanes] — Phasing pending summons,
+   * keyed by (side, DEFINITION, square). The paid cost is NOT hashed: it is a
+   * function of the definition (`pack` rejects any other combination), so
+   * hashing it would only duplicate information.
+   *
+   * Filled LAST so every earlier plane keeps the words it drew before M2: a
+   * position with no commitment has the very same `Kpos` it had under Standard.
+   */
+  pend: Uint32Array;
+  /**
+   * [2] one key, xored into `Kturn` when `progressThisTurn` is set.
+   *
+   * WHY IT NEEDS A KEY AT ALL. `progress` is within-turn state, so it belongs to
+   * `Kturn` and not to `Kpos`; the question is whether anything else in `Kturn`
+   * already implies it. Under Standard it effectively did: `progress` is set by a
+   * capture, and a capture leaves `atkCount`/`uflags` evidence on the killer,
+   * which `Kturn` hashes. Under PHASING the evidence can be ERASED inside the
+   * same turn — the killer is a tier-2+ body that `PAY_UPKEEP` releases during
+   * the very Prepare that follows its kill, taking its squares, its `atkCount`
+   * and its `F_LAST_KILLED` off the board with it. Two reachable Prepare states
+   * can then agree on `Kpos` and on every `Kturn` extra and still differ in
+   * `progress`, and their `END_PLACE` successors differ: one hands off with the
+   * inactivity clock reset to 0, the other with it incremented. A within-turn TT
+   * that shared an entry between them would answer with the wrong clock.
+   *
+   * Appended AFTER `pend`, so every plane above — `pend` included — keeps the
+   * words it already drew and every key of a position with `progress === 0` is
+   * bit-identical to the one it had before this plane existed. In particular
+   * every MACRO-boundary key is unchanged: `progress` is 0 at a hand-off by
+   * construction (`turn.ts:120-124` clears it).
+   */
+  progress: Uint32Array;
 }
 
 function fill(rng: () => number, keys: number): Uint32Array {
@@ -105,6 +139,11 @@ export function buildZobrist(seed: number = ZOBRIST_SEED): ZobristTables {
     upkeep: fill(rng, 1),
     rules: fill(rng, RULE_FLAGS * 2),
     handicap: fill(rng, HANDICAP_VALUES),
+    // APPEND-ONLY: every plane above must keep drawing the same words it drew
+    // before the `pend` plane existed, so `pend` goes last (DESIGN M2 item C) —
+    // and `progress`, appended after it for the same reason, goes last of all.
+    pend: fill(rng, 2 * NDEF * BOARD),
+    progress: fill(rng, 1),
   };
 }
 
@@ -146,6 +185,10 @@ export function zRule(flagIndex: number, value: number): number {
 export function zHandicap(value: number): number {
   return value * 2;
 }
+/** `pend[side][def][sq]`; `def` is the DEFINITION, not `pendDef`'s `def + 1`. */
+export function zPend(side: Side, def: number, s: Square): number {
+  return ((side * NDEF + def) * BOARD + s) * 2;
+}
 
 /** Scratch accumulator so `recompute*` never allocates per XOR. */
 let accLo = 0;
@@ -174,6 +217,13 @@ function xorKposParts(p: PackedState): void {
     const damage = p.damage[slot];
     if (damage !== 0) xorKey(Z.damage, zDamage(s, damage));
   }
+  // Phasing pending summons. `pendDef` is dense over the 200-entry plane, so a
+  // position without commitments costs 200 loads and XORs nothing at all —
+  // which is exactly why its key is bit-identical to the pre-M2 one.
+  for (let i = 0; i < 2 * PEND_STRIDE; i++) {
+    const def = p.pendDef[i];
+    if (def !== 0) xorKey(Z.pend, zPend(((i / PEND_STRIDE) | 0) as Side, def - 1, i % PEND_STRIDE));
+  }
   for (let s = 0; s < BOARD; s++) xorKey(Z.reserve, zReserve(s, p.reserve[s]));
   if (p.side === 1) xorKey(Z.side, 0);
   xorKey(Z.clock, zClock(p.clock));
@@ -188,6 +238,7 @@ function xorKposParts(p: PackedState): void {
 
 function xorKturnExtras(p: PackedState): void {
   if (p.phase === 0) xorKey(Z.phase, 0);
+  if (p.progress === 1) xorKey(Z.progress, 0);
   xorKey(Z.actions, zActions(p.actions));
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
     const s = p.sq[slot];

@@ -1,0 +1,1830 @@
+{
+  "at": "2026-09-19T09:03:13.545Z",
+  "sourceHashes": {
+    "src/ai/hard/types.ts": "f3d96fff8e01fa74cc84c5ad5dafa83256c43c8890ebe58a2510c92db150ff32",
+    "src/ai/hard/core/state.ts": "6760a278e12eaa1abb970e0ef6a2d19a63a11e9092e6cee845af5d228a8ff6f1",
+    "src/ai/hard/core/zobrist.ts": "0f14fe7a95b735f8429e7f7e8f035ba944f58ed44306f7c45b515de3e1a83f07",
+    "src/ai/hard/tactics/prover.ts": "a4115a129d2484b58bbcbcbc59b0cef42e7a53239dc730b90088fb80fdb9fb96",
+    "src/game/homeCheckmate.ts": "4ea0a6b2f3d261a50ae690d6fe2fc9d8cd4d853891d3e21a43c91a5a68826cac",
+    "src/game/summoning.ts": "b38f3523a92f4fb264acc0c60aca91795a93a84187287e662d6e66de269b01ce",
+    "src/game/turn.ts": "49513b3f769a8295f002db6d2f9457b7e8eec6af0f4c0f24f1d295c08ff155ce",
+    "src/game/legality.ts": "7511cab8b9b6586325af8cb8a277866df5c951c39256d16dabeee0df4458b233",
+    "src/ai/simulate.ts": "466b87836c63e6c3ff842bb8101a7558eb45fda24356d4c688838b90c4e2610f"
+  },
+  "counts": {
+    "canonicalLegal": 18,
+    "replicaLegal": 18,
+    "restored": 18,
+    "stateComparisons": 56,
+    "proverComparisons": 216,
+    "failures": 0
+  },
+  "cases": [
+    {
+      "name": "m2-arrival-order-repro",
+      "originalEvidenceSha256": "f3ced2d8765da081977174dddb2feee3db47c70dfc2d89b417c2a5b8ed5f9f63",
+      "rows": [
+        {
+          "index": 0,
+          "action": {
+            "type": "BUY_UNIT",
+            "definitionId": "fire_1",
+            "position": {
+              "x": 9,
+              "y": 8
+            }
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": {
+              "x": 9,
+              "y": 7
+            }
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "action": {
+            "type": "END_PLACE_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "action": {
+            "type": "END_ACTION_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "action": {
+            "type": "END_PLACE_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "action": {
+            "type": "END_ACTION_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "action": {
+            "type": "END_PLACE_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "action": {
+            "type": "MOVE",
+            "unitId": "invader",
+            "to": {
+              "x": 9,
+              "y": 9
+            }
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 1
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 1
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 1
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 2
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 2
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 2
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 3
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 3
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 3
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "action": {
+            "type": "END_ACTION_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 1
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 1
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 1
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 2
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 2
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 2
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 3
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 3
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 3
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "m2-dead-slot-order-repro",
+      "originalEvidenceSha256": "25648212a65af3262da9fac119ebec87e3da8ebbd3a8520b917b46219854e607",
+      "rows": [
+        {
+          "index": 0,
+          "action": {
+            "type": "PAY_UPKEEP",
+            "keepUnitIds": [
+              "anchor",
+              "fire-existing"
+            ]
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "action": {
+            "type": "BUY_UNIT",
+            "definitionId": "lightning_1",
+            "position": {
+              "x": 9,
+              "y": 7
+            }
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "action": {
+            "type": "END_PLACE_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "action": {
+            "type": "END_ACTION_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "action": {
+            "type": "END_PLACE_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "action": {
+            "type": "END_ACTION_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "action": {
+            "type": "END_PLACE_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 0
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 0
+              }
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "action": {
+            "type": "MOVE",
+            "unitId": "invader",
+            "to": {
+              "x": 9,
+              "y": 9
+            }
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 1
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 1
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 1
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 2
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 2
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 2
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 3
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 3
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 3
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "action": {
+            "type": "END_ACTION_PHASE"
+          },
+          "proofs": [
+            {
+              "cap": 1,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 1
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 1
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 1
+              }
+            },
+            {
+              "cap": 2,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 2
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 2
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 2
+              }
+            },
+            {
+              "cap": 3,
+              "canonical": {
+                "result": "unknown",
+                "nodes": 3
+              },
+              "incremental": {
+                "result": "unknown",
+                "nodes": 3
+              },
+              "fresh": {
+                "result": "unknown",
+                "nodes": 3
+              }
+            },
+            {
+              "cap": 4,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            },
+            {
+              "cap": 5,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            },
+            {
+              "cap": 20000,
+              "canonical": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "incremental": {
+                "result": "rescue",
+                "nodes": 4
+              },
+              "fresh": {
+                "result": "rescue",
+                "nodes": 4
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "failures": []
+}

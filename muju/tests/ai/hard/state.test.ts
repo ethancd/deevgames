@@ -9,6 +9,10 @@
  * `isLegalAction` on the same canonical state. That catches an action the
  * replica wrongly ACCEPTS as readily as one it wrongly rejects, which a
  * generator-only comparison cannot.
+ *
+ * Everything here is PHASING (M2). The corpus predates the ruleset and stores
+ * none, so its positions are read through `asPhasing`: a Phasing position over
+ * the same board, and the canonical engine is asked for its verdict on THAT.
  */
 import { describe, expect, it, vi } from 'vitest';
 import path from 'node:path';
@@ -33,7 +37,7 @@ import { DEF_ID } from '../../../src/ai/hard/core/catalog';
 import { Replica, allocState } from '../../../src/ai/hard/core/state';
 import { recomputeKpos, recomputeKturn, recomputeOccHash } from '../../../src/ai/hard/core/zobrist';
 import { readPositions } from '../../../lab/hard-ai/positions/corpus';
-import { buildState, randomState } from './game-fixture';
+import { asPhasing, buildState, randomState } from './game-fixture';
 
 // E0.5 timeout budget: slowest test 0.4 s in the 2026-09-15 survey (M2 Max, load ~5, maxWorkers 2); 10 s is this file's explicit ceiling.
 vi.setConfig({ testTimeout: 10_000 });
@@ -95,14 +99,27 @@ describe('Replica.isLegal', () => {
     let accepted = 0;
     let rejected = 0;
     let positions = 0;
+    let withPendings = 0;
     for (let i = 0; i < 120; i++) {
       const phase = rng() < 0.5 ? 'place' : 'action';
+      // Commitments on random squares: some land on a legal spawn square (where
+      // they must BLOCK the BUY both engines would otherwise allow), some do not.
+      const pendingSummons = Array.from({ length: Math.floor(rng() * 4) }, () => ({
+        def: 'fire_1',
+        owner: (rng() < 0.5 ? 'white' : 'black') as 'white' | 'black',
+        x: Math.floor(rng() * 10),
+        y: Math.floor(rng() * 10),
+      }));
       const state = randomState(rng, 2 + Math.floor(rng() * 6), {
         phase,
         actions: Math.floor(rng() * 5),
         white: Math.floor(rng() * 12),
         black: Math.floor(rng() * 12),
         current: rng() < 0.5 ? 'white' : 'black',
+        // De-duplicate: one commitment per owner per square (`pack` refuses more).
+        pendingSummons: pendingSummons.filter(
+          (a, k) => pendingSummons.findIndex(b => b.owner === a.owner && b.x === a.x && b.y === a.y) === k,
+        ),
       });
       const p = replica.pack(state);
       for (const pa of everyPackedAction(p)) {
@@ -117,10 +134,39 @@ describe('Replica.isLegal', () => {
         else rejected++;
       }
       positions++;
+      if ((state.pendingSummons ?? []).length > 0) withPendings++;
     }
     expect(positions).toBe(120);
+    expect(withPendings).toBeGreaterThan(60);
     expect(accepted).toBeGreaterThan(2000);
     expect(rejected).toBeGreaterThan(100_000);
+  });
+
+  it('BUY is illegal on a square the side has already committed to, legal on the enemy\'s', () => {
+    const units = [
+      { def: 'plant_1', owner: 'white' as const, x: 1, y: 1, id: 'w0' },
+      { def: 'plant_1', owner: 'black' as const, x: 8, y: 8, id: 'b0' },
+    ];
+    const open = buildState({ units, white: 20, phase: 'place' });
+    const p = replica.pack(open);
+    const buy = paMake(AKind.BUY, 0, 0);
+    expect(replica.isLegal(p, buy)).toBe(true);
+    expect(isLegalAction(open, { type: 'BUY_UNIT', definitionId: DEF_ID[0], position: { x: 0, y: 0 } })).toBe(true);
+
+    // One own commitment per square, whatever the definition it names.
+    const committed = buildState({ units, white: 20, phase: 'place', pendingSummons: [{ def: 'water_1', owner: 'white', x: 0, y: 0 }] });
+    const q = replica.pack(committed, allocState());
+    expect(replica.isLegal(q, buy)).toBe(false);
+    expect(replica.isLegal(q, paMake(AKind.BUY, DEF_ID.indexOf('water_1'), 0))).toBe(false);
+    expect(isLegalAction(committed, { type: 'BUY_UNIT', definitionId: DEF_ID[0], position: { x: 0, y: 0 } })).toBe(false);
+    // A neighbouring square is untouched: a commitment blocks its own square only.
+    expect(replica.isLegal(q, paMake(AKind.BUY, 0, 1))).toBe(true);
+
+    // The ENEMY's commitment on the same square blocks nothing: it is not a unit.
+    const theirs = buildState({ units, white: 20, phase: 'place', pendingSummons: [{ def: 'water_1', owner: 'black', x: 0, y: 0 }] });
+    const r = replica.pack(theirs, allocState());
+    expect(replica.isLegal(r, buy)).toBe(true);
+    expect(isLegalAction(theirs, { type: 'BUY_UNIT', definitionId: DEF_ID[0], position: { x: 0, y: 0 } })).toBe(true);
   });
 
   it('accepts multi-action MOVEs that generateAllActions does not emit', () => {
@@ -205,7 +251,7 @@ describe('Replica.isLegal', () => {
   });
 
   it('a terminal position has no legal action at all', () => {
-    const p = replica.pack({ ...createInitialGameState(), phase: 'victory', winner: 'white', victoryReason: 'elimination' });
+    const p = replica.pack({ ...createInitialGameState(undefined, 4, 0, 'phasing'), phase: 'victory', winner: 'white', victoryReason: 'elimination' });
     for (const pa of everyPackedAction(p)) expect(replica.isLegal(pa === 0 ? p : p, pa)).toBe(false);
   });
 });
@@ -219,8 +265,8 @@ describe('Replica generators', () => {
     const keep = newKeepSetTable();
     let checked = 0;
     for (const stored of positions) {
-      const state = stored.state;
-      if (state.phase !== 'playing' || state.upkeepPending) continue;
+      if (stored.state.phase !== 'playing' || stored.state.upkeepPending) continue;
+      const state = asPhasing(stored.state);
       const p = replica.pack(state);
       const n = p.phase === 0 ? replica.genPlace(p, GEN_BUFFER) : replica.genActions(p, GEN_BUFFER);
       const mine: string[] = [];
@@ -271,6 +317,38 @@ describe('Replica generators', () => {
     const spent = replica.pack({ ...state, turn: { ...state.turn, actionsRemaining: 0 } });
     expect(replica.genActions(spent, GEN_BUFFER)).toBe(1);
     expect(paKind(GEN_BUFFER[0])).toBe(AKind.END_ACTION);
+  });
+
+  it('genPlace masks the side\'s own commitments out of the spawn squares', () => {
+    const spec = {
+      units: [
+        { def: 'plant_1', owner: 'white' as const, x: 1, y: 1, id: 'w0' },
+        { def: 'plant_1', owner: 'black' as const, x: 8, y: 8, id: 'b0' },
+      ],
+      white: 3,
+      phase: 'place' as const,
+    };
+    const open = buildState(spec);
+    const p = replica.pack(open);
+    const buysOf = (q: PackedState): number[] => {
+      const n = replica.genPlace(q, GEN_BUFFER);
+      const squares: number[] = [];
+      for (let i = 0; i < n; i++) if (paKind(GEN_BUFFER[i]) === AKind.BUY) squares.push((GEN_BUFFER[i] >>> 10) & 0x7f);
+      return squares;
+    };
+    const before = buysOf(p);
+    expect(before).toContain(0);
+
+    const committed = replica.pack(buildState({ ...spec, pendingSummons: [{ def: 'fire_1', owner: 'white', x: 0, y: 0 }] }), allocState());
+    const after = buysOf(committed);
+    expect(after).not.toContain(0);
+    expect(after.length).toBe(before.length - before.filter(s => s === 0).length);
+    // ...and the canonical generator agrees square for square.
+    const theirs = generateAllActions(buildState({ ...spec, pendingSummons: [{ def: 'fire_1', owner: 'white', x: 0, y: 0 }] }), 'white')
+      .filter(a => a.type === 'BUY_UNIT')
+      .map(a => (a.type === 'BUY_UNIT' ? a.position.y * 10 + a.position.x : -1))
+      .sort((x, y) => x - y);
+    expect([...after].sort((x, y) => x - y)).toEqual(theirs);
   });
 
   it('genPlace emits BUY defId-ascending then square-ascending, then promotions, then END_PLACE', () => {
@@ -332,7 +410,19 @@ describe('Replica generators', () => {
         mine.push(normalize(action));
       }
       if (n >= KEEP_SET_CAPACITY) {
+        // The ranked-and-capped branch. Set EQUALITY against `upkeepActions` is
+        // undefined here — that is what the cap means — but distinctness is not.
+        // The soundness loop above accepts 64 copies of one legal set, and the
+        // sorted comparison that would have caught the repeat is exactly what the
+        // cap skips. Added by converger round 3, whose sweep was the first to
+        // reach the same branch through the fuzzer's legality surface (2 nodes in
+        // 1.25M checks), where it had the identical hole.
         truncated++;
+        expect(new Set(mine).size).toBe(n);
+        const capped = upkeepActions(state).filter(a => isLegalAction(state, a)).map(normalize).sort();
+        // When canonical offers no more than the cap, nothing was dropped and
+        // equality survives the truncation, so it is still required.
+        if (capped.length === n) expect(mine.slice().sort()).toEqual(capped);
         continue;
       }
       const theirs = upkeepActions(state).filter(a => isLegalAction(state, a)).map(normalize).sort();
@@ -376,7 +466,16 @@ describe('Replica maintenance', () => {
   it('rehash reproduces every incremental field from the unit arrays alone', () => {
     const rng = seededRandom(0x52454841);
     for (let i = 0; i < 400; i++) {
-      const p = replica.pack(randomState(rng, 1 + Math.floor(rng() * 12)));
+      const p = replica.pack(
+        randomState(rng, 1 + Math.floor(rng() * 12), {
+          white: 9,
+          black: 9,
+          pendingSummons: [
+            { def: 'fire_1', owner: 'white', x: i % 10, y: (i * 3) % 10 },
+            { def: 'plant_1', owner: 'black', x: (i * 7) % 10, y: i % 10 },
+          ],
+        }),
+      );
       const before = replica.digest(p);
       // Corrupt every derived field, then rebuild.
       p.kposLo = 0;
@@ -390,6 +489,10 @@ describe('Replica maintenance', () => {
       p.pieceAt.fill(255);
       p.materialCc.fill(0);
       p.pstSumCc.fill(0);
+      // `pendBB` / `pendCount` / `pendCostSum` are derived from the two planes.
+      p.pendBB.fill(0);
+      p.pendCount.fill(0);
+      p.pendCostSum.fill(0);
       replica.rehash(p);
       expect(replica.digest(p)).toBe(before);
       const kpos = recomputeKpos(p);
@@ -428,6 +531,48 @@ describe('Replica maintenance', () => {
     const brokenOcc = replica.pack(buildState({ units: [{ def: 'metal_3', owner: 'white', x: 3, y: 3 }] }));
     brokenOcc.occ[0] ^= 1;
     expect(() => replica.check(brokenOcc)).toThrow(/occ/);
+
+    // The commitment plane and its derived bitboard/counters must agree...
+    const pendState = (): PackedState =>
+      replica.pack(
+        buildState({
+          units: [{ def: 'metal_3', owner: 'white', x: 3, y: 3 }],
+          white: 3,
+          pendingSummons: [{ def: 'fire_1', owner: 'white', x: 4, y: 3 }],
+        }),
+        allocState(),
+      );
+    replica.check(pendState());
+
+    const brokenPendBB = pendState();
+    brokenPendBB.pendBB[1] ^= 1;
+    expect(() => replica.check(brokenPendBB)).toThrow(/pendBB/);
+
+    const brokenPendCount = pendState();
+    brokenPendCount.pendCount[0] = 2;
+    expect(() => replica.check(brokenPendCount)).toThrow(/pendCount/);
+
+    const brokenPendSum = pendState();
+    brokenPendSum.pendCostSum[0] += 1;
+    expect(() => replica.check(brokenPendSum)).toThrow(/pendCostSum/);
+
+    const brokenPendCost = pendState();
+    brokenPendCost.pendCost[34] = 9;
+    expect(() => replica.check(brokenPendCost)).toThrow(/cost 9 !== catalogue 3/);
+
+    // ...and `Kpos` must survive a from-scratch recompute, which is what catches
+    // a `make` that XORed the `pend` plane and an `unmake` that did not.
+    const brokenKpos = pendState();
+    brokenKpos.kposLo ^= 1;
+    expect(() => replica.check(brokenKpos)).toThrow(/Kpos/);
+
+    const brokenKturn = pendState();
+    brokenKturn.kturnLo ^= 1;
+    expect(() => replica.check(brokenKturn)).toThrow(/Kturn/);
+
+    const brokenOccHash = pendState();
+    brokenOccHash.occHash ^= 1;
+    expect(() => replica.check(brokenOccHash)).toThrow(/occHash/);
   });
 
   it('digest is square-keyed, so slot order never shows through', () => {
@@ -447,6 +592,48 @@ describe('Replica maintenance', () => {
     const pb = replica.pack(b, allocState());
     expect(replica.digest(pb)).toBe(replica.digest(pa));
     expect([pb.kposLo, pb.kposHi]).toEqual([pa.kposLo, pa.kposHi]);
-    expect(replica.digest(pa).split('|')).toHaveLength(24);
+    expect(replica.digest(pa).split('|')).toHaveLength(25);
+  });
+
+  it('digest shows commitments, and shows them side-then-square rather than in buy order', () => {
+    const units = [
+      { def: 'plant_1', owner: 'white' as const, x: 1, y: 1, id: 'w0' },
+      { def: 'plant_1', owner: 'black' as const, x: 8, y: 8, id: 'b0' },
+    ];
+    const bare = replica.pack(buildState({ units, white: 9, phase: 'place' }));
+    const committed = replica.pack(
+      buildState({ units, white: 9, phase: 'place', pendingSummons: [{ def: 'fire_1', owner: 'white', x: 0, y: 0 }] }),
+      allocState(),
+    );
+    expect(replica.digest(committed)).not.toBe(replica.digest(bare));
+    expect([committed.kposLo, committed.kposHi]).not.toEqual([bare.kposLo, bare.kposHi]);
+
+    // Buy order is not part of the position.
+    const forward = replica.pack(
+      buildState({
+        units,
+        white: 9,
+        phase: 'place',
+        pendingSummons: [
+          { def: 'fire_1', owner: 'white', x: 0, y: 0, id: 'first' },
+          { def: 'plant_1', owner: 'white', x: 1, y: 0, id: 'second' },
+        ],
+      }),
+      allocState(),
+    );
+    const reversed = replica.pack(
+      buildState({
+        units,
+        white: 9,
+        phase: 'place',
+        pendingSummons: [
+          { def: 'plant_1', owner: 'white', x: 1, y: 0, id: 'second' },
+          { def: 'fire_1', owner: 'white', x: 0, y: 0, id: 'first' },
+        ],
+      }),
+      allocState(),
+    );
+    expect(replica.digest(reversed)).toBe(replica.digest(forward));
+    expect([reversed.kposLo, reversed.kposHi]).toEqual([forward.kposLo, forward.kposHi]);
   });
 });

@@ -59,14 +59,32 @@ export type Reason = (typeof Reason)[keyof typeof Reason];
 
 /** 100 squares bound live units; 7-bit slot ids (DESIGN F20). */
 export const MAX_SLOTS = 128;
+/**
+ * Stride of the square-keyed pending-summon plane: `[side * PEND_STRIDE + sq]`.
+ * Phasing allows at most ONE commitment per owner per square
+ * (`hasPendingSummon`, summoning.ts:5-7), so a side's capacity is exactly the
+ * 100 squares and the plane can never overflow.
+ */
+export const PEND_STRIDE = 100;
 /** `pieceAt` sentinel. */
 export const NO_SLOT = 255;
 /** `sq` sentinel for a dead (reusable) slot. */
 export const DEAD = 255;
-/** 1 keep-set + ≤4 buys + ≤8 promos + END_PLACE + ≤4 actions + END_ACTION = 19, with headroom. */
+/**
+ * 1 keep-set + ≤4 buys + ≤8 promos + END_PLACE + ≤4 actions + END_ACTION = 19,
+ * with headroom.
+ *
+ * M2 note: under Phasing a BUY takes no slot, so the number of purchases in one
+ * Prepare is bounded by the bank rather than by the board — a rich side can
+ * exceed 24 half-actions in a turn. This constant is only read by `gen/**`,
+ * which M2 leaves on Standard semantics (DESIGN M2 item H); raising it belongs
+ * with the turn generator's own milestone, where the buffers it sizes live.
+ */
 export const MAX_TURN_ACTIONS = 24;
 
-/** `uflags` bits. */
+/** `uflags` bits. `F_PLACED` survives Phasing only as the `placedThisTurn`
+ * MIRROR for `pack`/`unpack`: a Phasing arrival is created with
+ * `placedThisTurn: false` (summoning.ts:29-30), so `make` never sets it. */
 export const F_CAN_ACT = 1;
 export const F_LAST_KILLED = 2;
 export const F_PLACED = 4;
@@ -98,6 +116,25 @@ export interface PackedState {
   uflags: Uint8Array;
   /** High-water mark of used slots. */
   slotCount: number;
+  /**
+   * [MAX_SLOTS] the slot's rank in canonical `board.units` (M2-STATUS §2.6).
+   *
+   * A slot is a HANDLE, not an identity: `pack` hands out slot `i` to
+   * `board.units[i]`, but an arrival reuses the lowest DEAD slot, so after one
+   * death-and-arrival the two orders part company. Canonical appends arrivals to
+   * `board.units` in `pendingSummons` order (`summoning.ts:24`) and removes with
+   * `filter`, which preserves the survivors' relative order — so canonical order
+   * is a per-unit BIRTH SEQUENCE and nothing else. That sequence lives here,
+   * assigned by `pack` from the array index and by `resolveArrivals` from
+   * `pendOrd`, restored byte-for-byte by `unmake`, and read by every
+   * ORDER-SENSITIVE consumer (`tactics/prover.ts buildOwned`, `unpack`).
+   *
+   * Only meaningful for a LIVING slot; a dead slot keeps its stale value until
+   * an arrival overwrites it (and `unmake` puts the stale value back).
+   */
+  ord: Int32Array;
+  /** The next birth sequence number; `unmake` restores it. */
+  ordNext: number;
   /** [100] slot or `NO_SLOT`. */
   pieceAt: Uint8Array;
 
@@ -108,6 +145,37 @@ export interface PackedState {
   occBy: Uint32Array;
   /** [12] lanes 0..3 tier1, 4..7 tier2, 8..11 tier3 (both sides). */
   occTier: Uint32Array;
+
+  // --- pending summons (Phasing; DESIGN M2 item B) ---
+  /**
+   * [2 * PEND_STRIDE] indexed `[side * 100 + sq]`: `0` = no commitment, else
+   * `defId + 1`. Square-keyed, exactly like everything else the replica hashes,
+   * so buy ORDER never shows through and one commitment per owner per square is
+   * enforced by the representation rather than by a check.
+   */
+  pendDef: Uint8Array;
+  /** [2 * PEND_STRIDE] the exact cost paid, refunded verbatim on disruption. */
+  pendCost: Uint8Array;
+  /**
+   * [2 * PEND_STRIDE] the commitment's rank in canonical `pendingSummons`
+   * (M2-STATUS §2.6). `applyBuyUnit` APPENDS (`simulate.ts:131`) and
+   * `resolveSummons` REMOVES with `filter` (`summoning.ts:22`), so canonical
+   * pending order is a commit sequence — which the square-keyed plane above
+   * cannot express on its own. `resolveArrivals` consumes it to decide the order
+   * arrivals take in `board.units`; nothing in the RULES reads it (every
+   * commitment is judged against the same snapshot).
+   *
+   * One global sequence for both sides, exactly like the single canonical array.
+   */
+  pendOrd: Int32Array;
+  /** The next commit sequence number; `unmake` restores it. */
+  pendOrdNext: number;
+  /** [8] lanes 0..3 white, 4..7 black — squares carrying a commitment. */
+  pendBB: Uint32Array;
+  /** [2] `popcount(pendBB[side])`. */
+  pendCount: Uint8Array;
+  /** [2] `Σ pendCost` per side. */
+  pendCostSum: Int32Array;
 
   // --- board ---
   /** [100] 0..16 (resourceMap.ts:5). */
@@ -169,4 +237,9 @@ export interface PackedState {
   // --- cold data: never read inside the search ---
   /** slot -> canonical unit id for units present at pack time. */
   originIds: string[];
+  /**
+   * `[side * PEND_STRIDE + sq]` -> the ROOT position's `PendingSummon.id`, for
+   * `unpack` fidelity only. `make` never invents one (DESIGN M2 item G).
+   */
+  pendIds: string[];
 }
