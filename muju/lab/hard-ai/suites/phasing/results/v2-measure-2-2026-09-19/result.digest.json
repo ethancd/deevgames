@@ -1,0 +1,243 @@
+{
+ "schema": "muju-phasing-measurement-v1",
+ "witnessTier": "local-only",
+ "witness": "WITNESS: local only",
+ "witnessUrls": [],
+ "remoteWitnesses": [],
+ "priorMeasurementsOfThisManifest": [],
+ "startedAt": "2026-09-19T19:44:01.118Z",
+ "finishedAt": "2026-09-19T19:46:46.843Z",
+ "head": "1864090d0d13897f90c398a42b7681dbb7066bf4",
+ "contractCommit": {
+  "commit": "1864090d0d13897f90c398a42b7681dbb7066bf4",
+  "committedAt": "2026-09-19T14:43:48-05:00",
+  "path": "muju/lab/hard-ai/suites/phasing/fixtures/v2/floor-contract.json",
+  "blobSha1": "131289d79def0a0adfd86c920e032a0d62b1a3a3",
+  "ancestorOfHead": true,
+  "bytesMatchCommit": true,
+  "committedBeforeRun": true,
+  "touchesResultPaths": false,
+  "witnessTier": "local-only",
+  "remoteRefs": [],
+  "remoteWitnesses": [],
+  "witnessUrls": []
+ },
+ "weightsSha256": "1addc7d64b574c2ea27df209d32a5e37bc0800e8e4948c2bd3f514c1f64c92e0",
+ "engineSourceSha256": "e46f735eaaea2aa4df2d7eda276e7c6db366e1db587260fcefc8a0d678391dcd",
+ "drift": false,
+ "engineDrift": false,
+ "engineIdentity": "c1303f7aaa27cf1f616c1e9319b70e252d0dbc10ba63718d68c3a9cf4f64e00d",
+ "valid": true,
+ "floorPass": false,
+ "floors": {
+  "schema": "muju-phasing-suite-floor-result-v1",
+  "contractVersion": "muju-phasing-suite-floor-v2",
+  "contractSha256": "004e8bea50593ae2a1a303c69c0a0e824384fda6ea45d7d894b56b627bb23d9c",
+  "manifestSha256": "454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453",
+  "engineIdentity": "c1303f7aaa27cf1f616c1e9319b70e252d0dbc10ba63718d68c3a9cf4f64e00d",
+  "correctness": true,
+  "pass": false,
+  "families": [
+   {
+    "family": "tactics",
+    "offered": 63,
+    "earned": 61,
+    "minimum": 57,
+    "pass": true
+   },
+   {
+    "family": "invariants",
+    "offered": 15,
+    "earned": 8,
+    "minimum": 14,
+    "pass": false
+   },
+   {
+    "family": "home-mate",
+    "offered": 28,
+    "earned": 28,
+    "minimum": 28,
+    "pass": true
+   },
+   {
+    "family": "economy",
+    "offered": 20,
+    "earned": 19,
+    "minimum": 20,
+    "pass": false
+   },
+   {
+    "family": "summon-disruption",
+    "offered": 14,
+    "earned": 12,
+    "minimum": 13,
+    "pass": false
+   },
+   {
+    "family": "home-fortify",
+    "offered": 6,
+    "earned": 6,
+    "minimum": 6,
+    "pass": true
+   }
+  ],
+  "releaseQualification": "suite-only; other migration and release gates remain required"
+ },
+ "rowsSha256": "92022c2db103869386934f3b2be88a0de5748aa42b2f7bde72ae8914d8b0f574",
+ "summary": {
+  "schema": "muju-phasing-suite-result-v1",
+  "manifestSha256": "454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453",
+  "scope": "release",
+  "engineIdentity": "c1303f7aaa27cf1f616c1e9319b70e252d0dbc10ba63718d68c3a9cf4f64e00d",
+  "complete": true,
+  "valid": true,
+  "acceptance": "not-established",
+  "offered": 146,
+  "earned": 134,
+  "expectedCases": 225,
+  "receivedCases": 225,
+  "coverage": {
+   "expected": 79,
+   "pass": 79,
+   "fail": 0,
+   "indeterminate": 0,
+   "error": 0,
+   "missing": 0
+  },
+  "diagnostics": [
+   {
+    "id": "inv11-home-bare",
+    "primary": "search-gap",
+    "value": 0,
+    "evalGap": 0,
+    "searchGap": 0
+   },
+   {
+    "id": "inv13-turtle",
+    "primary": "search-gap",
+    "value": -996500,
+    "evalGap": 0,
+    "searchGap": -996500
+   },
+   {
+    "id": "inv9-chip-across-turn",
+    "primary": "search-gap",
+    "value": 0,
+    "evalGap": 400,
+    "searchGap": 0
+   }
+  ],
+  "failures": []
+ },
+ "failedOrPartialCases": [
+  {
+   "id": "inv1-spawn-zero",
+   "kind": "invariant-pair",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "inv12-cleave-line",
+   "kind": "invariant-pair",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "inv14-liquidity-floor",
+   "kind": "invariant-pair",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "inv17-self-block",
+   "kind": "invariant-pair",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "inv2-corner-seal",
+   "kind": "invariant-pair",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "inv7-promote-no-runway",
+   "kind": "invariant-pair",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "inv8-no-pre-adjacency",
+   "kind": "invariant-pair",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "M5-SD-07-split-rectangles",
+   "kind": "macro-decision",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "M5-SD-18-arrival-immediate-attack",
+   "kind": "macro-decision",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "phasing-tactics-plugged-shadow_1-vs-fire_3",
+   "kind": "macro-decision",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "phasing-tactics-two-lanes-fire_2-vs-water_2",
+   "kind": "macro-decision",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  },
+  {
+   "id": "relocate-plant_2-e",
+   "kind": "macro-decision",
+   "offered": 1,
+   "earned": 0,
+   "failureCodes": [
+    "predicate-miss"
+   ]
+  }
+ ],
+ "note": "Derived digest of result.json for reading; the full file is result.json.gz and its sha256 is in original-file-sha256.txt. The first-measurement guard for this manifest is the committed measurement-ledger.jsonl."
+}

@@ -267,3 +267,29 @@ new limits treat differently, and the books' pinned hashes are unchanged (the se
 follows from the generator's stop rule recorded in `ALLOCATION-P1.md`). Amendments A1–A3 stand as written, including A3's
 row seed 20260960 and pilot seed 20260961, which have produced no eligible game.
 
+
+### A5 — 2026-09-19: the Gate 1 budget is calibrated per SEARCH, with a per-turn ceiling
+
+Written before the adapter is changed and before any eligible calibration or row exists. Justified without reference
+to any score.
+
+**Defect in A3 §3 as written.** A3 defined the row's fixed-work budget as "the median search work consumed per own turn"
+in wall mode. The shipped loop (`useAI` + the worker's turn mode) does not spend a turn's work in one piece: it runs a
+search, replays the returned plan, and runs a FURTHER full search only when the plan runs out or stops being legal
+(typically 1-3 searches per own turn; a Phasing turn also has an upkeep decision and a Prepare phase under the same
+mover). A single per-turn number cannot reproduce that: the adapter built to A3's wording gave its first search about 75%
+of the turn and funded every follow-up search with exactly 1 work unit (44 of 48 follow-up Act searches, 24% of hard own
+turns, in the ineligible pilot `gate1-p2-pilot-2026-09-19`), i.e. a weakened baseline — the same kind of defect A3 was
+written to remove.
+
+**Replacement.** The calibration measures, per engine, in wall mode at the shipped quick allowance on the dev openings:
+(a) the median work of ONE search (`workPerSearch`), by search kind where the shipped loop distinguishes them (Act
+search, upkeep decision, Prepare search); (b) the distribution of searches per own turn; (c) the median total work per
+own turn. The row's adapter funds EACH search with that kind's calibrated `workPerSearch` and stops a turn only at a
+per-turn ceiling set to the calibration's 95th-percentile total work per own turn, so a fixed-work turn is spent the
+way a shipped wall-clock turn is. The report header prints, side by side for calibration and row: work per search by
+kind, searches per own turn (median and distribution) and total work per own turn; a row whose median searches per own
+turn differs from the calibration's by more than 1, or in which more than 2% of searches were funded below half their
+calibrated `workPerSearch`, is INVALID. Everything else in A1-A4 stands. Seeds: row 20260960 (unused so far); the next
+pilot uses 20260963 (20260961 void per A4, 20260962 consumed by the defective-adapter pilot).
+

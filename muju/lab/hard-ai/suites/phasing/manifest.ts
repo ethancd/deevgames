@@ -32,8 +32,21 @@ export interface ManifestCase {
   id: string; family: Family; kind: PhasingCase['kind']; classification: CaseClassification;
   sha256: string; members: PositionRef[]; offered: 0 | 1;
 }
+/** Which authored release a manifest belongs to.
+ *
+ * This is the switch the measurement path reads to decide whether the
+ * author-time free-win veto is ENFORCED. The frozen v1 manifest was written
+ * before the veto existed and carries twenty-one flagged roots by design, so it
+ * must keep loading as the historical record it is; a v2 manifest declares
+ * `release: 'v2'` and is refused if any of its macro-decisions leaves the root
+ * mover an uncredited win. The field is optional so the v1 bytes still parse,
+ * and an absent value means v1. */
+export type ReleaseVersion = 'v1' | 'v2';
+export const releaseOf = (manifest: ReleaseManifest): ReleaseVersion => manifest.release ?? 'v1';
 export interface ReleaseManifest {
   schema: 'muju-phasing-suite-manifest-v1'; scope: 'release'; caseCount: number; memberCount: number;
+  /** Absent on the frozen v1 manifest; `'v2'` turns on veto enforcement. */
+  release?: ReleaseVersion;
   files: SuiteFilePin[]; cases: ManifestCase[];
   /** The declared per-family composition. Optional so the frozen v1 manifest,
    * written before this field existed, still PARSES byte-identically; when it
@@ -54,12 +67,12 @@ const pinSchema = z.object({ family: z.enum(FAMILIES), path: pathSchema, sha256:
 const descriptorSchema = z.object({ id: z.string().min(1), family: z.enum(FAMILIES), kind: z.enum(['macro-decision', 'canonical-coverage', 'invariant-pair']), classification: z.enum(['decision', 'coverage', 'preference', 'structural', 'diagnostic']), sha256: digest, members: z.array(z.object({ id: z.string().min(1), sha256: digest }).strict()).min(1).max(2), offered: z.union([z.literal(0), z.literal(1)]) }).strict();
 const count = z.number().int().nonnegative();
 const manifestSchema = z.object({ schema: z.literal('muju-phasing-suite-manifest-v1'), scope: z.literal('release'),
-  caseCount: count.min(1), memberCount: count.min(1), files: z.array(pinSchema).length(6),
+  caseCount: count.min(1), memberCount: count.min(1), release: z.enum(['v1', 'v2']).optional(), files: z.array(pinSchema).length(6),
   cases: z.array(descriptorSchema).min(1), familyCounts: z.object(Object.fromEntries(FAMILIES.map(f => [f, count])) as Record<Family, typeof count>).strict().optional(),
   artifacts: z.record(pathSchema, digest) }).strict();
 
 /** No subset/reduced denominator switch exists here. Tests use describeCase directly. */
-export function buildReleaseManifest(documents: SuiteDocument[], files: SuiteFilePin[], artifacts: Record<string, string>): ReleaseManifest {
+export function buildReleaseManifest(documents: SuiteDocument[], files: SuiteFilePin[], artifacts: Record<string, string>, release?: ReleaseVersion): ReleaseManifest {
   const docs = documents.map(validateSuiteDocument);
   if (docs.length !== 6 || new Set(docs.map(d => d.family)).size !== 6) throw new Error('release requires all six unique families');
   // The composition is READ OFF the documents instead of being asserted against
@@ -88,6 +101,7 @@ export function buildReleaseManifest(documents: SuiteDocument[], files: SuiteFil
   const descriptors = cases.map(describeCase).sort((a, b) => a.id.localeCompare(b.id));
   const caseCount = descriptors.length, memberCount = descriptors.reduce((n, c) => n + c.members.length, 0);
   return validateManifestShape({ schema: 'muju-phasing-suite-manifest-v1', scope: 'release', caseCount, memberCount,
+    ...(release && release !== 'v1' ? { release } : {}),
     files: [...files].sort((a, b) => a.family.localeCompare(b.family)), cases: descriptors, familyCounts, artifacts });
 }
 export function validateManifestShape(input: unknown): ReleaseManifest {
@@ -123,7 +137,7 @@ export function validateManifestShape(input: unknown): ReleaseManifest {
 }
 /** Caller separately verifies byte pins before parsing. This verifies the complete logical graph. */
 export function validateReleaseManifest(input: unknown, documents: SuiteDocument[]): ReleaseManifest {
-  const manifest = validateManifestShape(input), expected = buildReleaseManifest(documents, manifest.files, manifest.artifacts);
+  const manifest = validateManifestShape(input), expected = buildReleaseManifest(documents, manifest.files, manifest.artifacts, manifest.release);
   if (hashJson(manifest.cases) !== hashJson(expected.cases)) throw new Error('manifest differs from loaded case graph');
   return manifest;
 }

@@ -505,7 +505,14 @@ is committed requires a v3 and its own rationale, and invalidates comparison
 against v2. Passing these suites alone never clears Gate 0, the failed baseline
 sanity Gate 1, held-out strength, responsiveness, or deployment.
 
-## Not yet written: the v2 contract file
+## The v2 contract file
+
+**Written, 2026-09-19 (lane `suites-v2-authoring-2`): `fixtures/v2/floor-contract.json`
+now exists**, because the three fields below became determinable once the bundle
+was authored. Its values and the remaining coordinator steps are recorded in
+"What was actually authored" at the end of this document. The original reasoning
+is kept verbatim because the *form* of the file, and the order of operations
+below, are unchanged.
 
 `fixtures/v2/floor-contract.json` cannot be written honestly yet. Three of its
 required fields are not determinable at the time of writing:
@@ -570,6 +577,10 @@ One more thing is still missing before v2 can be measured, and this document
 does not pretend otherwise: **no root has been re-authored and `fixtures/v2`
 does not exist.** The veto, the scoring contract and the contract integrity
 machinery are code; the cases they will be applied to are not written.
+
+> **Superseded, 2026-09-19 by lane `suites-v2-authoring-2`.** The paragraph above
+> was true when it was written and is kept for the record. The roots have now
+> been re-authored and `fixtures/v2` exists; see "What was actually authored".
 
 ## Authoring status, 2026-09-19 (lane `suites-v2-authoring`)
 
@@ -653,6 +664,10 @@ declared, and none of the checks they used to provide was dropped.
 
 ### Still open: the authoring itself
 
+**Closed, 2026-09-19, by lane `suites-v2-authoring-2`; every bullet below is
+done and is itemised in "What was actually authored".** The list is kept as the
+work statement it was.
+
 The case design is untouched and is the whole of the remaining work:
 
 - the nine disruption roots re-authored to remove the free win while keeping
@@ -699,3 +714,233 @@ The v1 fixtures are byte-identical across this lane: all ten files under
 Nothing in this section changes a floor, a classification or the allowed-miss
 vector. The authoring requirements in "v2 authoring contract" above stand
 unchanged.
+
+---
+
+## What was actually authored, 2026-09-19 (lane `suites-v2-authoring-2`)
+
+**`fixtures/v2` exists, is complete and is valid.** `run.ts author-v2` and an
+independent `validate` from a fresh process both report
+`valid: true, release: "v2", cases: 225, members: 245, errors: [], vetoRefused: []`.
+The v1 fixtures are byte-identical across this lane: all ten files under
+`fixtures/v1/` hash the same before and after.
+
+### What was known when this was written, restated honestly
+
+Everything the section "What was already known when this was written" says still
+holds and is now the more important for having been acted on. This lane was
+executed **after** the v1 measurement (`m6-suite-measure-1`: tactics 62/63,
+invariants 5/18, home-mate 28/28, economy 20/20, summon-disruption 5/14,
+home-fortify 6/6) and **after three independent reviews** — the two named above
+plus the veto's own re-run, which found the eight home-mate invader roots that
+neither review did. Those outcomes were visible while this lane worked.
+
+That is exactly why **no v2 floor was chosen here.** The floor rule was fixed
+before this lane started and is mechanical: `minimumEarned = offered(v2) -
+allowedMiss(v1)`, with `V1_ALLOWED_MISS` pinned in `contract.ts` and refused in
+either direction. The lane changed offered counts (invariants 18 → 15) and the
+floors moved with them by that formula alone. Nothing in the authoring below was
+chosen because an engine passed or missed it; every accept predicate, horizon
+and endpoint number is recomputed canonically at author time from the shipped
+rules, and no Hard engine was run against v2 at any point.
+
+### The veto, wired so a defective bundle cannot exist
+
+- `authorBundle(directory, release)` runs `vetoDocument` over every document of a
+  **v2** bundle and records each finding as a family error, so `valid` cannot be
+  true while one stands.
+- `validateBundle` — the path `measure.ts` calls before the engine runs — **re-runs
+  the veto itself** for a v2 bundle rather than trusting the shipped author
+  report, and reports `release` and `vetoFindings` on the result.
+- Enforcement is gated on `manifest.release`, which is `'v2'` on the new manifest
+  and **absent** on the frozen v1 manifest (`releaseOf` reads an absent field as
+  `v1`). v1 therefore keeps loading as the historical record it is, with its 21
+  flagged roots.
+- Both directions are pinned by `tests/lab/suites-phasing-v2-authoring.test.ts`:
+  the same six documents, with v1's summon-disruption family swapped in, are
+  **refused** under `release: 'v2'` naming all nine roots and **accepted** under
+  `release: 'v1'`.
+- A superseded bundle now says so. `loadBundle` on `fixtures/v1/manifest.json`
+  reports *"Superseded bundle: builder/predicate/validator artifact set or bytes
+  differ, so this manifest is pinned to an older suite tree…"*, naming the added
+  and changed artifacts, instead of a bare hash error. No v1 byte was touched.
+
+### Builder entry point and author input
+
+`npm run hard:suite:phasing -- author-v2 --out <NEW_DIR>` (mode `author-v2`;
+`authorBundle(dir, 'v2')` in code). The v2 builders live in
+`lab/hard-ai/suites/phasing/build-v2.ts` and the v2 authoring is declared in the
+**new** author input `author-inputs/new-candidates-v2.json`, beside the
+byte-pinned `new-candidates-v1.json`, which is unchanged. The v2 input is a
+declarative delta pinned to the v1 input's SHA-256; the builder **re-derives**
+root states, witness traces and recorded endpoints canonically in the authoring
+process instead of reading v1's frozen observations.
+
+### Every root the veto flagged, with its disposition
+
+| Case | Disposition | Reason |
+|---|---|---|
+| `M5-SD-01-occupied-low-cost` | re-authored (garrison) | Raider mated on the empty White corner; `fallback` Plant I relocated from B1 to **A1**. |
+| `M5-SD-02-occupied-miner` | re-authored (garrison) | Same; `fallback` → A1. |
+| `M5-SD-03-interior-block` | re-authored (garrison) | Same; `fallback` → A1. |
+| `M5-SD-04-inclusive-edge` | re-authored (garrison) | Same; `fallback` → A1. |
+| `M5-SD-06-temporary-intrusion` | re-authored (garrison) | Same; `fallback` → A1. |
+| `M5-SD-07-split-rectangles` | re-authored (garrison) | Same, but the root has no spare body: a new `home-guard` Plant I is added at A1. |
+| `M5-SD-09-shared-intersection` | re-authored (garrison) | Same; new `home-guard` at A1. |
+| `M5-SD-18-arrival-immediate-attack` | re-authored (garrison) | Same; `fallback` → A1. |
+| `M5-SD-28-home-blocks-all-rectangles` | **replaced** by `M5-SD-28-single-anchor-interior-block` | Its objective *was* the home entry, so a garrison would delete the objective. Redesigned: the Water I raider spends all four AP walking B4→B3→B2→**C2** and blocks the single supporting rectangle at a **non-corner interior square**, denying the Plant I commitment on B2; A1 carries a `home-guard`. |
+| `phasing-tactics-two-lanes-fire_2-vs-water_2` | re-authored (garrison) | Spare lane body walked to the empty enemy corner J10 and mated; a Black `home-guard` Plant I now holds J10. Lane geometry, banks, reserves and the double-attack witness are unchanged. |
+| `phasing-tactics-two-lanes-shadow_1-vs-water_2` | re-authored (garrison) | Same. |
+| `phasing-tactics-two-lane-approach-fire_2-vs-water_2` | re-authored (garrison) | Same. |
+| `phasing-tactics-two-lane-approach-shadow_1-vs-water_2` | re-authored (garrison) | Same. |
+| `phasing-promotion-dependent-rescue-mate` + `-rotated-black-mate` | **explicitly credited** | The flagged win *is* the point: the case asks the invader to convert an established occupation into a finished game, and v1 refused only because `home-defense@1` declines a terminal snapshot and accept named one reason. v2 declares `terminalPolicy: 'allow-root-mover-win'` and an `any-of@1` accept over `home-checkmate` **and** `elimination`. The quiet control still wins nothing, so it stays a decision. |
+| `phasing-public-bank-no-promotion-money-mate` + `-rotated-black-mate` | explicitly credited | Same, per case. |
+| `phasing-newly-placed-unit-cannot-promote-mate` + `-rotated-black-mate` | explicitly credited | Same, per case. |
+| `phasing-at-most-one-promotion-mate` + `-rotated-black-mate` | explicitly credited | Same, per case. |
+
+That is the complete list: 21 of 21. The re-run of the veto over the v2 bundle's
+**131 macro-decisions returns 0 findings and 0 bound hits.**
+
+**Why a Plant I garrison and not something else.** Plant I is the inert durable
+tier-1 body: attack 0, defence 3, upkeep 0, never released by its owner's
+upkeep. Every raider in these roots has an effective attack strictly below 3
+against it — Lightning I 1+1=2, Water I 2−1=1, Shadow II 3−1=2 — so no root
+raider can clear the corner at all, let alone clear it and still hold the AP to
+enter. The garrison is applied to the **seed**, and the root is re-derived by
+replaying the same authored setup actions, so the commitment, the rectangles and
+the raider are untouched.
+
+### Intruder survival on every disruption decision
+
+All **14** summon-disruption decisions carry
+`horizon: { scripted, pass-only@1, additionalHandoffs: 1, homeFirst: true }` and
+an accept that requires the named intruder present at that endpoint
+(`assertsIntruderSurvival` is asserted per case at author time and in the test).
+For each, the accepted answer is shown **strictly better than the rejected one
+at the survival horizon by canonical replay**, on a stated measure:
+
+| Case | Measure | Accepted | Rejected |
+|---|---|---|---|
+| `M5-SD-01` | denied arrival, defender army at the horizon | 2 | 3 |
+| `M5-SD-02` | denied arrival | 2 | 3 |
+| `M5-SD-03` | denied arrival | 2 | 3 |
+| `M5-SD-04` | denied arrival | 2 | 3 |
+| `M5-SD-05` | denied arrival | 2 | 3 |
+| `M5-SD-06` | denied arrival | 2 | 3 |
+| `M5-SD-07` | denied arrival (one of two commitments) | 4 | 5 |
+| `M5-SD-09` | denied arrival (both commitments) | 3 | 5 |
+| `M5-SD-10` | denied arrival + anchor captured | 1 | 3 |
+| `M5-SD-13` | denied arrival + both anchors cleaved | 1 | 3 |
+| `M5-SD-14` | **terminal**: accepted ends the game for the mover; rejected leaves a playing position in which the commitment arrives | win | army 2 |
+| `M5-SD-18` | denied arrival | 2 | 3 |
+| `M5-SD-28` (redesigned) | denied arrival | 3 | 4 |
+| `M5-SD-30` | **terminal**: the rejected control is a canonical **loss** for the mover at this horizon | playing, rescuer alive | mover loses |
+
+The tempo measure is written into the accept predicate, not only into prose: the
+accepted answer must leave the defender's army at or below the accepted count
+*and* disrupt the commitment *and* keep the intruder on the board, so the
+equality on material-plus-bank that the independent replay found in 8 of 14 v1
+decisions cannot recur. **The final disruption offered count is 14**; no
+disruption case was dropped.
+
+### The four multi-answer tactics cases
+
+`canonicallyRemovableTargets` enumerates, canonically, every enemy body the
+mover can remove from the root within its AP, and the builder **refuses** a case
+whose declared target set disagrees with it. The split is a fact about the
+catalogue, not a choice:
+
+- **`any-of@1` over `u0, u1, u2, u3`** (all four independently removable):
+  `phasing-tactics-plugged-{fire_1,fire_2,fire_3,lightning_2}-vs-fire_3`. Each
+  attacker's effective attack meets the Plant I plugs' defence 3 (Fire I 2+1,
+  Fire II 3+1, Fire III 4+1, Lightning II 2+1).
+- **Canonical uniqueness argument, single target retained**:
+  `phasing-tactics-plugged-{water_1,water_2,water_3,shadow_1}-vs-fire_3`. Their
+  effective attack against Plant I is 1, 1, 2 and 1 — strictly below defence 3 —
+  so the canonical enumeration removes `u0` and nothing else.
+
+### Invariants
+
+Fifteen gating pairs at `primaryMetric: 'search-gap'`, `work: 120000` per member:
+1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 17, 19, 20. Three non-gating
+`diagnostic` pairs offering **0**: `inv9-chip-across-turn`, `inv11-home-bare`,
+`inv13-turtle`, each for the reason its own rationale already gave. Invariants 15
+and 18 remain `structural` with `primaryMetric: 'none'`. `inv16` is authored
+against the **20-ply** limit through the shipped `INACTIVITY_LIMIT` constant
+(premise `inactivity-plies eq 19` versus `eq 2`), which is the only invariant
+whose content moved between revisions.
+
+Each of the fifteen retained pairs was re-read under Phasing timing before this
+lane authored it; the per-pair reasons are recorded in
+`author-inputs/new-candidates-v2.json` under `invariants.rationaleRecheck`. Each
+states a canonical fact about the position — recruitment area, mobility,
+reach-and-retreat inside four AP, finite reserve consumption, a rectangle voided
+by an actual intrusion line, rent unpayable after a real promotion, arrival-batch
+blocking, the inactivity clock — rather than a transferred Standard-era
+heuristic. **No further pair was demoted.** Invariants offered falls 18 → 15 and
+the floor becomes 14 of 15.
+
+### Economy
+
+**No economy forecast changes under the 20-ply clock, and none was re-derived.**
+This is a measured claim, not an assumption: all thirty economy cases were
+rebuilt from `build-economy.ts` under `muju-phasing-2` and compared case-by-case
+against the frozen `fixtures/v1/economy.suite.json`; every case is identical
+modulo the position-reference hashes that carry the source binding. The longest
+economy horizon is eight additional pass-only hand-offs (nine plies from the
+root), below both the old ten-ply and the new twenty-ply limits, and no economy
+case asserts an inactivity fact. Pinned by a test.
+
+### The v2 bundle
+
+| Family | Cases | Offered | Allowed miss (v1 budget) | **v2 floor** |
+|---|---:|---:|---:|---:|
+| tactics | 79 | 63 | 6 | **57** |
+| invariants | 20 | 15 | 1 | **14** |
+| home-mate | 56 | 28 | 0 | **28** |
+| economy | 30 | 20 | 0 | **20** |
+| summon-disruption | 30 | 14 | 1 | **13** |
+| home-fortify | 10 | 6 | 0 | **6** |
+
+225 cases, 245 logical members, 131 macro-decisions, 146 offered units.
+Manifest semantic SHA-256 **`454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453`**;
+manifest file SHA-256 `ce248197d975c356c19db95d71cdc13d7d113cffaf228008ac73b4267826b00e`.
+
+### `fixtures/v2/floor-contract.json`, and what the coordinator must still do
+
+The file is written with `manifestSha256` above, the `allowedMiss` vector from
+the frozen v1 budget, `seed: 1`, `profile: 'desktop'`, and the build it is
+declared against:
+
+- `engineSourceSha256` `e46f735eaaea2aa4df2d7eda276e7c6db366e1db587260fcefc8a0d678391dcd`
+  = `hashJson(engineSourceHashes())`;
+- `weightsSha256` `1addc7d64b574c2ea27df209d32a5e37bc0800e8e4948c2bd3f514c1f64c92e0`
+  = `weightIdentity(DEFAULT_WEIGHTS)` (`phasing-accounting-bootstrap-v1`, version 2).
+
+Both are pure hashes of this worktree, read without running a search. **If the
+Hard engine or the weights change before the measurement, the contract must be
+rewritten with the new hashes** — `assertContractBuild` refuses any other build
+rather than crediting it against these floors.
+
+The remaining steps belong to the coordinator and cannot be merged:
+
+1. Confirm (or rewrite) the two build hashes against the build that will actually
+   be measured.
+2. **Commit `lab/hard-ai/suites/phasing/fixtures/v2/floor-contract.json` ALONE** —
+   no `result.json`, `cases.jsonl`, `started.json`, `failure.json`, ledger line,
+   or any path under a `results/` directory in the same commit.
+   `resolveContractCommit` refuses that commit otherwise, and refuses an
+   untracked or working-tree-modified contract outright. This is the mechanism
+   that makes the floor a preregistration rather than a description.
+3. Push that commit if a remote that is not this machine is available; a
+   `file://` remote, a localhost remote or a clone of a sibling directory earns
+   tier B (`local only`), which is recorded and printed rather than assumed.
+4. **Only then** run `hard:suite:phasing:measure` against
+   `fixtures/v2/manifest.json`, in a later commit. It is a first-measurement
+   instrument keyed on the manifest hash alone; a second reading requires a new
+   contract version declaring `supersedes: { ledgerSeq, chain }`.
+
+Nothing in this section changes the allowed-miss vector, a classification or a
+floor rule. The standing conditions above are unchanged: these are engineering
+targets for an authored manifest, not strength evidence, and passing them clears
+no release gate.

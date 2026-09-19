@@ -7,7 +7,7 @@ import { getNextTierDefinition, getUnitDefinition } from '../../../../src/game/u
 import { makePosition, positionRef, replayTrace, replayMacro, sourceBinding, withRules } from './canonical';
 import { validateSuiteDocument, type AIAction, type CanonicalCoverage, type MacroDecision, type PredicateSpec, type SuiteDocument } from './format';
 import { validateAuthorEvidence, validateProvenance } from './predicates';
-import { all, authorCorrections, authorInputs, buildBound, checkFrozen, common, compactAuthorEvidence, complete, diagram, EXPOSURE, facts, ledgerFor, other, probe, WORK, type TacticInput } from './tactics-home-author';
+import { all, authorCorrections, authorInputs, buildBound, checkFrozen, common, compactAuthorEvidence, complete, diagram, EXPOSURE, facts, ledgerFor, other, probe, WORK, type TacticInput, type V2TacticsHooks } from './tactics-home-author';
 
 function replacement(input: TacticInput, state: ReturnType<typeof diagram>): AIAction[] {
   const target = state.board.units.find(u => u.id === 'u0')!;
@@ -25,7 +25,7 @@ function replacement(input: TacticInput, state: ReturnType<typeof diagram>): AIA
   return input.oldId === 'tactics-chipped-metal_2-vs-fire_3' ? [hit('u1')] : [hit('u1'), hit('u2')];
 }
 
-export function buildTacticsSuite(): SuiteDocument {
+export function buildTacticsSuite(hooks: V2TacticsHooks = {}): SuiteDocument {
   const inputs = authorInputs().tactics;
   const corrections = authorCorrections();
   return buildBound(inputs[0].rules, binding => {
@@ -44,12 +44,17 @@ export function buildTacticsSuite(): SuiteDocument {
         state.upkeepPending = input.upkeepPending; state.reviewUpkeep = structuredClone(input.reviewUpkeep);
         state.inactivityPlies = input.inactivityPlies; state.progressThisTurn = input.progressThisTurn;
         if (input.kind === 'macro-decision') state.turn.actionsRemaining = input.turn.actionsRemaining;
+        const patch = hooks.patchState?.(input.oldId, state);
+        if (patch) row.rationale += ` ${patch}`;
         const witness = input.disposition === 'replacement' ? replacement(input, state) : input.witness;
         const position = makePosition(`${row.id}-root`, state, positionBinding, { kind: 'authored-diagram', rationale: `${row.rationale} Fresh explicit Phasing diagram reconstructed from finite unit/cash/reserve components; no claim of initial-game reachability. Historical whole-turn keys are discarded.` });
         doc.positions.push(position);
         if (input.kind === 'macro-decision') {
           if (!witness?.length) throw new Error(`missing declared witness ${input.oldId}`);
-          const accept: PredicateSpec = { kind: 'target-removed@1', targetId: 'u0', cause: 'own-act-attack', survivingSides: [state.turn.currentPlayer] };
+          const fallback: PredicateSpec = { kind: 'target-removed@1', targetId: 'u0', cause: 'own-act-attack', survivingSides: [state.turn.currentPlayer] };
+          const widened = hooks.decisionAccept?.(input.oldId, state, fallback);
+          if (widened) row.rationale += ` ${widened.rationale}`;
+          const accept: PredicateSpec = widened?.accept ?? fallback;
           const positive = probe(complete(state, witness), accept);
           const negative = probe(complete(state), facts([{ kind: 'unit', id: 'u0', present: true }]));
           const c: MacroDecision = { ...common(row), kind: 'macro-decision', root: positionRef(position), work: WORK,

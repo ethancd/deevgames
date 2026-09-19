@@ -9,6 +9,24 @@ import { isMacroEndpoint, replayMacro, semanticHash, sourceBinding, withRules } 
 import type { AIAction, GameState, PhasingCase, PlayerId, PredicateSpec, ProbeSpec, RulesBlock, SourceBinding, SuiteDocument } from './format';
 
 export const AUTHOR_REVISION = '2026-09-19-author-v2-pre-scoring';
+/** Re-authoring hooks the v2 builders inject into the SHARED tactics/home-mate
+ * builders. They are optional and absent on the v1 path, so `buildTacticsSuite()`
+ * and `buildHomeMateSuite()` with no argument still emit the frozen v1
+ * documents byte-identically; `fixtures/v1` must keep reproducing.
+ *
+ * Nothing here consults a measured answer: a hook receives the canonical root
+ * the builder just constructed and returns authored predicates, and the v2
+ * implementations re-derive their content canonically from that root. */
+export interface V2TacticsHooks {
+  /** Mutate the freshly constructed diagram before it becomes a position. */
+  patchState?(oldId: string, state: GameState): string | null;
+  /** Replace the accept predicate of one macro-decision. */
+  decisionAccept?(oldId: string, state: GameState, fallback: PredicateSpec): { accept: PredicateSpec; rationale: string } | null;
+}
+export interface V2HomeHooks {
+  /** Replace the invader decision's scoring contract for one case. */
+  invaderDecision?(oldId: string, fallback: PredicateSpec, invader: PlayerId): { terminalPolicy: 'predicate-only' | 'allow-root-mover-win'; accept: PredicateSpec; rationale: string } | null;
+}
 export const EXPOSURE = 'Original finite v1 suite inputs and the recorded canonical triage were read. Forty other new candidate positions were exposed to M4 legality/undo/cap/depth acceptance in the shared project; no recorded per-root Hard strategic choices were consulted for these definitions. No opening, sealed, validation, or strength outcomes were read.';
 export const WORK = 120000;
 interface Diagram {

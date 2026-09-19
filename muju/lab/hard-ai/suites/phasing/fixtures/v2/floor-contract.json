@@ -1,0 +1,22 @@
+{
+  "schema": "muju-phasing-suite-floor-v2",
+  "manifestSha256": "454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453",
+  "declaredAt": "2026-09-19T19:43:48.000Z",
+  "seed": 1,
+  "profile": "desktop",
+  "engineSourceSha256": "e46f735eaaea2aa4df2d7eda276e7c6db366e1db587260fcefc8a0d678391dcd",
+  "weightsSha256": "1addc7d64b574c2ea27df209d32a5e37bc0800e8e4948c2bd3f514c1f64c92e0",
+  "allowedMiss": {
+    "tactics": 6,
+    "invariants": 1,
+    "home-mate": 0,
+    "economy": 0,
+    "summon-disruption": 1,
+    "home-fortify": 0
+  },
+  "coverage": "all",
+  "fallback": "veto",
+  "illegalOrDivergent": "veto",
+  "unresolvedProof": "veto",
+  "rationale": "Preregistered engineering floors for the v2 authored release, per docs/hard-ai/phasing/M5-FLOOR-PREREGISTRATION-v2.md. The allowedMiss vector is the frozen v1 budget (v1 offered minus v1 minimumEarned per family) and contract.ts refuses any other value in either direction; minimumEarned is DERIVED from this manifest's own offered counts (tactics 63-6=57, invariants 15-1=14, home-mate 28-0=28, economy 20-0=20, summon-disruption 14-1=13, home-fortify 6-0=6) so that no v2 floor can be set from an observed outcome. engineSourceSha256 and weightsSha256 preregister the build these floors are declared against: assertContractBuild refuses any other build rather than crediting it. They are hashJson(engineSourceHashes()) and weightIdentity(DEFAULT_WEIGHTS) read off this worktree without running a search; if the Hard engine or the weights change before the measurement, this contract must be rewritten with the new hashes and re-committed ALONE before hard:suite:phasing:measure is run. This file must be committed by itself, with no result.json, cases.jsonl, started.json, failure.json, ledger line or any path under a results directory in the same commit, and the measurement must be a separate, later run; resolveContractCommit refuses an untracked or working-tree-modified contract, which is the mechanism that makes this a preregistration rather than a description. No engine outcome, corpus, opening or sealed set was read to write it."
+}
