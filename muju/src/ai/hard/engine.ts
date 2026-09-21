@@ -356,7 +356,11 @@ export class HardEngine {
         const mover = ctx.scoreMover;
         const terminal = terminalScore(p, mover, ply);
         if (terminal !== null) return terminal;
-        return evaluator.stage0(p, mover) + evaluator.stage1(p, mover, scratch, ply);
+        const baseScore = evaluator.stage0(p, mover) + evaluator.stage1(p, mover, scratch, ply);
+        // Phasing: a bought unit is a PENDING summon whose value lives in stage 2 (PendingValue).
+        // Without this credit every BUY reads as -100 cc per crystal here and the K cut evicts
+        // buying turns before search sees them (docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md).
+        return baseScore + (p.pendCostSum[mover] - p.pendCostSum[1 - mover]) * 100;
       },
       maxPly,
       ttScratch: newTTEntry(),

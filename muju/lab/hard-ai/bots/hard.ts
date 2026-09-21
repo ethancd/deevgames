@@ -102,7 +102,8 @@ import { HardEngine } from '../../../src/ai/hard/engine';
 import { now } from '../../../src/ai/hard/search/time';
 import type { RootResult } from '../../../src/ai/hard/search/root';
 import { DESKTOP, LAB, MIDRANGE, PHONE, type HardConfig, type Weights } from '../../../src/ai/hard/config';
-import { DEFAULT_WEIGHTS } from '../../../src/ai/hard/eval/weights';
+import { readFileSync } from 'node:fs';
+import { DEFAULT_WEIGHTS, loadWeights } from '../../../src/ai/hard/eval/weights';
 import type { EngineBot, HardSeatTurnRow } from '../../harness/types';
 import { ablationConfigFor } from '../ablate/arms';
 
@@ -283,8 +284,19 @@ export function hardConfigFor(label: string): Partial<HardConfig> {
  * constants themselves are untouched — `hardConfigFor`'s return is what
  * `src/ai/hard/config.ts` defines, for every other caller.
  */
+let envWeightsCache: { path: string; weights: Weights } | null = null;
+function envWeights(path: string): Weights {
+  if (envWeightsCache === null || envWeightsCache.path !== path) {
+    envWeightsCache = { path, weights: loadWeights(JSON.parse(readFileSync(path, 'utf8'))) };
+    console.error(`hard bot: MUJU_HARD_WEIGHTS -> ${envWeightsCache.weights.label} (${path})`);
+  }
+  return envWeightsCache.weights;
+}
+
 export function hardEnginePatch(profile: string | Partial<HardConfig> = 'lab', weights?: Weights): Partial<HardConfig> {
   const patch: Partial<HardConfig> = typeof profile === 'string' ? hardConfigFor(profile) : { ...profile };
+  // SCRATCH EXPERIMENT HOOK (not for merge as-is): MUJU_HARD_WEIGHTS=<weights json> overrides every hard@* bot in this process.
+  if (weights === undefined && process.env.MUJU_HARD_WEIGHTS) weights = envWeights(process.env.MUJU_HARD_WEIGHTS);
   const resolved = weights ?? (patch.weights === undefined || patch.weights.version === 0 ? DEFAULT_WEIGHTS : patch.weights);
   return { ...patch, weights: resolved };
 }

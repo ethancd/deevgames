@@ -9,6 +9,14 @@ kind), then review every affected node through verification and applicable
 deployment. Record changed, verified unchanged, or blocked with evidence.
 The browser site, Node/MCP host and Academy have separate release paths.
 
+## Hard AI under Phasing — current work (start here)
+
+Read [the 2026-09-20 repair handoff](muju/docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md) before
+touching `muju/src/ai/hard`: it has the measured results, the root causes of the engine's hoarding, the
+scorer fix and weight vectors, how to reproduce ladder rows, and the ranked next steps (including the
+Phasing-only cutover summary). Reports, weight files and per-run summaries sit beside it. A ready prompt for
+playing the scripted bots online is in `muju/docs/PROMPT_scripted_bots_online.md`.
+
 ## Playing Muju through MCP
 
 Before playing, consult [Muju MCP tool TAPs](muju/docs/MCP_TOOL_TAPS.md): shared
