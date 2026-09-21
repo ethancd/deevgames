@@ -356,7 +356,10 @@ export class HardEngine {
         const mover = ctx.scoreMover;
         const terminal = terminalScore(p, mover, ply);
         if (terminal !== null) return terminal;
-        return evaluator.stage0(p, mover) + evaluator.stage1(p, mover, scratch, ply);
+        const baseScore = evaluator.stage0(p, mover) + evaluator.stage1(p, mover, scratch, ply);
+        // SCRATCH (gap-fill reader): credit refundable pending principal in the within-turn score.
+        if (!evaluator.currentWeights.label.endsWith('+pc')) return baseScore;
+        return baseScore + (p.pendCostSum[mover] - p.pendCostSum[1 - mover]) * 100;
       },
       maxPly,
       ttScratch: newTTEntry(),

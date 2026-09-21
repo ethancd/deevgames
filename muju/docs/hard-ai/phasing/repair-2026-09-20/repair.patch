@@ -1,0 +1,57 @@
+--- /Users/ethancd/src/deevgames/muju/src/ai/hard/engine.ts	2026-09-20 18:03:42
++++ muju/src/ai/hard/engine.ts	2026-09-20 18:57:52
+@@ -356,7 +356,10 @@
+         const mover = ctx.scoreMover;
+         const terminal = terminalScore(p, mover, ply);
+         if (terminal !== null) return terminal;
+-        return evaluator.stage0(p, mover) + evaluator.stage1(p, mover, scratch, ply);
++        const baseScore = evaluator.stage0(p, mover) + evaluator.stage1(p, mover, scratch, ply);
++        // SCRATCH (gap-fill reader): credit refundable pending principal in the within-turn score.
++        if (!evaluator.currentWeights.label.endsWith('+pc')) return baseScore;
++        return baseScore + (p.pendCostSum[mover] - p.pendCostSum[1 - mover]) * 100;
+       },
+       maxPly,
+       ttScratch: newTTEntry(),
+--- /Users/ethancd/src/deevgames/muju/lab/hard-ai/ablate/arms.ts	2026-09-20 18:03:34
++++ muju/lab/hard-ai/ablate/arms.ts	2026-09-20 18:57:52
+@@ -948,6 +948,40 @@
+   patch: keepSafetyWeights(SAFETY_ANCHOR, armWeightsLabel('no-safety-keep-anchor')),
+   rootDiagnostic: true,
+ });
++
++
++// --- SCRATCH (gap-fill reader, 2026-09-20): hand-prior repair arms -------------
++// default-v1 (git 43b87b6) adapted to the 62-feature Phasing schema. NOT in the repo.
++function handPriorsPatch(label: string, opts: { bankExcess: number; priors: boolean }): Partial<HardConfig> {
++  const base = cloneWeights(DEFAULT_WEIGHTS);
++  const w = Int32Array.from(base.w);
++  const s = (i: number, v: number): void => { w[i] = v; };
++  // accounting pins kept from the bootstrap: BankLiquid 100, EconDelta 100, PendingValue 1
++  s(F.BankExcess, opts.bankExcess);
++  if (opts.priors) {
++    s(F.HomeInvaded, -4000);
++    s(F.SpawnArea, 30); s(F.SpawnReserve, 8); s(F.SpawnZero, -800); s(F.AnchorDepth, 25);
++    s(F.Infiltration, 90); s(F.CornerSeal, -60);
++    s(F.HomeThreat, -400); s(F.HomeCountdown, -180); s(F.HomePlug, 220); s(F.HomeRescuers, 90);
++    s(F.Exposure, -20); s(F.DrawPressure, -8); s(F.ActionsLeft, 40);
++    // zero by contract: Rent, PstMine (single forecast), BankConvertible, ElementCoverage (stale cash option)
++    // stage 2: economy overlap terms (24-27) stay 0; HangingBuy(29) stays 0 (slot redefined)
++    s(F.Hanging, -50); s(F.ApproachRetreat, -25); s(F.ApproachStrand, -10); s(F.StrandPunish, 20);
++    s(F.KillAvailable, 35); s(F.CleaveExposure, -40); s(F.AnchorFragility, -120);
++    s(F.BlockingDeficit, -150); s(F.CornerInfiltration, 300);
++    s(F.Inv1SpawnZero, -800); s(F.Inv2CornerSeal, -300); s(F.Inv3RetreatSquare, -250);
++    s(F.Inv4StrandUnpunished, -100); s(F.Inv6FragileAnchor, -120); s(F.Inv7PromoteNoRunway, -600);
++    s(F.Inv8NoPreAdjacency, -150); s(F.Inv9ChipAcrossTurn, -150); s(F.Inv10HomeReachable, -400);
++    s(F.Inv12CleaveLine, -40); s(F.Inv13Turtle, -200); s(F.Inv14LiquidityFloor, -200);
++    s(F.Inv16ClockDiscipline, -200); s(F.Inv19SoftMinerExposed, -150); s(F.Inv20StrandNoRetreat, -250);
++    // Inv5/15/17/18 structural zero; Inv11 (homeBare, bank>=3 story) zero by continuation-map C
++  }
++  return { weights: finishArmWeights(base, w, label) };
++}
++SPECS.push({ name: 'hand-priors', factor: 'weights', change: 'SCRATCH: default-v1 priors adapted to 62 features + BankExcess 25; scorer unchanged', patch: handPriorsPatch('scratch-hand-priors-v1', { bankExcess: 25, priors: true }), rootDiagnostic: true });
++SPECS.push({ name: 'hand-priors-pc', factor: 'weights', change: 'SCRATCH: hand-priors + within-turn scorer credits pending principal (label suffix +pc)', patch: handPriorsPatch('scratch-hand-priors-v1+pc', { bankExcess: 25, priors: true }), rootDiagnostic: true });
++SPECS.push({ name: 'bootstrap-pc', factor: 'weights', change: 'SCRATCH: bootstrap vector unchanged + within-turn scorer credits pending principal', patch: handPriorsPatch('scratch-bootstrap+pc', { bankExcess: 100, priors: false }), rootDiagnostic: true });
++SPECS.push({ name: 'bank25-pc', factor: 'weights', change: 'SCRATCH: bootstrap + BankExcess 25 + pending-principal scorer credit, no tactical priors', patch: handPriorsPatch('scratch-bank25+pc', { bankExcess: 25, priors: false }), rootDiagnostic: true });
+ 
+ export const ARMS: readonly AblationArm[] = Object.freeze(SPECS.map(registerArm));
+ 
