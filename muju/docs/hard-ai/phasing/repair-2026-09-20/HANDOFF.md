@@ -1,5 +1,12 @@
 # Hard AI under Phasing — repair handoff (2026-09-20)
 
+> **2026-09-21:** superseded in part. Read [HANDOFF-2026-09-21.md](HANDOFF-2026-09-21.md) first: it
+> records what PR #25 (`71b41a3`) already landed from step 1 (the credit is now unconditional and
+> `DEFAULT_WEIGHTS` is the hand priors, hash `14d06ba8`), the 24 tests that are red on master because
+> of it and their exact new values, the scorer-mirror and floor-contract recipes, and line-by-line
+> corrections to this file. The results table and root causes below still stand; the "What is in this
+> branch" and "Next steps" sections do not.
+
 Written in a hurry at the end of a session on the owner's laptop. A fresh cloud session cloning
 `deevgames` should read this file first. Everything referenced is in this directory.
 

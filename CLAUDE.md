@@ -11,11 +11,15 @@ The browser site, Node/MCP host and Academy have separate release paths.
 
 ## Hard AI under Phasing — current work (start here)
 
-Read [the 2026-09-20 repair handoff](muju/docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md) before
-touching `muju/src/ai/hard`: it has the measured results, the root causes of the engine's hoarding, the
-scorer fix and weight vectors, how to reproduce ladder rows, and the ranked next steps (including the
-Phasing-only cutover summary). Reports, weight files and per-run summaries sit beside it. A ready prompt for
-playing the scripted bots online is in `muju/docs/PROMPT_scripted_bots_online.md`.
+Read [the 2026-09-21 handoff addendum](muju/docs/hard-ai/phasing/repair-2026-09-20/HANDOFF-2026-09-21.md)
+first, then [the 2026-09-20 repair handoff](muju/docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md), before
+touching `muju/src/ai/hard`. The addendum is the verified state at master `eda73b2`: the repair is the
+production default but master is red (24 tests pin the old bootstrap vector), and it gives the exact edits,
+decisions and recipes to finish handoff step 1, then supersede the floor contract, run the correctness veto,
+Round 3, and the Rush and cutover work. The handoff has the measured results, the root causes of the engine's
+hoarding, the weight vectors and how to reproduce ladder rows. Reports, weight files and per-run summaries
+sit beside them. A ready prompt for playing the scripted bots online is in
+`muju/docs/PROMPT_scripted_bots_online.md`.
 
 ## Playing Muju through MCP
 
