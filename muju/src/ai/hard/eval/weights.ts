@@ -24,6 +24,24 @@ const W: readonly number[] = (() => {
   w[F.BankExcess] = 100;
   w[F.EconDelta] = 100;
   w[F.PendingValue] = 1;
+  // Hand priors, 2026-09-20 (docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md): the Standard-era
+  // default-v1 values for the features whose meaning survives Phasing, plus a cash discount so
+  // spending beats hoarding. Measured 53-0-11 vs AIEngineV2 hard on held-out openings. Rent,
+  // PstMine, BankConvertible, ElementCoverage, features 24-27, HangingBuy, Inv5/11/15/17/18 stay 0.
+  w[F.BankExcess] = 25;
+  w[F.HomeInvaded] = -4000;
+  w[F.SpawnArea] = 30; w[F.SpawnReserve] = 8; w[F.SpawnZero] = -800; w[F.AnchorDepth] = 25;
+  w[F.Infiltration] = 90; w[F.CornerSeal] = -60;
+  w[F.HomeThreat] = -400; w[F.HomeCountdown] = -180; w[F.HomePlug] = 220; w[F.HomeRescuers] = 90;
+  w[F.Exposure] = -20; w[F.DrawPressure] = -8; w[F.ActionsLeft] = 40;
+  w[F.Hanging] = -50; w[F.ApproachRetreat] = -25; w[F.ApproachStrand] = -10; w[F.StrandPunish] = 20;
+  w[F.KillAvailable] = 35; w[F.CleaveExposure] = -40; w[F.AnchorFragility] = -120;
+  w[F.BlockingDeficit] = -150; w[F.CornerInfiltration] = 300;
+  w[F.Inv1SpawnZero] = -800; w[F.Inv2CornerSeal] = -300; w[F.Inv3RetreatSquare] = -250;
+  w[F.Inv4StrandUnpunished] = -100; w[F.Inv6FragileAnchor] = -120; w[F.Inv7PromoteNoRunway] = -600;
+  w[F.Inv8NoPreAdjacency] = -150; w[F.Inv9ChipAcrossTurn] = -150; w[F.Inv10HomeReachable] = -400;
+  w[F.Inv12CleaveLine] = -40; w[F.Inv13Turtle] = -200; w[F.Inv14LiquidityFloor] = -200;
+  w[F.Inv16ClockDiscipline] = -200; w[F.Inv19SoftMinerExposed] = -150; w[F.Inv20StrandNoRetreat] = -250;
   return w;
 })();
 
@@ -41,7 +59,7 @@ function makeWeights(label: string): Weights {
  * The approved accounting bootstrap. Clone before modifications; this exported
  * object is the source default, not a tuned/generated historical vector.
  */
-export const DEFAULT_WEIGHTS: Weights = makeWeights('phasing-accounting-bootstrap-v1');
+export const DEFAULT_WEIGHTS: Weights = makeWeights('phasing-hand-priors-v1');
 
 /** A deep copy; `Weights` owns two typed arrays. */
 export function cloneWeights(w: Weights): Weights {
