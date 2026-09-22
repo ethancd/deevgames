@@ -52,6 +52,80 @@ out. Fill the slots below with what was measured, including failures.
   `dual-ruleset-final` is created at the merge commit's first parent, the last
   commit supporting both rule sets, and pushed: _(fill)_. (J-022, A6.)
 
+## Superseded evidence, retired arm names and the weights contract
+
+Recorded before the ledger because the rows below are read against it. The two
+paragraphs that follow are **verbatim** from the ci-green lane's handoff, written
+there for this file (that lane does not own it):
+
+> `eecdf14c` changes the play of exactly one profile, `hard@lab-refined`
+> (`lab/hard-ai/bots/hard.ts:256`, `useFutility: true`), because the depth-1 futility bound now
+> includes the pending-summon credit (`src/ai/hard/search/pvs.ts:709`). Its resolved config and
+> identity hash are unchanged, so
+> `docs/hard-ai/phasing/repair-2026-09-20/results/ladder-w1500-labrefined-vs-aiv2hardturn/` is
+> superseded and must not be compared across this commit. `hard@desktop` and every other profile
+> are bit-identical (fixed-work self-play, seed 31337, 6 games byte-equal).
+>
+> `eecdf14c` also changes, by design, the numbers the lab INSTRUMENTS print: `hard:recall`,
+> `hard:audit`, `hard:analyze`, `hard:coverage` and `lab/hard-ai/bench/p6-turn-time.ts` now score
+> positions with the same within-turn sum the engine plays with (`src/ai/hard/eval/turnScore.ts`),
+> pending-summon credit included. That is the point of the commit — before it, the instruments
+> described a generator nobody plays — but it means every `*Value`, `regret_*` and other
+> score-derived column those tools emit moves wherever a position holds paid pending summons,
+> which under Phasing is routine. No `configHash` and no arm identity moves with it, so nothing
+> mechanical flags it. Therefore **every committed result row under `muju/lab/results/**` and
+> `muju/lab/ai/results/**` produced by those instruments predates the shared scorer and must not
+> be diffed across `eecdf14c`** — 79 files, listed by
+> `git ls-files | grep -E "results/.*(coverage|audit|recall)"`. Re-generate a baseline on the
+> merged tree before comparing anything; do not read a moved column as a generator regression.
+
+Line numbers in that quotation are the ci-green lane's own worktree. On this
+merged tree the two citations are `lab/hard-ai/bots/hard.ts:270` (the
+`hard@lab-refined` branch, `useFutility: true`) and `src/ai/hard/search/pvs.ts:693`
+(the futility test) with the credited sum at `:709`; the file count is unchanged
+(`git ls-files | grep -E "results/.*(coverage|audit|recall)" | wc -l` -> 79 at the
+merged tip). Nothing else in the quotation is re-pointed.
+
+**Retired arm names — the mapping anyone reproducing a repair row needs.** About
+30 files under `docs/hard-ai/phasing/repair-2026-09-20/results/**` plus that
+directory's `HANDOFF.md` quote arm names that no longer exist in
+`lab/hard-ai/ablate/arms.ts`. Those are dated records and are not edited, so the
+mapping lives here: **since `71b41a39`, `hard@ablate:hand-priors-pc` ==
+`hand-priors` == `bank25-pc` == `hard@desktop`**, and the old `bootstrap-pc` is
+today's `weights-bank100` (*not* `weights-bootstrap-m6`, which is the genuine
+five-entry M6 bootstrap vector). `4bb4a7dc` then removed those four scratch arms
+(`hand-priors`, `hand-priors-pc`, `bootstrap-pc`, `bank25-pc`) and added three
+honest ones (`weights-bootstrap-m6`, `weights-bank100`, `weights-no-priors`), so
+`ARMS.length` went **61 -> 60**; the strength lane appended seven `evalFix`
+strength arms on top, and the merged tree carries **67**. No test pins the count
+(the existing `new Set(hashes).size === ARMS.length` assertions are
+self-referential), so a count is evidence only when measured:
+`node --import tsx -e "import('./lab/hard-ai/ablate/arms.ts').then(m=>console.log(m.ARMS.length))"`
+from `muju/`.
+
+**`WEIGHTS_VERSION` contract change.** The constant stays **2** (D9), but its
+contract changed on 2026-09-21: it is now bumped **when the vector's SCHEMA
+changes** — the feature count, their meaning, or the file shape `loadWeights`
+accepts — and no longer whenever the numbers change. The numbers *did* change on
+2026-09-20 without a bump, when `phasing-hand-priors-v1` replaced the
+five-nonzero M6 bootstrap; that was deliberate and is now the standing rule,
+because a bump makes `loadWeights` reject every stored vector, including the 33
+reviewed JSONs under `phasing/repair-2026-09-20/weights/` and the book key.
+Stated in the docstring at `src/ai/hard/eval/weights.ts:14` and in
+`../../JUDGMENT_LOG.md` J-022.
+
+**Documented-future commands that name deleted scripts.** `hard:spsa` and
+`hard:book` were removed from `package.json` on 2026-09-21; neither target ever
+existed (`lab/hard-ai/tune/spsa.ts` and `lab/hard-ai/book/` are absent, and
+`docs/hard-ai/e3/E3.3-TUNING-INSTRUMENT.md:35-37` records `hard:spsa` failing
+with module-not-found in 2026-09-17). One reference survives in code and is
+deliberately left alone:
+
+| Surface | What it is | Disposition |
+| --- | --- | --- |
+| `lab/hard-ai/verify/gates.ts:621` | `npm run hard:book …` inside the **M18 `notImplemented` gate row** | Kept. A `notImplemented` row is a documented future command that the verify runner never executes — it fails with `not-implemented` by construction. Anyone implementing M18 writes the script first. |
+| `docs/hard-ai/DESIGN.md:229-230,260-261,1507`, `MILESTONES.md:348,377`, `e3/E3.3-TUNING-INSTRUMENT.md:35-37,312-313` | historical plan text naming both scripts | Kept as written, each file stamped with a dated one-line note at the top rather than rewritten. |
+
 ## Release ledger
 
 Post-release measurement rows use seeds **7101–7606** and never the 2026095x /

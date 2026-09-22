@@ -243,9 +243,9 @@ describe('core/spawn.ts', () => {
   });
 
   it('is commitment-blind: a pending summon neither anchors, blocks nor occupies', () => {
-    // "They are not actual units: they cannot occupy squares, block movement,
-    // attack, be attacked, mine, promote, anchor or block rectangles"
-    // (`docs/PHASING-2026-09-16.md`). `core/spawn.ts` therefore reads `occBy`
+    // "A pending summon is not a unit: it cannot occupy a square, block
+    // movement, attack, be attacked, mine, promote, anchor or block a
+    // rectangle" (`SPEC.md` §5.2). `core/spawn.ts` therefore reads `occBy`
     // and nothing else — the pending MASK is `genPlace`'s business, not the
     // geometry's.
     const spec = {

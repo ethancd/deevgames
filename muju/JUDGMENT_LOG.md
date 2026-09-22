@@ -416,6 +416,16 @@ User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan t
   own default stays `'standard'` this pass and every entry point passes
   `'phasing'` explicitly; flipping the 243 defaulted call sites is filed as a
   follow-up, not smuggled into this change.
+  Lab — `WEIGHTS_VERSION` stays **2**, but its contract changes with this entry:
+  it is bumped **when the vector's schema changes** (the feature count, their
+  meaning, or the file shape `loadWeights` accepts), not whenever the numbers
+  change. The numbers did change on 2026-09-20 without a bump, when
+  `phasing-hand-priors-v1` replaced the five-nonzero M6 bootstrap; that was
+  deliberate, because a bump makes `loadWeights` reject every stored vector,
+  including the 33 reviewed JSONs under
+  `docs/hard-ai/phasing/repair-2026-09-20/weights/` and the book key. Stated at
+  `src/ai/hard/eval/weights.ts:14` and in
+  `docs/hard-ai/RELEASE-2026-09-21-phasing.md`.
 - **Compatibility:** stated as three decisions, none of which rewrites a stored
   row.
   - *Local saves.* `SCHEMA_VERSION = 9`, readable `[5,6,7,8,9]`; a non-Phasing

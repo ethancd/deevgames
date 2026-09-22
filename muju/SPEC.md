@@ -271,19 +271,25 @@ This applies unconditionally to moved, attacked and newly arrived units; Mining 
 
 - During Prepare, pay a tier-1 unit's catalogue cost to commit a **public pending
   summon**: its owner, unit type, square, paid cost and a unique ID, all visible
-  to both players. The piece does not appear yet.
+  to both players. The piece does not appear yet. The square must be **empty and
+  inside one of your current unblocked spawn rectangles (§5.3) at the moment you
+  commit**, and you may hold at most one own commitment per square. A commitment
+  that fails this test is not legal and is rejected; it does not become a pending
+  summon and nothing is paid or refunded.
 - A pending summon becomes an actual piece at your **next** turn start, if its
   square is then empty and supported by a current unblocked spawn rectangle
   (§5.3). Otherwise it disappears and refunds its exact original cost; there is
   no relocation and no automatic replacement purchase. Only the arrival-time
-  position matters, so a temporary intrusion that has left again is harmless.
+  position decides whether it *survives*, so a temporary intrusion that has left
+  again is harmless.
 - A pending summon is not a unit: it cannot occupy a square, block movement,
   attack, be attacked, mine, promote, anchor or block a rectangle, occupy home,
   incur upkeep, or postpone elimination. One own commitment per square; real
   units may move through or stop on that square.
-- Commit any number, limited only by crystals and legal squares. Committing
-  costs no actions. Higher tiers cannot be bought. Ordinary within-turn undo can
-  revise a commitment before handoff.
+- Commit any number, limited only by crystals and the legal squares defined
+  above — empty, inside a current unblocked rectangle, one own commitment each.
+  Committing costs no actions. Higher tiers cannot be bought. Ordinary
+  within-turn undo can revise a commitment before handoff.
 - There is no build queue, build time, readiness or separate tech requirement.
   Every tier-2 unit was a tier-1 on the board, and every tier-3 was a tier-2:
   this is structural, enforced by the promotion path, not another prerequisite.
@@ -296,9 +302,13 @@ This applies unconditionally to moved, attacked and newly arrived units; Mining 
   corners). If **no enemy unit is inside the rectangle**, the new unit may be
   placed on any **empty** square within it. Any enemy inside the rectangle
   blocks that anchor entirely (infiltration denies spawn zones).
-- The rectangle test runs on the **arrival-turn** board, not on the board as it
-  stood when the summon was paid for. The opponent therefore has one full turn to
-  occupy the square or break its support.
+- The rectangle test runs **twice**, and both tests apply: once on the board as
+  it stands when you commit (§5.2), and **again** on the **arrival-turn** board —
+  not merely on the board as it stood when the summon was paid for. Only the
+  arrival-time test can refund. A square that is occupied or unsupported *now*
+  cannot be bought at all; a commitment that was legal when paid for and is
+  occupied or unsupported on arrival disappears and returns its exact cost. The
+  opponent therefore has one full turn to occupy the square or break its support.
 - **Arrivals act immediately** on the turn they arrive — a full turn after
   payment. There is no summoning sickness, and there is no summon-and-strike: a
   piece can never act on the turn it was paid for.

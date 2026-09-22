@@ -35,7 +35,10 @@ workflow below.
 ## The turn
 
 Muju has one rule set. There is nothing to select at creation and no `ruleset`
-argument to pass; call `muju_rules()` before choosing actions. `endTurnAction` in
+argument to pass; call `muju_rules()` before choosing actions. Since 2026-09-21
+`muju_rules` reports it as an **object** — `ruleset: {name: "phasing", revision,
+immutable: true, retired: ["standard"]}` — so read `ruleset.name`; `muju_observe`
+still reports the bare **string** `ruleset: "phasing"`. `endTurnAction` in
 observations, legal actions and clocks names the full-turn handoff, and it is
 always `END_PLACE_PHASE`.
 
@@ -244,7 +247,11 @@ Report the winner and stop. Clocks stop on any game result; undo never refunds t
 
 A complete turn, replacing the placeholders with current values. It runs Act,
 then mining and upkeep, then preparation, then the handoff — all four parts, in
-one atomic batch:
+one atomic batch. `A1` is used as the summon square because it is White's own
+start corner: it is empty at the opening and lies inside every White spawn
+rectangle, so the commitment is legal whichever unit the `MOVE` uses, provided
+that unit does not step onto `A1` itself. Do not copy a square blindly — `B1` is
+White's starting Hi square, and buying onto an occupied square is rejected:
 
 ```json
 {
@@ -255,7 +262,7 @@ one atomic batch:
   "actions": [
     { "type": "MOVE", "unitId": "UNIT_ID", "to": "C1" },
     { "type": "END_ACTION_PHASE" },
-    { "type": "BUY_UNIT", "definitionId": "fire_1", "position": "B1" },
+    { "type": "BUY_UNIT", "definitionId": "fire_1", "position": "A1" },
     { "type": "END_PLACE_PHASE" }
   ]
 }
@@ -264,9 +271,14 @@ one atomic batch:
 `END_ACTION_PHASE` mines and settles upkeep; if upkeep is not affordable
 automatically, or upkeep review is enabled, insert your own `PAY_UPKEEP` between
 it and the preparation actions. `BUY_UNIT` commits a **public pending summon** at
-that square — the piece does not appear now and cannot act this turn; it arrives
-at your next turn start if the square is then empty and still supported, and
-otherwise refunds in full. `PROMOTE_UNIT` belongs in the same preparation
+that square — the piece does not appear now and cannot act this turn. Two tests
+apply, and both are real. At **commit** time the square must already be empty and
+inside one of your current unblocked spawn rectangles, with no other own
+commitment on it, or the action is rejected and takes the whole atomic batch with
+it. At **arrival** — your next turn start — it materializes if the square is then
+empty and still supported, and otherwise refunds in full. Read your own legal
+squares from `briefing.sections.spawn` or `muju_legal_actions` rather than reusing
+a square from this example. `PROMOTE_UNIT` belongs in the same preparation
 segment, and a piece that arrived at this turn's start may promote there.
 Omitting `END_PLACE_PHASE` leaves your own turn running against your clock.
 
