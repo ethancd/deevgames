@@ -40,3 +40,10 @@ in flight and are incomplete on disk: `p3-s14-Rush` (6/8 pairs), `p3-s15-Rush` a
 pairs, just spawned). From here on: ONE row at a time (`--concurrency 1`), `--shards 2`,
 `MUJU_HEAVY_SLOTS=2`, until the coordinator says otherwise. The three interrupted rows are finished
 with `--resume` before the rest of Stage A continues.
+- p3-s14 | Rush | A | 7-0-9 | score 0.438 | spend 95% | promo/g 3.94 | mined 189/244 | upkeepElim 0% | illegal 0 | valid | load 57.3 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s14-Rush]
+- p3-s15 | Rush | A | 7-0-9 | score 0.438 | spend 96% | promo/g 3.56 | mined 108/211 | upkeepElim 6% | illegal 0 | valid | load 6.3 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s15-Rush]
+- p3-s16 | Rush | A | 6-0-10 | score 0.375 | spend 95% | promo/g 3.75 | mined 141/237 | upkeepElim 0% | illegal 0 | valid | load 4.9 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s16-Rush]
+- p3-s17 | Rush | A | 8-0-8 | score 0.500 | spend 98% | promo/g 4.88 | mined 156/213 | upkeepElim 6% | illegal 0 | valid | load 3.7 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s17-Rush]
+- p3-s18 | Rush | A | 11-0-5 | score 0.688 | spend 97% | promo/g 3.69 | mined 210/205 | upkeepElim 0% | illegal 0 | valid | load 4.9 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s18-Rush]
+- p3-s19 | Rush | A | 10-0-6 | score 0.625 | spend 95% | promo/g 3.69 | mined 119/176 | upkeepElim 6% | illegal 0 | valid | load 5.2 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s19-Rush]
+- p3-s20 | Rush | A | 8-0-8 | score 0.500 | spend 97% | promo/g 5.06 | mined 132/196 | upkeepElim 0% | illegal 0 | valid | load 4.7 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s20-Rush]

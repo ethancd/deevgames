@@ -1,6 +1,6 @@
 {
   "schema": "muju-ladder-manifest-v1",
-  "status": "running",
+  "status": "complete",
   "a": "hard@env",
   "b": "Rush",
   "aConfigHash": "hard:env:fixed:60000#80b6e53f8b32a80530a9a5eae939679c47113b9e3b8756a1e92417a202b71d79",
@@ -424,10 +424,16 @@
     8.9423828125
   ],
   "at": "2026-09-22T22:17:37.025Z",
-  "finishedAt": null,
-  "wallMs": null,
-  "counts": null,
-  "voided": null,
+  "finishedAt": "2026-09-22T22:21:32.302Z",
+  "wallMs": 235455,
+  "counts": {
+    "scheduledPairs": 8,
+    "completedPairs": 8,
+    "games": 16,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "voided": false,
   "voidReason": null,
   "error": null
 }
