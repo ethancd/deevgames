@@ -123,6 +123,12 @@ it('copies a replayable report from any local game, with no opt-in', async () =>
   fireEvent.click(screen.getByRole('button', { name: 'Report this position' }), { shiftKey: true });
   await waitFor(() => expect(writeText).toHaveBeenCalledTimes(2));
   const report = JSON.parse(writeText.mock.calls[1][0] as string);
+  // The wire `kind` still carries the retired preview brand. It names the report
+  // FORMAT, not a feature flag, and every report already pasted into a chat
+  // carries it, so it is PINNED here rather than left free to drift: renaming it
+  // is a wire-format change and must move this line
+  // (`src/utils/positionReport.ts`, which no Stage-1 lane owns).
+  expect(report.kind).toBe('muju-phasing-preview-report');
   expect(report.rulesRevision).toBe('muju-phasing-2');
   expect(report.ruleset).toBe('phasing');
   expect(report.engine).toBe('v2');
