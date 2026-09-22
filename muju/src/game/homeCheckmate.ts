@@ -8,6 +8,7 @@ import { getValidMoves } from './movement';
 import { getNextTierDefinition, getUnitDefinition } from './units';
 import { getActionsPerTurn, isPhasing } from './rules';
 import { unitUpkeep } from './upkeep';
+import { killClockForbidsCheckmate } from './inactivity';
 
 type Transition = (state: GameState, action: AIAction) => GameState;
 export type HomeDefense = 'rescue' | 'mate' | 'unknown';
@@ -177,6 +178,10 @@ export function resolveHomeCheckmate(state: GameState, transition: Transition): 
   // In Phasing an invader must survive its own end-of-action upkeep before it
   // can force the defender's reply. Do not award mate to a piece about to be released.
   if (isPhasing(state) && state.turn.phase !== 'place') return state;
+  // `#` predicts the invader's NEXT turn start. When the kill clock would end the
+  // game at or before that start (c ≥ 9 of 10), the prediction is not guaranteed
+  // and no checkmate is awarded; the game plays on and the clock or a kill decides.
+  if (killClockForbidsCheckmate(state)) return state;
   // An earlier invasion wins when the defender's turn starts, before any rescue
   // would be required. A counter-invasion cannot steal that established win.
   if (getHomeOccupier(state.board, getOpponent(invader))) return state;
