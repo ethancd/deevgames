@@ -693,8 +693,19 @@ export function pvs(
     if (s.cfg.useFutility && depth === 1 && (turn.flags & NO_PRUNE_FLAGS) === 0 && searched > 0) {
       if (!stage1Valid) {
         // Same sum `ctx.score` uses, pending-summon credit included
-        // (`eval/turnScore.ts`), so the day `useFutility` flips this prunes
-        // against the score the search is actually comparing to `alpha`.
+        // (`eval/turnScore.ts`), so this bound prunes against the score the
+        // search is actually comparing to `alpha`.
+        //
+        // THIS LINE IS LIVE TODAY. `useFutility` is off in `DESKTOP` and `LAB`,
+        // but ON in `hard@lab-refined` (`lab/hard-ai/bots/hard.ts:256`), so
+        // adding the credit here (commit `eecdf14c`) changed that profile's play
+        // while its resolved config — and therefore its identity hash — stayed
+        // byte-identical. Measured on seed 4242, fixed:50000, 3 pairs: all 6
+        // replays differ across `eecdf14c` while `pairs.jsonl`, `elo.json` and
+        // the recorded `aConfigHash` are identical, so a summary-level diff
+        // reports "no change". Consequently
+        // `docs/hard-ai/phasing/repair-2026-09-20/results/ladder-w1500-labrefined-vs-aiv2hardturn/`
+        // is SUPERSEDED and must not be compared across `eecdf14c`.
         stage1Cache = s.eval.stage0(p, mover) + s.eval.stage1(p, mover, s.sc, ply) + pendingCreditCc(p, mover);
         stage1Valid = true;
       }

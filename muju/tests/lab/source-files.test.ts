@@ -22,12 +22,14 @@
  * genuinely differ, and `describe('the precondition ...')` re-checks that
  * nothing under the real directories has landed in one of them.
  *
- * Measured at branch tip `fbfd58e7`, `sourceIdentitySha256()` is
- * `d78a2e2fca5d9a691ef44ecc5ffb47cd68f8c4c7951c39c1fc18eca1a70bafc7` over 148
- * files. That number is recorded here rather than asserted, because it moves
+ * No `sourceIdentitySha256()` value is written down here, on purpose. It moves
  * with every ordinary edit under `src/ai`, `src/game`, `assembly`, `lab/ai` or
- * `lab/harness` — which is exactly what a source identity is for. Re-measure it
- * when you quote it; do not copy it forward.
+ * `lab/harness` — which is exactly what a source identity is for — including
+ * this branch's own edits, so a number recorded here goes stale within the
+ * branch that records it (it did, twice). Measure it in the tree you are
+ * talking about and stamp that commit beside it wherever you quote it:
+ * `node --import tsx -e "import('./lab/ai/gate1-sources').then(m =>
+ * console.log(m.sourceIdentitySha256()))"`, run from `muju/`.
  */
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { execFileSync } from 'node:child_process';
@@ -70,15 +72,14 @@ const rgFiles = (args: string[]): string[] =>
   execFileSync('rg', args, { encoding: 'utf8' }).trim().split('\n').sort();
 
 describe('listSourceFiles', () => {
-  it.each(CALLS)('reproduces `rg $args` for $caller', ({ args, dirs, ext }) => {
-    // Skipped, not failed, where ripgrep is absent — that absence is the bug
-    // this module exists to fix, and CI is the machine without it.
-    if (!HAS_RG) return;
+  // Reported as SKIPPED, not passed, where ripgrep is absent — that absence is
+  // the bug this module exists to fix, and CI is the machine without it. A bare
+  // `return` would let CI print "passed" for a test that asserted nothing.
+  it.skipIf(!HAS_RG).each(CALLS)('reproduces `rg $args` for $caller', ({ args, dirs, ext }) => {
     expect(listSourceFiles(dirs, ext)).toEqual(rgFiles(args));
   });
 
-  it('hashes the same gate-1 source identity as the ripgrep list did', () => {
-    if (!HAS_RG) return;
+  it.skipIf(!HAS_RG)('hashes the same gate-1 source identity as the ripgrep list did', () => {
     const paths = [...rgFiles(CALLS[0].args), ...GATE1_EXTRAS];
     const viaRg = Object.fromEntries([...new Set(paths)].sort().map(p => [p, sha(readFileSync(p))]));
     expect(sourceFileHashes()).toEqual(viaRg);
@@ -183,8 +184,7 @@ describe('the walker contract, on a fixture directory', () => {
       .toEqual(['nested/b.ts', 'nested/deep/c.ts', 'nested/deep/c.ts']);
   });
 
-  it('differs from `rg --files` exactly on hidden paths, `node_modules` and ignore files', () => {
-    if (!HAS_RG) return;
+  it.skipIf(!HAS_RG)('differs from `rg --files` exactly on hidden paths, `node_modules` and ignore files', () => {
     // With a `-g` whitelist ripgrep's override matcher beats its hidden filter and
     // its ignore filter, and ripgrep has no built-in `node_modules` rule at all.
     const whitelisted = rgFiles(['--files', '-g', '*.ts']);
