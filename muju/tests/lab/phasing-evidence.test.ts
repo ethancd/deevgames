@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { summarize, summaryToCsv } from '../../lab/harness/summary';
 import { sanityBands } from '../../lab/harness/phasing-round-robin';
 import { HARNESS_RULES_VERSION, type GameRecord } from '../../lab/harness/types';
+import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../../src/game/inactivity';
 
 const root = path.resolve(import.meta.dirname, '../..');
 
@@ -61,10 +62,15 @@ const PHASING3_HARNESS_EDITS: Record<string, string> = {
 const CAMPAIGNS = [
   { dir: 'lab/harness/results/p1-scripted-2026-09-18', rulesVersion: 'muju-phasing-1', current: false, edits: A4_HARNESS_EDITS },
   { dir: 'lab/harness/results/p2-scripted-2026-09-19', rulesVersion: 'muju-phasing-2', current: false, edits: PHASING3_HARNESS_EDITS },
+  { dir: 'lab/harness/results/p3-scripted-2026-09-22', rulesVersion: 'muju-phasing-3', current: true, edits: {} },
 ] as const;
-// No row is `current` under muju-phasing-3: the "reference this tree plays
-// under" checks below are dormant until a scripted campaign is played at the
-// kill clock. They are kept, not deleted, so that campaign re-arms them.
+// p3-scripted-2026-09-22 is now `current`: the kill clock (2026-09-22,
+// `docs/changes/2026-09-22-kill-clock-SPEC.md`) re-armed the "reference this
+// tree plays under" checks below, played fresh under muju-phasing-3
+// (`docs/changes/2026-09-22-p3-retune-SPEC.md` Lane P step 1). Its `edits` is
+// empty because this row was played by, and immediately committed with, the
+// live `lab/harness/**` bytes — nothing in the harness moved between the run
+// and the commit that pins it.
 
 describe.each(CAMPAIGNS)('scripted reference $dir', ({ dir: relDir, rulesVersion, current, edits }) => {
   const dir = path.join(root, relDir);
@@ -151,17 +157,22 @@ describe.each(CAMPAIGNS)('scripted reference $dir', ({ dir: relDir, rulesVersion
       const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.json'), 'utf8'));
       const totals = JSON.parse(fs.readFileSync(path.join(dir, 'totals.json'), 'utf8'));
       expect(manifest.rulesVersion).toBe(HARNESS_RULES_VERSION);
-      expect(manifest.inactivity).toEqual({ limitPlies: 20, warningPlies: 17, resetBy: 'an attack that removes a unit' });
+      expect(manifest.inactivity).toEqual({ limitPlies: INACTIVITY_LIMIT, warningPlies: INACTIVITY_WARNING, resetBy: 'an attack that removes a unit' });
       expect(manifest.runId).toBe(path.basename(dir));
       // No source that decides a scripted game moved while the 840 games ran,
       // in a worktree several lanes were editing at the time.
       expect(totals.changedDuringRun).toEqual([]);
       const recs = records();
       expect([...new Set(recs.map(r => r.runId))]).toEqual([path.basename(dir)]);
-      // No game outlived the clock it was played under, and every inactivity
-      // draw fired exactly at it rather than early or late.
-      for (const r of recs) expect(r.maxInactivityPlies ?? 0, `seed ${r.seed}`).toBeLessThanOrEqual(20);
-      for (const r of recs.filter(x => x.inactivityDraw)) expect(r.maxInactivityPlies, `seed ${r.seed}`).toBe(20);
+      // No game outlived the clock it was played under. Under the kill clock a
+      // decided game and a tie both close the clock at the same limit
+      // (`winType === 'kill-clock'`); `inactivityDraw` stays `false` for both,
+      // since it means an ACTUAL inactivity draw and the kill clock never
+      // produces one (coordinator decision 3 of the kill-clock record) — so the
+      // predicate below is winType, never the now-vacuous inactivityDraw flag.
+      // Never loosen this into a truthiness check.
+      for (const r of recs) expect(r.maxInactivityPlies ?? 0, `seed ${r.seed}`).toBeLessThanOrEqual(INACTIVITY_LIMIT);
+      for (const r of recs.filter(x => x.winType === 'kill-clock')) expect(r.maxInactivityPlies, `seed ${r.seed}`).toBe(INACTIVITY_LIMIT);
     });
   }
 });

@@ -62,14 +62,17 @@ function synthetic(mode: Mode): Entry[] {
 }
 
 /**
- * 2026-09-22, rules revision muju-phasing-3 (the kill clock): Gate 1 is DEFERRED.
- * `adoptedProtocol()` and `loadBands()` correctly refuse to run because
- * `lab/ai/gate1-references.json` and the frozen bands were adopted under
- * muju-phasing-2, and the inactivity/kill-clock rate is a direct function of the
- * clock, so bands do not cross a revision. The tests that need an adopted
- * protocol or score against those bands are skipped, not rewritten: they re-arm
- * by themselves the moment an amendment adopts re-frozen bands at the live
- * revision. The refusal itself is asserted below so the deferral stays visible.
+ * 2026-09-22, rules revision muju-phasing-3 (the kill clock): Gate 1 is
+ * RE-ADOPTED under amendment A7. `adoptedProtocol()` and `loadBands()` now
+ * accept the revision: `lab/ai/gate1-references.json` names A7's commit and
+ * the re-frozen `p3-scripted-2026-09-22` bands, both pinned by hash. The
+ * `it.skipIf(!GATE1_ADOPTED)` tests below therefore re-arm themselves, exactly
+ * as this comment always said they would the moment an amendment adopted
+ * re-frozen bands at the live revision — nothing here was rewritten to force
+ * them green. `GATE1_ADOPTED` stays a live check, not a hard-coded `true`, so
+ * a future rules edit that voids this adoption (the way A7 voided A4's) will
+ * flip these tests back to skipped rather than silently pass against stale
+ * bands.
  */
 const GATE1_ADOPTED = (() => { try { adoptedProtocol(); return true; } catch { return false; } })();
 
@@ -146,10 +149,10 @@ describe('allocation and reporting', () => {
       id: 'A3', commit: 'a0551c8c274bfdebb32ca309e49fd7a98657de73',
       sha256: '8242433d727638abf41b1006b9fcff645564200b92eadc9bbc887eb2b72f60f4',
     });
-    // A4 is the operative text and is pinned too, so the half of the
+    // A7 is the operative text and is pinned too, so the half of the
     // preregistration that is actually in force cannot be rewritten unnoticed.
-    expect(protocol.rulesAmendment).toMatchObject({ id: 'A4', rulesVersion: RULES_VERSION });
-    expect(protocol.document).toContain('A4 — 2026-09-19: rules revision `muju-phasing-2`');
+    expect(protocol.rulesAmendment).toMatchObject({ id: 'A7', rulesVersion: RULES_VERSION });
+    expect(protocol.document).toContain('A7 — 2026-09-22: rules revision `muju-phasing-3`');
     expect(full.rulesVersion).toBe(RULES_VERSION);
     expect(full.distinctnessReading).toBe(DISTINCTNESS_READING);
   });
@@ -294,18 +297,22 @@ describe('allocation and reporting', () => {
   });
 
   /**
-   * A1's behaviour condition reads the frozen purchase/inactivity bands, and A4
-   * changed the inactivity clock underneath them. The p1 bands allow a draw rate up
-   * to 0.866 where the re-frozen p2 bands allow 0.726, so a row read against the old
-   * ones is judged against a population the rules no longer produce — and judged
-   * more leniently, which is the direction that matters.
+   * A1's behaviour condition reads the frozen purchase/inactivity bands, and A7
+   * replaced the inactivity clock underneath them with the kill clock. The p2
+   * bands allow a draw rate up to 0.726 where the re-frozen p3 bands allow only
+   * 0.114 — not because the kill clock draws less often, but because a kill-clock
+   * ending is `winType: 'kill-clock'`, not `inactivityDraw`, so the quantity this
+   * band measures is now structurally 0 in every stratum. A row read against the
+   * old (p2) bands would be judged against a population and a meaning the rules
+   * no longer produce — and judged more leniently, which is the direction that
+   * matters.
    */
-  it.skipIf(!GATE1_ADOPTED)('reads the bands re-frozen under the 20-ply clock and refuses the superseded ones', () => {
-    expect(BANDS_PATH).toBe('lab/harness/results/p2-scripted-2026-09-19/sanity-bands.json');
-    expect(SUPERSEDED_BANDS_PATH).toBe('lab/harness/results/p1-scripted-2026-09-18/sanity-bands.json');
+  it.skipIf(!GATE1_ADOPTED)('reads the bands re-frozen under the kill clock and refuses the superseded ones', () => {
+    expect(BANDS_PATH).toBe('lab/harness/results/p3-scripted-2026-09-22/sanity-bands.json');
+    expect(SUPERSEDED_BANDS_PATH).toBe('lab/harness/results/p2-scripted-2026-09-19/sanity-bands.json');
     expect(bands.rulesVersion).toBe(RULES_VERSION);
     const superseded = JSON.parse(readFileSync(SUPERSEDED_BANDS_PATH, 'utf8'));
-    expect(superseded.rulesVersion).toBe('muju-phasing-1');
+    expect(superseded.rulesVersion).toBe('muju-phasing-2');
     // The old ceiling really is looser, so this is not a formality.
     expect(superseded.inactivityDrawRate[1]).toBeGreaterThan(bands.inactivityDrawRate[1]);
     // A summary computed against them is INVALID, not merely noted.
