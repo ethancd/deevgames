@@ -829,9 +829,6 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   // Get the current player's state for public bank display
   const currentPlayerState = state.players[state.turn.currentPlayer];
   const viewerPlayer: PlayerId = humanPlayer ?? (observing ? 'white' : state.turn.currentPlayer);
-  const viewerState = state.players[viewerPlayer];
-  const opponentPlayer: PlayerId = viewerPlayer === 'white' ? 'black' : 'white';
-  const opponentState = state.players[opponentPlayer];
   // Kill-clock lead: whoever's mined total (resourcesGained, plus Black's
   // handicap) is higher gets a subtle marker beside the crystal count. Nothing
   // on a tie. Both players see the same comparison, from their own row.
@@ -903,10 +900,17 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
           )}</div>
         </section>
         <section className="score-strip" aria-label="Player resources">
-          <div><strong><i className={`player-dot ${viewerPlayer}`} />{playerNames[viewerPlayer]} <b>◆ {viewerState.resources}</b>{minedLeader === viewerPlayer && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
-            <small>Gained {viewerState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[viewerPlayer]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, viewerPlayer)}</small><small className={upkeepDue(state,viewerPlayer)>viewerState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,viewerPlayer)} / turn</small></div>
-          <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ {opponentState.resources}</b>{minedLeader === opponentPlayer && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
-            <small>Gained {opponentState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[opponentPlayer]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, opponentPlayer)}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
+          {(['white', 'black'] as const).map(side => {
+            const sideState = state.players[side];
+            const isViewerSide = side === viewerPlayer;
+            const isActive = state.turn.currentPlayer === side;
+            return (
+              <div key={side} className={`player-card player-card-${side}${isActive ? ' player-card-active' : ''}`} aria-current={isActive ? 'true' : undefined}>
+                <strong><i className={`player-dot ${side}`} aria-hidden="true" />{playerNames[side]} <span className="vh-label">{side === 'white' ? 'White' : 'Black'}{isActive ? ' · active turn' : ''}</span> <b>◆ {sideState.resources}</b>{minedLeader === side && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
+                <small>Gained {sideState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[side]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, side)}</small><small className={isViewerSide && upkeepDue(state,side)>sideState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,side)} / turn</small>
+              </div>
+            );
+          })}
         </section>
         <div className="progress-clock"><span>{actionsPerTurn} actions / turn</span><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} turns without a kill</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
       </aside>

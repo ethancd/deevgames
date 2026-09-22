@@ -2,7 +2,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { act, cleanup, renderHook } from '@testing-library/react';
 import { createInitialGameState, createUnit } from '../../src/game/board';
 import { applyAction } from '../../src/ai/simulate';
-import { incomingFrames, useIncomingPlayback } from '../../src/online/incomingPlayback';
+import { incomingFrames, turnCue, useIncomingPlayback } from '../../src/online/incomingPlayback';
 import { useReplayPreference } from '../../src/components/TurnReplay';
 import type { RoomSnapshot } from '../../src/online/types';
 import type { AIAction } from '../../src/ai/types';
@@ -75,6 +75,19 @@ it('pauses while hidden and picks up speed changes without skipping an action', 
   act(()=>vi.advanceTimersByTime(300));expect(result.current.incoming.frame?.state.board.units[0].position).toEqual({x:2,y:0});
 });
 
+it('cues a your-move handoff and an opponent\'s mid-turn action, but never the viewer\'s own play, an observer, or a finished game', () => {
+  const room = fixture(), id = room.state.board.units[0].id; // white to place; white owns unit 0
+  const acting = advance(room, [{ type: 'END_PLACE_PHASE' }]); // white's action phase begins
+  const partial = advance(acting, [{ type: 'MOVE', unitId: id, to: { x: 1, y: 0 } }]); // white still mid-turn
+  expect(turnCue(acting, partial, 'black')).toBe('opponentAction');
+  expect(turnCue(acting, partial, 'white')).toBeNull(); // never the viewer's own action
+  expect(turnCue(acting, partial)).toBeNull(); // observers (no seat) get no cue
+  const handoff = advance(partial, [{ type: 'END_ACTION_PHASE' }]); // ends white's turn -> black's turn begins
+  expect(turnCue(partial, handoff, 'black')).toBe('yourTurn');
+  expect(turnCue(partial, handoff, 'white')).toBeNull(); // still never the viewer's own action, even a turn-ending one
+  const finished = { ...handoff, state: { ...handoff.state, phase: 'victory' as const } };
+  expect(turnCue(partial, finished, 'black')).toBeNull(); // stays quiet once the game has ended
+});
 it('does not enqueue live clock samples as extra playback frames', () => {
   vi.useFakeTimers();
   const room=fixture(), next=advance(room,[{type:'MOVE',unitId:room.state.board.units[0].id,to:{x:2,y:0}}]);

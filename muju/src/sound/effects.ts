@@ -1,10 +1,16 @@
-export const EFFECTS = ['move', 'attack', 'capture', 'phase', 'arrive', 'promote', 'turnEnd', 'turnStart'] as const;
+export const EFFECTS = ['move', 'attack', 'capture', 'phase', 'arrive', 'promote', 'turnEnd', 'turnStart', 'yourTurn', 'opponentAction'] as const;
 export type SoundEffect = typeof EFFECTS[number];
+
+/** Cues that must reach the player even on a hidden tab: a background-safe "your move"
+ * chime and a soft tick for an opponent's in-progress action. Every other effect follows
+ * the visible board only, exactly as before. */
+const BACKGROUND_SAFE = new Set<SoundEffect>(['yourTurn', 'opponentAction']);
 
 // Dry, quiet tabletop percussion. No samples, reverb, music, or network requests.
 const LENGTH: Record<SoundEffect, number> = {
   move: .085, attack: .095, capture: .12, phase: .14,
   arrive: .115, promote: .14, turnEnd: .075, turnStart: .12,
+  yourTurn: .26, opponentAction: .055,
 };
 
 export function effectSamples(effect: SoundEffect, sampleRate: number): Float32Array {
@@ -30,6 +36,10 @@ export function effectSamples(effect: SoundEffect, sampleRate: number): Float32A
       case 'promote': value = tap(t, 440, .012, .7) + tap(t - .045, 660, .017, .65); break;
       case 'turnEnd': value = tap(t, 240, .012, .65); break;
       case 'turnStart': value = tap(t, 510, .016, .65) + tap(t - .035, 510, .012, .35); break;
+      // A rising two-note chime, clearly distinct from the visible-tab turnStart tap.
+      case 'yourTurn': value = tap(t, 480, .05, .6) + tap(t - .1, 720, .09, .65); break;
+      // A single soft tick, quieter and shorter than an ordinary move.
+      case 'opponentAction': value = tap(t, 300, .012, .4); break;
     }
     // Gentle onset and a forced fade to zero prevent clicks at buffer boundaries.
     const fade = Math.min(1, i / (sampleRate * .001), (samples.length - 1 - i) / (sampleRate * .012));
@@ -71,9 +81,14 @@ export class SoundEngine {
 
   play(effects: readonly SoundEffect[]) {
     const context = this.context;
-    if (!this.enabled || !this.volume || document.hidden || context?.state !== 'running' || !this.gain) return;
+    if (!this.enabled || !this.volume || context?.state !== 'running' || !this.gain) return;
+    // Every other effect still follows the visible board; only the background-safe
+    // "your move"/opponent-action cues may reach a hidden tab. Never resume/create
+    // the context here — that only ever happens from a user gesture in unlock().
+    const playable = document.hidden ? effects.filter(effect => BACKGROUND_SAFE.has(effect)) : effects;
+    if (!playable.length) return;
     // One cue per visible event; duplicate arrivals/captures never make a loud pileup.
-    [...new Set(effects)].slice(0, 3).forEach((effect, i) => {
+    [...new Set(playable)].slice(0, 3).forEach((effect, i) => {
       try {
         let buffer = this.buffers.get(effect);
         if (!buffer) {
@@ -100,10 +115,10 @@ export class SoundEngine {
   }
 
   visibilityChanged = () => {
-    if (document.hidden) {
-      this.stop();
-      void this.context?.suspend().catch(() => {});
-    } else if (this.context) this.unlock();
+    // Cut off whatever was audibly playing, but leave the context running (never
+    // suspend it) so a background-safe cue can still be scheduled while hidden.
+    if (document.hidden) this.stop();
+    else if (this.context) this.unlock();
   };
 
   dispose() {

@@ -7,6 +7,7 @@ import {
   getValidAnchors,
   getAllSpawnPositions,
   isValidSpawnPosition,
+  isPendingSummonDoomed,
   getLargestSpawnZone,
 } from '../../src/game/spawning';
 import { createEmptyBoard, placeUnit, getStartCorner } from '../../src/game/board';
@@ -297,6 +298,48 @@ describe('Spawning System', () => {
 
       // Position would be in spawn zone but zone is blocked
       expect(isValidSpawnPosition({ x: 2, y: 2 }, 'white', board)).toBe(false);
+    });
+  });
+
+  describe('isPendingSummonDoomed', () => {
+    it('is false while some anchor still supports the square', () => {
+      let board = createEmptyBoard();
+      const anchor = createUnit('p1', 'white', { x: 2, y: 2 });
+      board = placeUnit(board, anchor);
+
+      expect(isPendingSummonDoomed({ position: { x: 1, y: 1 }, owner: 'white' }, board)).toBe(false);
+    });
+
+    it('is true once an enemy occupies the committed square', () => {
+      let board = createEmptyBoard();
+      const anchor = createUnit('p1', 'white', { x: 2, y: 2 });
+      const invader = createUnit('e1', 'black', { x: 1, y: 1 });
+      board = placeUnit(board, anchor);
+      board = placeUnit(board, invader);
+
+      expect(isPendingSummonDoomed({ position: { x: 1, y: 1 }, owner: 'white' }, board)).toBe(true);
+    });
+
+    it('is true once the only anchor for the square is captured', () => {
+      let board = createEmptyBoard();
+      const anchor = createUnit('p1', 'white', { x: 2, y: 2 });
+      board = placeUnit(board, anchor);
+      expect(isPendingSummonDoomed({ position: { x: 1, y: 1 }, owner: 'white' }, board)).toBe(false);
+
+      // The anchor is removed (captured), so nothing supports the square anymore.
+      board = { ...board, units: board.units.filter(u => u.id !== 'p1') };
+      expect(isPendingSummonDoomed({ position: { x: 1, y: 1 }, owner: 'white' }, board)).toBe(true);
+    });
+
+    it('is true once every rectangle containing the square gains an enemy', () => {
+      let board = createEmptyBoard();
+      const anchor = createUnit('p1', 'white', { x: 3, y: 3 });
+      board = placeUnit(board, anchor);
+      expect(isPendingSummonDoomed({ position: { x: 2, y: 2 }, owner: 'white' }, board)).toBe(false);
+
+      const enemy = createUnit('e1', 'black', { x: 1, y: 1 });
+      board = placeUnit(board, enemy);
+      expect(isPendingSummonDoomed({ position: { x: 2, y: 2 }, owner: 'white' }, board)).toBe(true);
     });
   });
 

@@ -1,6 +1,6 @@
 import type { GameState } from '../game/types';
 import { getUnitDefinition } from '../game/units';
-import { isValidSpawnPosition } from '../game/spawning';
+import { isPendingSummonDoomed } from '../game/spawning';
 import { historySquare } from '../game/moveHistory';
 import { ElementIcon } from './ElementGlyph';
 
@@ -15,11 +15,11 @@ export function SummoningStatus({ state, onInspect }: { state: GameState; onInsp
       {result && <p>{result.player === 'white' ? 'White' : 'Black'} arrival · {result.summoned.length} summoned · {result.disrupted.map(s => `${getUnitDefinition(s.definitionId).name} at ${historySquare(s.position)} disrupted · refunded ${s.cost} ◆`).join('; ')}</p>}
       <p>Dashed pieces are commitments, not occupants. They arrive at their owner's next turn. Legality is checked then.</p>
       <ul>{pending.map(s => {
-        const d = getUnitDefinition(s.definitionId), valid = isValidSpawnPosition(s.position, s.owner, state.board);
+        const d = getUnitDefinition(s.definitionId), doomed = isPendingSummonDoomed(s, state.board);
         return <li key={s.id}><ElementIcon element={d.element} /><span>
           <button onClick={event => { onInspect?.(s.id); event.currentTarget.closest('details')?.removeAttribute('open'); }}>{s.owner === 'white' ? 'White' : 'Black'} {d.name} · {historySquare(s.position)} · Show reach</button>
           <small>ATK {d.attack} · DEF {d.defense} · SPD {d.speed} · Mining {d.mining} · {s.cost} ◆ committed</small>
-          <small className={valid ? '' : 'rent-warning'}>{valid ? 'Currently supported' : 'Currently disrupted — refund if still blocked at arrival'}</small>
+          <small className={doomed ? 'rent-warning' : ''}>{doomed ? 'Currently disrupted — will refund if still blocked at arrival' : 'Currently supported'}</small>
         </span></li>;
       })}</ul>
     </details>}
