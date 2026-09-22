@@ -1,7 +1,7 @@
 import type { UnitDefinition, Element } from './types';
 
-// All 18 unit definitions — v2.9: Yan and Metal stats revised.
-// Stable IDs and prices are unchanged; see SPEC.md and docs/changes/2026-09-18-metal-yan.md.
+// All 18 unit definitions — v2.9 stats; display names revised 2026-09-22 (Muju Honō Irumbu).
+// Stable IDs, stats and prices are unchanged; see SPEC.md and docs/changes/2026-09-22-rename-irumbu.md.
 export const UNIT_DEFINITIONS: UnitDefinition[] = [
   // Fire (Rush) - Japanese
   {
@@ -18,7 +18,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'fire_2',
-    name: 'Hono',
+    name: 'Honō',
     element: 'fire',
     tier: 2,
     archetype: 'rush',
@@ -68,7 +68,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'lightning_3',
-    name: 'Kimubunga',
+    name: 'Kimbunga',
     element: 'lightning',
     tier: 3,
     archetype: 'rush',
@@ -79,10 +79,10 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     cost: 15,
   },
 
-  // Water (Balanced) - Norse
+  // Water (Balanced) - Old Norse
   {
     id: 'water_1',
-    name: 'Sjor',
+    name: 'Sjór',
     element: 'water',
     tier: 1,
     archetype: 'balanced',
@@ -106,7 +106,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'water_3',
-    name: 'Aegirinn',
+    name: 'Ægirinn',
     element: 'water',
     tier: 3,
     archetype: 'balanced',
@@ -117,10 +117,10 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     cost: 16,
   },
 
-  // Shadow (Balanced) - Turkish/Slavic (formerly Wind)
+  // Shadow (Balanced) - Turkish (formerly Wind)
   {
     id: 'shadow_1',
-    name: 'Göl',
+    name: 'Loş',
     element: 'shadow',
     tier: 1,
     archetype: 'balanced',
@@ -155,7 +155,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     cost: 16,
   },
 
-  // Plant (Expand) - Quechua/Nahuatl
+  // Plant (Expand) - Quechua
   {
     id: 'plant_1',
     name: 'Muju',
@@ -170,7 +170,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'plant_2',
-    name: 'Sachita',
+    name: 'Mallki',
     element: 'plant',
     tier: 2,
     archetype: 'expand',
@@ -182,7 +182,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'plant_3',
-    name: 'Sachakuna',
+    name: 'Sach\'akuna',
     element: 'plant',
     tier: 3,
     archetype: 'expand',
@@ -193,10 +193,10 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
     cost: 17,
   },
 
-  // Metal (Expand) - Lakota
+  // Metal (Expand) - Tamil
   {
     id: 'metal_1',
-    name: 'Yan',
+    name: 'Poṉ',
     element: 'metal',
     tier: 1,
     archetype: 'expand',
@@ -208,7 +208,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'metal_2',
-    name: 'Mazask',
+    name: 'Veḷḷi',
     element: 'metal',
     tier: 2,
     archetype: 'expand',
@@ -220,7 +220,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
   },
   {
     id: 'metal_3',
-    name: 'Tanka',
+    name: 'Irumbu',
     element: 'metal',
     tier: 3,
     archetype: 'expand',

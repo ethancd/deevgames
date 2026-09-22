@@ -239,10 +239,10 @@ describe('Elemental System - Double-Thick Triangle', () => {
     it('has correct cultural assignments', () => {
       expect(ELEMENT_INFO.fire.language).toBe('Japanese');
       expect(ELEMENT_INFO.lightning.language).toBe('Swahili');
-      expect(ELEMENT_INFO.water.language).toBe('Norse');
-      expect(ELEMENT_INFO.shadow.language).toBe('Turkish/Slavic');
-      expect(ELEMENT_INFO.plant.language).toBe('Quechua/Nahuatl');
-      expect(ELEMENT_INFO.metal.language).toBe('Lakota');
+      expect(ELEMENT_INFO.water.language).toBe('Old Norse');
+      expect(ELEMENT_INFO.shadow.language).toBe('Turkish');
+      expect(ELEMENT_INFO.plant.language).toBe('Quechua');
+      expect(ELEMENT_INFO.metal.language).toBe('Tamil');
     });
   });
 });

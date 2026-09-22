@@ -58,7 +58,7 @@ export type Tier = 1 | 2 | 3;
 
 export interface UnitDefinition {
   id: string; // e.g., "fire_1", "plant_3"
-  name: string; // e.g., "Hi", "Sachakuna"
+  name: string; // e.g., "Hi", "Sach'akuna"
   element: Element;
   tier: Tier;
   archetype: Archetype;
