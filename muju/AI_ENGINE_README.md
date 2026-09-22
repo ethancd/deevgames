@@ -70,19 +70,18 @@ Key weights to adjust:
 - `combinedAttackPotential`: combined kill setups
 - `spawnDenialPressure`: enemy units in your spawn zone
 - `spawnInfiltration`: your units in enemy spawn zone
-- `queueValue`: discounted value of queued units
 - `stepEfficiency`: ability to use remaining action points
 - `techTreeProgress`: tier unlock progression
 
-## Difficulty presets
+## Difficulty presets (`AIEngineV2`)
 
-Difficulty is driven by the configuration in `muju/src/ai/engine-v2.ts`. Each preset changes the size of the search budget and tactical depth:
+Difficulty inside `AIEngineV2` is driven by the configuration in `muju/src/ai/engine-v2.ts`. Each preset changes the size of the search budget and tactical depth:
 
-- **Easy**: lower MCTS iterations, smaller beam width, fewer belief particles, no tactical sharpening.
-- **Medium**: moderate MCTS iterations, wider beam, more particles, 1-ply tactical sharpening.
-- **Hard**: larger MCTS iterations/time, wider beam, more particles, deeper tactical sharpening.
+- **Easy**: lower MCTS iterations, smaller beam width, no tactical sharpening.
+- **Medium**: moderate MCTS iterations, wider beam, 1-ply tactical sharpening.
+- **Hard**: larger MCTS iterations/time, wider beam, deeper tactical sharpening.
 
-You can update these presets in the `DIFFICULTY_PRESETS` constant.
+You can update these presets in the `DIFFICULTY_PRESETS` constant. **Hard in the browser does not read them**: the hard difficulty routes to the `src/ai/hard` engine, whose search shape is the profiles in `muju/src/ai/hard/config.ts`. `DIFFICULTY_PRESETS` governs easy, medium, and a hard seat that opted out with `?hardAi=0`.
 
 ## AI Console
 
