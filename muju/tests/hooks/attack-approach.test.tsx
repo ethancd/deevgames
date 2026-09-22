@@ -2,13 +2,13 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { GameScreen } from '../../src/components/GameScreen';
 import { createInitialGameState, createUnit } from '../../src/game/board';
-// Phasing is the only ruleset since 2026-09-21: a save that is not one is
-// archived by `loadGameState`, so an injected save has to say so.
 import { loadGameState, saveGameState } from '../../src/utils/persistence';
 
 const config = {mode: 'pass-play', controls: {white: 'human', black: 'human'}, aiDifficulty: {white: 'medium', black: 'medium'}} as const;
 afterEach(() => { cleanup(); localStorage.clear(); });
 function start() {
+  // Phasing is the only ruleset since 2026-09-21: a save that is not one is
+  // archived by `loadGameState`, so an injected save has to say so.
   const state = createInitialGameState(undefined, 4, 0, 'phasing');
   state.board.units = [createUnit('fire_1', 'white', {x: 0, y: 0}), createUnit('plant_1', 'black', {x: 4, y: 0}), createUnit('water_1', 'black', {x: 9, y: 9})];
   saveGameState(state);

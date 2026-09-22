@@ -45,6 +45,29 @@ it.each(['white', 'black'] as const)('adjudicates an unanswerable arrival at Min
   saveGameState(result); expect(loadGameState()).toEqual(result);
 });
 
+// The reducer's combined move-then-strike is the other way a unit arrives home
+// (`useGameState.ts:69`), and it is adjudicated at the same moment. Under Phasing
+// the strike is load-bearing: arriving alone leaves a neighbour able to take the
+// corner back, so an all-or-nothing MOVE_AND_ATTACK is what turns rescue into mate.
+it('adjudicates a MOVE_AND_ATTACK arrival once the strike has cleared the rescuer', () => {
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
+  const invader = createUnit('fire_1', 'white', { x: 9, y: 8 });
+  const rescuer = unit('fire_1', 8, 9);
+  state.board.units = [invader, rescuer, unit('water_1', 0, 4)];
+  const arrival = { type: 'MOVE' as const, unitId: invader.id, to: { x: 9, y: 9 } };
+  const arrivedAlone = applyAction(state, arrival);
+  expect(analyzeHomeDefense(arrivedAlone, 'white', applyAction)).toBe('rescue');
+  expect(applyAction(arrivedAlone, { type: 'END_ACTION_PHASE' })).toMatchObject({ phase: 'playing', turn: { currentPlayer: 'white', phase: 'place' } });
+  const struck = gameReducer(state, { type: 'MOVE_AND_ATTACK', unitId: invader.id, to: arrival.to, targetPosition: rescuer.position });
+  expect(struck.board.units.map(u => u.id)).not.toContain(rescuer.id);
+  expect(struck.board.units.find(u => u.id === invader.id)?.position).toEqual({ x: 9, y: 9 });
+  expect(struck.turn).toMatchObject({ currentPlayer: 'white', phase: 'action', actionsRemaining: 2 });
+  expect(analyzeHomeDefense(struck, 'white', applyAction)).toBe('mate');
+  expect(gameReducer(struck, { type: 'END_ACTION_PHASE' })).toMatchObject({ phase: 'victory', winner: 'white', victoryReason: 'home-checkmate', turn: { currentPlayer: 'white' } });
+  // An arrival whose strike is illegal is rejected whole, so it never reaches home.
+  expect(gameReducer(state, { type: 'MOVE_AND_ATTACK', unitId: invader.id, to: arrival.to, targetPosition: { x: 0, y: 4 } })).toBe(state);
+});
+
 it('preserves a rescue that requires a speed promotion, and charges its actual cost', () => {
   const state = occupied('fire_1', [unit('lightning_1', 0, 7)], 4);
   const original = structuredClone(state);

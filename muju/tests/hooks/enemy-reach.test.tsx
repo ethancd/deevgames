@@ -3,9 +3,11 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { GameScreen } from '../../src/components/GameScreen';
 import { createInitialGameState, createUnit } from '../../src/game/board';
 import { saveGameState } from '../../src/utils/persistence';
-// Phasing is the only ruleset since 2026-09-21: a save that is not one is
-// archived by `loadGameState`, so an injected save has to say so.
 
+/**
+ * Phasing is the only ruleset since 2026-09-21: a save that is not one is
+ * archived by `loadGameState`, so every injected state below says so.
+ */
 afterEach(() => { cleanup(); localStorage.clear(); });
 
 it('uses four actions for enemy reach even with a partially spent current turn', () => {

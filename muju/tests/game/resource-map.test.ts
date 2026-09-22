@@ -6,8 +6,11 @@ import {PRE_EXPANSION_MAP} from '../fixtures/pre-expansion-map';
 import {saveGameState,loadGameState,RETIRED_STORAGE_KEY} from '../../src/utils/persistence';
 import {checkInvariants} from '../../lab/harness/invariants';
 import {endTurn} from '../../src/game/turn';
+import {applyAction} from '../../src/ai/simulate';
+import type {GameState} from '../../src/game/types';
 /** Phasing is the only ruleset since 2026-09-21, so every live state here is one. */
 const phasing=(map?:readonly number[])=>createInitialGameState(map,4,0,'phasing');
+const reserves=(state:GameState)=>state.board.cells.flat().reduce((total,cell)=>total+cell.resourceLayers,0);
 afterEach(()=>localStorage.clear());
 describe('Unequal routes passive reserves',()=>{
  it('starts new games on the expansion-economy map with 504 total',()=>{
@@ -36,7 +39,14 @@ describe('Unequal routes passive reserves',()=>{
   expect(resumed.board.initialResourceLayers).toEqual(oldMap);
   expect(resumed.board.initialResourceLayers).not.toEqual(UNEQUAL_ROUTES_MAP);
   checkInvariants(resumed,'old-map resume');
-  const next=endTurn(resumed);
+  // A resumed save is already in Prepare, where `endTurn` is a no-op: hand the
+  // turn over first, so the opponent really mines and depletes the old map.
+  const next=endTurn(applyAction(resumed,{type:'END_PLACE_PHASE'}));
+  expect(next).not.toBe(resumed);
+  expect(next.turn).toMatchObject({currentPlayer:'black',phase:'place'});
+  expect(next.lastIncome).toMatchObject({player:'black'});
+  expect(next.lastIncome!.total).toBeGreaterThan(0);
+  expect(reserves(next)).toBe(reserves(resumed)-next.lastIncome!.total);
   expect(next.board.initialResourceLayers).toEqual(oldMap);
   checkInvariants(next,'old-map next turn');
   expect(phasing().board.initialResourceLayers).toEqual(UNEQUAL_ROUTES_MAP);

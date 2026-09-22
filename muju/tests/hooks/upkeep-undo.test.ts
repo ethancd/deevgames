@@ -94,6 +94,10 @@ it('does not let the upkeep choice reopen a completed game', () => {
   expect(result.current.state.upkeepPending).toBe(true);
   act(() => result.current.payUpkeep([]));
   expect(result.current.state.victoryReason).toBe('upkeep-elimination');
+  // The paid-upkeep replay label (`replay.ts:95`) is still reachable under Phasing
+  // exactly here, where the bill was held open for review.
+  expect(result.current.lastTurnReplay?.frames.map(f => f.action.type)).toEqual(['END_ACTION_PHASE', 'PAY_UPKEEP']);
+  expect(result.current.lastTurnReplay?.frames.at(-1)?.label).toBe('Paid 0 crystals upkeep · released 2 units');
   expect(result.current.canUndo).toBe(false);
   act(() => result.current.undo());
   expect(result.current.state.phase).toBe('victory');

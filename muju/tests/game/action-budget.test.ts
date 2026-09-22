@@ -109,10 +109,14 @@ it('rejects six actions and inconsistent current saves', () => {
     const state={...createInitialGameState(undefined,4,0,'phasing'),actionsPerTurn:bad};
     localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:6,state}));
     expect(loadGameState()).toBeNull();
+    // Rejected by the strict gate, not archived: the save says Phasing, so the
+    // retired slot must stay empty and only the bad budget is what refused it.
+    expect(localStorage.getItem(RETIRED_STORAGE_KEY)).toBeNull();
     localStorage.clear();
   }
   const state=createInitialGameState(undefined,4,0,'phasing');state.turn.actionsRemaining=6;
   saveGameState(state);expect(loadGameState()).toBeNull();
+  expect(localStorage.getItem(RETIRED_STORAGE_KEY)).toBeNull();
   expect(getActionsPerTurn(createInitialGameState(undefined,4,0,'phasing'))).toBe(4);
   expect(()=>createInitialGameState(undefined,6 as never,0,'phasing')).toThrow();
 });
