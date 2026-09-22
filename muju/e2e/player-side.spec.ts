@@ -4,6 +4,8 @@ import type { GameState, PlayerId } from '../src/game/types';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
 
 const vsAI = 'vs AI Play against the computer';
+/** Phasing is the only ruleset since 2026-09-21. */
+const phasing = () => createInitialGameState(undefined, undefined, 0, 'phasing');
 
 async function chooseAI(page: Page) {
   await page.getByRole('button', { name: vsAI, exact: true }).click();
@@ -81,7 +83,7 @@ test('Black lets the real White AI open at the chosen difficulty and shows its f
 
 test('Black preference survives the mode menu and reload while resuming the saved Black turn', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 664 });
-  const state = createInitialGameState();
+  const state = phasing();
   state.turn.currentPlayer = 'black';
   state.turn.turnNumber = 4;
   state.players.black.resources = state.players.black.resourcesGained = 11;
@@ -122,7 +124,7 @@ test('Black preference survives the mode menu and reload while resuming the save
 
 for (const winner of ['black', 'white'] as const) {
   test(`playing Black shows the correct ${winner === 'black' ? 'victory celebration' : 'AI win'} result`, async ({ page }) => {
-    const state = createInitialGameState();
+    const state = phasing();
     state.phase = 'victory';
     state.winner = winner;
     state.victoryReason = 'elimination';

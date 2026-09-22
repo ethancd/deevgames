@@ -10,15 +10,17 @@ async function fits(page: Page) {
   expect(await page.locator('.decision-panel').evaluate(e=>e.scrollHeight <= e.clientHeight+1)).toBe(true);
 }
 async function online(page: Page, request: APIRequestContext) {
-  const host=await (await request.post('/api/muju/rooms',{data:{name:'Opponent',side:'black',ruleset:'phasing',timeControl:{delaySeconds:30,bankSeconds:600}}})).json();
+  const host=await (await request.post('/api/muju/rooms',{data:{name:'Opponent',side:'black',timeControl:{delaySeconds:30,bankSeconds:600}}})).json();
   await page.goto(`?room=${host.room.id}#invite=${host.inviteCode}`);
   await page.getByRole('button',{name:'Join room',exact:true}).click();
   await expect(page.getByRole('button',{name:'Mine & prepare'})).toBeEnabled();
   return host;
 }
-for (const ruleset of ['standard', 'phasing']) test(`${ruleset}: inspect either army while waiting for the online opponent`, async ({page,request}) => {
+// One ruleset since 2026-09-21: the server refuses `ruleset` on creation unless it
+// is the Phasing literal, so the room is created without naming one at all.
+test('inspect either army while waiting for the online opponent', async ({page,request}) => {
   await page.setViewportSize({width:390,height:664});
-  const host=await (await request.post('/api/muju/rooms',{data:{name:'Opponent',side:'white',ruleset}})).json();
+  const host=await (await request.post('/api/muju/rooms',{data:{name:'Opponent',side:'white'}})).json();
   await page.goto(`?room=${host.room.id}#invite=${host.inviteCode}`);
   await page.getByRole('button',{name:'Join room',exact:true}).click();
   await expect(page.locator('.turn-strip')).toContainText('Opponent');

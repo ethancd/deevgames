@@ -25,7 +25,7 @@ for (const [width, height] of [[320, 568], [390, 664], [390, 844], [844, 390], [
   test(`Phasing analysis keeps the board usable after an online timeout at ${width}x${height}`, async ({ page, request }, info) => {
     await page.setViewportSize({ width, height });
     const host = await (await request.post('/api/muju/rooms', { data: {
-      name: 'White', ruleset: 'phasing', timeControl: { delaySeconds: 0, bankSeconds: 3 },
+      name: 'White', timeControl: { delaySeconds: 0, bankSeconds: 3 },
     } })).json();
     const id = host.room.id;
     await request.post(`/api/muju/rooms/${id}/join`, { data: { name: 'Black', inviteCode: host.inviteCode } });
@@ -75,7 +75,7 @@ for (const scenario of [
 ]) {
   test(`${scenario.mode} can analyze a completed game and explore without changing its saved score at ${scenario.width}px`, async ({ page }, info) => {
     await page.setViewportSize({ width: scenario.width, height: 844 });
-    const state = createInitialGameState(Array(100).fill(0)); state.inactivityPlies = INACTIVITY_LIMIT - 1;
+    const state = createInitialGameState(Array(100).fill(0), undefined, 0, 'phasing'); state.inactivityPlies = INACTIVITY_LIMIT - 1;
     await page.addInitScript(({ state, schemaVersion }) => {
       if (sessionStorage.getItem('analysis:seeded')) return;
       localStorage.setItem('elemental-tactics-save', JSON.stringify({ state, schemaVersion, timestamp: Date.now() }));
@@ -92,6 +92,7 @@ for (const scenario of [
     await page.getByRole('button', { name: /Continue saved game/ }).click();
     if (scenario.mode !== 'Watch AI') {
       await page.getByTestId('cell-1-0').click(); await page.getByTestId('cell-5-0').click();
+      await page.getByRole('button', { name: 'Mine & prepare →', exact: true }).click();
       await page.getByRole('button', { name: 'End turn →', exact: true }).click();
     }
     await expect(page.getByRole('heading', { name: 'Draw by inactivity' })).toBeVisible({ timeout: 15000 });
@@ -130,7 +131,8 @@ for (const role of ['white', 'black', 'observer'] as const) {
     const id = host.room.id;
     const guest = await (await request.post(`/api/muju/rooms/${id}/join`, { data: { name: 'Black', inviteCode: host.inviteCode } })).json();
     const opening = await request.post(`/api/muju/rooms/${id}/actions`, { headers: { Authorization: `Bearer ${host.credentials.token}` },
-      data: { expectedRevision: 1, requestId: 'analysis-pass', actions: [{ type: 'END_ACTION_PHASE' }] } });
+      data: { expectedRevision: 1, requestId: 'analysis-pass',
+        actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] } });
     expect(opening.ok(), await opening.text()).toBe(true);
     const ended = await request.post(`/api/muju/rooms/${id}/actions`, { headers: { Authorization: `Bearer ${guest.credentials.token}` },
       data: { expectedRevision: 2, requestId: 'analysis-resign', actions: [{ type: 'RESIGN' }] } });
@@ -161,18 +163,26 @@ test('an upkeep position can be reviewed and varied while timeline navigation re
   const black = await (await request.post(`/api/muju/rooms/${id}/join`, { data: { name: 'Black', inviteCode: host.inviteCode } })).json();
   const hi = host.room.state.board.units.find((u: any) => u.owner === 'white' && u.definitionId === 'fire_1');
   let revision = 1;
+  // Phasing pays upkeep inside the mover's own END_ACTION_PHASE, so the position
+  // with a choice is White's own mining step — held open by asking to review it
+  // rather than by being unable to afford the rent.
   for (const [token, actions] of [
     [host.credentials.token, [{ type: 'END_ACTION_PHASE' }]],
-    [black.credentials.token, [{ type: 'END_ACTION_PHASE' }]],
-    [host.credentials.token, [{ type: 'PROMOTE_UNIT', unitId: hi.id }, { type: 'END_ACTION_PHASE' }]],
-    [black.credentials.token, [{ type: 'END_PLACE_PHASE' }, { type: 'END_ACTION_PHASE' }]],
+    [host.credentials.token, [{ type: 'END_PLACE_PHASE' }]],
+    [black.credentials.token, [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]],
+    [host.credentials.token, [{ type: 'END_ACTION_PHASE' }]],
+    [host.credentials.token, [{ type: 'PROMOTE_UNIT', unitId: hi.id }, { type: 'END_PLACE_PHASE' }]],
+    [black.credentials.token, [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]],
+    [host.credentials.token, [{ type: 'SET_UPKEEP_REVIEW', enabled: true }]],
+    [host.credentials.token, [{ type: 'END_ACTION_PHASE' }]],
   ] as const) {
     const response = await request.post(`/api/muju/rooms/${id}/actions`, { headers: { Authorization: `Bearer ${token}` },
       data: { expectedRevision: revision, requestId: `analysis-upkeep-${revision++}`, actions } });
     expect(response.ok(), await response.text()).toBe(true);
   }
+  const played = (await (await request.get(`/api/muju/rooms/${id}`)).json()).revision;
   const score = await (await request.get(`/api/muju/rooms/${id}/history`)).json();
-  const end = score.entries.find((entry: any) => entry.kind === 'mining' && entry.player === 'black' && entry.turnNumber === 2);
+  const end = score.entries.find((entry: any) => entry.kind === 'mining' && entry.player === 'white' && entry.turnNumber === 3);
   await page.goto(`analysis?room=${id}&event=${end.sequence}`);
   const controls = page.getByRole('region', { name: 'Analysis controls' });
   await expect(page.getByRole('dialog', { name: 'Choose upkeep' })).toHaveCount(0);
@@ -188,7 +198,8 @@ test('an upkeep position can be reviewed and varied while timeline navigation re
   await expect(upkeep).toHaveCount(0);
   const live = await (await request.get(`/api/muju/rooms/${id}`)).json();
   expect(live.state.board.units.find((u: any) => u.id === hi.id).definitionId).toBe('fire_2');
-  expect(live.revision).toBe(5);
+  // Nothing the analysis screen did reached the room.
+  expect(live.revision).toBe(played);
 });
 
 for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) {
@@ -208,6 +219,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 
     await expect(page.getByTestId('cell-3-0')).toHaveAttribute('aria-label', /white Hi/);
     await controls.getByRole('button', { name: 'Next step', exact: true }).click();
     await expect(page.getByTestId('cell-5-0')).toHaveAttribute('aria-label', /white Hi/);
+    await page.getByRole('button', { name: 'Mine & prepare →', exact: true }).click();
     await page.getByRole('button', { name: 'End turn →', exact: true }).click();
     await expect(page.locator('.turn-strip')).toContainText('Black');
     await expect(page.getByText('Pass device to')).toHaveCount(0);
@@ -231,12 +243,19 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 
     await page.setViewportSize(viewport);
     const host = await (await request.post('/api/muju/rooms', { data: { name: 'White' } })).json();
     const id = host.room.id;
-    await request.post(`/api/muju/rooms/${id}/join`, { data: { name: 'Black', inviteCode: host.inviteCode } });
+    const guest = await (await request.post(`/api/muju/rooms/${id}/join`, { data: { name: 'Black', inviteCode: host.inviteCode } })).json();
     const hi = host.room.state.board.units.find((u: any) => u.owner === 'white' && u.definitionId === 'fire_1');
     const played = await request.post(`/api/muju/rooms/${id}/actions`, { headers: { Authorization: `Bearer ${host.credentials.token}` },
-      data: { expectedRevision: 1, requestId: 'analysis-opening', actions: [{ type: 'MOVE', unitId: hi.id, to: { x: 5, y: 0 } }, { type: 'END_ACTION_PHASE' }] } });
-    expect(played.ok()).toBe(true);
-    const actual = await played.json();
+      data: { expectedRevision: 1, requestId: 'analysis-opening',
+        actions: [{ type: 'MOVE', unitId: hi.id, to: { x: 5, y: 0 } }, { type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] } });
+    expect(played.ok(), await played.text()).toBe(true);
+    // Black answers, so the recorded score really does contain a second turn to
+    // navigate to: a Phasing handover is not an event of its own.
+    const answered = await request.post(`/api/muju/rooms/${id}/actions`, { headers: { Authorization: `Bearer ${guest.credentials.token}` },
+      data: { expectedRevision: 2, requestId: 'analysis-opening-black',
+        actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] } });
+    expect(answered.ok(), await answered.text()).toBe(true);
+    const actual = await answered.json();
     await page.goto(`?room=${id}&watch=1`);
     await page.getByRole('button', { name: 'Move history', exact: true }).click();
     await page.getByRole('link', { name: '🔥1 B1→F1', exact: true }).click();
@@ -252,7 +271,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 
     const unchanged = await (await request.get(`/api/muju/rooms/${id}`)).json();
     // The authenticated response names its seat; an anonymous read of the same room must not.
     const { authenticatedPlayer, ...publicView } = actual;
-    expect(authenticatedPlayer).toBe('white');
+    expect(authenticatedPlayer).toBe('black');
     expect(unchanged).not.toHaveProperty('authenticatedPlayer');
     expect(unchanged).toEqual(publicView);
     await controls.getByRole('button', { name: 'Return to game score', exact: true }).click();

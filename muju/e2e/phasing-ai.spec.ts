@@ -1,15 +1,14 @@
 import { test, expect, type Page } from '@playwright/test';
 
 /**
- * THE PHASING AI PREVIEW, in a real browser.
+ * THE PHASING AI, in a real browser.
  *
- * Neither engine has passed a release gate under the Phasing ruleset, so by
- * default a player cannot start a Phasing game against the AI at all — the
- * first test here is the guard, and it is the one that must never stop failing
- * to find the option. The rest are the preview itself, reached only with
- * `?phasingAi=1`: the AI plays a COMPLETE Phasing turn through the real
- * reducer — Act, END_ACTION_PHASE (mine, then upkeep), Prepare,
- * END_PLACE_PHASE — and hands the turn back with no error banner.
+ * Phasing is the only ruleset shipped since 2026-09-21, so a vs-AI game needs
+ * no opt-in, no ruleset control and carries no preview badge — the first test
+ * here is that guard, and it is the one that must never stop failing to find an
+ * opt-in. The rest is the engine itself: the AI plays a COMPLETE Phasing turn
+ * through the real reducer — Act, END_ACTION_PHASE (mine, then upkeep),
+ * Prepare, END_PLACE_PHASE — and hands the turn back with no error banner.
  *
  * Modelled on `e2e/ai-timer.spec.ts` (how a vs-AI game is started and handed
  * over) and `e2e/phasing.spec.ts` (what a Phasing turn looks like).
@@ -22,12 +21,8 @@ async function playHumanPhasingTurn(page: Page): Promise<void> {
 }
 
 async function startPhasingVsAI(page: Page, difficulty: 'easy' | 'medium' | 'hard', pace: 'quick' | 'normal' | 'deep'): Promise<void> {
-  await page.goto('./?phasingAi=1');
+  await page.goto('./');
   await page.getByRole('button', { name: 'vs AI Play against the computer', exact: true }).click();
-  // The preview badge is on the option itself: the player is told what he is
-  // opting into at the moment he picks it.
-  await expect(page.getByText('Preview · unreleased AI')).toBeVisible();
-  await page.getByRole('radio', { name: /Phasing/ }).check();
   await page.getByLabel('AI Difficulty').selectOption(difficulty);
   await page.getByLabel('Thinking time').selectOption(pace);
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
@@ -43,22 +38,25 @@ async function expectAITurnCompletes(page: Page, timeout: number): Promise<void>
   await expect(page.getByRole('button', { name: 'Mine & prepare' })).toBeEnabled();
 }
 
-test('without the opt-in, vs-AI cannot be started under Phasing', async ({ page }) => {
+test('vs-AI starts under Phasing with no opt-in and no ruleset control', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('button', { name: 'vs AI Play against the computer', exact: true }).click();
-  // No ruleset control at all for an AI mode, and the screen says why.
+  // No ruleset control anywhere, no preview badge, and nothing to opt into:
+  // Phasing is what the AI plays.
   await expect(page.getByRole('radio', { name: /Phasing/ })).toHaveCount(0);
-  await expect(page.getByText('AI plays Standard rules. Try Phasing in Pass & Play or online.')).toBeVisible();
   await expect(page.getByText('Preview · unreleased AI')).toHaveCount(0);
+  await expect(page.getByText('AI plays Standard rules. Try Phasing in Pass & Play or online.')).toHaveCount(0);
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
-  // And the game that starts is Standard.
-  await expect(page.locator('.ruleset-badge')).toHaveText('Standard');
+  await expect(page.locator('.ruleset-badge')).toHaveText('Phasing');
+  await expect(page.getByRole('button', { name: 'Mine & prepare' })).toBeEnabled();
 
-  // Pass & Play still offers Phasing, unbadged, exactly as it always has.
+  // Pass & Play is the same one ruleset, equally unbadged.
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
-  await expect(page.getByRole('radio', { name: /Phasing/ })).toBeVisible();
+  await expect(page.getByRole('radio', { name: /Phasing/ })).toHaveCount(0);
   await expect(page.getByText('Preview · unreleased AI')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await expect(page.locator('.ruleset-badge')).toHaveText('Phasing');
 });
 
 test('Easy plays a complete Phasing turn against the owner', async ({ page }, info) => {
@@ -103,5 +101,7 @@ test('Hard plays a complete Phasing turn with no engine failure counted', async 
   expect({
     packError: diag!.packError, engineError: diag!.engineError, divergence: diag!.divergence,
     invalidSuffix: diag!.invalidSuffix, workerError: diag!.workerError,
-  }).toEqual({ packError: 0, engineError: 0, divergence: 0, invalidSuffix: 0, workerError: 0 });
+    emptyPlan: diag!.emptyPlan, budgetExhausted: diag!.budgetExhausted,
+  }).toEqual({ packError: 0, engineError: 0, divergence: 0, invalidSuffix: 0, workerError: 0,
+    emptyPlan: 0, budgetExhausted: 0 });
 });
