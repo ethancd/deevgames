@@ -222,6 +222,15 @@ one-command rebuild.
 
 ## Three independent release targets
 
+**One rule set (2026-09-21):** Muju ships a single ruleset, rules revision
+`muju-phasing-2` — Act → mine and upkeep → Prepare → hand over, with public
+pending summons. Standard was retired (`SPEC.md` v3.1, `JUDGMENT_LOG.md` J-022).
+The three targets are consistent only when all three describe **that** turn: the
+browser build, the Node/MCP host's rules payload and served `SKILL.md`, and the
+Academy lessons. The Academy recordings still teach the previous turn order and
+carry a course notice saying so; that notice is part of the consistency check,
+not an exception to it.
+
 **Current state (2026-09-18):** Cloudflare Pages publishing is paused, so the Render
 host is Muju's canonical and only live-updated release. Treat `static-deploy` as
 **blocked (no credentials)** rather than skipped: still build and smoke-test `_site`,

@@ -2,19 +2,40 @@
 
 ## Overview
 
-The AI searches the real public game state with beam planning, MCTS and a
-WebAssembly tactical solver. Every game uses four shared actions per player
+Muju has **one rule set**, rules revision `muju-phasing-2`, and every engine
+searches it: a turn is Act → `END_ACTION_PHASE` (mine once, then pay upkeep) →
+Prepare (promotions and public pending summons) → `END_PLACE_PHASE`. A purchase
+commits a summon that arrives at the buyer's next turn start, or refunds in full
+if the square is taken or unsupported, so the search must value a commitment the
+opponent gets a whole turn to answer. Standard was retired on 2026-09-21
+(`SPEC.md` v3.1, `JUDGMENT_LOG.md` J-022).
+
+Two engines ship in the browser, both searching the real public game state:
+
+- **`src/ai/` — `AIEngineV2`**: beam planning, MCTS and a WebAssembly tactical
+  solver. It plays easy and medium, and it is what `?hardAi=0` falls back to.
+  Its evaluation weights are `DEFAULT_WEIGHTS` in `src/ai/types.ts` (the section
+  below).
+- **`src/ai/hard/` — the hard engine**: a packed replica with its own search,
+  tables and tuned evaluation. It plays the hard difficulty. **Its weights are
+  `src/ai/hard/eval/weights.ts`, not `types.ts`**; see
+  `docs/hard-ai/` for its design, and
+  `docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md` for the pending-summon
+  scorer credit and the `phasing-hand-priors-v1` vector it currently ships.
+
+Every game uses four shared actions per player
 turn. Movement and attack combinations must fit that budget; enemy reach is
 three movement actions plus one attack. Only an enemy kill by attack resets
 the twenty-ply draw clock (raised from ten on 2026-09-19, rules revision
-`muju-phasing-2`). Income still matters economically, but cannot prevent
-a draw. The canonical transition supplies these rules to human and AI play.
+`muju-phasing-2`). Summoning, arrival and refunds are not progress. Income still
+matters economically, but cannot prevent a draw. The canonical transition
+supplies these rules to human and AI play.
 See [the current rules](SPEC.md) and [implementation status](docs/AI_IMPLEMENTATION_STATUS.md).
 
 
 ## Tuning evaluation weights
 
-The evaluation weights live in `muju/src/ai/types.ts` under `DEFAULT_WEIGHTS`. You can adjust these values to emphasize different strategic priorities.
+This section is about `AIEngineV2` only. Its evaluation weights live in `muju/src/ai/types.ts` under `DEFAULT_WEIGHTS`, and you can adjust these values to emphasize different strategic priorities. The hard engine ignores them entirely: its vector is `muju/src/ai/hard/eval/weights.ts`, tuned and pinned by identity hashes, and it is not edited by hand.
 
 Example: favor resource advantage and mining over direct combat.
 

@@ -1,5 +1,11 @@
 # Muju change impact plan
 
+> **Stale plan (last touched at `d667c823`).** This is the planner output from an
+> earlier pass at the Phasing-only cutover; its node dispositions were never filled
+> in and it lags the tree it describes. Superseded by
+> `2026-09-21-phasing-only.md`, the completion record written at the 2026-09-21
+> release. Retained as the dated record of the plan as it stood; do not work from it.
+
 Review plan only: no edits, tests, media generation or deployments have run. Unselected prerequisites must be current but need no automatic rebuild. Unmapped paths require manual investigation; this graph is not a semantic proof.
 
 ## 1. [ ] rule-contract — Agreed rules and change intent

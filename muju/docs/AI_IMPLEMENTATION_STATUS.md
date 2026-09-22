@@ -1,4 +1,4 @@
-# Current branch status — v2.6, 2026-09-12
+# Current branch status — SPEC v3.1, 2026-09-21
 
 Current Metal v2.9 verification (2026-09-18): Speed 0 is supported by canonical
 movement, JS/WASM tactics and the Hard AI packed engine, threat/approach tables,
@@ -8,9 +8,18 @@ explicit historical-catalogue tests; current differential tests use v2.9.
 This release makes no new playing-strength claim.
 
 
-The combined simplification branch uses the **real public GameState** in MCTS
+Muju ships **one rule set** as of 2026-09-21 (`SPEC.md` v3.1, rules revision
+unchanged at `muju-phasing-2`): Act → `END_ACTION_PHASE` → Prepare →
+`END_PLACE_PHASE`, with public pending summons. Standard is retired and is not
+searched, offered or selectable. Two engines run in the browser worker:
+`AIEngineV2` on easy and medium, and the `src/ai/hard` engine on hard, with
+`?hardAi=0` opting a seat back to `AIEngineV2`'s hard preset. The paragraphs
+below describe `AIEngineV2`; the hard engine is documented under `docs/hard-ai/`.
+
+`AIEngineV2` uses the **real public GameState** in MCTS
 and worker protocol **2**. Observation/event masking, belief particles, queue
-reconciliation and re-determinization have been deleted. Both banks are public.
+reconciliation and re-determinization were deleted in September 2026 and are not
+coming back. Both banks are public.
 Queue value is removed; evaluation uses projected end-of-turn income and
 highest on-board tier per element. Beam states settle income through the
 canonical transition. Bounded Place candidates include purchases by element,
@@ -24,12 +33,14 @@ an attack kill resets the quiet clock, and since 2026-09-19 (rules revision
 canonical draw transition as human and online play. Strength evidence measured
 under `muju-phasing-1` is not pooled with evidence measured under this revision.
 
-The rebuilt kernel uses **ABI 6**. Tactical proofs retain current-turn movement,
+The rebuilt kernel uses **ABI 7**. Tactical proofs retain current-turn movement,
 attacks/Cleave and home-blocked promotion subsets. **General placement and
 purchases remain outside the proof:** such queries return unknown. When an
 invader occupies home, every spawn rectangle is blocked, so the rescue proof
-can still enumerate legal promotion subsets without purchases. Income only
-arrives after Act and cannot finance a promotion in the preceding Place phase.
+can still enumerate legal promotion subsets without purchases. Mining settles at
+`END_ACTION_PHASE`, **before** Prepare, so this turn's income does finance this
+turn's promotions; what it cannot do is put a piece on the board this turn, since
+a purchase is a summon that arrives a full turn later.
 This scope choice avoids claiming complete search over a potentially large
 purchase space. JS validates successful witnesses; differential tests and
 browser worker/fallback/rescue tests cover the retained scope.
