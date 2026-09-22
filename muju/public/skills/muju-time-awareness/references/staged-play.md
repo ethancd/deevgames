@@ -24,9 +24,13 @@ can see its plans. Then call `muju_stage`:
 }
 ```
 
-This example ends a rapid turn about 20 seconds after it starts, when its initial
-allowance is 630,000 ms. Choose your own legal actions; end-turn is legal only in
-the action phase. Each batch contains 1–32 ordinary play actions. `fallbacks` may
+This example stages the mining and upkeep step alone, firing about 20 seconds after
+a rapid turn starts, when its initial allowance is 630,000 ms. It does **not** hand
+over: `END_ACTION_PHASE` mines, settles upkeep and leaves your seat in preparation
+with the clock still running. Choose your own legal actions, and keep the two end
+commands in their phases: `END_ACTION_PHASE` is legal in the action phase, and
+`END_PLACE_PHASE` — the command that actually ends your turn — is legal in the
+preparation phase. Each batch contains 1–32 ordinary play actions. `fallbacks` may
 contain up to three additional complete batches in your preferred order. MCP
 accepts A1–J10 or `{x,y}` positions; returned pending actions use `{x,y}` and can
 be passed back unchanged. There is no `STAGE` game action.
@@ -188,6 +192,7 @@ begins are skipped; samples start with the next newly started full turn. Current
 bank balances remain authoritative. Existing timing history survives restart.
 The window is cumulative, not a rolling trend or a prediction of game length.
 
-The example above stages a single action. A complete-turn candidate adds
-`END_ACTION_PHASE`, any required `PAY_UPKEEP` and desired preparation, followed by
-`END_PLACE_PHASE`. Never assume a partial staged batch stops the clock.
+The example above stages the mining and upkeep step alone. A complete-turn candidate
+puts the action-phase actions before `END_ACTION_PHASE`, then any required
+`PAY_UPKEEP`, the desired preparation, and `END_PLACE_PHASE` last. Never assume a
+partial staged batch stops the clock.
