@@ -165,7 +165,9 @@ const binding = z.object({ ruleset: z.literal('phasing'), rulesVersion: z.enum(R
 const unit = z.object({ id: text, definitionId: definition, owner: side, position: square, hasMoved: z.boolean(), hasAttacked: z.boolean(), canActThisTurn: z.boolean(), damageTaken: integer, promotedThisPlacement: z.boolean().optional(), placedThisTurn: z.boolean().optional(), attackedThisTurn: z.array(text).optional(), lastAttackKilled: z.boolean().optional() }).strict();
 const pending = z.object({ id: text, definitionId: definition, owner: side, position: square, cost: amount }).strict();
 const player = z.object({ id: side, resources: amount, startCorner: square, resourcesGained: amount, resourcesUpkeep: amount.optional() }).strict();
-const reason = z.enum(['elimination', 'home-occupation', 'home-checkmate', 'resignation', 'inactivity', 'upkeep-elimination', 'timeout', 'abandoned']);
+// 'kill-clock' added 2026-09-22 (muju-phasing-3, the KILL CLOCK); 'inactivity'
+// stays for archived muju-phasing-1/-2 authored evidence.
+const reason = z.enum(['elimination', 'home-occupation', 'home-checkmate', 'resignation', 'inactivity', 'kill-clock', 'upkeep-elimination', 'timeout', 'abandoned']);
 const state = z.object({
   ruleset: z.literal('phasing'), actionsPerTurn: z.literal(4), blackCrystalHandicap: integer,
   pendingSummons: z.array(pending), lastSummoning: z.object({ player: side, turnNumber: integer, summoned: z.array(pending), disrupted: z.array(pending) }).strict().optional(),

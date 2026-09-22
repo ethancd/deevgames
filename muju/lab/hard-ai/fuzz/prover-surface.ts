@@ -619,6 +619,10 @@ interface GateDivergence {
 /** Per-action buffer: 4 attacks + 100 destinations per slot, plus the phase-ender. */
 const GEN_CAPACITY = 4 + MAX_SLOTS * 104;
 
+// 'kill-clock' (7) added 2026-09-22 for `muju-phasing-3`; 'inactivity' (5)
+// stays for archived `muju-phasing-1`/`-2` replays. Kept in sync BY HAND with
+// `src/ai/hard/core/state.ts`'s (unexported) `REASON_NAME`, since that one is
+// private to its module.
 const REASON_NAME: readonly string[] = [
   'none',
   'elimination',
@@ -627,6 +631,7 @@ const REASON_NAME: readonly string[] = [
   'home-checkmate',
   'inactivity',
   'resignation',
+  'kill-clock',
 ];
 
 function replicaOutcome(p: PackedState): string {

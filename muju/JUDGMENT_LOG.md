@@ -538,3 +538,95 @@ User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan t
   labels are recorded in this entry and in the BRIEF; reverting is a display-name
   and label edit with no stat, save, schema or rules-revision change on either
   side of the reversal.
+
+
+## J-024: The kill clock replaces the inactivity draw (SPEC v3.3, rules revision `muju-phasing-2` -> `muju-phasing-3`, 2026-09-22)
+
+- **Date:** 2026-09-22. Owner decision (Ethan), recorded in
+  `muju/docs/changes/2026-09-22-kill-clock-SPEC.md`. **Supersedes J-021's
+  threshold and its draw verdict.** J-016's timing (resolved at the ending turn,
+  before the next home-win check) and J-019's definition of a quiet turn both
+  still stand — a *kill* is unchanged: any attack that removes a unit; releases,
+  refunds, promotions, mining, chip damage and disrupted or failed summons are
+  not kills.
+- **Decision — the clock:** the limit returns from twenty quiet plies to **ten**,
+  and the public warning keeps its three-ply margin, so the amber threshold
+  returns from 17 to **7**. This coincides numerically with `muju-phasing-1`'s
+  old ten-ply limit, but is a different rule: `muju-phasing-1` drew outright at
+  ten; this revision decides on mined totals at ten.
+- **Decision — the verdict.** Where J-021's clock always drew, this clock
+  decides: each player's **mined total** is the sum of every crystal their
+  units have ever taken from the board over the whole game, never reduced by
+  spending, upkeep, release or refund. **Black's starting handicap crystals
+  count toward Black's mined total** — an explicit owner call, since the
+  handicap is granted, not mined, but the owner judged that a handicap given to
+  offset a first-move/tempo disadvantage should also offset the tiebreak it
+  contributes to. The higher mined total wins; an equal total is a draw, same as
+  before. Victory reason `kill-clock`, with `winner` set on a decisive verdict
+  or `null` on a tie.
+- **Decision — home checkmate gets a clock gate.** `#` predicts the invader
+  will still stand on the enemy home at the start of its own next turn; that
+  prediction is only sound when the turn start is guaranteed. Let `c` be the
+  kill-clock count the hand-off at the end of the invading turn is about to
+  produce: `0` if that turn contained a kill, else the current count plus one.
+  `c ≤ 8` awards `#` as before. `c ≥ 9` awards no checkmate and the game plays
+  on: at `c = 9` the defender's reply is the tenth kill-free ply, so the clock
+  decides unless the defender itself kills; at `c = 10` the kill clock ends the
+  game at that very hand-off, on mined totals, and this can never be pre-empted
+  by a mate award. The refinement "`c = 9` and the invader is ahead on mining" is
+  deliberately **not** treated as a checkmate — it is exactly the kind of
+  prediction the gate exists to forbid, because the defender's own reply could
+  still kill and reset the clock.
+- **Deliberately NOT changed:** what counts as progress (only an attack that
+  removes a unit resets the clock), the clock's cadence (`END_PLACE_PHASE`,
+  once per turn, killer's own turn closes at 0), its precedence over the
+  turn-start home-occupation check, and the lab-only `inactivityRule: 'off'`
+  escape hatch.
+- **Rationale:** J-021's twenty-ply draw fixed a genuinely too-short clock but
+  traded away all of its own tension — a long quiet game still ends in a coin
+  flip regardless of who spent the game building a mining lead. A clock that
+  decides on mined totals keeps the original pacing fix (dead positions still
+  end) while giving territorial and economic play a real payoff: a player
+  ahead on mining no longer needs a kill to convert that lead, and a player
+  who has been baiting attacks without ever building an economy no longer
+  drifts to a free draw. Reverting the limit to ten, rather than inventing a
+  third number, keeps exactly one clock constant meaningfully in play at a time
+  and reuses evidence about how quickly Phasing summons resolve from J-021's
+  own rationale.
+- **Implementation:** `src/game/inactivity.ts` gained `minedTotal(state, player)`,
+  `killClockCountAfterTurn(state)`, `killClockForbidsCheckmate(state, limit?)`,
+  and `resolveInactivityDraw`/`resolveKillClock` gained a `verdict:
+  'mined-total' | 'draw'` parameter (default `'mined-total'`) alongside its
+  existing `limit` parameter. `LEGACY_INACTIVITY_LIMIT` now names
+  `muju-phasing-2`'s own limit (20, verdict `'draw'`) rather than
+  `muju-phasing-1`'s; `muju-phasing-1`'s ten-ply draw limit is pinned separately,
+  as `PHASING_1_DRAW_LIMIT` in `src/utils/persistence.ts`, precisely because it
+  now coincides numerically with the live kill clock's own limit but is a
+  different rule. The file and every identifier keep their historical
+  `inactivity`-prefixed names on purpose: more than sixty pinned lab, test and
+  Academy files import them, and renaming would be pure churn for the same
+  reason J-021 did not fork the constant. `VictoryReason` gains `'kill-clock'`;
+  `'inactivity'` stays in the union for archived `muju-phasing-1`/`-2` results,
+  which are never reinterpreted.
+- **Blast radius:** rules revision `muju-phasing-2` -> `muju-phasing-3`. Every
+  identity hash carried by a ladder row, suite measurement or Gate 1 row
+  changes, so evidence cannot be pooled across the two revisions — the same
+  consequence J-021 recorded when it advanced the revision the previous time.
+  Void until redone: every `muju-phasing-2` strength, ladder and suite
+  measurement, including `docs/hard-ai/phasing/repair-2026-09-20/`. The static
+  balance model and the WASM tactics kernel have no clock term at all and are
+  unaffected. Academy lesson R09 ("The Ten Quiet Turns") now states a number
+  and a verdict that are both wrong twice over (it already needed
+  re-narration for J-021 and was never re-recorded); R10 is checked separately.
+- **Compatibility:** local save schema 9 -> **10**. A schema-9 save
+  (`muju-phasing-2`, twenty-ply draw) and a schema 5-7 save (`muju-phasing-1`,
+  ten-ply draw) are each adjudicated once under the limit and verdict they were
+  RECORDED with — a game that had already drawn keeps that result — and a
+  position that is still playing resumes with its clock restarted at 0, exactly
+  as schema 8 did the previous time this clock's meaning changed. A finished
+  result is never revived. Schema 8 saves take the same `muju-phasing-2` branch
+  as schema 9.
+- **Reversal cost:** low in code (one constant and one verdict parameter, both
+  already designed to be pinned), high in evidence — reverting would void every
+  `muju-phasing-3` measurement the same way this change voids `muju-phasing-2`
+  ones.

@@ -20,24 +20,30 @@ import { assertMatchCapability, allowsMatchCapability } from './matchPolicy';
 import { completeClockTurn, newClockHistory, projectClockPressure, type ClockHistory } from './clockPressure';
 
 /**
- * The ONE rules revision this host plays. Standard was retired on 2026-09-21
- * (owner instruction; JUDGMENT_LOG J-022), so `muju-phasing-2` is the only
- * version a room can be created under, listed as active under, or opened under.
+ * The ONE rules revision this host plays. Kill clock (2026-09-22, rules revision
+ * `muju-phasing-3`) replaced the twenty-ply inactivity draw: ten kill-free plies
+ * end the game on the higher mined total, tie draws. `muju-phasing-3` is now the
+ * only version a room can be created under, listed as active under, or opened
+ * under.
  *
  * Every other version a row can carry — `muju-online-2`, `muju-online-3`,
  * `muju-online-4`, `muju-online-5` (reserved by the unmerged T5 branch
- * `codex/phasing-only-canonical` and never written here), `muju-online-6` and
- * `muju-phasing-1` — is RETIRED. A retired row keeps its bytes untouched and
- * takes the changed-rules path in `read()`: RULES_CHANGED, never a silent
- * reinterpretation, never an in-place migration and never a delete. That is
- * already what production returns for all 37 such rows.
+ * `codex/phasing-only-canonical` and never written here), `muju-online-6`,
+ * `muju-phasing-1` and `muju-phasing-2` — is RETIRED. A retired row keeps its
+ * bytes untouched and takes the changed-rules path in `read()`: RULES_CHANGED,
+ * never a silent reinterpretation, never an in-place migration and never a
+ * delete. That is already what production returns for every such row, now
+ * joined by every room still open under the twenty-ply draw clock at cutover.
  *
- * `PHASING_RULES_VERSION` must not move. `read()` is a hard allow-list, so a new
- * string would 409 the rooms that open today; it is also the lab identity key
- * (`src/ai/hard/config.ts` `PHASING_RULES_REVISION`), so changing it would void
- * every pooled Hard-AI measurement.
+ * `PHASING_RULES_VERSION` moves only for an incompatible rules change; this is
+ * one (the terminal's verdict changed from draw to mined-total). `read()` is a
+ * hard allow-list, so a new string 409s the rooms open before this bump — the
+ * precedent this repeats (muju-phasing-1 -> muju-phasing-2, 2026-09-19). It is a
+ * separate string from the lab identity key (`src/ai/hard/config.ts`
+ * `PHASING_RULES_REVISION`); they are kept equal by convention, not by import,
+ * and the hard-ai lane bumps its own copy.
  */
-export const PHASING_RULES_VERSION = 'muju-phasing-2';
+export const PHASING_RULES_VERSION = 'muju-phasing-3';
 /**
  * The last Standard revision this host ever wrote. Exported so tests and tools
  * can name it; never creatable, never accepted by `read()`.

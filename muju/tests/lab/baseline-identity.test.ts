@@ -190,7 +190,7 @@ describe('resolvedConfig / resolvedConfigHash (E0.1 clauses 1, 3, 4)', () => {
     // out of a phasing-2 pool — the two revisions share their engines, their
     // budgets and their opening book down to the byte, so the revision string
     // is the only thing that separates them.
-    expect(LADDER_RULES_VERSION).toBe('muju-phasing-2');
+    expect(LADDER_RULES_VERSION).toBe('muju-phasing-3');
     // One source of truth: the ladder's constant IS the P1 replayer's, and both
     // are the harness constant the runner stamps on every game record.
     expect(LADDER_RULES_VERSION).toBe(RULES_VERSION);

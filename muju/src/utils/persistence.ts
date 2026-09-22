@@ -18,13 +18,25 @@ import { DEFAULT_AI_PACE, isAIPace, type AIPace } from '../ai/turnTime';
 // covers a save this build can read and recognise: a schema outside
 // `READABLE_SCHEMA_VERSIONS`, or a payload that is not a game at all, is still
 // cleared exactly as it was before schema 9 — there is nothing there to review.
-export const SCHEMA_VERSION = 9;
+// v10 (rules revision `muju-phasing-3`, 2026-09-22): the KILL CLOCK. Ten
+// kill-free plies end the game on mined totals (a tie draws) instead of twenty
+// plies drawing outright. A save written under an earlier schema is adjudicated
+// once under the clock it was RECORDED with, then — if it is still playing —
+// restarted at 0 for the live kill clock, exactly as v8 did the last time this
+// clock's meaning changed. See `loadGameState`.
+export const SCHEMA_VERSION = 10;
 
-/** The schema that first recorded the twenty-ply clock; earlier saves counted differently. */
+/** The schema that first recorded the twenty-ply draw clock (`muju-phasing-2`); schema 5-7 (`muju-phasing-1`) counted ten plies to a draw instead. */
 const TWENTY_PLY_CLOCK_SCHEMA = 8;
 
+/** `muju-phasing-1` (schema 5-7): ten quiet plies drew the game outright. This is
+ * numerically the same as the live kill clock's own `INACTIVITY_LIMIT`, but a
+ * different rule with a different verdict, so it is pinned explicitly here rather
+ * than reusing a constant whose default verdict is now `mined-total`. */
+export const PHASING_1_DRAW_LIMIT = 10;
+
 /** Every save schema this build still reads. Anything else starts a fresh game. */
-const READABLE_SCHEMA_VERSIONS: readonly number[] = [5, 6, 7, TWENTY_PLY_CLOCK_SCHEMA, SCHEMA_VERSION];
+const READABLE_SCHEMA_VERSIONS: readonly number[] = [5, 6, 7, TWENTY_PLY_CLOCK_SCHEMA, 9, SCHEMA_VERSION];
 
 const STORAGE_KEY = 'elemental-tactics-save';
 /**
@@ -129,15 +141,20 @@ export function loadGameState(): GameState | null {
       return null;
     }
 
-    // A save written before v8 counted quiet plies against the ten-ply limit, so its
-    // stored clock means something else now. It is adjudicated once under the limit it
-    // was recorded with — a game that had already drawn keeps that result — and a
-    // position that is still playing restarts its clock instead of carrying a count
-    // whose meaning changed. It never revives a finished game.
-    const preTwentyPlyClock = persisted.schemaVersion < TWENTY_PLY_CLOCK_SCHEMA;
+    // A save written before v10 counted its clock under an earlier rule: schema 5-7
+    // (`muju-phasing-1`) drew outright at ten quiet plies; schema 8-9
+    // (`muju-phasing-2`) drew outright at twenty. Each is adjudicated once under the
+    // limit and verdict it was RECORDED with — a game that had already drawn keeps
+    // that result — and a position that is still playing restarts its clock at 0 for
+    // the live kill clock, instead of carrying a count whose meaning changed twice
+    // over. It never revives a finished game. A v10 save uses the live kill clock
+    // directly (`legacyClock` is null).
+    const legacyClock = persisted.schemaVersion < TWENTY_PLY_CLOCK_SCHEMA ? { limit: PHASING_1_DRAW_LIMIT, verdict: 'draw' as const }
+      : persisted.schemaVersion < SCHEMA_VERSION ? { limit: LEGACY_INACTIVITY_LIMIT, verdict: 'draw' as const }
+      : null;
     const adjudicated = resolveInactivityDraw({ ...persisted.state, actionsPerTurn: getActionsPerTurn(persisted.state) },
-      preTwentyPlyClock ? LEGACY_INACTIVITY_LIMIT : undefined);
-    const state = preTwentyPlyClock && adjudicated.phase === 'playing' && (adjudicated.inactivityPlies ?? 0) !== 0
+      legacyClock?.limit, legacyClock?.verdict);
+    const state = legacyClock && adjudicated.phase === 'playing' && (adjudicated.inactivityPlies ?? 0) !== 0
       ? { ...adjudicated, inactivityPlies: 0 } : adjudicated;
     // Stamp the revision once, keeping the score, so the restart cannot repeat.
     if (persisted.schemaVersion < SCHEMA_VERSION) saveGameState(state, persisted.history);

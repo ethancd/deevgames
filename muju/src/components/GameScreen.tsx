@@ -1,7 +1,7 @@
 import { INITIAL_MAP_RESOURCES } from '../game/resourceMap';
 import { MusicButton } from '../music/MusicPlayer';
 import { useGameSounds } from '../sound/useGameSounds';
-import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../game/inactivity';
+import { INACTIVITY_LIMIT, INACTIVITY_WARNING, minedTotal } from '../game/inactivity';
 import { UpkeepPanel } from './UpkeepPanel';
 import { upkeepDue } from '../game/upkeep';
 import { VisualKey } from './VisualKey';
@@ -832,6 +832,11 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   const viewerState = state.players[viewerPlayer];
   const opponentPlayer: PlayerId = viewerPlayer === 'white' ? 'black' : 'white';
   const opponentState = state.players[opponentPlayer];
+  // Kill-clock lead: whoever's mined total (resourcesGained, plus Black's
+  // handicap) is higher gets a subtle marker beside the crystal count. Nothing
+  // on a tie. Both players see the same comparison, from their own row.
+  const whiteMined = minedTotal(state, 'white'), blackMined = minedTotal(state, 'black');
+  const minedLeader: PlayerId | null = whiteMined > blackMined ? 'white' : blackMined > whiteMined ? 'black' : null;
 
   const interactive = !showReplay && !inspectOnly && isCurrentPlayerHuman && !isThinking && !showPassOverlay && state.phase === 'playing' && !state.upkeepPending;
   const playerNames = analysis ? { white: 'White', black: 'Black' } : online ? online.names : config.mode === 'pass-play' ? { white: 'Player 1', black: 'Player 2' }
@@ -875,7 +880,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
   return (
     <main className={`game-shell${phasing ? ' game-shell-phasing' : ''}${online ? ' game-shell-online' : ''}${observing ? ' game-shell-observer' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
-      {state.phase === 'victory' && !analysis && !online?.playingIncoming && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? '/muju/analysis?local=1'} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} />}
+      {state.phase === 'victory' && !analysis && !online?.playingIncoming && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? '/muju/analysis?local=1'} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} minedTotals={{ white: whiteMined, black: blackMined }} />}
       {showPassOverlay && state.phase === 'playing' && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {choosingUpkeep && <UpkeepPanel state={state} onConfirm={payUpkeep} onUndo={canUndo ? undo : undefined} disabled={online?.busy} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} phasing={phasing} />
@@ -898,9 +903,9 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
           )}</div>
         </section>
         <section className="score-strip" aria-label="Player resources">
-          <div><strong><i className={`player-dot ${viewerPlayer}`} />{playerNames[viewerPlayer]} <b>◆ {viewerState.resources}</b></strong>
+          <div><strong><i className={`player-dot ${viewerPlayer}`} />{playerNames[viewerPlayer]} <b>◆ {viewerState.resources}</b>{minedLeader === viewerPlayer && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
             <small>Gained {viewerState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[viewerPlayer]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, viewerPlayer)}</small><small className={upkeepDue(state,viewerPlayer)>viewerState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,viewerPlayer)} / turn</small></div>
-          <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ {opponentState.resources}</b></strong>
+          <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ {opponentState.resources}</b>{minedLeader === opponentPlayer && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
             <small>Gained {opponentState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[opponentPlayer]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, opponentPlayer)}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
         </section>
         <div className="progress-clock"><span>{actionsPerTurn} actions / turn</span><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} turns without a kill</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>

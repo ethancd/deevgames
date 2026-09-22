@@ -216,37 +216,58 @@ describe('eval: stage 1 against the canonical rules', () => {
   it('retains clock pressure, priced at -8 cc per unit of pressure', () => {
     // A4 re-expressed the feature against the LIMIT: `clock² × 100 / LIMIT²`
     // rather than raw `clock²`, so doubling the limit did not quadruple the
-    // feature's range behind an unchanged coefficient. The shape — quadratic,
-    // signed by the material+bank lead, antisymmetric between the two views —
-    // and the 0..100 span are the contract, and both are pinned here.
+    // feature's range behind an unchanged coefficient; `muju-phasing-3`
+    // (owner decision 2026-09-22, the KILL CLOCK) brings the limit back to 10,
+    // and the same formula re-pins the expected pressure back to its
+    // pre-A4 value. The shape — quadratic, antisymmetric between the two
+    // views — and the 0..100 span are the contract, and both are pinned here.
+    // The SIGN moved with the rule: it used to follow the material+bank lead
+    // (a wasted lead under an always-draws clock); it now follows the
+    // mined-total lead `gained[]` compares to decide the winner, because that
+    // is the quantity the clock actually adjudicates.
+    // POLARITY: the frozen weight is -8, fitted under the draw clock where the
+    // running clock hurt the leader; under the kill clock the leader must be
+    // REWARDED, so the feature is negated (`features.ts`) and the leader reads
+    // -pressure while the weight vector stays byte-identical (2026-09-22).
     const clock = INACTIVITY_LIMIT - 1;
     const expected = Math.trunc((clock * clock * 100) / (INACTIVITY_LIMIT * INACTIVITY_LIMIT));
-    expect(expected).toBe(90);
-    const leading = pack({ ...spec, inactivityPlies: clock });
+    expect(expected).toBe(81);
+    // White ahead on material + bank (spec: white 8, black 2) but EQUAL on
+    // mined total (both default to 0 gained): the feature must read 0, not the
+    // stale material-lead sign — this is what proves the sign moved.
+    const materialOnly = pack({ ...spec, inactivityPlies: clock });
+    expect(features(materialOnly, WHITE)[F.DrawPressure]).toBe(0);
+    expect(features(materialOnly, BLACK)[F.DrawPressure]).toBe(0);
+    // Now give White the mined-total lead explicitly.
+    const minedSpec = { ...spec, whiteGained: 6, blackGained: 2 };
+    const leading = pack({ ...minedSpec, inactivityPlies: clock });
     const f = features(leading, WHITE);
-    // White is ahead on material + bank, so the clock counts against white.
-    expect(f[F.DrawPressure]).toBe(expected);
-    // A full-scale clock costs the leader 800 cc — about two and a half fire_1s,
-    // enough to prefer a real move to shuffling, nowhere near enough to trade
-    // material for tempo. It is a stage-1 feature.
+    expect(f[F.DrawPressure]).toBe(-expected);
+    // A full-scale clock is worth 800 cc to the leader (w · f = -8 · -100) —
+    // about two and a half fire_1s, enough to keep a mining lead rather than
+    // shuffle, nowhere near enough to trade material for tempo. Stage 1.
     expect(DEFAULT_WEIGHTS.w[F.DrawPressure]).toBe(-8);
     expect(STAGE_OF[F.DrawPressure]).toBe(1);
-    expect(features(leading, BLACK)[F.DrawPressure]).toBe(-expected);
+    expect(features(leading, BLACK)[F.DrawPressure]).toBe(expected);
+    // Black's own mined lead flips the sign the other way, clock unchanged.
+    const blackLeading = pack({ ...spec, whiteGained: 1, blackGained: 5, inactivityPlies: clock });
+    expect(features(blackLeading, WHITE)[F.DrawPressure]).toBe(expected);
+    expect(features(blackLeading, BLACK)[F.DrawPressure]).toBe(-expected);
 
-    // Full scale is 100 AT the draw, and 0 at a fresh clock, at any limit.
-    expect(features(pack({ ...spec, inactivityPlies: INACTIVITY_LIMIT }), WHITE)[F.DrawPressure]).toBe(100);
-    expect(features(pack({ ...spec, inactivityPlies: 0 }), WHITE)[F.DrawPressure]).toBe(0);
+    // Full scale is 100 AT the clock's end, and 0 at a fresh clock, at any limit.
+    expect(features(pack({ ...minedSpec, inactivityPlies: INACTIVITY_LIMIT }), WHITE)[F.DrawPressure]).toBe(-100);
+    expect(features(pack({ ...minedSpec, inactivityPlies: 0 }), WHITE)[F.DrawPressure]).toBe(0);
     // Monotone, and never above full scale anywhere in the domain.
     let previous = -1;
     for (let c = 0; c <= INACTIVITY_LIMIT; c++) {
-      const v = features(pack({ ...spec, inactivityPlies: c }), WHITE)[F.DrawPressure];
+      const v = -features(pack({ ...minedSpec, inactivityPlies: c }), WHITE)[F.DrawPressure];
       expect(v).toBeGreaterThanOrEqual(previous);
       expect(v).toBeLessThanOrEqual(100);
       previous = v;
     }
 
     // The rule is off entirely when the inactivity rule is.
-    expect(features(pack({ ...spec, inactivityPlies: clock, inactivityRule: 'off' }), WHITE)[F.DrawPressure]).toBe(0);
+    expect(features(pack({ ...minedSpec, inactivityPlies: clock, inactivityRule: 'off' }), WHITE)[F.DrawPressure]).toBe(0);
   });
 
   it('Corridor and TierClimb count what DESIGN §5.12.1 says they count', () => {

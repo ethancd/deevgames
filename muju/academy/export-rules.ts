@@ -55,11 +55,22 @@ assert.equal(b.units.length,2);assert.equal(canAttack(b.units.find(u=>u.id==='wh
 b=resolveCombat(b,'white',right.position).board;assert.equal(b.units.length,1);assert.equal(canAttack(b.units[0]),false);
 demonstrations.push('R03: Honō kills two DEF-3 Muju, then has no third attack.');
 const initial=createInitialGameState();assert.equal(initial.turn.actionsRemaining,4);
-const ending=endTurn({...initial,phase:'playing',inactivityPlies:INACTIVITY_LIMIT-1,progressThisTurn:false});
-assert.equal(ending.victoryReason,'inactivity');assert.equal(ending.winner,null);assert.ok(ending.players.white.resources>0);
-// muju-phasing-2 (2026-09-19): the clock is twenty plies. R09's narration still says ten,
-// so the recording is stale until a v9 re-record; see academy/STATUS.md.
-demonstrations.push(`R09: positive mining income on the ${INACTIVITY_LIMIT}th quiet turn still draws (R09 narration still says 10).`);
+// Rules revision muju-phasing-3 (2026-09-22): the kill clock. The tenth
+// kill-free ply ends the game immediately, decided on mined totals (never a
+// draw by default): the higher of each side's mined total wins, counting
+// Black's starting handicap; equal totals draw.
+// Empty board: no starting units means no mining income this turn, so the
+// injected `resourcesGained` totals below are exactly what the clock compares.
+const quiet={...initial,board:{...initial.board,units:[]},phase:'playing' as const,inactivityPlies:INACTIVITY_LIMIT-1,progressThisTurn:false};
+const win=endTurn({...quiet,players:{...quiet.players,
+  white:{...quiet.players.white,resourcesGained:6},black:{...quiet.players.black,resourcesGained:2}},blackCrystalHandicap:1});
+assert.equal(win.victoryReason,'kill-clock');assert.equal(win.winner,'white');
+const tie=endTurn({...quiet,players:{...quiet.players,
+  white:{...quiet.players.white,resourcesGained:4},black:{...quiet.players.black,resourcesGained:4}}});
+assert.equal(tie.victoryReason,'kill-clock');assert.equal(tie.winner,null);
+// R09's narration still says "ten quiet turns" and "always a draw"
+// (muju-phasing-1); it is stale until a v9 re-record — see academy/STATUS.md.
+demonstrations.push(`R09: the ${INACTIVITY_LIMIT}th kill-free ply ends the game on mined totals — the higher wins, counting Black's handicap; equal totals draw (R09 narration still says ten, always a draw).`);
 // 2026-09-22: display-name rename (owner decision, docs/changes/2026-09-22-rename-irumbu-BRIEF.md).
 // Hono->Honō, Kimubunga->Kimbunga, Sjor->Sjór, Aegirinn->Ægirinn, Göl->Loş, Sachita->Mallki,
 // Sachakuna->Sach'akuna, Yan->Poṉ, Mazask->Veḷḷi, Tanka->Irumbu; title Muju Hono Tanka->Muju Hono
@@ -70,4 +81,4 @@ fs.writeFileSync(new URL('catalog.json',root),JSON.stringify(units,null,2));
 fs.writeFileSync(new URL('bonk-matrix.json',root),JSON.stringify(bonks,null,2));
 fs.writeFileSync(new URL('map.json',root),JSON.stringify(UNEQUAL_ROUTES_MAP));
 fs.writeFileSync(new URL('rules-verification.json',root),JSON.stringify({rules:'v2.9',fullHealth:true,adjacent:true,matchupChecks:324,demonstrations,passed:true,mapTotal:UNEQUAL_ROUTES_MAP.reduce((a,b)=>a+b,0)},null,2));
-console.log('324 ordered matchups and revised movement, Cleave, promotion and draw demonstrations passed.');
+console.log('324 ordered matchups and revised movement, Cleave, promotion and kill-clock demonstrations passed.');

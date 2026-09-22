@@ -269,7 +269,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         {selectedMode && <BlackCrystalHandicap value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
 
         {/* Start button */}
-        {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · Draw after {INACTIVITY_LIMIT} consecutive turns without a kill.</p>}
+        {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · After {INACTIVITY_LIMIT} consecutive turns without a kill, higher mined crystals wins (a tie draws).</p>}
         <button
           onClick={() => handleStart()}
           disabled={!selectedMode}

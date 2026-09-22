@@ -201,7 +201,11 @@ describe('M6 chronological canonical economy reference (authored only)', () => {
 
   it('stops before any income/arrival after an actual terminal boundary', () => {
     const draw = compare(cases.find(([name]) => name === 'inactivity stops before arrivals or income')![1]());
-    expect(draw.result).toMatchObject({ steps: 1, result: Result.DRAW, reason: Reason.INACTIVITY, bills: [], arrivals: [] });
+    // `authored()` leaves both sides' mined totals at their default 0, so the
+    // kill clock (`muju-phasing-3`, owner decision 2026-09-22) still ties —
+    // same `Result.DRAW` — but the reason is now `KILL_CLOCK`, not the
+    // archived-replay-only `INACTIVITY`.
+    expect(draw.result).toMatchObject({ steps: 1, result: Result.DRAW, reason: Reason.KILL_CLOCK, bills: [], arrivals: [] });
     expect(draw.out[1].firstBillReached).toBe(false);
     expect(draw.out[1].pendingArrival[78]).toBe(0);
     const mate = compare(cases.find(([name]) => name === 'settled home mate stops at the first bill')![1]());

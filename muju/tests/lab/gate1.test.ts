@@ -61,6 +61,26 @@ function synthetic(mode: Mode): Entry[] {
   }));
 }
 
+/**
+ * 2026-09-22, rules revision muju-phasing-3 (the kill clock): Gate 1 is DEFERRED.
+ * `adoptedProtocol()` and `loadBands()` correctly refuse to run because
+ * `lab/ai/gate1-references.json` and the frozen bands were adopted under
+ * muju-phasing-2, and the inactivity/kill-clock rate is a direct function of the
+ * clock, so bands do not cross a revision. The tests that need an adopted
+ * protocol or score against those bands are skipped, not rewritten: they re-arm
+ * by themselves the moment an amendment adopts re-frozen bands at the live
+ * revision. The refusal itself is asserted below so the deferral stays visible.
+ */
+const GATE1_ADOPTED = (() => { try { adoptedProtocol(); return true; } catch { return false; } })();
+
+describe('Gate 1 at the live rules revision', () => {
+  it('either runs under an adopted protocol or refuses by naming the revision it needs', () => {
+    if (GATE1_ADOPTED) { expect(adoptedProtocol().references.rulesVersion).toBe(RULES_VERSION); return; }
+    expect(() => adoptedProtocol()).toThrow(`at rules revision ${RULES_VERSION}`);
+    expect(RULES_VERSION).toBe('muju-phasing-3');
+  });
+});
+
 describe('allocation and reporting', () => {
   it('fixes 16 pilot and 768 full games, one distinct dev opening per pair', () => {
     expect(AMENDMENT).toBe('A3');
@@ -112,7 +132,7 @@ describe('allocation and reporting', () => {
     expect(() => seedFor('full', 'Rush', 0, FULL_PAIRS)).toThrow();
   });
 
-  it('passes A3 full evidence with unchanged A1 acceptance and never passes a pilot', () => {
+  it.skipIf(!GATE1_ADOPTED)('passes A3 full evidence with unchanged A1 acceptance and never passes a pilot', () => {
     const full = summarize(synthetic('full'), 'full', 'identity', bands, openings);
     expect(full.errors).toEqual([]);
     expect(full.gate1).toBe('passed');
@@ -134,7 +154,7 @@ describe('allocation and reporting', () => {
     expect(full.distinctnessReading).toBe(DISTINCTNESS_READING);
   });
 
-  it('reports a Rush loss without gating strength, but gates every other opponent and handicap', () => {
+  it.skipIf(!GATE1_ADOPTED)('reports a Rush loss without gating strength, but gates every other opponent and handicap', () => {
     const entries = synthetic('full');
     for (const e of entries.filter(e => e.task.opponent === 'Rush')) {
       e.record.winner = e.task.hardSeat === 'white' ? 'black' : 'white';
@@ -149,7 +169,7 @@ describe('allocation and reporting', () => {
     }
   });
 
-  it('requires an interval excluding zero, not only a positive score', () => {
+  it.skipIf(!GATE1_ADOPTED)('requires an interval excluding zero, not only a positive score', () => {
     const entries = synthetic('full');
     const cell = entries.filter(e => e.task.opponent === 'Expand' && e.task.handicap === 0);
     cell.forEach((e, i) => { if (i >= 50) e.record.winner = e.task.hardSeat === 'white' ? 'black' : 'white'; });
@@ -160,7 +180,7 @@ describe('allocation and reporting', () => {
     expect(report.gate1).toBe('failed');
   });
 
-  it.each(['Rush', 'Expand', 'Balanced', 'aiv2-medium'])('requires a purchase after ten completed turns vs %s', opponent => {
+  it.skipIf(!GATE1_ADOPTED).each(['Rush', 'Expand', 'Balanced', 'aiv2-medium'])('requires a purchase after ten completed turns vs %s', opponent => {
     const entries = synthetic('full');
     const game = entries.find(e => e.task.opponent === opponent && e.task.hardSeat === 'black')!;
     game.record.players.black.unitsPlaced = 0;
@@ -187,7 +207,7 @@ describe('allocation and reporting', () => {
     expect(report.rows.flatMap(r => r.mustBuyFailures)).toEqual(['Rush-h0-p0-black']);
   });
 
-  it.each(['purchases', 'inactivity', 'adjudication'])('still gates Rush %s behavior', field => {
+  it.skipIf(!GATE1_ADOPTED).each(['purchases', 'inactivity', 'adjudication'])('still gates Rush %s behavior', field => {
     const entries = synthetic('full');
     for (const e of entries.filter(e => e.task.opponent === 'Rush' && e.task.handicap === 3)) {
       if (field === 'purchases') e.record.players[e.task.hardSeat].unitsPlaced = 1;
@@ -280,7 +300,7 @@ describe('allocation and reporting', () => {
    * ones is judged against a population the rules no longer produce — and judged
    * more leniently, which is the direction that matters.
    */
-  it('reads the bands re-frozen under the 20-ply clock and refuses the superseded ones', () => {
+  it.skipIf(!GATE1_ADOPTED)('reads the bands re-frozen under the 20-ply clock and refuses the superseded ones', () => {
     expect(BANDS_PATH).toBe('lab/harness/results/p2-scripted-2026-09-19/sanity-bands.json');
     expect(SUPERSEDED_BANDS_PATH).toBe('lab/harness/results/p1-scripted-2026-09-18/sanity-bands.json');
     expect(bands.rulesVersion).toBe(RULES_VERSION);
@@ -366,7 +386,7 @@ describe('effective sample size (preregistration A3 §2)', () => {
     return cell;
   }
 
-  it('marks a replicated cell INVALID, and an INVALID gating cell can neither pass nor fail', () => {
+  it.skipIf(!GATE1_ADOPTED)('marks a replicated cell INVALID, and an INVALID gating cell can neither pass nor fail', () => {
     const entries = synthetic('full');
     replicate(entries, 'Balanced', 0, 96); // one pair, 48 times: A2's failure mode exactly
     const report = summarize(entries, 'full', 'identity', bands, openings);
@@ -422,7 +442,7 @@ describe('effective sample size (preregistration A3 §2)', () => {
    * all draws the cell is then a real, measured FAILURE of the strength condition
    * rather than an absence of information. `strengthMet === false`, not `null`.
    */
-  it('reads a seat-mirrored cell of identical drawn sequences as VALID and FAILED, not invalid', () => {
+  it.skipIf(!GATE1_ADOPTED)('reads a seat-mirrored cell of identical drawn sequences as VALID and FAILED, not invalid', () => {
     const entries = synthetic('full');
     const cell = entries.filter(e => e.task.opponent === 'Balanced' && e.task.handicap === 0);
     for (const pairId of new Set(cell.map(e => e.task.pairId))) {
@@ -452,7 +472,7 @@ describe('effective sample size (preregistration A3 §2)', () => {
    * different their openings were — which is most of what A3 §1's 48 openings were
    * bought for. A3 sets no threshold, so this reports and gates nothing.
    */
-  it('reports games that converge on a shared hand-off position, with the earliest ply', () => {
+  it.skipIf(!GATE1_ADOPTED)('reports games that converge on a shared hand-off position, with the earliest ply', () => {
     const entries = synthetic('full');
     const cell = entries.filter(e => e.task.opponent === 'Expand' && e.task.handicap === 3);
     const shared = 'c'.repeat(64);
@@ -479,7 +499,7 @@ describe('effective sample size (preregistration A3 §2)', () => {
     expect(report.laterConvergence.note).toContain('Report-only');
   });
 
-  it('still fails a row whose behaviour is wrong, even where a cell is INVALID', () => {
+  it.skipIf(!GATE1_ADOPTED)('still fails a row whose behaviour is wrong, even where a cell is INVALID', () => {
     const entries = synthetic('full');
     replicate(entries, 'Balanced', 0, 96);
     for (const e of entries.filter(e => e.task.opponent === 'Expand' && e.task.handicap === 3)) {
@@ -808,7 +828,7 @@ describe('a sharded row merges into one summary', () => {
       .toThrow(/no usable firstStartedAt/);
   });
 
-  it('produces the same verdict as one process would, and names the concession', async () => {
+  it.skipIf(!GATE1_ADOPTED)('produces the same verdict as one process would, and names the concession', async () => {
     const out = mkdtempSync(join(tmpdir(), 'gate1-row-'));
     await runRow(8, out);
     // The mode comes from the shards' own identity; a --mode that disagrees throws.

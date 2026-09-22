@@ -43,9 +43,15 @@ const UFLAGS_VALUES = UFLAGS_MASK + 1;
 const ACTION_VALUES = 5;
 /**
  * `inactivityPlies` 0..`INACTIVITY_LIMIT` — 21 values under `muju-phasing-2`
- * (amendment A4), 11 under `muju-phasing-1`. Split into a FROZEN prefix and an
- * APPENDED tail so the longer clock cannot disturb the keys the shorter one
- * drew; see `CLOCK_LEGACY_VALUES` and `buildZobrist`.
+ * (amendment A4, archived), 11 under `muju-phasing-1` AND under
+ * `muju-phasing-3` (owner decision 2026-09-22, the KILL CLOCK: the limit
+ * returns to 10, though the verdict at the limit no longer does — see
+ * `core/state.ts makeEndPlace`). Split into a FROZEN prefix and an APPENDED
+ * tail so a longer clock can never disturb the keys a shorter one drew; see
+ * `CLOCK_LEGACY_VALUES` and `buildZobrist`. With `CLOCK_VALUES` back at 11,
+ * `CLOCK_EXTRA_VALUES` is 0 and every key is once again exactly the frozen
+ * 11-key prefix — bit-identical to `muju-phasing-1` and to this plane before
+ * A4, by construction, not by re-derivation.
  */
 const CLOCK_VALUES = INACTIVITY_LIMIT + 1;
 /**
@@ -55,7 +61,10 @@ const CLOCK_VALUES = INACTIVITY_LIMIT + 1;
  * whole point is that it does not move when the limit does.
  */
 const CLOCK_LEGACY_VALUES = 11;
-/** The clock keys the longer limit adds; drawn LAST, after `pend` and `progress`. */
+/** The clock keys a longer limit would add, drawn LAST, after `pend` and
+ * `progress`. Zero under both `muju-phasing-1` and the current
+ * `muju-phasing-3` (`CLOCK_VALUES === CLOCK_LEGACY_VALUES`); was 10 under the
+ * archived `muju-phasing-2`. */
 const CLOCK_EXTRA_VALUES = Math.max(0, CLOCK_VALUES - CLOCK_LEGACY_VALUES);
 /** blackCrystalHandicap 0..20 (rules.ts:3). */
 const HANDICAP_VALUES = 21;
@@ -155,16 +164,20 @@ function concatPlane(head: Uint32Array, tail: Uint32Array): Uint32Array {
  * DRAW ORDER IS APPEND-ONLY and is the contract, not the field order of the
  * returned object. Every plane below draws from `rng` in the order written
  * here; anything new goes at the END so no earlier plane's words move. `pend`
- * (M2) and `progress` (M3) were appended that way, and the CLOCK EXTENSION of
- * `muju-phasing-2` (amendment A4: limit 10 -> 20) is appended after both.
+ * (M2) and `progress` (M3) were appended that way, and the CLOCK EXTENSION
+ * archived `muju-phasing-2` (amendment A4: limit 10 -> 20) added is appended
+ * after both. `muju-phasing-3` (owner decision 2026-09-22, the KILL CLOCK)
+ * returns the limit to 10, so `CLOCK_EXTRA_VALUES` is 0 and `fill(rng, 0)`
+ * draws nothing — the extension slot stays in the draw order but is now empty.
  *
  * The clock plane is therefore drawn in TWO pieces: its frozen 11-key prefix
- * (`clock` 0..10) stays where it always was, and the ten keys for `clock`
- * 11..20 are drawn last of all and concatenated onto it. Consequence — the one
- * this arrangement exists for — every key, and so every `Kpos`/`Kturn`, of a
- * position whose clock is <= 10 is BIT-IDENTICAL to the one it had under
- * `muju-phasing-1`. `tests/ai/hard/zobrist.test.ts` redraws the stream and
- * proves it.
+ * (`clock` 0..10) stays where it always was, and (archived, under
+ * `muju-phasing-2` only) ten more keys for `clock` 11..20 would be drawn last
+ * of all and concatenated onto it. Consequence — the one this arrangement
+ * exists for — every key, and so every `Kpos`/`Kturn`, of a position whose
+ * clock is <= 10 is BIT-IDENTICAL under `muju-phasing-1`, `muju-phasing-2` and
+ * `muju-phasing-3` alike. `tests/ai/hard/zobrist.test.ts` redraws the stream
+ * and proves it.
  */
 export function buildZobrist(seed: number = ZOBRIST_SEED): ZobristTables {
   const rng = seededRandom(seed);

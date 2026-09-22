@@ -26,15 +26,16 @@ for(const width of [390,834]) {
   await page.getByTestId('cell-1-0').click();await expect(page.locator('.unit-detail')).toContainText('Upkeep 1');
   await page.screenshot({path:info.outputPath('after-upkeep.png')});
  });
- test(`inactivity draw reaches victory screen at ${width}px`,async({page},info)=>{
+ test(`kill clock draw (tied mined totals) reaches victory screen at ${width}px`,async({page},info)=>{
   await page.setViewportSize({width,height:width===390?844:1112});
   const state=createInitialGameState(Array(100).fill(0),undefined,0,'phasing');state.inactivityPlies=INACTIVITY_LIMIT-1;state.turn.phase='action';state.board.units.find(u=>u.owner==='black')!.position={x:0,y:0};
   await page.addInitScript(({state,schemaVersion})=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion,timestamp:Date.now(),state})),{state,schemaVersion:SCHEMA_VERSION});
   await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();
-  // The quiet clock advances at the handover, after preparation.
+  // The kill clock advances at the handover, after preparation. A zero-resource
+  // board keeps both sides' mined totals at 0, so the tenth kill-free ply draws.
   await page.getByRole('button',{name:'Mine & prepare →',exact:true}).click();
-  await page.getByRole('button',{name:'End turn →',exact:true}).click();await expect(page.getByRole('heading',{name:'Draw by inactivity'})).toBeVisible();await expect(page.getByText(`${INACTIVITY_LIMIT} consecutive player turns passed without a kill. Crystal income does not reset the clock.`)).toBeVisible();
-  await page.screenshot({path:info.outputPath('inactivity-draw.png')});
-  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('elemental-tactics-save')!));expect(saved.state.victoryReason).toBe('inactivity');
+  await page.getByRole('button',{name:'End turn →',exact:true}).click();await expect(page.getByRole('heading',{name:'Draw by kill clock'})).toBeVisible();await expect(page.getByText(`${INACTIVITY_LIMIT} consecutive player turns passed without a kill, and both sides' mined crystal totals are tied at 0.`)).toBeVisible();
+  await page.screenshot({path:info.outputPath('kill-clock-draw.png')});
+  const saved=await page.evaluate(()=>JSON.parse(localStorage.getItem('elemental-tactics-save')!));expect(saved.state.victoryReason).toBe('kill-clock');expect(saved.state.winner).toBeNull();
  });
 }

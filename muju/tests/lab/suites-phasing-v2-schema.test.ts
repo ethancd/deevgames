@@ -132,20 +132,28 @@ describe('a manifest states its own composition instead of matching pinned liter
 });
 
 describe('the authored rules revision is derived, not pinned', () => {
-  it('names muju-phasing-2 in this worktree, because the clock runs to twenty', () => {
-    expect(INACTIVITY_LIMIT).toBe(20);
-    expect(CURRENT_RULES_VERSION).toBe('muju-phasing-2');
-    expect(currentRulesVersion(LEGACY_INACTIVITY_LIMIT)).toBe('muju-phasing-1');
-    expect(RULES_VERSIONS).toEqual(['muju-phasing-1', 'muju-phasing-2']);
+  // `muju-phasing-3` (owner decision 2026-09-22, the KILL CLOCK) brought the
+  // limit back to 10 — `muju-phasing-1`'s own number — so the limit alone no
+  // longer names a revision; the VERDICT (mined-total vs. an automatic draw)
+  // is now load-bearing too.
+  it('names muju-phasing-3 in this worktree, because the clock resolves on mined totals at ten plies', () => {
+    expect(INACTIVITY_LIMIT).toBe(10);
+    expect(CURRENT_RULES_VERSION).toBe('muju-phasing-3');
+    expect(currentRulesVersion(LEGACY_INACTIVITY_LIMIT, 'draw')).toBe('muju-phasing-2');
+    expect(currentRulesVersion(INACTIVITY_LIMIT, 'draw')).toBe('muju-phasing-1');
+    expect(RULES_VERSIONS).toEqual(['muju-phasing-1', 'muju-phasing-2', 'muju-phasing-3']);
   });
 
-  it('refuses a limit no revision is defined for, rather than guessing one', () => {
+  it('refuses a (limit, verdict) pair no revision is defined for, rather than guessing one', () => {
     expect(() => currentRulesVersion(13)).toThrow(/No Phasing rules revision is defined/);
+    // The archived twenty-ply limit under a mined-total verdict never shipped
+    // as any revision — `muju-phasing-2` was twenty plies and drew, full stop.
+    expect(() => currentRulesVersion(LEGACY_INACTIVITY_LIMIT, 'mined-total')).toThrow(/No Phasing rules revision is defined/);
   });
 
   it('mints a binding under the current revision and verifies it', () => {
     const binding = sourceBinding(DEFAULT_RULES);
-    expect(binding.rulesVersion).toBe('muju-phasing-2');
+    expect(binding.rulesVersion).toBe('muju-phasing-3');
     expect(() => verifySourceBinding(binding)).not.toThrow();
   });
 

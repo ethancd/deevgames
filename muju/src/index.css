@@ -26,6 +26,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .score-strip>div { background: #1a2737; padding: 6px 8px; border-radius: 8px; min-width: 0; }
 .score-strip strong { display: flex; gap: 5px; align-items: center; font-size: 12px; }
 .score-strip b { margin-left: auto; color: #f0cd7e; font-variant-numeric: tabular-nums; }
+/* Kill-clock lead marker: subtle on purpose — a small caret beside the crystal
+   count of whichever player's mined total is currently higher. Nothing on a tie. */
+.mined-lead { margin-left: 3px; font-size: 8px; line-height: 1; color: #f0cd7e; opacity: .7; }
 .score-strip small { display: block; font-size: 10px; color: #aabbcc; margin-top: 3px; white-space: nowrap; }
 .player-dot { width: 9px; height: 9px; border-radius: 50%; border: 1px solid #bdcbd9; flex: none; }
 .player-dot.white { background: white; } .player-dot.black { background: #101722; }

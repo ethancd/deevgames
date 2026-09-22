@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { PHASING_RULES_VERSION, RETIRED_STANDARD_VERSION, RoomStore } from '../../server/rooms';
 import { legalActions, observe } from '../../server/observation';
-import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
+import { INACTIVITY_LIMIT, minedTotal } from '../../src/game/inactivity';
 import { phaseEndAction } from '../../src/game/legality';
 import { applyAction } from '../../src/ai/simulate';
 import { createUnit } from '../../src/game/board';
@@ -57,8 +57,8 @@ it('previews, commits, notifies and persists immediate checkmate without playing
 });
 
 describe('authoritative shared rooms', () => {
-  it('draws after twenty ordinary income-earning turns without kills', () => {
-    expect(INACTIVITY_LIMIT).toBe(20);
+  it('ends on mined totals after ten ordinary income-earning turns without kills', () => {
+    expect(INACTIVITY_LIMIT).toBe(10);
     const {store,id,host,guest}=setup();let room=store.get(id);
     // A quiet Phasing turn is Act, then END_ACTION_PHASE to mine and pay upkeep,
     // then END_PLACE_PHASE to hand over — and only the handoff advances the clock.
@@ -70,9 +70,11 @@ describe('authoritative shared rooms', () => {
       expect(room.state.inactivityPlies).toBe(ply);
       expect(room.state.phase).toBe(ply===INACTIVITY_LIMIT?'victory':'playing');
     }
-    expect(room.state.victoryReason).toBe('inactivity');
+    expect(room.state.victoryReason).toBe('kill-clock');
     expect(room.state.players.white.resourcesGained).toBeGreaterThan(0);
     expect(room.state.players.black.resourcesGained).toBeGreaterThan(0);
+    const white=minedTotal(room.state,'white'),black=minedTotal(room.state,'black');
+    expect(room.state.winner).toBe(white===black?null:white>black?'white':'black');
   });
   it('persists a four-action room, rejects overspending and preserves its budget through undo and handoff', () => {
     const dir=mkdtempSync(join(tmpdir(),'muju-four-'));directories.push(dir);
@@ -112,16 +114,17 @@ describe('authoritative shared rooms', () => {
     expect(version(explicit.room.id)).toBe(PHASING_RULES_VERSION);
     expect(omitted.room.state.ruleset).toBe('phasing');
     // `muju-online-5` belongs to the unmerged codex/phasing-only-canonical branch.
-    expect(PHASING_RULES_VERSION).toBe('muju-phasing-2');
+    expect(PHASING_RULES_VERSION).toBe('muju-phasing-3');
     // Named, never written: no room has carried it since 2026-09-21.
     expect(RETIRED_STANDARD_VERSION).toBe('muju-online-6');
     expect(db.prepare("SELECT COUNT(*) AS n FROM rooms WHERE json_extract(data, '$.rulesVersion') = ?").get(RETIRED_STANDARD_VERSION)!.n).toBe(0);
     db.close();
   });
-  // A stored room was agreed under the ten-ply clock. It is never replayed under the
-  // twenty-ply one: the row survives untouched and every call takes the existing
-  // changed-rules path, exactly as an unmigratable version always has.
-  it.each(['muju-online-4','muju-phasing-1'])('refuses to play %s rooms under the new clock without losing them', version => {
+  // A stored room was agreed under an earlier clock (twenty-ply draw at
+  // muju-phasing-2, or ten-ply draw at muju-phasing-1). It is never replayed
+  // under the kill clock: the row survives untouched and every call takes the
+  // existing changed-rules path, exactly as an unmigratable version always has.
+  it.each(['muju-online-4','muju-phasing-1','muju-phasing-2'])('refuses to play %s rooms under the new clock without losing them', version => {
     const dir=mkdtempSync(join(tmpdir(),'muju-retired-'));directories.push(dir);
     const path=join(dir,'rooms.sqlite'),store=new RoomStore(path);stores.push(store);
     const host=store.create({name:'Human',side:'white'});
@@ -259,7 +262,7 @@ describe('authoritative shared rooms', () => {
       room = store.act(id, token, request(room.revision, [phaseEndAction(room.state)], `turn-step-${n}`));
     }
     expect(room.state.phase).toBe('victory');
-    expect(room.state.victoryReason).toBe('inactivity');
+    expect(room.state.victoryReason).toBe('kill-clock');
     expect(() => store.act(id, host.credentials.token, request(room.revision, [{ type: 'END_ACTION_PHASE' }], 'after-game'))).toThrow('illegal');
   });
   it('fails closed on incompatible saved rules', () => {

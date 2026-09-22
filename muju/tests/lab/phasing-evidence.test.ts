@@ -24,10 +24,6 @@ const root = path.resolve(import.meta.dirname, '../..');
  * it acceptable for its stored summary to stop matching its stored games: it is
  * still evidence, and it still has to re-derive from its own raw records.
  */
-const CAMPAIGNS = [
-  { dir: 'lab/harness/results/p1-scripted-2026-09-18', rulesVersion: 'muju-phasing-1', current: false },
-  { dir: 'lab/harness/results/p2-scripted-2026-09-19', rulesVersion: 'muju-phasing-2', current: true },
-] as const;
 
 /**
  * The `lab/harness/**` files amendment A4 changed, and why each one had to move.
@@ -50,7 +46,27 @@ const A4_HARNESS_EDITS: Record<string, string> = {
     'defaults to the p2 results directory, takes its run id from that directory, records the inactivity limit in the manifest and re-checks source identity after the run; the band formula is untouched',
 };
 
-describe.each(CAMPAIGNS)('scripted reference $dir', ({ dir: relDir, rulesVersion, current }) => {
+/**
+ * The `lab/harness/**` files the kill clock (`muju-phasing-3`, 2026-09-22,
+ * `docs/changes/2026-09-22-kill-clock-SPEC.md`) changed under the p2 row, and
+ * why. p2 was the CURRENT reference until the rule underneath it moved; its
+ * bands are now history exactly as p1's became under A4, and there is no
+ * scripted reference at the live rules until a p3 campaign is played.
+ */
+const PHASING3_HARNESS_EDITS: Record<string, string> = {
+  'lab/harness/types.ts':
+    'HARNESS_RULES_VERSION advanced to muju-phasing-3 and WinType gained kill-clock, the new decided terminal; nothing else in the file moved',
+};
+
+const CAMPAIGNS = [
+  { dir: 'lab/harness/results/p1-scripted-2026-09-18', rulesVersion: 'muju-phasing-1', current: false, edits: A4_HARNESS_EDITS },
+  { dir: 'lab/harness/results/p2-scripted-2026-09-19', rulesVersion: 'muju-phasing-2', current: false, edits: PHASING3_HARNESS_EDITS },
+] as const;
+// No row is `current` under muju-phasing-3: the "reference this tree plays
+// under" checks below are dormant until a scripted campaign is played at the
+// kill clock. They are kept, not deleted, so that campaign re-arms them.
+
+describe.each(CAMPAIGNS)('scripted reference $dir', ({ dir: relDir, rulesVersion, current, edits }) => {
   const dir = path.join(root, relDir);
   const records = (): GameRecord[] =>
     fs.readFileSync(path.join(dir, 'games.jsonl'), 'utf8').trim().split('\n').map(line => JSON.parse(line));
@@ -117,13 +133,13 @@ describe.each(CAMPAIGNS)('scripted reference $dir', ({ dir: relDir, rulesVersion
       // this harness, and a drifted harness means they were frozen from
       // something that no longer exists and the campaign owes a re-run. A
       // superseded reference may differ only where A4 says it does.
-      expect(current ? undefined : A4_HARNESS_EDITS[file], `${relDir}: ${file} drifted from its manifest`).toBeDefined();
+      expect(current ? undefined : edits[file], `${relDir}: ${file} drifted from its manifest`).toBeDefined();
       moved.push(file);
     }
     // Exactly the declared set for the superseded row: nothing silently added,
     // nothing declared that did not actually move.
     if (current) expect(moved).toEqual([]);
-    else expect(moved.sort()).toEqual(Object.keys(A4_HARNESS_EDITS).sort());
+    else expect(moved.sort()).toEqual(Object.keys(edits).sort());
   });
 
   if (current) {

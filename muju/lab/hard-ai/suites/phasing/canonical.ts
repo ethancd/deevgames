@@ -9,7 +9,7 @@ import { setElementGraph } from '../../../../src/game/elements';
 import { setCombatHandicap } from '../../../../src/game/combat';
 import { defaultUpkeepAction, setUpkeepVariant } from '../../../../src/game/upkeep';
 import { resolveSummons } from '../../../../src/game/summoning';
-import { INACTIVITY_LIMIT, LEGACY_INACTIVITY_LIMIT } from '../../../../src/game/inactivity';
+import { INACTIVITY_LIMIT, LEGACY_INACTIVITY_LIMIT, type InactivityVerdict } from '../../../../src/game/inactivity';
 import type { AIAction, Boundary, GameState, Horizon, PhasingPosition, PlayerId, PositionRef, RulesBlock, SourceBinding } from './format';
 
 /** Sorted object keys; ordered arrays are semantic, including attacks/receipts. */
@@ -45,21 +45,27 @@ export function canonicalSourceHashes(): Record<string, string> {
   const paths = [...walk(join(MUJU, 'src/game')), join(MUJU, 'src/ai/simulate.ts')].sort();
   return Object.fromEntries(paths.map(path => [relative(MUJU, path).replaceAll('\\', '/'), sha256(readFileSync(path))]));
 }
-export const RULES_VERSIONS = ['muju-phasing-1', 'muju-phasing-2'] as const;
+export const RULES_VERSIONS = ['muju-phasing-1', 'muju-phasing-2', 'muju-phasing-3'] as const;
 export type RulesVersion = typeof RULES_VERSIONS[number];
 /** The revision THIS worktree implements, read off the shipped inactivity
- * constant rather than written down a second time.
+ * constant AND verdict rather than written down a second time.
  *
- * `muju-phasing-2` is the 20-ply inactivity clock reset only by a capture;
- * `muju-phasing-1` was the 10-ply clock, still named by
- * `LEGACY_INACTIVITY_LIMIT`. Deriving the revision means a binding cannot claim
- * `muju-phasing-1` while the code it binds counts to twenty — exactly the drift
- * a source binding exists to catch, and the one thing a hard-coded literal
- * could not see. An unrecognised limit is a refusal, never a guess. */
-export function currentRulesVersion(limit: number = INACTIVITY_LIMIT): RulesVersion {
-  if (limit === INACTIVITY_LIMIT) return 'muju-phasing-2';
-  if (limit === LEGACY_INACTIVITY_LIMIT) return 'muju-phasing-1';
-  throw new Error(`No Phasing rules revision is defined for an inactivity limit of ${limit}`);
+ * A LIMIT ALONE no longer determines the revision: `muju-phasing-1` and
+ * `muju-phasing-3` (owner decision 2026-09-22, the KILL CLOCK) are both
+ * ten-ply clocks — `LEGACY_INACTIVITY_LIMIT` now names `muju-phasing-2`'s
+ * twenty, not `muju-phasing-1`'s ten, because A4's widening was itself
+ * superseded — but they resolve differently: `-1` draws automatically, `-3`
+ * awards the game to the higher mined total (a tie draws). Key on BOTH the
+ * limit and the verdict, or two different rules read as the same one. Deriving
+ * the revision means a binding cannot claim `muju-phasing-1` while the code it
+ * binds resolves on mined totals — exactly the drift a source binding exists
+ * to catch, and the one thing a hard-coded literal could not see. An
+ * unrecognised (limit, verdict) pair is a refusal, never a guess. */
+export function currentRulesVersion(limit: number = INACTIVITY_LIMIT, verdict: InactivityVerdict = 'mined-total'): RulesVersion {
+  if (limit === INACTIVITY_LIMIT && verdict === 'mined-total') return 'muju-phasing-3';
+  if (limit === LEGACY_INACTIVITY_LIMIT && verdict === 'draw') return 'muju-phasing-2';
+  if (limit === INACTIVITY_LIMIT && verdict === 'draw') return 'muju-phasing-1';
+  throw new Error(`No Phasing rules revision is defined for an inactivity limit of ${limit} and verdict "${verdict}"`);
 }
 export const CURRENT_RULES_VERSION: RulesVersion = currentRulesVersion();
 export function sourceBinding(rules: RulesBlock, rulesVersion: RulesVersion = CURRENT_RULES_VERSION): SourceBinding {

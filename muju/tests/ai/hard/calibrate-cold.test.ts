@@ -47,13 +47,24 @@ vi.setConfig({ testTimeout: 60_000 });
 
 /** The same mid-game action node `deadline.test.ts` uses: a real root list and
  * nothing forced. */
+// The banks are chosen so the cold probe's FIRST iteration lands in the narrow
+// band the "below the floor" case needs: heavy enough (> ~9,100 work) that the
+// iteration predictor refuses depth 2 inside `COLD_PROBE_WORK`, light enough
+// that the probe still stops under `MIN_PROFILE_SAMPLE_WORK`. Work units are
+// deterministic, not wall-clock. 20/18 sat there until `muju-phasing-3`
+// (2026-09-22): the kill clock's smaller Zobrist clock plane re-ordered the
+// transposition table just enough to make depth 1 ~10% cheaper, the predictor
+// then started depth 2, and the probe spent the whole rung (25,131). Swept on
+// 2026-09-22: 12/10 gives depth 1 = 10,621, probe = 12,389; every other bank
+// tried (10/8 .. 18/16) started depth 2. If this moves again, re-sweep the
+// bank rather than loosening the floor.
 const MIDGAME: GameState = buildState({
   current: 'white',
   phase: 'action',
   actions: 4,
   turnNumber: 6,
-  white: 20,
-  black: 18,
+  white: 12,
+  black: 10,
   units: [
     { def: 'fire_1', owner: 'white', x: 2, y: 2 },
     { def: 'water_1', owner: 'white', x: 4, y: 3 },

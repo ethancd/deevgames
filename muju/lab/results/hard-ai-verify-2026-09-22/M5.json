@@ -1,0 +1,15 @@
+{
+  "gate": "M5",
+  "pass": false,
+  "command": "npx vitest run tests/ai/hard && npm run hard:fuzz -- --actions 1000000 --seed 20260914 --surfaces transition,legality --legality-every 8 --out lab/results/hard-ai-verify/M5-fuzz.json && npm run hard:perft -- --check --engine replica --out lab/results/hard-ai-verify/M5-perft.json && npm run hard:deps",
+  "criterion": "Replica: state, movement, spawn, income, make/unmake, generators, fuzzer",
+  "metrics": {
+    "vitestFailures": 3
+  },
+  "git": "62a5703f8ceb28cd9365aac95d2a2a22763281b4",
+  "wasmSha256": "6d3cf33382ff94d81ae32194c3af4849bff81115d1b6f7f4a9d4ac45c795573c",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "elapsedMs": 34352,
+  "at": "2026-09-22T17:46:48.759Z"
+}

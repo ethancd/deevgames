@@ -419,7 +419,7 @@ it.each([false, true])('plays, previews, analyzes and stages a complete Phasing 
   // because the published SKILL.md told agents to pass it, so both spellings
   // return the same payload — and it is the PHASING payload either way.
   const rules = await call(client, 'muju_rules', { ruleset: 'phasing' });
-  expect(rules).toMatchObject({ ruleset: { name: 'phasing', revision: 'muju-phasing-2', immutable: true, retired: ['standard'] },
+  expect(rules).toMatchObject({ ruleset: { name: 'phasing', revision: 'muju-phasing-3', immutable: true, retired: ['standard'] },
     endTurnAction: 'END_PLACE_PHASE' });
   expect(rules.upkeep).toContain('outgoing');
   expect(rules.rulesets).toBeUndefined();

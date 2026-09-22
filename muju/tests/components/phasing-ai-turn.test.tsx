@@ -1,4 +1,5 @@
 import { parseCompactReport } from '../../src/utils/compactReport';
+import { PHASING_RULES_REVISION } from '../../src/ai/hard/config';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { phaseEndAction } from '../../src/game/legality';
@@ -113,7 +114,10 @@ it('copies a replayable report from any local game, with no opt-in', async () =>
   fireEvent.click(screen.getByRole('button', { name: 'Report this position' }));
   await waitFor(() => expect(writeText).toHaveBeenCalled());
   const compact = writeText.mock.calls[0][0] as string, parsed = parseCompactReport(compact);
-  expect(compact).toMatch(/^muju\/2 phasing muju-phasing-2 \| easy quick v2 \| T\d+ black action /);
+  // Pin the literal target revision too, so a stale `PHASING_RULES_REVISION`
+  // cannot silently make this test self-referential.
+  expect(PHASING_RULES_REVISION).toBe('muju-phasing-3');
+  expect(compact).toMatch(new RegExp(`^muju/2 phasing ${PHASING_RULES_REVISION} \\| easy quick v2 \\| T\\d+ black action `));
   expect(compact).toContain('note the summon looked pointless');
   expect(compact).toContain('last end; end');
   expect(parsed.state.turn.currentPlayer).toBe('black');
@@ -129,7 +133,8 @@ it('copies a replayable report from any local game, with no opt-in', async () =>
   // is a wire-format change and must move this line
   // (`src/utils/positionReport.ts`, which no Stage-1 lane owns).
   expect(report.kind).toBe('muju-phasing-preview-report');
-  expect(report.rulesRevision).toBe('muju-phasing-2');
+  expect(report.rulesRevision).toBe(PHASING_RULES_REVISION);
+  expect(report.rulesRevision).toBe('muju-phasing-3');
   expect(report.ruleset).toBe('phasing');
   expect(report.engine).toBe('v2');
   expect(report.lastTurnActions.map((a: { type: string }) => a.type)).toEqual(['END_ACTION_PHASE', 'END_PLACE_PHASE']);

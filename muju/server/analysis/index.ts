@@ -5,7 +5,7 @@ import { getAdjacentPositions, getStartCorner, getUnitAt } from '../../src/game/
 import { createUnitFromDefinition } from '../../src/game/building';
 import { UNIT_DEFINITIONS } from '../../src/game/units';
 import { getHomeOccupier, getOpponent } from '../../src/game/victory';
-import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
+import { INACTIVITY_LIMIT, INACTIVITY_WARNING, killClockForbidsCheckmate, minedTotal } from '../../src/game/inactivity';
 import { analyzeHomeDefenseEvidence } from '../../src/game/homeCheckmate';
 import { transitionWithoutCheckmate } from '../../src/ai/simulate';
 import { isPhasing } from '../../src/game/rules';
@@ -165,6 +165,12 @@ function checkmate(s: GameState, budget: WorkBudget) {
   if (isPhasing(s) && (s.turn.phase !== 'place' || s.upkeepPending)) return {
     occupier: occupier.id, result: 'unknown', reason: 'Phasing home checkmate is checked after the invader survives mining/upkeep. Preview END_ACTION_PHASE and any required PAY_UPKEEP first.',
   };
+  // Same c >= 9 gate as canonical `resolveHomeCheckmate`: `#` predicts the
+  // invader's NEXT turn start, and when the kill clock would end the game at or
+  // before that start the prediction is not guaranteed, so no checkmate can be
+  // proven here either — the clock or a kill decides instead.
+  if (killClockForbidsCheckmate(s)) return { occupier: occupier.id, result: 'not_applicable',
+    reason: 'The kill clock would end the game at or before the invader’s next turn start (c ≥ 9 of the 10 kill-free plies); no checkmate can be proven. The clock decides on mined totals instead, unless the defender kills.' };
   const proof = analyzeHomeDefenseEvidence(s, invader, transitionWithoutCheckmate, Math.max(0, budget.maxNodes - budget.nodes), () => !budget.available());
   budget.nodes += proof.nodes;
   return { occupier: occupier.id, result: proof.result === 'mate' ? 'proven_possible' : proof.result === 'rescue' ? 'proven_impossible' : 'unknown',
@@ -245,7 +251,15 @@ export class AnalysisService {
     const result: Result = { ...envelope(room, s, player, [], ['stay-in-place economy; Now flags use current turn; NextTurn flags assume engine handoff; existing single-hit witnesses only'], 'current'),
       sections: { economy: economyHeadlines(s, forecast), forecastStop: forecast.stop,
         deployment: Object.fromEntries(sides.map(p => { const geometry = spawnGeometry(s, p); return [p, [geometry.count, geometry.anchors.some(a => a.blockedBy.length > 0)]]; })),
-        // [quietPlayerTurns, limit] from the canonical constant, never a literal.
+        // `killClock` is the current terminal (rules revision `muju-phasing-3`,
+        // 2026-09-22): ten kill-free plies end the game on the higher mined
+        // total, a tie draws. `draw` is kept for one release as a deprecated
+        // [quietPlayerTurns, limit] alias of the same counter and limit; it no
+        // longer describes a draw-only terminal.
+        killClock: { plies: s.inactivityPlies ?? 0, limit: INACTIVITY_LIMIT, warningAt: INACTIVITY_WARNING,
+          minedTotals: { white: minedTotal(s, 'white'), black: minedTotal(s, 'black') },
+          leader: minedTotal(s, 'white') > minedTotal(s, 'black') ? 'white' as const
+            : minedTotal(s, 'black') > minedTotal(s, 'white') ? 'black' as const : null },
         draw: [s.inactivityPlies ?? 0, INACTIVITY_LIMIT], urgent: room.ready ? urgent(s, player, budget) : [] },
       search: budget.report(false, ['combinations', 'spending', 'nondefault upkeep', 'unlisted threats']),
       next: [followUp(room, player, ['threats'], { deep: true })] };

@@ -30,7 +30,8 @@ export function ArchivedGames({ server }: { server: string }) {
       <div className="active-game-info">
         <strong>{room.seats.white ?? 'White'} vs {room.seats.black ?? 'Black'}</strong>
         <span>{rulesetLabel(room)}{room.retiredRules ? ' · retired' : ''} · Turn {room.turnNumber}</span>
-        <span>{room.reason === 'abandoned' ? 'Closed · no moves for 24 hours' : room.winner ? `${room.seats[room.winner] ?? room.winner} won · ${room.reason?.replaceAll('-', ' ')}` : 'Draw'}</span>
+        <span>{room.reason === 'abandoned' ? 'Closed · no moves for 24 hours' : room.winner ? `${room.seats[room.winner] ?? room.winner} won · ${room.reason?.replaceAll('-', ' ')}`
+          : room.reason ? `Draw · ${room.reason.replaceAll('-', ' ')}` : 'Draw'}</span>
         <small>Archived <time dateTime={room.archivedAt}>{new Date(room.archivedAt).toLocaleString()}</time></small>
       </div>
       {room.retiredRules

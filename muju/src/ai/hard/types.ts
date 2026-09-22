@@ -45,7 +45,10 @@ export const DRAW_CC = 0;
 export const Result = { ONGOING: 0, WHITE_WIN: 1, BLACK_WIN: 2, DRAW: 3 } as const;
 export type Result = (typeof Result)[keyof typeof Result];
 
-/** `src/game/types.ts:116` (`VictoryReason`) order, with 0 reserved for "no reason yet". */
+/** `src/game/types.ts:116` (`VictoryReason`) order, with 0 reserved for "no reason yet".
+ * `INACTIVITY` (5) is kept for archived `muju-phasing-1`/`muju-phasing-2` replays whose
+ * recorded reason is the draw; live play under `muju-phasing-3` (2026-09-22) produces
+ * `KILL_CLOCK` (7) instead, never a fresh `INACTIVITY`. */
 export const Reason = {
   NONE: 0,
   ELIMINATION: 1,
@@ -54,6 +57,7 @@ export const Reason = {
   HOME_CHECKMATE: 4,
   INACTIVITY: 5,
   RESIGNATION: 6,
+  KILL_CLOCK: 7,
 } as const;
 export type Reason = (typeof Reason)[keyof typeof Reason];
 

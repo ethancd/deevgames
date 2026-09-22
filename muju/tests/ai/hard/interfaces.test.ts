@@ -1063,9 +1063,11 @@ describe('DESIGN §4 declaration tests', () => {
     expect([MAX_SLOTS, NO_SLOT, DEAD, MAX_TURN_ACTIONS]).toEqual([128, 255, 255, 24]);
     expect([F_CAN_ACT, F_LAST_KILLED, F_PLACED, F_PROMOTED]).toEqual([1, 2, 4, 8]);
     expect(Result).toEqual({ ONGOING: 0, WHITE_WIN: 1, BLACK_WIN: 2, DRAW: 3 });
+    // `KILL_CLOCK` (7) added 2026-09-22 for `muju-phasing-3`; `INACTIVITY` (5)
+    // stays for archived `muju-phasing-1`/`-2` replays.
     expect(Reason).toEqual({
       NONE: 0, ELIMINATION: 1, UPKEEP_ELIMINATION: 2, HOME_OCCUPATION: 3,
-      HOME_CHECKMATE: 4, INACTIVITY: 5, RESIGNATION: 6,
+      HOME_CHECKMATE: 4, INACTIVITY: 5, RESIGNATION: 6, KILL_CLOCK: 7,
     });
     expect(AKind).toEqual({
       END_PLACE: 0, MOVE: 1, ATTACK: 2, BUY: 3, PROMOTE: 4, END_ACTION: 5, PAY_UPKEEP: 6, RESIGN: 7,

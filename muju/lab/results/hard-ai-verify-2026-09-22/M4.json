@@ -1,0 +1,15 @@
+{
+  "gate": "M4",
+  "pass": false,
+  "command": "npx vitest run tests/ai/hard && npm run hard:deps && npx tsc --noEmit -p tsconfig.json && npm run hard:types",
+  "criterion": "Packed primitives: bits, tables, catalog, zobrist, action, config, interface tests",
+  "metrics": {
+    "vitestFailures": 3
+  },
+  "git": "62a5703f8ceb28cd9365aac95d2a2a22763281b4",
+  "wasmSha256": "6d3cf33382ff94d81ae32194c3af4849bff81115d1b6f7f4a9d4ac45c795573c",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "elapsedMs": 33166,
+  "at": "2026-09-22T17:45:41.572Z"
+}

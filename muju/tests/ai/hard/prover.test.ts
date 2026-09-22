@@ -480,30 +480,47 @@ describe('core/state.ts make: the packed checkmate gate (DESIGN §3.4)', () => {
     expect(canonical.phase).toBe('playing');
   });
 
-  it('SU §8.1: a proven mate beats the inactivity draw, an unproven occupation does not', () => {
-    // Under Phasing the mate lands at the invader's own END_ACTION, which is
-    // strictly before the hand-off where the LAST quiet ply would draw — so the
-    // ordering SU §8.1 asserts still holds, one action later than it used to.
-    // The clock is set one ply short of the LIMIT rather than to a literal 9, so
-    // the case still straddles the boundary after A4 moved it to twenty.
-    const mate = stepThenEndAction(invasion([], { inactivityPlies: INACTIVITY_LIMIT - 1 }));
-    expect(mate.packed.reason).toBe(Reason.HOME_CHECKMATE);
-    expect(mate.canonical.victoryReason).toBe('home-checkmate');
+  it('the c >= 9 kill-clock gate: a proven mate is awarded at c = 8 and withheld at c = 9', () => {
+    // `muju-phasing-3` (owner decision 2026-09-22, the KILL CLOCK) replaces
+    // SU §8.1's old "mate beats a same-ply draw" ordering with a GATE:
+    // `killClockForbidsCheckmate` (`src/game/inactivity.ts`), mirrored here.
+    // `#` predicts the invader's NEXT turn start, so it may be awarded only
+    // when that start is guaranteed — `c` (the count THIS hand-off is about to
+    // produce: `progress ? 0 : clock + 1`) must be `<= 8` of the 10-ply limit.
+    // Same base position as the plain "adjudicates a proven mate" case above
+    // (an unrescuable occupation), varying only the clock.
+    const allowed = stepThenEndAction(invasion([], { inactivityPlies: INACTIVITY_LIMIT - 3 })); // c = 8
+    expect(allowed.packed.result).toBe(Result.BLACK_WIN);
+    expect(allowed.packed.reason).toBe(Reason.HOME_CHECKMATE);
+    expect(allowed.canonical.victoryReason).toBe('home-checkmate');
 
+    const withheld = stepThenEndAction(invasion([], { inactivityPlies: INACTIVITY_LIMIT - 2 })); // c = 9
+    expect(withheld.packed.result).toBe(Result.ONGOING);
+    expect(withheld.packed.reason).toBe(Reason.NONE);
+    expect(withheld.canonical.phase).toBe('playing');
+    expect(withheld.canonical.victoryReason).toBeUndefined();
+  });
+
+  it('an unproven occupation still does not win, and the hand-off can end the game on mined totals', () => {
     const rescued = stepThenEndAction(
       invasion([{ def: 'lightning_1', owner: 'white', x: 0, y: 1, id: 'u2' }], { inactivityPlies: INACTIVITY_LIMIT - 1 }),
     );
     expect(rescued.packed.result).toBe(Result.ONGOING);
 
-    // The hand-off is END_PLACE now that END_ACTION has already been played.
+    // The hand-off is END_PLACE now that END_ACTION has already been played:
+    // the clock reaches the limit here, so the kill clock decides on mined
+    // totals. Black's invading END_ACTION mined income off its own square
+    // (the board's default reserves), so Black is ahead and wins outright —
+    // not a tie, and not the neutral draw the old rule would have given.
     undo.top = 0;
     replica.resetUndoScratch();
     replica.make(rescued.packed, paMake(AKind.END_PLACE), undo, keep);
     const canonicalEnd = applyAction(rescued.canonical, { type: 'END_PLACE_PHASE' });
-    expect(rescued.packed.result).toBe(Result.DRAW);
-    expect(rescued.packed.reason).toBe(Reason.INACTIVITY);
-    expect(canonicalEnd.victoryReason).toBe('inactivity');
-    expect(canonicalEnd.winner).toBeNull();
+    expect(rescued.packed.gained[1]).toBeGreaterThan(rescued.packed.gained[0]);
+    expect(rescued.packed.result).toBe(Result.BLACK_WIN);
+    expect(rescued.packed.reason).toBe(Reason.KILL_CLOCK);
+    expect(canonicalEnd.victoryReason).toBe('kill-clock');
+    expect(canonicalEnd.winner).toBe('black');
   });
 
   it('proverMode 1 runs the bound alone and can only under-claim a mate', () => {

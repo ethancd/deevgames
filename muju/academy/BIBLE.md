@@ -1,3 +1,12 @@
+> Kill clock override (2026-09-22, later the same day as the rename below): the quiet-turn
+> draw is retired. Ten kill-free player turns, not twenty, now end the game immediately,
+> decided by each side's **mined total** (every crystal its units have taken from the board,
+> plus Black's starting handicap) — the higher total wins, equal totals draw. It is no longer
+> always a draw. The rules revision string moves `muju-phasing-2` → `muju-phasing-3`. **The
+> published course keeps its v7/v8 videos, whose R09 narration still says "ten quiet turns...
+> is a draw" — this is a notice, not a re-voice.** See
+> `docs/changes/2026-09-22-kill-clock-SPEC.md` and `STATUS.md`.
+
 > Current names override (2026-09-22): the game retitled to **Muju Hono Irumbu** (ASCII `Hono`
 > in the title, no macron, even though the piece card reads `Honō`) and ten pieces plus three
 > element language labels got new display names. Stable IDs, stats, prices and every rule are

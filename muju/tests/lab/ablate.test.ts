@@ -195,8 +195,21 @@ function weightArmLabel(name: (typeof ALL_WEIGHT_ARMS)[number]): string {
  * `muju-phasing-1` on today's resolved configuration reproduces the superseded
  * value below byte for byte, which is how this move was attributed to A4 rather
  * than to any concurrent edit under `src/ai/hard/**`.
+ *
+ * 2026-09-22 muju-phasing-3: the revision string is part of every resolved
+ * hash; the weights/config it names are byte-identical to the phasing-2
+ * champion (old hash 2c485153f22afad810639da52dc59a3e7e13c1187cc2cce9cb0bf9611e90abdd).
+ * The kill clock took the inactivity limit back to 10 plies but changed the
+ * VERDICT (mined totals, not an automatic draw) and advanced the revision
+ * again, so the resolved-configuration hash moves a fourth time for the same
+ * structural reason as the second and third moves, not because anything under
+ * `src/ai/hard/**` besides the revision string changed.
  */
-const DESKTOP_WALL3000_HASH = '2c485153f22afad810639da52dc59a3e7e13c1187cc2cce9cb0bf9611e90abdd';
+const DESKTOP_WALL3000_HASH = '65867011d62619f9436ce703ed7f37e7cc0caf6f1fccdf95fc8d4b0af4f1bbef';
+/** The same arm under `muju-phasing-2` (the 20-ply draw clock): every E1/E4
+ * manifest recorded between A4 (2026-09-19) and the 2026-09-22 kill clock
+ * quotes it. */
+const DESKTOP_WALL3000_HASH_PHASING_2 = '2c485153f22afad810639da52dc59a3e7e13c1187cc2cce9cb0bf9611e90abdd';
 /**
  * The same arm under the M6 accounting bootstrap: identical configuration, the
  * five-nonzero `DEFAULT_WEIGHTS` that 2026-09-20's `phasing-hand-priors-v1`
@@ -509,7 +522,14 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     // M6-bootstrap value: a18b84f8f89e57281c49139959fd9563865bee5461a0c10211e44897259b8b11
     // — superseded by the 2026-09-20 hand priors (DESKTOP_WALL3000_HASH's
     // fourth move), which every hard@* configuration carries.
-    expect(arm.configHash).toBe('6c8f9bb176bf1f365d6a4e6ca2e285c8117e3d5d7b73b6bb963d974cd562754e');
+    // `muju-phasing-2` value: 6c8f9bb176bf1f365d6a4e6ca2e285c8117e3d5d7b73b6bb963d974cd562754e
+    // — superseded by A4's revision string alone (DESKTOP_WALL3000_HASH's fifth
+    // move); forcing the revision back to `muju-phasing-2` on today's
+    // configuration reproduces it.
+    // 2026-09-22 muju-phasing-3: the revision string is part of every resolved
+    // hash; the weights/config it names are byte-identical to the phasing-2
+    // champion (old hash 6c8f9bb176bf1f365d6a4e6ca2e285c8117e3d5d7b73b6bb963d974cd562754e).
+    expect(arm.configHash).toBe('9b05b441f7479e7fb7c3d57c6ea35d46c0cf2a41bef35f4b3b520b39da7748ef');
     expect(hardConfigFor('ablate:search-iter-fit').searchFix?.iterFit).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -544,7 +564,12 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     // — superseded by A4's 20-ply draw clock, as above.
     // M6-bootstrap value: 1aef0a8b094f9bf5dd1c8fc8ba9efe5aaa7975078cfa5127152727f45f79c99e
     // — superseded by the 2026-09-20 hand priors, as above.
-    expect(arm.configHash).toBe('6e3d2936d0564c13b331fe5435da15452e4ae4572636cdb898bfd045bd52973c');
+    // `muju-phasing-2` value: 6e3d2936d0564c13b331fe5435da15452e4ae4572636cdb898bfd045bd52973c
+    // — superseded by A4's revision string alone, as above.
+    // 2026-09-22 muju-phasing-3: the revision string is part of every resolved
+    // hash; the weights/config it names are byte-identical to the phasing-2
+    // champion (old hash 6e3d2936d0564c13b331fe5435da15452e4ae4572636cdb898bfd045bd52973c).
+    expect(arm.configHash).toBe('0d8777e2d8e73579e623023726ba056657f645a8f868c9d4b97456802d6bbc55');
     expect(hardConfigFor('ablate:search-reach-cache').searchFix?.reachCache).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -613,10 +638,12 @@ describe('E4.2 search arms (factor `searchFix`)', () => {
     // can no longer produce it (`ladder/identity.ts`, clause 3). Neither is the
     // M4-era Phasing identity, nor the `muju-phasing-1` identity it carried
     // until A4 moved the draw clock, nor the M6-bootstrap identity it carried
-    // until the 2026-09-20 hand priors replaced `DEFAULT_WEIGHTS`. All four are
-    // kept so a reader of an older manifest can find the hash it quotes.
+    // until the 2026-09-20 hand priors replaced `DEFAULT_WEIGHTS`, nor the
+    // `muju-phasing-2` identity it carried until the 2026-09-22 kill clock
+    // advanced the revision again. All five are kept so a reader of an older
+    // manifest can find the hash it quotes.
     for (const superseded of [DESKTOP_WALL3000_HASH_STANDARD, DESKTOP_WALL3000_HASH_PHASING_M4,
-      DESKTOP_WALL3000_HASH_PHASING_1, DESKTOP_WALL3000_HASH_BOOTSTRAP_M6]) {
+      DESKTOP_WALL3000_HASH_PHASING_1, DESKTOP_WALL3000_HASH_BOOTSTRAP_M6, DESKTOP_WALL3000_HASH_PHASING_2]) {
       expect(DESKTOP_WALL3000_HASH).not.toBe(superseded);
       expect(requireArm('base').configHash).not.toBe(superseded);
     }

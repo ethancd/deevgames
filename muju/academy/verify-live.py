@@ -37,6 +37,12 @@ assert source.count('id="rename-notice"')==1,'Missing or duplicated rename notic
 assert 'The game is now Muju Hono Irumbu, not Muju Hono Tanka.' in source
 assert 'Hono → Honō' in source and 'Yan → Poṉ' in source and 'Tanka → Irumbu' in source,'Notice must give the old→new list'
 assert 'These recordings still use the old names; they have not yet been updated.' in source
+assert source.count('id="kill-clock-notice"')==1,'Missing or duplicated kill-clock notice'
+assert 'The quiet-turn draw is retired.' in source
+assert 'Ten kill-free player turns, not twenty' in source,'Missing muju-phasing-3 kill-clock correction'
+assert "decided by each side's mined total" in source and "Black's starting handicap" in source
+assert 'Lessons R09 (the draw lesson) and R10 still teach the retired twenty-ply always-a-draw rule' in source,'Notice must name R09 (the draw lesson) and R10 as stating the superseded rule'
+assert 'only an attack that removes a piece' in source,'Notice must state that what resets the clock is unchanged'
 assert len(videos)==len(set(videos))==16
 assert source.count('Video version 7 · Rules v2.8')==8
 assert source.count('Video version 8 · Rules v2.9')==8

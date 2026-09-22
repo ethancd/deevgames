@@ -44,8 +44,25 @@ const MANIFEST = join(MUJU_ROOT, 'lab/hard-ai/suites/phasing/fixtures/v2/manifes
 /** The bundle the release record and `fixtures/v3/floor-contract.json` name. */
 const V2_MANIFEST_SHA256 = '454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453';
 
+/**
+ * The `lab/hard-ai/suites/phasing/**` files the 2026-09-22 kill-clock change
+ * (`muju-phasing-3`, `docs/changes/2026-09-22-kill-clock-SPEC.md` §3) forced,
+ * and why each one had to move — same declared-set pattern as
+ * `tests/lab/phasing-evidence.test.ts`'s `A4_HARNESS_EDITS`: the pin below
+ * stays strict on everything NOT named here, so an undeclared suite-source
+ * edit still fails loudly.
+ */
+const KILL_CLOCK_ARTIFACT_EDITS: Record<string, string> = {
+  'lab/hard-ai/suites/phasing/canonical.ts':
+    "currentRulesVersion now keys on (limit, verdict) instead of limit alone, and gained 'muju-phasing-3'/RULES_VERSIONS a third entry — the ten-ply limit is no longer unique to muju-phasing-1's draw verdict",
+  'lab/hard-ai/suites/phasing/format.ts':
+    "the state-fact 'reason' zod enum gained 'kill-clock' — an authored case whose endpoint reason is the new terminal (case 16, clock-discipline) fails validation without it",
+  'lab/hard-ai/suites/phasing/build-invariants.ts':
+    "case 16 (clock-discipline)'s endpoint assertion moved from reason 'inactivity' to 'kill-clock' — the fixture's own tie (both sides mine nothing) still draws, only the reason string the rule now produces changed",
+};
+
 describe('committed Phasing v2 release bundle', () => {
-  it('keeps every artifact pin of the committed v2 bundle intact', () => {
+  it('keeps every artifact pin of the committed v2 bundle intact, except the kill-clock edits it declares', () => {
     // Name the offending pin BEFORE loadBundle throws its bundle-wide message,
     // so a failure here says which file's bytes moved rather than "artifact
     // bytes differ". package.json is called out by name because it is the pin
@@ -56,7 +73,12 @@ describe('committed Phasing v2 release bundle', () => {
     const added = Object.keys(current).filter(path => !(path in manifest.artifacts));
     const removed = Object.keys(manifest.artifacts).filter(path => !(path in current));
     const changed = Object.keys(manifest.artifacts).filter(path => path in current && current[path] !== manifest.artifacts[path]);
-    expect({ added, removed, changed }).toEqual({ added: [], removed: [], changed: [] });
+    for (const path of changed) expect(KILL_CLOCK_ARTIFACT_EDITS[path], `${path}: undeclared artifact drift`).toBeDefined();
+    // Exactly the declared set moved: nothing silently added, nothing declared
+    // that did not actually change.
+    expect({ added, removed, changed: changed.sort() }).toEqual({
+      added: [], removed: [], changed: Object.keys(KILL_CLOCK_ARTIFACT_EDITS).sort(),
+    });
     expect(current['package.json']).toBe(manifest.artifacts['package.json']);
   });
 
@@ -67,9 +89,14 @@ describe('committed Phasing v2 release bundle', () => {
   // committed bundle with "canonical source binding mismatch". Re-binding is a
   // preregistration act (a new measurement-ledger entry and floor contract)
   // that the owner deferred to the next AI measurement campaign, which will
-  // re-author the suite under the kill-clock rules revision anyway. The pin
-  // guard above stays live so no OTHER artifact drifts silently meanwhile.
-  it.skip('still loads against the live tree through the measurement path loader (superseded by the 2026-09-22 rename; re-bind with the next measurement)', () => {
+  // re-author the suite under the kill-clock rules revision anyway. THAT SAME
+  // DAY (2026-09-22) also brought the kill clock itself (`muju-phasing-3`):
+  // the v2 bundle's `sourceBinding.rulesVersion` is `muju-phasing-2`
+  // (twenty-ply draw), which `currentRulesVersion()` no longer names as the
+  // live revision, so the bundle is now doubly superseded — catalogue bytes
+  // AND rules revision. The pin guard above stays live so no OTHER artifact
+  // drifts silently meanwhile.
+  it.skip('still loads against the live tree through the measurement path loader (superseded by the 2026-09-22 rename AND by the 2026-09-22 kill-clock rules revision muju-phasing-3; re-bind with the next measurement)', () => {
     const { manifest: loaded, documents, identity } = loadBundle(MANIFEST);
     expect(identity.manifestSha256).toBe(V2_MANIFEST_SHA256);
     expect(hashJson(loaded)).toBe(V2_MANIFEST_SHA256);

@@ -198,9 +198,15 @@ describe('core/zobrist: table construction', () => {
     }
   });
 
-  it('the appended clock keys exist, are distinct and are not zero', () => {
-    expect(CLOCK_EXTRA_VALUES).toBe(10);
+  it('the clock plane is exactly its frozen 11-key prefix under the live 10-ply limit, distinct and nonzero', () => {
+    // Archived `muju-phasing-2` (A4) appended ten extra keys because its limit
+    // was 20. `muju-phasing-3` (owner decision 2026-09-22, the KILL CLOCK)
+    // brings the limit back to 10, so `CLOCK_EXTRA_VALUES` is 0 again and the
+    // plane is once more exactly its historical 11-key prefix — the append-only
+    // mechanism absorbing the change with no code path exercised.
+    expect(CLOCK_EXTRA_VALUES).toBe(0);
     expect(Z.clock.length).toBe((INACTIVITY_LIMIT + 1) * 2);
+    expect(Z.clock.length).toBe(CLOCK_LEGACY_VALUES * 2);
     const seen = new Set<string>();
     for (let v = 0; v <= INACTIVITY_LIMIT; v++) {
       const lo = Z.clock[v * 2];
@@ -212,7 +218,7 @@ describe('core/zobrist: table construction', () => {
     }
   });
 
-  it('Kpos separates every reachable clock value, including the ten A4 added', () => {
+  it('Kpos separates every reachable clock value', () => {
     const keys = new Set<string>();
     for (let v = 0; v <= INACTIVITY_LIMIT; v++) {
       const p = sample();

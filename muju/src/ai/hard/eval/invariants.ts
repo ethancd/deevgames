@@ -244,13 +244,24 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
   // lives in `tactics/prover.ts` (exhaustion never wins) and in invariant 10's
   // "no proven rescue counts as no rescue" reading above.
 
-  // --- 16: sitting on a lead while the draw clock runs --------------------
+  // --- 16: sitting on a lead while the kill clock runs ---------------------
   // The threshold is the CANONICAL in-game warning, `INACTIVITY_WARNING` — the
-  // last three plies before the draw — not the literal 7 it used to be. Under
-  // `muju-phasing-2` (A4) that is 17; the invariant's meaning ("the draw is
-  // three plies away and you are ahead with no kill on the board") is unchanged
-  // and no longer has to be restated when the limit moves. The 300 cc lead and
-  // the `killNow.count === 0` clause are unrelated to the clock and untouched.
+  // last three plies before the clock ends the game — not the literal 7 it
+  // used to be. Under `muju-phasing-2` (A4) that was 17; `muju-phasing-3`
+  // (owner decision 2026-09-22, the KILL CLOCK) brings it back to 7, and the
+  // invariant's threshold did not have to be restated either time.
+  // MEANING FLIPPED under `muju-phasing-3`: under `-1`/`-2` the clock only ever
+  // drew, so "the clock is three plies from ending and you are ahead" was a
+  // WASTED lead — nothing about being ahead changed a neutral draw. Now the
+  // clock is DECIDED by the higher mined total, so sitting on a mining lead
+  // while it runs out is the CORRECT plan — it heads toward a win, not a
+  // neutral draw. `leadCc` here (material + bank) is not literally the
+  // mined-total lead the verdict compares — `eval/features.ts`'s
+  // `DrawPressure` uses that exact quantity (`gained[]`) — but a side that
+  // converted a lead into material and cash typically mined more to pay for
+  // it, so this remains a cheap proxy for the same idea; a future tuning pass
+  // may switch it to `gained[]` directly. The 300 cc lead and the
+  // `killNow.count === 0` clause are unrelated to the clock and untouched.
   if (p.drawRuleOn === 1 && p.clock >= INACTIVITY_WARNING && leadCc(p, side) >= 300 && killNow.count === 0) bits |= bit(16);
 
   // --- 17: structural zero ------------------------------------------------

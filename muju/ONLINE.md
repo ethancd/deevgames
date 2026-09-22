@@ -259,10 +259,17 @@ limits, fixtures and benchmarks.
 
 Every room uses four shared actions per player turn. Room observations expose
 `actionsPerTurn: 4`; the current allowance is `turn.actionsRemaining`.
-Twenty consecutive completed turns — 20 plies, ten hand-offs each — without an
-enemy attack kill draw, even if players collect crystals. Only an attack kill
-resets the clock. Observations carry the live pair as `quietTurns` and
-`drawAtQuietTurns`; the browser board warns from 17.
+Ten consecutive kill-free player turns — 10 plies, five hand-offs each — end
+the game immediately at the tenth `END_PLACE_PHASE`, even if players collect
+crystals. A kill is any attack that removes a unit; only a kill resets the
+clock, to zero, on the killer's own turn. The kill clock is decided on mined
+totals: the higher of each side's mined total (every crystal that side's units
+have taken from the board, plus Black's starting handicap, never reduced by
+spending, upkeep, release or refund) wins; equal totals draw. Observations
+carry the live values as `killClock` (`plies`, `limit`, `warningAt`,
+`minedTotals`, `leader`); the deprecated `quietTurns`/`drawAtQuietTurns` pair
+reads the same counter and limit for one release. The browser board warns
+from 7.
 
 Suggested agent instructions:
 
@@ -560,23 +567,25 @@ matchmaking service. No paid infrastructure is provisioned
 by these files.
 
 Saved rooms have a rules version. One constant survives:
-`PHASING_RULES_VERSION` in `server/rooms.ts`, currently `muju-phasing-2` — bump it
+`PHASING_RULES_VERSION` in `server/rooms.ts`, currently `muju-phasing-3` — bump it
 when changing incompatible game rules. The Standard constant is retired: it is
 exported as `RETIRED_STANDARD_VERSION` so stored rows can still be recognised,
 and no room is ever created under it.
 Older rooms fail with an explicit error instead of silently continuing under
 different rules.
 
-New rooms are **`muju-phasing-2`** (the twenty-ply inactivity draw, 2026-09-19),
-and that is the only revision the server opens. `muju-online-2`, `muju-online-3`,
-`muju-online-4`, `muju-online-5`, `muju-online-6` and `muju-phasing-1` are retired
-identifiers on the `RULES_CHANGED` path. A stored room under any of them is never
-replayed under current rules and is never migrated in place: its row stays in the
-database untouched, the active-games lobby omits it, the archived list still shows
-its result and labels it retired, and any read or command returns `RULES_CHANGED`
-("This room uses older rules. Create a new room."). The in-place upgrade that
-version-2/3 rooms once received is gone with the Standard retirement — reinterpreting
-a stored room under a different rule set is exactly what this path exists to prevent.
+New rooms are **`muju-phasing-3`** (the kill clock: ten kill-free plies decided
+on the higher mined total, 2026-09-22), and that is the only revision the server
+opens. `muju-online-2`, `muju-online-3`, `muju-online-4`, `muju-online-5`,
+`muju-online-6`, `muju-phasing-1` and `muju-phasing-2` (the twenty-ply inactivity
+draw, 2026-09-19) are retired identifiers on the `RULES_CHANGED` path. A stored
+room under any of them is never replayed under current rules and is never
+migrated in place: its row stays in the database untouched, the active-games
+lobby omits it, the archived list still shows its result and labels it retired,
+and any read or command returns `RULES_CHANGED` ("This room uses older rules.
+Create a new room."). The in-place upgrade that version-2/3 rooms once received
+is gone with the Standard retirement — reinterpreting a stored room under a
+different rule set is exactly what this path exists to prevent.
 See `SPEC.md` §1 "Stored artefacts by rules revision" and `JUDGMENT_LOG.md` J-022.
 
 ## HTTP API and verification

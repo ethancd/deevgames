@@ -2,7 +2,7 @@
 import { beforeAll, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { createInitialGameState, createUnit } from '../../src/game/board';
-import { INACTIVITY_LIMIT, LEGACY_INACTIVITY_LIMIT } from '../../src/game/inactivity';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 import { LADDER_RULES_VERSION, rulesetForRevision } from '../../lab/hard-ai/ladder/ruleset';
 import { getUnitDefinition } from '../../src/game/units';
 import { isLegalAction } from '../../src/game/legality';
@@ -42,10 +42,12 @@ it('passes the full Act/upkeep/Prepare turn, mining once and resolving incoming 
   expect(passTurn(prepare)).toEqual(reply);
 });
 
-it('does not hand off or resolve summons after an inactivity terminal', () => {
+it('does not hand off or resolve summons after a kill-clock terminal', () => {
   const state = initial(); state.inactivityPlies = INACTIVITY_LIMIT - 1;
   const result = passTurn(state);
-  expect(result).toMatchObject({ phase: 'victory', winner: null, victoryReason: 'inactivity' });
+  // White mines this turn and Black has not moved yet, so the kill clock
+  // decides on mined totals rather than drawing.
+  expect(result).toMatchObject({ phase: 'victory', winner: 'white', victoryReason: 'kill-clock' });
   expect(result.turn.currentPlayer).toBe('white');
 });
 
@@ -175,9 +177,11 @@ it('fixed-work Phasing self-play is reproducible, purchases and terminates legal
   expect(a.illegalActions).toBe(0);
   expect(a.turns).toBeLessThan(400);
   // The screening row must label itself with the revision it was actually played
-  // under. This was the literal 'muju-phasing-1' while the clock counted to 20,
-  // so every new screening directory claimed a superseded revision.
+  // under, keyed on the clock's limit AND its verdict (10 plies + mined-total ->
+  // `muju-phasing-3`), never guessed from the limit alone — a limit of 10 also
+  // matched `muju-phasing-1`'s draw verdict, so a numeric-only check would have
+  // silently mislabeled a screening row.
   expect(a.rules).toBe(LADDER_RULES_VERSION);
-  expect(a.rules).toBe(INACTIVITY_LIMIT === LEGACY_INACTIVITY_LIMIT ? 'muju-phasing-1' : 'muju-phasing-2');
+  expect(a.rules).toBe('muju-phasing-3');
   expect(rulesetForRevision(a.rules, 'phasing self-play smoke')).toBe('phasing');
 }, 30000);
