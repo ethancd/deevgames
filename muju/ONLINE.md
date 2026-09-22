@@ -77,8 +77,13 @@ The separate Cloudflare Pages workflow also follows `master`. Its publishing
 step requires configured Cloudflare credentials; a green build without that
 step is not evidence of a new Pages deployment.
 
-Hard-AI research stays on a development branch until strength and device
-gates pass. See [the recovery plan](docs/hard-ai/RECOVERY-PLAN-2026-09-16.md).
+The Hard difficulty runs the `src/ai/hard` engine in the browser
+(`hardEnabled = true`); `?hardAi=0` opts a seat back to `AIEngineV2`, which also
+plays easy and medium. Gates 0, 2 and 3 of
+[the preregistration](docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md) are still
+owed — amendment A6 there waives their ordering, not the gates — so nothing here
+claims the engine is stronger. See
+[the release record](docs/hard-ai/RELEASE-2026-09-21-phasing.md).
 
 ## Start a host
 
