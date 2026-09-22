@@ -19,7 +19,7 @@
  *     `materialCc`/`pstSumCc` stage-0 sums, and while allocating nothing per
  *     node.
  *
- * The Phasing turn (`docs/PHASING-2026-09-16.md`; `turn.ts`, `summoning.ts`):
+ * The Phasing turn (`SPEC.md` §5.2-§5.3; `turn.ts`, `summoning.ts`):
  * the mover starts in ACT; `END_ACTION` collects mining income and settles
  * upkeep, sets `phase = place` (Prepare) and does NOT hand off; in Prepare a
  * `BUY` debits the bank and records a public commitment instead of placing a

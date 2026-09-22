@@ -271,7 +271,11 @@ Suggested agent instructions:
 > sequences. Play using the observed revision. Wait for changes between turns.
 
 Example `muju_play` arguments for one complete turn (replace IDs and revision with
-returned values):
+returned values). The summon square is `A1`, White's own start corner: empty at
+the opening and inside every White spawn rectangle, so it is legal whichever unit
+the `MOVE` uses, provided that unit does not step onto `A1` itself. `B1` is
+White's starting Hi square — a `BUY_UNIT` there at the opening is rejected, and
+the batch is atomic, so the whole turn would be lost:
 
 ```json
 {
@@ -282,7 +286,7 @@ returned values):
   "actions": [
     { "type": "MOVE", "unitId": "UNIT_ID_FROM_OBSERVE", "to": "C1" },
     { "type": "END_ACTION_PHASE" },
-    { "type": "BUY_UNIT", "definitionId": "fire_1", "position": "B1" },
+    { "type": "BUY_UNIT", "definitionId": "fire_1", "position": "A1" },
     { "type": "END_PLACE_PHASE" }
   ]
 }
@@ -291,6 +295,11 @@ returned values):
 The batch is not a turn without `END_PLACE_PHASE`. `END_ACTION_PHASE` only mines and
 settles upkeep and leaves you in preparation on your own clock; `END_PLACE_PHASE` is
 what hands over.
+
+A `BUY_UNIT` square is tested twice: at commit time it must be empty, inside a
+current unblocked spawn rectangle and free of another own commitment, or the
+action is illegal; at your next turn start it is tested again on that board, and
+only that second test refunds.
 
 Coordinates are A1–J10, with A1 at top left. MCP accepts square names or `{x,y}`
 objects (zero indexed); the HTTP API uses `{x,y}`. Unit IDs come from observations;
