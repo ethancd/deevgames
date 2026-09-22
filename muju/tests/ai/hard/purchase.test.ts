@@ -478,3 +478,62 @@ describe('Phasing purchase timing and dependency isolation', () => {
     }
   });
 });
+
+/**
+ * R1b (2026-09-21): `EvalFix.strength.purchaseScoreBeforeTruncate`. Absent on
+ * every profile, so every test above describes the shipped generator; these two
+ * pin what the knob changes and, first, that it changes nothing when unset.
+ */
+describe('gen/purchase.ts score-then-truncate knob (strength.purchaseScoreBeforeTruncate)', () => {
+  /** Runs `planPurchases` with the knob set, and always puts the tables back. */
+  function withKnob<T>(on: boolean, fn: () => T): T {
+    tables.evalFix = on ? { strength: { purchaseScoreBeforeTruncate: true } } : null;
+    try {
+      return fn();
+    } finally {
+      tables.evalFix = null;
+    }
+  }
+
+  /** Every plan, off the full-size buffer `gen/generate.ts` allocates. */
+  function menu(p: PackedState, t: NodeTables): PlacePlan[] {
+    const cfg = DESKTOP.gen.purchase;
+    const out: PlacePlan[] = Array.from({ length: Math.max(cfg.maxPlans, 200) + 1 }, () => newPlacePlan());
+    return out.slice(0, planPurchases(p, t, cfg, sc, 0, out)).map(plan => ({ ...plan, actions: plan.actions.slice() }) as PlacePlan);
+  }
+
+  it('is absent by default, and the default menu is the cheapest class in catalogue order', () => {
+    expect(DESKTOP.evalFix).toBeUndefined();
+    const { p, t } = prepare(quiet());
+    const plans = menu(p, t);
+    // 12 plans at `maxPlans`: the empty plan, then `fire_1 x1..4` — the whole
+    // point of R1b is that nothing else can be reached at a bank of 12.
+    expect(plans).toHaveLength(DESKTOP.gen.purchase.maxPlans);
+    expect(plans[0].count).toBe(0);
+    expect(new Set(plans.slice(1).flatMap(buysOf).map(b => b.split('@')[0]))).toEqual(new Set(['fire_1']));
+  });
+
+  it('with the knob on, scores every enumerated plan and keeps the best maxPlans', () => {
+    const { p, t } = prepare(quiet());
+    const off = menu(p, t);
+    const on = withKnob(true, () => menu(p, t));
+    expect(on).toHaveLength(DESKTOP.gen.purchase.maxPlans);
+    // Still the empty plan first (sortPlans never moves index 0), so "buy
+    // nothing" survives the truncation.
+    expect(on[0].count).toBe(0);
+    // Classes the default menu cannot reach at this bank are now on it, and the
+    // best plan scores strictly higher than anything the default rule saw.
+    expect(new Set(on.slice(1).flatMap(buysOf).map(b => b.split('@')[0])).size).toBeGreaterThan(1);
+    expect(on[1].scoreCc).toBeGreaterThan(off[1].scoreCc);
+    for (let i = 2; i < on.length; i++) expect(on[i].scoreCc).toBeLessThanOrEqual(on[i - 1].scoreCc);
+  });
+
+  it('offers a non-fire singleton where the default menu offers only fire_1', () => {
+    const { p, t } = prepare(cornerLocked());
+    const singles = (plans: PlacePlan[]): string[] =>
+      plans.filter(plan => plan.count === 1).map(plan => buysOf(plan)[0].split('@')[0]);
+    expect(new Set(singles(menu(p, t)))).toEqual(new Set(['fire_1']));
+    const on = new Set(singles(withKnob(true, () => menu(p, t))));
+    expect(on.has('water_1') || on.has('plant_1')).toBe(true);
+  });
+});

@@ -53,11 +53,17 @@ import { RENT_PV, pstMine } from '../core/income';
 import { ACTION_VALUE_CC } from '../tables/economy';
 import { KILL_NEVER, type NodeTables } from '../tables/context';
 
-/** DESIGN §4.13. */
-export const Mission = { FORTIFY: 0, SURVIVE: 1, INCOME: 2, REACH: 3, ANCHOR: 4 } as const;
+/**
+ * DESIGN §4.13, plus `STRENGTH` — the 2026-09-21 R2 fallback mission, which is
+ * proposed ONLY under `EvalFix.strength.promoteStrengthMission` (absent on every
+ * shipped profile, so no candidate carries it by default). Appended at 5 rather
+ * than inserted, so every mission code already written into a trace, a recall
+ * artifact or a test keeps its meaning.
+ */
+export const Mission = { FORTIFY: 0, SURVIVE: 1, INCOME: 2, REACH: 3, ANCHOR: 4, STRENGTH: 5 } as const;
 export type Mission = (typeof Mission)[keyof typeof Mission];
 
-export const MISSION_NAMES: readonly string[] = ['FORTIFY', 'SURVIVE', 'INCOME', 'REACH', 'ANCHOR'];
+export const MISSION_NAMES: readonly string[] = ['FORTIFY', 'SURVIVE', 'INCOME', 'REACH', 'ANCHOR', 'STRENGTH'];
 
 export interface PromoCandidate {
   slot: Slot;
@@ -193,11 +199,33 @@ function bestMission(
     return Mission.REACH;
   }
 
+  // STRENGTH (R2, `EvalFix.strength.promoteStrengthMission`, off by default) —
+  // the fallback the five missions above leave out: a promotion that only makes
+  // the body hit harder or survive more hits is never PROPOSED today, whatever
+  // the weights say about it, because no mission claims it.
+  if (t.evalFix !== null && t.evalFix.strength?.promoteStrengthMission === true) {
+    const combatGain = cat.atk[next] - cat.atk[def] + (cat.def[next] - cat.def[def]);
+    if (combatGain > 0) {
+      outBenefit[0] = combatGain * ACTION_VALUE_CC;
+      return Mission.STRENGTH;
+    }
+  }
+
   outBenefit[0] = 0;
   return -1;
 }
 
 const SC_BENEFIT = new Int32Array(1);
+
+/**
+ * The rent present value the promotion ORDERING expression charges per crystal
+ * of added upkeep. `RENT_PV` unless an arm set `promoteOrderingRentPv`, so the
+ * default arithmetic below is the champion's, term for term.
+ */
+function orderingRentPv(t: NodeTables): number {
+  const knob = t.evalFix === null ? undefined : t.evalFix.strength?.promoteOrderingRentPv;
+  return knob === undefined ? RENT_PV : knob;
+}
 
 /**
  * DESIGN §4.13's `planPromotions`. Writes at most `max` ordinary candidates; FORTIFY bypasses that beam
@@ -252,7 +280,12 @@ export function planPromotions(p: PackedState, t: NodeTables, max: number, out: 
     const mission = bestMission(p, t, cat, slot, next, deepestAnchor, SC_BENEFIT);
     if (mission < 0) continue;
     const materialGain = (cat.cost[next] - cat.cost[def]) * CC;
-    const rent = RENT_PV * (cat.upkeep[next] - cat.upkeep[def]);
+    // R3 (`EvalFix.strength.promoteOrderingRentPv`, absent = `RENT_PV`): the
+    // rent this ORDERING expression charges. The keep-set ranking in
+    // `gen/upkeep.ts` and the `EconDelta` leaf forecast keep the shared
+    // `RENT_PV` whatever this says — the knob changes which promotions are
+    // SEEN, never what one is worth once the search looks at it.
+    const rent = orderingRentPv(t) * (cat.upkeep[next] - cat.upkeep[def]);
     const scoreCc = (SC_BENEFIT[0] + materialGain - cost * CC - rent) | 0;
 
     let slotIndex: number;
