@@ -105,7 +105,7 @@ it('copies a replayable report from any local game, with no opt-in', async () =>
   planPhaseEnd();
   const writeText = vi.fn().mockResolvedValue(undefined);
   Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
-  vi.spyOn(window, 'prompt').mockReturnValue('  the summon looked pointless  ');
+  const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('  the summon looked pointless  ');
 
   render(<GameScreen config={phasingConfig()} onBackToMenu={() => {}} />);
   await waitForAITurnToFinish();
@@ -129,4 +129,13 @@ it('copies a replayable report from any local game, with no opt-in', async () =>
   expect(report.lastTurnActions.map((a: { type: string }) => a.type)).toEqual(['END_ACTION_PHASE', 'END_PLACE_PHASE']);
   expect(report.state.turn.currentPlayer).toBe('black');
   expect(await screen.findByText('Position report copied to the clipboard.')).toBeInTheDocument();
+
+  // Cancelling the note prompt writes nothing. The deleted
+  // `phasing-preview-ui.test.tsx` covered this; the path is still live
+  // (`GameScreen.tsx`: `if (note === null) return;`) and now reachable in every
+  // local game rather than only under the retired opt-in.
+  promptSpy.mockReturnValue(null);
+  fireEvent.click(screen.getByRole('button', { name: 'Report this position' }));
+  await waitFor(() => expect(promptSpy).toHaveBeenCalledTimes(3));
+  expect(writeText).toHaveBeenCalledTimes(2);
 });

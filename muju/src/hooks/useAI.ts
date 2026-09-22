@@ -296,10 +296,13 @@ export function useAI(options: UseAIOptions = {}) {
           // prefix stands and only the rest of the plan is dropped — the same
           // policy `lab/hard-ai/bots/hard.ts` applies in the lab.
           // The banner is set HERE rather than left to `:setWarning(turn.fallback …)`
-          // above, which has already run for this search and cleared it: an
+          // above, which has already run for this search and cleared it: a HARD
           // engine that proposes an illegal action is a failure the player is
-          // told about, not a silent drop (`ai-production-wiring.md` §6g).
-          if (outcome === 'illegal') { if (useHard) recordHardFallback('invalidSuffix'); setWarning('AI engine fell back (invalid plan suffix).'); fellBack = true; continue; }
+          // told about, not a silent drop (`ai-production-wiring.md` §6g). It
+          // stays inside the `useHard` guard with its sibling `emptyPlan`
+          // banner: the brief is the three silent HARD fallbacks, and v2 (which
+          // simulates its own plan) keeps the behaviour it has always had.
+          if (outcome === 'illegal') { if (useHard) { recordHardFallback('invalidSuffix'); setWarning('AI engine fell back (invalid plan suffix).'); } fellBack = true; continue; }
           if (outcome === 'abort') break;
           if (useHard) noteHardPlanReplayed();
           // outcome === 'ok': either the turn is over (outer while exits) or

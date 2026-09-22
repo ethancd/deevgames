@@ -302,7 +302,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     // two orders of magnitude more and says nothing extra. Shift-click keeps the JSON.
     const report = fullJson ? formatPositionReport(input) : formatCompactReport(input, online ? null : loadGameHistory());
     const copied = await copyToClipboard(report);
-    if (!copied) console.warn('[phasing-preview] clipboard refused; position report follows\n', report);
+    if (!copied) console.warn('[muju] clipboard refused; position report follows\n', report);
     setReportStatus(copied ? 'Position report copied to the clipboard.' : 'Clipboard refused — the report was logged to the console.');
   }, [state, online, config.controls, config.aiDifficulty, config.aiPace, whiteAI, blackAI]);
 
