@@ -382,6 +382,19 @@ Evidence:
 - Weights contract: `WEIGHTS_VERSION` stays **2** (D9); its docstring now says
   it is bumped when the vector's **schema** changes, not when the numbers do
   (`src/ai/hard/eval/weights.ts:14`). `ACCOUNTING_PINS` → `{2:100, 58:1}`.
+- **Gate-0 suite reading of the shipped engine (added 2026-09-22).** The
+  `phasing-hand-priors-v1` vector this node ships was measured against the
+  committed v2 release bundle on 2026-09-22 — see node 11 item 1 for the command
+  and the full record. Identity measured by the instrument itself:
+  `engineSourceSha256 8ad95e28…`, `weightsSha256 ec981616…` (version 2),
+  `engineIdentity e00907f8…`, all equal to what the floor contract preregistered.
+  Result: earned **121 / 146**, `floorPass false`, with **invariants 8 against a
+  floor of 14 and economy 4 against a floor of 20**. Correctness clean across all
+  225 cases (0 divergences, 0 capped prover calls, 0 refusals, 0 errors,
+  coverage 79/79). Informational under A6, so it is not a ship gate; recorded
+  here because it is the only direct suite-level reading of the vector this node
+  deploys, and because economy read **19** on the same 225 cases under the
+  previous build and weights on 2026-09-19.
 
 ## 11. [changed] ai-strength — AI correctness veto and preregistered strength evidence
 
@@ -389,8 +402,12 @@ Reason: upstream changed: hard-ai; upstream changed: ai-search
 Paths: `muju/lab/hard-ai/`, `muju/tests/ai/hard/`, `muju/tests/lab/`, `muju/docs/hard-ai/RELEASE-2026-09-18.md`, `muju/docs/hard-ai/EPIC-PLAN-2026-09-16.md`
 Commands (cwd `muju`): `npm run hard:perft && npm run hard:fuzz && npm run hard:determinism`; `npm run hard:suite`; `npm run hard:ladder`
 
-**Disposition: changed.** Correctness veto **passes**; the strength-evidence
-tooling is partly blocked, all of it pre-existing.
+**Disposition: changed.** Correctness veto **passes**. The Gate-0 suite reading
+was blocked on 2026-09-21 and is **read as of 2026-09-22** (item 1 below): two of
+six families land below their preregistered floor, informational under A6. What
+remains blocked is the part that needs a Phasing port of the Standard lab
+corpora — M6–M13, M14's fourth step and the generic `hard:suite` — all of it
+pre-existing.
 
 Correctness veto — green:
 
@@ -428,7 +445,9 @@ base→tip generated-unit-id map to be a **bijection**) passes on all 16 pairs /
 — and that last value **matches** the `DESKTOP_WALL3000_HASH` pin at
 `tests/lab/ablate.test.ts:199`, so the seven new arms did not move the champion.
 
-Source changes: 28 files, 1 168 insertions / 198 deletions.
+Source changes: 28 files, 1 168 insertions / 198 deletions (plus the 2026-09-22
+lab-verification commits `568f314a`, `179d9e34`, `f366c43b`, `7b96f634`,
+`79c19d00`).
 `lab/hard-ai/ablate/arms.ts` (+204: seven strength arms appended,
 `hard@env` label), `bots/hard.ts` (`MUJU_HARD_WEIGHTS` scoped to `hard@env`,
 decision D13), the five instruments routed through `eval/turnScore.ts`
@@ -436,58 +455,101 @@ decision D13), the five instruments routed through `eval/turnScore.ts`
 `bench/p6-turn-time.ts`, `coverage/run.ts`, `recall/run.ts`), `tune/texel.ts`
 re-pinned, and `tests/lab/source-files.test.ts` **new** (+260).
 
-**Blocked / failing, every one pre-existing at `eda73b26` — recorded, not
-fixed:**
+**The pre-existing lab debts, and what happened to each on 2026-09-22. Items
+1–3 are now fixed and read; items 4–5 remain blocked on a lab-corpus port:**
 
-1. **Gate 0 suite measure — blocked before any case ran.** `hard:suite:phasing:measure`
-   with the committed v3 floor contract refused at `run.ts:156` (`loadBundle`):
-   `Superseded bundle: builder/predicate/validator artifact set or bytes differ …
-   (changed package.json)`, EXIT=1. Root cause pinned down: `artifactPins()`
-   (`run.ts:34-42`) hashes `muju/package.json` into the v2 manifest's artifact
-   map; removing the two dead scripts `hard:spsa` and `hard:book` changed its
-   bytes (`a36f0da6…` → `b9482bd9…`). **22 of 23 pinned artifacts byte-match, all
-   six suite documents match their `files[].sha256` pins, and the canonical rules
-   binding is unchanged.** Constructive proof (`<w4>/logs/B-diag-bundle.log`): a
-   scratch manifest with only `artifacts["package.json"]` repinned loads and
-   validates completely — `documents 6 cases 225 members 245`, `valid = true
-   checks 225 veto findings 0 errors 0 release v2`, `failing checks: []`. So the
-   v2 case set is intact; only the byte pin blocks it. **No first-measurement
-   slot was consumed and no ledger line was written**, so the committed v3
-   contract stays measurable. Informational under A6 → not a ship blocker, but
-   **the cutover ships with no Gate-0 reading at all**. The repo's own tests
-   cannot see this: `tests/lab/suites-phasing-{runner,v2-authoring}.test.ts`
-   author throwaway bundles in temp dirs and never load the committed manifest.
-2. **`hard:determinism` cannot run any `hard@*` engine (F1 in VALIDATION).**
-   `lab/hard-ai/verify/determinism.ts:149` builds the patch with
+1. **Gate 0 suite measure — RESOLVED AND READ on 2026-09-22.** It first refused
+   at `run.ts:156` (`loadBundle`): `Superseded bundle: … (changed package.json)`,
+   EXIT=1, because `artifactPins()` (`run.ts:34-42`) hashes `muju/package.json`
+   into the v2 manifest's artifact map and removing the two dead scripts
+   `hard:spsa` / `hard:book` changed its bytes (`a36f0da6…` → `b9482bd9…`). 22 of
+   23 pinned artifacts, all six suite documents and the canonical rules binding
+   were byte-identical, so the fix was to put `package.json` back
+   (`568f314a`; the two entries are retained as dead entries, see node 21) rather
+   than repin a historical manifest. No first-measurement slot had been consumed
+   (`results/v3-measure-1-2026-09-21/failure.json`, `ec24980e`).
+
+   **The reading** (`79c19d00`,
+   `lab/hard-ai/suites/phasing/results/v3-measure-2-2026-09-22/`, ledger seq 2,
+   superseding seq 1 as the committed contract declares):
+
+   ```
+   npm run hard:suite:phasing:measure -- \
+     --manifest lab/hard-ai/suites/phasing/fixtures/v2/manifest.json \
+     --contract lab/hard-ai/suites/phasing/fixtures/v3/floor-contract.json \
+     --out lab/hard-ai/suites/phasing/results/v3-measure-2-2026-09-22
+   WITNESS: remote-tracking ref contains the contract commit (git@github.com:ethancd/deevgames.git)
+   {"valid":true,"floorPass":false,"earned":121,"offered":146,
+    "coverage":{"expected":79,"pass":79,"fail":0,"indeterminate":0,"error":0,"missing":0},
+    "failedCases":[],"witnessTier":"remote-tracking","supersededMeasurements":1,"ledgerSeq":2}
+   EXIT=1   # the floor miss, not a tool failure
+   ```
+
+   | family | measured | floor | offered | |
+   |---|---|---|---|---|
+   | tactics | 62 | 57 | 63 | PASS |
+   | invariants | **8** | 14 | 15 | **BELOW FLOOR** |
+   | home-mate | 28 | 28 | 28 | PASS |
+   | economy | **4** | 20 | 20 | **BELOW FLOOR** |
+   | summon-disruption | 13 | 13 | 14 | PASS |
+   | home-fortify | 6 | 6 | 6 | PASS |
+
+   Witness tier `remote-tracking` (contract commit `9c3da287` is contained in
+   `origin/claude/pc-lane1`); coverage 79/79; **0 replica divergences, 0 capped
+   prover calls, 0 adapter refusals, 0 errored executions, 0 fallbacks**;
+   `correctness true`, `drift false`, `engineDrift false`; engine identity
+   `e00907f8…` / source `8ad95e28…` / weights `ec981616…`, equal to the
+   preregistered pair. Informational under A6 → **two families below floor do not
+   block the cutover**, and the reading is not converted into a pass. Against the
+   2026-09-19 reading of the same manifest (different build and the M6 bootstrap
+   weights) 23 of 225 cases moved; **economy fell 19 → 4**, all fifteen losses in
+   `relocate-*` and `muju-onto-4-*`. Both build and weights changed at once, so
+   that is a flagged finding, not an attribution. `tests/lab/suites-phasing-manifest.test.ts`
+   (`179d9e34`) now loads the committed manifest against the live tree, so this
+   class of breakage fails in `npm test` instead of at measurement time.
+2. **`hard:determinism` could not run any `hard@*` engine — FIXED 2026-09-22
+   (`f366c43b`).** `lab/hard-ai/verify/determinism.ts` built the patch with
    `hardConfigFor(...)`, which returns a config whose `weights` field is
-   *present* and is M4's `placeholder-m4` vector (`version: 0`), so
-   `HardEngine`'s `DEFAULT_WEIGHTS` substitution never fires and
-   `assertCurrentWeights` throws `Phasing weight schema/version mismatch`.
-   Every other lab call site already goes through `hardEnginePatch`/
-   `createHardBot`; this is the one that was missed. `git diff eda73b26..HEAD`
-   is **empty** for `determinism.ts` and `evaluate.ts`. **The engine itself is
-   fine**: with the documented one-line resolution the exact requested row gives
-   `{"identical":true,"decisions":4,"mismatches":0}`
-   (`<w4>/logs/determinism-probe.json`). Not fixed here because the fix moves
-   what gate M14 measures (placeholder-m4 → the shipped vector) and
-   `tests/lab/suites.test.ts:65` currently pins the broken construction.
-3. **`hard:verify --all` stops at M1** (`<w4>/logs/12-hard-verify.log`): M1's
-   criterion requires `metrics.fixturesChecked === 11`; the Phasing fixture set
-   in `lab/hard-ai/perft/phasing-fixtures.ts` has **7**. Everything else in M1 is
-   green. `gates.ts` and `perft/**` are unchanged on this branch; the 7-fixture
-   set landed at `142f0904`, before the cutover base.
+   *present* and is a version-0 placeholder, so `HardEngine`'s `DEFAULT_WEIGHTS`
+   substitution never fired and `assertCurrentWeights` threw `Phasing weight
+   schema/version mismatch`. Every other lab call site already goes through
+   `hardEnginePatch`/`createHardBot`; this was the one that was missed, and it is
+   pre-existing at `eda73b26`. Now: `npm run hard:determinism -- --engine
+   hard@desktop --work 50000 --positions 4` → `{"identical":true,"decisions":4,
+   "mismatches":0}`, EXIT=0. `tests/lab/suites.test.ts`'s regression case, which
+   pinned the broken construction and could not have run even un-quarantined, is
+   re-pinned in the same commit; the file stays quarantined for its own unrelated
+   reason (its fixture imports a Standard catalogue, so it does not collect).
+3. **`hard:verify --all` stopped at M1 — FIXED 2026-09-22 (`7b96f634`), M1 now
+   PASSES.** The criterion required `metrics.fixturesChecked === 11`; the Phasing
+   fixture set in `lab/hard-ai/perft/phasing-fixtures.ts` has **7**, and
+   everything else in M1 was green. It now reads `=== PHASING_FIXTURES.length`.
+   `npm run hard:verify -- --gate M1` → `M1: PASS (17451ms)`, EXIT=0,
+   `fixturesChecked 7`, `fixturesMismatch 0`, `digestMismatches 0`,
+   `replicaAgreed true`, `standardTriple checked`, `14959/1053/797`,
+   `openings 797`, deps `violations []`, vitest 44/44. Because `verify/run.ts`
+   breaks on the first failing gate, this one line was why `--all` produced no
+   reading for M2–M14 at all.
 4. **7 more gates fail on Standard-ruleset corpora** (`<w4>/logs/12b-gates-individual.log`):
    M7/M8/M9 `PackError: pack: ruleset "standard" is not "phasing"`; M6
    `strikeChecked 0`; M11 `positionsChecked 0, positionsSkipped 216`; M12
    `bench: empty corpus`; M13 `positions 0`. Root cause:
    `lab/hard-ai/positions/{openings,authored,fuzz-1000,economy,canonical-fixtures}.jsonl`
    are Standard positions and `pack()` has been Phasing-only since `142f0904`.
-   **PASS: M4, M5, M10.** Not run: M2 (not reached), M3 (contains a
-   `--work wall:1000` ladder row — excluded by the fixed-work-only rule for a
-   shared box), M14 (its first step is the broken `hard:determinism` call).
-   Disposed here as **historical/blocked**, the same disposition A-S3 gives the
-   generic `hard:suite`; porting the lab corpora to Phasing is unfunded work,
-   filed as a follow-up.
+   **PASS: M1 (2026-09-22), M4, M5, M10.** Not run: M2 (not reached), M3
+   (contains a `--work wall:1000` ladder row — excluded by the fixed-work-only
+   rule for a shared box). **M14 tried 2026-09-22 and FAILS at step 4 of 5**
+   (`M14: FAIL (39817ms)`): its first three steps now pass — `npx vitest run
+   tests/ai/hard`, determinism `{"identical":true,"decisions":160,
+   "mismatches":0}`, bench `ttOnOffScoreMismatch 0` / `ttChecked 200` /
+   `depthGe4Share 1` / `quiesceShareMax 0` — and step 4 is the generic
+   `npm run hard:suite`, which dies on the same Standard-corpus `PackError` at
+   `lab/hard-ai/suites/run.ts:457`; step 5 is a `--work wall:500` ladder row that
+   never ran. Before 2026-09-22 M14 could not start at all, because step 2 was
+   the broken `hard:determinism` call. The remaining failures are disposed
+   **historical/blocked**, the same disposition A-S3 gives the generic
+   `hard:suite`; porting the lab corpora to Phasing is unfunded work, filed as a
+   follow-up.
 5. **`npm run hard:suite` (generic)** — historical/blocked per A-S3.
 
 **Strength knob screen (fixed work, 16 pairs, one slice, nothing adopted).** Full
@@ -1093,11 +1155,14 @@ Compatibility: no stored row is rewritten or reinterpreted. Local saves: schema 
 Remaining work: (1) fill the deploy fields here and in
   docs/hard-ai/RELEASE-2026-09-21-phasing.md; (2) tags — standard-final stays at
   71a2c511 and is pushed as-is, NEW tag dual-ruleset-final at the first parent of
-  the cutover merge; (3) Gate-0 remedy (re-author a v3 bundle, restore two
-  package.json lines, or record Gate 0 blocked for this release) — informational
-  under A6, so not a ship blocker; (4) the lab-verification debts: hard:determinism's
-  hardConfigFor call site, M1's fixture-count criterion, and the Standard lab
-  corpora under lab/hard-ai/positions/; (5) F1 — delete the Standard branches in
+  the cutover merge; (3) Gate 0 — DONE 2026-09-22: package.json restored, bundle
+  loaded, read at ledger seq 2, with invariants 8/14 and economy 4/20 below floor
+  and informational under A6; what is left is the economy 19 -> 4 question, which
+  wants an ablation on the weight vector alone; (4) the lab-verification debts —
+  hard:determinism's hardConfigFor call site and M1's fixture-count criterion are
+  FIXED, and a test now loads the committed v2 manifest; what remains is the
+  Standard lab corpora under lab/hard-ai/positions/, which still block M6-M13 and
+  M14's fourth step; (5) F1 — delete the Standard branches in
   shipped source together with their tests (work order in node 4); (6) the
   follow-ups listed in docs/hard-ai/RELEASE-2026-09-21-phasing.md "Follow-ups
   filed"; (7) Stage 4 AI measurement — nothing from the knob screen is adopted.
