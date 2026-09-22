@@ -300,7 +300,7 @@ The setting is fixed at creation, including while waiting for the opponent.
 These are delay clocks: **each player has their own bank, shared across their own
 turns**. A full turn gets a fresh free allowance; after it runs out, only the active
 player’s bank counts down. Unused allowance does not accumulate. Running out loses.
-The allowance covers upkeep, placement and all four actions together. Moves,
+The allowance covers all four actions, mining and upkeep, and preparation together. Moves,
 starting the action phase, undo, previews, reads and retries never reset it.
 
 | Preset | Free delay / personal bank | Approximate pace |
@@ -539,10 +539,7 @@ when changing incompatible game rules. The Standard constant is retired: it is
 exported as `RETIRED_STANDARD_VERSION` so stored rows can still be recognised,
 and no room is ever created under it.
 Older rooms fail with an explicit error instead of silently continuing under
-different rules. Version 4 upgrades version-2/3 rooms in place to four actions and
-resets the new kill-only clock to zero. It subtracts actions already spent,
-preserves the board, seats and final results, and clears old undo/replay history.
-Reconnects receive an updated revision.
+different rules.
 
 New rooms are **`muju-phasing-2`** (the twenty-ply inactivity draw, 2026-09-19),
 and that is the only revision the server opens. `muju-online-2`, `muju-online-3`,
@@ -601,14 +598,17 @@ seat authorization, atomic batches, origin validation, malformed requests and dr
 The browser Undo button and MCP `muju_play` with `actions: [{"type":"UNDO"}]`
 reverse the current player’s latest command. An atomic batch is one undo step.
 Undo covers purchases, promotions, upkeep choices, movement, attacks, and ending
-placement. It persists across reconnects, but stops at turn end or game completion.
-`canUndo` reports availability; revision and request-ID checks apply to undo too.
-When your turn starts with a positive automatic upkeep payment, that payment is
-your first undo step. Undo later actions first, then undo upkeep to refund the
-crystals and reopen the keep/release selector, before healing. The opponent's
-completed turn, income and turn handoff remain committed. Confirming the selector
-pays only the new keep-set and can itself be undone. Unaffordable upkeep still
-opens the selector immediately; zero-cost automatic upkeep adds no undo step.
+the action phase. It persists across reconnects, but stops at turn end or game
+completion. `canUndo` reports availability; revision and request-ID checks apply
+to undo too. There is no incoming upkeep, so a turn never opens with an upkeep
+undo step: this turn's mining and its automatic upkeep payment are one
+reversible `END_ACTION_PHASE` step, and undoing it returns you to Act with the
+crystals and the keep-set as they were. To choose a keep-set, undo back to Act,
+enable upkeep review in its own command (`SET_UPKEEP_REVIEW`, sent alone), then
+end the action phase and submit the payment with a keep-set containing every
+tier-1 unit. Unaffordable upkeep opens the selector immediately; zero-cost
+automatic upkeep adds no separate undo step. The opponent's completed turn,
+income and turn handoff remain committed, and `END_PLACE_PHASE` clears undo.
 
 Use `muju_wait_for_change({roomId, afterRevision, timeoutMs:25000})` as the
 supported move notification mechanism for either MCP transport. Set `afterRevision`
@@ -664,8 +664,9 @@ indicates that earlier positions were not recorded.
 Each recorded event has a compressed state snapshot in SQLite. The original
 state is available at sequence 0. Movement also retains its prior state, route
 and speed so intermediate AP positions have the correct location and remaining
-actions. A turn-end position precedes positive automatic upkeep, allowing that
-payment to be undone without losing the outgoing player's mining outcome.
+actions. A recorded position precedes that turn's `END_ACTION_PHASE` mining and
+upkeep, so that one step can be undone and replayed without losing the outgoing
+player's mining outcome.
 Historical positions are fetched on demand; normal room updates stay compact.
 The public positions endpoint rejects undone events and out-of-range steps.
 
