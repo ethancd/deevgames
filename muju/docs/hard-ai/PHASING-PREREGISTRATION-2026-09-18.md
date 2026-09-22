@@ -293,3 +293,75 @@ turn differs from the calibration's by more than 1, or in which more than 2% of 
 calibrated `workPerSearch`, is INVALID. Everything else in A1-A4 stands. Seeds: row 20260960 (unused so far); the next
 pilot uses 20260963 (20260961 void per A4, 20260962 consumed by the defective-adapter pilot).
 
+
+### A6 — 2026-09-21: the owner waives the staged unlock; Phasing vs-AI opens with `hardEnabled = true`
+
+**Owner instruction (Ethan, 2026-09-21), and that instruction is the authority for this amendment:**
+make Phasing the only deployed ruleset — retire Standard, never display it — and make the AI engine
+good and solid. Recorded in parallel as `JUDGMENT_LOG.md` J-022, which carries the rules half of the
+same instruction. Written before any further row is run and justified without reference to any score
+this amendment unlocks.
+
+**What changes: the "What each gate unlocks" table.** The three rows are superseded for this release.
+The browser ships the Hard engine to the Hard difficulty in Phasing vs-AI and Watch-AI immediately:
+`hardEnabled = true`, the `worker/handler.ts` Phasing refusal is deleted, and the `?phasingAi=1`
+preview flag is deleted with it. The `?hardAi=0` opt-out survives and routes a seat back to
+`AIEngineV2`'s hard preset, so a player who wants the previous engine still has it. Easy and medium
+continue to run `AIEngineV2`. Nothing else in this document is waived: Gates 0, 2 and 3 keep their
+definitions, their falsifiable rules, their seeds and A1–A5 in full. What the waiver removes is the
+*ordering* — the requirement that those rows be complete before players meet the engine.
+
+**Why.** Three reasons, in the order they carry weight.
+
+1. **The owner instruction.** Deployment order is the owner's call; this document's job is to keep the
+   measurement honest, not to hold a release.
+2. **Gate 1 now protects nothing.** Gate 1 exists to stop a crippled `AIEngineV2` port being used as a
+   flattering baseline for the Gate 2 strength row. With Standard retired there is no longer a Standard
+   engine on the shipping path at all: `AIEngineV2` is the *incumbent being replaced*, and the question
+   a player faces is which of the two shipped engines plays their Hard seat. Gate 1's crippled-baseline
+   risk is a risk to the *measurement*, and the measurement still has to clear it before any strength
+   claim is made (see "What is still owed").
+3. **The repair evidence points the right way.** `docs/hard-ai/phasing/repair-2026-09-20/` measured the
+   engine that ships — the unconditional pending-summon scorer credit plus the `phasing-hand-priors-v1`
+   vector — against `aiv2-hard-turn`, the same engine `?hardAi=0` falls back to:
+   **53–0–11 on held-out `p1-val` openings at 6 s (+273 Elo, CI [+161, +476])**, **28–0–4 on `p1-dev`
+   at 6 s (+338)**, and **49–0–15 on `p1-val` at 1.5 s against per-action `aiv2-hard`**, the last of
+   which is **VOID** for timing under load and is cited here only for its direction. Correctness across
+   that campaign was 0 illegal actions, 0 replica divergences, 0 fallbacks.
+   **These rows are development evidence plus one look at `p1-val`. They are NOT Gate 2 evidence and
+   they are not a preregistered strength claim.** `p1-val` has now been looked at once; the sealed
+   corpus `p1-sealed.jsonl` is untouched and stays untouched.
+
+**What is still owed, and is not satisfied by this amendment.**
+
+- **Gate 0.** The correctness veto stands item for item. The suite floors are re-measured against a v3
+  floor contract committed on its own before the measure runs, and the result is reported per family in
+  the release record. That measure is **informational** under this amendment — it does not gate the
+  release the owner has instructed — but a failure is reported as a failure, never as a pass, and any
+  regression it shows is owed a fix.
+- **Gate 2.** No sealed row has been run. The strength row keeps its arms, its 32 pairs, its seed
+  20260953, its SPRT rule and its no-rerun rule. Until it is run and reported, **no release note,
+  changelog, marketing string or player-facing copy may claim that the Hard engine is stronger than
+  `AIEngineV2`.** Shipping copy may say which engine plays the Hard seat and how to opt out. That is the
+  line this amendment draws in exchange for the waiver.
+- **Gate 3.** Responsiveness is unmeasured on the shipped configuration. Desktop p95 ≤ 6,000 ms and
+  phone p95 ≤ 3,000 ms remain the thresholds; the browser currently runs the DESKTOP search shape on
+  every device, so the phone number is not merely unmeasured but unrepresented. Both are reported with
+  the shipped 7,500 ms whole-turn allowance alongside the literal 6,000 ms reading.
+
+**Rules revision: unchanged.** "Fixed definitions" says any rules edit after sign-off voids rows
+measured before it. `SPEC.md` v3.1 (2026-09-21) folds the Phasing rules into the normative body and
+deletes the Standard option; it changes **no rule**. The rules revision therefore stays
+`muju-phasing-2`, identity hashes are unaffected, and **no row measured under `muju-phasing-2` is
+voided by this amendment** — including the whole `repair-2026-09-20` bundle. v3.1 also discharges the
+"to be folded into `SPEC.md` v3.0" clause of Fixed definitions, one minor version later than intended.
+
+**Reproducibility anchor: `standard-final` is re-pointed.** Fixed definitions anchors Standard pins and
+`RELEASE-2026-09-18.md` to "the last commit supporting both rule sets", tagged `standard-final`. That
+tag existed only in one local checkout, at `2b0f2bc0` (2026-09-18), more than thirty commits before the
+commit it is supposed to name, and was never pushed. It is re-pointed to the **first parent of this
+cutover's merge commit on `master`** — the genuine last dual-ruleset commit — and pushed. Standard pins
+and `RELEASE-2026-09-18.md` remain valid evidence for that tag only.
+
+**Amendments A1–A5 stand as written.** Seeds are unchanged; the post-release measurement rows use the
+7101–7606 series and never the 2026095x/2026096x Gate seeds.
