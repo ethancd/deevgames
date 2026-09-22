@@ -387,8 +387,7 @@ it('records the mover’s own mine-and-upkeep as an undo step, without undoing t
 
   play([{type:'END_ACTION_PHASE'}]);
   const paid=room.state;
-  expect(paid.lastUpkeep).toMatchObject({player:'white'});
-  expect(paid.lastUpkeep!.paid).toBeGreaterThan(0);
+  expect(paid.lastUpkeep).toEqual({player:'white',paid:1,released:[],turnNumber:3});
   expect(paid.upkeepPending).toBe(false);expect(room.canUndo).toBe(true);
   expect(legalActions(room,{type:'UNDO'}).total).toBe(1);
   expect(()=>store.act(id,guest.credentials.token,request(room.revision,[{type:'UNDO'}],'wrong-seat-upkeep'))).toThrow('current player');

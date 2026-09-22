@@ -14,7 +14,10 @@ import { DEFAULT_AI_PACE, isAIPace, type AIPace } from '../ai/turnTime';
 // silent reinterpretation the content DAG's `persistence` node forbids. The
 // payload is MOVED byte-for-byte to `RETIRED_STORAGE_KEY`, never deleted and
 // never rewritten, and stays readable through `loadRetiredSave` /
-// `loadRetiredHistory` so the analysis screen can show the game.
+// `loadRetiredHistory` so the analysis screen can show the game. "Never deleted"
+// covers a save this build can read and recognise: a schema outside
+// `READABLE_SCHEMA_VERSIONS`, or a payload that is not a game at all, is still
+// cleared exactly as it was before schema 9 — there is nothing there to review.
 export const SCHEMA_VERSION = 9;
 
 /** The schema that first recorded the twenty-ply clock; earlier saves counted differently. */
@@ -98,16 +101,28 @@ export function loadGameState(): GameState | null {
       return null;
     }
 
+    // Permissively first, and before the retirement gate: only a payload that is
+    // recognisably a game is worth archiving. A truncated or half-written save has no
+    // `ruleset` either, so archiving before this check would move garbage into the
+    // retired slot — unreadable there, and occupying the one slot the real retired
+    // game needs. Those are cleared exactly as they were before schema 9.
+    if (!validateGameState(persisted.state, true)) {
+      console.log('Invalid saved state, starting fresh game');
+      clearGameState();
+      return null;
+    }
+
     // Standard was retired on 2026-09-21. A save recorded under it is moved to the
     // retired slot and reported as "no saved game": it is never resumed, because the
     // turn it was played with no longer exists, and never deleted, because it is the
     // only copy. A pre-v7 save has no `ruleset` at all, which meant Standard.
-    if (persisted.state?.ruleset !== 'phasing') {
+    if (persisted.state.ruleset !== 'phasing') {
       archiveRetiredSave(raw);
       return null;
     }
 
-    // Basic validation - check required fields exist
+    // Strictly now: a Phasing save is about to be resumed, so it must satisfy the
+    // playable-state rules (four actions a turn) and not merely the permissive ones.
     if (!validateGameState(persisted.state)) {
       console.log('Invalid saved state, starting fresh game');
       clearGameState();
@@ -118,8 +133,7 @@ export function loadGameState(): GameState | null {
     // stored clock means something else now. It is adjudicated once under the limit it
     // was recorded with — a game that had already drawn keeps that result — and a
     // position that is still playing restarts its clock instead of carrying a count
-    // whose meaning changed. That is the same choice `migrateLegacyGame` made when the
-    // clock's reset rule changed, and it never revives a finished game.
+    // whose meaning changed. It never revives a finished game.
     const preTwentyPlyClock = persisted.schemaVersion < TWENTY_PLY_CLOCK_SCHEMA;
     const adjudicated = resolveInactivityDraw({ ...persisted.state, actionsPerTurn: getActionsPerTurn(persisted.state) },
       preTwentyPlyClock ? LEGACY_INACTIVITY_LIMIT : undefined);

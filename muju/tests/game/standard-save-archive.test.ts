@@ -56,6 +56,32 @@ it.each([[5, 'standard'], [6, undefined], [7, 'standard'], [8, undefined], [8, '
     expect(archived.state.ruleset).toBe(ruleset);
   });
 
+// A half-written or truncated payload has no `ruleset` either, so the retirement
+// gate on its own would read it as retired rules. Archiving it would put unreadable
+// bytes in the one slot the real retired game needs — and, because an occupied slot
+// is never overwritten, would strand every later retired save in the main key. It is
+// cleared instead, which is what this build did with it before schema 9.
+it.each([
+  ['a truncated save', '{"schemaVersion":8,"timestamp":0,"state":{"phase":"playing"}}'],
+  ['a Standard save with no board', JSON.stringify({
+    schemaVersion: 8, timestamp: 1758400000000,
+    state: { ...standardState('standard'), board: undefined },
+  })],
+])('clears %s instead of archiving it', (_label, raw) => {
+  localStorage.setItem(KEY, raw);
+
+  expect(loadGameState()).toBeNull();
+  expect(localStorage.getItem(KEY)).toBeNull();
+  expect(localStorage.getItem(RETIRED_STORAGE_KEY)).toBeNull();
+  expect(loadRetiredSave()).toBeNull();
+
+  // And the slot it did not poison is still free for the real retired game.
+  const retired = standardState('standard');
+  const retiredRaw = write(8, retired, startHistory(retired, true));
+  expect(loadGameState()).toBeNull();
+  expect(localStorage.getItem(RETIRED_STORAGE_KEY)).toBe(retiredRaw);
+});
+
 it('writes a new Phasing game while the retired save survives untouched', () => {
   const retired = standardState('standard');
   const raw = write(8, retired, startHistory(retired, true));
