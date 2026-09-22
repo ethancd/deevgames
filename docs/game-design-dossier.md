@@ -19,7 +19,7 @@ does not survive is anything about tempo, since a purchase no longer appears and
 acts on the turn it is paid for. Current-engine evidence lives in
 `muju/docs/hard-ai/`, and no new strength claim is made here.
 
-**Muju update, September 16, 2026:** Standard remains the default. The optional
+**Muju update, September 16, 2026 — superseded by the 2026-09-21 update above; recorded as it stood:** Standard remains the default. The optional
 [Phasing ruleset](https://github.com/ethancd/deevgames/blob/master/muju/docs/PHASING-2026-09-16.md) changes turn timing to actions,
 mining, upkeep, then promotions and public committed summons. Arrivals resolve
 next own turn or refund. Current AI/balance claims apply to Standard only.
