@@ -50,10 +50,12 @@ test('the same invitation moves the seat between browsers and the previous brows
   } finally { await Promise.all(contexts.map(context => context.close())); }
 });
 
-test('archived Phasing games leave the active list and remain reviewable on a phone', async ({ page }, testInfo) => {
+test('archived Phasing games leave the active list and remain reviewable on a phone', async ({ page, baseURL }, testInfo) => {
   const directory = mkdtempSync(join(tmpdir(), 'muju-archive-browser-')), path = join(directory, 'rooms.sqlite');
   const store = new RoomStore(path);
-  const app = createApp(store, { publicUrl: 'http://127.0.0.1', allowedOrigins: ['http://127.0.0.1:8928'] });
+  // Whatever origin this config serves the app from: the page has to be allowed
+  // to call this ad-hoc server, and the default config does not use port 8928.
+  const app = createApp(store, { publicUrl: 'http://127.0.0.1', allowedOrigins: [new URL(baseURL!).origin] });
   const listener = app.listen(0, '127.0.0.1');
   await new Promise<void>(resolve => listener.once('listening', resolve));
   const server = `http://127.0.0.1:${(listener.address() as { port: number }).port}`;

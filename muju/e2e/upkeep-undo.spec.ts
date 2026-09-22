@@ -19,7 +19,7 @@ test('Phasing upkeep choice stays open, can be undone past, and the keyboard dri
   }, { state, schemaVersion: SCHEMA_VERSION });
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
-  await page.getByRole('button', { name: /Continue saved game · Phasing/ }).click();
+  await page.getByRole('button', { name: /Continue saved game/ }).click();
 
   // Tab visits own pieces, then the opponent's, in A–J then 1–10 order; Escape clears.
   for (const unit of [...mine, ...theirs]) { await page.keyboard.press('Tab'); await expect(cellOf(unit)).toBeFocused(); await expect(page.locator('.unit-detail')).toBeVisible(); }

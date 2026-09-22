@@ -1,6 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createInitialGameState } from '../src/game/board';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
+import { PREPARE_RESERVE_DIVISOR } from '../src/ai/turnFunding';
 import type { GameState } from '../src/game/types';
 
 /**
@@ -289,8 +290,13 @@ test('?hardMs funds the hard turn, clamped, without touching the engine route', 
   const hardRequests = requests.filter(r => r.mode === 'turn' && r.engine === 'hard');
   expect(hardRequests.length).toBeGreaterThan(0);
   // The first whole-turn request of a turn is funded by the override, never by
-  // the shipped 8000; a mid-turn re-request draws on what is left of it.
-  expect(hardRequests.some(r => r.decisionMs === 1200)).toBe(true);
+  // the shipped 8000; a mid-turn re-request draws on what is left of it. A
+  // Phasing turn spans Act, the upkeep decision and Prepare under that one
+  // allowance, so the Act search asks for the override LESS the floor those two
+  // later segments keep (`src/ai/turnFunding.ts`): 1200 − 2 × 150 = 900.
+  const actAllowance = 1200 - 2 * Math.floor(1200 / PREPARE_RESERVE_DIVISOR);
+  expect(actAllowance).toBe(900);
+  expect(hardRequests.some(r => r.decisionMs === actAllowance)).toBe(true);
   for (const request of hardRequests) expect(request.decisionMs!).toBeLessThanOrEqual(1200);
   const diag = await hardDiag(page);
   expect(diag?.optIn).toBe(true);
