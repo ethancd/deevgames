@@ -184,11 +184,12 @@ export const rules = {
 };
 
 /**
- * The rules payload, labelled. There is one rule set and one end-turn command,
- * so this takes no argument: the timing prose above IS the played timing. The
- * function survives its two-branch past because every caller (`muju_rules`,
- * tests, the skill build) wants the labels with the body.
+ * The rules payload, plus the one end-turn command. It takes no argument: there
+ * is one rule set, the timing prose above IS the played timing, and the payload
+ * names itself in `rules.ruleset` ({ name, revision, immutable, retired }). The
+ * function survives its two-branch past because `muju_rules` and its tests want
+ * `endTurnAction` alongside the body.
  */
 export function rulesFor() {
-  return { ...rules, ruleset: 'phasing' as const, endTurnAction: 'END_PLACE_PHASE' as const };
+  return { ...rules, endTurnAction: 'END_PLACE_PHASE' as const };
 }
