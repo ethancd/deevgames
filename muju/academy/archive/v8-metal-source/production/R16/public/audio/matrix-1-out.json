@@ -1,0 +1,49 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Inyan can finish Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the In-yahn can finish Shore, Gurl, gurl-geh and kah-rahn-luk. Every unlit card survives that single hit.",
+  "hash": "fa9376d3b07cf6d90a8a9b121fb9de36244ca027224cb0382bf0f9b2e319bcab",
+  "duration": 9.8,
+  "bytes": 470478,
+  "retakeMethod": "sentence-by-sentence-v1",
+  "retakeReason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences.",
+  "createdAt": "2026-09-13T10:51:14.901Z",
+  "captions": [
+    {
+      "text": "With one attack, the Inyan can finish Sjor, Göl, Gölge and Karanlık.",
+      "start": 0,
+      "end": 187
+    },
+    {
+      "text": "Every unlit card survives that single hit.",
+      "start": 187,
+      "end": 294
+    }
+  ],
+  "wordFrames": [
+    0,
+    6,
+    15,
+    39,
+    41,
+    55,
+    67,
+    78,
+    112,
+    130,
+    152,
+    155,
+    187,
+    197,
+    212,
+    224,
+    245,
+    256,
+    268
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "fa9376d3b07cf6d90a8a9b121fb9de36244ca027224cb0382bf0f9b2e319bcab"
+}

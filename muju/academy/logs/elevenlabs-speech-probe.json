@@ -1,0 +1,17 @@
+{
+  "provider": "elevenlabs",
+  "endpoint": "text-to-speech/with-timestamps",
+  "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+  "text": "Four a turn, for the team. Not four each.",
+  "status": "rejected",
+  "http_status": 401,
+  "error": {
+    "detail": {
+      "type": "authentication_error",
+      "code": "unauthorized",
+      "message": "The API key you used is missing the permission text_to_speech to execute this operation.",
+      "status": "missing_permissions",
+      "request_id": "4163d2a1588d94a09570d57214c439ea"
+    }
+  }
+}

@@ -1,0 +1,1310 @@
+{
+  "n": 26,
+  "games": [
+    {
+      "id": "ai-A-Plant3-white",
+      "economy": "A",
+      "opponent": "Plant3",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "black",
+      "winType": "upkeep-elimination",
+      "turns": 10,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 36024,
+      "aiOutcome": "loss",
+      "aiIncome": 21,
+      "enemyIncome": 83,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 10,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 4,
+          "at": 22,
+          "cost": 2
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 5,
+          "at": 43,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-B-Plant3-white",
+      "economy": "B",
+      "opponent": "Plant3",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "black",
+      "winType": "upkeep-elimination",
+      "turns": 6,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 20012,
+      "aiOutcome": "loss",
+      "aiIncome": 13,
+      "enemyIncome": 52,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 10,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 4,
+          "at": 22,
+          "cost": 2
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 5,
+          "at": 34,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-C-Plant3-white",
+      "economy": "C",
+      "opponent": "Plant3",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": null,
+      "winType": "inactivity",
+      "turns": 29,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 116065,
+      "aiOutcome": "draw",
+      "aiIncome": 334,
+      "enemyIncome": 224,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 21,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 11,
+          "cost": 2
+        },
+        {
+          "id": "start-white-fire_1",
+          "owner": "white",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 2,
+          "at": 1,
+          "cost": 2
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 3,
+          "at": 11,
+          "cost": 6
+        },
+        {
+          "id": "start-white-fire_1",
+          "owner": "white",
+          "from": "fire_2",
+          "to": "fire_3",
+          "turn": 3,
+          "at": 1,
+          "cost": 3
+        },
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_2",
+          "to": "plant_3",
+          "turn": 3,
+          "at": 42,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-A-Plant3-black",
+      "economy": "A",
+      "opponent": "Plant3",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "black",
+      "winType": "home-occupation",
+      "turns": 4,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 12008,
+      "aiOutcome": "win",
+      "aiIncome": 7,
+      "enemyIncome": 29,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 89,
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "ai-B-Plant3-black",
+      "economy": "B",
+      "opponent": "Plant3",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "white",
+      "winType": "upkeep-elimination",
+      "turns": 7,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 24016,
+      "aiOutcome": "loss",
+      "aiIncome": 17,
+      "enemyIncome": 60,
+      "aiPromotions": [
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 88,
+          "cost": 2
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 4,
+          "at": 88,
+          "cost": 6
+        },
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 5,
+          "at": 77,
+          "cost": 3
+        }
+      ]
+    },
+    {
+      "id": "ai-C-Plant3-black",
+      "economy": "C",
+      "opponent": "Plant3",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "white",
+      "winType": "elimination",
+      "turns": 24,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 92051,
+      "aiOutcome": "loss",
+      "aiIncome": 243,
+      "enemyIncome": 258,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 69,
+          "cost": 3
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 88,
+          "cost": 2
+        },
+        {
+          "id": "start-black-fire_1",
+          "owner": "black",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 2,
+          "at": 98,
+          "cost": 2
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 3,
+          "at": 88,
+          "cost": 6
+        },
+        {
+          "id": "start-black-fire_1",
+          "owner": "black",
+          "from": "fire_2",
+          "to": "fire_3",
+          "turn": 3,
+          "at": 98,
+          "cost": 3
+        },
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_2",
+          "to": "plant_3",
+          "turn": 3,
+          "at": 67,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-A-Metal3-white",
+      "economy": "A",
+      "opponent": "Metal3",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "black",
+      "winType": "home-occupation",
+      "turns": 24,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 96063,
+      "aiOutcome": "loss",
+      "aiIncome": 59,
+      "enemyIncome": 154,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 10,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 4,
+          "at": 22,
+          "cost": 2
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 6,
+          "at": 54,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-B-Metal3-white",
+      "economy": "B",
+      "opponent": "Metal3",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "black",
+      "winType": "upkeep-elimination",
+      "turns": 9,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 32015,
+      "aiOutcome": "loss",
+      "aiIncome": 19,
+      "enemyIncome": 46,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 10,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 4,
+          "at": 21,
+          "cost": 2
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 5,
+          "at": 32,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-C-Metal3-white",
+      "economy": "C",
+      "opponent": "Metal3",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "black",
+      "winType": "elimination",
+      "turns": 21,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 82082,
+      "aiOutcome": "loss",
+      "aiIncome": 287,
+      "enemyIncome": 243,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 21,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 11,
+          "cost": 2
+        },
+        {
+          "id": "start-white-fire_1",
+          "owner": "white",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 2,
+          "at": 1,
+          "cost": 2
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 3,
+          "at": 11,
+          "cost": 6
+        },
+        {
+          "id": "start-white-fire_1",
+          "owner": "white",
+          "from": "fire_2",
+          "to": "fire_3",
+          "turn": 3,
+          "at": 1,
+          "cost": 3
+        },
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_2",
+          "to": "plant_3",
+          "turn": 3,
+          "at": 42,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-A-Metal3-black",
+      "economy": "A",
+      "opponent": "Metal3",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "white",
+      "winType": "upkeep-elimination",
+      "turns": 12,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 44042,
+      "aiOutcome": "loss",
+      "aiIncome": 40,
+      "enemyIncome": 86,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 89,
+          "cost": 3
+        },
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_2",
+          "to": "plant_3",
+          "turn": 3,
+          "at": 98,
+          "cost": 6
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 4,
+          "at": 88,
+          "cost": 2
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 9,
+          "at": 88,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-B-Metal3-black",
+      "economy": "B",
+      "opponent": "Metal3",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "white",
+      "winType": "upkeep-elimination",
+      "turns": 6,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 20012,
+      "aiOutcome": "loss",
+      "aiIncome": 19,
+      "enemyIncome": 47,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 89,
+          "cost": 3
+        },
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_2",
+          "to": "plant_3",
+          "turn": 3,
+          "at": 98,
+          "cost": 6
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 3,
+          "at": 88,
+          "cost": 2
+        },
+        {
+          "id": "start-black-fire_1",
+          "owner": "black",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 4,
+          "at": 23,
+          "cost": 2
+        }
+      ]
+    },
+    {
+      "id": "ai-C-Metal3-black",
+      "economy": "C",
+      "opponent": "Metal3",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "white",
+      "winType": "home-occupation",
+      "turns": 26,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 100077,
+      "aiOutcome": "loss",
+      "aiIncome": 206,
+      "enemyIncome": 249,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 69,
+          "cost": 3
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 88,
+          "cost": 2
+        },
+        {
+          "id": "start-black-fire_1",
+          "owner": "black",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 2,
+          "at": 98,
+          "cost": 2
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 3,
+          "at": 88,
+          "cost": 6
+        },
+        {
+          "id": "start-black-fire_1",
+          "owner": "black",
+          "from": "fire_2",
+          "to": "fire_3",
+          "turn": 3,
+          "at": 98,
+          "cost": 3
+        },
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_2",
+          "to": "plant_3",
+          "turn": 3,
+          "at": 57,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-A-MiningDenial-white",
+      "economy": "A",
+      "opponent": "MiningDenial",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "black",
+      "winType": "home-occupation",
+      "turns": 6,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 22177,
+      "aiOutcome": "loss",
+      "aiIncome": 13,
+      "enemyIncome": 7,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 10,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 5,
+          "at": 11,
+          "cost": 2
+        }
+      ]
+    },
+    {
+      "id": "ai-B-MiningDenial-white",
+      "economy": "B",
+      "opponent": "MiningDenial",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "white",
+      "winType": "home-occupation",
+      "turns": 4,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 12007,
+      "aiOutcome": "win",
+      "aiIncome": 8,
+      "enemyIncome": 11,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 10,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 3,
+          "at": 11,
+          "cost": 2
+        },
+        {
+          "id": "start-white-fire_1",
+          "owner": "white",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 3,
+          "at": 66,
+          "cost": 2
+        }
+      ]
+    },
+    {
+      "id": "ai-C-MiningDenial-white",
+      "economy": "C",
+      "opponent": "MiningDenial",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "white",
+      "winType": "home-occupation",
+      "turns": 11,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 40016,
+      "aiOutcome": "win",
+      "aiIncome": 90,
+      "enemyIncome": 15,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 21,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 11,
+          "cost": 2
+        },
+        {
+          "id": "start-white-fire_1",
+          "owner": "white",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 2,
+          "at": 1,
+          "cost": 2
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 3,
+          "at": 11,
+          "cost": 6
+        },
+        {
+          "id": "start-white-fire_1",
+          "owner": "white",
+          "from": "fire_2",
+          "to": "fire_3",
+          "turn": 3,
+          "at": 1,
+          "cost": 3
+        },
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_2",
+          "to": "plant_3",
+          "turn": 3,
+          "at": 42,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-A-MiningDenial-black",
+      "economy": "A",
+      "opponent": "MiningDenial",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "white",
+      "winType": "upkeep-elimination",
+      "turns": 17,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 64032,
+      "aiOutcome": "loss",
+      "aiIncome": 25,
+      "enemyIncome": 24,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 89,
+          "cost": 3
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 9,
+          "at": 98,
+          "cost": 2
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 10,
+          "at": 77,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-B-MiningDenial-black",
+      "economy": "B",
+      "opponent": "MiningDenial",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "white",
+      "winType": "upkeep-elimination",
+      "turns": 8,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 28016,
+      "aiOutcome": "loss",
+      "aiIncome": 16,
+      "enemyIncome": 9,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 89,
+          "cost": 3
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 4,
+          "at": 99,
+          "cost": 2
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 6,
+          "at": 87,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-C-MiningDenial-black",
+      "economy": "C",
+      "opponent": "MiningDenial",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "black",
+      "winType": "home-occupation",
+      "turns": 10,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 36018,
+      "aiOutcome": "win",
+      "aiIncome": 79,
+      "enemyIncome": 14,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 69,
+          "cost": 3
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 88,
+          "cost": 2
+        },
+        {
+          "id": "start-black-fire_1",
+          "owner": "black",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 2,
+          "at": 98,
+          "cost": 2
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 3,
+          "at": 88,
+          "cost": 6
+        },
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_2",
+          "to": "plant_3",
+          "turn": 3,
+          "at": 68,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-A-Invade:LightningRush-white",
+      "economy": "A",
+      "opponent": "Invade:LightningRush",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "white",
+      "winType": "home-occupation",
+      "turns": 4,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 12011,
+      "aiOutcome": "win",
+      "aiIncome": 6,
+      "enemyIncome": 17,
+      "aiPromotions": [
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 11,
+          "cost": 2
+        }
+      ]
+    },
+    {
+      "id": "ai-B-Invade:LightningRush-white",
+      "economy": "B",
+      "opponent": "Invade:LightningRush",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "white",
+      "winType": "home-occupation",
+      "turns": 4,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 12011,
+      "aiOutcome": "win",
+      "aiIncome": 6,
+      "enemyIncome": 17,
+      "aiPromotions": [
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 11,
+          "cost": 2
+        }
+      ]
+    },
+    {
+      "id": "ai-C-Invade:LightningRush-white",
+      "economy": "C",
+      "opponent": "Invade:LightningRush",
+      "aiSeat": "white",
+      "adapter": true,
+      "winner": "white",
+      "winType": "elimination",
+      "turns": 12,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 47106,
+      "aiOutcome": "win",
+      "aiIncome": 188,
+      "enemyIncome": 15,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 21,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 11,
+          "cost": 2
+        },
+        {
+          "id": "start-white-fire_1",
+          "owner": "white",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 2,
+          "at": 1,
+          "cost": 2
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 4,
+          "at": 1,
+          "cost": 6
+        },
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_2",
+          "to": "plant_3",
+          "turn": 4,
+          "at": 41,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-A-Invade:LightningRush-black",
+      "economy": "A",
+      "opponent": "Invade:LightningRush",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "white",
+      "winType": "upkeep-elimination",
+      "turns": 13,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 48026,
+      "aiOutcome": "loss",
+      "aiIncome": 23,
+      "enemyIncome": 21,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 89,
+          "cost": 3
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 6,
+          "at": 99,
+          "cost": 2
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 7,
+          "at": 78,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-B-Invade:LightningRush-black",
+      "economy": "B",
+      "opponent": "Invade:LightningRush",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "white",
+      "winType": "upkeep-elimination",
+      "turns": 13,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 48031,
+      "aiOutcome": "loss",
+      "aiIncome": 23,
+      "enemyIncome": 21,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 89,
+          "cost": 3
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 6,
+          "at": 99,
+          "cost": 2
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 7,
+          "at": 78,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-C-Invade:LightningRush-black",
+      "economy": "C",
+      "opponent": "Invade:LightningRush",
+      "aiSeat": "black",
+      "adapter": true,
+      "winner": "black",
+      "winType": "elimination",
+      "turns": 14,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 55693,
+      "aiOutcome": "win",
+      "aiIncome": 57,
+      "enemyIncome": 24,
+      "aiPromotions": [
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 2,
+          "at": 88,
+          "cost": 2
+        },
+        {
+          "id": "start-black-fire_1",
+          "owner": "black",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 2,
+          "at": 98,
+          "cost": 2
+        },
+        {
+          "id": "start-black-water_1",
+          "owner": "black",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 4,
+          "at": 66,
+          "cost": 6
+        },
+        {
+          "id": "unit-q-black-11-0",
+          "owner": "black",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 13,
+          "at": 87,
+          "cost": 2
+        },
+        {
+          "id": "unit-q-black-11-0",
+          "owner": "black",
+          "from": "fire_2",
+          "to": "fire_3",
+          "turn": 14,
+          "at": 87,
+          "cost": 3
+        },
+        {
+          "id": "unit-q-black-11-2",
+          "owner": "black",
+          "from": "fire_1",
+          "to": "fire_2",
+          "turn": 14,
+          "at": 79,
+          "cost": 2
+        }
+      ]
+    },
+    {
+      "id": "ai-original-A-Plant3-white",
+      "economy": "A",
+      "opponent": "Plant3",
+      "aiSeat": "white",
+      "adapter": false,
+      "winner": null,
+      "winType": "inactivity",
+      "turns": 33,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 130062,
+      "aiOutcome": "draw",
+      "aiIncome": 78,
+      "enemyIncome": 159,
+      "aiPromotions": [
+        {
+          "id": "start-white-plant_1",
+          "owner": "white",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 10,
+          "cost": 3
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_1",
+          "to": "water_2",
+          "turn": 6,
+          "at": 66,
+          "cost": 2
+        },
+        {
+          "id": "start-white-water_1",
+          "owner": "white",
+          "from": "water_2",
+          "to": "water_3",
+          "turn": 7,
+          "at": 86,
+          "cost": 6
+        }
+      ]
+    },
+    {
+      "id": "ai-original-A-Plant3-black",
+      "economy": "A",
+      "opponent": "Plant3",
+      "aiSeat": "black",
+      "adapter": false,
+      "winner": "black",
+      "winType": "home-occupation",
+      "turns": 4,
+      "cap": false,
+      "invalid": false,
+      "durationMs": 12010,
+      "aiOutcome": "win",
+      "aiIncome": 7,
+      "enemyIncome": 29,
+      "aiPromotions": [
+        {
+          "id": "start-black-plant_1",
+          "owner": "black",
+          "from": "plant_1",
+          "to": "plant_2",
+          "turn": 2,
+          "at": 89,
+          "cost": 3
+        }
+      ]
+    }
+  ]
+}

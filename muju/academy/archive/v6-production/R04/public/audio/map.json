@@ -1,0 +1,82 @@
+{
+  "provider": "openai",
+  "hash": "0e4b1c9c4eb0955a42f3c19cd52fc89764415bdfa102fa82b83efa9d1eadb396",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "New games use this Unequal routes map. Squares start with zero, four, eight, or ten crystals. There are four hundred eighty altogether. The bright home reserves and the middle cluster are real reserves, and empty squares are still roads.",
+  "speechText": "New games use this Unequal routes map. Squares start with zero, four, eight, or ten crystals. There are four hundred eighty altogether. The bright home reserves and the middle cluster are real reserves, and empty squares are still roads.",
+  "duration": 16.55,
+  "bytes": 794444,
+  "createdAt": "2026-09-13T10:38:19.300Z",
+  "captions": [
+    {
+      "text": "New games use this Unequal routes map.",
+      "start": 0,
+      "end": 134
+    },
+    {
+      "text": "Squares start with zero, four, eight, or ten crystals.",
+      "start": 134,
+      "end": 247
+    },
+    {
+      "text": "There are four hundred eighty altogether.",
+      "start": 247,
+      "end": 313
+    },
+    {
+      "text": "The bright home reserves and the middle cluster are real reserves,",
+      "start": 313,
+      "end": 429
+    },
+    {
+      "text": "and empty squares are still roads.",
+      "start": 429,
+      "end": 497
+    }
+  ],
+  "wordFrames": [
+    0,
+    15,
+    40,
+    56,
+    65,
+    80,
+    93,
+    134,
+    139,
+    148,
+    152,
+    172,
+    187,
+    202,
+    204,
+    213,
+    247,
+    251,
+    256,
+    256,
+    256,
+    271,
+    313,
+    319,
+    328,
+    336,
+    347,
+    356,
+    359,
+    365,
+    376,
+    385,
+    394,
+    429,
+    431,
+    441,
+    452,
+    460,
+    469
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "91895497deb714a2ba3b58726c38f05c205671c6131729fa5ed58bdd7cfce2be"
+}

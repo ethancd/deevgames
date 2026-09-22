@@ -1,0 +1,66 @@
+{
+  "provider": "openai",
+  "hash": "5402591871a268b26d367439b4f4f2638a268fe4552afe5ff1c693d70aa09d5c",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Straumr is one shot by Kagari, Aegirinn, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health STROWM-ur is one shot by kah-GAH-ree, AY-gear-in, GURL-geh, kah-rahn-luk, sah-chah-KOO-nah, MAH-zahsk and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "duration": 14.65,
+  "bytes": 703244,
+  "createdAt": "2026-09-13T10:39:10.690Z",
+  "captions": [
+    {
+      "text": "Now the red side.",
+      "start": 0,
+      "end": 43
+    },
+    {
+      "text": "A full health Straumr is one shot by Kagari, Aegirinn, Gölge, Karanlık,",
+      "start": 43,
+      "end": 234
+    },
+    {
+      "text": "Sachakuna, Mazask and Tanka.",
+      "start": 234,
+      "end": 334
+    },
+    {
+      "text": "Every unlit attacker needs help or earlier damage.",
+      "start": 334,
+      "end": 440
+    }
+  ],
+  "wordFrames": [
+    0,
+    7,
+    13,
+    19,
+    43,
+    46,
+    52,
+    61,
+    78,
+    85,
+    93,
+    101,
+    111,
+    148,
+    178,
+    205,
+    234,
+    274,
+    286,
+    299,
+    334,
+    345,
+    356,
+    368,
+    376,
+    386,
+    399,
+    410
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "a30c0c08c5d64e2d32ca83874bfb928f6c79aeb412b80eb57e1a2a4fdb0b87fe"
+}

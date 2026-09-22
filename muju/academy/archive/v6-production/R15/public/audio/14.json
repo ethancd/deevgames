@@ -1,0 +1,11 @@
+{
+  "hash": "2ef53987137b76794326ee5130cb17f0074c1c7ba18c673897cdf8bd5062e289",
+  "model": "gpt-4o-mini-tts",
+  "voice": "coral",
+  "speaker": "PIP",
+  "originalText": "Five. My gardener is a five.",
+  "speechText": "Five. My gardener is a five.",
+  "duration": 3.9,
+  "bytes": 187244,
+  "createdAt": "2026-09-10T15:58:22.043Z"
+}

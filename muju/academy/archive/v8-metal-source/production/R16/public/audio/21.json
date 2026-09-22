@@ -1,0 +1,11 @@
+{
+  "hash": "da3cf59e870527d794f6bc0ed82ed7b233761fbd1e56a92a3181b1049da139ac",
+  "model": "gpt-4o-mini-tts",
+  "voice": "onyx",
+  "speaker": "CLANK",
+  "originalText": "This is the Inyan. Shield of three. Collects up to two crystals a turn. Walks one. That is the Inyan.",
+  "speechText": "This is the In-yahn. Shield of three. Collects up to two crystals a turn. Walks one. That is the In-yahn.",
+  "duration": 8.25,
+  "bytes": 396044,
+  "createdAt": "2026-09-10T15:58:32.224Z"
+}

@@ -1,0 +1,70 @@
+{
+  "provider": "openai",
+  "hash": "b38370225b89db9273893500b40b043dcf880f8f8c1a6e902ec97001edbd6fc4",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Kagari can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the kah-GAH-ree can finish Hee, hohnoh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, Gurl, GURL-geh, kah-rahn-luk, Moo-joo, sah-CHEE-tah, sah-chah-KOO-nah, In-yahn, MAH-zahsk and Tahn-kah. Every unlit card survives that single hit.",
+  "duration": 21.35,
+  "bytes": 1024844,
+  "createdAt": "2026-09-13T10:39:01.622Z",
+  "captions": [
+    {
+      "text": "With one attack, the Kagari can finish Hi, Hono, Kagari, Radi, Umeme,",
+      "start": 0,
+      "end": 205
+    },
+    {
+      "text": "Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna,",
+      "start": 205,
+      "end": 468
+    },
+    {
+      "text": "Inyan, Mazask and Tanka.",
+      "start": 468,
+      "end": 553
+    },
+    {
+      "text": "Every unlit card survives that single hit.",
+      "start": 553,
+      "end": 641
+    }
+  ],
+  "wordFrames": [
+    0,
+    5,
+    16,
+    46,
+    48,
+    65,
+    74,
+    83,
+    108,
+    130,
+    161,
+    182,
+    205,
+    249,
+    266,
+    295,
+    314,
+    344,
+    378,
+    402,
+    431,
+    468,
+    494,
+    514,
+    520,
+    553,
+    563,
+    575,
+    586,
+    604,
+    614,
+    625
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "89d50e61eea5b67af614b63f5be0388c5ffd807acd53232d8a0375df11142461"
+}

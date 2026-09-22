@@ -4,7 +4,7 @@ import type { ErrorRequestHandler } from 'express';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z, ZodError } from 'zod';
 import { RoomStore } from './rooms';
-import { RoomError } from './schema';
+import { RoomError, stageIdSchema, shortInviteSchema } from './schema';
 import { createMcpServer } from './mcp';
 import { historyQuerySchema } from './schema';
 
@@ -38,6 +38,9 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   app.use(express.json({ limit: '64kb' }));
   app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Tanka', protocol: 1 }));
   app.post('/api/muju/rooms', (req, res) => res.status(201).json(store.create(req.body)));
+  app.get('/api/muju/rooms', (_req, res) => res.json({ rooms: store.listActive() }));
+  app.get('/api/muju/rooms/invitations/:code', (req, res) => res.json(store.resolveInvitation(req.params.code)));
+  app.get('/api/muju/rooms/watch/:code', (req, res) => res.json(store.resolveWatch(req.params.code)));
   app.get('/api/muju/rooms/:id', (req, res) => res.json(store.get(req.params.id, req.headers.authorization?.replace(/^Bearer /, ''))));
   app.get('/api/muju/rooms/:id/history', (req, res) => res.json(store.moveHistory(req.params.id, historyQuerySchema.parse(req.query))));
   app.get('/api/muju/rooms/:id/positions/:sequence', (req, res) => {
@@ -65,6 +68,20 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
     const { player } = z.object({ player: z.enum(['white', 'black']) }).strict().parse(req.body);
     res.json(store.restore(req.params.id, auth.slice(7), player));
   });
+  app.get('/api/muju/rooms/:id/stage', (req, res) => {
+    const auth = req.headers.authorization;
+    if (!auth?.startsWith('Bearer ')) throw new RoomError(401, 'SEAT_REQUIRED', 'Send your seat token as Authorization: Bearer <token>.');
+    const { stageId } = z.object({ stageId: stageIdSchema.optional() }).strict().parse(req.query);
+    res.json(store.staged(req.params.id, auth.slice(7), stageId));
+  });
+  for (const operation of ['stage', 'stage/cancel'] as const) {
+    app.post(`/api/muju/rooms/:id/${operation}`, (req, res) => {
+      const auth = req.headers.authorization;
+      if (!auth?.startsWith('Bearer ')) throw new RoomError(401, 'SEAT_REQUIRED', 'Send your seat token as Authorization: Bearer <token>.');
+      res.json(operation === 'stage' ? store.stage(req.params.id, auth.slice(7), req.body)
+        : store.cancelStage(req.params.id, auth.slice(7), req.body));
+    });
+  }
   for (const operation of ['actions', 'preview'] as const) {
     app.post(`/api/muju/rooms/:id/${operation}`, (req, res) => {
       const auth = req.headers.authorization;
@@ -81,6 +98,10 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   });
   app.all('/mcp', (_req, res) => res.status(405).json({ error: 'This stateless MCP endpoint accepts POST requests.' }));
   if (options.distPath) {
+    app.get(['/join/:code', '/watch/:code'], (req, res) => {
+      shortInviteSchema.parse(req.params.code);
+      res.set('Cache-Control', 'no-store').set('X-Robots-Tag', 'noindex, nofollow').sendFile(resolve(options.distPath!, 'index.html'));
+    });
     app.get('/', (_req, res) => res.redirect('/muju/'));
     app.get('/SKILL.md', (_req, res) => res.type('text/markdown').sendFile(resolve(options.distPath!, 'skills/muju-hono-tanka/SKILL.md')));
     app.get('/muju/painter', (_req, res) => res.set('X-Robots-Tag', 'noindex, nofollow').sendFile(resolve(options.distPath!, 'index.html')));
@@ -89,7 +110,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   }
   const onError: ErrorRequestHandler = (error, _req, res, _next) => {
     if (res.headersSent) return;
-    if (error instanceof RoomError) res.status(error.status).json({ code: error.code, error: error.message });
+    if (error instanceof RoomError) res.status(error.status).json({ code: error.code, error: error.message, ...(error.room ? { room: error.room } : {}) });
     else if (error instanceof ZodError) res.status(400).json({ code: 'INVALID_REQUEST', error: 'Invalid request.', issues: error.issues });
     else if (error.status === 413 || error instanceof SyntaxError) res.status(error.status ?? 400).json({ error: 'Invalid or oversized JSON request.' });
     else { console.error('Muju server error:', error instanceof Error ? error.message : 'Unknown error'); res.status(500).json({ error: 'Server could not complete the request.' }); }

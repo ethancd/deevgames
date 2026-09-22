@@ -1,0 +1,115 @@
+{
+  "economy": "A",
+  "values": [
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "n": 20,
+  "pairs": [
+    [
+      "Plant3",
+      "Rush"
+    ],
+    [
+      "Plant3",
+      "MiningDenial"
+    ],
+    [
+      "Plant3",
+      "Aware:AntiRush"
+    ],
+    [
+      "Plant3",
+      "Metal3"
+    ],
+    [
+      "Plant3",
+      "Plant2"
+    ],
+    [
+      "Plant3",
+      "Aware:Balanced"
+    ],
+    [
+      "Plant3",
+      "Invade:LightningRush"
+    ],
+    [
+      "Plant3",
+      "Guard:Turtle"
+    ],
+    [
+      "Plant2",
+      "Rush"
+    ],
+    [
+      "Plant2",
+      "MiningDenial"
+    ],
+    [
+      "Plant2",
+      "Metal3"
+    ],
+    [
+      "Plant2",
+      "Aware:Balanced"
+    ],
+    [
+      "Plant3",
+      "Plant3"
+    ],
+    [
+      "Plant2",
+      "Plant2"
+    ],
+    [
+      "Metal3",
+      "Metal3"
+    ],
+    [
+      "Metal3",
+      "Rush"
+    ],
+    [
+      "Metal3",
+      "MiningDenial"
+    ],
+    [
+      "Plant1",
+      "Plant2"
+    ],
+    [
+      "Plant1",
+      "Plant3"
+    ],
+    [
+      "Mono-plant",
+      "Mono-metal"
+    ],
+    [
+      "InvestT3",
+      "HomeT3"
+    ],
+    [
+      "Invade:Balanced",
+      "Aware:Balanced"
+    ],
+    [
+      "Rush",
+      "AntiRush"
+    ],
+    [
+      "LightningRush",
+      "Expand"
+    ]
+  ],
+  "seedBase": 9092026,
+  "maxTurns": 120,
+  "maxPlies": 8000,
+  "sourceHash": "35439512052f177d2de6b32caef4eeea610f9b593a3117a2b99ff4f87ce6b26c",
+  "policyHash": "a8228ed79a4e19d40adb4092e13a348cff5bbf3533aeae9cff35bc114388a173",
+  "started": "2026-09-09T04:26:55.873Z"
+}

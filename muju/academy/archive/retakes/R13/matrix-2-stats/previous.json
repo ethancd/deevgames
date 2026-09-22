@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "dd8dfa513fcbb7509a5a7ea7d5058b4249947735f66629ba6001201f7d1923f0",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier two: the Straumr. Attack two, defense three, speed one, and Mining two. Look at the green side first.",
+  "speechText": "Tier two: the STROWM-ur. Attack two, defense three, speed one, and Mining two. Look at the green side first.",
+  "duration": 6.35,
+  "bytes": 304844,
+  "createdAt": "2026-09-13T10:39:07.731Z"
+}

@@ -1,0 +1,87 @@
+{
+  "text": "Tier 2. The Mazask. Attack 1, Defense 4, Speed 1, and Mining 4.",
+  "words": [
+    {
+      "word": "Tier",
+      "start": 0.0,
+      "end": 0.22,
+      "probability": 0.7788786292076111
+    },
+    {
+      "word": "2.",
+      "start": 0.22,
+      "end": 0.68,
+      "probability": 0.7123087644577026
+    },
+    {
+      "word": "The",
+      "start": 1.18,
+      "end": 1.22,
+      "probability": 0.9614608883857727
+    },
+    {
+      "word": "Mazask.",
+      "start": 1.22,
+      "end": 1.88,
+      "probability": 0.3154079606756568
+    },
+    {
+      "word": "Attack",
+      "start": 2.36,
+      "end": 2.78,
+      "probability": 0.8866443634033203
+    },
+    {
+      "word": "1,",
+      "start": 2.78,
+      "end": 3.14,
+      "probability": 0.892276406288147
+    },
+    {
+      "word": "Defense",
+      "start": 3.56,
+      "end": 3.78,
+      "probability": 0.942170262336731
+    },
+    {
+      "word": "4,",
+      "start": 3.78,
+      "end": 4.2,
+      "probability": 0.994419515132904
+    },
+    {
+      "word": "Speed",
+      "start": 4.6,
+      "end": 4.84,
+      "probability": 0.9858304858207703
+    },
+    {
+      "word": "1,",
+      "start": 4.84,
+      "end": 5.18,
+      "probability": 0.993191659450531
+    },
+    {
+      "word": "and",
+      "start": 5.64,
+      "end": 5.7,
+      "probability": 0.9836979508399963
+    },
+    {
+      "word": "Mining",
+      "start": 5.7,
+      "end": 5.94,
+      "probability": 0.9903558492660522
+    },
+    {
+      "word": "4.",
+      "start": 5.94,
+      "end": 6.32,
+      "probability": 0.9952066540718079
+    }
+  ],
+  "audioSha256": "fc523b3a2e4e343adde8630f9dd2f972ac7055393c6db1cc6f1e65dff67d814b",
+  "sourceText": "Tier two: the Mazask. Attack one, defense four, speed one, and Mining four. Look at the green side first.",
+  "model": "faster-whisper small.en int8, local only",
+  "duration": 6.5
+}

@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "dee503fe15b298a1537eceb4c3e36d853d5b1121ba93159753032e7f0f045102",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier three: the Tanka. Attack two, defense five, speed two, and Mining five. Look at the green side first.",
+  "speechText": "Tier three: the Tahn-kah. Attack two, defense five, speed two, and Mining five. Look at the green side first.",
+  "duration": 9.15,
+  "bytes": 439244,
+  "createdAt": "2026-09-18T17:15:02.404Z"
+}

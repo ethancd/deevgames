@@ -1,0 +1,58 @@
+{
+  "provider": "openai",
+  "hash": "3231802fc1e527a7508a15fad553a908137d882dd8252fea811d40e78ca2cd1e",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Mazask can finish Hi, Hono, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the MAH-zahsk can finish Hee, hohnoh, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, Gurl, GURL-geh and kah-rahn-luk. Every unlit card survives that single hit.",
+  "duration": 15.85,
+  "bytes": 760844,
+  "createdAt": "2026-09-13T10:39:33.960Z",
+  "captions": [
+    {
+      "text": "With one attack, the Mazask can finish Hi, Hono, Radi, Umeme, Kimubunga,",
+      "start": 0,
+      "end": 242
+    },
+    {
+      "text": "Sjor, Straumr, Göl, Gölge and Karanlık.",
+      "start": 242,
+      "end": 383
+    },
+    {
+      "text": "Every unlit card survives that single hit.",
+      "start": 383,
+      "end": 476
+    }
+  ],
+  "wordFrames": [
+    0,
+    4,
+    12,
+    40,
+    41,
+    62,
+    76,
+    88,
+    118,
+    148,
+    171,
+    200,
+    242,
+    263,
+    296,
+    313,
+    339,
+    347,
+    383,
+    394,
+    406,
+    416,
+    436,
+    446,
+    455
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "9c1edaa63bbdbfeb077152e6c9269870916ad6a130498c6faa10e28f45cb405f"
+}

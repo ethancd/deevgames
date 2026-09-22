@@ -1,0 +1,79 @@
+{
+  "provider": "openai",
+  "hash": "13c61c568b30f6e3b88010b69761b7b6e78c15dc84a1673201f76ef15b970b69",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Hono is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health hohnoh is one shot by Hee, hohnoh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-chah-KOO-nah, MAH-zahsk and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "duration": 21.4,
+  "bytes": 1027244,
+  "createdAt": "2026-09-13T10:38:57.606Z",
+  "captions": [
+    {
+      "text": "Now the red side.",
+      "start": 0,
+      "end": 52
+    },
+    {
+      "text": "A full health Hono is one shot by Hi, Hono, Kagari, Radi,",
+      "start": 52,
+      "end": 235
+    },
+    {
+      "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+      "start": 235,
+      "end": 455
+    },
+    {
+      "text": "Sachakuna, Mazask and Tanka.",
+      "start": 455,
+      "end": 547
+    },
+    {
+      "text": "Every unlit attacker needs help or earlier damage.",
+      "start": 547,
+      "end": 642
+    }
+  ],
+  "wordFrames": [
+    0,
+    10,
+    16,
+    22,
+    52,
+    55,
+    62,
+    72,
+    87,
+    96,
+    105,
+    115,
+    133,
+    157,
+    182,
+    212,
+    235,
+    262,
+    301,
+    322,
+    353,
+    378,
+    396,
+    427,
+    455,
+    489,
+    509,
+    515,
+    547,
+    556,
+    566,
+    577,
+    585,
+    595,
+    609,
+    619
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "b3c62297eaa5e49585e9592623f7b3f8e4fe60be55e086027052e04e27c9cb7f"
+}

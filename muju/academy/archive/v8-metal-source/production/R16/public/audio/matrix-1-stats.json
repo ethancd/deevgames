@@ -1,0 +1,52 @@
+{
+  "provider": "openai",
+  "hash": "ad1ef2aa178677f6965400c203d3470e106a36bb92d8b177388c4e4e7b233ca5",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier one: the Inyan. Attack one, defense three, speed one, and Mining two. Look at the green side first.",
+  "speechText": "Tier one: the In-yahn. Attack one, defense three, speed one, and Mining two. Look at the green side first.",
+  "duration": 9.75,
+  "bytes": 468044,
+  "createdAt": "2026-09-13T10:39:28.115Z",
+  "captions": [
+    {
+      "text": "Tier one: the Inyan.",
+      "start": 0,
+      "end": 76
+    },
+    {
+      "text": "Attack one, defense three, speed one, and Mining two.",
+      "start": 76,
+      "end": 229
+    },
+    {
+      "text": "Look at the green side first.",
+      "start": 229,
+      "end": 293
+    }
+  ],
+  "wordFrames": [
+    0,
+    8,
+    39,
+    45,
+    76,
+    84,
+    107,
+    114,
+    143,
+    149,
+    175,
+    178,
+    190,
+    229,
+    232,
+    236,
+    241,
+    250,
+    262
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "c8bad6998feb944e12a6c442070ebaf6fa92981457f514562cb48f4ff908f2fd"
+}

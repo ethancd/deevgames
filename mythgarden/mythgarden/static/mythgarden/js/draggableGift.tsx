@@ -20,7 +20,7 @@ export default function DraggableGift ({ giftData, giftActionPill, left = 0, top
 
   return (
     <div
-      className="draggable-gift"
+      className={`draggable-gift${isDragging ? ' is-dragging' : ''}`}
       ref={dragRef}
       style={{ position: 'relative', left, top }}
     >

@@ -1,0 +1,256 @@
+{
+  "provider": "ElevenLabs",
+  "accepted_auditions": {
+    "metal": {
+      "label": "10A",
+      "title": "Tanka / Weight Without Hurry",
+      "variant": "Held weight",
+      "job": "tanka-pressure-elevenlabs-take-1",
+      "round": 4,
+      "audio_file": "muju/music-auditions/round-4/tanka-pressure-elevenlabs-take-1.mp3",
+      "sha256": "0d8ad3968201bc8e9c6e8ca7e582ce6c4cf0516656bda70fd2b5e9e964508600",
+      "status": "User accepted this audition; full-length development and loop editing remain separate.",
+      "source": "User: 10a is good enough, I'm picky on the others, next round!"
+    },
+    "lightning": {
+      "label": "19D",
+      "title": "Umeme / Held Charge",
+      "variant": "19A branch · no woodwinds",
+      "job": "umeme-held-charge-elevenlabs-take-4",
+      "round": 7,
+      "audio_file": "muju/music-auditions/round-7/umeme-held-charge-elevenlabs-take-4.mp3",
+      "sha256": "e7eff8049776e096dc10dcdbd6b81492a62f77d83c00435b959dad797162e419",
+      "status": "Explicitly accepted as the Electricity theme.",
+      "source": "User: I think 19D cracks it. Lets use that for the electricity theme! And put that into 3:30"
+    }
+  },
+  "current_reference_takes": {
+    "hono-koto": {
+      "label": "14A",
+      "audio_file": "muju/music-auditions/round-6/hono-koto-elevenlabs-take-1.mp3",
+      "sha256": "a3267e7c343235253ae88099e2b0f3ec5d1626c5c5d8787fe9ccd2d1229f8fb1",
+      "round": 6,
+      "status": "Favorite marked in listening page; current preferred audition",
+      "notes": "Fire is all good, this one is a good choice",
+      "feedback_file": "SOUNDTRACK_ROUND_6_FEEDBACK-2026-09-12.json"
+    },
+    "muju-charango": {
+      "label": "15A",
+      "audio_file": "muju/music-auditions/round-6/muju-charango-elevenlabs-take-1.mp3",
+      "sha256": "de26dd84242c1ff1fcebf07f509c47f967d08c78762764d55a95e832caca99a4",
+      "round": 6,
+      "status": "Favorite marked in listening page; current preferred audition",
+      "notes": "",
+      "feedback_file": "SOUNDTRACK_ROUND_6_FEEDBACK-2026-09-12.json"
+    },
+    "golge-baglama": {
+      "label": "16A",
+      "audio_file": "muju/music-auditions/round-6/golge-baglama-elevenlabs-take-1.mp3",
+      "sha256": "1a8f0e04821c0f0ba3ed1b0e6228bc413664d507a9519a421b7ba61ea74e9978",
+      "round": 6,
+      "status": "Favorite marked in listening page; current preferred audition",
+      "notes": "The shadowy woodwind in the middle is awesome.",
+      "feedback_file": "SOUNDTRACK_ROUND_6_FEEDBACK-2026-09-12.json"
+    },
+    "tanka-flute": {
+      "label": "17A",
+      "audio_file": "muju/music-auditions/round-6/tanka-flute-elevenlabs-take-1.mp3",
+      "sha256": "1358494bef7202f013c7f523e7fb7daaf8e710a2c2c295264cda1b24bdca026f",
+      "round": 6,
+      "status": "Favorite marked in listening page; current preferred audition",
+      "notes": "",
+      "feedback_file": "SOUNDTRACK_ROUND_6_FEEDBACK-2026-09-12.json"
+    },
+    "straumr-hardanger": {
+      "label": "18A",
+      "audio_file": "muju/music-auditions/round-6/straumr-hardanger-elevenlabs-take-1.mp3",
+      "sha256": "8923502c592c54a3b13e154a7983ebc824e8dfc685325d4384180b016bbbe4f1",
+      "round": 6,
+      "status": "Favorite marked in listening page; current preferred audition",
+      "notes": "",
+      "feedback_file": "SOUNDTRACK_ROUND_6_FEEDBACK-2026-09-12.json"
+    },
+    "umeme-held-charge": {
+      "label": "19D",
+      "title": "Umeme / Held Charge",
+      "variant": "19A branch · no woodwinds",
+      "job": "umeme-held-charge-elevenlabs-take-4",
+      "round": 7,
+      "audio_file": "muju/music-auditions/round-7/umeme-held-charge-elevenlabs-take-4.mp3",
+      "sha256": "e7eff8049776e096dc10dcdbd6b81492a62f77d83c00435b959dad797162e419",
+      "status": "Explicitly accepted as the Electricity theme.",
+      "source": "User: I think 19D cracks it. Lets use that for the electricity theme! And put that into 3:30"
+    },
+    "open-room": {
+      "label": "03C",
+      "round": 2,
+      "audio_file": "muju/music-auditions/round-2/open-room-elevenlabs-take-3.mp3",
+      "sha256": "1bc05c85dc1113b2d21785a16f49376243ba5257b1ad517a6f5da7f9b4ede6d0",
+      "status": "Favorite from the round-two feedback; full version created."
+    },
+    "unequal-routes": {
+      "label": "04C",
+      "round": 2,
+      "audio_file": "muju/music-auditions/round-2/unequal-routes-elevenlabs-take-3.mp3",
+      "sha256": "122eaa93d87d3168b2a2e146449b1f3c079266c97acb6ffcb1f0e4d4c9ca39b8",
+      "status": "Favorite from the round-two feedback; full version created."
+    },
+    "before-dawn": {
+      "label": "05B",
+      "round": 2,
+      "audio_file": "muju/music-auditions/round-2/before-dawn-elevenlabs-take-2.mp3",
+      "sha256": "4b62ac0757f85f92173ee0f77b4ae93aeb98f4acbc32a94a2d1d63e3112f10ec",
+      "status": "Favorite from the round-two feedback; full version created."
+    }
+  },
+  "lightning_status": "19D accepted; its 3:30 full version is complete and the composition joins passed focused continuity checks.",
+  "reference_history": [
+    {
+      "date": "2026-09-12",
+      "reason": "References used for round-six cultural accents",
+      "takes": {
+        "hono-koto": {
+          "label": "E",
+          "audio_file": "muju/music-auditions/round-1/hono-lantern-elevenlabs-take-1.mp3",
+          "sha256": "23f884a433f92a37b9060bc2db25e4a32dc7008e095c1809e72ef67cb198b93f",
+          "round": 1,
+          "status": "Liked in notes; E chosen as reference, C also liked"
+        },
+        "muju-charango": {
+          "label": "01A",
+          "audio_file": "muju/music-auditions/round-2/muju-field-elevenlabs-take-1.mp3",
+          "sha256": "dbd9762a14b259cdf261447810e7a52daaf92e82dfb6fb0aaff984f2761a21c6",
+          "round": 2,
+          "status": "Favorite marked in listening page"
+        },
+        "golge-baglama": {
+          "label": "02A",
+          "audio_file": "muju/music-auditions/round-2/golge-square-elevenlabs-take-1.mp3",
+          "sha256": "242673e6e0eecd732b2c85ad1eb77f551d54023b4e3c77aa12ff2b3eb2644795",
+          "round": 2,
+          "status": "Favorite marked in listening page"
+        },
+        "tanka-flute": {
+          "label": "10A",
+          "audio_file": "muju/music-auditions/round-4/tanka-pressure-elevenlabs-take-1.mp3",
+          "sha256": "0d8ad3968201bc8e9c6e8ca7e582ce6c4cf0516656bda70fd2b5e9e964508600",
+          "round": 4,
+          "status": "Explicitly accepted audition"
+        },
+        "straumr-hardanger": {
+          "label": "13B",
+          "audio_file": "muju/music-auditions/round-5/straumr-arco-elevenlabs-take-2.mp3",
+          "sha256": "a7b902059a1d5a7d95c5560238d4e85f2fdc35bdc3bd3afdf5d17df0f782a3d6",
+          "round": 5,
+          "status": "Favorite marked in listening page"
+        }
+      }
+    }
+  ],
+  "full_versions": {
+    "golge-baglama": {
+      "source_label": "16A",
+      "title": "Gölge / One Square Out of Sight",
+      "audio_file": "muju/music-auditions/full-versions/golge-baglama-full-v2-blended.mp3",
+      "sha256": "2c4e05bc362d1abf7014321d8f86e5f34756ff908c960b24bceb553f9c7c48dc",
+      "duration_seconds": 201.43020408163267,
+      "status": "Current full mix. All composition joins checked at 100 ms resolution; user listening review remains applicable."
+    },
+    "hono-koto": {
+      "source_label": "14A",
+      "title": "Hono / Banked Fire",
+      "audio_file": "muju/music-auditions/full-versions/hono-koto-full-v2-blended.mp3",
+      "sha256": "8681f8c0f31e8147e72ec99ed68d245d7e533124bb8ddf44406a70d65c7f7651",
+      "duration_seconds": 197.59020408163266,
+      "status": "Current full mix. All composition joins checked at 100 ms resolution; user listening review remains applicable."
+    },
+    "muju-charango": {
+      "source_label": "15A",
+      "title": "Muju / A Field of Small Decisions",
+      "audio_file": "muju/music-auditions/full-versions/muju-charango-full-v2-blended.mp3",
+      "sha256": "8c25a1b64577b2bc755093f33c92bbf74cbb12a9c17a6a96eb752c80416825e5",
+      "duration_seconds": 193.9330612244898,
+      "status": "Current full mix. All composition joins checked at 100 ms resolution; user listening review remains applicable."
+    },
+    "straumr-hardanger": {
+      "source_label": "18A",
+      "title": "Straumr / Under the Current",
+      "audio_file": "muju/music-auditions/full-versions/straumr-hardanger-full-v2-blended.mp3",
+      "sha256": "878d93e0b9474694a566ae3110225c1e78a565ca672e8fdeb074d67af24e5f0b",
+      "duration_seconds": 200.88163265306122,
+      "status": "Current full mix. All composition joins checked at 100 ms resolution; user listening review remains applicable."
+    },
+    "tanka-flute": {
+      "source_label": "17A",
+      "title": "Tanka / Weight Without Hurry",
+      "audio_file": "muju/music-auditions/full-versions/tanka-flute-full-v3-low-mid.mp3",
+      "sha256": "94b0c4739e3f301ef7ac06d55505819fdf521c8f052cfd61d30336383799f8b6",
+      "duration_seconds": 198.0081632653061,
+      "status": "Current v3 middle-passage revision targets low-medium intensity at 1:59–2:28. Technical checks passed; user listening review pending."
+    },
+    "umeme-held-charge": {
+      "source_label": "19D",
+      "title": "Umeme / Held Charge",
+      "audio_file": "muju/music-auditions/full-versions/umeme-held-charge-full-v1.mp3",
+      "sha256": "ce2a37c87e38f5b8af6b40a0666f3a42ad03079838d5939cb39713961050773e",
+      "duration_seconds": 210.0,
+      "status": "Current full mix. All composition joins checked at 100 ms resolution; user listening review remains applicable."
+    },
+    "open-room": {
+      "source_label": "03C",
+      "title": "Open Room, Lantern On",
+      "audio_file": "muju/music-auditions/full-versions/open-room-full-v1.mp3",
+      "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42",
+      "duration_seconds": 210,
+      "status": "Full version complete; all composition joins checked at 100 ms resolution."
+    },
+    "unequal-routes": {
+      "source_label": "04C",
+      "title": "Unequal Routes",
+      "audio_file": "muju/music-auditions/full-versions/unequal-routes-full-v1.mp3",
+      "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7",
+      "duration_seconds": 210,
+      "status": "Full version complete; all composition joins checked at 100 ms resolution."
+    },
+    "before-dawn": {
+      "source_label": "05B",
+      "title": "Another Game Before Dawn",
+      "audio_file": "muju/music-auditions/full-versions/before-dawn-full-v1.mp3",
+      "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709",
+      "duration_seconds": 210,
+      "status": "Full version complete; all composition joins checked at 100 ms resolution."
+    }
+  },
+  "non_element_full_versions": {
+    "favorites": [
+      "03C",
+      "04C",
+      "05B"
+    ],
+    "status": "All three uploaded and extended after explicit approval. Completed 3:30 versions added to the playlist."
+  },
+  "playlist": {
+    "url": "http://127.0.0.1:8766/playlist/",
+    "tracks": 9,
+    "total_seconds": 1832,
+    "repeat_modes": [
+      "track",
+      "disc"
+    ],
+    "default_repeat": "disc"
+  },
+  "full_mix_revision_history": [
+    {
+      "id": "tanka-flute",
+      "superseded": {
+        "source_label": "17A",
+        "title": "Tanka / Weight Without Hurry",
+        "audio_file": "muju/music-auditions/full-versions/tanka-flute-full-v2-blended.mp3",
+        "sha256": "952efac275c4eb42e017e6167d5a5aceb16b100144efbd586245bf2c843610f6",
+        "duration_seconds": 198.0081632653061,
+        "status": "Current full mix. All composition joins checked at 100 ms resolution; user listening review remains applicable."
+      },
+      "reason": "Tanka 1:59–2:28 returns to extremely low opening energy; should dip only to low-mid."
+    }
+  ]
+}

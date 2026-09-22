@@ -1,0 +1,398 @@
+{
+  "B": {
+    "roundsDelta": 0.14583333333333334,
+    "totalIncomeDelta": 4.026041666666667,
+    "pairings": [
+      {
+        "cell": 0,
+        "deltaNaturalWinRateA": -0.075,
+        "seedBootstrap95": [
+          -0.2,
+          0
+        ]
+      },
+      {
+        "cell": 1,
+        "deltaNaturalWinRateA": -0.05,
+        "seedBootstrap95": [
+          -0.275,
+          0.175
+        ]
+      },
+      {
+        "cell": 2,
+        "deltaNaturalWinRateA": -0.075,
+        "seedBootstrap95": [
+          -0.175,
+          0.025
+        ]
+      },
+      {
+        "cell": 3,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 4,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 5,
+        "deltaNaturalWinRateA": -0.075,
+        "seedBootstrap95": [
+          -0.225,
+          0.075
+        ]
+      },
+      {
+        "cell": 6,
+        "deltaNaturalWinRateA": 0.0,
+        "seedBootstrap95": [
+          -0.1,
+          0.1
+        ]
+      },
+      {
+        "cell": 7,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 8,
+        "deltaNaturalWinRateA": 0.025,
+        "seedBootstrap95": [
+          -0.1,
+          0.15
+        ]
+      },
+      {
+        "cell": 9,
+        "deltaNaturalWinRateA": -0.075,
+        "seedBootstrap95": [
+          -0.3,
+          0.175
+        ]
+      },
+      {
+        "cell": 10,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 11,
+        "deltaNaturalWinRateA": 0.0,
+        "seedBootstrap95": [
+          -0.1,
+          0.1
+        ]
+      },
+      {
+        "cell": 12,
+        "deltaNaturalWinRateA": 0.025,
+        "seedBootstrap95": [
+          0,
+          0.075
+        ]
+      },
+      {
+        "cell": 13,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 14,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 15,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 16,
+        "deltaNaturalWinRateA": -0.1,
+        "seedBootstrap95": [
+          -0.275,
+          0.1
+        ]
+      },
+      {
+        "cell": 17,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 18,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 19,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 20,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 21,
+        "deltaNaturalWinRateA": 0.075,
+        "seedBootstrap95": [
+          -0.075,
+          0.225
+        ]
+      },
+      {
+        "cell": 22,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 23,
+        "deltaNaturalWinRateA": 0.05,
+        "seedBootstrap95": [
+          -0.05,
+          0.15
+        ]
+      }
+    ]
+  },
+  "C": {
+    "roundsDelta": -0.48125,
+    "totalIncomeDelta": 143.58645833333333,
+    "pairings": [
+      {
+        "cell": 0,
+        "deltaNaturalWinRateA": -0.325,
+        "seedBootstrap95": [
+          -0.475,
+          -0.175
+        ]
+      },
+      {
+        "cell": 1,
+        "deltaNaturalWinRateA": -0.225,
+        "seedBootstrap95": [
+          -0.4,
+          -0.05
+        ]
+      },
+      {
+        "cell": 2,
+        "deltaNaturalWinRateA": -0.175,
+        "seedBootstrap95": [
+          -0.275,
+          -0.075
+        ]
+      },
+      {
+        "cell": 3,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 4,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 5,
+        "deltaNaturalWinRateA": -0.125,
+        "seedBootstrap95": [
+          -0.25,
+          -0.025
+        ]
+      },
+      {
+        "cell": 6,
+        "deltaNaturalWinRateA": -0.325,
+        "seedBootstrap95": [
+          -0.475,
+          -0.175
+        ]
+      },
+      {
+        "cell": 7,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 8,
+        "deltaNaturalWinRateA": -0.25,
+        "seedBootstrap95": [
+          -0.4,
+          -0.1
+        ]
+      },
+      {
+        "cell": 9,
+        "deltaNaturalWinRateA": -0.35,
+        "seedBootstrap95": [
+          -0.55,
+          -0.15
+        ]
+      },
+      {
+        "cell": 10,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 11,
+        "deltaNaturalWinRateA": -0.075,
+        "seedBootstrap95": [
+          -0.15,
+          0
+        ]
+      },
+      {
+        "cell": 12,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 13,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 14,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 15,
+        "deltaNaturalWinRateA": -0.4,
+        "seedBootstrap95": [
+          -0.575,
+          -0.25
+        ]
+      },
+      {
+        "cell": 16,
+        "deltaNaturalWinRateA": -0.525,
+        "seedBootstrap95": [
+          -0.7,
+          -0.35
+        ]
+      },
+      {
+        "cell": 17,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 18,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 19,
+        "deltaNaturalWinRateA": 0,
+        "seedBootstrap95": [
+          0,
+          0
+        ]
+      },
+      {
+        "cell": 20,
+        "deltaNaturalWinRateA": -0.05,
+        "seedBootstrap95": [
+          -0.125,
+          0
+        ]
+      },
+      {
+        "cell": 21,
+        "deltaNaturalWinRateA": 0.125,
+        "seedBootstrap95": [
+          -0.125,
+          0.375
+        ]
+      },
+      {
+        "cell": 22,
+        "deltaNaturalWinRateA": -0.35,
+        "seedBootstrap95": [
+          -0.525,
+          -0.175
+        ]
+      },
+      {
+        "cell": 23,
+        "deltaNaturalWinRateA": -0.125,
+        "seedBootstrap95": [
+          -0.25,
+          0.0
+        ]
+      }
+    ]
+  }
+}

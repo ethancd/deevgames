@@ -6,3 +6,5 @@ node_modules/
 .coverage
 /static/
 /.sass-cache/
+!/package-lock.json
+/*.sqlite3

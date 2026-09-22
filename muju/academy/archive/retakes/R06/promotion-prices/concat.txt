@@ -1,0 +1,4 @@
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R06/promotion-prices/sentence-1.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R06/promotion-prices/sentence-2.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R06/promotion-prices/sentence-3.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R06/promotion-prices/sentence-4.wav'

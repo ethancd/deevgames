@@ -1,0 +1,14 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Yan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health Shore is one shot by hoh-noh, kah-gah-ree, kee-moo-boon-gah, Shore, strowm-ur, ay-gear-in, Gurl, gurl-geh, kah-rahn-luk, sah-chee-tah, sah-chah-koo-nah, Yahn, mah-zahsk, and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "hash": "b58f516e86ae27644db034468ba8e964f0814046fbe426f76350357f7ceef0cc",
+  "duration": 22.5,
+  "bytes": 1080078,
+  "retakeMethod": "sentence-by-sentence-v1",
+  "retakeReason": "Metal v8: unresolved local ASR differences: [{\"kind\": \"delete\", \"expected\": \"and\", \"heard\": \"\"}]",
+  "createdAt": "2026-09-18T17:25:41.314Z"
+}

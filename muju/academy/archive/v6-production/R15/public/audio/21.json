@@ -1,0 +1,11 @@
+{
+  "hash": "d689a0c69ee9b67fcacb4670d69648f6b197a3d8793da75fc1a71f6de3dfa7ca",
+  "model": "gpt-4o-mini-tts",
+  "voice": "cedar",
+  "speaker": "CLICK",
+  "originalText": "This is the Sachakuna. Many growing things. Shield of four. Takes five crystals.",
+  "speechText": "This is the sah-chah-KOO-nah. Many growing things. Shield of four. Takes five crystals.",
+  "duration": 6.05,
+  "bytes": 290444,
+  "createdAt": "2026-09-10T15:58:26.180Z"
+}

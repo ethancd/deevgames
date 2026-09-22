@@ -1,0 +1,79 @@
+{
+  "provider": "openai",
+  "hash": "9b1e39d8af7b7373da2739c519d9ce66679e61e8615f13574c5b74d41a7d7c75",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Umeme is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health oo-MEH-meh is one shot by Hee, HOH-noh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-chah-KOO-nah, MAH-zahsk and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "duration": 21.25,
+  "bytes": 1020044,
+  "createdAt": "2026-09-13T10:38:53.213Z",
+  "captions": [
+    {
+      "text": "Now the red side.",
+      "start": 0,
+      "end": 58
+    },
+    {
+      "text": "A full health Umeme is one shot by Hi, Hono, Kagari, Radi,",
+      "start": 58,
+      "end": 235
+    },
+    {
+      "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+      "start": 235,
+      "end": 450
+    },
+    {
+      "text": "Sachakuna, Mazask and Tanka.",
+      "start": 450,
+      "end": 529
+    },
+    {
+      "text": "Every unlit attacker needs help or earlier damage.",
+      "start": 529,
+      "end": 638
+    }
+  ],
+  "wordFrames": [
+    0,
+    18,
+    20,
+    27,
+    58,
+    60,
+    70,
+    82,
+    101,
+    117,
+    128,
+    136,
+    144,
+    163,
+    189,
+    216,
+    235,
+    268,
+    302,
+    322,
+    344,
+    373,
+    388,
+    417,
+    450,
+    484,
+    509,
+    512,
+    529,
+    551,
+    562,
+    571,
+    580,
+    589,
+    602,
+    613
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "bb0668909f4eaa81de02f2ffec67cacf767f7a622524c7e1e66123c128f6ede6"
+}

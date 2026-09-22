@@ -1,3 +1,7 @@
+---
+name: ux-affordances
+description: Translates game rules and actions into concrete UI/UX affordances. Use when designing or reviewing game specs for the UI layer.
+---
 # UX Affordances Skill
 
 Translates game rules and actions into concrete UI/UX affordances. Use this skill when designing or reviewing game specifications to ensure every game action has a corresponding player interaction pattern.

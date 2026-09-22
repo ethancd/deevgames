@@ -1,0 +1,14 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "You may move between attacks at the normal cost. If a target survives, even with zero damage, that piece cannot attack again this turn. Another teammate killing the target does not reopen its chain.",
+  "speechText": "You may move between attacks at the normal cost. If a target survives, even with zero damage, that piece cannot attack again this turn. Another teammate killing the target does not reopen its chain.",
+  "hash": "e11ec1237a12c89f3e442800562c44d1a1a74d7226a5af696df7ec42d1329e37",
+  "duration": 15.6,
+  "bytes": 748878,
+  "retakeMethod": "sentence-by-sentence-v1",
+  "retakeReason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences.",
+  "createdAt": "2026-09-13T10:50:52.820Z"
+}

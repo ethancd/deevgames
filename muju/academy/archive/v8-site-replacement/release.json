@@ -1,0 +1,899 @@
+{
+  "release": "v7-expansion-economy",
+  "date": "2026-09-13",
+  "scope": "Ten rules lessons and six element lessons",
+  "economy": {
+    "homeReserve": 8,
+    "expansionReserve": 16,
+    "mapTotal": 504,
+    "plantMining": [
+      3,
+      5,
+      8
+    ]
+  },
+  "retiredEpisodes": [
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27
+  ],
+  "retiredStrategyAssets": [
+    "episode-17.870089656cee.mp4",
+    "episode-17.4ab0dba48e97.jpg",
+    "episode-17-transcript.d57f21509576.txt",
+    "episode-18.7d6aae80c81f.mp4",
+    "episode-18.4bf529e5a700.jpg",
+    "episode-18-transcript.3cff8b468ded.txt",
+    "episode-19.675930193870.mp4",
+    "episode-19.e693b9fd7f51.jpg",
+    "episode-19-transcript.4402239cafad.txt",
+    "episode-20.c35f7a5b2e04.mp4",
+    "episode-20.7940c515ed70.jpg",
+    "episode-20-transcript.57e90d7148fb.txt",
+    "episode-21.d3002a83b876.mp4",
+    "episode-21.52fc99cc0f43.jpg",
+    "episode-21-transcript.6d4ee3a4cea7.txt",
+    "episode-22.199af2df0291.mp4",
+    "episode-22.d8ef04edfc48.jpg",
+    "episode-22-transcript.9f2a292d00d9.txt",
+    "episode-23.99d230021483.mp4",
+    "episode-23.cc0aa6186995.jpg",
+    "episode-23-transcript.2ae29568604d.txt",
+    "episode-24.46e65479cfa6.mp4",
+    "episode-24.22b55f233d5c.jpg",
+    "episode-24-transcript.4ad0bb1338e9.txt",
+    "episode-25.f49e01c81781.mp4",
+    "episode-25.a5a255211a96.jpg",
+    "episode-25-transcript.6cf8f1a102c0.txt",
+    "episode-26.5ad7a478420c.mp4",
+    "episode-26.065d61a340ce.jpg",
+    "episode-26-transcript.e655172462ca.txt",
+    "episode-27.c15b3b619dc3.mp4",
+    "episode-27.82bdcd69f033.jpg",
+    "episode-27-transcript.2db5e4d8866b.txt"
+  ],
+  "replacedAssets": [
+    {
+      "from": "/muju-academy/episode-01-transcript.5ceaf073d299.txt",
+      "to": "/muju-academy/episode-01-transcript.a820a099e9d8.txt"
+    },
+    {
+      "from": "/muju-academy/episode-01-transcript.ebaf1a03a483.txt",
+      "to": "/muju-academy/episode-01-transcript.a820a099e9d8.txt"
+    },
+    {
+      "from": "/muju-academy/episode-01.061591d48106.mp4",
+      "to": "/muju-academy/episode-01.2fec36aff6dc.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-01.5f6f52ed4b87.mp4",
+      "to": "/muju-academy/episode-01.2fec36aff6dc.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-01.993508a06dd0.jpg",
+      "to": "/muju-academy/episode-01.c8cfb14c6ce1.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-01.b1347b5a0527.jpg",
+      "to": "/muju-academy/episode-01.c8cfb14c6ce1.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-02-transcript.1e5a425ce3ca.txt",
+      "to": "/muju-academy/episode-02-transcript.14ef4c72d6f7.txt"
+    },
+    {
+      "from": "/muju-academy/episode-02-transcript.874d37641717.txt",
+      "to": "/muju-academy/episode-02-transcript.14ef4c72d6f7.txt"
+    },
+    {
+      "from": "/muju-academy/episode-02.5700b87864a9.jpg",
+      "to": "/muju-academy/episode-02.7b9ee0288d2c.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-02.5a6e6cfc70f4.jpg",
+      "to": "/muju-academy/episode-02.7b9ee0288d2c.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-02.8148c427f8e9.mp4",
+      "to": "/muju-academy/episode-02.2bbc5969725e.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-02.b58e9cab96a6.mp4",
+      "to": "/muju-academy/episode-02.2bbc5969725e.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-03-transcript.13de3627b26a.txt",
+      "to": "/muju-academy/episode-03-transcript.72bca1e22c46.txt"
+    },
+    {
+      "from": "/muju-academy/episode-03-transcript.ac8f8c9bc927.txt",
+      "to": "/muju-academy/episode-03-transcript.72bca1e22c46.txt"
+    },
+    {
+      "from": "/muju-academy/episode-03.4338df31f962.jpg",
+      "to": "/muju-academy/episode-03.22a756915621.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-03.7a74576c55cd.jpg",
+      "to": "/muju-academy/episode-03.22a756915621.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-03.d0079f21b9ac.mp4",
+      "to": "/muju-academy/episode-03.544a43ba9953.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-03.dc2ac0804856.mp4",
+      "to": "/muju-academy/episode-03.544a43ba9953.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-04-transcript.5d562c704709.txt",
+      "to": "/muju-academy/episode-04-transcript.642a4bda3355.txt"
+    },
+    {
+      "from": "/muju-academy/episode-04-transcript.ef3c0e7bece8.txt",
+      "to": "/muju-academy/episode-04-transcript.642a4bda3355.txt"
+    },
+    {
+      "from": "/muju-academy/episode-04.655d0f41be33.jpg",
+      "to": "/muju-academy/episode-04.f8f43728921b.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-04.6c6e3a6f7b72.jpg",
+      "to": "/muju-academy/episode-04.f8f43728921b.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-04.992330d0fc8d.mp4",
+      "to": "/muju-academy/episode-04.34bca623e771.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-04.d1d98f189318.mp4",
+      "to": "/muju-academy/episode-04.34bca623e771.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-05-transcript.8e876205ea38.txt",
+      "to": "/muju-academy/episode-05-transcript.d67e2483b69e.txt"
+    },
+    {
+      "from": "/muju-academy/episode-05-transcript.c32842785f27.txt",
+      "to": "/muju-academy/episode-05-transcript.d67e2483b69e.txt"
+    },
+    {
+      "from": "/muju-academy/episode-05.011f098ecbd0.jpg",
+      "to": "/muju-academy/episode-05.6213378604e8.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-05.611d94b2b740.mp4",
+      "to": "/muju-academy/episode-05.fa730b7e5ab6.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-05.a90e0f41f7e6.jpg",
+      "to": "/muju-academy/episode-05.6213378604e8.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-05.d0cf5095c633.mp4",
+      "to": "/muju-academy/episode-05.fa730b7e5ab6.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-06-transcript.2e00abfb4449.txt",
+      "to": "/muju-academy/episode-06-transcript.d508a92955c4.txt"
+    },
+    {
+      "from": "/muju-academy/episode-06-transcript.c8c102151de6.txt",
+      "to": "/muju-academy/episode-06-transcript.d508a92955c4.txt"
+    },
+    {
+      "from": "/muju-academy/episode-06.6d94be6ab36f.jpg",
+      "to": "/muju-academy/episode-06.4117065d12df.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-06.6eae53501e7e.jpg",
+      "to": "/muju-academy/episode-06.4117065d12df.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-06.970223c56357.mp4",
+      "to": "/muju-academy/episode-06.5144b52deaeb.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-06.d1522bb64ddd.mp4",
+      "to": "/muju-academy/episode-06.5144b52deaeb.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-07-transcript.1dbc973b5ac9.txt",
+      "to": "/muju-academy/episode-07-transcript.4a9b646f55db.txt"
+    },
+    {
+      "from": "/muju-academy/episode-07-transcript.3298512ce801.txt",
+      "to": "/muju-academy/episode-07-transcript.4a9b646f55db.txt"
+    },
+    {
+      "from": "/muju-academy/episode-07.327682a27ddf.jpg",
+      "to": "/muju-academy/episode-07.44ec203b18be.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-07.5d308f93ba00.jpg",
+      "to": "/muju-academy/episode-07.44ec203b18be.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-07.d7395dabc7d5.mp4",
+      "to": "/muju-academy/episode-07.c9b5bde6704d.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-07.e395f89b2659.mp4",
+      "to": "/muju-academy/episode-07.c9b5bde6704d.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-08-transcript.407f0a8281e6.txt",
+      "to": "/muju-academy/episode-08-transcript.a451f95688fa.txt"
+    },
+    {
+      "from": "/muju-academy/episode-08-transcript.bb2390bdb978.txt",
+      "to": "/muju-academy/episode-08-transcript.a451f95688fa.txt"
+    },
+    {
+      "from": "/muju-academy/episode-08.16a4aa5b0ba2.mp4",
+      "to": "/muju-academy/episode-08.b95d7b8ca999.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-08.5736263a5dc3.jpg",
+      "to": "/muju-academy/episode-08.a815d70ef45e.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-08.b681e9a1d19e.mp4",
+      "to": "/muju-academy/episode-08.b95d7b8ca999.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-08.dfac72c232ff.jpg",
+      "to": "/muju-academy/episode-08.a815d70ef45e.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-09-transcript.18cc6c98ec47.txt",
+      "to": "/muju-academy/episode-09-transcript.bf47f810ae53.txt"
+    },
+    {
+      "from": "/muju-academy/episode-09-transcript.1a8333469b8a.txt",
+      "to": "/muju-academy/episode-09-transcript.bf47f810ae53.txt"
+    },
+    {
+      "from": "/muju-academy/episode-09.7168767139ad.jpg",
+      "to": "/muju-academy/episode-09.45610e79f9cc.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-09.9d0899a10a53.jpg",
+      "to": "/muju-academy/episode-09.45610e79f9cc.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-09.c7f05f285043.mp4",
+      "to": "/muju-academy/episode-09.f5c950855a05.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-09.f8deed5fa0ee.mp4",
+      "to": "/muju-academy/episode-09.f5c950855a05.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-10-transcript.c80704c5ba0b.txt",
+      "to": "/muju-academy/episode-10-transcript.a29520de7b48.txt"
+    },
+    {
+      "from": "/muju-academy/episode-10-transcript.d3ab3402b897.txt",
+      "to": "/muju-academy/episode-10-transcript.a29520de7b48.txt"
+    },
+    {
+      "from": "/muju-academy/episode-10.09cd5f079b0e.jpg",
+      "to": "/muju-academy/episode-10.c63a3e047723.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-10.2ed70d6d4ceb.mp4",
+      "to": "/muju-academy/episode-10.3b4c3638c854.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-10.4e47debb748d.mp4",
+      "to": "/muju-academy/episode-10.3b4c3638c854.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-10.79391be0afd2.jpg",
+      "to": "/muju-academy/episode-10.c63a3e047723.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-11-transcript.294ca973c46c.txt",
+      "to": "/muju-academy/episode-11-transcript.0313c6487e19.txt"
+    },
+    {
+      "from": "/muju-academy/episode-11-transcript.d8f3048253cb.txt",
+      "to": "/muju-academy/episode-11-transcript.0313c6487e19.txt"
+    },
+    {
+      "from": "/muju-academy/episode-11.0ec43c39981b.jpg",
+      "to": "/muju-academy/episode-11.530540534f13.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-11.3fcaa9e26f1c.mp4",
+      "to": "/muju-academy/episode-11.461cca413f44.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-11.5413015ae91c.mp4",
+      "to": "/muju-academy/episode-11.461cca413f44.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-11.e5129a06c826.jpg",
+      "to": "/muju-academy/episode-11.530540534f13.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-12-transcript.02ef89c4cff1.txt",
+      "to": "/muju-academy/episode-12-transcript.14f01fd7b81d.txt"
+    },
+    {
+      "from": "/muju-academy/episode-12-transcript.346b119c85e7.txt",
+      "to": "/muju-academy/episode-12-transcript.14f01fd7b81d.txt"
+    },
+    {
+      "from": "/muju-academy/episode-12.1fb7f213069b.jpg",
+      "to": "/muju-academy/episode-12.6c1e1c0d0140.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-12.4c740b45d4b7.mp4",
+      "to": "/muju-academy/episode-12.7974fbf5b66e.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-12.546e2b8e0076.mp4",
+      "to": "/muju-academy/episode-12.7974fbf5b66e.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-12.817372755a42.jpg",
+      "to": "/muju-academy/episode-12.6c1e1c0d0140.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-13-transcript.ea8614d72485.txt",
+      "to": "/muju-academy/episode-13-transcript.549c2f3641c3.txt"
+    },
+    {
+      "from": "/muju-academy/episode-13-transcript.fd00e6769074.txt",
+      "to": "/muju-academy/episode-13-transcript.549c2f3641c3.txt"
+    },
+    {
+      "from": "/muju-academy/episode-13.17f8b6d77e73.mp4",
+      "to": "/muju-academy/episode-13.ed321bbf0902.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-13.74fefaea2eae.jpg",
+      "to": "/muju-academy/episode-13.094486e09a5e.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-13.cbda10287de8.jpg",
+      "to": "/muju-academy/episode-13.094486e09a5e.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-13.d4b0cc70bdeb.mp4",
+      "to": "/muju-academy/episode-13.ed321bbf0902.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-14-transcript.11e6afa07fa7.txt",
+      "to": "/muju-academy/episode-14-transcript.8b7508b773ce.txt"
+    },
+    {
+      "from": "/muju-academy/episode-14-transcript.33b547728815.txt",
+      "to": "/muju-academy/episode-14-transcript.8b7508b773ce.txt"
+    },
+    {
+      "from": "/muju-academy/episode-14.ae4a5f4d3007.jpg",
+      "to": "/muju-academy/episode-14.1e944af32d81.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-14.c13d57cb66ad.jpg",
+      "to": "/muju-academy/episode-14.1e944af32d81.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-14.e2235f4a852d.mp4",
+      "to": "/muju-academy/episode-14.7e08c82bbf3a.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-14.e435adf6a340.mp4",
+      "to": "/muju-academy/episode-14.7e08c82bbf3a.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-15-transcript.358a184dccab.txt",
+      "to": "/muju-academy/episode-15-transcript.35ae958e31d9.txt"
+    },
+    {
+      "from": "/muju-academy/episode-15-transcript.8f9037060367.txt",
+      "to": "/muju-academy/episode-15-transcript.35ae958e31d9.txt"
+    },
+    {
+      "from": "/muju-academy/episode-15.42282812d26e.jpg",
+      "to": "/muju-academy/episode-15.8b01651d8c69.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-15.7fb2ff8a156b.mp4",
+      "to": "/muju-academy/episode-15.39de6b4b30ec.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-15.a381bd11d1c7.mp4",
+      "to": "/muju-academy/episode-15.39de6b4b30ec.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-15.a7c269791c8c.jpg",
+      "to": "/muju-academy/episode-15.8b01651d8c69.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-16-transcript.0f4535e55d4d.txt",
+      "to": "/muju-academy/episode-16-transcript.8fe49ce3b762.txt"
+    },
+    {
+      "from": "/muju-academy/episode-16-transcript.9d2cf622483b.txt",
+      "to": "/muju-academy/episode-16-transcript.8fe49ce3b762.txt"
+    },
+    {
+      "from": "/muju-academy/episode-16.13287bed94eb.mp4",
+      "to": "/muju-academy/episode-16.1e499fe88841.mp4"
+    },
+    {
+      "from": "/muju-academy/episode-16.1b4ec0adad22.jpg",
+      "to": "/muju-academy/episode-16.5b14169b41ba.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-16.9353082ad67f.jpg",
+      "to": "/muju-academy/episode-16.5b14169b41ba.jpg"
+    },
+    {
+      "from": "/muju-academy/episode-16.a82b0851548e.mp4",
+      "to": "/muju-academy/episode-16.1e499fe88841.mp4"
+    }
+  ],
+  "episodes": [
+    {
+      "id": "R01",
+      "number": 1,
+      "title": "The Board Has Two Front Doors",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 179.534,
+      "description": "Find both homes, meet the starting team, and learn the ways a game can end.",
+      "topics": [
+        "Board coordinates",
+        "Starting map",
+        "Winning"
+      ],
+      "soundtrack": {
+        "id": "open-room",
+        "title": "Open Room, Lantern On",
+        "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+      },
+      "sha256": {
+        "video": "2fec36aff6dcec016b2703a935892d8972ec47dca852f5ee4e11a9d93e58a700",
+        "poster": "c8cfb14c6ce1cec99f3558f6f7cba5554b45243d4250784c80ff6f69f49fe6b6",
+        "transcript": "a820a099e9d81668466315e29b8c00a2c0fe8f3cb94bd7545c52e4e17f843c23"
+      },
+      "video": "episode-01.2fec36aff6dc.mp4",
+      "poster": "episode-01.c8cfb14c6ce1.jpg",
+      "transcript": "episode-01-transcript.a820a099e9d8.txt"
+    },
+    {
+      "id": "R02",
+      "number": 2,
+      "title": "Four Actions, Zero Octopus Exceptions",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 182.8,
+      "description": "Click has four lights. Count whole movement actions and share them across the team.",
+      "topics": [
+        "Four shared actions",
+        "Speed",
+        "Blocked paths"
+      ],
+      "soundtrack": {
+        "id": "unequal-routes",
+        "title": "Unequal Routes",
+        "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7"
+      },
+      "sha256": {
+        "video": "2bbc5969725e08f3f998f1baa74d20a9efc567aba5d2d12eeacf94e05bdb86ad",
+        "poster": "7b9ee0288d2c433823529925f1a59797237ba33143821fa1cca59c52cfd13377",
+        "transcript": "14ef4c72d6f7a8f904ff602bb85f2f9cab10d5cdc4a616859016496bc85d3e5a"
+      },
+      "video": "episode-02.2bbc5969725e.mp4",
+      "poster": "episode-02.7b9ee0288d2c.jpg",
+      "transcript": "episode-02-transcript.14ef4c72d6f7.txt"
+    },
+    {
+      "id": "R03",
+      "number": 3,
+      "title": "The Bonk Lab",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 237.067,
+      "description": "Match damage to defense, combine attacks, and learn when a kill unlocks Cleave.",
+      "topics": [
+        "Element bonuses",
+        "Damage and healing",
+        "Cleave"
+      ],
+      "soundtrack": {
+        "id": "before-dawn",
+        "title": "Another Game Before Dawn",
+        "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709"
+      },
+      "sha256": {
+        "video": "544a43ba995321a24d7b34849f9cb23d37b2b1990c930d7e75a569353bdec0ac",
+        "poster": "22a756915621cbc3eda04fdd562c80a68d10d397fb1ca6cae950929fc50ec165",
+        "transcript": "72bca1e22c46311589fa0f757ce3c969e59d2f2d000a15a2427ada635c6aa304"
+      },
+      "video": "episode-03.544a43ba9953.mp4",
+      "poster": "episode-03.22a756915621.jpg",
+      "transcript": "episode-03-transcript.72bca1e22c46.txt"
+    },
+    {
+      "id": "R04",
+      "number": 4,
+      "title": "The Crystal Payday",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 220.567,
+      "description": "Every friendly piece collects at turn end. Homes hold 8 per square; brighter expansions hold 16.",
+      "topics": [
+        "Passive mining",
+        "Finite reserves",
+        "504 crystals"
+      ],
+      "soundtrack": {
+        "id": "open-room",
+        "title": "Open Room, Lantern On",
+        "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+      },
+      "sha256": {
+        "video": "34bca623e77137709fd8a911b6d42425adc2238c67c4c680984433a4ef7d9925",
+        "poster": "f8f43728921bc872870c24153ff645d57eb457f410d746e280d49eafdb07a32a",
+        "transcript": "642a4bda33551dee13ef5be0c620a233bb23f44fc68e86410992611dbe2ac609"
+      },
+      "video": "episode-04.34bca623e771.mp4",
+      "poster": "episode-04.f8f43728921b.jpg",
+      "transcript": "episode-04-transcript.642a4bda3355.txt"
+    },
+    {
+      "id": "R05",
+      "number": 5,
+      "title": "The Shop Delivers Rectangles",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 207.467,
+      "description": "Buy tier-one pieces at their current prices and find a clear delivery rectangle.",
+      "topics": [
+        "Tier-one prices",
+        "Purchase rectangles",
+        "Blocked home"
+      ],
+      "soundtrack": {
+        "id": "unequal-routes",
+        "title": "Unequal Routes",
+        "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7"
+      },
+      "sha256": {
+        "video": "fa730b7e5ab656487c9b597052df4833c6630c970c36a8a515145d809e176ec2",
+        "poster": "6213378604e8c03cca170961401c24fa4a21d45b774ca15ecc9d77125795cdd3",
+        "transcript": "d67e2483b69ef7b0452ae722254db8d09d21a5ded82f96ac80fa661b29323053"
+      },
+      "video": "episode-05.fa730b7e5ab6.mp4",
+      "poster": "episode-05.6213378604e8.jpg",
+      "transcript": "episode-05-transcript.d67e2483b69e.txt"
+    },
+    {
+      "id": "R06",
+      "number": 6,
+      "title": "The Promotion Staircase",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 190.5,
+      "description": "Pay four crystals for tier two or eight more for tier three, one step per piece each turn.",
+      "topics": [
+        "Promotion costs",
+        "Purchase-turn limit",
+        "Act immediately"
+      ],
+      "soundtrack": {
+        "id": "before-dawn",
+        "title": "Another Game Before Dawn",
+        "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709"
+      },
+      "sha256": {
+        "video": "5144b52deaebf4be3587c9e6cee2e571ac9ff0b5870ca0b2dd396d28dfd46a2b",
+        "poster": "4117065d12df00c5b135be6c509cca69aa320645671ae685d1f20c995aa23733",
+        "transcript": "d508a92955c487335ab928be3ebe3f05abe2708c3e921b1386b69ccb06fbba64"
+      },
+      "video": "episode-06.5144b52deaeb.mp4",
+      "poster": "episode-06.4117065d12df.jpg",
+      "transcript": "episode-06-transcript.d508a92955c4.txt"
+    },
+    {
+      "id": "R07",
+      "number": 7,
+      "title": "Bigger Pieces Have Bills",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 190.7,
+      "description": "Bigger pieces bring upkeep bills. Choose the pieces the bank can afford to keep.",
+      "topics": [
+        "Upkeep 0 / 1 / 2",
+        "Affordable keep sets",
+        "Full healing"
+      ],
+      "soundtrack": {
+        "id": "open-room",
+        "title": "Open Room, Lantern On",
+        "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+      },
+      "sha256": {
+        "video": "c9b5bde6704d444286f49a2615de9ff980b10bba4c637151ee558ceb7f9841d9",
+        "poster": "44ec203b18be26ed3f942bad19692c9ed1abc4effc155e15a33957b2b3475f2d",
+        "transcript": "4a9b646f55dbc926b3f4aa78ab1193740cc4488ee3d0f7e0394119c1e800dcae"
+      },
+      "video": "episode-07.c9b5bde6704d.mp4",
+      "poster": "episode-07.44ec203b18be.jpg",
+      "transcript": "episode-07-transcript.4a9b646f55db.txt"
+    },
+    {
+      "id": "R08",
+      "number": 8,
+      "title": "Keep Your Pieces Safe",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 179.034,
+      "description": "Count the enemy’s trip and attack against the four-action limit.",
+      "topics": [
+        "Travel plus attack",
+        "Four-action reach",
+        "A safe square"
+      ],
+      "soundtrack": {
+        "id": "unequal-routes",
+        "title": "Unequal Routes",
+        "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7"
+      },
+      "sha256": {
+        "video": "b95d7b8ca99945329de648221342c6406a3675125f895a9082831bc530cfcc7d",
+        "poster": "a815d70ef45e3b216d035d387d123ab88f207619db2ee4e3b649c7297e517317",
+        "transcript": "a451f95688faedc74b2f2466048b84dcdc459310728076ef20537ffdc0e913a4"
+      },
+      "video": "episode-08.b95d7b8ca999.mp4",
+      "poster": "episode-08.a815d70ef45e.jpg",
+      "transcript": "episode-08-transcript.a451f95688fa.txt"
+    },
+    {
+      "id": "R09",
+      "number": 9,
+      "title": "The Ten Quiet Turns",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 197.067,
+      "description": "Only an enemy killed by an attack resets the clock. Mining does not prevent a quiet-turn draw.",
+      "topics": [
+        "Ten quiet turns",
+        "Attack kills",
+        "Draw timing"
+      ],
+      "soundtrack": {
+        "id": "before-dawn",
+        "title": "Another Game Before Dawn",
+        "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709"
+      },
+      "sha256": {
+        "video": "f5c950855a05ca0840eac008508cb9384a97b1fd992b7466eeee118403c14868",
+        "poster": "45610e79f9cca78266bfe5e0911ea7e7009d595a9ddc5c1911871d0612cba509",
+        "transcript": "bf47f810ae53a15ae2cbdda62c06585957ff3e3685879ba5dd0477aef3351bea"
+      },
+      "video": "episode-09.f5c950855a05.mp4",
+      "poster": "episode-09.45610e79f9cc.jpg",
+      "transcript": "episode-09-transcript.bf47f810ae53.txt"
+    },
+    {
+      "id": "R10",
+      "number": 10,
+      "title": "One Turn at the Practice Table",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 236.534,
+      "description": "Follow Pay, Place, Act, Mine, then learn the controls, optional handicap, and online game endings.",
+      "topics": [
+        "A complete turn",
+        "Controls and undo",
+        "Handicap and clocks"
+      ],
+      "soundtrack": {
+        "id": "open-room",
+        "title": "Open Room, Lantern On",
+        "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+      },
+      "sha256": {
+        "video": "3b4c3638c85451af2e4ef633ac400e83b225b1ca4cc590e3d31af68cf7a87034",
+        "poster": "c63a3e04772340d5a6b4a96f321ecb47bc8c143dfe0a322c77dad2c7f6c72b63",
+        "transcript": "a29520de7b48b650b9a8cb9870a7f34a031928e17d244a8ab52f31962d938c55"
+      },
+      "video": "episode-10.3b4c3638c854.mp4",
+      "poster": "episode-10.c63a3e047723.jpg",
+      "transcript": "episode-10-transcript.a29520de7b48.txt"
+    },
+    {
+      "id": "R11",
+      "number": 11,
+      "title": "Fire: The Toast Department",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 396.167,
+      "description": "Meet Hi, Hono, and Kagari. Inspect every one-shot matchup in both directions at each tier.",
+      "topics": [
+        "Fire",
+        "T1 / T2 / T3 bonk matrices",
+        "Cleave"
+      ],
+      "soundtrack": {
+        "id": "hono-koto",
+        "title": "Hono / Banked Fire",
+        "sha256": "8681f8c0f31e8147e72ec99ed68d245d7e533124bb8ddf44406a70d65c7f7651"
+      },
+      "sha256": {
+        "video": "461cca413f4421bdc2246b2b720b123f4fcf2a9f9fe03e67c4ce209d33f84ebb",
+        "poster": "530540534f1323a54279077d9f9fee20a252f40de96ceb94810599720dff25c1",
+        "transcript": "0313c6487e19c43945216f2f730617f9ea38e56974ec3dc7258a47805842f998"
+      },
+      "video": "episode-11.461cca413f44.mp4",
+      "poster": "episode-11.530540534f13.jpg",
+      "transcript": "episode-11-transcript.0313c6487e19.txt"
+    },
+    {
+      "id": "R12",
+      "number": 12,
+      "title": "Lightning: Express Delivery",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 402.667,
+      "description": "Meet Radi, Umeme, and Kimubunga. Check each tier’s outgoing and incoming one-shot attacks.",
+      "topics": [
+        "Lightning",
+        "T1 / T2 / T3 bonk matrices",
+        "Speed and damage"
+      ],
+      "soundtrack": {
+        "id": "umeme-held-charge",
+        "title": "Umeme / Held Charge",
+        "sha256": "ce2a37c87e38f5b8af6b40a0666f3a42ad03079838d5939cb39713961050773e"
+      },
+      "sha256": {
+        "video": "7974fbf5b66eca02cd9d4d65614586366c0fa0aa6986451673145e34287d8b26",
+        "poster": "6c1e1c0d0140d0e8d27a262b64d57fab4db2a1774d9e9dcb49842a8b01b612b4",
+        "transcript": "14f01fd7b81da2da5b6374ce39d1c3c26fa0828ab30bbc0e17b4d435bd855b0f"
+      },
+      "video": "episode-12.7974fbf5b66e.mp4",
+      "poster": "episode-12.6c1e1c0d0140.jpg",
+      "transcript": "episode-12-transcript.14f01fd7b81d.txt"
+    },
+    {
+      "id": "R13",
+      "number": 13,
+      "title": "Water: Captain Bucket",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 363.134,
+      "description": "Meet Sjor, Straumr, and Aegirinn. Compare each tier’s one-shot attacks and vulnerabilities.",
+      "topics": [
+        "Water",
+        "T1 / T2 / T3 bonk matrices",
+        "Defense and mining"
+      ],
+      "soundtrack": {
+        "id": "straumr-hardanger",
+        "title": "Straumr / Under the Current",
+        "sha256": "878d93e0b9474694a566ae3110225c1e78a565ca672e8fdeb074d67af24e5f0b"
+      },
+      "sha256": {
+        "video": "ed321bbf09023f3f469286d035a37d6886712b915264587170550fb910fa388a",
+        "poster": "094486e09a5e4331e5b083e4364e9823445a77b914721712ed5d823dba791d17",
+        "transcript": "549c2f3641c3287333c79bf68e4ea08ece9de07ea6a838eff342225ed3e5f7d1"
+      },
+      "video": "episode-13.ed321bbf0902.mp4",
+      "poster": "episode-13.094486e09a5e.jpg",
+      "transcript": "episode-13-transcript.549c2f3641c3.txt"
+    },
+    {
+      "id": "R14",
+      "number": 14,
+      "title": "Shadow: The Visible Detective",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 395.367,
+      "description": "Meet Göl, Gölge, and Karanlık. Check both sides of every tier’s bonk matrix.",
+      "topics": [
+        "Shadow",
+        "T1 / T2 / T3 bonk matrices",
+        "Paths and blockers"
+      ],
+      "soundtrack": {
+        "id": "golge-baglama",
+        "title": "Gölge / One Square Out of Sight",
+        "sha256": "2c4e05bc362d1abf7014321d8f86e5f34756ff908c960b24bceb553f9c7c48dc"
+      },
+      "sha256": {
+        "video": "7e08c82bbf3ad2f9ff1d8b898a609ea517cc4a29617a6ec9458c7d25841a7c40",
+        "poster": "1e944af32d81f82dc2d2a55f7662858821819fe38399065754235a9750a7a0d9",
+        "transcript": "8b7508b773cedb10455cea13bc2f5a0d0681bd6f5ba35aba9f3c2177436c6280"
+      },
+      "video": "episode-14.7e08c82bbf3a.mp4",
+      "poster": "episode-14.1e944af32d81.jpg",
+      "transcript": "episode-14-transcript.8b7508b773ce.txt"
+    },
+    {
+      "id": "R15",
+      "number": 15,
+      "title": "Plant: The Payday Garden",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 342.234,
+      "description": "Meet Muju, Sachita, and Sachakuna. Study every tier’s one-shot matchups and crystal income.",
+      "topics": [
+        "Plant",
+        "T1 / T2 / T3 bonk matrices",
+        "Mining 3 / 5 / 8"
+      ],
+      "soundtrack": {
+        "id": "muju-charango",
+        "title": "Muju / A Field of Small Decisions",
+        "sha256": "8c25a1b64577b2bc755093f33c92bbf74cbb12a9c17a6a96eb752c80416825e5"
+      },
+      "sha256": {
+        "video": "39de6b4b30ec9bedde09efdc7bc2f06080c851fbe3a587ec03ac6bdf64967c43",
+        "poster": "8b01651d8c69f4a8e5c84b74c2301af73bc7943f783e7f3aa1521d63906a809e",
+        "transcript": "35ae958e31d9e077e37d7da6abefad216d3b3a4c03834c2e0c0ec09333879d53"
+      },
+      "video": "episode-15.39de6b4b30ec.mp4",
+      "poster": "episode-15.8b01651d8c69.jpg",
+      "transcript": "episode-15-transcript.35ae958e31d9.txt"
+    },
+    {
+      "id": "R16",
+      "number": 16,
+      "title": "Metal: The Moving Fortress",
+      "version": 7,
+      "rules": "v2.8",
+      "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+      "seconds": 351.334,
+      "description": "Meet Inyan, Mazask, and Tanka. Check each tier’s one-shot matchups and the fortress’s five defense.",
+      "topics": [
+        "Metal",
+        "T1 / T2 / T3 bonk matrices",
+        "Tanka defense 5"
+      ],
+      "soundtrack": {
+        "id": "tanka-flute",
+        "title": "Tanka / Weight Without Hurry",
+        "sha256": "94b0c4739e3f301ef7ac06d55505819fdf521c8f052cfd61d30336383799f8b6"
+      },
+      "sha256": {
+        "video": "1e499fe8884156bc29c29d3cfffd05c6fdd0f6e650d678d1afd604d894feb884",
+        "poster": "5b14169b41badded1c674a03dd0f90fa30229bc5f3293deda9bd3ee392fddb5f",
+        "transcript": "8fe49ce3b7627309f0c5d97e090477962de7b65b621ba4eb351e8a495c01d483"
+      },
+      "video": "episode-16.1e499fe88841.mp4",
+      "poster": "episode-16.5b14169b41ba.jpg",
+      "transcript": "episode-16-transcript.8fe49ce3b762.txt"
+    }
+  ]
+}

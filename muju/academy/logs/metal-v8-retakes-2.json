@@ -1,0 +1,16 @@
+[
+  {
+    "episode": "R12",
+    "id": "matrix-3-out",
+    "speechText": "With one attack, the kee-moo-boon-gah can finish Hee, hoh-noh, kah-gah-ree, rah-dee, oo-meh-meh, kee-moo-boon-gah, Shore. Gurl. gurl-geh. kah-rahn-luk, Moo-joo, sah-chee-tah, sah-chah-koo-nah, Yahn, and mah-zahsk. Every unlit card survives that single hit.",
+    "force": true,
+    "reason": "Two local models confirm a skipped or mispronounced unit name; isolate the neighboring names with spoken sentence boundaries."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-1-in",
+    "speechText": "Now the red side. A full health Shore is one shot by hoh-noh, kah-gah-ree, kee-moo-boon-gah, Shore, strowm-ur, ay-gear-in, Gurl, gurl-geh, kah-rahn-luk, sah-chee-tah. sah-chah-koo-nah. Yahn, mah-zahsk, and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+    "force": true,
+    "reason": "Two local models confirm a skipped or mispronounced unit name; isolate the neighboring names with spoken sentence boundaries."
+  }
+]

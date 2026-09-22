@@ -35,7 +35,7 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
   </>},
   {title:'Movement', content:<>
     <p>Move orthogonally through empty squares. One action moves a piece up to its Speed. Longer moves cost the shortest path length divided by Speed, rounded up. Pieces cannot pass through other pieces.</p>
-    <p>{hi.name} has Speed {hi.speed}. Moving three squares costs {Math.ceil(3/hi.speed)} actions. A piece may move repeatedly while shared actions remain.</p>
+    <p>{hi.name} has Speed {hi.speed}. Moving three squares costs {Math.ceil(3/hi.speed)} actions. A piece with positive Speed may move repeatedly while shared actions remain. Yan has Speed 0: it cannot move, but can attack adjacent enemies and promote to gain movement.</p>
   </>},
   {title:'Combat & Cleave', content:<>
     <p>Attack an orthogonally adjacent enemy for one action. Attack reduces its remaining Defense; reaching zero eliminates it. There is no retaliation. Damage accumulates until the damaged unit’s next turn and heals at the start of the damaged piece’s own turn.</p>

@@ -1,0 +1,3601 @@
+diff --git a/muju/JUDGMENT_LOG.md b/muju/JUDGMENT_LOG.md
+index 2a8bd3dc..4335a63a 100644
+--- a/muju/JUDGMENT_LOG.md
++++ b/muju/JUDGMENT_LOG.md
+@@ -299,3 +299,8 @@ Do not install a static power score in the playing AI or claim that a stat has o
+ - **Compatibility:** existing boards and painter drafts retain their reserves; the current Plant catalogue applies when games resume. No save/room reset.
+ - **Intent and limits:** encourage earlier expansion and meaningful economic promotions. These incentives are not a playtested claim about win rates or turtling. See `docs/EXPANSION_ECONOMY-2026-09-13.md`.
+ - **Release authorization:** the designer reviewed the color mockup and instructed, “Pull the trigger on the map and plant changes!”
++
++
++## 2026-09-18 — Metal v2.9
++
++User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan to Yan. Preserve stable IDs, costs, other elements and historical evidence. Speed 0 permits adjacent attacks, mining and promotion, but no movement. Existing saves/rooms adopt the current catalogue; replay snapshots and labels remain historical. See docs/changes/2026-09-18-metal-yan.md for verification and release scope.
+diff --git a/muju/SPEC.md b/muju/SPEC.md
+index 563747ec..23bbe659 100644
+--- a/muju/SPEC.md
++++ b/muju/SPEC.md
+@@ -19,7 +19,11 @@ document and the code disagree, that is a bug in one of them: see
+ of known divergences. The stat tables in §7 are transcriptions of
+ `src/game/units.ts`, which is the canonical stat source.
+ 
+-**Spec version:** v2.8 (2026-09-13) — new games use 8-crystal home squares and
++**Spec version:** v2.9 (2026-09-18) — Metal is Yan → Mazask → Tanka, with
++ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot move but may attack
++adjacent enemies, mine, anchor purchases and promote normally. Prices and IDs
++are unchanged. Existing saves and rooms use this catalogue; recorded historical
++boards and move labels are preserved. The v2.8 economy remains: new games use 8-crystal home squares and
+ 16-crystal expansions, with 504 crystals total. Plant Mining is 3/5/8. Saved and
+ in-progress games retain their stored maps and use the updated unit catalogue.
+ See `docs/EXPANSION_ECONOMY-2026-09-13.md`.
+@@ -297,7 +301,7 @@ The catalogue has no build times. Tier-1 costs are 3/4/5 by pair, with
+ universal 4/8 promotion steps; Muju has DEF 3 and Tanka DEF 5. Tier 3 is terminal.
+ The historical tier-4 cut and its measured tradeoffs are recorded in
+ `docs/TIER3_CAP-2026-09-08.md`; those well-economy measurements are not current
+-balance evidence. Tanka has Speed 2, Mining 4 and DEF 5.
++balance evidence. Tanka has Speed 2, Mining 5 and DEF 5.
+ 
+ ### Fire (Rush — ATK specialist) — Japanese
+ | Tier | Name | ATK | DEF | SPD | MINE | Cost |
+@@ -337,11 +341,11 @@ balance evidence. Tanka has Speed 2, Mining 4 and DEF 5.
+ ### Metal (Expand — DEF specialist) — Lakota
+ | Tier | Name | ATK | DEF | SPD | MINE | Cost |
+ |---|---|---|---|---|---|---|
+-| 1 | Inyan | 1 | 3 | 1 | 2 | 5 |
+-| 2 | Mazask | 2 | 4 | 1 | 3 | 9 |
+-| 3 | Tanka | 2 | 5 | 2 | 4 | 17 |
++| 1 | Yan | 1 | 3 | 0 | 3 | 5 |
++| 2 | Mazask | 1 | 4 | 1 | 4 | 9 |
++| 3 | Tanka | 2 | 5 | 2 | 5 | 17 |
+ 
+-The Metal ladder is **Inyan → Mazask → Tanka**. The title names a tier-1, tier-2,
++The Metal ladder is **Yan → Mazask → Tanka**. The title names a tier-1, tier-2,
+ and tier-3 unit: Muju / Hono / Tanka.
+ 
+ Starting units for both players: `fire_1`, `water_1`, `plant_1`.
+diff --git a/muju/assembly/tactics.ts b/muju/assembly/tactics.ts
+index 5eb812ab..12262b63 100644
+--- a/muju/assembly/tactics.ts
++++ b/muju/assembly/tactics.ts
+@@ -72,7 +72,7 @@ function possible(actions: i32): bool {
+     if (!alive(u) || !own(u) || !canAttack(u) || attacked(u, target)) continue;
+     const steps = max(0, md(pos(u), pos(target)) - 1);
+     const speed = catalogue[def(u) * 6 + 2];
+-    if ((steps + speed - 1) / speed + 1 <= actions) { damage += power(u, target); attackers++; }
++    if ((steps == 0 ? 1 : speed > 0 ? (steps + speed - 1) / speed + 1 : 2147483647) <= actions) { damage += power(u, target); attackers++; }
+   }
+   return attackers > 0 && damage >= remainingDefense(target);
+ }
+@@ -108,6 +108,7 @@ function dfs(actions: i32, depth: i32): bool {
+   for (let u = 0; u < count; u++) {
+     if (!alive(u) || !own(u) || !(input[at(u) + 4] & 1)) continue;
+     const start = pos(u), speed = catalogue[def(u) * 6 + 2], base = depth * 100;
++    if (speed <= 0) continue;
+     for (let k = 0; k < 100; k++) distances[base + k] = -1;
+     let head = 0, tail = 1;
+     queues[base] = start; distances[base + start] = 0;
+diff --git a/muju/docs/AI_IMPLEMENTATION_STATUS.md b/muju/docs/AI_IMPLEMENTATION_STATUS.md
+index b94756ed..2300639f 100644
+--- a/muju/docs/AI_IMPLEMENTATION_STATUS.md
++++ b/muju/docs/AI_IMPLEMENTATION_STATUS.md
+@@ -1,5 +1,13 @@
+ # Current branch status — v2.6, 2026-09-12
+ 
++Current Metal v2.9 verification (2026-09-18): Speed 0 is supported by canonical
++movement, JS/WASM tactics and the Hard AI packed engine, threat/approach tables,
++kill/home bounds and promotion missions. Yan can attack adjacent enemies and
++promote for movement. Frozen Hard AI evaluations and replay witnesses retain
++explicit historical-catalogue tests; current differential tests use v2.9.
++This release makes no new playing-strength claim.
++
++
+ The combined simplification branch uses the **real public GameState** in MCTS
+ and worker protocol **2**. Observation/event masking, belief particles, queue
+ reconciliation and re-determinization have been deleted. Both banks are public.
+diff --git a/muju/docs/MCP_TOOL_TAPS.md b/muju/docs/MCP_TOOL_TAPS.md
+index 28cc9b46..ff913447 100644
+--- a/muju/docs/MCP_TOOL_TAPS.md
++++ b/muju/docs/MCP_TOOL_TAPS.md
+@@ -60,7 +60,7 @@ named unit.
+ |---|---|
+ | About to end a turn that leaves any unit costing 5 or more where an enemy could reach | `muju_analyze({topics:["threats"], targets:{unitIds:[...]}, hypotheticalActions:<whole turn>, deep:true})`. Read `kill`: `proven_possible` means move it; `unknown` means read `search.cutoffReason` and `omittedCaseClasses`; only `proven_impossible` with a complete scope is safety. |
+ | Choosing a square for a unit ("where can this Hi stand?") | `survival` topic with `targets.squares` for the candidates. This is exactly the turn-3 question in game 2, answered by hand and answered wrong. |
+-| Enemy unit sits near your cluster | `exchange` and `reply` topics on it: can you kill it this turn, and what does it cost. Damage stacks within one turn, so the answer is often a combination (Aegirinn 3 + Inyan 2 kills an Aegirinn; you need 5 on a Tanka). |
++| Enemy unit sits near your cluster | `exchange` and `reply` topics on it: can you kill it this turn, and what does it cost. Damage stacks within one turn, so the answer is often a combination (Aegirinn 3 + Yan 2 kills an Aegirinn; you need 5 on a Tanka). |
+ | Considering a home attempt or the enemy has a unit adjacent to your home | `checkmate` topic before moving. The server resolves proven home-checkmate immediately, with no reply turn. |
+ | Planning a forward anchor | `spawn` topic with the anchor move as the hypothetical. Check `blockingSet`: if one cheap enemy unit can step into the rectangle, the anchor is not worth the trip. Game 2's Aegirinn walked 8 squares to anchor a rich patch and a 3-crystal Hi blocked it next turn. |
+ | Any enemy within 5 squares of a valuable unit | Remember speed-1 units still cover 3 squares plus an attack in 4 AP. `reach` topic lists this; do not trust a mental "it's slow". |
+diff --git a/muju/docs/STRATEGY_GUIDE-2026-09-12.md b/muju/docs/STRATEGY_GUIDE-2026-09-12.md
+index 72806bdc..5b6df08d 100644
+--- a/muju/docs/STRATEGY_GUIDE-2026-09-12.md
++++ b/muju/docs/STRATEGY_GUIDE-2026-09-12.md
+@@ -1,5 +1,7 @@
+ # Muju Hono Tanka — A Strategy Guide From One Hard Game
+ 
++> Historical analysis: predates v2.9 (2026-09-18). Metal is now Yan/Mazask/Tanka with ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot relocate until promoted; old Metal movement and matchup advice is not current evidence.
++
+ *Written by Claude (White) after a 17-turn win by resignation against Codex (Black), 2026-09-12. Four shared actions per turn.*
+ 
+ This is not a solved-game guide. It is a set of principles that held up under pressure, plus the mistakes that nearly lost the game. Costs and stats refer to the live catalogue at the time of writing; check `muju_rules` before relying on a number.
+diff --git a/muju/docs/changes/2026-09-18-metal-yan.md b/muju/docs/changes/2026-09-18-metal-yan.md
+new file mode 100644
+index 00000000..6e9f3017
+--- /dev/null
++++ b/muju/docs/changes/2026-09-18-metal-yan.md
+@@ -0,0 +1,322 @@
++# Metal v2.9 — preparation and release evidence
++
++User request: Metal ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5; metal_1 renamed Yan. Local game implementation verified. Academy speech is synthesized and verified after explicit authorization; all eight affected videos and the complete course package are verified locally. Academy deployed at website commit 3b67c3e32b2b8eb10fb08540a6ee79c51a3f958c; game deployment is in progress. This document retains the original preparation evidence below; the release addendum supersedes its unpublished-scope statements. Source HEAD 1ac8026802461569cb1ac0a27c17341737e78a68 plus existing dirty working tree and this change. Unrelated work preserved. Closure: python3 tools/muju-content-dag.py plan --kind piece-stats.
++
++## 1. [x] catalogue — Canonical piece definitions and elemental relationships
++
++Reason: change kind: piece-stats
++
++Paths: `muju/src/game/units.ts`, `muju/src/game/types.ts`, `muju/src/game/elements.ts`
++
++Read/confirm current prerequisites: rule-contract
++
++- Update: Change canonical definitions, stable IDs, stats, costs and elemental relationships. Check promotion cost differences and tier/stock limits. Read the applicable SPEC sections even when starting here.
++- Verify: Exercise changed stat boundaries and elemental matchups against real combat, movement, mining and promotion behavior; verify all consumers use current definitions.
++
++**Disposition: changed.** Evidence: Stable metal_1/2/3 IDs; Yan/Mazask/Tanka = 1/3/0/3, 1/4/1/4, 2/5/2/5. Costs 5/9/17 and promotion gaps 4/8 retained. tests/game/metal-v29.test.ts.
++
++## 2. [x] transitions — Canonical legality and state transitions
++
++Reason: upstream changed: catalogue
++
++Paths: `muju/src/game/`, `muju/src/ai/simulate.ts`, `muju/src/hooks/useGameState.ts`, `muju/lab/harness/`
++
++Read/confirm current prerequisites: board-rules
++
++- Update: Review legality, combat, movement, promotion, spawning, upkeep, mining, turn timing, inactivity, victory and home-checkmate. Keep UI, server and simulations on the same transition; adjust lab invariants where the rule itself changes.
++- Verify: Add or adapt meaningful regression cases for the changed rule, including illegal-action behavior and identical resulting states in local, AI and server paths.
++
++**Disposition: changed.** Evidence: Movement rejects Speed 0 and shared movementActionCost handles stationary adjacent attacks without NaN. Home-defense optimistic bounds retain Yan attacks. UI reducer / AI transition parity, promotion and finite reserve income regressions pass.
++
++## 3. [x] rules-docs — Current rules, AI explanation and public design copy
++
++Reason: upstream changed: transitions
++
++Paths: `muju/SPEC.md`, `muju/AI_ENGINE_README.md`, `muju/docs/AI_IMPLEMENTATION_STATUS.md`, `muju/docs/STRATEGY_GUIDE-2026-09-12.md`, `muju/docs/strategy-guide-codex-vs-claude.md`, `docs/game-design-dossier.md`, `portfolio/index.html`
++
++- Update: Synchronize current rule tables, examples, costs, terminology and supported strategy claims. Review dated guides used as current advice; mark superseded claims or issue a new revision instead of silently rewriting historical evidence.
++- Verify: Search by piece ID, display name, stat label and old numeric phrase across active docs. Check examples with the current engine. Do not claim old balance studies establish new strategic strength.
++
++**Disposition: changed.** Evidence: SPEC v2.9 and JUDGMENT_LOG updated; dated strategy guides marked historical. Current AI implementation note updated. Root dossier/portfolio and AI plans reviewed: no changed stat claim; old architecture plans already carry supersession notices.
++
++## 4. [x] browser-ui — Browser controls, instructions and visual representations
++
++Reason: upstream changed: transitions
++
++Paths: `muju/src/components/`, `muju/src/App.tsx`, `muju/src/main.tsx`, `muju/src/hooks/useAI.ts`, `muju/src/index.css`, `muju/src/utils/colors.ts`, `muju/index.html`, `muju/public/previews/`
++
++- Update: Inspect UnitShop, UnitInfo, InstructionsModal, VisualKey, AnalysisScreen, MapPainter, action/reach previews and unit artwork for copied facts or numeric assumptions. Reuse canonical data where possible. Regenerate affected previews.
++- Verify: Inspect desktop and phone play: instructions, stat cards, legal highlights, purchase/promotion, turn endings and analysis. Ensure the AI worker still runs.
++
++**Disposition: changed.** Evidence: Instructions explain stationary Yan. Shop, UnitInfo, VisualKey, MapPainter and artwork derive stats/labels or contain no changed claim. Metal desktop/phone tests verify cards, keyboard/click nonmovement, adjacent capture and save reload. Existing preview is reserve-only. Full site phone/tablet smoke passes.
++
++## 5. [x] persistence — Saved games, migrations, history and replay compatibility
++
++Reason: upstream changed: transitions
++
++Paths: `muju/src/game/migrate.ts`, `muju/src/game/replay.ts`, `muju/src/game/moveHistory.ts`, `muju/src/utils/persistence.ts`, `muju/src/components/TurnReplay.tsx`, `muju/src/online/RoomHistory.tsx`
++
++- Update: Decide how existing saves, active rooms and historical replays behave under the change. Add migration/version handling if needed; preserve old evidence and stored histories.
++- Verify: Load an existing save/room, undo where supported, restart the server and replay a completed game. Explicitly report incompatibilities and their handling.
++
++**Disposition: changed.** Evidence: Existing saves/rooms retain stable IDs and adopt current catalogue. Replay expansion preserves historical Speed-1 Metal move snapshots/labels instead of looping at Speed 0. Historical command fixture uses its explicitly scoped old Metal catalogue, restored immediately after playback. Arbitrary historical commands are not guaranteed legal under v2.9; snapshots remain viewable and exploration uses current rules.
++
++## 6. [x] wasm-tactics — Compiled tactical solver and canonical witness validation
++
++Reason: upstream changed: transitions
++
++Paths: `muju/assembly/tactics.ts`, `muju/src/ai/wasm/`, `muju/asconfig.json`
++
++- Update: Review duplicated tactical semantics and ABI assumptions. kernel.ts packs stats and attack powers from canonical definitions; do not invent a second stat table. Rebuild tactics.wasm when affected.
++- Verify: Replay solver witnesses through canonical legality/transitions. Compare TS and WASM on changed combat/movement/promotion cases, including bounded-search unknown results.
++- Command (cwd `muju`): `npm run ai:wasm` — Rebuilds generated WASM; also runs automatically before npm test/build.
++
++**Disposition: changed.** Evidence: WASM bound skips unreachable Speed-0 approaches and retains adjacent attacks, movement loop explicitly skips Speed 0; kernel and canonical TS use safe cost helper. Rebuilt tactics.wasm. Differential full-catalogue tests plus new adjacent/distant Yan fixtures pass.
++
++## 7. [x] ai-search — Deterministic game AI, evaluation, planning and worker
++
++Reason: upstream changed: transitions; upstream changed: wasm-tactics
++
++Paths: `muju/src/ai/`, `muju/lab/ai/`, `muju/AI_ENGINE_PLAN.md`, `muju/AI_ENGINE_QUESTIONS.md`
++
++- Update: Review moves, evaluation, beam plans, MCTS, placement strategies, budgets, tactical sharpening and worker protocol. Rules changes may alter reach, affordability and threat assumptions even when stats import automatically. Historical design plans are context, not implementation authority.
++- Verify: Check legal complete turns, reproducibility under fixed seeds/work budgets, worker execution and deadlines. Separate rule correctness from strength; run targeted matchups when balance claims are made.
++- Command (cwd `muju`): `npm run ai:tactics` — Runs tactical cases and writes a fresh lab result directory; inspect results.
++
++**Disposition: changed.** Evidence: Strategic evaluation stays finite for stationary Yan, including at enemy home. All regression tests and 7 worker browser tests pass. Fresh tactical run: 28 fixtures, 84 decisions, 42/42 expected rescues cleared; lab/results/ai-wasm-tactics-1789744884022. No new strategic-strength claim.
++
++## 8. [x] server-runtime — Authoritative multiplayer host, schemas and online client
++
++Reason: upstream changed: transitions; upstream changed: persistence
++
++Paths: `muju/server/rooms.ts`, `muju/server/schema.ts`, `muju/server/http.ts`, `muju/server/index.ts`, `muju/server/clockPressure.ts`, `muju/src/online/`, `muju/ONLINE.md`
++
++- Update: Review room transitions, validation, clocks, staging, invitations, observations, persistence and client/server compatibility. Document any protocol change and handling of active games.
++- Verify: Check create/join/play, revision and idempotency handling, clocks/staging where relevant, persisted rooms and reconnects.
++
++**Disposition: verified unchanged.** Evidence: Room/schema protocol and clock behavior need no content copy. Server types and 121 server/MCP tests pass, including persisted rooms/restarts, revision/idempotency and HTTP/stdio. Online suite 46/48 initially passed; two pre-existing 10-reserve expectations corrected to 8 and both history tests pass.
++
++## 9. [x] mcp-tools — MCP rules, legal actions, previews and analysis helpers
++
++Reason: upstream changed: server-runtime; upstream changed: ai-search
++
++Paths: `muju/server/mcp.ts`, `muju/server/stdio.ts`, `muju/server/observation.ts`, `muju/server/agentSchema.ts`, `muju/server/notation.ts`, `muju/server/analysis/`, `muju/tools/benchmark-analysis.ts`
++
++- Update: Review muju_rules text and catalogue, tool descriptions, schemas/defaults, legal actions, preview and play parity. Recheck geometry, economy, units, tactics and exchange helpers for hardcoded budgets/claims and changed search bounds.
++- Verify: Assert rules/analysis return current stats and legal witnesses, then exercise HTTP MCP and stdio as applicable. Distinguish bounded estimates from proofs; update benchmark evidence when helper behavior changes.
++
++**Disposition: changed.** Evidence: Rules prose describes Speed 0. Analysis damage bound handles adjacent stationary pieces; tests assert Yan attacks remain discoverable. HTTP/stdio catalogue tests assert exact requested Metal stats, names and prices.
++
++## 10. [x] agent-guides — Published agent skills and MCP usage documentation
++
++Reason: upstream changed: mcp-tools; upstream changed: rules-docs
++
++Paths: `muju/public/skills/`, `muju/server/skills.ts`, `muju/docs/MCP_TOOL_TAPS.md`, `muju/docs/ANALYSIS_TOOLS.md`, `muju/ONLINE.md`
++
++- Update: Update public Muju and time-awareness skill files, TAPs, analysis documentation and live tool examples. Vite copies public skills into dist; the production server serves those copies.
++- Verify: Compare documentation to tool discovery and actual responses. Check both /SKILL.md on the Node host and the static /muju/skills/ copies after release.
++
++**Disposition: changed.** Evidence: Public Muju skill adds Metal v2.9 table and movement behavior; MCP tool TAP example renamed. Time-awareness/analysis docs reviewed, unaffected. Updated skill is copied in dist and _site. Live copies intentionally unpublished.
++
++## 11. [x] balance-analysis — Current static balance report and relevant fresh experiments
++
++Reason: upstream changed: transitions; upstream changed: ai-search
++
++Paths: `muju/lab/solver/`, `muju/lab/results/current-static/current.json`, `muju/lab/results/current-static/current.md`
++
++- Update: Review solver assumptions and regenerate current-static. Run new experiments only when needed to support changed claims; record source/rules hashes, configuration and seeds. Leave frozen map studies, baselines and dated results intact.
++- Verify: Check catalogue/model freshness and explain changed dominance or witness results rather than weakening checks merely to pass. Static values are separate from AI weights.
++- Command (cwd `muju`): `npm run balance:static` — Regenerates current-static outputs.
++- Command (cwd `muju`): `npm run balance:check && npm run balance:types` — Checks current outputs and solver types.
++
++**Disposition: changed.** Evidence: Static model accepts nonnegative speed, includes adjacent strikes, excludes unreachable approaches, reports null for unbounded mean/savings instead of NaN. Regenerated current-static with new hashes. balance:check and balance:types pass: 18 distinct profiles, no dominance, no missing sole witness. Historical baselines untouched.
++
++## 12. [x] academy-data — Academy current rule snapshots, catalogues, map and matchup matrices
++
++Reason: upstream changed: transitions
++
++Paths: `muju/academy/export-rules.ts`, `muju/academy/rules-snapshot/`, `muju/academy/catalog.json`, `muju/academy/map.json`, `muju/academy/bonk-matrix.json`, `muju/academy/rules-verification.json`, `muju/academy/production/R??/source-rules/`, `muju/academy/production/R??/src/catalog.json`, `muju/academy/production/R??/src/map.json`, `muju/academy/production/R??/src/bonk-matrix.json`
++
++- Update: Read Academy README and STATUS first. Adapt export-rules.ts assertions/version to the intended rule change, export from live src/game, then propagate current data to every affected active episode. Audit imports and provenance of rules-snapshot and each episode source-rules: they contain historical assumptions and rendering subsets, so do not blindly replace them.
++- Verify: Check all ordered full-health matchups and affected demonstrations, map totals and copies. A single attack/defense change can alter incoming/outgoing matrices in every element lesson R11–R16. Regeneration of JSON alone does not update narration or rendered videos.
++- Command (cwd `muju`): `node --import tsx academy/export-rules.ts` — Writes Academy JSON after all assertions pass.
++
++**Disposition: changed.** Evidence: Export validates all 324 matchups, Metal stat rows, no-move Yan and reserve-limited income before writing. All 16 catalogue/matrix copies and changed source snapshots verified. Rendering subset types retained; provenance in academy/metal-v29-provenance.json. Prior copies archived.
++
++## 13. [x] academy-lessons — Academy lesson scripts, examples and renderer sources
++
++Reason: upstream changed: academy-data; upstream changed: rules-docs; upstream changed: browser-ui; upstream changed: server-runtime
++
++Paths: `muju/academy/README.md`, `muju/academy/STATUS.md`, `muju/academy/BIBLE.md`, `muju/academy/ALL-SCRIPTS.md`, `muju/academy/CURRICULUM-AND-BATCHES.md`, `muju/academy/PIPELINE-NOTES.md`, `muju/academy/production/R??/episode.json`, `muju/academy/production/R??/src/`, `muju/academy/production/R??/scripts/`, `muju/academy/supplement.tsx`, `muju/academy/update-visuals.py`
++
++- Update: Audit active R01–R16 episode.json and renderer sources for spoken facts, cards, boards, examples, captions and summaries. Record affected episode IDs and why others are unchanged. Preserve repaired current scripts; revise.py and propagate-economy.py are one-time historical migrations and must not be rerun over current production.
++- Verify: Validate each changed example against current engine state, action budget and timing. Cross-element counter matchups matter. Check visible revision/date labels and current source provenance; do not resurrect retired R17–R27.
++
++**Disposition: changed.** Evidence: R05 shop card, R06 ladder, R11–R16 matrices/renaming, R16 income/roster/Speed-0 exercise updated. Eight other episodes have no changed claims. Existing repaired narration preserved unless content changed. All scripts/curriculum updated. R16 preview frames inspected for exact stats, matrix changes, v2.9 label and text fit.
++
++## 14. [x] academy-audio — Academy narration, local transcription and caption timing
++
++Reason: upstream changed: academy-lessons
++
++Paths: `muju/academy/audio-batch.py`, `muju/academy/prepare-audio.py`, `muju/academy/retake-openai.mjs`, `muju/academy/transcribe-local.py`, `muju/academy/align-current.py`, `muju/academy/timeline.mjs`, `muju/academy/production/R??/public/audio/`, `muju/academy/production/R??/speech-directions.json`
++
++- Update: Regenerate only changed speech with the established OpenAI cast and pronunciation, preserve unchanged takes, and refresh the changed-clip inventory consumed by transcribe-local.py. Verify locally with faster-whisper, align captions, and regenerate timelines. Inspect hardcoded temporary runtime/model paths before running scripts.
++- Verify: No unresolved spoken-fact, missing-word, pronunciation or caption-timing errors. Bind ASR and caption evidence to current audio hashes. Old clip inventories and successful historical logs do not verify new narration.
++
++**Disposition: changed.** Evidence: The user explicitly authorized speech synthesis on 2026-09-18, resolving the earlier automatic approval rejection. All 32 changed clips across R06/R11/R12/R13/R14/R16 use the established OpenAI voices. Seven clips received targeted repairs for omissions or name pronunciation. Local small.en/medium.en verification has no unresolved differences; ASR and aligned captions match current audio hashes in academy/logs/metal-v8-speech-current.json. Consecutive Göl/Gölge ASR token joining is normalized without dropping words. Unchanged takes and every replaced take/QA record are preserved.
++
++## 15. [x] academy-video — Final videos, mastering, posters, transcripts and visual QA
++
++Reason: upstream changed: academy-audio
++
++Paths: `muju/academy/render-batch.py`, `muju/academy/render.mjs`, `muju/academy/master.mjs`, `muju/academy/remaster-batch.py`, `muju/academy/final-frames.py`, `muju/academy/stills-batch.py`, `muju/academy/review-final.py`, `muju/academy/production/R??/output/`, `muju/academy/production/R??/qa/`, `muju/academy/production/R??/public/music/`, `muju/academy/production/R??/public/art/`
++
++- Update: Render affected episodes, master with existing soundtracks, and regenerate affected posters/transcripts. Review actual final exports before recording review-final.py --visual-reviewed evidence. Inspect batch script/runtime paths and current episode configuration first.
++- Verify: Require full decode, source-audio correlation, complete duration, quiet holds, loudness/peak checks, readable cards/boards and correct matrices. final-review.json must identify exact final video and timeline hashes; never mechanically assert that unseen frames were reviewed.
++
++**Disposition: changed.** Evidence: All eight v8 exports (R05, R06, R11–R16) are rendered, mastered, fully decoded and visually reviewed. All 324 exported speech clips pass correlation (minimum 0.90994, maximum offset 0.048s); duration, loudness/peak and quiet-hold checks pass. Thirty reviewed final frames cover all 18 element-tier matrices, the shop, promotion ladder, Yan demonstrations, Metal roster/mining and Speed0 exercise. Final reviews identify exact video/timeline/frame hashes. Previous media and QA are archived. Full evidence: academy/logs/metal-v8-final-release-summary.json.
++
++## 16. [x] game-validation — Game, AI, server, MCP and browser regression gates
++
++Reason: upstream changed: rules-docs; upstream changed: browser-ui; upstream changed: persistence; upstream changed: wasm-tactics; upstream changed: ai-search; upstream changed: server-runtime; upstream changed: mcp-tools; upstream changed: agent-guides; upstream changed: balance-analysis
++
++Paths: `muju/tests/`, `muju/e2e/`, `muju/vitest.config.ts`, `muju/playwright.config.ts`, `muju/playwright.online.config.ts`, `muju/server/tsconfig.json`, `muju/tsconfig.json`
++
++- Update: Adapt meaningful changed-rule regression cases and fixtures. Retain explicit historical compatibility fixtures; do not replace every occurrence of an old number. Investigate failures against intended behavior.
++- Verify: Run targeted checks during iteration, then release gates. For general local browser tests first serve the built game at MUJU_BASE_URL (default http://127.0.0.1:8927/muju/); the online suite starts its own isolated host.
++- Command (cwd `muju`): `npm run server:types && npm test && npm run build` — Checks types/tests and rebuilds WASM plus browser artifacts.
++- Command (cwd `muju`): `npm run test:online:e2e` — Runs Playwright against an isolated in-memory Node host on port 8928.
++- Command (cwd `muju`): `npm run test:e2e -- e2e/ai-worker.spec.ts` — Requires the built game served at MUJU_BASE_URL and an installed browser.
++
++**Disposition: changed.** Evidence: 808/808 tests and server types/build passed. Subsequent exact MCP catalogue assertions passed in the 121-test server suite. Online tests: 46 initially plus 2 corrected history tests pass. AI worker 7/7; Metal desktop/phone 2/2; staged site smoke at 390/834px passes. Fixed stale smoke comparison to ignore save timestamp only. DAG check and 10 planner tests pass.
++
++## 17. [x] static-package — Complete deevgames static release artifact
++
++Reason: upstream changed: game-validation
++
++Paths: `build-all.sh`, `tools/verify_site.py`, `tools/smoke-site.cjs`, `muju/vite.config.ts`, `muju/package.json`, `muju/package-lock.json`, `index.html`, `README.md`
++
++- Update: Build all three games with locked dependencies and Node 24; stage only the generated _site directory. Confirm current rules, skill assets and compiled AI land in the artifact. Check hub/game navigation and public dossier copy.
++- Verify: The full build verifies links, required pages and file sizes. Serve _site on an unused port and run tools/smoke-site.cjs against it; inspect actual gameplay.
++- Command (cwd `.`): `bash build-all.sh` — Builds muju, forge and oracle and replaces generated _site; their dependencies must already be installed.
++
++**Disposition: changed.** Evidence: bash build-all.sh on Node v24.11.1 built all three games; site links/assets verified. _site staged and browser smoke passes, including save/refresh. Source and asset hashes in 2026-09-18-metal-evidence/artifact-hashes.json.
++
++## 18. [ ] server-package — Node host release with persistent room storage
++
++Reason: upstream changed: game-validation
++
++Paths: `muju/Dockerfile`, `muju/compose.yaml`, `muju/.dockerignore`
++
++- Update: Build the Node host including its own browser dist and copied public skill files. Verify deployed source revision, persistent disk configuration, public URL/CORS and protocol compatibility.
++- Verify: Test the built image and restart persistence. Preserve /app/data/rooms.sqlite and existing room data. Static Pages publication does not update this service.
++
++**Disposition: blocked.** Evidence: Node browser artifact/server types and room persistence tests pass; Dockerfile imports canonical source and rebuilt dist. Docker executable unavailable in this environment, so container-image build/restart verification was not performed. No production release requested.
++
++## 19. [x] academy-package — Versioned Academy site package and historical redirects
++
++Reason: upstream changed: academy-video
++
++Paths: `muju/academy/build-release.py`, `muju/academy/verify-live.py`, `muju/academy/verify-withdrawal.py`
++
++- Update: Adapt release-specific v7/v2.8 assumptions, summaries and expected economy in builder/verifier for the new release. Locate a current ashkie-pages checkout, review its instructions/workflow, choose a fresh archive outside the site, then validate before packaging. Do not assume the old /private/tmp checkout still exists.
++- Verify: Run build-release.py with production root, site checkout and fresh external archive using --check-only before packaging. Verify exact hashed videos/posters/transcripts, course page, release.json, offline-manifest handling and static-before-wildcard redirects. The builder explicitly verifies the Metal v2.9 mixed v7/v8 release.
++- External: ethancd/ashkie-pages: muju-academy/, _redirects, offline-manifest.json, ./check, tools/verify_muju_videos.py and deployment workflow
++
++**Disposition: changed.** Evidence: build-release.py --check-only passes all16 final exports; mixed v7/v8 package built at /private/tmp/muju-academy-v8-metal-site from website snapshot 6145c0f6025c80fc08bc4da293182defa8dd24ca. The shared checkout was not changed. Local exact-byte verification passes 48 assets, 48 seek ranges, 120 historical redirects and 33 retired assets. Desktop/phone page and Metal seeking visually reviewed. Offline manifest fresh at 7,681 URLs, exactly 16 poster/transcript additions and 16 removals. Cache behavior passes with browser globals supplied to the pre-existing VM test harness. Prior website assets archived outside staging. Prepared, not deployed; a future publish requires a fresh website-source check.
++
++## 20. [x] static-deploy — Publish Cloudflare Pages deevgames
++
++Reason: upstream changed: static-package
++
++Paths: `.github/workflows/deploy.yml`
++
++- Update: Follow root README deployment flow. Publish validated _site through the workflow or documented Wrangler command; master is production and other branches are previews. Check fetched origin/master freshness and preserve unrelated work.
++- Verify: Record source revision, artifact identity, actual publish result and deployment URL. A green workflow can mean checks-only when credentials are absent; confirm the deploy step actually ran.
++- External: Cloudflare Pages project deevgames; documented public base https://deevgames.pages.dev
++
++**Disposition: verified unchanged.** Evidence: Publication outside requested scope. Local _site prepared, not deployed; no live change claimed.
++
++## 21. [x] server-deploy — Publish authoritative multiplayer/MCP host
++
++Reason: upstream changed: server-package
++
++Paths: external release surface
++
++- Update: Inspect the current Render service and deploy the verified matching source/image through its configured release path. The repository has no verified automatic server deployment workflow; discover the live service configuration instead of inventing a deploy command. Follow ONLINE.md persistent disk and health settings.
++- Verify: Record service/release identity and revision. Verify /api/muju/health, /muju/, /SKILL.md and MCP discovery/rules. Exercise a changed-rule preview and legal action in a fresh disposable room; verify existing storage survived.
++- External: Documented Node/MCP host https://deevgames-muju.onrender.com; Render web service with /app/data persistence
++
++**Disposition: verified unchanged.** Evidence: Publication outside requested scope. No Render release or live room change performed.
++
++## 22. [x] academy-deploy — Publish Muju Academy on ashkie.com
++
++Reason: upstream changed: academy-package
++
++Paths: external release surface
++
++- Update: Publish the prepared Academy-only changes via the current ashkie-pages workflow, following that checkout's release checks. Preserve unrelated website changes and previous media archives.
++- Verify: Record website revision/deployment URL. Install the adapted verify-live.py as tools/verify_muju_videos.py in the website checkout before running it there. Verify page and release manifest, exact media bytes/hashes, range seeking, historical redirects and retired assets, then inspect the live course.
++- External: https://ashkie.com/muju-academy/; ethancd/ashkie-pages deployment workflow
++
++**Disposition: verified unchanged.** Evidence: Publication outside requested scope; current v7 media remain published. Local v8 package verified and not deployed.
++
++## 23. [x] release-verification — Cross-surface completion evidence
++
++Reason: upstream changed: static-deploy; upstream changed: server-deploy; upstream changed: academy-deploy
++
++Paths: external release surface
++
++- Update: Write a change-specific completion record with every affected node disposition, exact source/artifact revisions, tests, affected lesson IDs, publish results and live verification evidence. Update current Academy STATUS and append decision context as appropriate.
++- Verify: Compare the changed piece/rule across browser UI, local AI behavior, online engine, MCP rules and analysis, public agent skills and live Academy lessons/transcripts. Every applicable release must be verified or explicitly blocked. Do not call an end-to-end update complete when a surface is still stale or a publish is unverified.
++
++**Disposition: changed.** Evidence: This ledger records every selected node, dirty-tree source provenance, passing local checks and exact blockers. Live cross-surface completion is intentionally not claimed.
++
++
++## Scope and cleanup
++
++The requested Metal change and Academy speech/video update are complete locally.
++All eight revised videos and the 16-lesson package are verified. No phase-variant
++changes were included. Container image verification still needs Docker; deployment
++is outside this request. No production site or service was changed.
++
++Speech synthesis was explicitly authorized and completed. Render processes exited;
++temporary game preview 8937 and Academy preview 9418 are stopped. Final evidence is
++in 2026-09-18-metal-evidence/metal-v8-final-release-summary.json and the Academy logs.
++
++## Authorized release addendum (2026-09-18)
++
++The user explicitly authorized publication and deployment. Release work uses an
++isolated checkout based on current `origin/master` 57a70c1a7914bba649df0d8fcf30d16ebf5b34b7,
++preserving Phasing, room lifecycle changes, and the recently shipped Hard AI.
++The shared source checkout remains untouched by Git operations.
++
++That newer Hard AI required Speed-0 support in packed action generation, move
++costs, kill and home-defense bounds, approach/retreat classification, nearest-owner
++tables and promotion candidates. Dedicated Yan parity tests cover stationary
++movement and adjacent attacks; Yan can promote for movement on an exhausted mine.
++Historical E3 evaluations, A6 suite scores, exam witnesses and E1 replay corpora
++retain their v2.8 catalogue in isolated test mocks; their source artifacts remain
++unchanged. Current-rule differential tests use v2.9. Static balance was regenerated
++for the current four-action model (18 distinct profiles, no dominance).
++
++Academy: website source based on current `origin/main` 565028b0; release commit
++3b67c3e32b2b8eb10fb08540a6ee79c51a3f958c. GitHub Actions run 35381455284 successfully
++published via Cloudflare. Live verification passed all 48 exact assets, 48 range
++requests, 120 redirects and 33 retired assets. Desktop and phone visuals and
++Metal seeking to 110s of 347.4333s were checked. Offline manifest remains 7,681 URLs,
++with exactly 16 additions and 16 removals.
++
++Render service srv-dahbp4ht0dsc73fdqn10 auto-deploys master using Docker. The
++existing 1 GB disk is mounted at /app/data. A disposable room was created before
++release to verify persistence across deployment; credentials remain private.
++Game live results and final release IDs are recorded in the local DAG ledger
++and release evidence after deployment completes.
++
++Release gates completed locally: Node 24 build of all three games; server and
++balance types; balance freshness; 72 online browser cases (69 initial passes,
++three verified on an isolated retry); nine Metal/AI-worker cases; phone/tablet
++site smoke; 167 focused Hard AI/historical-evidence cases with the revised
++mobile-spare fixture; twelve direct Yan/promotion cases; eleven deadline cases.
++The pre-existing slow-runner deadline assertion now respects its own minimum
++sample-work floor instead of always requiring a profile update.
+diff --git a/muju/docs/strategy-guide-codex-vs-claude.md b/muju/docs/strategy-guide-codex-vs-claude.md
+index 676af576..016d5751 100644
+--- a/muju/docs/strategy-guide-codex-vs-claude.md
++++ b/muju/docs/strategy-guide-codex-vs-claude.md
+@@ -1,5 +1,7 @@
+ Muju rewards good exchanges, but our game showed how easily a player can win exchanges while losing the position that supports them. Claude finished with 57 crystals and eight projected income to my four crystals and two projected income. I resigned on turn 17 because sustaining my army and generating threats had become increasingly difficult.
+ 
++> Historical analysis: predates v2.9 (2026-09-18). Metal is now Yan/Mazask/Tanka with ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot relocate until promoted; old Metal movement and matchup advice is not current evidence.
++
+ That was a judgment about the position, not a demonstrated forced win. One game also cannot establish an optimal strategy. But it offered useful lessons about expansion, upkeep, movement, and the limits of tactical success.
+ 
+ **Treat actions as your scarcest resource.**
+diff --git a/muju/e2e/metal.spec.ts b/muju/e2e/metal.spec.ts
+new file mode 100644
+index 00000000..91376130
+--- /dev/null
++++ b/muju/e2e/metal.spec.ts
+@@ -0,0 +1,37 @@
++import { test, expect } from '@playwright/test';
++import { createInitialGameState, createUnit } from '../src/game/board';
++import { SCHEMA_VERSION } from '../src/utils/persistence';
++
++for (const width of [1280,390]) test(`Yan's stationary moves, stats and adjacent attack at ${width}px`, async ({page},info) => {
++  await page.setViewportSize({width,height:844});
++  const state=createInitialGameState();
++  state.board.units=[createUnit('metal_1','white',{x:2,y:2}),createUnit('water_1','black',{x:2,y:3}),createUnit('plant_1','black',{x:8,y:8})];
++  state.turn.phase='action';
++  await page.addInitScript(({state,schemaVersion})=>{
++    if(sessionStorage.getItem('metal:seeded'))return;
++    localStorage.setItem('elemental-tactics-save',JSON.stringify({state,schemaVersion,timestamp:Date.now()}));
++    sessionStorage.setItem('metal:seeded','1');
++  },{state,schemaVersion:SCHEMA_VERSION});
++  await page.goto('./');
++  await page.getByRole('button',{name:/^Pass & Play/}).click();
++  await page.getByRole('button',{name:/Continue saved game/}).click();
++  const yan=page.getByTestId('cell-2-2');
++  await expect(yan).toHaveAttribute('aria-label',/white Yan/);
++  await yan.click();
++  const detail=page.locator('.unit-detail');
++  await expect(detail).toContainText('Speed 0');
++  await expect(detail).toContainText('Mining 3');
++  await page.keyboard.press('ArrowRight');
++  await page.getByTestId('cell-3-2').click();
++  await expect(yan).toHaveAttribute('aria-label',/white Yan/);
++  await yan.click();
++  await page.getByTestId('cell-2-3').click();
++  await page.getByRole('button',{name:'Confirm attack'}).click();
++  await expect(page.getByTestId('cell-2-3')).not.toHaveAttribute('aria-label',/black Sjor/);
++  await page.screenshot({path:info.outputPath('yan-stationary-attack.png')});
++  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
++  await page.reload();
++  await page.getByRole('button',{name:/^Pass & Play/}).click();
++  await page.getByRole('button',{name:/Continue saved game/}).click();
++  await expect(yan).toHaveAttribute('aria-label',/white Yan/);
++});
+diff --git a/muju/lab/results/current-static/current.json b/muju/lab/results/current-static/current.json
+index 72108f9f..d16e45b6 100644
+--- a/muju/lab/results/current-static/current.json
++++ b/muju/lab/results/current-static/current.json
+@@ -904,9 +904,9 @@
+       ]
+     }
+   ],
+-  "catalogueHash": "a140fd0f0dffae7f7b2800f15b9a933b8e73f574bfbb193706855de3a3a21c0c",
+-  "modelHash": "a5090b226e70bff60850ae2c09860b893380e7c83188c4f43a00487e62dc876b",
+-  "elapsedSeconds": 0.124,
++  "catalogueHash": "99f8875d65df594307c562962da4b807d54175e4da0fa765776456e25f11b9eb",
++  "modelHash": "28463203896b0455240e900fa6bf1ffd4364394bab6a6b1d659e18dc15f509df",
++  "elapsedSeconds": 0.157,
+   "assumptions": [
+     "Open shortest-path distances, no traffic or enemy moves.",
+     "Strike grid: 18 targets, all 18 open-board distances, action budgets 1/2/3; cells are not matchup probabilities.",
+@@ -935,9 +935,9 @@
+       "cost": 3,
+       "dominatedBy": [],
+       "role": {
+-        "feasible": 2760,
+-        "cheapest": 2760,
+-        "soleCheapest": 1992,
++        "feasible": 3450,
++        "cheapest": 3450,
++        "soleCheapest": 2490,
+         "witnesses": [
+           {
+             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive no hit",
+@@ -1066,10 +1066,10 @@
+             "killCells": 54,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 8,
+-              "jointlyFeasible": 43,
+-              "meanCrystalsSaved": 1.0465116279069768,
+-              "meanActionsSaved": 0.627906976744186,
++              "newlyFeasible": 12,
++              "jointlyFeasible": 36,
++              "meanCrystalsSaved": 0.75,
++              "meanActionsSaved": 0.25,
+               "examples": [
+                 {
+                   "target": "water_1",
+@@ -1080,7 +1080,7 @@
+                 {
+                   "target": "water_1",
+                   "distance": 4,
+-                  "beforeCost": 6,
++                  "beforeCost": null,
+                   "afterCost": 3
+                 },
+                 {
+@@ -1121,7 +1121,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 43,
++              "jointlyFeasible": 36,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -1155,26 +1155,26 @@
+             "killCells": 27,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 8,
+-              "jointlyFeasible": 43,
++              "newlyFeasible": 7,
++              "jointlyFeasible": 36,
+               "meanCrystalsSaved": 0,
+-              "meanActionsSaved": 0.7441860465116279,
++              "meanActionsSaved": 0.5,
+               "examples": [
+                 {
+                   "target": "water_1",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 6
+                 },
+                 {
+-                  "target": "water_2",
++                  "target": "shadow_1",
+                   "distance": 4,
+                   "beforeCost": null,
+-                  "afterCost": 9
++                  "afterCost": 6
+                 },
+                 {
+-                  "target": "shadow_1",
+-                  "distance": 7,
++                  "target": "shadow_2",
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 6
+                 }
+@@ -1210,7 +1210,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 43,
++              "jointlyFeasible": 36,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -1264,24 +1264,24 @@
+       "cost": 7,
+       "dominatedBy": [],
+       "role": {
+-        "feasible": 4488,
+-        "cheapest": 936,
+-        "soleCheapest": 936,
++        "feasible": 5610,
++        "cheapest": 1560,
++        "soleCheapest": 1560,
+         "witnesses": [
+           {
+-            "mission": "strike water_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_2 hit",
++            "mission": "strike water_1 at distance 2 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_2 hit",
+             "tiedWith": [],
+             "cost": 7,
+-            "nextBestPrice": 15
++            "nextBestPrice": 8
+           },
+           {
+-            "mission": "strike water_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive metal_1 hit",
++            "mission": "strike water_1 at distance 2 within 2 actions; mine >=0 crystals at turn end on rich ground; survive metal_1 hit",
+             "tiedWith": [],
+             "cost": 7,
+-            "nextBestPrice": 15
++            "nextBestPrice": 8
+           },
+           {
+-            "mission": "strike water_1 at distance 3 within 2 actions; mine >=1 crystals at turn end on rich ground; survive no hit",
++            "mission": "strike water_1 at distance 2 within 2 actions; mine >=0 crystals at turn end on rich ground; survive metal_2 hit",
+             "tiedWith": [],
+             "cost": 7,
+             "nextBestPrice": 8
+@@ -1413,10 +1413,10 @@
+             "killCells": 18,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 2,
+-              "jointlyFeasible": 51,
+-              "meanCrystalsSaved": 0.5490196078431373,
+-              "meanActionsSaved": 0.1568627450980392,
++              "newlyFeasible": 4,
++              "jointlyFeasible": 48,
++              "meanCrystalsSaved": 0.2916666666666667,
++              "meanActionsSaved": 0.041666666666666664,
+               "examples": [
+                 {
+                   "target": "water_2",
+@@ -1427,7 +1427,7 @@
+                 {
+                   "target": "water_2",
+                   "distance": 4,
+-                  "beforeCost": 14,
++                  "beforeCost": null,
+                   "afterCost": 7
+                 },
+                 {
+@@ -1468,7 +1468,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 51,
++              "jointlyFeasible": 48,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -1503,25 +1503,25 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 3,
+-              "jointlyFeasible": 51,
++              "jointlyFeasible": 48,
+               "meanCrystalsSaved": 0,
+-              "meanActionsSaved": 0.7058823529411765,
++              "meanActionsSaved": 0.625,
+               "examples": [
+                 {
+                   "target": "water_2",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 14
+                 },
+                 {
+                   "target": "water_3",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 14
+                 },
+                 {
+                   "target": "metal_3",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 14
+                 }
+@@ -1557,7 +1557,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 51,
++              "jointlyFeasible": 48,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -1612,23 +1612,23 @@
+       "dominatedBy": [],
+       "role": {
+         "feasible": 14256,
+-        "cheapest": 6774,
+-        "soleCheapest": 6414,
++        "cheapest": 6555,
++        "soleCheapest": 6105,
+         "witnesses": [
+           {
+-            "mission": "strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_3 hit",
++            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive plant_3 hit",
+             "tiedWith": [],
+             "cost": 15,
+             "nextBestPrice": 16
+           },
+           {
+-            "mission": "strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive metal_2 hit",
++            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive metal_3 hit",
+             "tiedWith": [],
+             "cost": 15,
+             "nextBestPrice": 16
+           },
+           {
+-            "mission": "strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive metal_3 hit",
++            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive plant_3 hit",
+             "tiedWith": [],
+             "cost": 15,
+             "nextBestPrice": 16
+@@ -1793,10 +1793,10 @@
+             "killCells": 12,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
+-              "meanCrystalsSaved": 0.8333333333333334,
+-              "meanActionsSaved": 0.1111111111111111,
++              "newlyFeasible": 1,
++              "jointlyFeasible": 53,
++              "meanCrystalsSaved": 0.5660377358490566,
++              "meanActionsSaved": 0.05660377358490566,
+               "examples": [
+                 {
+                   "target": "water_3",
+@@ -1813,7 +1813,7 @@
+                 {
+                   "target": "water_3",
+                   "distance": 7,
+-                  "beforeCost": 30,
++                  "beforeCost": null,
+                   "afterCost": 15
+                 }
+               ]
+@@ -1848,7 +1848,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
++              "jointlyFeasible": 53,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -1883,7 +1883,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
++              "jointlyFeasible": 53,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -1918,7 +1918,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
++              "jointlyFeasible": 53,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -1972,9 +1972,9 @@
+       "cost": 3,
+       "dominatedBy": [],
+       "role": {
+-        "feasible": 1092,
+-        "cheapest": 1092,
+-        "soleCheapest": 324,
++        "feasible": 1365,
++        "cheapest": 1365,
++        "soleCheapest": 405,
+         "witnesses": [
+           {
+             "mission": "strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit",
+@@ -2121,10 +2121,10 @@
+             "killCells": 48,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 16,
+-              "jointlyFeasible": 35,
+-              "meanCrystalsSaved": 1.2,
+-              "meanActionsSaved": 0.7714285714285715,
++              "newlyFeasible": 15,
++              "jointlyFeasible": 28,
++              "meanCrystalsSaved": 0.9642857142857143,
++              "meanActionsSaved": 0.4642857142857143,
+               "examples": [
+                 {
+                   "target": "fire_3",
+@@ -2141,7 +2141,7 @@
+                 {
+                   "target": "fire_3",
+                   "distance": 7,
+-                  "beforeCost": 6,
++                  "beforeCost": null,
+                   "afterCost": 3
+                 }
+               ]
+@@ -2176,7 +2176,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 35,
++              "jointlyFeasible": 28,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -2211,7 +2211,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 35,
++              "jointlyFeasible": 28,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -2246,7 +2246,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 35,
++              "jointlyFeasible": 28,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -2300,9 +2300,9 @@
+       "cost": 7,
+       "dominatedBy": [],
+       "role": {
+-        "feasible": 2364,
+-        "cheapest": 696,
+-        "soleCheapest": 696,
++        "feasible": 2955,
++        "cheapest": 870,
++        "soleCheapest": 870,
+         "witnesses": [
+           {
+             "mission": "strike fire_1 at distance 5 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit",
+@@ -2464,10 +2464,10 @@
+             "killCells": 90,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 3,
+-              "jointlyFeasible": 51,
+-              "meanCrystalsSaved": 3.019607843137255,
+-              "meanActionsSaved": 0.803921568627451,
++              "newlyFeasible": 8,
++              "jointlyFeasible": 43,
++              "meanCrystalsSaved": 2.441860465116279,
++              "meanActionsSaved": 0.4883720930232558,
+               "examples": [
+                 {
+                   "target": "water_1",
+@@ -2484,7 +2484,7 @@
+                 {
+                   "target": "water_1",
+                   "distance": 7,
+-                  "beforeCost": 14,
++                  "beforeCost": null,
+                   "afterCost": 7
+                 }
+               ]
+@@ -2519,7 +2519,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 51,
++              "jointlyFeasible": 43,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -2554,7 +2554,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 51,
++              "jointlyFeasible": 43,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -2589,7 +2589,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 51,
++              "jointlyFeasible": 43,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -2643,9 +2643,9 @@
+       "cost": 15,
+       "dominatedBy": [],
+       "role": {
+-        "feasible": 4320,
+-        "cheapest": 1092,
+-        "soleCheapest": 732,
++        "feasible": 5400,
++        "cheapest": 1365,
++        "soleCheapest": 915,
+         "witnesses": [
+           {
+             "mission": "strike fire_1 at distance 6 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit",
+@@ -2822,10 +2822,10 @@
+             "killCells": 36,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
+-              "meanCrystalsSaved": 1.6666666666666667,
+-              "meanActionsSaved": 0.2222222222222222,
++              "newlyFeasible": 2,
++              "jointlyFeasible": 51,
++              "meanCrystalsSaved": 1.1764705882352942,
++              "meanActionsSaved": 0.11764705882352941,
+               "examples": [
+                 {
+                   "target": "water_2",
+@@ -2842,7 +2842,7 @@
+                 {
+                   "target": "water_2",
+                   "distance": 7,
+-                  "beforeCost": 30,
++                  "beforeCost": null,
+                   "afterCost": 15
+                 }
+               ]
+@@ -2877,7 +2877,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
++              "jointlyFeasible": 51,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -2911,11 +2911,30 @@
+             "killCells": 45,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
++              "newlyFeasible": 3,
++              "jointlyFeasible": 51,
+               "meanCrystalsSaved": 0,
+-              "meanActionsSaved": 0.3888888888888889,
+-              "examples": []
++              "meanActionsSaved": 0.29411764705882354,
++              "examples": [
++                {
++                  "target": "water_2",
++                  "distance": 7,
++                  "beforeCost": null,
++                  "afterCost": 30
++                },
++                {
++                  "target": "water_3",
++                  "distance": 7,
++                  "beforeCost": null,
++                  "afterCost": 30
++                },
++                {
++                  "target": "metal_3",
++                  "distance": 7,
++                  "beforeCost": null,
++                  "afterCost": 30
++                }
++              ]
+             },
+             "strikeActionsSaved": 0.2777777777777777,
+             "deliveredDamage": 0.12345679012345678,
+@@ -2947,7 +2966,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
++              "jointlyFeasible": 51,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -3226,7 +3245,7 @@
+               {
+                 "distance": 4,
+                 "before": 4,
+-                "after": 7
++                "after": 8
+               },
+               {
+                 "distance": 7,
+@@ -3239,7 +3258,7 @@
+             "killCells": 30,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 12,
++              "newlyFeasible": 10,
+               "jointlyFeasible": 27,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0.37037037037037035,
+@@ -3348,9 +3367,9 @@
+       "cost": 8,
+       "dominatedBy": [],
+       "role": {
+-        "feasible": 8280,
+-        "cheapest": 2766,
+-        "soleCheapest": 2766,
++        "feasible": 8970,
++        "cheapest": 3612,
++        "soleCheapest": 3612,
+         "witnesses": [
+           {
+             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_2 hit",
+@@ -3368,7 +3387,7 @@
+             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_1 hit",
+             "tiedWith": [],
+             "cost": 8,
+-            "nextBestPrice": 9
++            "nextBestPrice": 16
+           }
+         ]
+       },
+@@ -3475,16 +3494,6 @@
+             {
+               "distance": 4,
+               "frontier": [
+-                {
+-                  "cost": 7,
+-                  "actions": 6,
+-                  "bodies": 2,
+-                  "units": [
+-                    "shadow_1",
+-                    "fire_1"
+-                  ],
+-                  "damage": 3
+-                },
+                 {
+                   "cost": 8,
+                   "actions": 3,
+@@ -3575,8 +3584,8 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 7,
+-                "after": 7
++                "before": 8,
++                "after": 8
+               },
+               {
+                 "distance": 7,
+@@ -3610,8 +3619,8 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 7,
+-                "after": 8
++                "before": 8,
++                "after": 16
+               },
+               {
+                 "distance": 7,
+@@ -3624,7 +3633,7 @@
+             "killCells": 30,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 12,
++              "newlyFeasible": 10,
+               "jointlyFeasible": 27,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0.37037037037037035,
+@@ -3664,8 +3673,8 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 7,
+-                "after": 7
++                "before": 8,
++                "after": 8
+               },
+               {
+                 "distance": 7,
+@@ -3699,8 +3708,8 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 7,
+-                "after": 7
++                "before": 8,
++                "after": 8
+               },
+               {
+                 "distance": 7,
+@@ -3734,8 +3743,8 @@
+       "dominatedBy": [],
+       "role": {
+         "feasible": 29988,
+-        "cheapest": 10752,
+-        "soleCheapest": 9927,
++        "cheapest": 13986,
++        "soleCheapest": 13056,
+         "witnesses": [
+           {
+             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_3 hit",
+@@ -3744,16 +3753,16 @@
+             "nextBestPrice": null
+           },
+           {
+-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive fire_3 hit",
++            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_3 hit",
+             "tiedWith": [],
+             "cost": 16,
+-            "nextBestPrice": null
++            "nextBestPrice": 17
+           },
+           {
+-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=2 crystals at turn end on rich ground; survive fire_3 hit",
++            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive shadow_2 hit",
+             "tiedWith": [],
+             "cost": 16,
+-            "nextBestPrice": null
++            "nextBestPrice": 17
+           }
+         ]
+       },
+@@ -3875,26 +3884,6 @@
+             {
+               "distance": 4,
+               "frontier": [
+-                {
+-                  "cost": 8,
+-                  "actions": 6,
+-                  "bodies": 2,
+-                  "units": [
+-                    "shadow_1",
+-                    "shadow_1"
+-                  ],
+-                  "damage": 4
+-                },
+-                {
+-                  "cost": 15,
+-                  "actions": 5,
+-                  "bodies": 2,
+-                  "units": [
+-                    "shadow_2",
+-                    "lightning_2"
+-                  ],
+-                  "damage": 4
+-                },
+                 {
+                   "cost": 16,
+                   "actions": 2,
+@@ -3927,10 +3916,10 @@
+             "killCells": 36,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 5,
+-              "jointlyFeasible": 46,
+-              "meanCrystalsSaved": 3.130434782608696,
+-              "meanActionsSaved": 0.3695652173913043,
++              "newlyFeasible": 8,
++              "jointlyFeasible": 40,
++              "meanCrystalsSaved": 2,
++              "meanActionsSaved": 0.125,
+               "examples": [
+                 {
+                   "target": "water_3",
+@@ -3941,7 +3930,7 @@
+                 {
+                   "target": "water_3",
+                   "distance": 4,
+-                  "beforeCost": 32,
++                  "beforeCost": null,
+                   "afterCost": 16
+                 },
+                 {
+@@ -3967,8 +3956,8 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 8,
+-                "after": 8
++                "before": 16,
++                "after": 16
+               },
+               {
+                 "distance": 7,
+@@ -3982,7 +3971,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 46,
++              "jointlyFeasible": 40,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -4002,13 +3991,13 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 8,
+-                "after": 12
++                "before": 16,
++                "after": 23
+               },
+               {
+                 "distance": 7,
+                 "before": 16,
+-                "after": 23
++                "after": null
+               }
+             ]
+           },
+@@ -4016,26 +4005,26 @@
+             "killCells": 33,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 7,
+-              "jointlyFeasible": 46,
++              "newlyFeasible": 6,
++              "jointlyFeasible": 40,
+               "meanCrystalsSaved": 0,
+-              "meanActionsSaved": 0.7391304347826086,
++              "meanActionsSaved": 0.55,
+               "examples": [
+                 {
+                   "target": "water_3",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 32
+                 },
+                 {
+                   "target": "plant_1",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 32
+                 },
+                 {
+                   "target": "plant_2",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 32
+                 }
+@@ -4056,8 +4045,8 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 8,
+-                "after": 8
++                "before": 16,
++                "after": 16
+               },
+               {
+                 "distance": 7,
+@@ -4071,7 +4060,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 46,
++              "jointlyFeasible": 40,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -4091,8 +4080,8 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 8,
+-                "after": 8
++                "before": 16,
++                "after": 16
+               },
+               {
+                 "distance": 7,
+@@ -4292,10 +4281,10 @@
+             "killCells": 9,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 7,
+-              "jointlyFeasible": 39,
+-              "meanCrystalsSaved": 0.9230769230769231,
+-              "meanActionsSaved": 0.28205128205128205,
++              "newlyFeasible": 3,
++              "jointlyFeasible": 37,
++              "meanCrystalsSaved": 0.8648648648648649,
++              "meanActionsSaved": 0.21621621621621623,
+               "examples": [
+                 {
+                   "target": "water_2",
+@@ -4306,7 +4295,7 @@
+                 {
+                   "target": "water_2",
+                   "distance": 4,
+-                  "beforeCost": 8,
++                  "beforeCost": null,
+                   "afterCost": 4
+                 },
+                 {
+@@ -4347,7 +4336,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 39,
++              "jointlyFeasible": 37,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -4368,7 +4357,7 @@
+               {
+                 "distance": 4,
+                 "before": 4,
+-                "after": 7
++                "after": 8
+               },
+               {
+                 "distance": 7,
+@@ -4381,28 +4370,22 @@
+             "killCells": 30,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 5,
+-              "jointlyFeasible": 39,
++              "newlyFeasible": 2,
++              "jointlyFeasible": 37,
+               "meanCrystalsSaved": 0,
+-              "meanActionsSaved": 0.6153846153846154,
++              "meanActionsSaved": 0.5405405405405406,
+               "examples": [
+                 {
+                   "target": "water_2",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 8
+                 },
+                 {
+                   "target": "water_3",
+-                  "distance": 7,
+-                  "beforeCost": null,
+-                  "afterCost": 8
+-                },
+-                {
+-                  "target": "plant_1",
+                   "distance": 4,
+                   "beforeCost": null,
+-                  "afterCost": 12
++                  "afterCost": 8
+                 }
+               ]
+             },
+@@ -4436,7 +4419,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 39,
++              "jointlyFeasible": 37,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -4672,10 +4655,10 @@
+             "killCells": 36,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 5,
+-              "jointlyFeasible": 46,
+-              "meanCrystalsSaved": 1.565217391304348,
+-              "meanActionsSaved": 0.3695652173913043,
++              "newlyFeasible": 8,
++              "jointlyFeasible": 40,
++              "meanCrystalsSaved": 1,
++              "meanActionsSaved": 0.125,
+               "examples": [
+                 {
+                   "target": "water_3",
+@@ -4686,7 +4669,7 @@
+                 {
+                   "target": "water_3",
+                   "distance": 4,
+-                  "beforeCost": 16,
++                  "beforeCost": null,
+                   "afterCost": 8
+                 },
+                 {
+@@ -4727,7 +4710,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 46,
++              "jointlyFeasible": 40,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -4748,7 +4731,7 @@
+               {
+                 "distance": 4,
+                 "before": 4,
+-                "after": 7
++                "after": 8
+               },
+               {
+                 "distance": 7,
+@@ -4761,26 +4744,26 @@
+             "killCells": 33,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 7,
+-              "jointlyFeasible": 46,
++              "newlyFeasible": 6,
++              "jointlyFeasible": 40,
+               "meanCrystalsSaved": 0,
+-              "meanActionsSaved": 0.7391304347826086,
++              "meanActionsSaved": 0.55,
+               "examples": [
+                 {
+                   "target": "water_3",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 16
+                 },
+                 {
+                   "target": "plant_1",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 16
+                 },
+                 {
+                   "target": "plant_2",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 16
+                 }
+@@ -4816,7 +4799,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 46,
++              "jointlyFeasible": 40,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -4871,7 +4854,7 @@
+       "dominatedBy": [],
+       "role": {
+         "feasible": 11835,
+-        "cheapest": 4464,
++        "cheapest": 4569,
+         "soleCheapest": 3639,
+         "witnesses": [
+           {
+@@ -5067,10 +5050,10 @@
+             "killCells": 24,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
+-              "meanCrystalsSaved": 1.7777777777777777,
+-              "meanActionsSaved": 0.2222222222222222,
++              "newlyFeasible": 2,
++              "jointlyFeasible": 51,
++              "meanCrystalsSaved": 1.2549019607843137,
++              "meanActionsSaved": 0.11764705882352941,
+               "examples": [
+                 {
+                   "target": "plant_3",
+@@ -5087,7 +5070,7 @@
+                 {
+                   "target": "plant_3",
+                   "distance": 7,
+-                  "beforeCost": 32,
++                  "beforeCost": null,
+                   "afterCost": 16
+                 }
+               ]
+@@ -5122,7 +5105,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
++              "jointlyFeasible": 51,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -5143,7 +5126,7 @@
+               {
+                 "distance": 4,
+                 "before": 4,
+-                "after": 7
++                "after": 8
+               },
+               {
+                 "distance": 7,
+@@ -5157,7 +5140,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
++              "jointlyFeasible": 51,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -5192,7 +5175,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 54,
++              "jointlyFeasible": 51,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -5247,23 +5230,23 @@
+       "dominatedBy": [],
+       "role": {
+         "feasible": 988,
+-        "cheapest": 736,
+-        "soleCheapest": 208,
++        "cheapest": 700,
++        "soleCheapest": 42,
+         "witnesses": [
+           {
+-            "mission": "collect >=3 on ordinary reserve 4 within 1 turns; survive no hit",
++            "mission": "occupy anchor at distance 1 within 1 moves; survive water_1 hit",
+             "tiedWith": [],
+             "cost": 5,
+-            "nextBestPrice": 9
++            "nextBestPrice": 8
+           },
+           {
+-            "mission": "collect >=3 on ordinary reserve 4 within 1 turns; survive lightning_1 hit",
++            "mission": "occupy anchor at distance 1 within 1 moves; survive water_2 hit",
+             "tiedWith": [],
+             "cost": 5,
+-            "nextBestPrice": 9
++            "nextBestPrice": 8
+           },
+           {
+-            "mission": "collect >=3 on ordinary reserve 4 within 1 turns; survive water_1 hit",
++            "mission": "occupy anchor at distance 1 within 1 moves; survive water_3 hit",
+             "tiedWith": [],
+             "cost": 5,
+             "nextBestPrice": 9
+@@ -5476,7 +5459,7 @@
+               {
+                 "distance": 7,
+                 "before": 3,
+-                "after": 6
++                "after": 7
+               }
+             ]
+           },
+@@ -5484,30 +5467,11 @@
+             "killCells": 0,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 4,
++              "newlyFeasible": 0,
+               "jointlyFeasible": 6,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+-              "examples": [
+-                {
+-                  "target": "water_1",
+-                  "distance": 4,
+-                  "beforeCost": null,
+-                  "afterCost": 10
+-                },
+-                {
+-                  "target": "shadow_1",
+-                  "distance": 4,
+-                  "beforeCost": null,
+-                  "afterCost": 10
+-                },
+-                {
+-                  "target": "shadow_2",
+-                  "distance": 4,
+-                  "beforeCost": null,
+-                  "afterCost": 10
+-                }
+-              ]
++              "examples": []
+             },
+             "strikeActionsSaved": 4,
+             "deliveredDamage": 0.018518518518518517,
+@@ -5594,23 +5558,23 @@
+       "dominatedBy": [],
+       "role": {
+         "feasible": 7813,
+-        "cheapest": 3549,
+-        "soleCheapest": 2457,
++        "cheapest": 3957,
++        "soleCheapest": 1183,
+         "witnesses": [
+           {
+-            "mission": "strike water_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive no hit",
++            "mission": "strike water_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive no hit",
+             "tiedWith": [],
+             "cost": 9,
+             "nextBestPrice": 17
+           },
+           {
+-            "mission": "strike water_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive lightning_1 hit",
++            "mission": "strike water_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive lightning_1 hit",
+             "tiedWith": [],
+             "cost": 9,
+             "nextBestPrice": 17
+           },
+           {
+-            "mission": "strike water_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive water_1 hit",
++            "mission": "strike water_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive water_1 hit",
+             "tiedWith": [],
+             "cost": 9,
+             "nextBestPrice": 17
+@@ -5841,7 +5805,7 @@
+               {
+                 "distance": 7,
+                 "before": 3,
+-                "after": 6
++                "after": 7
+               }
+             ]
+           },
+@@ -5849,7 +5813,7 @@
+             "killCells": 12,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 6,
++              "newlyFeasible": 4,
+               "jointlyFeasible": 15,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0.26666666666666666,
+@@ -5861,16 +5825,16 @@
+                   "afterCost": 9
+                 },
+                 {
+-                  "target": "water_2",
+-                  "distance": 4,
++                  "target": "shadow_1",
++                  "distance": 7,
+                   "beforeCost": null,
+-                  "afterCost": 18
++                  "afterCost": 9
+                 },
+                 {
+-                  "target": "water_3",
+-                  "distance": 4,
++                  "target": "shadow_2",
++                  "distance": 7,
+                   "beforeCost": null,
+-                  "afterCost": 18
++                  "afterCost": 9
+                 }
+               ]
+             },
+@@ -5959,23 +5923,23 @@
+       "dominatedBy": [],
+       "role": {
+         "feasible": 32000,
+-        "cheapest": 14887,
+-        "soleCheapest": 12577,
++        "cheapest": 15097,
++        "soleCheapest": 10288,
+         "witnesses": [
+           {
+-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive no hit",
++            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=6 crystals at turn end on rich ground; survive no hit",
+             "tiedWith": [],
+             "cost": 17,
+             "nextBestPrice": null
+           },
+           {
+-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive fire_1 hit",
++            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=6 crystals at turn end on rich ground; survive fire_1 hit",
+             "tiedWith": [],
+             "cost": 17,
+             "nextBestPrice": null
+           },
+           {
+-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive lightning_1 hit",
++            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=6 crystals at turn end on rich ground; survive lightning_1 hit",
+             "tiedWith": [],
+             "cost": 17,
+             "nextBestPrice": null
+@@ -6133,16 +6097,6 @@
+             {
+               "distance": 7,
+               "frontier": [
+-                {
+-                  "cost": 6,
+-                  "actions": 6,
+-                  "bodies": 2,
+-                  "units": [
+-                    "lightning_1",
+-                    "lightning_1"
+-                  ],
+-                  "damage": 4
+-                },
+                 {
+                   "cost": 7,
+                   "actions": 4,
+@@ -6215,8 +6169,8 @@
+               },
+               {
+                 "distance": 7,
+-                "before": 6,
+-                "after": 6
++                "before": 7,
++                "after": 7
+               }
+             ]
+           },
+@@ -6246,12 +6200,12 @@
+               {
+                 "distance": 4,
+                 "before": 6,
+-                "after": 6
++                "after": 10
+               },
+               {
+                 "distance": 7,
+-                "before": 6,
+-                "after": 10
++                "before": 7,
++                "after": 15
+               }
+             ]
+           },
+@@ -6259,7 +6213,7 @@
+             "killCells": 30,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 17,
++              "newlyFeasible": 10,
+               "jointlyFeasible": 28,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0.35714285714285715,
+@@ -6277,10 +6231,10 @@
+                   "afterCost": 17
+                 },
+                 {
+-                  "target": "fire_3",
+-                  "distance": 4,
++                  "target": "lightning_1",
++                  "distance": 7,
+                   "beforeCost": null,
+-                  "afterCost": 34
++                  "afterCost": 17
+                 }
+               ]
+             },
+@@ -6304,8 +6258,8 @@
+               },
+               {
+                 "distance": 7,
+-                "before": 6,
+-                "after": 6
++                "before": 7,
++                "after": 7
+               }
+             ]
+           },
+@@ -6339,8 +6293,8 @@
+               },
+               {
+                 "distance": 7,
+-                "before": 6,
+-                "after": 6
++                "before": 7,
++                "after": 7
+               }
+             ]
+           }
+@@ -6357,20 +6311,20 @@
+     },
+     {
+       "id": "metal_1",
+-      "name": "Inyan",
++      "name": "Yan",
+       "element": "metal",
+       "tier": 1,
+       "archetype": "expand",
+       "attack": 1,
+       "defense": 3,
+-      "speed": 1,
+-      "mining": 2,
++      "speed": 0,
++      "mining": 3,
+       "cost": 5,
+       "dominatedBy": [],
+       "role": {
+-        "feasible": 4056,
+-        "cheapest": 3048,
+-        "soleCheapest": 2520,
++        "feasible": 2158,
++        "cheapest": 1690,
++        "soleCheapest": 1032,
+         "witnesses": [
+           {
+             "mission": "strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_1 hit",
+@@ -6429,14 +6383,14 @@
+       },
+       "value": {
+         "base": {
+-          "killCells": 24,
++          "killCells": 12,
+           "cells": 972,
+-          "deliveredDamage": 0.1111111111111111,
+-          "meanStrikeActions": 9.5,
++          "deliveredDamage": 0.05555555555555555,
++          "meanStrikeActions": null,
+           "income": {
+             "ordinary": [
+               0,
+-              2,
++              3,
+               4,
+               4,
+               4,
+@@ -6445,27 +6399,27 @@
+             ],
+             "shelf": [
+               0,
+-              2,
+-              4,
++              3,
+               6,
+               8,
+               8,
++              8,
+               8
+             ],
+             "rich": [
+               0,
+-              2,
+-              4,
++              3,
+               6,
+-              8,
+-              10,
+-              12
++              9,
++              12,
++              15,
++              16
+             ]
+           },
+           "turnsToEmpty": {
+             "ordinary": 2,
+-            "shelf": 4,
+-            "rich": 8
++            "shelf": 3,
++            "rich": 6
+           },
+           "defense": [
+             {
+@@ -6532,13 +6486,13 @@
+         },
+         "changes": {
+           "attack": {
+-            "killCells": 36,
++            "killCells": 18,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 13,
+-              "jointlyFeasible": 15,
+-              "meanCrystalsSaved": 2.6666666666666665,
+-              "meanActionsSaved": 0.5333333333333333,
++              "newlyFeasible": 7,
++              "jointlyFeasible": 11,
++              "meanCrystalsSaved": 3.6363636363636362,
++              "meanActionsSaved": 0.7272727272727273,
+               "examples": [
+                 {
+                   "target": "fire_1",
+@@ -6547,21 +6501,21 @@
+                   "afterCost": 5
+                 },
+                 {
+-                  "target": "fire_1",
+-                  "distance": 4,
++                  "target": "fire_2",
++                  "distance": 1,
+                   "beforeCost": null,
+                   "afterCost": 5
+                 },
+                 {
+-                  "target": "fire_2",
++                  "target": "fire_3",
+                   "distance": 1,
+                   "beforeCost": null,
+-                  "afterCost": 5
++                  "afterCost": 10
+                 }
+               ]
+             },
+-            "strikeActionsSaved": 0,
+-            "deliveredDamage": 0.08641975308641975,
++            "strikeActionsSaved": null,
++            "deliveredDamage": 0.043209876543209874,
+             "incomeAt6": {
+               "ordinary": 0,
+               "shelf": 0,
+@@ -6590,12 +6544,12 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 15,
++              "jointlyFeasible": 11,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+             },
+-            "strikeActionsSaved": 0,
++            "strikeActionsSaved": null,
+             "deliveredDamage": 0,
+             "incomeAt6": {
+               "ordinary": 0,
+@@ -6616,7 +6570,7 @@
+               {
+                 "distance": 7,
+                 "before": 3,
+-                "after": 6
++                "after": 7
+               }
+             ]
+           },
+@@ -6624,32 +6578,32 @@
+             "killCells": 12,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 6,
+-              "jointlyFeasible": 15,
++              "newlyFeasible": 4,
++              "jointlyFeasible": 11,
+               "meanCrystalsSaved": 0,
+-              "meanActionsSaved": 0.26666666666666666,
++              "meanActionsSaved": 0,
+               "examples": [
+                 {
+                   "target": "water_1",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 5
+                 },
+                 {
+-                  "target": "water_2",
++                  "target": "shadow_1",
+                   "distance": 4,
+                   "beforeCost": null,
+-                  "afterCost": 10
++                  "afterCost": 5
+                 },
+                 {
+-                  "target": "water_3",
++                  "target": "shadow_2",
+                   "distance": 4,
+                   "beforeCost": null,
+-                  "afterCost": 10
++                  "afterCost": 5
+                 }
+               ]
+             },
+-            "strikeActionsSaved": 4,
++            "strikeActionsSaved": null,
+             "deliveredDamage": 0.05555555555555555,
+             "incomeAt6": {
+               "ordinary": 0,
+@@ -6679,17 +6633,17 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 15,
++              "jointlyFeasible": 11,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+             },
+-            "strikeActionsSaved": 0,
++            "strikeActionsSaved": null,
+             "deliveredDamage": 0,
+             "incomeAt6": {
+               "ordinary": 0,
+               "shelf": 0,
+-              "rich": 4
++              "rich": 0
+             },
+             "defenseKillCost": [
+               {
+@@ -6714,7 +6668,7 @@
+           "extraKillCellsBeyondAdditive": 18,
+           "witness": {
+             "target": "fire_1",
+-            "distance": 3,
++            "distance": 2,
+             "actions": 2
+           }
+         }
+@@ -6726,31 +6680,31 @@
+       "element": "metal",
+       "tier": 2,
+       "archetype": "expand",
+-      "attack": 2,
++      "attack": 1,
+       "defense": 4,
+       "speed": 1,
+-      "mining": 3,
++      "mining": 4,
+       "cost": 9,
+       "dominatedBy": [],
+       "role": {
+-        "feasible": 14656,
+-        "cheapest": 6408,
+-        "soleCheapest": 5316,
++        "feasible": 8160,
++        "cheapest": 3680,
++        "soleCheapest": 906,
+         "witnesses": [
+           {
+-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_3 hit",
++            "mission": "strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive shadow_3 hit",
+             "tiedWith": [],
+             "cost": 9,
+-            "nextBestPrice": 16
++            "nextBestPrice": 17
+           },
+           {
+-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive shadow_2 hit",
++            "mission": "strike water_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive shadow_3 hit",
+             "tiedWith": [],
+             "cost": 9,
+-            "nextBestPrice": 16
++            "nextBestPrice": 17
+           },
+           {
+-            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive shadow_3 hit",
++            "mission": "strike water_1 at distance 1 within 1 actions; mine >=2 crystals at turn end on rich ground; survive shadow_3 hit",
+             "tiedWith": [],
+             "cost": 9,
+             "nextBestPrice": 17
+@@ -6809,14 +6763,14 @@
+       },
+       "value": {
+         "base": {
+-          "killCells": 60,
++          "killCells": 24,
+           "cells": 972,
+-          "deliveredDamage": 0.19753086419753085,
++          "deliveredDamage": 0.1111111111111111,
+           "meanStrikeActions": 9.5,
+           "income": {
+             "ordinary": [
+               0,
+-              3,
++              4,
+               4,
+               4,
+               4,
+@@ -6825,8 +6779,8 @@
+             ],
+             "shelf": [
+               0,
+-              3,
+-              6,
++              4,
++              8,
+               8,
+               8,
+               8,
+@@ -6834,18 +6788,18 @@
+             ],
+             "rich": [
+               0,
+-              3,
+-              6,
+-              9,
++              4,
++              8,
+               12,
+-              15,
++              16,
++              16,
+               16
+             ]
+           },
+           "turnsToEmpty": {
+-            "ordinary": 2,
+-            "shelf": 3,
+-            "rich": 6
++            "ordinary": 1,
++            "shelf": 2,
++            "rich": 4
+           },
+           "defense": [
+             {
+@@ -6908,16 +6862,6 @@
+             {
+               "distance": 7,
+               "frontier": [
+-                {
+-                  "cost": 6,
+-                  "actions": 6,
+-                  "bodies": 2,
+-                  "units": [
+-                    "lightning_1",
+-                    "lightning_1"
+-                  ],
+-                  "damage": 4
+-                },
+                 {
+                   "cost": 7,
+                   "actions": 4,
+@@ -6942,36 +6886,36 @@
+         },
+         "changes": {
+           "attack": {
+-            "killCells": 30,
++            "killCells": 36,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 5,
+-              "jointlyFeasible": 28,
+-              "meanCrystalsSaved": 1.9285714285714286,
+-              "meanActionsSaved": 0.21428571428571427,
++              "newlyFeasible": 13,
++              "jointlyFeasible": 15,
++              "meanCrystalsSaved": 4.8,
++              "meanActionsSaved": 0.5333333333333333,
+               "examples": [
+                 {
+-                  "target": "fire_3",
++                  "target": "fire_1",
+                   "distance": 1,
+-                  "beforeCost": 18,
++                  "beforeCost": null,
+                   "afterCost": 9
+                 },
+                 {
+-                  "target": "fire_3",
++                  "target": "fire_1",
+                   "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 9
+                 },
+                 {
+-                  "target": "water_3",
++                  "target": "fire_2",
+                   "distance": 1,
+-                  "beforeCost": 18,
++                  "beforeCost": null,
+                   "afterCost": 9
+                 }
+               ]
+             },
+             "strikeActionsSaved": 0,
+-            "deliveredDamage": 0.04938271604938271,
++            "deliveredDamage": 0.08641975308641975,
+             "incomeAt6": {
+               "ordinary": 0,
+               "shelf": 0,
+@@ -6990,8 +6934,8 @@
+               },
+               {
+                 "distance": 7,
+-                "before": 6,
+-                "after": 6
++                "before": 7,
++                "after": 7
+               }
+             ]
+           },
+@@ -7000,7 +6944,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 28,
++              "jointlyFeasible": 15,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -7021,46 +6965,46 @@
+               {
+                 "distance": 4,
+                 "before": 6,
+-                "after": 6
++                "after": 10
+               },
+               {
+                 "distance": 7,
+-                "before": 6,
+-                "after": 10
++                "before": 7,
++                "after": 15
+               }
+             ]
+           },
+           "speed": {
+-            "killCells": 30,
++            "killCells": 12,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 17,
+-              "jointlyFeasible": 28,
++              "newlyFeasible": 4,
++              "jointlyFeasible": 15,
+               "meanCrystalsSaved": 0,
+-              "meanActionsSaved": 0.35714285714285715,
++              "meanActionsSaved": 0.26666666666666666,
+               "examples": [
+                 {
+-                  "target": "fire_1",
++                  "target": "water_1",
+                   "distance": 7,
+                   "beforeCost": null,
+                   "afterCost": 9
+                 },
+                 {
+-                  "target": "fire_2",
++                  "target": "shadow_1",
+                   "distance": 7,
+                   "beforeCost": null,
+                   "afterCost": 9
+                 },
+                 {
+-                  "target": "fire_3",
+-                  "distance": 4,
++                  "target": "shadow_2",
++                  "distance": 7,
+                   "beforeCost": null,
+-                  "afterCost": 18
++                  "afterCost": 9
+                 }
+               ]
+             },
+             "strikeActionsSaved": 4,
+-            "deliveredDamage": 0.09876543209876543,
++            "deliveredDamage": 0.05555555555555555,
+             "incomeAt6": {
+               "ordinary": 0,
+               "shelf": 0,
+@@ -7079,8 +7023,8 @@
+               },
+               {
+                 "distance": 7,
+-                "before": 6,
+-                "after": 6
++                "before": 7,
++                "after": 7
+               }
+             ]
+           },
+@@ -7089,7 +7033,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 28,
++              "jointlyFeasible": 15,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -7114,16 +7058,16 @@
+               },
+               {
+                 "distance": 7,
+-                "before": 6,
+-                "after": 6
++                "before": 7,
++                "after": 7
+               }
+             ]
+           }
+         },
+         "attackSpeedSynergy": {
+-          "extraKillCellsBeyondAdditive": 15,
++          "extraKillCellsBeyondAdditive": 18,
+           "witness": {
+-            "target": "fire_3",
++            "target": "fire_1",
+             "distance": 3,
+             "actions": 2
+           }
+@@ -7139,13 +7083,13 @@
+       "attack": 2,
+       "defense": 5,
+       "speed": 2,
+-      "mining": 4,
++      "mining": 5,
+       "cost": 17,
+       "dominatedBy": [],
+       "role": {
+-        "feasible": 34128,
+-        "cheapest": 6064,
+-        "soleCheapest": 3754,
++        "feasible": 40734,
++        "cheapest": 11697,
++        "soleCheapest": 6888,
+         "witnesses": [
+           {
+             "mission": "strike fire_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive fire_2 hit",
+@@ -7160,7 +7104,7 @@
+             "nextBestPrice": null
+           },
+           {
+-            "mission": "strike fire_1 at distance 1 within 2 actions; mine >=4 crystals at turn end on rich ground; survive fire_2 hit",
++            "mission": "strike fire_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive fire_2 hit",
+             "tiedWith": [],
+             "cost": 17,
+             "nextBestPrice": null
+@@ -7250,7 +7194,7 @@
+             ],
+             "shelf": [
+               0,
+-              4,
++              5,
+               8,
+               8,
+               8,
+@@ -7259,9 +7203,9 @@
+             ],
+             "rich": [
+               0,
+-              4,
+-              8,
+-              12,
++              5,
++              10,
++              15,
+               16,
+               16,
+               16
+@@ -7300,16 +7244,6 @@
+             {
+               "distance": 4,
+               "frontier": [
+-                {
+-                  "cost": 6,
+-                  "actions": 5,
+-                  "bodies": 2,
+-                  "units": [
+-                    "lightning_1",
+-                    "fire_1"
+-                  ],
+-                  "damage": 5
+-                },
+                 {
+                   "cost": 10,
+                   "actions": 4,
+@@ -7334,16 +7268,6 @@
+             {
+               "distance": 7,
+               "frontier": [
+-                {
+-                  "cost": 10,
+-                  "actions": 6,
+-                  "bodies": 2,
+-                  "units": [
+-                    "lightning_2",
+-                    "lightning_1"
+-                  ],
+-                  "damage": 5
+-                },
+                 {
+                   "cost": 15,
+                   "actions": 3,
+@@ -7362,10 +7286,10 @@
+             "killCells": 45,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 6,
+-              "jointlyFeasible": 45,
+-              "meanCrystalsSaved": 4.155555555555556,
+-              "meanActionsSaved": 0.4666666666666667,
++              "newlyFeasible": 10,
++              "jointlyFeasible": 38,
++              "meanCrystalsSaved": 2.6842105263157894,
++              "meanActionsSaved": 0.15789473684210525,
+               "examples": [
+                 {
+                   "target": "fire_3",
+@@ -7376,7 +7300,7 @@
+                 {
+                   "target": "fire_3",
+                   "distance": 4,
+-                  "beforeCost": 34,
++                  "beforeCost": null,
+                   "afterCost": 17
+                 },
+                 {
+@@ -7402,13 +7326,13 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 6,
+-                "after": 6
++                "before": 10,
++                "after": 10
+               },
+               {
+                 "distance": 7,
+-                "before": 10,
+-                "after": 10
++                "before": 15,
++                "after": 15
+               }
+             ]
+           },
+@@ -7417,7 +7341,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 45,
++              "jointlyFeasible": 38,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -7437,13 +7361,13 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 6,
+-                "after": 6
++                "before": 10,
++                "after": 14
+               },
+               {
+                 "distance": 7,
+-                "before": 10,
+-                "after": 14
++                "before": 15,
++                "after": null
+               }
+             ]
+           },
+@@ -7451,26 +7375,26 @@
+             "killCells": 30,
+             "squad": {
+               "cases": 54,
+-              "newlyFeasible": 8,
+-              "jointlyFeasible": 45,
++              "newlyFeasible": 7,
++              "jointlyFeasible": 38,
+               "meanCrystalsSaved": 0,
+-              "meanActionsSaved": 0.7555555555555555,
++              "meanActionsSaved": 0.5263157894736842,
+               "examples": [
+                 {
+                   "target": "fire_3",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 34
+                 },
+                 {
+                   "target": "water_3",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 34
+                 },
+                 {
+                   "target": "plant_1",
+-                  "distance": 7,
++                  "distance": 4,
+                   "beforeCost": null,
+                   "afterCost": 34
+                 }
+@@ -7491,13 +7415,13 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 6,
+-                "after": 6
++                "before": 10,
++                "after": 10
+               },
+               {
+                 "distance": 7,
+-                "before": 10,
+-                "after": 10
++                "before": 15,
++                "after": 15
+               }
+             ]
+           },
+@@ -7506,7 +7430,7 @@
+             "squad": {
+               "cases": 54,
+               "newlyFeasible": 0,
+-              "jointlyFeasible": 45,
++              "jointlyFeasible": 38,
+               "meanCrystalsSaved": 0,
+               "meanActionsSaved": 0,
+               "examples": []
+@@ -7526,13 +7450,13 @@
+               },
+               {
+                 "distance": 4,
+-                "before": 6,
+-                "after": 6
++                "before": 10,
++                "after": 10
+               },
+               {
+                 "distance": 7,
+-                "before": 10,
+-                "after": 10
++                "before": 15,
++                "after": 15
+               }
+             ]
+           }
+@@ -7578,26 +7502,6 @@
+       "target": "water_3",
+       "distance": 4,
+       "solutions": [
+-        {
+-          "cost": 8,
+-          "actions": 6,
+-          "bodies": 2,
+-          "units": [
+-            "shadow_1",
+-            "shadow_1"
+-          ],
+-          "damage": 4
+-        },
+-        {
+-          "cost": 15,
+-          "actions": 5,
+-          "bodies": 2,
+-          "units": [
+-            "shadow_2",
+-            "lightning_2"
+-          ],
+-          "damage": 4
+-        },
+         {
+           "cost": 16,
+           "actions": 2,
+@@ -7716,16 +7620,6 @@
+       "target": "metal_3",
+       "distance": 4,
+       "solutions": [
+-        {
+-          "cost": 6,
+-          "actions": 5,
+-          "bodies": 2,
+-          "units": [
+-            "lightning_1",
+-            "fire_1"
+-          ],
+-          "damage": 5
+-        },
+         {
+           "cost": 10,
+           "actions": 4,
+@@ -7751,16 +7645,6 @@
+       "target": "metal_3",
+       "distance": 7,
+       "solutions": [
+-        {
+-          "cost": 10,
+-          "actions": 6,
+-          "bodies": 2,
+-          "units": [
+-            "lightning_2",
+-            "lightning_1"
+-          ],
+-          "damage": 5
+-        },
+         {
+           "cost": 15,
+           "actions": 3,
+diff --git a/muju/lab/results/current-static/current.md b/muju/lab/results/current-static/current.md
+index 7e691571..d1bbbebb 100644
+--- a/muju/lab/results/current-static/current.md
++++ b/muju/lab/results/current-static/current.md
+@@ -1,6 +1,6 @@
+ # Static value solver: current
+ 
+-Catalogue SHA-256: `a140fd0f0dffae7f7b2800f15b9a933b8e73f574bfbb193706855de3a3a21c0c`. Model SHA-256: `a5090b226e70bff60850ae2c09860b893380e7c83188c4f43a00487e62dc876b`.
++Catalogue SHA-256: `99f8875d65df594307c562962da4b807d54175e4da0fa765776456e25f11b9eb`. Model SHA-256: `28463203896b0455240e900fa6bf1ffd4364394bab6a6b1d659e18dc15f509df`.
+ 
+ **This is a set of local optimization results, not a universal power score or a proof of game balance.**
+ 
+@@ -10,24 +10,24 @@ Witness counts reflect this deliberately broad mission grid, not importance or e
+ 
+ | Unit | ATK/DEF/SPD/MINE | Cost | Same-tier dominators | Cheapest / sole-cheapest tasks | Example witness |
+ |---|---|---|---|---:|---|
+-| Hi (fire_1) | 2/1/2/1 | 3 | none | 2760 / 1992 | strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive no hit |
+-| Hono (fire_2) | 3/1/2/1 | 7 | none | 936 / 936 | strike water_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_2 hit |
+-| Kagari (fire_3) | 4/2/3/1 | 15 | none | 6774 / 6414 | strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_3 hit |
+-| Radi (lightning_1) | 1/1/3/0 | 3 | none | 1092 / 324 | strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit |
+-| Umeme (lightning_2) | 2/1/4/0 | 7 | none | 696 / 696 | strike fire_1 at distance 5 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit |
+-| Kimubunga (lightning_3) | 3/1/5/0 | 15 | none | 1092 / 732 | strike fire_1 at distance 6 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit |
++| Hi (fire_1) | 2/1/2/1 | 3 | none | 3450 / 2490 | strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive no hit |
++| Hono (fire_2) | 3/1/2/1 | 7 | none | 1560 / 1560 | strike water_1 at distance 2 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_2 hit |
++| Kagari (fire_3) | 4/2/3/1 | 15 | none | 6555 / 6105 | strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive plant_3 hit |
++| Radi (lightning_1) | 1/1/3/0 | 3 | none | 1365 / 405 | strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit |
++| Umeme (lightning_2) | 2/1/4/0 | 7 | none | 870 / 870 | strike fire_1 at distance 5 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit |
++| Kimubunga (lightning_3) | 3/1/5/0 | 15 | none | 1365 / 915 | strike fire_1 at distance 6 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit |
+ | Sjor (water_1) | 2/2/1/2 | 4 | none | 2874 / 2058 | strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive fire_1 hit |
+-| Straumr (water_2) | 2/3/1/2 | 8 | none | 2766 / 2766 | strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_2 hit |
+-| Aegirinn (water_3) | 3/4/2/3 | 16 | none | 10752 / 9927 | strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_3 hit |
++| Straumr (water_2) | 2/3/1/2 | 8 | none | 3612 / 3612 | strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_2 hit |
++| Aegirinn (water_3) | 3/4/2/3 | 16 | none | 13986 / 13056 | strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_3 hit |
+ | Göl (shadow_1) | 2/2/2/0 | 4 | none | 1404 / 588 | strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive fire_1 hit |
+ | Gölge (shadow_2) | 3/2/2/1 | 8 | none | 810 / 810 | strike fire_1 at distance 3 within 2 actions; mine >=1 crystals at turn end on rich ground; survive fire_1 hit |
+-| Karanlık (shadow_3) | 4/2/3/2 | 16 | none | 4464 / 3639 | strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive fire_1 hit |
+-| Muju (plant_1) | 0/3/1/3 | 5 | none | 736 / 208 | collect >=3 on ordinary reserve 4 within 1 turns; survive no hit |
+-| Sachita (plant_2) | 1/3/1/5 | 9 | none | 3549 / 2457 | strike water_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive no hit |
+-| Sachakuna (plant_3) | 2/4/1/8 | 17 | none | 14887 / 12577 | strike fire_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive no hit |
+-| Inyan (metal_1) | 1/3/1/2 | 5 | none | 3048 / 2520 | strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_1 hit |
+-| Mazask (metal_2) | 2/4/1/3 | 9 | none | 6408 / 5316 | strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_3 hit |
+-| Tanka (metal_3) | 2/5/2/4 | 17 | none | 6064 / 3754 | strike fire_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive fire_2 hit |
++| Karanlık (shadow_3) | 4/2/3/2 | 16 | none | 4569 / 3639 | strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive fire_1 hit |
++| Muju (plant_1) | 0/3/1/3 | 5 | none | 700 / 42 | occupy anchor at distance 1 within 1 moves; survive water_1 hit |
++| Sachita (plant_2) | 1/3/1/5 | 9 | none | 3957 / 1183 | strike water_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive no hit |
++| Sachakuna (plant_3) | 2/4/1/8 | 17 | none | 15097 / 10288 | strike fire_1 at distance 1 within 1 actions; mine >=6 crystals at turn end on rich ground; survive no hit |
++| Yan (metal_1) | 1/3/0/3 | 5 | none | 1690 / 1032 | strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_1 hit |
++| Mazask (metal_2) | 1/4/1/4 | 9 | none | 3680 / 906 | strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive shadow_3 hit |
++| Tanka (metal_3) | 2/5/2/5 | 17 | none | 11697 / 6888 | strike fire_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive fire_2 hit |
+ 
+ ## Marginal stat values (one extra point, holding opponents fixed)
+ 
+@@ -50,8 +50,8 @@ Attack and speed show newly reachable one-hit kill cells on the reporting grid.
+ | plant_1 | 24/972 | 0/972 / 4.00 | 0 / 0 / 0 | 3 → 6 | 12 |
+ | plant_2 | 36/972 | 12/972 / 4.00 | 0 / 0 / 0 | 3 → 6 | 18 |
+ | plant_3 | 30/972 | 30/972 / 4.00 | 0 / 0 / 0 | 6 → 6 | 15 |
+-| metal_1 | 36/972 | 12/972 / 4.00 | 0 / 0 / 4 | 3 → 6 | 18 |
+-| metal_2 | 30/972 | 30/972 / 4.00 | 0 / 0 / 0 | 6 → 6 | 15 |
++| metal_1 | 18/972 | 12/972 / unreachable before | 0 / 0 / 0 | 3 → 6 | 18 |
++| metal_2 | 36/972 | 12/972 / 4.00 | 0 / 0 / 0 | 6 → 6 | 18 |
+ | metal_3 | 45/972 | 30/972 / 1.33 | 0 / 0 / 0 | 6 → 6 | 15 |
+ 
+ ## Earliest financed exemplar (own turns)
+@@ -127,21 +127,21 @@ Cheapest same-type squad, at most four bodies and six actions, at distances 1/4/
+ 
+ | Unit | Mean crystals saved in jointly feasible cases | Newly feasible cases | Example |
+ |---|---:|---:|---|
+-| fire_1 | 1.05 (43 cases) | 8/54 | water_1, distance 1: 6 → 3 crystals |
+-| fire_2 | 0.55 (51 cases) | 2/54 | water_2, distance 1: 14 → 7 crystals |
+-| fire_3 | 0.83 (54 cases) | 0/54 | water_3, distance 1: 30 → 15 crystals |
+-| lightning_1 | 1.20 (35 cases) | 16/54 | fire_3, distance 1: 6 → 3 crystals |
+-| lightning_2 | 3.02 (51 cases) | 3/54 | water_1, distance 1: 14 → 7 crystals |
+-| lightning_3 | 1.67 (54 cases) | 0/54 | water_2, distance 1: 30 → 15 crystals |
++| fire_1 | 0.75 (36 cases) | 12/54 | water_1, distance 1: 6 → 3 crystals |
++| fire_2 | 0.29 (48 cases) | 4/54 | water_2, distance 1: 14 → 7 crystals |
++| fire_3 | 0.57 (53 cases) | 1/54 | water_3, distance 1: 30 → 15 crystals |
++| lightning_1 | 0.96 (28 cases) | 15/54 | fire_3, distance 1: 6 → 3 crystals |
++| lightning_2 | 2.44 (43 cases) | 8/54 | water_1, distance 1: 14 → 7 crystals |
++| lightning_3 | 1.18 (51 cases) | 2/54 | water_2, distance 1: 30 → 15 crystals |
+ | water_1 | 1.19 (27 cases) | 2/54 | water_2, distance 1: 8 → 4 crystals |
+ | water_2 | 2.37 (27 cases) | 2/54 | water_2, distance 1: 16 → 8 crystals |
+-| water_3 | 3.13 (46 cases) | 5/54 | water_3, distance 1: 32 → 16 crystals |
+-| shadow_1 | 0.92 (39 cases) | 7/54 | water_2, distance 1: 8 → 4 crystals |
+-| shadow_2 | 1.57 (46 cases) | 5/54 | water_3, distance 1: 16 → 8 crystals |
+-| shadow_3 | 1.78 (54 cases) | 0/54 | plant_3, distance 1: 32 → 16 crystals |
++| water_3 | 2.00 (40 cases) | 8/54 | water_3, distance 1: 32 → 16 crystals |
++| shadow_1 | 0.86 (37 cases) | 3/54 | water_2, distance 1: 8 → 4 crystals |
++| shadow_2 | 1.00 (40 cases) | 8/54 | water_3, distance 1: 16 → 8 crystals |
++| shadow_3 | 1.25 (51 cases) | 2/54 | plant_3, distance 1: 32 → 16 crystals |
+ | plant_1 | 5.83 (6 cases) | 9/54 | water_1, distance 1: 10 → 5 crystals |
+ | plant_2 | 4.80 (15 cases) | 13/54 | fire_1, distance 1: infeasible → 9 crystals |
+ | plant_3 | 3.64 (28 cases) | 5/54 | fire_3, distance 1: 34 → 17 crystals |
+-| metal_1 | 2.67 (15 cases) | 13/54 | fire_1, distance 1: infeasible → 5 crystals |
+-| metal_2 | 1.93 (28 cases) | 5/54 | fire_3, distance 1: 18 → 9 crystals |
+-| metal_3 | 4.16 (45 cases) | 6/54 | fire_3, distance 1: 34 → 17 crystals |
++| metal_1 | 3.64 (11 cases) | 7/54 | fire_1, distance 1: infeasible → 5 crystals |
++| metal_2 | 4.80 (15 cases) | 13/54 | fire_1, distance 1: infeasible → 9 crystals |
++| metal_3 | 2.68 (38 cases) | 10/54 | fire_3, distance 1: 34 → 17 crystals |
+diff --git a/muju/lab/solver/model.ts b/muju/lab/solver/model.ts
+index 308c7439..40e6eaf5 100644
+--- a/muju/lab/solver/model.ts
++++ b/muju/lab/solver/model.ts
+@@ -1,3 +1,4 @@
++import { movementActionCost } from '../../src/game/movement';
+ /** Deterministic local optimization, not a game-playing bot or a universal power rating. */
+ import { reserveTake } from '../../src/game/mining';
+ import { upkeepForTier } from '../../src/game/upkeep';
+@@ -14,7 +15,7 @@ export function validateCatalogue(catalogue: Catalogue): void {
+     const unit = catalogue.find(d => d.id === `${element}_${tier}`);
+     if (!unit || unit.element !== element || unit.tier !== tier) throw new Error(`Missing/mismatched ${element}_${tier}`);
+     for (const key of ['attack', 'defense', 'speed', 'mining', 'cost'] as const) {
+-      if (!Number.isInteger(unit[key]) || unit[key] < (key === 'attack' || key === 'mining' ? 0 : 1)) throw new Error(`Invalid ${unit.id}.${key}`);
++      if (!Number.isInteger(unit[key]) || unit[key] < (key === 'attack' || key === 'mining' || key === 'speed' ? 0 : 1)) throw new Error(`Invalid ${unit.id}.${key}`);
+     }
+     if (unit.mining > 8) throw new Error('Catalogue mining is capped at eight');
+   }
+@@ -45,7 +46,7 @@ export function power(attacker: UnitDefinition, defender: UnitDefinition): numbe
+ /** Open shortest-path distance. One attack, never repeated on the same target. */
+ export function strikeActions(unit: UnitDefinition, distance: number): number {
+   if (distance < 1 || !Number.isInteger(distance)) throw new Error('Positive integer distance required');
+-  return Math.ceil((distance - 1) / unit.speed) + 1;
++  return movementActionCost(distance - 1, unit.speed) + 1;
+ }
+ export function canKill(unit: UnitDefinition, target: UnitDefinition, distance: number, actions: number): boolean {
+   return strikeActions(unit, distance) <= actions && power(unit, target) >= target.defense;
+@@ -165,7 +166,7 @@ export function solveRoles(catalogue: Catalogue): Record<string, RoleEvidence> {
+   // Anchor occupation need not involve an attack or income.
+   for (let distance = 1; distance <= 18; distance++) for (const actions of [1, 2, 3]) for (const guard of guards) {
+     mission(`occupy anchor at distance ${distance} within ${actions} moves; survive ${guard?.id ?? 'no'} hit`,
+-      u => Math.ceil(distance / u.speed) <= actions && (!guard || u.defense > power(guard, u)));
++      u => movementActionCost(distance, u.speed) <= actions && (!guard || u.defense > power(guard, u)));
+   }
+   return evidence;
+ }
+@@ -180,7 +181,7 @@ export function metrics(unit: UnitDefinition, opponents: Catalogue) {
+   for (const distance of DISTANCES) actionTotal += strikeActions(unit, distance);
+   const defense = [1, 4, 7].map(distance => ({ distance, frontier: killFrontier(unit, opponents, distance) }));
+   return { killCells: kills, cells, deliveredDamage: damageTotal / cells,
+-    meanStrikeActions: actionTotal / DISTANCES.length,
++    meanStrikeActions: Number.isFinite(actionTotal) ? actionTotal / DISTANCES.length : null,
+     income: Object.fromEntries(Object.entries(RESERVES).map(([name, reserve]) => [name, passiveCurve(unit, reserve)])),
+     turnsToEmpty: Object.fromEntries(Object.entries(RESERVES).map(([name,reserve])=>[name,turnsToEmpty(unit,reserve)])),
+     defense };
+@@ -206,7 +207,7 @@ export function marginalValues(unit: UnitDefinition, opponents: Catalogue) {
+     const changed = metrics({ ...unit, [stat]: unit[stat] + 1 }, opponents);
+     return [stat, { killCells: changed.killCells - base.killCells,
+       squad: squadMarginal(unit, { ...unit, [stat]: unit[stat] + 1 }, opponents),
+-      strikeActionsSaved: base.meanStrikeActions - changed.meanStrikeActions,
++      strikeActionsSaved: base.meanStrikeActions === null || changed.meanStrikeActions === null ? null : base.meanStrikeActions - changed.meanStrikeActions,
+       deliveredDamage: changed.deliveredDamage - base.deliveredDamage,
+       incomeAt6: Object.fromEntries(Object.keys(RESERVES).map(name => [name, changed.income[name][6] - base.income[name][6]])),
+       defenseKillCost: changed.defense.map((d, i) => ({ distance: d.distance,
+diff --git a/muju/lab/solver/run.ts b/muju/lab/solver/run.ts
+index 27ee2a2e..d321b10f 100644
+--- a/muju/lab/solver/run.ts
++++ b/muju/lab/solver/run.ts
+@@ -55,7 +55,7 @@ lines.push('', '## Marginal stat values (one extra point, holding opponents fixe
+   '|---|---:|---:|---:|---|---:|');
+ for (const d of rows) {
+   const c = d.value.changes, defense = c.defense.defenseKillCost[0];
+-  lines.push(`| ${d.id} | ${c.attack.killCells}/${d.value.base.cells} | ${c.speed.killCells}/${d.value.base.cells} / ${c.speed.strikeActionsSaved.toFixed(2)} | ${c.mining.incomeAt6.ordinary} / ${c.mining.incomeAt6.shelf} / ${c.mining.incomeAt6.rich} | ${defense.before ?? 'unbreakable'} → ${defense.after ?? 'unbreakable'} | ${d.value.attackSpeedSynergy.extraKillCellsBeyondAdditive} |`);
++  lines.push(`| ${d.id} | ${c.attack.killCells}/${d.value.base.cells} | ${c.speed.killCells}/${d.value.base.cells} / ${(c.speed.strikeActionsSaved?.toFixed(2) ?? 'unreachable before')} | ${c.mining.incomeAt6.ordinary} / ${c.mining.incomeAt6.shelf} / ${c.mining.incomeAt6.rich} | ${defense.before ?? 'unbreakable'} → ${defense.after ?? 'unbreakable'} | ${d.value.attackSpeedSynergy.extraKillCellsBeyondAdditive} |`);
+ }
+ lines.push('', '## Earliest financed exemplar (own turns)', '',
+   'Income is external crystals per turn, paid AFTER placement/promotion. Starting units are free. No enemy or travel; tier rent is modeled here. Promotion permits immediate action; freshly placed pieces cannot promote again that turn.', '',
+diff --git a/muju/public/skills/muju-hono-tanka/SKILL.md b/muju/public/skills/muju-hono-tanka/SKILL.md
+index 84503764..80d13a44 100644
+--- a/muju/public/skills/muju-hono-tanka/SKILL.md
++++ b/muju/public/skills/muju-hono-tanka/SKILL.md
+@@ -421,3 +421,7 @@ Rooms close and archive after 24 hours without a successful game action (creatio
+ starts the deadline). Joins, takeovers, reads, previews and staging edits do not
+ reset it. Archived rooms are read-only; history and positions remain available
+ for analysis. New commands return `ROOM_ARCHIVED`.
++
++## Metal catalogue (v2.9)
++
++Yan (`metal_1`): ATK/DEF/SPD/MINE 1/3/0/3; Mazask: 1/4/1/4; Tanka: 2/5/2/5. Costs remain 5/9/17. Yan cannot move until promoted, but can attack adjacent enemies, mine and anchor purchases.
+diff --git a/muju/server/analysis/tactics.ts b/muju/server/analysis/tactics.ts
+index a2147ed3..82328f62 100644
+--- a/muju/server/analysis/tactics.ts
++++ b/muju/server/analysis/tactics.ts
+@@ -1,3 +1,4 @@
++import { movementActionCost } from '../../src/game/movement';
+ import type { AIAction } from '../../src/ai/types';
+ import { applyAction } from '../../src/ai/simulate';
+ import { generateAllActions } from '../../src/ai/moves';
+@@ -49,7 +50,7 @@ export function damageUpperBound(s: GameState, target: Unit, categories: Categor
+     const variants = [u], next = getNextTierDefinition(u.definitionId);
+     if (preparing && next && (categories.includes('promotion') || categories.includes('combined')) &&
+       next.cost - getUnitDefinition(u.definitionId).cost <= cash) variants.push({ ...u, definitionId: next.id });
+-    choices.push(variants.map(v => ({ cost: Math.ceil(Math.max(0, manhattanDistance(v.position, target.position) - 1) / getUnitDefinition(v.definitionId).speed) + 1,
++    choices.push(variants.map(v => ({ cost: movementActionCost(Math.max(0, manhattanDistance(v.position, target.position) - 1), getUnitDefinition(v.definitionId).speed) + 1,
+       damage: calculateAttackPower(v, target) })));
+   }
+   if (preparing && (categories.includes('purchase') || categories.includes('combined'))) {
+diff --git a/muju/server/observation.ts b/muju/server/observation.ts
+index c4d66668..efd8c385 100644
+--- a/muju/server/observation.ts
++++ b/muju/server/observation.ts
+@@ -159,7 +159,7 @@ export const rules = {
+   history: 'muju_history reads the persistent room score, including upkeep, purchases, public summon commitments/arrivals/refunds, promotions, move paths/AP, combat outcomes and per-unit mining. Use before/after sequence cursors to page; default omits undone commands. History is public and available in the browser room sidebar. Older rooms mark where detailed recording began.',
+   turn: ['Pay tier 2/3 upkeep at turn start (1/2 crystals per unit). Tier 1 stays free; release higher tiers if needed.',
+     'Place: buy tier 1 units in controlled empty squares, or promote existing units by one tier, paying the cost difference. Newly placed units cannot promote this turn.',
+-    'Act: spend up to 4 shared actions per turn. Movement is orthogonal through empty cells; cost is ceil(path length / speed). Attacks target orthogonally adjacent enemies and cost 1.',
++    'Act: spend up to 4 shared actions per turn. Movement is orthogonal through empty cells; cost is ceil(path length / speed). Speed 0 pieces cannot move, but may attack adjacent enemies. Attacks target orthogonally adjacent enemies and cost 1.',
+     'End the action phase to collect finite crystals beneath each unit, then hand play to the other player.'],
+   combat: 'Attack ≥ remaining defense eliminates. Otherwise damage lasts until the defender’s turn starts. A unit gets one attack; its own killing blow unlocks another, up to its tier. Moving can repeat while actions remain.',
+   elements: 'Fire/Lightning beats Plant/Metal beats Water/Shadow beats Fire/Lightning. Advantage +1 attack; disadvantage −1, minimum 0.',
+diff --git a/muju/src/ai/hard/core/movement.ts b/muju/src/ai/hard/core/movement.ts
+index 8ce10a7b..c291e6f0 100644
+--- a/muju/src/ai/hard/core/movement.ts
++++ b/muju/src/ai/hard/core/movement.ts
+@@ -100,7 +100,7 @@ export function bfsMulti(occ: BB, sources: BB, out: Int8Array): void {
+  */
+ export function moveCost(dist: Int8Array, to: Square, speed: number): number {
+   const d = dist[to];
+-  if (d <= 0) return -1;
++  if (d <= 0 || speed <= 0) return -1;
+   return ((d + speed - 1) / speed) | 0;
+ }
+ 
+diff --git a/muju/src/ai/hard/core/state.ts b/muju/src/ai/hard/core/state.ts
+index e4fa5ebe..93a04c74 100644
+--- a/muju/src/ai/hard/core/state.ts
++++ b/muju/src/ai/hard/core/state.ts
+@@ -714,6 +714,7 @@ export class Replica {
+         if (s === DEAD || p.owner[slot] !== side) continue;
+         if ((p.uflags[slot] & F_CAN_ACT) === 0) continue;
+         const speed = this.cat.spd[p.defId[slot]];
++        if (speed <= 0) continue;
+         const dist = this.dist.get(p, s);
+         for (let to = 0; to < BOARD; to++) {
+           const d = dist[to];
+diff --git a/muju/src/ai/hard/gen/promote.ts b/muju/src/ai/hard/gen/promote.ts
+index 2b1196e8..36035d20 100644
+--- a/muju/src/ai/hard/gen/promote.ts
++++ b/muju/src/ai/hard/gen/promote.ts
+@@ -228,9 +228,9 @@ function bestMission(
+     }
+   }
+ 
+-  // REACH — the two promotions that buy speed (`lightning_2→3`, `metal_2→3`).
++  // REACH — speed upgrades, including stationary Yan becoming mobile.
+   const speedGain = cat.spd[next] - cat.spd[def];
+-  if (speedGain > 0 && cat.tier[def] === 2) {
++  if (speedGain > 0) {
+     outBenefit[0] = speedGain * ACTION_VALUE_CC;
+     return Mission.REACH;
+   }
+diff --git a/muju/src/ai/hard/gen/purchase.ts b/muju/src/ai/hard/gen/purchase.ts
+index 41349f13..fdcd6cb0 100644
+--- a/muju/src/ai/hard/gen/purchase.ts
++++ b/muju/src/ai/hard/gen/purchase.ts
+@@ -347,7 +347,7 @@ function dropsLightning(p: PackedState, t: NodeTables, side: Side): boolean {
+ 
+ /**
+  * `metal_1` loses to `plant_1` when every candidate square already mines well
+- * (`reserve ≥ 3`, so Muju's MINE 3 dominates Inyan's 2) and Inyan's ATK 1
++ * (`reserve ≥ 3`, where Muju and Yan both mine 3) and Yan's ATK 1
+  * completes no lethal answer Muju's ATK 0 cannot.
+  */
+ function dropsMetal(p: PackedState, t: NodeTables, cat: Catalog, side: Side, metal1: DefId, plant1: DefId): boolean {
+diff --git a/muju/src/ai/hard/tables/approach.ts b/muju/src/ai/hard/tables/approach.ts
+index e17603f9..f6c4424e 100644
+--- a/muju/src/ai/hard/tables/approach.ts
++++ b/muju/src/ai/hard/tables/approach.ts
+@@ -229,7 +229,6 @@ export function approachTable(
+         if (cat.power[powerIndex(attacker, def, targetDef)] < effDef) continue;
+         if (attacker === p.side && !attackerReady(p, a, def, cat)) continue;
+         const speed = cat.spd[def];
+-        if (speed < 1) continue;
+         if (MANHATTAN[from * 100 + targetSq] > speed * maxMoves + 1) continue;
+         if (dist === null) dist = t.dist.get(p, from);
+         classifyFrom(p, t, dist, from, speed, v, def, sc, ply, cat, defenderUnits, res);
+@@ -243,7 +242,6 @@ export function approachTable(
+         if (cat.cost[def] > bank) continue;
+         if (cat.power[powerIndex(attacker, def, targetDef)] < effDef) continue;
+         const speed = cat.spd[def];
+-        if (speed < 1) continue;
+         classifyFrom(p, t, buyDist, -1, speed, v, def, sc, ply, cat, defenderUnits, res);
+         considerCandidate(res, 1, i);
+       }
+@@ -317,7 +315,7 @@ function classifyFrom(
+   out.buy = originSq >= 0 && p.pieceAt[originSq] !== NO_SLOT ? 0 : 1;
+ 
+   const targetSq = p.sq[targetSlot];
+-  if (targetSq === DEAD || speed < 1) return out;
++  if (targetSq === DEAD) return out;
+   const defender = p.owner[targetSlot] as Side;
+   const attacker = (1 - defender) as Side;
+   const budget = attacker === p.side ? p.actions : ACTIONS_PER_TURN;
+@@ -362,14 +360,14 @@ function classifyFrom(
+ 
+   for (let q = bbNext(candidates, -1); q >= 0; q = bbNext(candidates, q)) {
+     const d = dist[q];
+-    if (d < 0) continue;
++    if (d < 0 || (speed === 0 && d > 0)) continue;
+     const cost = d === 0 ? 0 : ((d + speed - 1) / speed) | 0;
+     if (cost + 1 > budget) continue;
+     const left = budget - cost - 1;
+ 
+     let cls: Approach = Approach.STRAND;
+     let retreats = 0;
+-    if (!decisive && left >= 1) {
++    if (speed > 0 && !decisive && left >= 1) {
+       const after = sc.bb(ply, SC_AFTER);
+       bbCopy(after, p.occ);
+       if (originSq >= 0) clearSquare(after, originSq);
+diff --git a/muju/src/ai/hard/tables/kill.ts b/muju/src/ai/hard/tables/kill.ts
+index 080ee9c0..af16fa20 100644
+--- a/muju/src/ai/hard/tables/kill.ts
++++ b/muju/src/ai/hard/tables/kill.ts
+@@ -250,7 +250,7 @@ function canAttack(p: PackedState, cat: Catalog, slot: Slot): boolean {
+ /** `ceil(distance / speed) + 1` — the approach plus the hit; 0 steps still
+  * costs the single attack action (DESIGN §5.7 "0 → 1 when adjacent"). */
+ function actionCost(distance: number, speed: number): number {
+-  return (((distance + speed - 1) / speed) | 0) + 1;
++  return distance === 0 ? 1 : speed > 0 ? (((distance + speed - 1) / speed) | 0) + 1 : Infinity;
+ }
+ 
+ function pushCandidate(
+@@ -696,7 +696,7 @@ export function cleavePlan(
+     if (q !== origin) {
+       const d = dist[q];
+       if (d <= 0 || d > reach) continue;
+-      approach = ((d + speed - 1) / speed) | 0;
++      approach = speed > 0 ? ((d + speed - 1) / speed) | 0 : Infinity;
+     }
+     const left = ACTIONS_PER_TURN - approach;
+     if (left <= 0) continue;
+diff --git a/muju/src/ai/hard/tables/threat.ts b/muju/src/ai/hard/tables/threat.ts
+index 8e7b162b..95dabd47 100644
+--- a/muju/src/ai/hard/tables/threat.ts
++++ b/muju/src/ai/hard/tables/threat.ts
+@@ -12,8 +12,8 @@
+  * BFS from a set returns `min` over the sources of the single-source distance
+  * over the same `~occ` graph, and every source is seeded at 0 whether or not
+  * its own square is occupied — so the multi-source ball is the union of the
+- * per-unit balls, square for square. Three speeds exist (Sjor/Muju/Inyan 1,
+- * Hi/Göl 2, Radi 3), so a side costs at most three BFS.
++ * per-unit balls, square for square. Four speeds exist (Yan 0, Sjor/Muju 1,
++ * Hi/Göl 2, Radi 3), so a side costs at most four BFS.
+  *
+  * `strikeIfBought` is the same construction with the side's legal spawn mask
+  * as the source set and `3 · speed` as the radius, one BFS shared by every
+@@ -161,11 +161,10 @@ export function nearestOwner(
+     const from = p.sq[slot];
+     if (from === DEAD || p.owner[slot] !== side) continue;
+     const speed = cat.spd[p.defId[slot]];
+-    if (speed <= 0) continue;
+     const dist = t.dist.get(p, from);
+     for (let q = 0; q < BOARD; q++) {
+       const d = dist[q];
+-      if (d < 0) continue;
++      if (d < 0 || (speed === 0 && d > 0)) continue;
+       const cost = d === 0 ? 0 : ((d + speed - 1) / speed) | 0;
+       if (cost < outCost[q]) {
+         outCost[q] = cost;
+diff --git a/muju/src/ai/hard/tactics/prover.ts b/muju/src/ai/hard/tactics/prover.ts
+index 5071fc70..fd19c138 100644
+--- a/muju/src/ai/hard/tactics/prover.ts
++++ b/muju/src/ai/hard/tactics/prover.ts
+@@ -425,7 +425,7 @@ function damageBoundCore(dp: Int32Array, preparing: boolean): boolean {
+       const raw = MANHATTAN[s * BOARD + occupierSq] - 1;
+       const distance = raw > 0 ? raw : 0;
+       const speed = cat.spd[attackerDef];
+-      const cost = (((distance + speed - 1) / speed) | 0) + 1;
++      const cost = distance === 0 ? 1 : speed > 0 ? (((distance + speed - 1) / speed) | 0) + 1 : Infinity;
+       const power = cat.power[powerIndex(defenderSide, attackerDef, victimDef)];
+       for (let hits = 1; hits <= 2; hits++) {
+         for (let used = cost; used <= actions; used++) {
+diff --git a/muju/src/ai/planner/strategies.ts b/muju/src/ai/planner/strategies.ts
+index ddf9cea2..c2bb836b 100644
+--- a/muju/src/ai/planner/strategies.ts
++++ b/muju/src/ai/planner/strategies.ts
+@@ -1,3 +1,4 @@
++import { movementActionCost } from '../../game/movement';
+ import { getActionsPerTurn } from '../../game/rules';
+ import type { GameState, PlayerId } from '../../game/types';
+ import type { TurnPlan } from './types';
+@@ -24,7 +25,7 @@ export function strategicValue(state: GameState, player: PlayerId): number {
+       const route = getMoveCost(u.position, target, d.speed, state.board);
+       if (route !== null) closest = Math.min(closest, route);
+       // A modest raiding prior breaks aimless wandering once local ore is dry.
+-      if (d.attack > 0) score += sign * Math.max(0, actions + 1 - Math.ceil(distance / d.speed)) * 1.2;
++      if (d.attack > 0) score += sign * Math.max(0, actions + 1 - movementActionCost(distance, d.speed)) * 1.2;
+     }
+     if (state.victoryRule !== 'elimination' && closest <= actions) {
+       const home = state.players[other].startCorner;
+diff --git a/muju/src/ai/wasm/kernel.ts b/muju/src/ai/wasm/kernel.ts
+index 2eda027a..2c154776 100644
+--- a/muju/src/ai/wasm/kernel.ts
++++ b/muju/src/ai/wasm/kernel.ts
+@@ -1,3 +1,4 @@
++import { movementActionCost } from '../../game/movement';
+ import type { GameState } from '../../game/types';
+ import { getActionsPerTurn } from '../../game/rules';
+ import { UNIT_DEFINITIONS, getUnitDefinition } from '../../game/units';
+@@ -90,7 +91,7 @@ export function canPossiblyRemove(state: GameState, targetId: string): boolean {
+   for (const u of state.board.units) {
+     if (u.owner !== state.turn.currentPlayer || !canAttack(u) || u.attackedThisTurn?.includes(targetId)) continue;
+     const distance = Math.max(0, Math.abs(u.position.x - target.position.x) + Math.abs(u.position.y - target.position.y) - 1);
+-    if (Math.ceil(distance / getUnitDefinition(u.definitionId).speed) + 1 <= state.turn.actionsRemaining) {
++    if (movementActionCost(distance, getUnitDefinition(u.definitionId).speed) + 1 <= state.turn.actionsRemaining) {
+       count++; power += calculateAttackPower(u, target);
+     }
+   }
+diff --git a/muju/src/ai/wasm/tactics.wasm b/muju/src/ai/wasm/tactics.wasm
+index 65f4cdcffb08be28f9caa1a37b937debbc88faee..4fb499ab53b0b9ca8ab4dde84a63a9b8b10a93f2 100644
+GIT binary patch
+delta 170
+zcmexiH`{*0Rz}8Wo3}B#3o_oG{7)z(Oo_#jK>>*Uq!n3|Wt4f8Sk0Ii6j&9Q1k@eb
+zavYhm1e6q66<Ap66<8e^ynqyo0&A8dW3~cot|Ma>tK)wlVCQCaWaL(0@L_RKU<QgR
+zGEeRmmXu-!Yfu&y&{kmd0qW*fmT_dsQjy{Qv-yB94>Kdv<kMmX%&xo)lmCjzvMX^q
+OGWhT^Y?cv^;Q#<w-zBa9
+
+delta 137
+zcmbPj|HE#>Rz}9do3}B#3o;&<{7)!^Ns)PSoUnMP5~~8UBLfKgNoP4SW-GAfIx=P{
+zF!-=ID6jxoiYy9D%Ax{V3P2_!H@5;4NQ{XG#AI<~@M5V4N@^=G`mj1Oa4X9=vSg{q
+faDUl+TbPG=@=Gy&CKiXu(&DmAikzG6#bY=CkR=?-
+
+diff --git a/muju/src/components/InstructionsModal.tsx b/muju/src/components/InstructionsModal.tsx
+index bcb2c1ac..1352fce2 100644
+--- a/muju/src/components/InstructionsModal.tsx
++++ b/muju/src/components/InstructionsModal.tsx
+@@ -35,7 +35,7 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
+   </>},
+   {title:'Movement', content:<>
+     <p>Move orthogonally through empty squares. One action moves a piece up to its Speed. Longer moves cost the shortest path length divided by Speed, rounded up. Pieces cannot pass through other pieces.</p>
+-    <p>{hi.name} has Speed {hi.speed}. Moving three squares costs {Math.ceil(3/hi.speed)} actions. A piece may move repeatedly while shared actions remain.</p>
++    <p>{hi.name} has Speed {hi.speed}. Moving three squares costs {Math.ceil(3/hi.speed)} actions. A piece with positive Speed may move repeatedly while shared actions remain. Yan has Speed 0: it cannot move, but can attack adjacent enemies and promote to gain movement.</p>
+   </>},
+   {title:'Combat & Cleave', content:<>
+     <p>Attack an orthogonally adjacent enemy for one action. Attack reduces its remaining Defense; reaching zero eliminates it. There is no retaliation. Damage accumulates until the damaged unit’s next turn and heals at the start of the damaged piece’s own turn.</p>
+diff --git a/muju/src/game/homeCheckmate.ts b/muju/src/game/homeCheckmate.ts
+index ac195903..3b424d04 100644
+--- a/muju/src/game/homeCheckmate.ts
++++ b/muju/src/game/homeCheckmate.ts
+@@ -1,3 +1,4 @@
++import { movementActionCost } from './movement';
+ import type { GameState, PlayerId, Unit } from './types';
+ import type { AIAction } from '../ai/types';
+ import { getHomeOccupier, getOpponent } from './victory';
+@@ -38,7 +39,7 @@ function enoughPossibleDamage(state: GameState, target: Unit, preparing: boolean
+     const updated = power.map(row => [...row]);
+     for (const attacker of choices) {
+       const distance = Math.max(0, manhattanDistance(attacker.position, target.position) - 1);
+-      const cost = Math.ceil(distance / getUnitDefinition(attacker.definitionId).speed) + 1;
++      const cost = movementActionCost(distance, getUnitDefinition(attacker.definitionId).speed) + 1;
+       for (let hits = 1; hits <= 2; hits++) for (let used = cost; used <= actions; used++) {
+         updated[hits][used] = Math.max(updated[hits][used], power[hits - 1][used - cost] + calculateAttackPower(attacker, target));
+       }
+diff --git a/muju/src/game/movement.ts b/muju/src/game/movement.ts
+index e7dbc358..edc15c9a 100644
+--- a/muju/src/game/movement.ts
++++ b/muju/src/game/movement.ts
+@@ -14,7 +14,7 @@ import { canAttack } from './combat';
+  * Units can move multiple times per turn if they have actions remaining.
+  */
+ export function canMove(unit: Unit): boolean {
+-  return unit.canActThisTurn;
++  return unit.canActThisTurn && getUnitDefinition(unit.definitionId).speed > 0;
+ }
+ 
+ /**
+@@ -213,6 +213,11 @@ export function getAttackFrontier(unit: Unit, board: BoardState, moveActions = 3
+   ));
+ }
+ 
++/** Open-path action cost, including stationary pieces and already-adjacent attacks. */
++export function movementActionCost(distance: number, speed: number): number {
++  return distance === 0 ? 0 : speed > 0 ? Math.ceil(distance / speed) : Infinity;
++}
++
+ /**
+  * Calculate the number of actions required to move from one position to another.
+  * Returns null if the position is not reachable.
+@@ -229,6 +234,7 @@ export function getMoveCost(
+   speed: number,
+   board: BoardState
+ ): number | null {
++  if (speed <= 0) return null;
+   const distance = distancesFrom(startPosition, board).distances[targetPosition.y * 10 + targetPosition.x];
+   return distance > 0 ? Math.ceil(distance / speed) : null;
+ }
+diff --git a/muju/src/game/replay.ts b/muju/src/game/replay.ts
+index bb1503a6..e84741ab 100644
+--- a/muju/src/game/replay.ts
++++ b/muju/src/game/replay.ts
+@@ -33,6 +33,9 @@ function splitMoveFrame(before: BoardState, frame: ReplayFrame): ReplayFrame[] {
+   const unit = before.units.find(u => u.id === action.unitId);
+   if (!unit) return [frame];
+   const { speed, name } = getUnitDefinition(unit.definitionId);
++  // Old recordings may contain Metal moves from before Yan became stationary.
++  // Preserve their recorded snapshot instead of splitting it with current Speed 0.
++  if (speed <= 0) return [frame];
+   const path = findPath(unit.position, action.to, before, BOARD_SIZE * BOARD_SIZE);
+   if (!path || path.length <= speed) return [frame];
+   const frames: ReplayFrame[] = [];
+diff --git a/muju/src/game/units.ts b/muju/src/game/units.ts
+index 442f283e..c3b94ba5 100644
+--- a/muju/src/game/units.ts
++++ b/muju/src/game/units.ts
+@@ -1,7 +1,7 @@
+ import type { UnitDefinition, Element } from './types';
+ 
+-// All 18 unit definitions — v2.8: Plant Mining 3/5/8.
+-// See docs/EXPANSION_ECONOMY-2026-09-13.md; prices and combat stats are unchanged.
++// All 18 unit definitions — v2.9: Yan and Metal stats revised.
++// Stable IDs and prices are unchanged; see SPEC.md and docs/changes/2026-09-18-metal-yan.md.
+ export const UNIT_DEFINITIONS: UnitDefinition[] = [
+   // Fire (Rush) - Japanese
+   {
+@@ -196,14 +196,14 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
+   // Metal (Expand) - Lakota
+   {
+     id: 'metal_1',
+-    name: 'Inyan',
++    name: 'Yan',
+     element: 'metal',
+     tier: 1,
+     archetype: 'expand',
+     attack: 1,
+     defense: 3,
+-    speed: 1,
+-    mining: 2,
++    speed: 0,
++    mining: 3,
+     cost: 5,
+   },
+   {
+@@ -212,10 +212,10 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
+     element: 'metal',
+     tier: 2,
+     archetype: 'expand',
+-    attack: 2,
++    attack: 1,
+     defense: 4,
+     speed: 1,
+-    mining: 3,
++    mining: 4,
+     cost: 9,
+   },
+   {
+@@ -227,7 +227,7 @@ export const UNIT_DEFINITIONS: UnitDefinition[] = [
+     attack: 2,
+     defense: 5,
+     speed: 2,
+-    mining: 4,
++    mining: 5,
+     cost: 17,
+   },
+ ];
+diff --git a/muju/tests/ai/hard/deadline.test.ts b/muju/tests/ai/hard/deadline.test.ts
+index f0bed24e..be86047e 100644
+--- a/muju/tests/ai/hard/deadline.test.ts
++++ b/muju/tests/ai/hard/deadline.test.ts
+@@ -195,7 +195,9 @@ describe('device profile under A11', () => {
+     // (deploy run 35346032064, 2026-09-18), so it is asserted only with the
+     // wall-clock flag; the structural claims below always run.
+     if (process.env.MUJU_WALLCLOCK_TESTS) expect(result.work).toBeGreaterThanOrEqual(MIN_PROFILE_SAMPLE_WORK);
+-    expect(engine.profile.samples).toBe(1);
++    // A slow runner may abort below A16's minimum useful sample. That must
++    // preserve the profile; reaching the floor must update it even on abort.
++    expect(engine.profile.samples).toBe(result.work >= MIN_PROFILE_SAMPLE_WORK ? 1 : 0);
+     expect(engine.profile.unitsPerMs).toBeGreaterThan(0);
+   });
+ 
+diff --git a/muju/tests/ai/hard/eval-correct.test.ts b/muju/tests/ai/hard/eval-correct.test.ts
+index c92c443b..1913dd7b 100644
+--- a/muju/tests/ai/hard/eval-correct.test.ts
++++ b/muju/tests/ai/hard/eval-correct.test.ts
+@@ -1,4 +1,5 @@
+ // @vitest-environment node
++import "../../fixtures/metal-v28-catalogue";
+ /**
+  * The E3.2 correctness flags, `HardConfig.evalFix` B1–B5
+  * (`docs/hard-ai/e3/E3.1-SYNTHESIS.md` §5, `docs/hard-ai/e3/E3.2-CORRECTNESS-ARM.md`).
+diff --git a/muju/tests/ai/hard/income.test.ts b/muju/tests/ai/hard/income.test.ts
+index 88b30fcd..3e1342f0 100644
+--- a/muju/tests/ai/hard/income.test.ts
++++ b/muju/tests/ai/hard/income.test.ts
+@@ -49,12 +49,12 @@ describe('core/income.ts', () => {
+     expect([...GAMMA_Q16]).toEqual([65536, 58982, 53084, 47776, 42998, 38698, 34829, 31346, 28211, 25390, 22851, 20566, 18509]);
+   });
+ 
+-  it('PST_MINE reproduces the JF §2.1 check values', () => {
++  it('PST_MINE reproduces current mining values (Metal v2.9)', () => {
+     const row = (id: string, reserve: number): number => pstMine(defId(id), reserve);
+     expect([row('fire_1', 16), row('water_1', 16), row('plant_1', 16), row('plant_2', 16), row('plant_3', 16), row('metal_3', 16)])
+-      .toEqual([646, 1025, 1159, 1285, 1368, 1238]);
++      .toEqual([646, 1025, 1159, 1285, 1368, 1285]);
+     expect([row('fire_1', 8), row('water_1', 8), row('plant_1', 8), row('plant_2', 8), row('plant_3', 8), row('metal_3', 8)])
+-      .toEqual([513, 619, 659, 693, 720, 684]);
++      .toEqual([513, 619, 659, 693, 720, 693]);
+     expect([row('fire_1', 4), row('water_1', 4), row('plant_1', 4), row('plant_2', 4), row('plant_3', 4), row('metal_3', 4)])
+       .toEqual([310, 342, 351, 360, 360, 360]);
+     for (let r = 0; r <= 16; r++) {
+@@ -82,8 +82,8 @@ describe('core/income.ts', () => {
+       for (let r = 1; r < RESERVE_VALUES; r++) expect(pstMine(def, r)).toBeGreaterThanOrEqual(pstMine(def, r - 1));
+     }
+     // metal_3 (tier 3, rent 2) still scores strictly positively at reserve 16:
+-    // a rent-bearing PST would have subtracted 2 * RENT_PV = 844 from 1238.
+-    expect(pstMine(defId('metal_3'), 16)).toBe(1238);
++    // a rent-bearing PST would have subtracted 2 * RENT_PV = 844 from 1285.
++    expect(pstMine(defId('metal_3'), 16)).toBe(1285);
+     expect(RENT_PV).toBe(422);
+   });
+ 
+diff --git a/muju/tests/ai/hard/invariants.test.ts b/muju/tests/ai/hard/invariants.test.ts
+index 22d4c56d..7f4813e5 100644
+--- a/muju/tests/ai/hard/invariants.test.ts
++++ b/muju/tests/ai/hard/invariants.test.ts
+@@ -300,9 +300,9 @@ describe('eval/invariants.ts — invariant 3 under EvalFix.inv3RetreatConjunct (
+   /** Three white bodies that put every escape square of the attacker inside
+    * White's own strike, so `t.retreats === 0`. */
+   const WALL: UnitSpec[] = [
+-    { def: 'metal_1', owner: 'white', x: 6, y: 2 },
+-    { def: 'metal_1', owner: 'white', x: 6, y: 6 },
+-    { def: 'metal_1', owner: 'white', x: 8, y: 4 },
++    { def: 'plant_1', owner: 'white', x: 6, y: 2 },
++    { def: 'plant_1', owner: 'white', x: 6, y: 6 },
++    { def: 'plant_1', owner: 'white', x: 8, y: 4 },
+   ];
+ 
+   function bitsWithFix(units: UnitSpec[], on: boolean): number {
+diff --git a/muju/tests/ai/hard/metal-v29.test.ts b/muju/tests/ai/hard/metal-v29.test.ts
+new file mode 100644
+index 00000000..23a97391
+--- /dev/null
++++ b/muju/tests/ai/hard/metal-v29.test.ts
+@@ -0,0 +1,28 @@
++// @vitest-environment node
++import { expect, it } from 'vitest';
++import { Replica } from '../../../src/ai/hard/core/state';
++import { AKind, paKind } from '../../../src/ai/hard/core/action';
++import { Scratch } from '../../../src/ai/hard/core/bits';
++import { allocTables } from '../../../src/ai/hard/tables/context';
++import { Approach, classifyApproach } from '../../../src/ai/hard/tables/approach';
++import { nearestOwner, UNREACHABLE } from '../../../src/ai/hard/tables/threat';
++import { buildState } from './game-fixture';
++it.each([1, 2])('Hard AI handles stationary Yan at distance %s', distance => {
++  const state = buildState({ current: 'white', phase: 'action', actions: 4, units: [
++    { def: 'metal_1', owner: 'white', x: 2, y: 2 },
++    { def: 'water_1', owner: 'black', x: 2, y: 2 + distance },
++    { def: 'plant_1', owner: 'black', x: 8, y: 8 },
++  ] });
++  const replica = new Replica(), p = replica.pack(state), actions = new Int32Array(4096);
++  const count = replica.genActions(p, actions);
++  expect([...actions.slice(0, count)].some(a => paKind(a) === AKind.MOVE)).toBe(false);
++  expect([...actions.slice(0, count)].some(a => paKind(a) === AKind.ATTACK)).toBe(distance === 1);
++  const tables = allocTables(), scratch = new Scratch(4, 64, 16);
++  const result = classifyApproach(p, tables, 22, 0, p.pieceAt[22 + distance * 10], scratch, 0);
++  expect(result.cls).toBe(distance === 1 ? Approach.STRAND : Approach.NONE);
++  expect(result.retreats).toBe(0);
++  const slots = new Uint8Array(100), costs = new Uint8Array(100);
++  nearestOwner(p, 0, tables, slots, costs);
++  expect(costs[22]).toBe(0);
++  expect(costs[23]).toBe(UNREACHABLE);
++});
+diff --git a/muju/tests/ai/hard/negamax-sign.test.ts b/muju/tests/ai/hard/negamax-sign.test.ts
+index 13eed1a8..8e39a04c 100644
+--- a/muju/tests/ai/hard/negamax-sign.test.ts
++++ b/muju/tests/ai/hard/negamax-sign.test.ts
+@@ -103,7 +103,7 @@ describe('the turn boundary is the only sign flip', () => {
+       units: [
+         { def: 'fire_1', owner: 'white', x: 4, y: 4 },
+         { def: 'plant_1', owner: 'black', x: 4, y: 5 },
+-        { def: 'metal_1', owner: 'black', x: 9, y: 9 },
++        { def: 'plant_1', owner: 'black', x: 9, y: 9 },
+       ],
+     });
+     const prepared = prepare(state, 800_000);
+diff --git a/muju/tests/ai/hard/p8-rescue-cap.test.ts b/muju/tests/ai/hard/p8-rescue-cap.test.ts
+index 81187b63..f3aa01bb 100644
+--- a/muju/tests/ai/hard/p8-rescue-cap.test.ts
++++ b/muju/tests/ai/hard/p8-rescue-cap.test.ts
+@@ -1,4 +1,5 @@
+ // @vitest-environment node
++import "../../fixtures/metal-v28-catalogue";
+ /**
+  * P8 / E4.3 candidate A: the forced rescue injection must be BOUNDED
+  * (`docs/hard-ai/e3/P8-SLOW-TURNS.md` §6, `docs/hard-ai/e4/E4.3-RESCUE-CAP.md`).
+diff --git a/muju/tests/ai/hard/promote.test.ts b/muju/tests/ai/hard/promote.test.ts
+index 44172dd4..69f6a5c1 100644
+--- a/muju/tests/ai/hard/promote.test.ts
++++ b/muju/tests/ai/hard/promote.test.ts
+@@ -254,3 +254,13 @@ describe('gen/promote.ts planPromotions (DESIGN §5.6)', () => {
+     expect(promotionsOf(p, t)).toHaveLength(0);
+   });
+ });
++
++// Metal v2.9: Yan must be eligible for a movement upgrade even on an empty mine.
++it('REACH: stationary Yan can promote for movement alone', () => {
++  const {p, t} = prepare(buildState({current:'white', phase:'place', white:20, black:0,
++    reserves:new Array<number>(100).fill(0), units:[
++      {def:'metal_1',owner:'white',x:2,y:2},
++      {def:'plant_1',owner:'black',x:8,y:8},
++    ]}));
++  expect(promotionsOf(p,t).some(c=>c.mission===Mission.REACH)).toBe(true);
++});
+diff --git a/muju/tests/ai/wasm-tactics.test.ts b/muju/tests/ai/wasm-tactics.test.ts
+index cef90568..8a9354c8 100644
+--- a/muju/tests/ai/wasm-tactics.test.ts
++++ b/muju/tests/ai/wasm-tactics.test.ts
+@@ -149,3 +149,14 @@ for(const tier of [1,2]) it(`Tier ${tier} corridor requires kill, move, then ano
+     expect(applyActions(s,result.actions).turn.actionsRemaining).toBe(0);
+   }
+ });
++
++it.each([1,2])('Yan attacks at distance %s identically in JS and WASM without zero-speed traps', distance => {
++  const state=createInitialGameState();
++  const yan=createUnit('metal_1','white',{x:2,y:2}), target=createUnit('water_1','black',{x:2,y:2+distance});
++  state.board.units=[yan,target,createUnit('plant_1','black',{x:8,y:8})];
++  for(const solve of [referenceTactics,solver]) {
++    const result=solve(state,target.id,10000,new SearchBudget());
++    expect(result.status).toBe(distance===1?'proved':'disproved');
++    if(result.status==='proved')expect(applyActions(state,result.actions).board.units.some(u=>u.id===target.id)).toBe(false);
++  }
++});
+diff --git a/muju/tests/fixtures/analysis.ts b/muju/tests/fixtures/analysis.ts
+index e47bb079..aeddac1f 100644
+--- a/muju/tests/fixtures/analysis.ts
++++ b/muju/tests/fixtures/analysis.ts
+@@ -1,3 +1,4 @@
++import { getUnitDefinition } from '../../src/game/units';
+ import match from './codex-claude-2026-09-12.json';
+ import { createInitialGameState } from '../../src/game/board';
+ import { createUnitFromDefinition } from '../../src/game/building';
+@@ -21,7 +22,18 @@ export function snapshot(state: GameState, revision = 1): RoomSnapshot {
+   return { id: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', revision, ready: true, state, seats: { white: 'White', black: 'Black' },
+     history: [], updatedAt: '2026-09-12T00:00:00.000Z' };
+ }
++/** Historical command playback must use its recorded Metal catalogue, not v2.9.
++ * Synchronous fixture only: restore shared definitions even on failure. */
+ export function matchPositions() {
++  const definitions = [1, 2, 3].map(tier => getUnitDefinition(`metal_${tier}`));
++  const saved = definitions.map(def => ({ ...def }));
++  Object.assign(definitions[0], { name: 'Inyan', speed: 1, mining: 2 });
++  Object.assign(definitions[1], { attack: 2, mining: 3 });
++  Object.assign(definitions[2], { mining: 4 });
++  try { return historicalMatchPositions(); }
++  finally { definitions.forEach((def, index) => Object.assign(def, saved[index])); }
++}
++function historicalMatchPositions() {
+   let state = structuredClone(match.initialState) as GameState, recording = emptyRecording();
+   const positions = new Map<number, RoomSnapshot>([[match.recordingStart.revision, { ...snapshot(state, match.recordingStart.revision), id: match.roomId }]]);
+   for (const command of match.commands.filter(c => c.revision > match.recordingStart.revision)) {
+diff --git a/muju/tests/fixtures/metal-v28-catalogue.ts b/muju/tests/fixtures/metal-v28-catalogue.ts
+new file mode 100644
+index 00000000..d2b6cdc3
+--- /dev/null
++++ b/muju/tests/fixtures/metal-v28-catalogue.ts
+@@ -0,0 +1,12 @@
++/** Frozen September 2026 Hard AI evidence was authored against Metal v2.8.
++ * Load only in historical evidence tests; current-rule parity and Yan tests do
++ * not import this mock. Vitest isolates the catalogue in each test file.
++ */
++import { vi } from 'vitest';
++vi.mock('../../src/game/units', async importOriginal => {
++  const units = await importOriginal<typeof import('../../src/game/units')>();
++  Object.assign(units.getUnitDefinition('metal_1'), { name: 'Inyan', speed: 1, mining: 2 });
++  Object.assign(units.getUnitDefinition('metal_2'), { attack: 2, mining: 3 });
++  Object.assign(units.getUnitDefinition('metal_3'), { mining: 4 });
++  return units;
++});
+diff --git a/muju/tests/game/audit-fixtures.test.ts b/muju/tests/game/audit-fixtures.test.ts
+index 56d3fe9f..01037ea6 100644
+--- a/muju/tests/game/audit-fixtures.test.ts
++++ b/muju/tests/game/audit-fixtures.test.ts
+@@ -46,22 +46,22 @@ describe('audit fixtures: mixed-element combined attacks', () => {
+     const defender = placed('water_2', 'black', 5, 5);
+     // fire_1 Hi: ATK 2, fire attacks water at DISadvantage -> 2 - 1 = 1
+     const fireAtk = placed('fire_1', 'white', 5, 4);
+-    // metal_2 Mazaska: ATK 2, metal attacks water with ADvantage -> 2 + 1 = 3
++    // metal_2 Mazask: ATK 1, metal attacks water with ADvantage -> 1 + 1 = 2
+     const metalAtk = placed('metal_2', 'white', 5, 6);
+ 
+     const board = boardWith(defender, fireAtk, metalAtk);
+ 
+     expect(calculateAttackPower(fireAtk, defender)).toBe(1);
+-    expect(calculateAttackPower(metalAtk, defender)).toBe(3);
+-    expect(calculateCombinedAttackPower([fireAtk, metalAtk], defender)).toBe(4);
++    expect(calculateAttackPower(metalAtk, defender)).toBe(2);
++    expect(calculateCombinedAttackPower([fireAtk, metalAtk], defender)).toBe(3);
+ 
+     const { eliminated, totalAttack } = resolveCombinedCombat(
+       board,
+       [fireAtk.id, metalAtk.id],
+       defender.position
+     );
+-    expect(totalAttack).toBe(4);
+-    expect(eliminated).toBe(true); // 4 >= DEF 3
++    expect(totalAttack).toBe(3);
++    expect(eliminated).toBe(true); // 3 >= DEF 3
+   });
+ 
+   it('attack power floors at 0 under disadvantage (plant_1 ATK 0 cannot go negative)', () => {
+@@ -92,12 +92,12 @@ describe('audit fixtures: mixed-element combined attacks', () => {
+     expect(targets).toHaveLength(0); // same enemy not attackable again
+   });
+ 
+-  it('within-turn damage accumulates across different attackers (M1+M2 kill P1)', () => {
++  it('within-turn damage accumulates across different attackers (M1+M2 leave P1 alive)', () => {
+     // v1.1 spec section 6.1 regression: metal_1 (ATK 1+1 adv vs plant... wait,
+     // metal attacks plant: same pair (plant-metal) -> neutral. ATK 1.
+-    // Use the spec's exact scenario: M1 then M2 vs plant_1 (DEF 3).
++    // v2.9: M1 and M2 now each deal one; the defender survives.
+     const m1 = placed('metal_1', 'white', 4, 5); // ATK 1, neutral vs plant
+-    const m2 = placed('metal_2', 'white', 6, 5); // ATK 2, neutral vs plant
++    const m2 = placed('metal_2', 'white', 6, 5); // ATK 1, neutral vs plant
+     const p1 = placed('plant_1', 'black', 5, 5); // DEF 3
+     let board = boardWith(m1, m2, p1);
+ 
+@@ -107,7 +107,8 @@ describe('audit fixtures: mixed-element combined attacks', () => {
+     expect(board.units.find((u) => u.id === p1.id)!.damageTaken).toBe(1);
+ 
+     const second = resolveCombat(board, m2.id, p1.position);
+-    expect(second.eliminated).toBe(true); // 2 >= effective DEF 2
++    expect(second.eliminated).toBe(false); // 1 < effective DEF 2
++    expect(second.board.units.find(u => u.id === p1.id)!.damageTaken).toBe(2);
+   });
+ });
+ 
+diff --git a/muju/tests/game/metal-v29.test.ts b/muju/tests/game/metal-v29.test.ts
+new file mode 100644
+index 00000000..e5257530
+--- /dev/null
++++ b/muju/tests/game/metal-v29.test.ts
+@@ -0,0 +1,81 @@
++import { expect, it } from 'vitest';
++import { createInitialGameState, createUnit } from '../../src/game/board';
++import { getUnitDefinition, getPromotionCost } from '../../src/game/units';
++import { canMove, findAttackApproach, getMovementRange, getMoveCost } from '../../src/game/movement';
++import { isLegalAction } from '../../src/game/legality';
++import { applyAction } from '../../src/ai/simulate';
++import { gameReducer } from '../../src/hooks/useGameState';
++import { generateAllActions } from '../../src/ai/moves';
++import { unitEndOfTurnTake } from '../../src/game/mining';
++import { analyzeHomeDefense } from '../../src/game/homeCheckmate';
++import { strategicValue } from '../../src/ai/planner/strategies';
++import { damageUpperBound } from '../../server/analysis/tactics';
++import { strikeActions, marginalValues } from '../../lab/solver/model';
++import { expandReplayMoves, type TurnReplay } from '../../src/game/replay';
++
++function position(distance = 1) {
++  const s = createInitialGameState();
++  s.board.units = [createUnit('metal_1', 'white', {x: 2, y: 2}), createUnit('water_1', 'black', {x: 2, y: 2 + distance}), createUnit('plant_1', 'black', {x: 8, y: 8})];
++  s.turn.phase = 'action';
++  return s;
++}
++it('uses the requested Metal ladder with unchanged IDs and prices', () => {
++  expect([1,2,3].map(t => {
++    const d = getUnitDefinition(`metal_${t}`);
++    return [d.name, d.attack, d.defense, d.speed, d.mining, d.cost];
++  })).toEqual([['Yan',1,3,0,3,5],['Mazask',1,4,1,4,9],['Tanka',2,5,2,5,17]]);
++  expect([getPromotionCost('metal_1'), getPromotionCost('metal_2')]).toEqual([4,8]);
++});
++it('rejects stationary movement in the UI, engine and AI, but preserves adjacent attacks', () => {
++  const s = position(), yan = s.board.units[0], target = s.board.units[1];
++  const move = {type:'MOVE' as const,unitId:yan.id,to:{x:3,y:2}};
++  expect(canMove(yan)).toBe(false);
++  expect(getMovementRange(yan.position,0,4,s.board)).toEqual([]);
++  expect(getMoveCost(yan.position,move.to,0,s.board)).toBeNull();
++  expect(isLegalAction(s,move)).toBe(false);
++  expect(applyAction(s,move)).toBe(s);
++  expect(gameReducer(s,move)).toBe(s);
++  expect(generateAllActions(s,'white').some(a=>a.type==='MOVE'&&a.unitId===yan.id)).toBe(false);
++  expect(findAttackApproach(yan,target,s.board,4)).toEqual([]);
++  const attack = {type:'ATTACK' as const,unitId:yan.id,targetPosition:target.position};
++  expect(isLegalAction(s,attack)).toBe(true);
++  const after=applyAction(s,attack);
++  expect(after.board.units.some(u=>u.id===target.id)).toBe(false);
++  expect(gameReducer(s,attack)).toEqual(after);
++  expect(damageUpperBound(s,target,['existing'])).toBe(2);
++  const distant=position(2);
++  expect(damageUpperBound(distant,distant.board.units[1],['existing'])).toBe(0);
++});
++it('gains movement on promotion and caps every Metal harvest at the reserve', () => {
++  const s=position();s.turn.phase='place';s.players.white.resources=4;
++  const promoted=applyAction(s,{type:'PROMOTE_UNIT',unitId:s.board.units[0].id});
++  expect(promoted.board.units[0].definitionId).toBe('metal_2');
++  const ready=applyAction(promoted,{type:'END_PLACE_PHASE'});
++  expect(isLegalAction(ready,{type:'MOVE',unitId:s.board.units[0].id,to:{x:3,y:2}})).toBe(true);
++  for(const [tier,mining] of [[1,3],[2,4],[3,5]])for(const reserve of [0,2,8,16]) {
++    const u=createUnit(`metal_${tier}`,'white',{x:2,y:2});
++    expect(unitEndOfTurnTake(u,{position:u.position,resourceLayers:reserve})).toBe(Math.min(mining,reserve));
++  }
++});
++it('counts a stationary adjacent home rescuer and keeps evaluation finite on home', () => {
++  const s=createInitialGameState();
++  s.board.units=[createUnit('water_1','white',{x:9,y:9}),createUnit('metal_1','black',{x:9,y:8})];
++  s.players.black.resources=0;
++  expect(analyzeHomeDefense(s,'white',applyAction)).toBe('rescue');
++  s.board.units[0].definitionId='metal_1';
++  expect(Number.isFinite(strategicValue(s,'white'))).toBe(true);
++});
++it('preserves old Metal move snapshots and labels without resimulating them', () => {
++  const s=position(), yan=s.board.units[0];
++  const board={...s.board,units:s.board.units.map(u=>u.id===yan.id?{...u,position:{x:3,y:2}}:u)};
++  const replay:TurnReplay={player:'white',turnNumber:1,initialBoard:s.board,frames:[{board,action:{type:'MOVE',unitId:yan.id,to:{x:3,y:2}},label:'Inyan: C3 → D3'}]};
++  expect(expandReplayMoves(replay)).toEqual(replay);
++});
++it('reports unreachable static approaches explicitly instead of NaN', () => {
++  const yan=getUnitDefinition('metal_1');
++  expect(strikeActions(yan,1)).toBe(1);
++  expect(strikeActions(yan,2)).toBe(Infinity);
++  const values=marginalValues(yan,[getUnitDefinition('water_1')]);
++  expect(values.base.meanStrikeActions).toBeNull();
++  expect(values.changes.speed.strikeActionsSaved).toBeNull();
++});
+diff --git a/muju/tests/game/tier3-cap.test.ts b/muju/tests/game/tier3-cap.test.ts
+index 5d06c4e9..66818eaa 100644
+--- a/muju/tests/game/tier3-cap.test.ts
++++ b/muju/tests/game/tier3-cap.test.ts
+@@ -11,7 +11,7 @@ import baseline from '../../lab/solver/baseline-v1.3.json';
+ 
+ describe('current catalogue boundary', () => {
+   it('preserves the 18-unit ladder with approved stats and 3/4/5 purchases plus 4/8 promotions', () => {
+-    expect(UNIT_DEFINITIONS).toEqual(baseline.filter(d => d.tier <= 3).map(({buildTime: _removed, ...d}) => ({...d,cost:({fire:3,lightning:3,water:4,shadow:4,plant:5,metal:5}[d.element]!+[0,4,12][d.tier-1]),...(d.element==='metal'?{name:['Inyan','Mazask','Tanka'][d.tier-1],speed:d.tier===3?2:d.speed}:{}),...({lightning_1:{attack:1},lightning_2:{attack:2},lightning_3:{mining:0},plant_1:{defense:3},plant_2:{mining:5},plant_3:{mining:8},metal_3:{mining:4,defense:5}} as Record<string,object>)[d.id]})));
++    expect(UNIT_DEFINITIONS).toEqual(baseline.filter(d => d.tier <= 3).map(({buildTime: _removed, ...d}) => ({...d,cost:({fire:3,lightning:3,water:4,shadow:4,plant:5,metal:5}[d.element]!+[0,4,12][d.tier-1]),...(d.element==='metal'?{name:['Yan','Mazask','Tanka'][d.tier-1],speed:d.tier===3?2:d.speed}:{}),...({lightning_1:{attack:1},lightning_2:{attack:2},lightning_3:{mining:0},plant_1:{defense:3},plant_2:{mining:5},plant_3:{mining:8},metal_1:{speed:0,mining:3},metal_2:{attack:1,mining:4},metal_3:{mining:5,defense:5}} as Record<string,object>)[d.id]})));
+     expect(UNIT_DEFINITIONS).toHaveLength(18);
+   });
+   it('caps Cleave at exactly 1/2/3 for every catalogue entry', () => {
+diff --git a/muju/tests/game/units.test.ts b/muju/tests/game/units.test.ts
+index e0bf9513..a86ebd85 100644
+--- a/muju/tests/game/units.test.ts
++++ b/muju/tests/game/units.test.ts
+@@ -41,7 +41,7 @@ describe('Unit Definitions', () => {
+       for (const unit of UNIT_DEFINITIONS) {
+         expect(unit.attack).toBeGreaterThanOrEqual(0);
+         expect(unit.defense).toBeGreaterThan(0);
+-        expect(unit.speed).toBeGreaterThan(0);
++        expect(unit.speed).toBeGreaterThanOrEqual(0);
+         expect(unit.mining).toBeGreaterThanOrEqual(0); // Some units can't mine
+         expect(unit.cost).toBeGreaterThan(0);
+         expect(unit).not.toHaveProperty('buildTime');
+diff --git a/muju/tests/lab/exam.test.ts b/muju/tests/lab/exam.test.ts
+index fc869bf2..c1590c72 100644
+--- a/muju/tests/lab/exam.test.ts
++++ b/muju/tests/lab/exam.test.ts
+@@ -1,4 +1,5 @@
+ // @vitest-environment node
++import "../fixtures/metal-v28-catalogue";
+ /**
+  * `lab/hard-ai/exam/**` — the Muju examination set (EPIC-PLAN §4 E1.2).
+  *
+diff --git a/muju/tests/lab/profile.test.ts b/muju/tests/lab/profile.test.ts
+index 97f53d7c..fee8dfd8 100644
+--- a/muju/tests/lab/profile.test.ts
++++ b/muju/tests/lab/profile.test.ts
+@@ -1,4 +1,5 @@
+ // @vitest-environment node
++import "../fixtures/metal-v28-catalogue";
+ import { describe, it, expect, vi } from 'vitest';
+ 
+ // Corpus builders touch real replay files under `lab/results/` and one of
+diff --git a/muju/tests/lab/suites.test.ts b/muju/tests/lab/suites.test.ts
+index 6eeb7c4a..edb6843d 100644
+--- a/muju/tests/lab/suites.test.ts
++++ b/muju/tests/lab/suites.test.ts
+@@ -1,3 +1,4 @@
++import "../fixtures/metal-v28-catalogue";
+ /**
+  * `lab/hard-ai/suites/run.ts`'s engine, and nothing else.
+  *
+diff --git a/muju/tests/server/analysis.test.ts b/muju/tests/server/analysis.test.ts
+index 8df410e3..6656609c 100644
+--- a/muju/tests/server/analysis.test.ts
++++ b/muju/tests/server/analysis.test.ts
+@@ -234,7 +234,7 @@ describe('home proof evidence and replay fixtures', () => {
+     for (const action of proof.witness!) { const next = applyAction(reply, action); expect(next).not.toBe(reply); reply = next as typeof reply; }
+     expect(reply.board.units.some(u => u.id === 'occupier')).toBe(false);
+   });
+-  it('replays all archived commands from the recorded root through the engine and replay module', () => {
++  it('replays archived commands with their historical Metal catalogue and preserves recorded snapshots', () => {
+     const match = matchPositions();
+     expect(match.recordingStart.complete).toBe(false);
+     expect(match.final).toEqual(match.expectedFinal);
+diff --git a/muju/tests/server/mcp.test.ts b/muju/tests/server/mcp.test.ts
+index 743ed7c1..3b3b347b 100644
+--- a/muju/tests/server/mcp.test.ts
++++ b/muju/tests/server/mcp.test.ts
+@@ -221,6 +221,11 @@ describe('MCP and HTTP interoperability', () => {
+     const rules=await call(client,'muju_rules');expect(rules.actionsPerTurn.options).toEqual([4]);
+     expect(rules.resourceMap).toMatchObject({total:504,maximumReserve:16,startingReserves:[0,4,8,16]});
+     expect(rules.catalogue.filter((unit: {element:string})=>unit.element==='plant').map((unit: {mining:number})=>unit.mining)).toEqual([3,5,8]);
++    expect(rules.catalogue.filter((u: {element:string})=>u.element==='metal')).toMatchObject([
++      {id:'metal_1',name:'Yan',attack:1,defense:3,speed:0,mining:3,cost:5},
++      {id:'metal_2',name:'Mazask',attack:1,defense:4,speed:1,mining:4,cost:9},
++      {id:'metal_3',name:'Tanka',attack:2,defense:5,speed:2,mining:5,cost:17},
++    ]);
+   });
+   it.each([false, true])('returns tiny idle results without repeated snapshot downloads (stdio=%s)', async stdio => {
+     const { store, url, requests } = await setup();

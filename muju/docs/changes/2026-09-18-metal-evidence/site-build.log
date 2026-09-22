@@ -1,0 +1,59 @@
+Building muju...
+
+> elemental-tactics@0.1.0 prebuild
+> npm run ai:wasm
+
+
+> elemental-tactics@0.1.0 ai:wasm
+> asc --config asconfig.json
+
+
+> elemental-tactics@0.1.0 build
+> tsc && vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 107 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                      0.56 kB │ gzip:   0.36 kB
+dist/assets/tactics-Cv55RSU9.wasm    8.09 kB │ gzip:   3.70 kB
+dist/assets/entry-DSLElzXx.js       44.38 kB
+dist/assets/index-BjsS7TF7.css      61.44 kB │ gzip:  13.61 kB
+dist/assets/index-CByGFS4Y.js      342.13 kB │ gzip: 107.79 kB
+✓ built in 4.99s
+Building forge...
+
+> forge@1.0.0 build
+> tsc && vite build
+
+vite v7.3.0 building client environment for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[vite:css][postcss] Gradient has outdated direction syntax. New syntax is like `closest-side at 0 0` instead of `0 0, closest-side`.
+
+✓ 54 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.81 kB │ gzip:  0.51 kB
+dist/assets/index-Ceg_56Ku.css   58.14 kB │ gzip:  9.83 kB
+dist/assets/index-oKVk9DCy.js   251.67 kB │ gzip: 74.10 kB
+✓ built in 1.31s
+Building oracle...
+
+> oracle-of-delve@0.1.0 build
+> tsc && vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 36 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.96 kB │ gzip:  0.55 kB
+dist/assets/index-Cfhj-PBN.css   24.65 kB │ gzip:  5.15 kB
+dist/assets/index-B6GoX3Ll.js   202.56 kB │ gzip: 63.36 kB
+✓ built in 782ms
+Site verified: three games, portfolio, local links and asset sizes.
+Ready to publish: _site/

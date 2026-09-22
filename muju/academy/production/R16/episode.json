@@ -1,0 +1,504 @@
+{
+  "id": "R16",
+  "title": "Metal: The Moving Fortress",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "CLANK",
+      "cue": "warm, unhurried",
+      "text": "This daisy is protected by five layers of politeness.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: Clank sets a daisy in a thick pot beside the table. No piece moves.]",
+        "[card: METAL DEPARTMENT. The element chart never changes defense.]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "My helmet would like five layers.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Politeness is not armor. Helmet defense: zero.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "EMBER",
+      "cue": "mock-formal announcement",
+      "text": "Memo. We stamped one fortress PARTIALLY BROWNED. That closed our kitchen for the turn.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: Clank pins a work order to the wall: HOLD THE LINE. EARN ON THE SQUARE.]",
+        "[card: MEMO FROM THE TOAST DEPARTMENT]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "CLANK",
+      "cue": "gently, slower",
+      "text": "I have met that Hono. It left a mark. The fortress was still standing.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Sparks burn the Garden Wall. The Hono's attack three becomes four against Metal.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: the Hono card beside a fresh Tanka. The Tanka's damage marker reads zero.]"
+      ],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The chart never changes defense. The Tanka's defense is five.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: the Tanka's card lights. Defense five. The five does not move.]"
+      ]
+    },
+    {
+      "id": "08",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Four in. One lit. The fortress lived, so that Hono is done attacking.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk, dull] [board: four of the five shield pips go dark. One stays lit. The Hono's attack marker greys out.]"
+      ],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible."
+    },
+    {
+      "id": "09",
+      "speaker": "CLANK",
+      "cue": "",
+      "text": "Strong is useful. Invincible is a different word.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "If the Tanka survives and pays its bill, it heals at its own turn start.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "11",
+      "speaker": "CLANK",
+      "cue": "",
+      "text": "Job two. The fortress is standing on three crystals. Its Mining is five.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: separate income trial. A White Tanka ends its turn on a square holding three crystals. This is a new position, not the attacked defender taking an immediate turn.] [card: the Tanka, Mining five] [card: this square, three crystals]"
+      ]
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Mining is the most a piece can collect at its turn end.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "13",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Mining four. Three crystals in the square. The turn is ending.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "14",
+      "speaker": "CLANK",
+      "cue": "question, open",
+      "text": "How many crystals does my fortress collect?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Nothing here is timed. Count it, or watch the square with us.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "How many crystals does my fortress collect?"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Three. The square ran out before the bucket did.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [board: three crystals slide to the bank. The square turns grey and reads zero.]"
+      ]
+    },
+    {
+      "id": "17",
+      "speaker": "PIP",
+      "cue": "quietly certain",
+      "text": "Bucket or puddle. The puddle was three.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Next payday here is an Empty Payday. Large pot. Empty square.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "19",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Tier three. That fortress owes two crystals when its turn starts.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "20",
+      "speaker": "CLANK",
+      "cue": "counting, even beats",
+      "text": "Three in, two out next morning.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "21",
+      "speaker": "CLANK",
+      "cue": "",
+      "text": "This is the Yan. Hits for one. Shield of three. Collects up to three crystals a turn. Cannot walk. That is the Yan.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: one Hono leaves a fresh Tanka on one; a Tanka on three crystals collects three. Not checked: what the rest of White could do this turn.]",
+        "[card: METAL. The Yan. The Mazask. The Tanka.]"
+      ]
+    },
+    {
+      "id": "22",
+      "speaker": "CLANK",
+      "cue": "",
+      "text": "This is the Mazask. Hits for one. Shield of four. Collects up to four crystals a turn. Walks one. That is the Mazask.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "23",
+      "speaker": "CLANK",
+      "cue": "",
+      "text": "This is the Tanka. Hits for two. Shield of five. Collects up to five crystals a turn. Walks two. That is the Tanka.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "24",
+      "speaker": "CLANK",
+      "cue": "",
+      "text": "I am excellent at standing somewhere with purpose. Without purpose, it is mostly loitering.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: the trouble: four squares away · the Yan cannot move until promoted]"
+      ]
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Distance to the trouble: four squares. Speed one.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "CLANK",
+      "cue": "gently, slower",
+      "text": "I can reach the danger, or I can reach it in time. Today those are different squares.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "27",
+      "speaker": "CLANK",
+      "cue": "",
+      "text": "The daisy would like to speak to the Toast Department.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: WORK CARD. METAL. Shields three, four, five. Collects three, four, five. Yan cannot walk; Mazask walks one; Tanka walks two.]",
+        "[card: MISSION. ONE ACTION LEFT. Yan on C three. Goal one: empty C four. Goal two: empty C five. Separate starting positions, clear path, no attack required. Neither goal fits: Yan has Speed zero. Promote on a later placement phase to gain movement.]"
+      ]
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for metal. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      }
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Yan. Attack one, defense three, speed zero, and Mining three. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Yan can finish Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Yan is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_1",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_1",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Mazask. Attack one, defense four, speed one, and Mining four. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Mazask can finish Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Mazask is one shot by Hono, Kagari and Kimubunga. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_2",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_2",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Tanka. Attack two, defense five, speed two, and Mining five. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Tanka can finish Hi, Hono, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Tanka is one shot by Kagari. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_3",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "metal_3",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "28",
+      "speaker": "CLANK",
+      "cue": "gently, slower",
+      "text": "Strong is useful. Invincible is a different word.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "29",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Today was plenty. You have met all six elements and learned the game rules. Try a practice game, and keep the bonk cards nearby.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "version": 8,
+  "rules": "v2.9",
+  "updatedLabel": "Video version 8 · Last updated Sep 18 2026 CDT",
+  "question": "How many crystals does my fortress collect?",
+  "soundtrack": {
+    "id": "tanka-flute",
+    "title": "Tanka / Weight Without Hurry",
+    "source": "muju/music-auditions/full-versions/tanka-flute-full-v3-low-mid.mp3",
+    "sha256": "94b0c4739e3f301ef7ac06d55505819fdf521c8f052cfd61d30336383799f8b6"
+  },
+  "speechProvider": "openai"
+}

@@ -1,0 +1,349 @@
+{
+  "id": "R07",
+  "title": "Bigger Pieces Have Bills",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "Fan mail. Addressed to The Very Impressive Army.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a teller window. Pip is at the counter holding up a small envelope addressed to The Very Impressive Army.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "It is a bill. Three crystals, due when your turn starts.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "My fan is very picky about timing.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Hello. We bought that Hi on C three. Does it owe anything?",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: C three, with the Hi we bought last time standing on it.]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Nothing. Tier one never gets mail.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Upkeep is the toll a big piece pays, at your own turn start.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: TIER MEANS HOW FAR A PIECE HAS CLIMBED · the Hi is tier one · the Hono is tier two · the Tanka is tier three]",
+        "[board: one coin drops through a small gate in the counter as the word lands.]"
+      ]
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "counting, even beats",
+      "text": "Tier one owes nothing. Tier two owes one. Tier three owes two.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: three envelopes stamped 0, 1 and 2, in front of the Hi, the Hono and the Tanka. The bank counter shows two.]"
+      ]
+    },
+    {
+      "id": "08",
+      "speaker": "PIP",
+      "cue": "cheerfully wrong",
+      "text": "Then we let the Hi go. Off the board, and we save a fortune.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: KEEPING A PIECE MEANS PAYING ITS ENVELOPE · nobody pays, that piece walks away]"
+      ]
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Letting the Hi go saves zero crystals. And tier one may never be let go.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "My loophole has become a regular hole.",
+      "beat": "SHOW",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "11",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Extremely responsible is doing a lot of work in that plan.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "12",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Nothing, one, two.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "13",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "And tier one always stays.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "14",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bank: two.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: ALL THREE] [card: THE HI AND THE TANKA]",
+        "[board: two crystals in the bank. The envelope on the Hi lies open. The other two are sealed. Nothing moves.]"
+      ]
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "All three envelopes: three.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "16",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Hi and the Tanka: two.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "Which card can two crystals pay for?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Put a finger on one, or take your time and look at both.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Two crystals cannot open all three. So the Hono is let go.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bill thud] [board: the second card lights. The Hono steps back from the counter and off the table, its envelope still sealed. Then both crystals slide onto the Tanka envelope and it opens.]"
+      ]
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Then two crystals opened the Tanka envelope, and the Hi owed nothing.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "21",
+      "speaker": "PIP",
+      "cue": "dawning concern",
+      "text": "We do not pay part of it. We keep less of us.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Proves what two crystals pay. Not which pieces we want.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE · proves: two crystals keep the Hi and the Tanka · also payable: the Hi and the Hono, or the Hi alone · not checked: which pieces this army actually wants]"
+      ]
+    },
+    {
+      "id": "23",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "I will pay this turn's bill from this turn's payday. Here is a receipt.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: pay the bill from today's payday]"
+      ]
+    },
+    {
+      "id": "24",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Your receipt cannot mine.",
+      "beat": "TRANSFER",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "This turn's bill comes before healing and payday. Today's income can pay next turn's bill.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: Pip lowers the receipt onto a crystal square. It does not dig. Then it goes into the drawer marked PIP'S AMENDMENTS (PENDING).]"
+      ]
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "The Standing Bill comes back every turn you own a Hono or a Tanka.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One game for your table. Put counters beside each card, then add them up.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: TABLE GAME · counters beside each card · add them up · move that many crystals out of the bank first]"
+      ]
+    },
+    {
+      "id": "28",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Nothing, one, two.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "upkeep-flow",
+      "speaker": "COACH",
+      "text": "If your bank covers every bill, payment is automatic. Otherwise, choose an affordable group to keep. All tier one pieces must stay. The review upkeep setting also lets you release bigger pieces voluntarily. Losing your last piece loses the game.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Pay before healing and Place",
+        "body": "Enough crystals: payment is automatic.\nOtherwise choose an affordable group. All T1 must stay.\nReview upkeep each turn: optionally release T2 or T3.\nNo pieces left means elimination."
+      }
+    },
+    {
+      "id": "promotion-bill",
+      "speaker": "COACH",
+      "text": "A newly promoted piece pays its new tier bill on your next turn, not again today. A home occupation win is checked before any of these bills.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Tomorrow’s tier bill",
+        "body": "Promotion now → new upkeep next own turn.\nHome win check → upkeep → full heal → Place."
+      }
+    },
+    {
+      "id": "29",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "And tier one always stays.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Stopping here is fine. Next time we count somebody else's trip.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "question": "Which card can two crystals pay for?",
+  "version": 6,
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "rules": "v2.7",
+  "soundtrack": {
+    "id": "open-room",
+    "title": "Open Room, Lantern On",
+    "source": "muju/music-auditions/full-versions/open-room-full-v1.mp3",
+    "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+  },
+  "speechProvider": "openai"
+}

@@ -1,0 +1,57 @@
+{
+  "provider": "openai",
+  "hash": "ee677787ac3d561bd7e77e5f7348af4ad073eb35ed5d75afa4096d1d9fd5b760",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Hi can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Inyan. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the Hee can finish Hee, hohnoh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Moo-joo, sah-CHEE-tah and In-yahn. Every unlit card survives that single hit.",
+  "duration": 13.15,
+  "bytes": 631244,
+  "createdAt": "2026-09-13T10:38:47.914Z",
+  "captions": [
+    {
+      "text": "With one attack, the Hi can finish Hi, Hono, Kagari, Radi, Umeme,",
+      "start": 0,
+      "end": 187
+    },
+    {
+      "text": "Kimubunga, Muju, Sachita and Inyan.",
+      "start": 187,
+      "end": 311
+    },
+    {
+      "text": "Every unlit card survives that single hit.",
+      "start": 311,
+      "end": 395
+    }
+  ],
+  "wordFrames": [
+    0,
+    7,
+    16,
+    43,
+    44,
+    50,
+    58,
+    67,
+    91,
+    115,
+    143,
+    164,
+    187,
+    227,
+    254,
+    280,
+    282,
+    311,
+    322,
+    334,
+    346,
+    360,
+    368,
+    379
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "93b63f2b6b644f215e736902b43dff628f26cdb1a60f74961d01cfa836e13fb4"
+}

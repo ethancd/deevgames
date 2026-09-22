@@ -1,0 +1,21 @@
+{
+  "source": "Visible round-three notes and favorites read from the user's comparison page on 2026-09-12. Snapshot, not a live sync.",
+  "url": "http://127.0.0.1:8766/round-3/",
+  "favorites": [],
+  "takes": [
+    {"label":"06A","id":"umeme-spark-elevenlabs-take-1","favorite":false,"notes":"Little too much bow-drawn violin, pizzacotto might be the better approach"},
+    {"label":"06B","id":"umeme-spark-elevenlabs-take-2","favorite":false,"notes":"Little too much bow-drawn violin, pizzacotto might be the better approach"},
+    {"label":"06C","id":"umeme-spark-elevenlabs-take-3","favorite":false,"notes":"Too mixolydian or minor or something, electricity should be a little more major and straightforward"},
+    {"label":"07A","id":"tanka-weight-elevenlabs-take-1","favorite":false,"notes":"Too busy and boppy to start with, metal should be slow and have dynamic tension"},
+    {"label":"07B","id":"tanka-weight-elevenlabs-take-2","favorite":false,"notes":"Would love to see more restraint and not have 16th/8th notes all over the place"},
+    {"label":"07C","id":"tanka-weight-elevenlabs-take-3","favorite":false,"notes":"idk I don't think the 3-3-2 is a fit for metal"},
+    {"label":"08A","id":"straumr-current-elevenlabs-take-1","favorite":false,"notes":"A little too cheery and pastoral"},
+    {"label":"08B","id":"straumr-current-elevenlabs-take-2","favorite":false,"notes":"This whole irish green fields fiddle isn't doing it for me -- I want something darker, cooler, more intimidating"},
+    {"label":"08C","id":"straumr-current-elevenlabs-take-3","favorite":false,"notes":"Too cheerful"}
+  ],
+  "redirect": {
+    "lightning": "Pizzicato and other plucked strings; clearly major and straightforward; no bowed lead or modal/minor detour.",
+    "metal": "Slow, restrained and spacious; long notes and dynamic tension; plain pulse without busy subdivisions or 3-3-2 accents.",
+    "water": "Dark, cool and imposing; replace pastoral fiddle with deep electronic resonance and a clearly minor melody."
+  }
+}

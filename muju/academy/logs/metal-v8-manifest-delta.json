@@ -1,0 +1,41 @@
+{
+  "beforeUrls": 7681,
+  "afterUrls": 7681,
+  "added": [
+    "/muju-academy/episode-05-transcript.b77a3fa007e2.txt",
+    "/muju-academy/episode-05.e763e237b3ff.jpg",
+    "/muju-academy/episode-06-transcript.41d3fb8cbc74.txt",
+    "/muju-academy/episode-06.a63b7e7f94f7.jpg",
+    "/muju-academy/episode-11-transcript.bd322a6080d0.txt",
+    "/muju-academy/episode-11.00984ec1ea9c.jpg",
+    "/muju-academy/episode-12-transcript.23007c56155e.txt",
+    "/muju-academy/episode-12.fd7bc93823ec.jpg",
+    "/muju-academy/episode-13-transcript.1f3e62f8d18c.txt",
+    "/muju-academy/episode-13.e1aea9920874.jpg",
+    "/muju-academy/episode-14-transcript.6800d83f8c6f.txt",
+    "/muju-academy/episode-14.3f871a9a22fc.jpg",
+    "/muju-academy/episode-15-transcript.42d6a5d189d1.txt",
+    "/muju-academy/episode-15.3f750a2cd780.jpg",
+    "/muju-academy/episode-16-transcript.026339e0b566.txt",
+    "/muju-academy/episode-16.b01f02fa8d59.jpg"
+  ],
+  "removed": [
+    "/muju-academy/episode-05-transcript.d67e2483b69e.txt",
+    "/muju-academy/episode-05.6213378604e8.jpg",
+    "/muju-academy/episode-06-transcript.d508a92955c4.txt",
+    "/muju-academy/episode-06.4117065d12df.jpg",
+    "/muju-academy/episode-11-transcript.0313c6487e19.txt",
+    "/muju-academy/episode-11.530540534f13.jpg",
+    "/muju-academy/episode-12-transcript.14f01fd7b81d.txt",
+    "/muju-academy/episode-12.6c1e1c0d0140.jpg",
+    "/muju-academy/episode-13-transcript.549c2f3641c3.txt",
+    "/muju-academy/episode-13.094486e09a5e.jpg",
+    "/muju-academy/episode-14-transcript.8b7508b773ce.txt",
+    "/muju-academy/episode-14.1e944af32d81.jpg",
+    "/muju-academy/episode-15-transcript.35ae958e31d9.txt",
+    "/muju-academy/episode-15.8b01651d8c69.jpg",
+    "/muju-academy/episode-16-transcript.8fe49ce3b762.txt",
+    "/muju-academy/episode-16.5b14169b41ba.jpg"
+  ],
+  "exactDeltaPassed": true
+}

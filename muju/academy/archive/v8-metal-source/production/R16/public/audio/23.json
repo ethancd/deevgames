@@ -1,0 +1,53 @@
+{
+  "provider": "openai",
+  "hash": "82fa616b6ccc750234b0a9463938d935b4db0b06aaec32123d37ccbdf2f1b586",
+  "model": "gpt-4o-mini-tts",
+  "voice": "onyx",
+  "speaker": "CLANK",
+  "originalText": "This is the Tanka. Shield of five. Collects up to four crystals a turn. Walks two. That is the Tanka.",
+  "speechText": "This is the Tahn-kah. Shield of five. Collects up to four crystals a turn. Walks two. That is the Tahn-kah.",
+  "duration": 8,
+  "bytes": 384044,
+  "createdAt": "2026-09-13T10:39:26.141Z",
+  "captions": [
+    {
+      "text": "This is the Tanka.",
+      "start": 0,
+      "end": 57
+    },
+    {
+      "text": "Shield of five. Collects up to four crystals a turn.",
+      "start": 57,
+      "end": 169
+    },
+    {
+      "text": "Walks two. That is the Tanka.",
+      "start": 169,
+      "end": 240
+    }
+  ],
+  "wordFrames": [
+    0,
+    17,
+    25,
+    31,
+    57,
+    68,
+    73,
+    103,
+    113,
+    116,
+    122,
+    128,
+    140,
+    146,
+    169,
+    178,
+    205,
+    209,
+    214,
+    219
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "4e02a652dee1ff13cad72398a57c23045773ecf2109763242701d5f968611963"
+}

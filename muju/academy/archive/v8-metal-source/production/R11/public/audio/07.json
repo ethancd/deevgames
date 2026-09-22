@@ -1,0 +1,11 @@
+{
+  "hash": "baa8079437d5224e34fe69325a4b42072c79ff1657a1bcff39d7fad4729c5ddd",
+  "model": "gpt-4o-mini-tts",
+  "voice": "cedar",
+  "speaker": "CLICK",
+  "originalText": "The Inyan's defense is three.",
+  "speechText": "The In-yahn's defense is three.",
+  "duration": 3.3,
+  "bytes": 158444,
+  "createdAt": "2026-09-10T15:57:09.178Z"
+}

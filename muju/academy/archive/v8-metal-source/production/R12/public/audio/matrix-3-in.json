@@ -1,0 +1,79 @@
+{
+  "provider": "openai",
+  "hash": "6b6b3dc4b95016327fffd38aca7028d947f361e861c44dd9afcbcd3829a3454b",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Kimubunga is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health kee-moo-BOON-gah is one shot by Hee, HOH-noh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-chah-KOO-nah, MAH-zahsk and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "duration": 20.95,
+  "bytes": 1005644,
+  "createdAt": "2026-09-13T10:38:58.856Z",
+  "captions": [
+    {
+      "text": "Now the red side.",
+      "start": 0,
+      "end": 55
+    },
+    {
+      "text": "A full health Kimubunga is one shot by Hi, Hono, Kagari, Radi,",
+      "start": 55,
+      "end": 232
+    },
+    {
+      "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+      "start": 232,
+      "end": 437
+    },
+    {
+      "text": "Sachakuna, Mazask and Tanka.",
+      "start": 437,
+      "end": 531
+    },
+    {
+      "text": "Every unlit attacker needs help or earlier damage.",
+      "start": 531,
+      "end": 629
+    }
+  ],
+  "wordFrames": [
+    0,
+    18,
+    20,
+    26,
+    55,
+    58,
+    65,
+    76,
+    102,
+    109,
+    118,
+    125,
+    134,
+    154,
+    175,
+    213,
+    232,
+    261,
+    296,
+    315,
+    334,
+    362,
+    378,
+    404,
+    437,
+    477,
+    496,
+    497,
+    531,
+    538,
+    550,
+    560,
+    569,
+    579,
+    598,
+    607
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "ed8be8f0f604f752bee119fc39e2b5d9b329cf5216f9634fa14a72e4627308d6"
+}

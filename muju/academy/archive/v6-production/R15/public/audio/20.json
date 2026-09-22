@@ -1,0 +1,11 @@
+{
+  "hash": "e0abac9f1e65d80d508a6dd7dd9e9b4eb83c51c4cc79dc370283e7c342b43557",
+  "model": "gpt-4o-mini-tts",
+  "voice": "cedar",
+  "speaker": "CLICK",
+  "originalText": "This is the Sachita. Shield of three. Takes four crystals. That is the Sachita.",
+  "speechText": "This is the sah-CHEE-tah. Shield of three. Takes four crystals. That is the sah-CHEE-tah.",
+  "duration": 6.2,
+  "bytes": 297644,
+  "createdAt": "2026-09-10T15:58:25.766Z"
+}

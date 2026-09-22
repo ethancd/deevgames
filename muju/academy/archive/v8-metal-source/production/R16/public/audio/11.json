@@ -1,0 +1,11 @@
+{
+  "hash": "0295e470631b9ca89adbf9d5f330b9f56346667e43414ead9d3c2f42409b859d",
+  "model": "gpt-4o-mini-tts",
+  "voice": "onyx",
+  "speaker": "CLANK",
+  "originalText": "Job two. The fortress is standing on three crystals. Its Mining is four.",
+  "speechText": "Job two. The fortress is standing on three crystals. Its Mining is four.",
+  "duration": 6.75,
+  "bytes": 324044,
+  "createdAt": "2026-09-10T15:58:25.668Z"
+}

@@ -1,8 +1,10 @@
+import { movementActionCost } from '../../src/game/movement';
 /** Deterministic local optimization, not a game-playing bot or a universal power rating. */
 import { reserveTake } from '../../src/game/mining';
 import { upkeepForTier } from '../../src/game/upkeep';
 import type { UnitDefinition } from '../../src/game/types';
 import { getAttackModifier } from '../../src/game/elements';
+import { MAX_RESOURCE_RESERVE } from '../../src/game/resourceMap';
 
 export type Catalogue = readonly UnitDefinition[];
 export function validateCatalogue(catalogue: Catalogue): void {
@@ -13,19 +15,19 @@ export function validateCatalogue(catalogue: Catalogue): void {
     const unit = catalogue.find(d => d.id === `${element}_${tier}`);
     if (!unit || unit.element !== element || unit.tier !== tier) throw new Error(`Missing/mismatched ${element}_${tier}`);
     for (const key of ['attack', 'defense', 'speed', 'mining', 'cost'] as const) {
-      if (!Number.isInteger(unit[key]) || unit[key] < (key === 'attack' || key === 'mining' ? 0 : 1)) throw new Error(`Invalid ${unit.id}.${key}`);
+      if (!Number.isInteger(unit[key]) || unit[key] < (key === 'attack' || key === 'mining' || key === 'speed' ? 0 : 1)) throw new Error(`Invalid ${unit.id}.${key}`);
     }
-    if (unit.mining > 5) throw new Error('Catalogue mining is capped at five');
+    if (unit.mining > 8) throw new Error('Catalogue mining is capped at eight');
   }
 }
 
 export const ACTIONS = 6;
 export const MAX_NEIGHBORS = 4;
 export const DISTANCES = Array.from({ length: 18 }, (_, i) => i + 1);
-export const RESERVES = { ordinary: 4, shelf: 8, rich: 10 };
+export const RESERVES = { ordinary: 4, shelf: 8, rich: 16 };
 
 export function passiveCurve(unit: UnitDefinition, reserve: number, turns = 6): number[] {
-  if(!Number.isInteger(reserve)||reserve<0||reserve>10||!Number.isInteger(turns)||turns<0)throw new Error('Valid reserve and horizon required');
+  if(!Number.isInteger(reserve)||reserve<0||reserve>MAX_RESOURCE_RESERVE||!Number.isInteger(turns)||turns<0)throw new Error('Valid reserve and horizon required');
   const curve = [0]; let left = reserve;
   for (let turn = 1; turn <= turns; turn++) {
     const take = reserveTake(unit.mining, left); left -= take;
@@ -44,7 +46,7 @@ export function power(attacker: UnitDefinition, defender: UnitDefinition): numbe
 /** Open shortest-path distance. One attack, never repeated on the same target. */
 export function strikeActions(unit: UnitDefinition, distance: number): number {
   if (distance < 1 || !Number.isInteger(distance)) throw new Error('Positive integer distance required');
-  return Math.ceil((distance - 1) / unit.speed) + 1;
+  return movementActionCost(distance - 1, unit.speed) + 1;
 }
 export function canKill(unit: UnitDefinition, target: UnitDefinition, distance: number, actions: number): boolean {
   return strikeActions(unit, distance) <= actions && power(unit, target) >= target.defense;
@@ -148,7 +150,7 @@ export function solveRoles(catalogue: Catalogue): Record<string, RoleEvidence> {
     }
   }
   for (const target of catalogue) for (const distance of DISTANCES) for (const actions of [1, 2, 3, 4, 5, 6]) {
-    for (const mine of [0, 1, 2, 3, 4, 5]) for (const guard of guards) {
+    for (const mine of [0, 1, 2, 3, 4, 5, 6, 7, 8]) for (const guard of guards) {
       mission(`strike ${target.id} at distance ${distance} within ${actions} actions; mine >=${mine} crystals at turn end on rich ground; survive ${guard?.id ?? 'no'} hit`,
         u => (mine === 0 || u.mining >= mine) && strikeActions(u, distance) <= actions &&
           power(u, target) >= target.defense && (!guard || u.defense > power(guard, u)));
@@ -164,7 +166,7 @@ export function solveRoles(catalogue: Catalogue): Record<string, RoleEvidence> {
   // Anchor occupation need not involve an attack or income.
   for (let distance = 1; distance <= 18; distance++) for (const actions of [1, 2, 3]) for (const guard of guards) {
     mission(`occupy anchor at distance ${distance} within ${actions} moves; survive ${guard?.id ?? 'no'} hit`,
-      u => Math.ceil(distance / u.speed) <= actions && (!guard || u.defense > power(guard, u)));
+      u => movementActionCost(distance, u.speed) <= actions && (!guard || u.defense > power(guard, u)));
   }
   return evidence;
 }
@@ -179,7 +181,7 @@ export function metrics(unit: UnitDefinition, opponents: Catalogue) {
   for (const distance of DISTANCES) actionTotal += strikeActions(unit, distance);
   const defense = [1, 4, 7].map(distance => ({ distance, frontier: killFrontier(unit, opponents, distance) }));
   return { killCells: kills, cells, deliveredDamage: damageTotal / cells,
-    meanStrikeActions: actionTotal / DISTANCES.length,
+    meanStrikeActions: Number.isFinite(actionTotal) ? actionTotal / DISTANCES.length : null,
     income: Object.fromEntries(Object.entries(RESERVES).map(([name, reserve]) => [name, passiveCurve(unit, reserve)])),
     turnsToEmpty: Object.fromEntries(Object.entries(RESERVES).map(([name,reserve])=>[name,turnsToEmpty(unit,reserve)])),
     defense };
@@ -205,7 +207,7 @@ export function marginalValues(unit: UnitDefinition, opponents: Catalogue) {
     const changed = metrics({ ...unit, [stat]: unit[stat] + 1 }, opponents);
     return [stat, { killCells: changed.killCells - base.killCells,
       squad: squadMarginal(unit, { ...unit, [stat]: unit[stat] + 1 }, opponents),
-      strikeActionsSaved: base.meanStrikeActions - changed.meanStrikeActions,
+      strikeActionsSaved: base.meanStrikeActions === null || changed.meanStrikeActions === null ? null : base.meanStrikeActions - changed.meanStrikeActions,
       deliveredDamage: changed.deliveredDamage - base.deliveredDamage,
       incomeAt6: Object.fromEntries(Object.keys(RESERVES).map(name => [name, changed.income[name][6] - base.income[name][6]])),
       defenseKillCost: changed.defense.map((d, i) => ({ distance: d.distance,

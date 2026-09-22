@@ -1,0 +1,11 @@
+{
+  "hash": "430403743f97640d288f82bf31e730af563d8ff044214ef9413dcfd628431fe2",
+  "model": "gpt-4o-mini-tts",
+  "voice": "onyx",
+  "speaker": "CLANK",
+  "originalText": "This is the Mazask. Shield of four. Collects up to three crystals a turn. Walks one. That is the Mazask.",
+  "speechText": "This is the MAH-zahsk. Shield of four. Collects up to three crystals a turn. Walks one. That is the MAH-zahsk.",
+  "duration": 9.3,
+  "bytes": 446444,
+  "createdAt": "2026-09-10T15:58:33.084Z"
+}

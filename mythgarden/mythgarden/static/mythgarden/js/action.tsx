@@ -1,6 +1,7 @@
 import React from 'react'
 import Duration, { WaitClass } from "./duration";
 import PriceTag from "./priceTag";
+import {actionCost} from './touchControls'
 
 export default function ActionPill ({ emoji, costAmount, costType, waitClass, backgroundColor, opacity }: ActionPillProps): JSX.Element {
   if (costAmount == null || costType == null) {
@@ -16,6 +17,7 @@ export default function ActionPill ({ emoji, costAmount, costType, waitClass, ba
             ? <>
                 <span className='action-type'>{emoji}</span>
                 <Duration amount={costAmount} waitClass={waitClass}></Duration>
+                <span className="touch-cost">{actionCost({costAmount, costType})}</span>
               </>
             : <PriceTag amount={costAmount}></PriceTag>
           }
@@ -53,6 +55,7 @@ interface ActionData {
 }
 
 interface ActionExtras {
+  description?: string
   backgroundColor?: string
   opacity?: number
 }

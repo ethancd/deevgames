@@ -1,0 +1,54 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier two: the Mazask. Attack two, defense four, speed one, and Mining three. Look at the green side first.",
+  "speechText": "Tier two: the mah-zahsk. Attack two, defense four, speed one, and Mining three. Look at the green side first.",
+  "hash": "a2bf9dd4485c701404730e060019a968292651a92fe1183b178991f00efef1e1",
+  "duration": 9.45,
+  "bytes": 453678,
+  "retakeMethod": "sentence-by-sentence-v1",
+  "retakeReason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences.",
+  "createdAt": "2026-09-13T10:51:16.565Z",
+  "captions": [
+    {
+      "text": "Tier two: the Mazask.",
+      "start": 0,
+      "end": 86
+    },
+    {
+      "text": "Attack two, defense four, speed one, and Mining three.",
+      "start": 86,
+      "end": 229
+    },
+    {
+      "text": "Look at the green side first.",
+      "start": 229,
+      "end": 284
+    }
+  ],
+  "wordFrames": [
+    0,
+    11,
+    39,
+    41,
+    86,
+    93,
+    124,
+    125,
+    153,
+    160,
+    186,
+    188,
+    197,
+    229,
+    232,
+    236,
+    240,
+    247,
+    257
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "a2bf9dd4485c701404730e060019a968292651a92fe1183b178991f00efef1e1"
+}

@@ -42,3 +42,13 @@ forge-ai/
 # Vite/TS build caches
 .vite/
 *.tsbuildinfo
+
+# The bare `coverage` rule above is for test-coverage output. Hard AI's E2.2
+# stage-trace tool and its results happen to live in directories of that name
+# and ARE repo content (docs/hard-ai/e2/E2.2-COVERAGE-TRACE.md).
+!muju/lab/hard-ai/coverage/
+!muju/lab/results/hard-ai-e2/coverage/
+
+# Python bytecode cache
+__pycache__/
+*.pyc

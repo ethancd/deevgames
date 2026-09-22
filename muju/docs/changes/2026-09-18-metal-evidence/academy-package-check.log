@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/ashkie/src/deevgames/muju/academy/build-release.py", line 214, in <module>
+    main()
+    ~~~~^^
+  File "/Users/ashkie/src/deevgames/muju/academy/build-release.py", line 94, in main
+    require(t['audioComplete'], f'{eid}: current narration is incomplete')
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/ashkie/src/deevgames/muju/academy/build-release.py", line 51, in require
+    raise ValueError(message)
+ValueError: R06: current narration is incomplete

@@ -1,0 +1,219 @@
+{
+  "text": "Now, the red side. A full health shore is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Kakuna, Yan, Mazask, and Tanka. Every unlit attacker needs help or earlier damage.",
+  "words": [
+    {
+      "word": "Now,",
+      "start": 0.0,
+      "end": 0.4,
+      "probability": 0.9468637704849243
+    },
+    {
+      "word": "the",
+      "start": 0.88,
+      "end": 0.94,
+      "probability": 0.8576852679252625
+    },
+    {
+      "word": "red",
+      "start": 0.94,
+      "end": 1.28,
+      "probability": 0.5432004332542419
+    },
+    {
+      "word": "side.",
+      "start": 1.28,
+      "end": 1.78,
+      "probability": 0.9816646575927734
+    },
+    {
+      "word": "A",
+      "start": 2.12,
+      "end": 2.18,
+      "probability": 0.7877985835075378
+    },
+    {
+      "word": "full",
+      "start": 2.18,
+      "end": 2.56,
+      "probability": 0.8759733438491821
+    },
+    {
+      "word": "health",
+      "start": 2.56,
+      "end": 2.98,
+      "probability": 0.8555670976638794
+    },
+    {
+      "word": "shore",
+      "start": 2.98,
+      "end": 3.36,
+      "probability": 0.7477418184280396
+    },
+    {
+      "word": "is",
+      "start": 3.36,
+      "end": 3.9,
+      "probability": 0.9476680755615234
+    },
+    {
+      "word": "one",
+      "start": 3.9,
+      "end": 4.22,
+      "probability": 0.9736321568489075
+    },
+    {
+      "word": "shot",
+      "start": 4.22,
+      "end": 4.56,
+      "probability": 0.9753367304801941
+    },
+    {
+      "word": "by",
+      "start": 4.56,
+      "end": 4.92,
+      "probability": 0.9984073042869568
+    },
+    {
+      "word": "Hono,",
+      "start": 4.92,
+      "end": 5.48,
+      "probability": 0.7130547016859055
+    },
+    {
+      "word": "Kagari,",
+      "start": 5.94,
+      "end": 6.48,
+      "probability": 0.49985988438129425
+    },
+    {
+      "word": "Kimubunga,",
+      "start": 7.16,
+      "end": 8.1,
+      "probability": 0.8410036265850067
+    },
+    {
+      "word": "Sjor,",
+      "start": 8.44,
+      "end": 8.86,
+      "probability": 0.2344174667474969
+    },
+    {
+      "word": "Straumr,",
+      "start": 9.3,
+      "end": 9.86,
+      "probability": 0.0962669300303484
+    },
+    {
+      "word": "Aegirinn,",
+      "start": 10.3,
+      "end": 10.82,
+      "probability": 0.2510295857985814
+    },
+    {
+      "word": "Göl,",
+      "start": 11.44,
+      "end": 11.7,
+      "probability": 0.14746075490256771
+    },
+    {
+      "word": "Gölge,",
+      "start": 12.08,
+      "end": 12.5,
+      "probability": 0.5365258674137294
+    },
+    {
+      "word": "Karanlık,",
+      "start": 12.96,
+      "end": 13.6,
+      "probability": 0.5817944953218103
+    },
+    {
+      "word": "Sachita,",
+      "start": 14.08,
+      "end": 14.56,
+      "probability": 0.41787346079945564
+    },
+    {
+      "word": "Kakuna,",
+      "start": 14.94,
+      "end": 15.24,
+      "probability": 0.7097373902797699
+    },
+    {
+      "word": "Yan,",
+      "start": 15.92,
+      "end": 16.06,
+      "probability": 0.14279396831989288
+    },
+    {
+      "word": "Mazask,",
+      "start": 16.72,
+      "end": 17.08,
+      "probability": 0.46634354442358017
+    },
+    {
+      "word": "and",
+      "start": 17.52,
+      "end": 17.68,
+      "probability": 0.9769595861434937
+    },
+    {
+      "word": "Tanka.",
+      "start": 17.68,
+      "end": 18.22,
+      "probability": 0.5037363786250353
+    },
+    {
+      "word": "Every",
+      "start": 18.54,
+      "end": 18.92,
+      "probability": 0.9949467778205872
+    },
+    {
+      "word": "unlit",
+      "start": 18.92,
+      "end": 19.48,
+      "probability": 0.6861736327409744
+    },
+    {
+      "word": "attacker",
+      "start": 19.48,
+      "end": 20.0,
+      "probability": 0.9913968443870544
+    },
+    {
+      "word": "needs",
+      "start": 20.0,
+      "end": 20.44,
+      "probability": 0.994392454624176
+    },
+    {
+      "word": "help",
+      "start": 20.44,
+      "end": 20.8,
+      "probability": 0.9975469708442688
+    },
+    {
+      "word": "or",
+      "start": 20.8,
+      "end": 21.3,
+      "probability": 0.9343312382698059
+    },
+    {
+      "word": "earlier",
+      "start": 21.3,
+      "end": 21.64,
+      "probability": 0.9963713884353638
+    },
+    {
+      "word": "damage.",
+      "start": 21.64,
+      "end": 22.0,
+      "probability": 0.9988623857498169
+    }
+  ],
+  "audioSha256": "b58f516e86ae27644db034468ba8e964f0814046fbe426f76350357f7ceef0cc",
+  "sourceText": "Now the red side. A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Yan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "model": "faster-whisper small.en int8, local only",
+  "duration": 22.5
+}

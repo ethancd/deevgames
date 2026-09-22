@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';import fs from 'node:fs';
+import {createInitialGameState,createUnit} from '../../../rules-snapshot/src/game/board';
+import {getMoveCost} from '../../../rules-snapshot/src/game/movement';
+import {isLegalAction} from '../../../rules-snapshot/src/game/legality';
+import {applyAction} from '../../../rules-snapshot/src/ai/simulate';
+const pos=(c:string)=>({x:c.charCodeAt(0)-65,y:Number(c.slice(1))-1});
+const setup=(blocked=false)=>{const s=createInitialGameState(Array(100).fill(0));s.board.units=[createUnit('fire_1','white',pos('C3')),createUnit('plant_1','black',pos('J9'))];if(blocked)s.board.units.push(createUnit('water_1','black',pos('C4')));return s;};
+const move=(s:any,to:string)=>{const a={type:'MOVE',unitId:s.board.units[0].id,to:pos(to)};assert(isLegalAction(s,a as any));return applyAction(s,a as any);};
+let s=setup();assert.equal(getMoveCost(pos('C3'),pos('C5'),2,s.board),1);s=move(s,'C5');assert.equal(s.turn.actionsRemaining,5);
+s=setup();s=move(s,'C6');assert.equal(s.turn.actionsRemaining,4);s=move(s,'C7');assert.equal(s.turn.actionsRemaining,3);
+s=setup(true);assert.equal(getMoveCost(pos('C3'),pos('C6'),2,s.board),3);s=move(s,'C6');assert.equal(s.turn.actionsRemaining,3);assert.equal(s.board.units.length,3);assert(s.board.units.some(u=>u.definitionId==='water_1'&&u.position.x===2&&u.position.y===3));
+const path=['C3','B3','B4','B5','B6','C6'].map(pos);for(let i=1;i<path.length;i++)assert.equal(Math.abs(path[i].x-path[i-1].x)+Math.abs(path[i].y-path[i-1].y),1);
+const t=JSON.parse(fs.readFileSync('src/timeline.json','utf8'));const source=fs.readFileSync('R02-Script.md','utf8').split('## Showrunner notes')[0];const spoken=[...source.matchAll(/^(COACH|PIP|CLICK)(?: \[[^\]]+\])?: (.*?)(?: \(hold \d+\))?$/gm)].map(m=>m[2]);assert.deepEqual(t.lines.map(l=>l.text),spoken);assert(t.audioComplete);assert.equal(t.lines.filter(l=>l.thinking).length,1);assert.equal(t.lines.find(l=>l.thinking).hold,10.2);
+const report={status:'PASS',speechLines:spoken.length,scenarios:['two-square trip uses one','three-square trip leaves four','later square spends a fresh action','occupied C4 forces five-square detour for three actions','walking past Sjor does not attack','detour is orthogonal','spoken script exact','one static thinking hold'],rulesSource:'v2.1 snapshot 760e088'};fs.writeFileSync('qa/rules-verification.json',JSON.stringify(report,null,2));console.log(report);

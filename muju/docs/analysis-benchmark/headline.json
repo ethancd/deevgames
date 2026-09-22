@@ -1,0 +1,98 @@
+{
+  "roomId": "0a56f850c8050113da84aefac5007810",
+  "revision": 19,
+  "perspective": "white",
+  "turn": {
+    "currentPlayer": "white",
+    "phase": "place",
+    "actionsRemaining": 4,
+    "turnNumber": 10
+  },
+  "phase": "place",
+  "stateKind": "current",
+  "hypothetical": {
+    "actions": [],
+    "assumptions": [
+      "stay-in-place economy; Now flags use current turn; NextTurn flags assume engine handoff; existing single-hit witnesses only"
+    ]
+  },
+  "sections": {
+    "economy": {
+      "white": {
+        "treasury": 40,
+        "harvest": 16,
+        "upkeep": 0,
+        "harvestTrend": [
+          16,
+          14,
+          6
+        ],
+        "next": "harvest:56",
+        "nextUpkeepShortfall": 0,
+        "shortfallIn": null
+      },
+      "black": {
+        "treasury": 23,
+        "harvest": 4,
+        "upkeep": 6,
+        "harvestTrend": [
+          4,
+          3,
+          0
+        ],
+        "next": "upkeep:17",
+        "nextUpkeepShortfall": 0,
+        "shortfallIn": null
+      }
+    },
+    "forecastStop": "terminal:inactivity",
+    "deployment": {
+      "white": [
+        21,
+        false
+      ],
+      "black": [
+        15,
+        false
+      ]
+    },
+    "draw": [
+      0,
+      10
+    ],
+    "urgent": [
+      "threatNextTurn:white_water_1_1789244664000_chhc5",
+      "captureNow:unit-black-4-1"
+    ]
+  },
+  "search": {
+    "completeness": "bounded",
+    "nodes": 3,
+    "maxNodes": 160,
+    "maxMs": 15,
+    "elapsedMs": 1,
+    "cutoffReason": null,
+    "subsearchCutoffs": [],
+    "omittedCaseClasses": [
+      "combinations",
+      "spending",
+      "nondefault upkeep",
+      "unlisted threats"
+    ],
+    "collapsed": 0
+  },
+  "next": [
+    {
+      "tool": "muju_analyze",
+      "arguments": {
+        "roomId": "0a56f850c8050113da84aefac5007810",
+        "expectedRevision": 19,
+        "player": "white",
+        "topics": [
+          "threats"
+        ],
+        "deep": true
+      }
+    }
+  ]
+}

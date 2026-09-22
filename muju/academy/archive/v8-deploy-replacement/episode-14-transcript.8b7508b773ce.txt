@@ -1,0 +1,91 @@
+Shadow: The Visible Detective
+Rules v2.8 · Video version 7
+Music: Gölge / One Square Out of Sight
+
+MURMUR: You cannot see me.
+
+COACH: I can see your hat, your feet, and your enormous detective sandwich.
+
+MURMUR: A witness. Most inconvenient.
+
+MURMUR: The leaf is entered as scenery.
+
+CLICK: Memo from Dispatch. Speed buys travel. It has never once bought damage.
+
+COACH: The Göl's speed is two.
+
+COACH: The walk to C6 is three squares.
+
+COACH: One walk, declared once. Two squares fit in an action. Leftovers cost a whole action.
+
+COACH: No walking through pieces. No diagonals. Up, down, left or right, and a path may turn.
+
+MURMUR: The count goes in the file. Not on the table.
+
+COACH: Every attack costs one action.
+
+COACH: The Deep End puts out the Sparks. Shadow beats Fire, so the Göl hits for three.
+
+MURMUR: What did that walk and that hit cost us?
+
+MURMUR: Three actions, or four?
+
+COACH: Count it, or sit with the file and watch.
+
+COACH: Three actions. Two for the walk. One for the hit.
+
+PIP: Three squares cost two?
+
+COACH: Two squares fit in the first action. One was left over. Leftovers cost a whole action.
+
+MURMUR: The thief was the second square. It travelled free. Hiding in plain sight. Just like me.
+
+CLICK: Leftovers do not go in a pocket. A new walk counts on its own.
+
+CLICK: Shadow walks the halls. Same as anyone.
+
+MURMUR: This is the Gölge. Walks two. Hits for three. Takes one crystal.
+
+MURMUR: This is the Karanlık. Walks three. Hits for four. Takes two crystals.
+
+COACH: At your own turn end it takes one crystal from the square it stands on.
+
+CLICK: The Göl takes nothing. The square keeps its crystals.
+
+CLICK: Next turn the Göl owes nothing. The Gölge owes one. The Karanlık owes two.
+
+MURMUR: Somebody standing in that path is a different case. Put one there and count again.
+
+CLICK: Shadow walks the halls. Same as anyone.
+
+MURMUR: Tried walking through a piece. Repeatedly. It had no opinion about me. It was simply there.
+
+COACH: Now the bonk matrix for shadow. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.
+
+COACH: Tier one: the Göl. Attack two, defense two, speed two, and Mining zero. Look at the green side first.
+
+COACH: With one attack, the Göl can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Göl is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: Tier two: the Gölge. Attack three, defense two, speed two, and Mining one. Look at the green side first.
+
+COACH: With one attack, the Gölge can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Gölge and Karanlık. It also finishes Göl. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Gölge is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+COACH: Tier three: the Karanlık. Attack four, defense two, speed three, and Mining two. Look at the green side first.
+
+COACH: With one attack, the Karanlık can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Muju, Sachita and Inyan. Every unlit card survives that single hit.
+
+COACH: Now the red side. A full health Karanlık is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.
+
+COACH: That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.
+
+MURMUR: Case closed. The card goes in the file. Stopping here is fine.
+
+PIP: That was my leaf. It would like a copy.

@@ -1,0 +1,57 @@
+{
+  "provider": "openai",
+  "hash": "14141d2dcb986c8763c7cc67c9adf66b463f618e57649a97080b11998f4f7c3a",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Umeme can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Inyan. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the oo-MEH-meh can finish Hee, HOH-noh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Moo-joo, sah-CHEE-tah and In-yahn. Every unlit card survives that single hit.",
+  "duration": 15.15,
+  "bytes": 727244,
+  "createdAt": "2026-09-13T10:38:50.897Z",
+  "captions": [
+    {
+      "text": "With one attack, the Umeme can finish Hi, Hono, Kagari, Radi, Umeme,",
+      "start": 0,
+      "end": 230
+    },
+    {
+      "text": "Kimubunga, Muju, Sachita and Inyan.",
+      "start": 230,
+      "end": 363
+    },
+    {
+      "text": "Every unlit card survives that single hit.",
+      "start": 363,
+      "end": 455
+    }
+  ],
+  "wordFrames": [
+    0,
+    7,
+    19,
+    52,
+    55,
+    72,
+    83,
+    96,
+    122,
+    148,
+    178,
+    200,
+    230,
+    271,
+    296,
+    325,
+    328,
+    363,
+    373,
+    385,
+    398,
+    419,
+    427,
+    439
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "113a583c5febdadeec2686eeffc03f278c88563c593438b64e18e545c677c0ac"
+}

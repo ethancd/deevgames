@@ -1,0 +1,142 @@
+{
+  "status": "User authorized three new Lightning trials using the held-charge recommendation.",
+  "date": "2026-09-12",
+  "label_offset": 18,
+  "execution": {
+    "cards": [
+      "umeme-held-charge"
+    ],
+    "takes_per_card": 4,
+    "total_audio_requests": 4,
+    "duration_seconds": 45,
+    "total_requested_minutes": 3,
+    "estimated_generation_usd": 0.45,
+    "branch_note": "Fourth request is a separately authorized 19A edit, executed by branch-umeme-without-woodwinds.py."
+  },
+  "research_file": "SOUNDTRACK_ELECTRICITY_RESEARCH-2026-09-12.md",
+  "page": {
+    "title": "Held charge — Muju soundtrack auditions",
+    "eyebrow": "Muju Hono Tanka · Round seven · ElevenLabs",
+    "heading": "Ready. Leap. Answer.",
+    "intro": "19A–C explore held charge and a linked answering hook. New 19D branches from 19A: its first 29 seconds are retained as a reference section, and the ending is recomposed to exclude the voice entering at 30–31 seconds, using plucked strings and electric synth.",
+    "save_key": "muju-soundtrack-round-seven-v1"
+  },
+  "cards": [
+    {
+      "id": "umeme-held-charge",
+      "title": "Umeme / Held Charge",
+      "direction": "Lightning · held charge and answering hook",
+      "bpm": 124,
+      "description": "Three original approaches plus 19D, a focused edit of 19A’s ending without woodwinds.",
+      "change": "Make readiness and release part of a memorable major-key phrase, with foreground Swahili-coast plucked strings.",
+      "cultural_note": "Udi and kanuni are documented instruments of the Swahili-coast taarab palette. The electronic arrangement and phrase behavior are original; this is not a claim of traditional repertoire or verified performance technique.",
+      "sources": [
+        "https://www2.umbc.edu/eol/7/reed/index.html"
+      ],
+      "listen_for": "Does the pause feel charged, does the leap satisfy, and does its answer stick in your head? Can the strings remain distinctive without making the groove busy?",
+      "take_names": {
+        "1": "Before the leap",
+        "2": "Across the gap",
+        "3": "Quiet voltage",
+        "4": "19A branch · no woodwinds"
+      },
+      "providers": {
+        "elevenlabs": {
+          "url": "https://api.elevenlabs.io/v1/music",
+          "take_bodies": {
+            "1": {
+              "model_id": "music_v2",
+              "music_length_ms": 45000,
+              "force_instrumental": true,
+              "store_for_inpainting": true,
+              "prompt": "An original instrumental strategy-game soundtrack excerpt: chill but energizing melodic electronica, a subtle chiptune influence blended into a warm acoustic/electronic ensemble. 124 BPM, 4/4, clearly D MAJOR, comfortable mid-register lead and smooth treble. Lightning's personality is readiness followed by a precise leap. The listener should remember a tune, not a sound-effect sequence.\n\nWrite one singable four-bar question-and-answer hook. A rounded electric synth holds a note with a very gentle increase in harmonic brightness; a short deliberate silence makes its rising fourth or fifth feel like a precise spark jumping a gap. The answering instrument catches that leap and resolves stepwise into the same major-key tune. Make this charged hold, gap and melodic arrival audible in the first complete phrase and recognizable at each return. Let the second half of the hook answer the first with a DIFFERENT rhythm. Use occasional Asus4-to-A-to-D resolution and delayed phrase entries for local harmonic suspense, with the major third clearly established. Keep D major throughout.\n\nThe distinctive acoustic voices come from the Swahili coast's taarab plucked-string palette: an UDI, the rounded woody oud-type lute, and a KANUNI, the resonant plucked zither. Feature their actual plucked attacks and natural string decay in the foreground. Give them short idiomatic ornaments and complete melodic replies, passing the hook between them and the electric synth. This is an original contemporary arrangement, not a traditional-song imitation. Warm electric bass and a soft, spacious broken-beat drum groove maintain an easy pulse. A little hand-drum detail can sit inside that groove. Keep the low end light and controlled.\n\nElectrical events happen at musical phrase boundaries: charged stillness, one clean leap, then a linked answering hook. Leave empty space around each event. No continuous crackles, zaps, random blips, constant fast arpeggios, shrill synths, rolling thunder, pounding trailer drums, large drops, bowed lead or wall of legato. No busy strumming or unrelated decorative runs. Entirely instrumental: no voices, speech, humming, chanting or choir.\n\nThe HELD CHARGE is the clearest feature. Let the electric synth sustain the question over a gently suspended chord, with audible but restrained tonal brightening. Make a half-beat space before the UDI catches the rising leap. KANUNI echoes only the last two notes of the answer. The anticipation lasts a musical breath; the release is a satisfying melodic arrival, never a loud impact. Keep the rhythm buoyant and understated.\n\nCreate a complete 45-second excerpt. Establish the hook in the first four bars. Repeat it with a fresh answering voice, make one modest harmonic turn around the middle, and return clearly to the original hook in the final ten seconds. The arrangement should develop through timing and melodic conversation, not by accumulating more layers. Keep a consistent listening level and leave the final phrase open for continuation."
+            },
+            "2": {
+              "model_id": "music_v2",
+              "music_length_ms": 45000,
+              "force_instrumental": true,
+              "store_for_inpainting": true,
+              "prompt": "An original instrumental strategy-game soundtrack excerpt: chill but energizing melodic electronica, a subtle chiptune influence blended into a warm acoustic/electronic ensemble. 124 BPM, 4/4, clearly D MAJOR, comfortable mid-register lead and smooth treble. Lightning's personality is readiness followed by a precise leap. The listener should remember a tune, not a sound-effect sequence.\n\nWrite one singable four-bar question-and-answer hook. A rounded electric synth holds a note with a very gentle increase in harmonic brightness; a short deliberate silence makes its rising fourth or fifth feel like a precise spark jumping a gap. The answering instrument catches that leap and resolves stepwise into the same major-key tune. Make this charged hold, gap and melodic arrival audible in the first complete phrase and recognizable at each return. Let the second half of the hook answer the first with a DIFFERENT rhythm. Use occasional Asus4-to-A-to-D resolution and delayed phrase entries for local harmonic suspense, with the major third clearly established. Keep D major throughout.\n\nThe distinctive acoustic voices come from the Swahili coast's taarab plucked-string palette: an UDI, the rounded woody oud-type lute, and a KANUNI, the resonant plucked zither. Feature their actual plucked attacks and natural string decay in the foreground. Give them short idiomatic ornaments and complete melodic replies, passing the hook between them and the electric synth. This is an original contemporary arrangement, not a traditional-song imitation. Warm electric bass and a soft, spacious broken-beat drum groove maintain an easy pulse. A little hand-drum detail can sit inside that groove. Keep the low end light and controlled.\n\nElectrical events happen at musical phrase boundaries: charged stillness, one clean leap, then a linked answering hook. Leave empty space around each event. No continuous crackles, zaps, random blips, constant fast arpeggios, shrill synths, rolling thunder, pounding trailer drums, large drops, bowed lead or wall of legato. No busy strumming or unrelated decorative runs. Entirely instrumental: no voices, speech, humming, chanting or choir.\n\nMake CHAIN LIGHTNING'S ANSWERING HOOK the clearest feature. The UDI states the short question, the electric synth holds its last note and jumps a fourth after a deliberate gap, and the KANUNI completes the answer in the same register. Each voice catches the preceding voice's final note so the handoff sounds connected and inevitable. Repeat this same recognizable tune with changed entry timing, not new riffs. Keep the charged hold audible and the plucked-string identities distinct.\n\nCreate a complete 45-second excerpt. Establish the hook in the first four bars. Repeat it with a fresh answering voice, make one modest harmonic turn around the middle, and return clearly to the original hook in the final ten seconds. The arrangement should develop through timing and melodic conversation, not by accumulating more layers. Keep a consistent listening level and leave the final phrase open for continuation."
+            },
+            "3": {
+              "model_id": "music_v2",
+              "music_length_ms": 45000,
+              "force_instrumental": true,
+              "store_for_inpainting": true,
+              "prompt": "An original instrumental strategy-game soundtrack excerpt: chill but energizing melodic electronica, a subtle chiptune influence blended into a warm acoustic/electronic ensemble. 124 BPM, 4/4, clearly D MAJOR, comfortable mid-register lead and smooth treble. Lightning's personality is readiness followed by a precise leap. The listener should remember a tune, not a sound-effect sequence.\n\nWrite one singable four-bar question-and-answer hook. A rounded electric synth holds a note with a very gentle increase in harmonic brightness; a short deliberate silence makes its rising fourth or fifth feel like a precise spark jumping a gap. The answering instrument catches that leap and resolves stepwise into the same major-key tune. Make this charged hold, gap and melodic arrival audible in the first complete phrase and recognizable at each return. Let the second half of the hook answer the first with a DIFFERENT rhythm. Use occasional Asus4-to-A-to-D resolution and delayed phrase entries for local harmonic suspense, with the major third clearly established. Keep D major throughout.\n\nThe distinctive acoustic voices come from the Swahili coast's taarab plucked-string palette: an UDI, the rounded woody oud-type lute, and a KANUNI, the resonant plucked zither. Feature their actual plucked attacks and natural string decay in the foreground. Give them short idiomatic ornaments and complete melodic replies, passing the hook between them and the electric synth. This is an original contemporary arrangement, not a traditional-song imitation. Warm electric bass and a soft, spacious broken-beat drum groove maintain an easy pulse. A little hand-drum detail can sit inside that groove. Keep the low end light and controlled.\n\nElectrical events happen at musical phrase boundaries: charged stillness, one clean leap, then a linked answering hook. Leave empty space around each event. No continuous crackles, zaps, random blips, constant fast arpeggios, shrill synths, rolling thunder, pounding trailer drums, large drops, bowed lead or wall of legato. No busy strumming or unrelated decorative runs. Entirely instrumental: no voices, speech, humming, chanting or choir.\n\nThe calmest, most spacious take: KANUNI carries the memorable hook with ringing plucked notes and one restrained grace-note ornament; the UDI gives a rounded low-mid answer. The electric synth holds a gently brightening note behind the phrase, then takes over for one precise rising leap into the next answer. Use only one or two charged leaps per long phrase. A warm restrained bass groove keeps the energy alive during the spaces; avoid bouncy novelty bass or a conspicuous dub backbeat. Make anticipation compelling at a comfortable background level.\n\nCreate a complete 45-second excerpt. Establish the hook in the first four bars. Repeat it with a fresh answering voice, make one modest harmonic turn around the middle, and return clearly to the original hook in the final ten seconds. The arrangement should develop through timing and melodic conversation, not by accumulating more layers. Keep a consistent listening level and leave the final phrase open for continuation."
+            },
+            "4": {
+              "model_id": "music_v2",
+              "store_for_inpainting": true,
+              "seed": 6142904,
+              "composition_plan": {
+                "chunks": [
+                  {
+                    "song_id": "z6FMHh2z1p5OsdpoGDd7",
+                    "range": {
+                      "start_ms": 0,
+                      "end_ms": 29000
+                    }
+                  },
+                  {
+                    "text": "[Instrumental]",
+                    "duration_ms": 16000,
+                    "positive_styles": [
+                      "entirely instrumental, no voices",
+                      "continue directly from the kept opening, matching its tempo, key, melodic hook, bass movement and quiet groove",
+                      "124 BPM target, 4/4, clear D major, chill but energizing melodic electronica",
+                      "INSTRUMENTATION CHANGE IS THE PRIORITY: the new high melodic voice that entered around 30-31 seconds in the source must be absent; keep the arrangement built from the voices heard BEFORE that entrance",
+                      "the allowed melodic voices are a rounded clearly electronic mid-register synth, a woody plucked Swahili-coast udi lute and a resonant plucked kanuni zither; use these existing voices for every melodic answer",
+                      "the electric synth has a smooth but audibly electronic harmonic edge and no breath noise or wind-instrument imitation",
+                      "retain the held charge, gentle harmonic suspense, short deliberate gap, precise rising leap and memorable answering hook",
+                      "warm electric bass, restrained broken-beat drums and sparse hand-drum detail, with the same light low end and comfortable treble",
+                      "keep one lead voice at a time, with short udi and kanuni replies; do not introduce a new solo instrument in the final section",
+                      "make a recognizable return to the original hook over these last sixteen seconds, maintain the same listening level and leave a natural open phrase at the end"
+                    ],
+                    "negative_styles": [
+                      "woodwinds",
+                      "flute",
+                      "clarinet",
+                      "oboe",
+                      "bassoon",
+                      "recorder",
+                      "piccolo",
+                      "saxophone",
+                      "panpipes",
+                      "ney flute",
+                      "reed instruments",
+                      "wind instruments",
+                      "whistling",
+                      "breathy flute-like synth",
+                      "reedy synth lead",
+                      "vocals",
+                      "speech",
+                      "humming",
+                      "choir",
+                      "new countermelody entering around 30 seconds",
+                      "bowed strings",
+                      "brass",
+                      "constant fast arpeggios",
+                      "crackling sound effects",
+                      "rolling thunder",
+                      "huge drop"
+                    ],
+                    "context_adherence": "high",
+                    "conditioning_ref": {
+                      "song_id": "z6FMHh2z1p5OsdpoGDd7",
+                      "range": {
+                        "start_ms": 0,
+                        "end_ms": 29000
+                      }
+                    },
+                    "condition_strength": "high"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

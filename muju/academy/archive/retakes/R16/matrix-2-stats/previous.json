@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "87f041a11d096be1b207513487ad97d64331a3d625f5d0b3557ba4c015a4ba08",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier two: the Mazask. Attack two, defense four, speed one, and Mining three. Look at the green side first.",
+  "speechText": "Tier two: the MAH-zahsk. Attack two, defense four, speed one, and Mining three. Look at the green side first.",
+  "duration": 7.4,
+  "bytes": 355244,
+  "createdAt": "2026-09-13T10:39:32.510Z"
+}

@@ -93,19 +93,21 @@ Two players build tableaus by bidding astrological symbols (♂♀☿☽, 4 of e
 
 Two players occupy opposite corners of a 10×10 grid, combining territorial
 control, tactical combat and an economy. Modes are vs AI, pass-and-play and
-AI-vs-AI. The v2.2 cost ladder doubles all tier-1 purchases and promotion steps to slow
-early army growth; income and upkeep are unchanged. Muju has two phases: **Place** (public tier-1
-purchase and later-turn promotion), then **Act** (six shared move/attack actions).
+AI-vs-AI. Tier-1 purchases cost 3/4/5 by element pair, with 4/8 promotion
+steps. Muju has two phases: **Place** (public tier-1 purchase and later-turn
+promotion), then **Act** (four shared move/attack actions).
 Every owned unit collects up to its Mining stat from its square at turn end.
-The unchanged Unequal routes layout now holds 0/4/8/10 reserves, 520 total.
+The v2.8 Unequal routes map holds 0/4/8/16 reserves, 504 total: six 8-crystal
+home squares per player and two four-square expansions holding 16 each. Plant
+Mining is 3/5/8. Existing games keep their stored maps with the current catalogue.
 
 Anchor rectangles, blocked entirely by any enemy inside, connect positioning
 to spawning and home defense. Units act immediately after purchase or
 promotion, but a newly bought unit cannot promote that turn. Each existing
 unit may climb one tier per own turn, paying the cost difference. The exact
-18-unit v1.9 combat/movement/mining stats, elemental triangle, Cleave, owner-turn healing,
-upkeep and ten-quiet-turn draw remain. No lake or first-player compensation
-has been added. First-player rush strength under the combined rules remains
+18-unit catalogue is defined in `muju/src/game/units.ts`. The elemental triangle,
+Cleave, owner-turn healing, and upkeep remain; ten player turns without an attack
+kill draw. Black may receive an optional 1–20 starting-crystal handicap. First-player rush strength under the combined rules remains
 an open design question.
 
 Both banks are public. The AI uses public-state MCTS and beam/placement plans;

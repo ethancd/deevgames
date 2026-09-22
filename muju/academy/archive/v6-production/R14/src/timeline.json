@@ -1,0 +1,2225 @@
+{
+  "id": "R14",
+  "title": "Shadow: The Visible Detective",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "You cannot see me.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: Murmur stands behind a very small leaf, in a long coat and a wide hat, holding a sandwich the size of a pillow. The coat, the hat, the boots and the sandwich all stick out past the leaf. Sign above: SHADOW DEPARTMENT. Game board unchanged.]"
+      ],
+      "displayText": "You cannot see me.",
+      "from": 0,
+      "speechFrames": 68,
+      "preRollFrames": 0,
+      "duration": 88,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "You cannot see me.",
+          "start": 0,
+          "end": 68
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        29,
+        43
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "I can see your hat, your feet, and your enormous detective sandwich.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "I can see your hat, your feet, and your enormous detective sandwich.",
+      "from": 88,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 172,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "I can see your hat, your feet, and your enormous detective sandwich.",
+          "start": 3,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        3,
+        7,
+        18,
+        25,
+        33,
+        55,
+        63,
+        82,
+        87,
+        93,
+        111,
+        127
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "A witness. Most inconvenient.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "A witness. Most inconvenient.",
+      "from": 260,
+      "speechFrames": 122,
+      "preRollFrames": 0,
+      "duration": 149,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "A witness. Most inconvenient.",
+          "start": 9,
+          "end": 122
+        }
+      ],
+      "wordFrames": [
+        9,
+        16,
+        63,
+        63
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "MURMUR",
+      "cue": "conspiratorial whisper",
+      "text": "The leaf is entered as scenery.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "The leaf is entered as scenery.",
+      "from": 409,
+      "speechFrames": 128,
+      "preRollFrames": 0,
+      "duration": 230,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "The leaf is entered as scenery.",
+          "start": 0,
+          "end": 128
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        21,
+        46,
+        56,
+        80
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Memo from Dispatch. Speed buys travel. It has never once bought damage.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: THE THREE QUESTIONS. Which stat helps this job? How many actions does it take? What will this piece owe next turn?]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]",
+        "[card: MEMO FROM DISPATCH]"
+      ],
+      "displayText": "Memo from Dispatch. Speed buys travel. It has never once bought damage.",
+      "from": 639,
+      "speechFrames": 156,
+      "preRollFrames": 0,
+      "duration": 176,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "Memo from Dispatch. Speed buys travel.",
+          "start": 4,
+          "end": 106
+        },
+        {
+          "text": "It has never once bought damage.",
+          "start": 106,
+          "end": 156
+        }
+      ],
+      "wordFrames": [
+        4,
+        13,
+        27,
+        65,
+        71,
+        80,
+        106,
+        109,
+        116,
+        120,
+        132,
+        139
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "The Göl's speed is two.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: White Göl on column C, row three. Black Hi on column C, row seven. C four, C five and C six are empty. Four action tokens in the tray.] [card: THE CASE FILE. Column one, fact. Column two, possible. Column three, guess.]"
+      ],
+      "displayText": "The Göl's speed is two.",
+      "from": 815,
+      "speechFrames": 65,
+      "preRollFrames": 0,
+      "duration": 85,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "The Göl's speed is two.",
+          "start": 0,
+          "end": 65
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        26,
+        35,
+        50
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The walk to column C, row six is three squares.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The walk to C6 is three squares.",
+      "from": 900,
+      "speechFrames": 147,
+      "preRollFrames": 0,
+      "duration": 167,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "The walk to C6 is three squares.",
+          "start": 4,
+          "end": 147
+        }
+      ],
+      "wordFrames": [
+        4,
+        11,
+        21,
+        37,
+        42,
+        74,
+        74,
+        102,
+        108,
+        125
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One walk, declared once. Two squares fit in an action. Leftovers cost a whole action.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: one arrow, drawn once, from C three to C six. The Göl slides along it as one declared walk.]"
+      ],
+      "displayText": "One walk, declared once. Two squares fit in an action. Leftovers cost a whole action.",
+      "from": 1067,
+      "speechFrames": 201,
+      "preRollFrames": 0,
+      "duration": 221,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "One walk, declared once.",
+          "start": 5,
+          "end": 79
+        },
+        {
+          "text": "Two squares fit in an action.",
+          "start": 79,
+          "end": 146
+        },
+        {
+          "text": "Leftovers cost a whole action.",
+          "start": 146,
+          "end": 201
+        }
+      ],
+      "wordFrames": [
+        5,
+        12,
+        42,
+        48,
+        79,
+        86,
+        97,
+        105,
+        111,
+        123,
+        146,
+        156,
+        169,
+        177,
+        184
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "No walking through pieces. No diagonals. Up, down, left or right, and a path may turn.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "No walking through pieces. No diagonals. Up, down, left or right, and a path may turn.",
+      "from": 1288,
+      "speechFrames": 212,
+      "preRollFrames": 0,
+      "duration": 232,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "No walking through pieces.",
+          "start": 3,
+          "end": 61
+        },
+        {
+          "text": "No diagonals. Up, down, left or right, and a path may turn.",
+          "start": 61,
+          "end": 212
+        }
+      ],
+      "wordFrames": [
+        3,
+        9,
+        19,
+        31,
+        61,
+        70,
+        111,
+        133,
+        145,
+        148,
+        159,
+        165,
+        176,
+        188,
+        188,
+        199
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "MURMUR",
+      "cue": "dry aside",
+      "text": "The count goes in the file. Not on the table.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: Murmur slides the case file over the action tray.]"
+      ],
+      "displayText": "The count goes in the file. Not on the table.",
+      "from": 1520,
+      "speechFrames": 150,
+      "preRollFrames": 0,
+      "duration": 170,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "The count goes in the file.",
+          "start": 0,
+          "end": 98
+        },
+        {
+          "text": "Not on the table.",
+          "start": 98,
+          "end": 150
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        24,
+        44,
+        54,
+        69,
+        98,
+        107,
+        121,
+        140
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Every attack costs one action.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Every attack costs one action.",
+      "from": 1690,
+      "speechFrames": 83,
+      "preRollFrames": 0,
+      "duration": 103,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "Every attack costs one action.",
+          "start": 15,
+          "end": 83
+        }
+      ],
+      "wordFrames": [
+        15,
+        15,
+        29,
+        45,
+        64
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Deep End puts out the Sparks. Shadow beats Fire, so the Göl hits for three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Hi, defense one]"
+      ],
+      "displayText": "The Deep End puts out the Sparks. Shadow beats Fire, so the Göl hits for three.",
+      "from": 1793,
+      "speechFrames": 192,
+      "preRollFrames": 0,
+      "duration": 212,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "The Deep End puts out the Sparks.",
+          "start": 3,
+          "end": 88
+        },
+        {
+          "text": "Shadow beats Fire, so the Göl hits for three.",
+          "start": 88,
+          "end": 192
+        }
+      ],
+      "wordFrames": [
+        3,
+        7,
+        16,
+        28,
+        38,
+        46,
+        65,
+        88,
+        89,
+        99,
+        126,
+        130,
+        137,
+        144,
+        154,
+        171
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "MURMUR",
+      "cue": "question, open",
+      "text": "What did that walk and that hit cost us?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk] [sfx: piece removed]",
+        "[card: two boxes in the file. THE COST. THREE ACTIONS / FOUR ACTIONS]"
+      ],
+      "displayText": "What did that walk and that hit cost us?",
+      "from": 2005,
+      "speechFrames": 129,
+      "preRollFrames": 0,
+      "duration": 149,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "What did that walk and that hit cost us?",
+          "start": 5,
+          "end": 129
+        }
+      ],
+      "wordFrames": [
+        5,
+        14,
+        32,
+        42,
+        54,
+        69,
+        85,
+        93,
+        111
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "Three actions, or four?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Three actions, or four?",
+      "from": 2154,
+      "speechFrames": 92,
+      "preRollFrames": 0,
+      "duration": 112,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "Three actions, or four?",
+          "start": 0,
+          "end": 92
+        }
+      ],
+      "wordFrames": [
+        0,
+        23,
+        52,
+        73
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Count it, or sit with the file and watch.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "What did that walk and that hit cost us?",
+      "displayText": "Count it, or sit with the file and watch.",
+      "from": 2266,
+      "speechFrames": 108,
+      "preRollFrames": 0,
+      "duration": 414,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "Count it, or sit with the file and watch.",
+          "start": 0,
+          "end": 108
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        26,
+        34,
+        42,
+        51,
+        57,
+        67,
+        81
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Three actions. Two for the walk. One for the hit.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: Murmur lifts the file off the tray. Three tokens are gone. Three are still sitting there.]"
+      ],
+      "displayText": "Three actions. Two for the walk. One for the hit.",
+      "from": 2680,
+      "speechFrames": 137,
+      "preRollFrames": 0,
+      "duration": 157,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "Three actions. Two for the walk.",
+          "start": 16,
+          "end": 102
+        },
+        {
+          "text": "One for the hit.",
+          "start": 102,
+          "end": 137
+        }
+      ],
+      "wordFrames": [
+        16,
+        22,
+        60,
+        66,
+        72,
+        77,
+        102,
+        108,
+        115,
+        119
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Three squares cost two?",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Three squares cost two?",
+      "from": 2837,
+      "speechFrames": 98,
+      "preRollFrames": 0,
+      "duration": 118,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "Three squares cost two?",
+          "start": 5,
+          "end": 98
+        }
+      ],
+      "wordFrames": [
+        5,
+        17,
+        34,
+        59
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Two squares fit in the first action. One was left over. Leftovers cost a whole action.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Two squares fit in the first action. One was left over. Leftovers cost a whole action.",
+      "from": 2955,
+      "speechFrames": 189,
+      "preRollFrames": 0,
+      "duration": 209,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "Two squares fit in the first action.",
+          "start": 0,
+          "end": 87
+        },
+        {
+          "text": "One was left over.",
+          "start": 87,
+          "end": 145
+        },
+        {
+          "text": "Leftovers cost a whole action.",
+          "start": 145,
+          "end": 189
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        22,
+        32,
+        36,
+        41,
+        51,
+        87,
+        88,
+        107,
+        126,
+        145,
+        145,
+        158,
+        170,
+        175
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "The thief was the second square. It travelled free. Hiding in plain sight. Just like me.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The thief was the second square. It travelled free. Hiding in plain sight. Just like me.",
+      "from": 3164,
+      "speechFrames": 261,
+      "preRollFrames": 0,
+      "duration": 281,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "The thief was the second square.",
+          "start": 4,
+          "end": 104
+        },
+        {
+          "text": "It travelled free. Hiding in plain sight.",
+          "start": 104,
+          "end": 233
+        },
+        {
+          "text": "Just like me.",
+          "start": 233,
+          "end": 261
+        }
+      ],
+      "wordFrames": [
+        4,
+        5,
+        22,
+        41,
+        55,
+        64,
+        104,
+        112,
+        121,
+        171,
+        173,
+        192,
+        202,
+        233,
+        239,
+        248
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Leftovers do not go in a pocket. A new walk counts on its own.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Leftovers do not go in a pocket. A new walk counts on its own.",
+      "from": 3445,
+      "speechFrames": 125,
+      "preRollFrames": 0,
+      "duration": 145,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "Leftovers do not go in a pocket.",
+          "start": 8,
+          "end": 67
+        },
+        {
+          "text": "A new walk counts on its own.",
+          "start": 67,
+          "end": 125
+        }
+      ],
+      "wordFrames": [
+        8,
+        17,
+        25,
+        31,
+        37,
+        41,
+        51,
+        67,
+        71,
+        79,
+        85,
+        97,
+        103,
+        108
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Shadow walks the halls. Same as anyone.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Shadow walks the halls. Same as anyone.",
+      "from": 3590,
+      "speechFrames": 90,
+      "preRollFrames": 0,
+      "duration": 110,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "Shadow walks the halls.",
+          "start": 3,
+          "end": 60
+        },
+        {
+          "text": "Same as anyone.",
+          "start": 60,
+          "end": 90
+        }
+      ],
+      "wordFrames": [
+        3,
+        12,
+        21,
+        38,
+        60,
+        61,
+        68
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "MURMUR",
+      "cue": "counting, even beats",
+      "text": "This is the Gölge. Walks two. Hits for three. Takes one crystal.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: this path, with nobody in it. Not checked: a blocker, and Black's reply.]",
+        "[card: the Göl · the Gölge · the Karanlık.]"
+      ],
+      "displayText": "This is the Gölge. Walks two. Hits for three. Takes one crystal.",
+      "from": 3700,
+      "speechFrames": 240,
+      "preRollFrames": 0,
+      "duration": 260,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "This is the Gölge.",
+          "start": 0,
+          "end": 99
+        },
+        {
+          "text": "Walks two. Hits for three.",
+          "start": 99,
+          "end": 195
+        },
+        {
+          "text": "Takes one crystal.",
+          "start": 195,
+          "end": 240
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        24,
+        62,
+        99,
+        103,
+        145,
+        145,
+        156,
+        195,
+        201,
+        221
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "This is the Karanlık. Walks three. Hits for four. Takes two crystals.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "This is the Karanlık. Walks three. Hits for four. Takes two crystals.",
+      "from": 3960,
+      "speechFrames": 209,
+      "preRollFrames": 0,
+      "duration": 229,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "This is the Karanlık.",
+          "start": 5,
+          "end": 91
+        },
+        {
+          "text": "Walks three. Hits for four.",
+          "start": 91,
+          "end": 167
+        },
+        {
+          "text": "Takes two crystals.",
+          "start": 167,
+          "end": 209
+        }
+      ],
+      "wordFrames": [
+        5,
+        15,
+        26,
+        58,
+        91,
+        97,
+        125,
+        125,
+        136,
+        167,
+        167,
+        199
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "At your own turn end it takes one crystal from the square it stands on.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: a separate practice square. A Gölge standing on three crystals.] [card: INCOME. At your own turn end. From the square you are standing on. Never the square you left.]"
+      ],
+      "displayText": "At your own turn end it takes one crystal from the square it stands on.",
+      "from": 4189,
+      "speechFrames": 135,
+      "preRollFrames": 0,
+      "duration": 155,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "At your own turn end it takes one crystal from the square",
+          "start": 2,
+          "end": 107
+        },
+        {
+          "text": "it stands on.",
+          "start": 107,
+          "end": 135
+        }
+      ],
+      "wordFrames": [
+        2,
+        5,
+        14,
+        27,
+        34,
+        54,
+        59,
+        64,
+        78,
+        84,
+        94,
+        107,
+        107,
+        121,
+        121
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "The Göl takes nothing. The square keeps its crystals.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Göl takes nothing. The square keeps its crystals.",
+      "from": 4344,
+      "speechFrames": 129,
+      "preRollFrames": 0,
+      "duration": 149,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "The Göl takes nothing.",
+          "start": 1,
+          "end": 54
+        },
+        {
+          "text": "The square keeps its crystals.",
+          "start": 54,
+          "end": 129
+        }
+      ],
+      "wordFrames": [
+        1,
+        8,
+        16,
+        29,
+        54,
+        65,
+        74,
+        85,
+        106
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Next turn the Göl owes nothing. The Gölge owes one. The Karanlık owes two.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Next turn the Göl owes nothing. The Gölge owes one. The Karanlık owes two.",
+      "from": 4493,
+      "speechFrames": 192,
+      "preRollFrames": 0,
+      "duration": 212,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "Next turn the Göl owes nothing.",
+          "start": 0,
+          "end": 83
+        },
+        {
+          "text": "The Gölge owes one.",
+          "start": 83,
+          "end": 139
+        },
+        {
+          "text": "The Karanlık owes two.",
+          "start": 139,
+          "end": 192
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        26,
+        34,
+        42,
+        51,
+        83,
+        97,
+        111,
+        111,
+        139,
+        152,
+        165,
+        177
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "Somebody standing in that path is a different case. Put one there and count again.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: reset the original C three to C seven practice position. The Göl and the enemy Hi are back at their starting squares. Add a friendly Muju on C five before any actions; relight the longer path around it.]"
+      ],
+      "displayText": "Somebody standing in that path is a different case. Put one there and count again.",
+      "from": 4705,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 206,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "Somebody standing in that path is a different case.",
+          "start": 18,
+          "end": 117
+        },
+        {
+          "text": "Put one there and count again.",
+          "start": 117,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        18,
+        18,
+        36,
+        42,
+        49,
+        60,
+        67,
+        76,
+        81,
+        117,
+        119,
+        129,
+        139,
+        156,
+        165
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Shadow walks the halls. Same as anyone.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: SHADOW WORK CARD. Attack two, three, four · defense two · speed two, two, three · Mining nothing, one, two · toll nothing, one, two. Filed with the case.]"
+      ],
+      "displayText": "Shadow walks the halls. Same as anyone.",
+      "from": 4911,
+      "speechFrames": 98,
+      "preRollFrames": 0,
+      "duration": 118,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Shadow walks the halls.",
+          "start": 5,
+          "end": 70
+        },
+        {
+          "text": "Same as anyone.",
+          "start": 70,
+          "end": 98
+        }
+      ],
+      "wordFrames": [
+        5,
+        14,
+        30,
+        47,
+        70,
+        75,
+        81
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "29",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "Tried walking through a piece. Repeatedly. It had no opinion about me. It was simply there.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Tried walking through a piece. Repeatedly. It had no opinion about me. It was simply there.",
+      "from": 5029,
+      "speechFrames": 260,
+      "preRollFrames": 0,
+      "duration": 280,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "Tried walking through a piece.",
+          "start": 4,
+          "end": 85
+        },
+        {
+          "text": "Repeatedly. It had no opinion about me.",
+          "start": 85,
+          "end": 207
+        },
+        {
+          "text": "It was simply there.",
+          "start": 207,
+          "end": 260
+        }
+      ],
+      "wordFrames": [
+        4,
+        16,
+        34,
+        47,
+        60,
+        85,
+        124,
+        136,
+        144,
+        159,
+        169,
+        179,
+        207,
+        219,
+        226,
+        241
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for shadow. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      },
+      "displayText": "Now the bonk matrix for shadow. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "from": 5309,
+      "speechFrames": 393,
+      "preRollFrames": 0,
+      "duration": 417,
+      "audio": "audio/matrix-intro.wav",
+      "captions": [
+        {
+          "text": "Now the bonk matrix for shadow.",
+          "start": 0,
+          "end": 78
+        },
+        {
+          "text": "We check all eighteen enemy unit types, including matching types.",
+          "start": 78,
+          "end": 210
+        },
+        {
+          "text": "Both pieces start at full health and are already next to each",
+          "start": 210,
+          "end": 306
+        },
+        {
+          "text": "other. One attack, not a whole turn.",
+          "start": 306,
+          "end": 393
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        12,
+        29,
+        39,
+        49,
+        78,
+        81,
+        88,
+        99,
+        113,
+        122,
+        133,
+        154,
+        164,
+        176,
+        210,
+        215,
+        226,
+        234,
+        239,
+        244,
+        253,
+        269,
+        273,
+        287,
+        298,
+        302,
+        306,
+        334,
+        341,
+        365,
+        370,
+        374,
+        378
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Göl. Attack two, defense two, speed two, and Mining zero. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_1",
+        "focus": "out"
+      },
+      "displayText": "Tier one: the Göl. Attack two, defense two, speed two, and Mining zero. Look at the green side first.",
+      "from": 5726,
+      "speechFrames": 257,
+      "preRollFrames": 0,
+      "duration": 281,
+      "audio": "audio/matrix-1-stats.wav",
+      "captions": [
+        {
+          "text": "Tier one: the Göl.",
+          "start": 0,
+          "end": 73
+        },
+        {
+          "text": "Attack two, defense two, speed two, and Mining zero.",
+          "start": 73,
+          "end": 204
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 204,
+          "end": 257
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        31,
+        36,
+        73,
+        74,
+        100,
+        105,
+        134,
+        136,
+        160,
+        162,
+        171,
+        204,
+        207,
+        212,
+        215,
+        221,
+        229
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Göl can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_1",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Göl can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "from": 6007,
+      "speechFrames": 479,
+      "preRollFrames": 0,
+      "duration": 503,
+      "audio": "audio/matrix-1-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Göl can finish Hi, Hono, Kagari, Radi, Umeme,",
+          "start": 0,
+          "end": 238
+        },
+        {
+          "text": "Kimubunga, Sjor, Göl, Gölge and Karanlık.",
+          "start": 238,
+          "end": 387
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 387,
+          "end": 479
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        16,
+        38,
+        42,
+        50,
+        58,
+        68,
+        101,
+        133,
+        173,
+        199,
+        238,
+        277,
+        298,
+        314,
+        341,
+        344,
+        387,
+        397,
+        408,
+        419,
+        439,
+        449,
+        460
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Göl is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_1",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Göl is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "from": 6510,
+      "speechFrames": 627,
+      "preRollFrames": 0,
+      "duration": 651,
+      "audio": "audio/matrix-1-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 59
+        },
+        {
+          "text": "A full health Göl is one shot by Hono, Kagari, Kimubunga, Sjor,",
+          "start": 59,
+          "end": 242
+        },
+        {
+          "text": "Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan,",
+          "start": 242,
+          "end": 472
+        },
+        {
+          "text": "Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+          "start": 472,
+          "end": 627
+        }
+      ],
+      "wordFrames": [
+        0,
+        20,
+        22,
+        30,
+        59,
+        59,
+        71,
+        81,
+        91,
+        98,
+        109,
+        117,
+        125,
+        158,
+        184,
+        224,
+        242,
+        271,
+        301,
+        318,
+        352,
+        385,
+        413,
+        446,
+        472,
+        490,
+        493,
+        513,
+        523,
+        539,
+        555,
+        568,
+        578,
+        592,
+        602
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_1",
+        "focus": "both"
+      },
+      "displayText": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 7161,
+      "speechFrames": 290,
+      "preRollFrames": 0,
+      "duration": 350,
+      "audio": "audio/matrix-1-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier one card.",
+          "start": 0,
+          "end": 70
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 70,
+          "end": 133
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 133,
+          "end": 259
+        },
+        {
+          "text": "finish the other.",
+          "start": 259,
+          "end": 290
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        16,
+        22,
+        27,
+        37,
+        70,
+        73,
+        79,
+        85,
+        94,
+        104,
+        133,
+        136,
+        143,
+        151,
+        159,
+        167,
+        174,
+        182,
+        213,
+        219,
+        232,
+        245,
+        259,
+        267,
+        274
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Gölge. Attack three, defense two, speed two, and Mining one. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_2",
+        "focus": "out"
+      },
+      "displayText": "Tier two: the Gölge. Attack three, defense two, speed two, and Mining one. Look at the green side first.",
+      "from": 7511,
+      "speechFrames": 266,
+      "preRollFrames": 0,
+      "duration": 290,
+      "audio": "audio/matrix-2-stats.wav",
+      "captions": [
+        {
+          "text": "Tier two: the Gölge.",
+          "start": 0,
+          "end": 86
+        },
+        {
+          "text": "Attack three, defense two, speed two, and Mining one.",
+          "start": 86,
+          "end": 213
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 213,
+          "end": 266
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        42,
+        43,
+        86,
+        92,
+        118,
+        125,
+        147,
+        152,
+        171,
+        172,
+        181,
+        213,
+        215,
+        220,
+        223,
+        229,
+        239
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Gölge can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Gölge and Karanlık. It also finishes Göl. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_2",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Gölge can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Gölge and Karanlık. It also finishes Göl. Every unlit card survives that single hit.",
+      "from": 7801,
+      "speechFrames": 585,
+      "preRollFrames": 0,
+      "duration": 609,
+      "audio": "audio/matrix-2-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Gölge can finish Hi, Hono, Kagari, Radi, Umeme,",
+          "start": 0,
+          "end": 237
+        },
+        {
+          "text": "Kimubunga, Sjor, Straumr, Gölge and Karanlık.",
+          "start": 237,
+          "end": 398
+        },
+        {
+          "text": "It also finishes Göl.",
+          "start": 398,
+          "end": 469
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 469,
+          "end": 585
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        22,
+        56,
+        58,
+        77,
+        88,
+        100,
+        129,
+        154,
+        190,
+        214,
+        237,
+        283,
+        306,
+        335,
+        362,
+        365,
+        398,
+        401,
+        410,
+        427,
+        469,
+        482,
+        500,
+        514,
+        536,
+        548,
+        560
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Gölge is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_2",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Gölge is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "from": 8410,
+      "speechFrames": 674,
+      "preRollFrames": 0,
+      "duration": 698,
+      "audio": "audio/matrix-2-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 50
+        },
+        {
+          "text": "A full health Gölge is one shot by Hono, Kagari, Kimubunga, Sjor,",
+          "start": 50,
+          "end": 274
+        },
+        {
+          "text": "Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan,",
+          "start": 274,
+          "end": 510
+        },
+        {
+          "text": "Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+          "start": 510,
+          "end": 674
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        15,
+        25,
+        50,
+        53,
+        63,
+        73,
+        91,
+        108,
+        118,
+        127,
+        136,
+        169,
+        205,
+        250,
+        274,
+        307,
+        334,
+        353,
+        384,
+        416,
+        446,
+        484,
+        510,
+        532,
+        539,
+        573,
+        584,
+        597,
+        611,
+        625,
+        634,
+        641,
+        654
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_2",
+        "focus": "both"
+      },
+      "displayText": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 9108,
+      "speechFrames": 345,
+      "preRollFrames": 0,
+      "duration": 405,
+      "audio": "audio/matrix-2-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier two card.",
+          "start": 0,
+          "end": 91
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 91,
+          "end": 181
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 181,
+          "end": 305
+        },
+        {
+          "text": "finish the other.",
+          "start": 305,
+          "end": 345
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        23,
+        32,
+        38,
+        56,
+        91,
+        98,
+        110,
+        127,
+        142,
+        155,
+        181,
+        182,
+        193,
+        202,
+        211,
+        218,
+        224,
+        230,
+        263,
+        268,
+        280,
+        293,
+        305,
+        316,
+        323
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Karanlık. Attack four, defense two, speed three, and Mining two. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_3",
+        "focus": "out"
+      },
+      "displayText": "Tier three: the Karanlık. Attack four, defense two, speed three, and Mining two. Look at the green side first.",
+      "from": 9513,
+      "speechFrames": 279,
+      "preRollFrames": 0,
+      "duration": 303,
+      "audio": "audio/matrix-3-stats.wav",
+      "captions": [
+        {
+          "text": "Tier three: the Karanlık.",
+          "start": 0,
+          "end": 87
+        },
+        {
+          "text": "Attack four, defense two, speed three, and Mining two.",
+          "start": 87,
+          "end": 221
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 221,
+          "end": 279
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        35,
+        37,
+        87,
+        89,
+        115,
+        121,
+        149,
+        154,
+        179,
+        181,
+        188,
+        221,
+        227,
+        233,
+        238,
+        245,
+        257
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Karanlık can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Muju, Sachita and Inyan. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_3",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Karanlık can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Muju, Sachita and Inyan. Every unlit card survives that single hit.",
+      "from": 9816,
+      "speechFrames": 596,
+      "preRollFrames": 0,
+      "duration": 620,
+      "audio": "audio/matrix-3-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Karanlık can finish Hi, Hono, Kagari, Radi,",
+          "start": 0,
+          "end": 197
+        },
+        {
+          "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+          "start": 197,
+          "end": 428
+        },
+        {
+          "text": "Muju, Sachita and Inyan.",
+          "start": 428,
+          "end": 516
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 516,
+          "end": 596
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        14,
+        44,
+        46,
+        70,
+        79,
+        90,
+        110,
+        143,
+        175,
+        197,
+        226,
+        269,
+        287,
+        315,
+        347,
+        366,
+        397,
+        428,
+        456,
+        484,
+        486,
+        516,
+        524,
+        535,
+        544,
+        556,
+        567,
+        578
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Karanlık is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_3",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Karanlık is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "from": 10436,
+      "speechFrames": 650,
+      "preRollFrames": 0,
+      "duration": 674,
+      "audio": "audio/matrix-3-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 57
+        },
+        {
+          "text": "A full health Karanlık is one shot by Hono, Kagari, Kimubunga, Sjor,",
+          "start": 57,
+          "end": 267
+        },
+        {
+          "text": "Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan,",
+          "start": 267,
+          "end": 483
+        },
+        {
+          "text": "Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+          "start": 483,
+          "end": 650
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        18,
+        26,
+        57,
+        57,
+        67,
+        79,
+        98,
+        102,
+        112,
+        120,
+        132,
+        183,
+        210,
+        250,
+        267,
+        296,
+        325,
+        344,
+        371,
+        397,
+        424,
+        457,
+        483,
+        505,
+        509,
+        538,
+        547,
+        560,
+        574,
+        588,
+        598,
+        611,
+        622
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "shadow_3",
+        "focus": "both"
+      },
+      "displayText": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 11110,
+      "speechFrames": 299,
+      "preRollFrames": 0,
+      "duration": 359,
+      "audio": "audio/matrix-3-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier three card.",
+          "start": 0,
+          "end": 70
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 70,
+          "end": 137
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 137,
+          "end": 265
+        },
+        {
+          "text": "finish the other.",
+          "start": 265,
+          "end": 299
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        20,
+        25,
+        29,
+        37,
+        70,
+        74,
+        81,
+        86,
+        95,
+        104,
+        137,
+        140,
+        148,
+        155,
+        163,
+        171,
+        179,
+        185,
+        220,
+        226,
+        238,
+        251,
+        265,
+        273,
+        280
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "30",
+      "speaker": "MURMUR",
+      "cue": "",
+      "text": "Case closed. The card goes in the file. Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Case closed. The card goes in the file. Stopping here is fine.",
+      "from": 11469,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 206,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "Case closed. The card goes in the file.",
+          "start": 11,
+          "end": 119
+        },
+        {
+          "text": "Stopping here is fine.",
+          "start": 119,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        11,
+        13,
+        49,
+        64,
+        64,
+        75,
+        80,
+        95,
+        119,
+        131,
+        142,
+        159
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "31",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "That was my leaf. It would like a copy.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "That was my leaf. It would like a copy.",
+      "from": 11675,
+      "speechFrames": 126,
+      "preRollFrames": 0,
+      "duration": 186,
+      "audio": "audio/31.wav",
+      "captions": [
+        {
+          "text": "That was my leaf.",
+          "start": 0,
+          "end": 58
+        },
+        {
+          "text": "It would like a copy.",
+          "start": 58,
+          "end": 126
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        27,
+        40,
+        58,
+        70,
+        75,
+        84,
+        102
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "version": 6,
+  "rules": "v2.7",
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "question": "What did that walk and that hit cost us?",
+  "soundtrack": {
+    "id": "golge-baglama",
+    "title": "Gölge / One Square Out of Sight",
+    "source": "muju/music-auditions/full-versions/golge-baglama-full-v2-blended.mp3",
+    "sha256": "2c4e05bc362d1abf7014321d8f86e5f34756ff908c960b24bceb553f9c7c48dc"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 11861
+}

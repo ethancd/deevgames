@@ -1,7 +1,8 @@
 import { resolveInactivityDraw } from '../game/inactivity';
 import type { GameState } from '../game/types';
-import { getActionsPerTurn, isActionsPerTurn } from '../game/rules';
+import { getActionsPerTurn, isActionsPerTurn, isBlackCrystalHandicap } from '../game/rules';
 import { migrateLegacyGame } from '../game/migrate';
+import { startHistory, type LocalGameHistory } from '../game/analysis';
 
 // v6: four actions only, and kills alone reset the quiet-turn clock.
 export const SCHEMA_VERSION = 6;
@@ -12,23 +13,44 @@ interface PersistedState {
   schemaVersion: number;
   timestamp: number;
   state: GameState;
+  history?: LocalGameHistory;
 }
 
 /**
  * Save game state to localStorage
  */
-export function saveGameState(state: GameState): void {
+export function saveGameState(state: GameState, history?: LocalGameHistory): void {
   try {
     const persisted: PersistedState = {
       schemaVersion: SCHEMA_VERSION,
       timestamp: Date.now(),
       state,
+      history,
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted));
+    // Keep the latest position resumable even when a long score fills storage.
+    for (;;) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted)); break; }
+      catch (error) {
+        if (!persisted.history || persisted.history.frames.length <= 1) throw error;
+        persisted.history = { complete: false, frames: persisted.history.frames.slice(Math.ceil(persisted.history.frames.length / 2)) };
+      }
+    }
   } catch (e) {
     // localStorage might be full or disabled
     console.warn('Failed to save game state:', e);
   }
+}
+
+/** Older saves can still be analyzed from their first available position. */
+export function loadGameHistory(): LocalGameHistory | null {
+  const state = loadGameState();
+  if (!state) return null;
+  try {
+    const history = (JSON.parse(localStorage.getItem(STORAGE_KEY)!) as PersistedState).history;
+    if (history && typeof history.complete === 'boolean' && Array.isArray(history.frames) && history.frames.length &&
+      history.frames.every(frame => frame && typeof frame.label === 'string' && typeof frame.turn === 'string' && validateGameState(frame.state))) return history;
+  } catch { /* The current saved position remains useful without its score. */ }
+  return startHistory(state, false);
 }
 
 /**
@@ -90,6 +112,8 @@ function validateGameState(state: unknown, legacy = false): state is GameState {
   // Check top-level required fields
   if (!s.phase || !s.board || !s.players || !s.turn) return false;
   if (s.actionsPerTurn !== undefined && !(isActionsPerTurn(s.actionsPerTurn) || (legacy && s.actionsPerTurn === 6))) return false;
+
+  if (s.blackCrystalHandicap !== undefined && !isBlackCrystalHandicap(s.blackCrystalHandicap)) return false;
 
   // Check board has cells and units
   const board = s.board as Record<string, unknown>;

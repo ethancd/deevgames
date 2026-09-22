@@ -35,7 +35,7 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 
     await play('white', [{ type: 'END_ACTION_PHASE' }]);
     await expect(history).toContainText('Mining +6 ◆');
     await history.getByText('Mining by piece', { exact: true }).first().click();
-    await expect(history).toContainText('Reserves 10 →');
+    await expect(history).toContainText('Reserves 8 →');
     await play('black', [{ type: 'END_ACTION_PHASE' }]);
     await play('white', [{ type: 'PROMOTE_UNIT', unitId: hi.id }, { type: 'END_ACTION_PHASE' }]);
     await expect(history).toContainText('↑🔥2@B1');

@@ -1,0 +1,52 @@
+{
+  "provider": "openai",
+  "hash": "b48f871d73c208c98532029a72a90985433e4dec9371ee320f8ce049270033c5",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier three: the Sachakuna. Attack two, defense four, speed one, and Mining five. Look at the green side first.",
+  "speechText": "Tier three: the sah-chah-KOO-nah. Attack two, defense four, speed one, and Mining five. Look at the green side first.",
+  "duration": 9.65,
+  "bytes": 463244,
+  "createdAt": "2026-09-13T10:39:29.139Z",
+  "captions": [
+    {
+      "text": "Tier three: the Sachakuna.",
+      "start": 0,
+      "end": 105
+    },
+    {
+      "text": "Attack two, defense four, speed one, and Mining five.",
+      "start": 105,
+      "end": 238
+    },
+    {
+      "text": "Look at the green side first.",
+      "start": 238,
+      "end": 290
+    }
+  ],
+  "wordFrames": [
+    0,
+    8,
+    35,
+    37,
+    105,
+    106,
+    134,
+    140,
+    167,
+    173,
+    196,
+    199,
+    206,
+    238,
+    241,
+    245,
+    248,
+    255,
+    264
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "c0d6f41ec08f86a3ca414fc526eab089cc357e55d389cd4774a03936d90d091b"
+}

@@ -1,0 +1,21 @@
+{
+  "difficulty": "medium",
+  "speed": "fast",
+  "mctsTimeLimit": 120,
+  "mctsIterations": 60,
+  "resign": false,
+  "seeds": [
+    9122601,
+    9122602
+  ],
+  "opponents": [
+    "Aware:Rush",
+    "Aware:Balanced"
+  ],
+  "maps": [
+    "current",
+    "alternate"
+  ],
+  "bothColors": true,
+  "note": "Production search and WASM; throughput limits, not UI strength. Time-bounded decisions are not exactly seed-reproducible."
+}

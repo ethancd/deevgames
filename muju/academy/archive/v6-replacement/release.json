@@ -1,0 +1,308 @@
+{
+  "release": "v5-art-and-turn-order",
+  "date": "2026-09-10",
+  "episodes": [
+    {
+      "id": "R01",
+      "number": 1,
+      "title": "The Board Has Two Front Doors",
+      "version": 4,
+      "updatedLabel": "Video version 4 · Last updated at 09:48 Sep 10 2026 CDT",
+      "seconds": 165.8,
+      "rules": "v2.2",
+      "description": "Find both homes and meet the starting team. Pip installs a doorbell and discovers that arriving is only the first step.",
+      "topics": [
+        "Coordinates",
+        "Home visits",
+        "Two ways to win"
+      ],
+      "video": "episode-01.061591d48106.mp4",
+      "poster": "episode-01.993508a06dd0.jpg",
+      "transcript": "episode-01-transcript.5ceaf073d299.txt"
+    },
+    {
+      "id": "R02",
+      "number": 2,
+      "title": "Six Actions, Zero Octopus Exceptions",
+      "version": 4,
+      "updatedLabel": "Video version 4 · Last updated at 09:38 Sep 10 2026 CDT",
+      "seconds": 183.0,
+      "rules": "v2.2",
+      "description": "Eight cardboard arms still get six shared actions. Count a trip, pay whole tickets, and take a detour around a blocker.",
+      "topics": [
+        "Six shared actions",
+        "Speed",
+        "Blocked paths"
+      ],
+      "video": "episode-02.b58e9cab96a6.mp4",
+      "poster": "episode-02.5a6e6cfc70f4.jpg",
+      "transcript": "episode-02-transcript.874d37641717.txt"
+    },
+    {
+      "id": "R03",
+      "number": 3,
+      "title": "The Bonk Lab",
+      "version": 4,
+      "updatedLabel": "Video version 4 · Last updated at 09:45 Sep 10 2026 CDT",
+      "seconds": 177.3,
+      "rules": "v2.2",
+      "description": "A shield taped to a spoon changes nothing. Two teammates combine their bonks while the element chart keeps the numbers honest.",
+      "topics": [
+        "Element pairs",
+        "Damage",
+        "Two attackers"
+      ],
+      "video": "episode-03.d0079f21b9ac.mp4",
+      "poster": "episode-03.7a74576c55cd.jpg",
+      "transcript": "episode-03-transcript.13de3627b26a.txt"
+    },
+    {
+      "id": "R04",
+      "number": 4,
+      "title": "The Crystal Payday",
+      "version": 4,
+      "updatedLabel": "Video version 4 · Last updated at 09:40 Sep 10 2026 CDT",
+      "seconds": 177.5,
+      "rules": "v2.2",
+      "description": "The bucket is big. The puddle is small. Find out how much a piece collects when its square starts running out.",
+      "topics": [
+        "Mining",
+        "Finite reserves",
+        "Turn-end income"
+      ],
+      "video": "episode-04.d1d98f189318.mp4",
+      "poster": "episode-04.655d0f41be33.jpg",
+      "transcript": "episode-04-transcript.5d562c704709.txt"
+    },
+    {
+      "id": "R05",
+      "number": 5,
+      "title": "The Shop Delivers Rectangles",
+      "version": 4,
+      "updatedLabel": "Video version 4 · Last updated at 09:41 Sep 10 2026 CDT",
+      "seconds": 177.3,
+      "rules": "v2.2",
+      "description": "Pip requests a star-shaped delivery zone. The shop offers rectangles—and one enemy can block a whole box.",
+      "topics": [
+        "Tier-one purchases",
+        "Hi costs 2",
+        "Clear rectangles"
+      ],
+      "video": "episode-05.d0cf5095c633.mp4",
+      "poster": "episode-05.011f098ecbd0.jpg",
+      "transcript": "episode-05-transcript.c32842785f27.txt"
+    },
+    {
+      "id": "R06",
+      "number": 6,
+      "title": "The Promotion Staircase",
+      "version": 4,
+      "updatedLabel": "Video version 4 · Last updated at 09:47 Sep 10 2026 CDT",
+      "seconds": 175.5,
+      "rules": "v2.2",
+      "description": "A stack of hats is not a promotion. Pay the price gap, then check which piece arrived today.",
+      "topics": [
+        "Promotion prices",
+        "Arrival tags",
+        "Three tiers"
+      ],
+      "video": "episode-06.d1522bb64ddd.mp4",
+      "poster": "episode-06.6eae53501e7e.jpg",
+      "transcript": "episode-06-transcript.c8c102151de6.txt"
+    },
+    {
+      "id": "R07",
+      "number": 7,
+      "title": "Bigger Pieces Have Bills",
+      "version": 4,
+      "updatedLabel": "Video version 4 · Last updated at 09:43 Sep 10 2026 CDT",
+      "seconds": 161.6,
+      "rules": "v2.2",
+      "description": "The Very Impressive Army gets fan mail. Unfortunately, it is a bill. Choose which pieces the bank can keep.",
+      "topics": [
+        "Upkeep 0 / 1 / 2",
+        "Keep-set choices",
+        "Next-turn money"
+      ],
+      "video": "episode-07.e395f89b2659.mp4",
+      "poster": "episode-07.5d308f93ba00.jpg",
+      "transcript": "episode-07-transcript.3298512ce801.txt"
+    },
+    {
+      "id": "R08",
+      "number": 8,
+      "title": "Keep Your Pieces Safe",
+      "version": 4,
+      "updatedLabel": "Video version 4 · Last updated at 09:43 Sep 10 2026 CDT",
+      "seconds": 170.4,
+      "rules": "v2.2",
+      "description": "The helmet is ready. The buzzer is retired. Count an enemy’s trip and hit before deciding where to retreat.",
+      "topics": [
+        "Travel + attack",
+        "Six-action limit",
+        "Safe this turn"
+      ],
+      "video": "episode-08.16a4aa5b0ba2.mp4",
+      "poster": "episode-08.5736263a5dc3.jpg",
+      "transcript": "episode-08-transcript.407f0a8281e6.txt"
+    },
+    {
+      "id": "R09",
+      "number": 9,
+      "title": "The Ten Quiet Turns",
+      "version": 4,
+      "updatedLabel": "Video version 4 · Last updated at 09:47 Sep 10 2026 CDT",
+      "seconds": 170.0,
+      "rules": "v2.2",
+      "description": "A clock in slippers ignores the trumpet. Learn what resets the quiet-turn count and when the game ends in a draw.",
+      "topics": [
+        "Ten quiet turns",
+        "Kills or income",
+        "Draw timing"
+      ],
+      "video": "episode-09.f8deed5fa0ee.mp4",
+      "poster": "episode-09.9d0899a10a53.jpg",
+      "transcript": "episode-09-transcript.1a8333469b8a.txt"
+    },
+    {
+      "id": "R10",
+      "number": 10,
+      "title": "One Turn at the Practice Table",
+      "version": 5,
+      "updatedLabel": "Video version 5 · Last updated at 21:39 Sep 10 2026 CDT",
+      "seconds": 178.5,
+      "rules": "v2.2",
+      "description": "Give Pip’s enormous checklist four boxes: Pay, Place, Act, Mine. Follow one complete turn and count what the bank actually holds.",
+      "topics": [
+        "Whole turn",
+        "Bank vs income",
+        "Practice mission"
+      ],
+      "video": "episode-10.4e47debb748d.mp4",
+      "poster": "episode-10.79391be0afd2.jpg",
+      "transcript": "episode-10-transcript.d3ab3402b897.txt"
+    },
+    {
+      "id": "R11",
+      "number": 11,
+      "title": "Fire: The Toast Department",
+      "version": 5,
+      "updatedLabel": "Video version 5 · Last updated at 21:31 Sep 10 2026 CDT",
+      "seconds": 195.7,
+      "rules": "v2.2",
+      "description": "Ember needs a toast ticket that stays closed. Match damage to defense, then let two teammates finish a fortress.",
+      "topics": [
+        "Fire",
+        "Damage thresholds",
+        "Attack chains"
+      ],
+      "video": "episode-11.3fcaa9e26f1c.mp4",
+      "poster": "episode-11.0ec43c39981b.jpg",
+      "transcript": "episode-11-transcript.294ca973c46c.txt"
+    },
+    {
+      "id": "R12",
+      "number": 12,
+      "title": "Lightning: Express Delivery",
+      "version": 5,
+      "updatedLabel": "Video version 5 · Last updated at 21:31 Sep 10 2026 CDT",
+      "seconds": 201.3,
+      "rules": "v2.2",
+      "description": "Zip prices each delivery in actions. Fast feet can save a ticket, but they cannot make an attack stronger.",
+      "topics": [
+        "Lightning",
+        "Speed",
+        "Travel vs damage"
+      ],
+      "video": "episode-12.4c740b45d4b7.mp4",
+      "poster": "episode-12.1fb7f213069b.jpg",
+      "transcript": "episode-12-transcript.346b119c85e7.txt"
+    },
+    {
+      "id": "R13",
+      "number": 13,
+      "title": "Water: Captain Bucket",
+      "version": 5,
+      "updatedLabel": "Video version 5 · Last updated at 21:34 Sep 10 2026 CDT",
+      "seconds": 178.8,
+      "rules": "v2.2",
+      "description": "Captain Bucket interviews two defenders. Find the shield that survives, then hire for a different job.",
+      "topics": [
+        "Water",
+        "Combined damage",
+        "Mining"
+      ],
+      "video": "episode-13.d4b0cc70bdeb.mp4",
+      "poster": "episode-13.cbda10287de8.jpg",
+      "transcript": "episode-13-transcript.ea8614d72485.txt"
+    },
+    {
+      "id": "R14",
+      "number": 14,
+      "title": "Shadow: The Visible Detective",
+      "version": 5,
+      "updatedLabel": "Video version 5 · Last updated at 21:34 Sep 10 2026 CDT",
+      "seconds": 190.1,
+      "rules": "v2.2",
+      "description": "Murmur is visible behind that leaf. Follow an open path, count the hit, then put a friend in the way.",
+      "topics": [
+        "Shadow",
+        "Path costs",
+        "Blockers"
+      ],
+      "video": "episode-14.e435adf6a340.mp4",
+      "poster": "episode-14.c13d57cb66ad.jpg",
+      "transcript": "episode-14-transcript.33b547728815.txt"
+    },
+    {
+      "id": "R15",
+      "number": 15,
+      "title": "Plant: The Payday Garden",
+      "version": 5,
+      "updatedLabel": "Video version 5 · Last updated at 21:36 Sep 10 2026 CDT",
+      "seconds": 174.8,
+      "rules": "v2.2",
+      "description": "Pip opens a refill company. The garden teaches why big Mining numbers still need crystals underfoot.",
+      "topics": [
+        "Plant",
+        "Finite reserves",
+        "Ending squares"
+      ],
+      "video": "episode-15.a381bd11d1c7.mp4",
+      "poster": "episode-15.a7c269791c8c.jpg",
+      "transcript": "episode-15-transcript.8f9037060367.txt"
+    },
+    {
+      "id": "R16",
+      "number": 16,
+      "title": "Metal: The Moving Fortress",
+      "version": 5,
+      "updatedLabel": "Video version 5 · Last updated at 21:36 Sep 10 2026 CDT",
+      "seconds": 188.8,
+      "rules": "v2.2",
+      "description": "Clank protects a daisy with six layers of politeness. Count the fortress’s shield, payday, and next bill.",
+      "topics": [
+        "Metal",
+        "Defense",
+        "Mining 4 / Speed 2"
+      ],
+      "video": "episode-16.a82b0851548e.mp4",
+      "poster": "episode-16.9353082ad67f.jpg",
+      "transcript": "episode-16-transcript.0f4535e55d4d.txt"
+    }
+  ],
+  "retiredEpisodes": [
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27
+  ],
+  "scope": "Core rules and six elements"
+}

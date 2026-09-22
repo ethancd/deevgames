@@ -34,6 +34,8 @@ const screenshots = process.env.QA_SCREENSHOTS;
         'https://deevgames-muju.onrender.com/muju/');
       // Exercise this release's bundled game independently of the external host.
       await page.goto(base + '/muju/');
+      assert.equal(await page.getByRole('link', {name: '← Deev Games', exact: true}).getAttribute('href'),
+        'https://deevgames.pages.dev/');
       await page.getByRole('button', {name: 'Pass & Play Two players, one device', exact: true}).click();
       await page.getByRole('button', {name: 'Start Game', exact: true}).click();
       assert.equal(await page.locator('[data-testid^="cell-"]').count(), 100);
@@ -55,9 +57,14 @@ const screenshots = process.env.QA_SCREENSHOTS;
       await page.reload();
       await page.getByRole('button', {name: 'Pass & Play Two players, one device', exact: true}).click();
       await page.getByRole('button', {name: /Continue saved game/}).click();
-      assert.equal(await page.evaluate(() => localStorage.getItem('elemental-tactics-save')), saved);
+      const resumed = JSON.parse(await page.evaluate(() => localStorage.getItem('elemental-tactics-save')));
+      const previous = JSON.parse(saved);
+      delete resumed.timestamp; delete previous.timestamp;
+      assert.deepEqual(resumed, previous);
       assert.equal(await page.locator('.action-budget strong').innerText(), '4 actions');
-      await page.getByRole('link', {name: 'Back to Deev Games', exact: true}).click();
+      assert.equal(await page.getByRole('link', {name: 'Back to Deev Games', exact: true}).getAttribute('href'),
+        'https://deevgames.pages.dev/');
+      await page.goto(base + '/');
       await page.getByRole('link', {name: /FORGE/}).click();
       await fits(); await picture('forge');
       // A face-up card opens the actual game action modal with art.

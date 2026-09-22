@@ -1,0 +1,22 @@
+
+> elemental-tactics@0.1.0 test:online:e2e
+> playwright test --config playwright.online.config.ts --output=/private/tmp/muju-metal-online-retry --grep independent browsers|incoming fast|390x568
+
+[WebServer] (node:83397) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:83397) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+[WebServer] Muju Hono Tanka: http://127.0.0.1:8928/muju/ · MCP: http://127.0.0.1:8928/mcp
+(node:83395) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 2 workers
+
+(node:83401) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:83400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 e2e/replay.spec.ts:17:3 › replay layout stays fixed during confirmation, handoff and playback at 390x568 (6.9s)
+  ✓  2 e2e/online.spec.ts:169:35 › 4-action independent browsers join, move, hand off and reconnect without a local save (8.8s)
+  ✓  3 e2e/sounds.spec.ts:69:36 › incoming fast moves sound at each visible hop, followed by your turn start (2.8s)
+
+  3 passed (11.1s)

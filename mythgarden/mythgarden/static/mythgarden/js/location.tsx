@@ -26,6 +26,9 @@ export default function Location ({ name, imageUrl, children }: React.PropsWithC
 }
 
 interface LocationData {
+  id: number
+  placeType?: string
+  isFarmhouse?: boolean
   name: string
   imageUrl: string
   hasInventory: boolean

@@ -1,0 +1,860 @@
+[
+  {
+    "episode": "R01",
+    "id": "setup",
+    "speaker": "COACH",
+    "text": "White moves first. Each side starts with a Hi, a Sjor and a Muju. White begins on B one, B two and A two. Black begins on I ten, I nine and J nine."
+  },
+  {
+    "episode": "R02",
+    "id": "01",
+    "speaker": "CLICK",
+    "text": "Job ticket. A short trip. Price: one action. Four tickets a turn."
+  },
+  {
+    "episode": "R02",
+    "id": "03",
+    "speaker": "CLICK",
+    "text": "Four a turn, for the team. Not four each."
+  },
+  {
+    "episode": "R02",
+    "id": "14",
+    "speaker": "COACH",
+    "text": "The Hi makes that trip. How many of the four tickets are left?"
+  },
+  {
+    "episode": "R02",
+    "id": "15",
+    "speaker": "PIP",
+    "text": "I say one left."
+  },
+  {
+    "episode": "R02",
+    "id": "17",
+    "speaker": "COACH",
+    "text": "Two remain."
+  },
+  {
+    "episode": "R02",
+    "id": "19",
+    "speaker": "PIP",
+    "text": "I said one. One ticket for every square. I am checking my pockets."
+  },
+  {
+    "episode": "R02",
+    "id": "29",
+    "speaker": "COACH",
+    "text": "Four coins on the table. They come back when your next turn starts."
+  },
+  {
+    "episode": "R02",
+    "id": "32",
+    "speaker": "PIP",
+    "text": "My four spare arms now hold the reference cards. Finally. An advantage."
+  },
+  {
+    "episode": "R03",
+    "id": "cleave-rule",
+    "speaker": "COACH",
+    "text": "A kill can unlock another attack by that same piece. This is Cleave. Tier one gets at most one attack, tier two gets two, and tier three gets three. Every attack still costs one of your four shared actions."
+  },
+  {
+    "episode": "R03",
+    "id": "cleave-demo",
+    "speaker": "COACH",
+    "text": "This Hono is beside two enemy Muju. Its first hit does four against defense three and removes one. That unlocks its second attack. One more action removes the other. Two kills cost two actions."
+  },
+  {
+    "episode": "R03",
+    "id": "cleave-finish",
+    "speaker": "COACH",
+    "text": "Now two team actions remain. This Hono has used both its attacks. It may still move, but it cannot attack a third time this turn."
+  },
+  {
+    "episode": "R03",
+    "id": "cleave-limits",
+    "speaker": "COACH",
+    "text": "You may move between attacks at the normal cost. If your attack leaves the target on the board, your piece cannot attack again this turn. Even a zero damage hit closes the chain. Another teammate’s later kill cannot reopen it."
+  },
+  {
+    "episode": "R04",
+    "id": "map",
+    "speaker": "COACH",
+    "text": "New games use this Unequal routes map. Squares start with zero, four, eight, or ten crystals. There are four hundred eighty altogether. The bright home reserves and the middle cluster are real reserves, and empty squares are still roads."
+  },
+  {
+    "episode": "R04",
+    "id": "all-miners",
+    "speaker": "COACH",
+    "text": "Every friendly piece collects at your turn end, including pieces bought or promoted that turn. Mining uses no actions. The bank is spendable money; total income remembers everything you collected, even after you spend it."
+  },
+  {
+    "episode": "R05",
+    "id": "11",
+    "speaker": "COACH",
+    "text": "Three crystals buy a Hi there. Only the smallest pieces are for sale."
+  },
+  {
+    "episode": "R05",
+    "id": "shop-prices",
+    "speaker": "COACH",
+    "text": "Fire and Lightning cost three each. Water and Shadow cost four. Plant and Metal cost five. You may buy any number you can afford, on legal empty squares. Each new piece can act immediately."
+  },
+  {
+    "episode": "R05",
+    "id": "home-block",
+    "speaker": "COACH",
+    "text": "Black draws rectangles from J ten toward a Black anchor. Either player may choose any clear friendly anchor. An enemy on your home is inside every one of your rectangles, so it blocks all purchases. Existing pieces can still promote and act."
+  },
+  {
+    "episode": "R06",
+    "id": "promotion-prices",
+    "speaker": "COACH",
+    "text": "For every element, tier one to tier two costs four crystals. Tier two to tier three costs eight. A promoted piece can act immediately. There is no fourth tier."
+  },
+  {
+    "episode": "R07",
+    "id": "upkeep-flow",
+    "speaker": "COACH",
+    "text": "If your bank covers every bill, payment is automatic. Otherwise, choose an affordable group to keep. All tier one pieces must stay. The review upkeep setting also lets you release bigger pieces voluntarily. Losing your last piece loses the game."
+  },
+  {
+    "episode": "R07",
+    "id": "promotion-bill",
+    "speaker": "COACH",
+    "text": "A newly promoted piece pays its new tier bill on your next turn, not again today. A home occupation win is checked before any of these bills."
+  },
+  {
+    "episode": "R08",
+    "id": "02",
+    "speaker": "CLICK",
+    "text": "The helmet is not defense. This video has no answer timer. Take your time."
+  },
+  {
+    "episode": "R08",
+    "id": "11",
+    "speaker": "COACH",
+    "text": "That trip is three squares. Three squares is three actions."
+  },
+  {
+    "episode": "R08",
+    "id": "12",
+    "speaker": "COACH",
+    "text": "Then the hit. Four."
+  },
+  {
+    "episode": "R08",
+    "id": "13",
+    "speaker": "CLICK",
+    "text": "Four is their whole turn. It fits."
+  },
+  {
+    "episode": "R08",
+    "id": "15",
+    "speaker": "CLICK",
+    "text": "Their whole turn: four actions."
+  },
+  {
+    "episode": "R08",
+    "id": "16",
+    "speaker": "CLICK",
+    "text": "Hitting the Hi on D three would take all four."
+  },
+  {
+    "episode": "R08",
+    "id": "19",
+    "speaker": "COACH",
+    "text": "To hit D two, the Sjor must stand on D three. That trip is four squares."
+  },
+  {
+    "episode": "R08",
+    "id": "21",
+    "speaker": "CLICK",
+    "text": "The hit would be a fifth action. There is no fifth action."
+  },
+  {
+    "episode": "R08",
+    "id": "22",
+    "speaker": "CLICK",
+    "text": "Name for the file: the Missing Fifth."
+  },
+  {
+    "episode": "R08",
+    "id": "26",
+    "speaker": "CLICK",
+    "text": "Four squares. Speed two. Two actions, then the hit. Three."
+  },
+  {
+    "episode": "R08",
+    "id": "30",
+    "speaker": "COACH",
+    "text": "Today was plenty. Next time, a clock that resets only when an attack removes an enemy."
+  },
+  {
+    "episode": "R09",
+    "id": "06",
+    "speaker": "CLICK",
+    "text": "Nine. Nine finished player turns with no enemy killed by attack."
+  },
+  {
+    "episode": "R09",
+    "id": "07",
+    "speaker": "COACH",
+    "text": "A quiet turn has no enemy killed by attack. Collecting crystals does not reset this clock."
+  },
+  {
+    "episode": "R09",
+    "id": "11",
+    "speaker": "COACH",
+    "text": "Walking never resets it. Neither does mining, buying, promoting, or a hit the target survives."
+  },
+  {
+    "episode": "R09",
+    "id": "12",
+    "speaker": "CLICK",
+    "text": "That square paid. The quiet clock kept counting."
+  },
+  {
+    "episode": "R09",
+    "id": "13",
+    "speaker": "CLICK",
+    "text": "An attack kill. Back to zero. A crystal does not do that."
+  },
+  {
+    "episode": "R09",
+    "id": "15",
+    "speaker": "COACH",
+    "text": "A payday still fills your bank. It does not reset the quiet count."
+  },
+  {
+    "episode": "R09",
+    "id": "16",
+    "speaker": "COACH",
+    "text": "Ending A finishes with no attack kill, even though it collects one crystal."
+  },
+  {
+    "episode": "R09",
+    "id": "17",
+    "speaker": "COACH",
+    "text": "Ending B removes an enemy by attack. Another enemy remains on the board."
+  },
+  {
+    "episode": "R09",
+    "id": "23",
+    "speaker": "COACH",
+    "text": "Ending B killed an enemy by attack. That reset the count, and this turn ends at zero."
+  },
+  {
+    "episode": "R09",
+    "id": "24",
+    "speaker": "PIP",
+    "text": "So a busy payday can still be a quiet turn."
+  },
+  {
+    "episode": "R09",
+    "id": "29",
+    "speaker": "CLICK",
+    "text": "Attack kill. Back to zero. A crystal does not do that."
+  },
+  {
+    "episode": "R09",
+    "id": "draw-timing",
+    "speaker": "COACH",
+    "text": "The tenth quiet turn ends in a draw after mining, before the next turn starts. Even a piece waiting on the enemy home cannot override it. Ten player turns means five complete rounds. The warning turns amber at seven."
+  },
+  {
+    "episode": "R10",
+    "id": "09",
+    "speaker": "COACH",
+    "text": "Second box. The shop. A Hi at C three costs three crystals and no actions."
+  },
+  {
+    "episode": "R10",
+    "id": "11",
+    "speaker": "CLICK",
+    "text": "One."
+  },
+  {
+    "episode": "R10",
+    "id": "15",
+    "speaker": "COACH",
+    "text": "Three actions are unused, and that is allowed. The last box is the one we count together."
+  },
+  {
+    "episode": "R10",
+    "id": "22",
+    "speaker": "CLICK",
+    "text": "Bank one. Now bank five."
+  },
+  {
+    "episode": "R10",
+    "id": "public",
+    "speaker": "COACH",
+    "text": "The board, crystals, purchases, promotions and quiet count are public. There is no hidden build queue. If no legal purchase or promotion is available, the game skips straight to actions."
+  },
+  {
+    "episode": "R10",
+    "id": "controls",
+    "speaker": "COACH",
+    "text": "Tap an empty reachable square to move. Tap an enemy to preview a trip and attack, then confirm to spend the actions. Undo works inside the current turn. End Actions collects income and hands the turn over."
+  },
+  {
+    "episode": "R10",
+    "id": "options",
+    "speaker": "COACH",
+    "text": "Before a new game, Black can receive an optional starting gift of one to twenty crystals. White still starts with zero. Three or more lets Black shop on its first turn. Both players still get four actions."
+  },
+  {
+    "episode": "R10",
+    "id": "timed",
+    "speaker": "COACH",
+    "text": "Online rooms can use a clock or be untimed. Check the chosen clock settings before starting. Running out of allowed time loses a timed game. Resigning also gives the other player the win. These video questions have no timer."
+  },
+  {
+    "episode": "R11",
+    "id": "05",
+    "speaker": "PIP",
+    "text": "The shop. Three crystals. Tier one owes no toll."
+  },
+  {
+    "episode": "R11",
+    "id": "15",
+    "speaker": "CLICK",
+    "text": "The Tanka's defense is five."
+  },
+  {
+    "episode": "R11",
+    "id": "17",
+    "speaker": "COACH",
+    "text": "Five is a big shield. Take your time, or just watch the toaster."
+  },
+  {
+    "episode": "R11",
+    "id": "18",
+    "speaker": "COACH",
+    "text": "Not yet. Four browned. One still pale."
+  },
+  {
+    "episode": "R11",
+    "id": "28",
+    "speaker": "COACH",
+    "text": "Three are still lit. Now a Hono that has not swung hits for four. Finished."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-intro",
+    "speaker": "COACH",
+    "text": "Now the bonk matrix for fire. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-1-stats",
+    "speaker": "COACH",
+    "text": "Tier one: the Hi. Attack two, defense one, speed two, and Mining one. Look at the green side first."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-1-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Hi can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Inyan. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-1-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Hi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-1-read",
+    "speaker": "COACH",
+    "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-2-stats",
+    "speaker": "COACH",
+    "text": "Tier two: the Hono. Attack three, defense one, speed two, and Mining one. Look at the green side first."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-2-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Hono can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan and Mazask. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-2-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Hono is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-2-read",
+    "speaker": "COACH",
+    "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-3-stats",
+    "speaker": "COACH",
+    "text": "Tier three: the Kagari. Attack four, defense two, speed three, and Mining one. Look at the green side first."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-3-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Kagari can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-3-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Kagari is one shot by Hi, Hono, Kagari, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge and Karanlık. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R11",
+    "id": "matrix-3-read",
+    "speaker": "COACH",
+    "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-intro",
+    "speaker": "COACH",
+    "text": "Now the bonk matrix for Lightning. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-1-stats",
+    "speaker": "COACH",
+    "text": "Tier one: the Radi. Attack one, defense one, speed three, and Mining zero. Look at the green side first."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-1-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Radi can finish Hi, Hono, Radi, Umeme and Kimubunga. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-1-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Radi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-1-read",
+    "speaker": "COACH",
+    "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-2-stats",
+    "speaker": "COACH",
+    "text": "Tier two: the Umeme. Attack two, defense one, speed four, and Mining zero. Look at the green side first."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-2-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Umeme can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Inyan. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-2-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Umeme is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-2-read",
+    "speaker": "COACH",
+    "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-3-stats",
+    "speaker": "COACH",
+    "text": "Tier three: the Kimubunga. Attack three, defense one, speed five, and Mining zero. Look at the green side first."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-3-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan and Mazask. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-3-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Kimubunga is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R12",
+    "id": "matrix-3-read",
+    "speaker": "COACH",
+    "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-intro",
+    "speaker": "COACH",
+    "text": "Now the bonk matrix for water. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-1-stats",
+    "speaker": "COACH",
+    "text": "Tier one: the Sjor. Attack two, defense two, speed one, and Mining two. Look at the green side first."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-1-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Sjor can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-1-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-1-read",
+    "speaker": "COACH",
+    "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-2-stats",
+    "speaker": "COACH",
+    "text": "Tier two: the Straumr. Attack two, defense three, speed one, and Mining two. Look at the green side first."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-2-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Straumr can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-2-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Straumr is one shot by Kagari, Aegirinn, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-2-read",
+    "speaker": "COACH",
+    "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-3-stats",
+    "speaker": "COACH",
+    "text": "Tier three: the Aegirinn. Attack three, defense four, speed two, and Mining three. Look at the green side first."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-3-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Aegirinn can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-3-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Aegirinn is one shot by Karanlık. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R13",
+    "id": "matrix-3-read",
+    "speaker": "COACH",
+    "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-intro",
+    "speaker": "COACH",
+    "text": "Now the bonk matrix for shadow. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-1-stats",
+    "speaker": "COACH",
+    "text": "Tier one: the Göl. Attack two, defense two, speed two, and Mining zero. Look at the green side first."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-1-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Göl can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-1-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Göl is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-1-read",
+    "speaker": "COACH",
+    "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-2-stats",
+    "speaker": "COACH",
+    "text": "Tier two: the Gölge. Attack three, defense two, speed two, and Mining one. Look at the green side first."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-2-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Gölge can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Gölge and Karanlık. It also finishes Göl. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-2-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Gölge is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-2-read",
+    "speaker": "COACH",
+    "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-3-stats",
+    "speaker": "COACH",
+    "text": "Tier three: the Karanlık. Attack four, defense two, speed three, and Mining two. Look at the green side first."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-3-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Karanlık can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Muju, Sachita and Inyan. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-3-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Karanlık is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R14",
+    "id": "matrix-3-read",
+    "speaker": "COACH",
+    "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R15",
+    "id": "19",
+    "speaker": "CLICK",
+    "text": "This is the Muju. Shield of three. Takes three crystals. That is the Muju."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-intro",
+    "speaker": "COACH",
+    "text": "Now the bonk matrix for plant. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-1-stats",
+    "speaker": "COACH",
+    "text": "Tier one: the Muju. Attack zero, defense three, speed one, and Mining three. Look at the green side first."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-1-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Muju can finish no full health unit. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-1-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Muju is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-1-read",
+    "speaker": "COACH",
+    "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-2-stats",
+    "speaker": "COACH",
+    "text": "Tier two: the Sachita. Attack one, defense three, speed one, and Mining four. Look at the green side first."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-2-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Sachita can finish Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-2-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Sachita is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-2-read",
+    "speaker": "COACH",
+    "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-3-stats",
+    "speaker": "COACH",
+    "text": "Tier three: the Sachakuna. Attack two, defense four, speed one, and Mining five. Look at the green side first."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-3-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Sachakuna can finish Hi, Hono, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-3-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Sachakuna is one shot by Hono, Kagari and Kimubunga. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R15",
+    "id": "matrix-3-read",
+    "speaker": "COACH",
+    "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R15",
+    "id": "27",
+    "speaker": "COACH",
+    "text": "That completes the garden rules. Keep the three bonk cards beside your practice board."
+  },
+  {
+    "episode": "R16",
+    "id": "01",
+    "speaker": "CLANK",
+    "text": "This daisy is protected by five layers of politeness."
+  },
+  {
+    "episode": "R16",
+    "id": "02",
+    "speaker": "PIP",
+    "text": "My helmet would like five layers."
+  },
+  {
+    "episode": "R16",
+    "id": "07",
+    "speaker": "COACH",
+    "text": "The chart never changes defense. The Tanka's defense is five."
+  },
+  {
+    "episode": "R16",
+    "id": "08",
+    "speaker": "CLICK",
+    "text": "Four in. One lit. The fortress lived, so that Hono is done attacking."
+  },
+  {
+    "episode": "R16",
+    "id": "23",
+    "speaker": "CLANK",
+    "text": "This is the Tanka. Shield of five. Collects up to four crystals a turn. Walks two. That is the Tanka."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-intro",
+    "speaker": "COACH",
+    "text": "Now the bonk matrix for metal. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-1-stats",
+    "speaker": "COACH",
+    "text": "Tier one: the Inyan. Attack one, defense three, speed one, and Mining two. Look at the green side first."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-1-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Inyan can finish Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-1-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Inyan is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-1-read",
+    "speaker": "COACH",
+    "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-2-stats",
+    "speaker": "COACH",
+    "text": "Tier two: the Mazask. Attack two, defense four, speed one, and Mining three. Look at the green side first."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-2-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Mazask can finish Hi, Hono, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-2-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Mazask is one shot by Hono, Kagari and Kimubunga. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-2-read",
+    "speaker": "COACH",
+    "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-3-stats",
+    "speaker": "COACH",
+    "text": "Tier three: the Tanka. Attack two, defense five, speed two, and Mining four. Look at the green side first."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-3-out",
+    "speaker": "COACH",
+    "text": "With one attack, the Tanka can finish Hi, Hono, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık. Every unlit card survives that single hit."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-3-in",
+    "speaker": "COACH",
+    "text": "Now the red side. A full health Tanka is one shot by Kagari. Every unlit attacker needs help or earlier damage."
+  },
+  {
+    "episode": "R16",
+    "id": "matrix-3-read",
+    "speaker": "COACH",
+    "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other."
+  },
+  {
+    "episode": "R16",
+    "id": "29",
+    "speaker": "COACH",
+    "text": "Today was plenty. You have met all six elements and learned the game rules. Try a practice game, and keep the bonk cards nearby."
+  }
+]

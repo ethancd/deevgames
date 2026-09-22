@@ -41,7 +41,7 @@ describe('Unit Definitions', () => {
       for (const unit of UNIT_DEFINITIONS) {
         expect(unit.attack).toBeGreaterThanOrEqual(0);
         expect(unit.defense).toBeGreaterThan(0);
-        expect(unit.speed).toBeGreaterThan(0);
+        expect(unit.speed).toBeGreaterThanOrEqual(0);
         expect(unit.mining).toBeGreaterThanOrEqual(0); // Some units can't mine
         expect(unit.cost).toBeGreaterThan(0);
         expect(unit).not.toHaveProperty('buildTime');

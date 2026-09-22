@@ -1,0 +1,77 @@
+{
+  "provider": "openai",
+  "hash": "e178fd81bdc2360c560b834b7f99eeb8a1278198192d5c7bc20249fa15eb6b2d",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "This Hono is beside two enemy Muju. Its first hit does four against defense three and removes one. That unlocks its second attack. One more action removes the other. Two kills cost two actions.",
+  "speechText": "This HOH-noh is beside two enemy Moo-joo. Its first hit does four against defense three and removes one. That unlocks its second attack. One more action removes the other. Two kills cost two actions.",
+  "duration": 13.85,
+  "bytes": 664844,
+  "createdAt": "2026-09-13T10:38:15.236Z",
+  "captions": [
+    {
+      "text": "This Hono is beside two enemy Muju.",
+      "start": 0,
+      "end": 116
+    },
+    {
+      "text": "Its first hit does four against defense three and removes one.",
+      "start": 116,
+      "end": 221
+    },
+    {
+      "text": "That unlocks its second attack.",
+      "start": 221,
+      "end": 292
+    },
+    {
+      "text": "One more action removes the other.",
+      "start": 292,
+      "end": 361
+    },
+    {
+      "text": "Two kills cost two actions.",
+      "start": 361,
+      "end": 416
+    }
+  ],
+  "wordFrames": [
+    0,
+    20,
+    41,
+    58,
+    70,
+    79,
+    88,
+    116,
+    122,
+    130,
+    136,
+    144,
+    152,
+    161,
+    170,
+    181,
+    187,
+    196,
+    221,
+    233,
+    242,
+    251,
+    259,
+    292,
+    299,
+    305,
+    316,
+    328,
+    335,
+    361,
+    370,
+    378,
+    387,
+    394
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "1c6dc3b1227488f9a84fd399a8eb3e116ff3c2091163edb6bb81bd1fef791f79"
+}

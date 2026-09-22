@@ -1,0 +1,73 @@
+{
+  "provider": "openai",
+  "hash": "84c5c3190b059adea687ded623c152236e300a4c514859ce46b4d03d8e32ec1a",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Karanlık is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health kah-rahn-luk is one shot by HOH-noh, kah-GAH-ree, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-CHEE-tah, sah-chah-KOO-nah, In-yahn, MAH-zahsk and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "duration": 21.65,
+  "bytes": 1039244,
+  "createdAt": "2026-09-13T10:39:21.443Z",
+  "captions": [
+    {
+      "text": "Now the red side.",
+      "start": 0,
+      "end": 57
+    },
+    {
+      "text": "A full health Karanlık is one shot by Hono, Kagari, Kimubunga, Sjor,",
+      "start": 57,
+      "end": 267
+    },
+    {
+      "text": "Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan,",
+      "start": 267,
+      "end": 483
+    },
+    {
+      "text": "Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "start": 483,
+      "end": 650
+    }
+  ],
+  "wordFrames": [
+    0,
+    10,
+    18,
+    26,
+    57,
+    57,
+    67,
+    79,
+    98,
+    102,
+    112,
+    120,
+    132,
+    183,
+    210,
+    250,
+    267,
+    296,
+    325,
+    344,
+    371,
+    397,
+    424,
+    457,
+    483,
+    505,
+    509,
+    538,
+    547,
+    560,
+    574,
+    588,
+    598,
+    611,
+    622
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "cdd0c5d23267139c2a7c2e22d134abbc43096ab64c06bfbc585188a165e90068"
+}

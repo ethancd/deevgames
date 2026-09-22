@@ -1,0 +1,75 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Göl is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health Gurl is one shot by hoh-noh, kah-gah-ree, kee-moo-boon-gah, Shore, strowm-ur, ay-gear-in, Gurl, gurl-geh, kah-rahn-luk, sah-chee-tah, sah-chah-koo-nah, In-yahn, mah-zahsk and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "hash": "022e4ca2a3d266e8feb8b509aedbb0f293fc968fa81d9e1e9ea44167488170d5",
+  "duration": 20.9,
+  "bytes": 1003278,
+  "retakeMethod": "sentence-by-sentence-v1",
+  "retakeReason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences.",
+  "createdAt": "2026-09-13T10:51:09.386Z",
+  "captions": [
+    {
+      "text": "Now the red side.",
+      "start": 0,
+      "end": 59
+    },
+    {
+      "text": "A full health Göl is one shot by Hono, Kagari, Kimubunga, Sjor,",
+      "start": 59,
+      "end": 242
+    },
+    {
+      "text": "Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan,",
+      "start": 242,
+      "end": 472
+    },
+    {
+      "text": "Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "start": 472,
+      "end": 627
+    }
+  ],
+  "wordFrames": [
+    0,
+    20,
+    22,
+    30,
+    59,
+    59,
+    71,
+    81,
+    91,
+    98,
+    109,
+    117,
+    125,
+    158,
+    184,
+    224,
+    242,
+    271,
+    301,
+    318,
+    352,
+    385,
+    413,
+    446,
+    472,
+    490,
+    493,
+    513,
+    523,
+    539,
+    555,
+    568,
+    578,
+    592,
+    602
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "022e4ca2a3d266e8feb8b509aedbb0f293fc968fa81d9e1e9ea44167488170d5"
+}

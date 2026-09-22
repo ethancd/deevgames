@@ -1,0 +1,69 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Gölge can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Gölge and Karanlık. It also finishes Göl. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the Gurl-geh can finish Hee, hoh-noh, kah-gah-ree, rah-dee, oo-meh-meh, kee-moo-boong-gah, Shore, strowm-ur, Gurl-geh and kah-rahn-luk. It also finishes Gurl. Every unlit card survives that single hit.",
+  "hash": "fad560a18d28682896b91d6fb2581143ae3874df9120ee2472c10eee38e1db58",
+  "duration": 19.5,
+  "bytes": 936078,
+  "retakeMethod": "sentence-by-sentence-v1",
+  "retakeReason": "State Göl separately so both similar names remain clear in the matchup list.",
+  "createdAt": "2026-09-13T11:02:38.855Z",
+  "captions": [
+    {
+      "text": "With one attack, the Gölge can finish Hi, Hono, Kagari, Radi, Umeme,",
+      "start": 0,
+      "end": 237
+    },
+    {
+      "text": "Kimubunga, Sjor, Straumr, Gölge and Karanlık.",
+      "start": 237,
+      "end": 398
+    },
+    {
+      "text": "It also finishes Göl.",
+      "start": 398,
+      "end": 469
+    },
+    {
+      "text": "Every unlit card survives that single hit.",
+      "start": 469,
+      "end": 585
+    }
+  ],
+  "wordFrames": [
+    0,
+    7,
+    22,
+    56,
+    58,
+    77,
+    88,
+    100,
+    129,
+    154,
+    190,
+    214,
+    237,
+    283,
+    306,
+    335,
+    362,
+    365,
+    398,
+    401,
+    410,
+    427,
+    469,
+    482,
+    500,
+    514,
+    536,
+    548,
+    560
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "fad560a18d28682896b91d6fb2581143ae3874df9120ee2472c10eee38e1db58"
+}

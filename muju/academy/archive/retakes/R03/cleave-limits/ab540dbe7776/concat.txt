@@ -1,0 +1,4 @@
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R03/cleave-limits/ab540dbe7776/sentence-1.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R03/cleave-limits/ab540dbe7776/sentence-2.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R03/cleave-limits/ab540dbe7776/sentence-3.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R03/cleave-limits/ab540dbe7776/sentence-4.wav'

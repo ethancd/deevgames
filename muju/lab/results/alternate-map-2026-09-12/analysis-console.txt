@@ -1,0 +1,257 @@
+{
+  "main": {
+    "alternate": {
+      "n": 320,
+      "wins": 95,
+      "losses": 35,
+      "draws": 190,
+      "caps": 0,
+      "whiteWins": 83,
+      "blackWins": 47,
+      "roundsMedian": 13.0,
+      "firstKillMedian": 2.0,
+      "reasons": {
+        "elimination": 87,
+        "upkeep-elimination": 31,
+        "inactivity": 190,
+        "home-checkmate": 8,
+        "home-occupation": 4
+      },
+      "centerIncomeMean": 31.466,
+      "centerKillsMean": 4.147,
+      "centerUnitTurnsMean": 56.744,
+      "totalIncomeMean": 277.212,
+      "killsMean": 22.531
+    },
+    "centerOnly": {
+      "n": 320,
+      "wins": 106,
+      "losses": 28,
+      "draws": 186,
+      "caps": 0,
+      "whiteWins": 87,
+      "blackWins": 47,
+      "roundsMedian": 11.0,
+      "firstKillMedian": 2,
+      "reasons": {
+        "elimination": 78,
+        "home-occupation": 7,
+        "upkeep-elimination": 33,
+        "inactivity": 186,
+        "home-checkmate": 16
+      },
+      "centerIncomeMean": 28.494,
+      "centerKillsMean": 4.109,
+      "centerUnitTurnsMean": 53.925,
+      "totalIncomeMean": 251.903,
+      "killsMean": 21.559
+    },
+    "current": {
+      "n": 320,
+      "wins": 93,
+      "losses": 31,
+      "draws": 196,
+      "caps": 0,
+      "whiteWins": 80,
+      "blackWins": 44,
+      "roundsMedian": 12.0,
+      "firstKillMedian": 2.0,
+      "reasons": {
+        "elimination": 66,
+        "upkeep-elimination": 35,
+        "inactivity": 196,
+        "home-checkmate": 19,
+        "home-occupation": 4
+      },
+      "centerIncomeMean": 17.275,
+      "centerKillsMean": 3.809,
+      "centerUnitTurnsMean": 56.203,
+      "totalIncomeMean": 275.228,
+      "killsMean": 23.691
+    },
+    "homeExpansionOnly": {
+      "n": 320,
+      "wins": 95,
+      "losses": 37,
+      "draws": 188,
+      "caps": 0,
+      "whiteWins": 81,
+      "blackWins": 51,
+      "roundsMedian": 12.5,
+      "firstKillMedian": 2.0,
+      "reasons": {
+        "elimination": 78,
+        "upkeep-elimination": 34,
+        "home-checkmate": 16,
+        "inactivity": 188,
+        "home-occupation": 4
+      },
+      "centerIncomeMean": 17.575,
+      "centerKillsMean": 3.844,
+      "centerUnitTurnsMean": 59.231,
+      "totalIncomeMean": 282.962,
+      "killsMean": 24.897
+    }
+  },
+  "routes": {
+    "alternate": {
+      "n": 480,
+      "wins": 87,
+      "losses": 206,
+      "draws": 187,
+      "caps": 0,
+      "whiteWins": 158,
+      "blackWins": 135,
+      "roundsMedian": 18.0,
+      "firstKillMedian": 2.0,
+      "reasons": {
+        "elimination": 171,
+        "upkeep-elimination": 56,
+        "inactivity": 187,
+        "home-checkmate": 45,
+        "home-occupation": 21
+      },
+      "centerIncomeMean": 38.323,
+      "centerKillsMean": 3.173,
+      "centerUnitTurnsMean": 39.956,
+      "totalIncomeMean": 309.413,
+      "killsMean": 17.452
+    },
+    "current": {
+      "n": 480,
+      "wins": 85,
+      "losses": 214,
+      "draws": 181,
+      "caps": 0,
+      "whiteWins": 153,
+      "blackWins": 146,
+      "roundsMedian": 18.0,
+      "firstKillMedian": 2.0,
+      "reasons": {
+        "elimination": 180,
+        "upkeep-elimination": 42,
+        "inactivity": 181,
+        "home-checkmate": 53,
+        "home-occupation": 24
+      },
+      "centerIncomeMean": 19.688,
+      "centerKillsMean": 2.033,
+      "centerUnitTurnsMean": 39.867,
+      "totalIncomeMean": 312.365,
+      "killsMean": 17.885
+    }
+  },
+  "routes-deep": {
+    "alternate": {
+      "n": 240,
+      "wins": 45,
+      "losses": 103,
+      "draws": 92,
+      "caps": 0,
+      "whiteWins": 78,
+      "blackWins": 70,
+      "roundsMedian": 16.0,
+      "firstKillMedian": 2.0,
+      "reasons": {
+        "elimination": 94,
+        "upkeep-elimination": 19,
+        "inactivity": 92,
+        "home-checkmate": 26,
+        "home-occupation": 9
+      },
+      "centerIncomeMean": 36.95,
+      "centerKillsMean": 3.258,
+      "centerUnitTurnsMean": 40.163,
+      "totalIncomeMean": 286.483,
+      "killsMean": 16.004
+    },
+    "current": {
+      "n": 240,
+      "wins": 42,
+      "losses": 105,
+      "draws": 93,
+      "caps": 0,
+      "whiteWins": 80,
+      "blackWins": 67,
+      "roundsMedian": 17.0,
+      "firstKillMedian": 2.0,
+      "reasons": {
+        "upkeep-elimination": 18,
+        "inactivity": 93,
+        "elimination": 96,
+        "home-checkmate": 26,
+        "home-occupation": 7
+      },
+      "centerIncomeMean": 19.413,
+      "centerKillsMean": 2.075,
+      "centerUnitTurnsMean": 41.996,
+      "totalIncomeMean": 302.867,
+      "killsMean": 17.725
+    }
+  }
+}
+{
+  "n": 16,
+  "cells": [
+    {
+      "opponent": "Aware:Balanced",
+      "map": "current",
+      "n": 4,
+      "wins": 3,
+      "losses": 0,
+      "draws": 1,
+      "caps": 0,
+      "rounds": [
+        22,
+        13,
+        28,
+        26
+      ]
+    },
+    {
+      "opponent": "Aware:Balanced",
+      "map": "alternate",
+      "n": 4,
+      "wins": 3,
+      "losses": 0,
+      "draws": 1,
+      "caps": 0,
+      "rounds": [
+        29,
+        14,
+        23,
+        14
+      ]
+    },
+    {
+      "opponent": "Aware:Rush",
+      "map": "current",
+      "n": 4,
+      "wins": 0,
+      "losses": 2,
+      "draws": 2,
+      "caps": 0,
+      "rounds": [
+        36,
+        32,
+        44,
+        23
+      ]
+    },
+    {
+      "opponent": "Aware:Rush",
+      "map": "alternate",
+      "n": 4,
+      "wins": 0,
+      "losses": 4,
+      "draws": 0,
+      "caps": 0,
+      "rounds": [
+        35,
+        42,
+        33,
+        19
+      ]
+    }
+  ]
+}

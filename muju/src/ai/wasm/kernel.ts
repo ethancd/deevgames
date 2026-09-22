@@ -1,3 +1,4 @@
+import { movementActionCost } from '../../game/movement';
 import type { GameState } from '../../game/types';
 import { getActionsPerTurn } from '../../game/rules';
 import { UNIT_DEFINITIONS, getUnitDefinition } from '../../game/units';
@@ -90,7 +91,7 @@ export function canPossiblyRemove(state: GameState, targetId: string): boolean {
   for (const u of state.board.units) {
     if (u.owner !== state.turn.currentPlayer || !canAttack(u) || u.attackedThisTurn?.includes(targetId)) continue;
     const distance = Math.max(0, Math.abs(u.position.x - target.position.x) + Math.abs(u.position.y - target.position.y) - 1);
-    if (Math.ceil(distance / getUnitDefinition(u.definitionId).speed) + 1 <= state.turn.actionsRemaining) {
+    if (movementActionCost(distance, getUnitDefinition(u.definitionId).speed) + 1 <= state.turn.actionsRemaining) {
       count++; power += calculateAttackPower(u, target);
     }
   }

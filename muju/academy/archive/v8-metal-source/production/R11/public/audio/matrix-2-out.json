@@ -1,0 +1,63 @@
+{
+  "provider": "openai",
+  "hash": "99b2acb0a2d37b42d76aa52f378afad4e3474a223b5be06c5b91c47e8f07a496",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Hono can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan and Mazask. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the hohnoh can finish Hee, hohnoh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, Gurl, GURL-geh, kah-rahn-luk, Moo-joo, sah-CHEE-tah, sah-chah-KOO-nah, In-yahn and MAH-zahsk. Every unlit card survives that single hit.",
+  "duration": 21.75,
+  "bytes": 1044044,
+  "createdAt": "2026-09-13T10:38:54.244Z",
+  "captions": [
+    {
+      "text": "With one attack, the Hono can finish Hi, Hono, Kagari, Radi, Umeme,",
+      "start": 0,
+      "end": 225
+    },
+    {
+      "text": "Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna,",
+      "start": 225,
+      "end": 487
+    },
+    {
+      "text": "Inyan and Mazask. Every unlit card survives that single hit.",
+      "start": 487,
+      "end": 653
+    }
+  ],
+  "wordFrames": [
+    0,
+    6,
+    19,
+    45,
+    47,
+    59,
+    66,
+    81,
+    112,
+    137,
+    173,
+    193,
+    225,
+    271,
+    295,
+    317,
+    348,
+    385,
+    413,
+    445,
+    487,
+    512,
+    521,
+    550,
+    564,
+    579,
+    591,
+    613,
+    625,
+    636
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "6d252862f33467397f779b790ad02230c4eea653a3bbc399d6b018e1195ccebe"
+}

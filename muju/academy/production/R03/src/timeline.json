@@ -1,0 +1,1626 @@
+{
+  "id": "R03",
+  "title": "The Bonk Lab",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "I have issued the lab spoon a small shield.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: the Bonk Lab bench. White Hi on D five and on F five. Black Sjor on E five. A spare Black Muju on J nine, off the bench. Every piece fresh. White in Action with four actions. Pip holds a very official spoon with a tiny felt shield taped to it.]"
+      ],
+      "displayText": "I have issued the lab spoon a small shield.",
+      "from": 0,
+      "speechFrames": 111,
+      "preRollFrames": 0,
+      "duration": 131,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "I have issued the lab spoon a small shield.",
+          "start": 0,
+          "end": 111
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        20,
+        27,
+        35,
+        43,
+        54,
+        65,
+        77
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "A shield taped to a spoon is a shield taped to a spoon.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "A shield taped to a spoon is a shield taped to a spoon.",
+      "from": 131,
+      "speechFrames": 116,
+      "preRollFrames": 0,
+      "duration": 136,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "A shield taped to a spoon is a shield taped to a",
+          "start": 0,
+          "end": 102
+        },
+        {
+          "text": "spoon.",
+          "start": 102,
+          "end": 116
+        }
+      ],
+      "wordFrames": [
+        0,
+        19,
+        30,
+        37,
+        43,
+        56,
+        56,
+        70,
+        83,
+        83,
+        91,
+        97,
+        102
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then it is decoration. It still looks important.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "Then it is decoration. It still looks important.",
+      "from": 267,
+      "speechFrames": 135,
+      "preRollFrames": 0,
+      "duration": 237,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "Then it is decoration.",
+          "start": 0,
+          "end": 74
+        },
+        {
+          "text": "It still looks important.",
+          "start": 74,
+          "end": 135
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        21,
+        32,
+        74,
+        79,
+        93,
+        104
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "recap, brisk",
+      "text": "Last time, any piece blocked the hallway. Now we count the hit.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: last episode's blocked hallway at C four, for two seconds.]"
+      ],
+      "displayText": "Last time, any piece blocked the hallway. Now we count the hit.",
+      "from": 504,
+      "speechFrames": 119,
+      "preRollFrames": 0,
+      "duration": 139,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "Last time, any piece blocked the hallway.",
+          "start": 0,
+          "end": 91
+        },
+        {
+          "text": "Now we count the hit.",
+          "start": 91,
+          "end": 119
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        29,
+        37,
+        44,
+        55,
+        70,
+        91,
+        95,
+        101,
+        106,
+        110
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One action buys one attack. Up, down, left or right.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Hi. Attack two. The Sjor. Defense two.]"
+      ],
+      "displayText": "One action buys one attack. Up, down, left or right.",
+      "from": 643,
+      "speechFrames": 122,
+      "preRollFrames": 0,
+      "duration": 142,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "One action buys one attack.",
+          "start": 0,
+          "end": 66
+        },
+        {
+          "text": "Up, down, left or right.",
+          "start": 66,
+          "end": 122
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        20,
+        31,
+        41,
+        66,
+        83,
+        94,
+        100,
+        107
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "One? The card says attack two.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: the Hi on D five attacks E five and does not move.]",
+        "[sfx: bonk, dull]",
+        "[board: one damage marker lands on the Sjor. One of its two shield pips goes dark. The card still reads attack two.]"
+      ],
+      "displayText": "One? The card says attack two.",
+      "from": 785,
+      "speechFrames": 99,
+      "preRollFrames": 0,
+      "duration": 119,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "One? The card says attack two.",
+          "start": 0,
+          "end": 99
+        }
+      ],
+      "wordFrames": [
+        0,
+        25,
+        32,
+        37,
+        49,
+        62
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Water beats Fire. The Sjor is Water. The Hi is Fire.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: one row only. Water beats Fire.]"
+      ],
+      "displayText": "Water beats Fire. The Sjor is Water. The Hi is Fire.",
+      "from": 904,
+      "speechFrames": 137,
+      "preRollFrames": 0,
+      "duration": 157,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "Water beats Fire. The Sjor is Water.",
+          "start": 0,
+          "end": 95
+        },
+        {
+          "text": "The Hi is Fire.",
+          "start": 95,
+          "end": 137
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        19,
+        48,
+        53,
+        61,
+        71,
+        95,
+        101,
+        106,
+        120
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "curious, thinking aloud",
+      "text": "Check the two elements. The attacker's number goes up one, or down one.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Check the two elements. The attacker's number goes up one, or down one.",
+      "from": 1061,
+      "speechFrames": 141,
+      "preRollFrames": 0,
+      "duration": 161,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "Check the two elements.",
+          "start": 0,
+          "end": 61
+        },
+        {
+          "text": "The attacker's number goes up one, or down one.",
+          "start": 61,
+          "end": 141
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        19,
+        28,
+        61,
+        68,
+        82,
+        86,
+        94,
+        101,
+        107,
+        121,
+        128
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Attack two. Take one away. One damage. Never below nothing.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Attack two. Take one away. One damage. Never below nothing.",
+      "from": 1222,
+      "speechFrames": 129,
+      "preRollFrames": 0,
+      "duration": 149,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "Attack two. Take one away.",
+          "start": 0,
+          "end": 64
+        },
+        {
+          "text": "One damage. Never below nothing.",
+          "start": 64,
+          "end": 129
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        32,
+        38,
+        45,
+        64,
+        72,
+        103,
+        106,
+        113
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Elements change the hit. They never change the shield.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Elements change the hit. They never change the shield.",
+      "from": 1371,
+      "speechFrames": 105,
+      "preRollFrames": 0,
+      "duration": 125,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "Elements change the hit.",
+          "start": 0,
+          "end": 55
+        },
+        {
+          "text": "They never change the shield.",
+          "start": 55,
+          "end": 105
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        26,
+        31,
+        55,
+        58,
+        68,
+        82,
+        89
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The spoon is not an attack bonus.",
+      "beat": "SHOW",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "The spoon is not an attack bonus.",
+      "from": 1496,
+      "speechFrames": 95,
+      "preRollFrames": 0,
+      "duration": 122,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "The spoon is not an attack bonus.",
+          "start": 0,
+          "end": 95
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        19,
+        28,
+        35,
+        40,
+        49
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "That Hi already swung once this turn. Now a different question.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Pronounce swung clearly with a final ng sound. Read That Hi already swung once this turn. Do not say swum.",
+      "displayText": "That Hi already swung once this turn. Now a different question.",
+      "from": 1618,
+      "speechFrames": 137,
+      "preRollFrames": 0,
+      "duration": 157,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "That Hi already swung once this turn.",
+          "start": 0,
+          "end": 95
+        },
+        {
+          "text": "Now a different question.",
+          "start": 95,
+          "end": 137
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        23,
+        38,
+        47,
+        59,
+        67,
+        95,
+        110,
+        115,
+        120
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "PIP",
+      "cue": "quietly certain",
+      "text": "I would send that Hi again. I cannot. It did not finish the job.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "I would send that Hi again. I cannot. It did not finish the job.",
+      "from": 1775,
+      "speechFrames": 168,
+      "preRollFrames": 0,
+      "duration": 188,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "I would send that Hi again.",
+          "start": 0,
+          "end": 82
+        },
+        {
+          "text": "I cannot. It did not finish the job.",
+          "start": 82,
+          "end": 168
+        }
+      ],
+      "wordFrames": [
+        0,
+        18,
+        29,
+        37,
+        48,
+        52,
+        82,
+        88,
+        111,
+        115,
+        122,
+        134,
+        140,
+        148
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Pip is ahead of me. Leave the target standing, and that piece is done attacking for the turn.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Pip is ahead of me. Leave the target standing, and that piece is done attacking for the turn.",
+      "from": 1963,
+      "speechFrames": 155,
+      "preRollFrames": 0,
+      "duration": 175,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "Pip is ahead of me.",
+          "start": 0,
+          "end": 50
+        },
+        {
+          "text": "Leave the target standing, and that piece is done attacking for",
+          "start": 50,
+          "end": 133
+        },
+        {
+          "text": "the turn.",
+          "start": 133,
+          "end": 155
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        16,
+        23,
+        28,
+        50,
+        52,
+        57,
+        64,
+        89,
+        91,
+        97,
+        102,
+        109,
+        113,
+        122,
+        133,
+        138
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Name for the file: the Closed Chain.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Name for the file: the Closed Chain.",
+      "from": 2138,
+      "speechFrames": 101,
+      "preRollFrames": 0,
+      "duration": 121,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "Name for the file: the Closed Chain.",
+          "start": 0,
+          "end": 101
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        16,
+        20,
+        32,
+        49,
+        60
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Hi on F five has not attacked. The Sjor has one shield left.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: the White Hi on F five, fresh, has not attacked. The Sjor shows one shield pip still lit. Both numbers stay on screen. Nothing moves.]"
+      ],
+      "displayText": "The Hi on F5 has not attacked. The Sjor has one shield left.",
+      "from": 2259,
+      "speechFrames": 203,
+      "preRollFrames": 0,
+      "duration": 223,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "The Hi on F5 has not attacked.",
+          "start": 0,
+          "end": 131
+        },
+        {
+          "text": "The Sjor has one shield left.",
+          "start": 131,
+          "end": 203
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        26,
+        44,
+        56,
+        68,
+        86,
+        100,
+        131,
+        138,
+        143,
+        155,
+        169,
+        176
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "If nobody finishes it, the Sjor heals on its own next turn.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "If nobody finishes it, the Sjor heals on its own next turn.",
+      "from": 2482,
+      "speechFrames": 128,
+      "preRollFrames": 0,
+      "duration": 148,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "If nobody finishes it, the Sjor heals on its own next turn.",
+          "start": 0,
+          "end": 128
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        22,
+        35,
+        55,
+        61,
+        70,
+        81,
+        86,
+        91,
+        104,
+        112
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "If that Hi hits now, does the Sjor survive?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "If that Hi hits now, does the Sjor survive?",
+      "from": 2630,
+      "speechFrames": 120,
+      "preRollFrames": 0,
+      "duration": 140,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "If that Hi hits now, does the Sjor survive?",
+          "start": 0,
+          "end": 120
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        18,
+        27,
+        37,
+        60,
+        68,
+        78,
+        80
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Take longer if you want. Or watch with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "displayText": "Take longer if you want. Or watch with me.",
+      "from": 2770,
+      "speechFrames": 113,
+      "preRollFrames": 0,
+      "duration": 419,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "Take longer if you want.",
+          "start": 0,
+          "end": 68
+        },
+        {
+          "text": "Or watch with me.",
+          "start": 68,
+          "end": 113
+        }
+      ],
+      "wordFrames": [
+        0,
+        17,
+        28,
+        36,
+        41,
+        68,
+        73,
+        82,
+        89
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Two shields, two bonks, two attackers. The Sjor is off the board.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk]",
+        "[board: the second Hi attacks from F five and does not move. The last shield pip goes dark. The Sjor tips over and lands in the tray. The two one-damage lines stay on screen, unchanged.]",
+        "[sfx: piece removed]"
+      ],
+      "displayText": "Two shields, two bonks, two attackers. The Sjor is off the board.",
+      "from": 3189,
+      "speechFrames": 161,
+      "preRollFrames": 0,
+      "duration": 181,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "Two shields, two bonks, two attackers.",
+          "start": 0,
+          "end": 101
+        },
+        {
+          "text": "The Sjor is off the board.",
+          "start": 101,
+          "end": 161
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        37,
+        42,
+        67,
+        71,
+        101,
+        107,
+        114,
+        127,
+        136,
+        143
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "COACH",
+      "cue": "gently, slower",
+      "text": "The first Hi could not finish it. A second attacker could.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The first Hi could not finish it. A second attacker could.",
+      "from": 3370,
+      "speechFrames": 134,
+      "preRollFrames": 0,
+      "duration": 154,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "The first Hi could not finish it.",
+          "start": 0,
+          "end": 78
+        },
+        {
+          "text": "A second attacker could.",
+          "start": 78,
+          "end": 134
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        27,
+        32,
+        39,
+        48,
+        56,
+        78,
+        87,
+        93,
+        105
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Checked: this defender. Nobody hits back during an attack.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Checked: this defender. Nobody hits back during an attack.",
+      "from": 3524,
+      "speechFrames": 134,
+      "preRollFrames": 0,
+      "duration": 154,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "Checked: this defender. Nobody hits back during an attack.",
+          "start": 0,
+          "end": 134
+        }
+      ],
+      "wordFrames": [
+        0,
+        33,
+        40,
+        74,
+        85,
+        91,
+        103,
+        110,
+        116
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Sparks burn the Garden Wall.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: two fresh Hi remove one fresh Sjor for two actions. Not checked: other defenders, what Black does on Black's turn.]",
+        "[card: the three-team wheel, one-way arrows. Fire and Lightning: the Sparks. Plant and Metal: the Garden Wall. Water and Shadow: the Deep End. Element symbols as well as colour.]"
+      ],
+      "displayText": "Sparks burn the Garden Wall.",
+      "from": 3678,
+      "speechFrames": 83,
+      "preRollFrames": 0,
+      "duration": 103,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "Sparks burn the Garden Wall.",
+          "start": 0,
+          "end": 83
+        }
+      ],
+      "wordFrames": [
+        0,
+        19,
+        39,
+        58,
+        62
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "rhyme couplet, light lilt",
+      "text": "The Garden Wall drains the Deep End. The Deep End puts out the Sparks.",
+      "beat": "TRANSFER",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "The Garden Wall drains the Deep End. The Deep End puts out the Sparks.",
+      "from": 3781,
+      "speechFrames": 204,
+      "preRollFrames": 0,
+      "duration": 231,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "The Garden Wall drains the Deep End.",
+          "start": 0,
+          "end": 121
+        },
+        {
+          "text": "The Deep End puts out the Sparks.",
+          "start": 121,
+          "end": 204
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        25,
+        45,
+        69,
+        82,
+        89,
+        121,
+        127,
+        136,
+        152,
+        166,
+        175,
+        195
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "In rules words: Fire and Lightning beat Plant and Metal.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "In rules words: Fire and Lightning beat Plant and Metal.",
+      "from": 4012,
+      "speechFrames": 162,
+      "preRollFrames": 0,
+      "duration": 182,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "In rules words: Fire and Lightning beat Plant and Metal.",
+          "start": 0,
+          "end": 162
+        }
+      ],
+      "wordFrames": [
+        0,
+        29,
+        34,
+        70,
+        73,
+        94,
+        94,
+        110,
+        125,
+        136
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Plant and Metal beat Water and Shadow. Water and Shadow beat Fire and Lightning.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Plant and Metal beat Water and Shadow. Water and Shadow beat Fire and Lightning.",
+      "from": 4194,
+      "speechFrames": 162,
+      "preRollFrames": 0,
+      "duration": 182,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "Plant and Metal beat Water and Shadow.",
+          "start": 0,
+          "end": 92
+        },
+        {
+          "text": "Water and Shadow beat Fire and Lightning.",
+          "start": 92,
+          "end": 162
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        19,
+        28,
+        44,
+        56,
+        65,
+        92,
+        96,
+        113,
+        113,
+        125,
+        135,
+        148
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "We can keep the chart. This is a lab, not a memory test.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "We can keep the chart. This is a lab, not a memory test.",
+      "from": 4376,
+      "speechFrames": 138,
+      "preRollFrames": 0,
+      "duration": 158,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "We can keep the chart.",
+          "start": 0,
+          "end": 62
+        },
+        {
+          "text": "This is a lab, not a memory test.",
+          "start": 62,
+          "end": 138
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        17,
+        26,
+        34,
+        62,
+        64,
+        68,
+        78,
+        95,
+        98,
+        104,
+        110
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Only the defender changes. A Straumr on E five. Same team. One more shield.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: one thing changes. The Sjor is gone and a Straumr stands on E five. Both Hi are back, fresh, on D five and F five.]",
+        "[card: the Straumr. Water. Defense three.]"
+      ],
+      "displayText": "Only the defender changes. A Straumr on E5. Same team. One more shield.",
+      "from": 4534,
+      "speechFrames": 191,
+      "preRollFrames": 0,
+      "duration": 211,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Only the defender changes.",
+          "start": 0,
+          "end": 71
+        },
+        {
+          "text": "A Straumr on E5.",
+          "start": 71,
+          "end": 141
+        },
+        {
+          "text": "Same team. One more shield.",
+          "start": 141,
+          "end": 191
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        17,
+        26,
+        71,
+        76,
+        81,
+        97,
+        107,
+        141,
+        142,
+        163,
+        172,
+        178
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "29",
+      "speaker": "COACH",
+      "cue": "trailing off, inviting",
+      "text": "The dare. Are both Hi enough?",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The dare. Are both Hi enough?",
+      "from": 4745,
+      "speechFrames": 96,
+      "preRollFrames": 0,
+      "duration": 116,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "The dare. Are both Hi enough?",
+          "start": 0,
+          "end": 96
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        21,
+        46,
+        56,
+        70
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "That is enough for today if you want.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "That is enough for today if you want.",
+      "from": 4861,
+      "speechFrames": 80,
+      "preRollFrames": 0,
+      "duration": 100,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "That is enough for today if you want.",
+          "start": 0,
+          "end": 80
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        22,
+        28,
+        37,
+        49,
+        56,
+        61
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "cleave-rule",
+      "speaker": "COACH",
+      "text": "A kill can unlock another attack by that same piece. This is Cleave. Tier one gets at most one attack, tier two gets two, and tier three gets three. Every attack still costs one of your four shared actions.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Cleave: earn the next attack",
+        "body": "T1: at most 1 attack\nT2: at most 2 attacks\nT3: at most 3 attacks\nEvery attack costs 1 of the team’s 4 actions."
+      },
+      "displayText": "A kill can unlock another attack by that same piece. This is Cleave. Tier one gets at most one attack, tier two gets two, and tier three gets three. Every attack still costs one of your four shared actions.",
+      "from": 4961,
+      "speechFrames": 438,
+      "preRollFrames": 0,
+      "duration": 462,
+      "audio": "audio/cleave-rule.wav",
+      "captions": [
+        {
+          "text": "A kill can unlock another attack by that same piece.",
+          "start": 0,
+          "end": 118
+        },
+        {
+          "text": "This is Cleave. Tier one gets at most one attack, tier two",
+          "start": 118,
+          "end": 244
+        },
+        {
+          "text": "gets two, and tier three gets three.",
+          "start": 244,
+          "end": 332
+        },
+        {
+          "text": "Every attack still costs one of your four shared actions.",
+          "start": 332,
+          "end": 438
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        14,
+        25,
+        38,
+        52,
+        65,
+        75,
+        80,
+        89,
+        118,
+        121,
+        130,
+        161,
+        162,
+        173,
+        181,
+        185,
+        192,
+        202,
+        230,
+        232,
+        244,
+        250,
+        262,
+        280,
+        284,
+        295,
+        303,
+        332,
+        342,
+        352,
+        361,
+        372,
+        384,
+        390,
+        395,
+        403,
+        412
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "cleave-demo",
+      "speaker": "COACH",
+      "text": "This Hono is beside two enemy Muju. Its first hit does four against defense three and removes one. That unlocks its second attack. One more action removes the other. Two kills cost two actions.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "cleave",
+        "stage": 0
+      },
+      "displayText": "This Hono is beside two enemy Muju. Its first hit does four against defense three and removes one. That unlocks its second attack. One more action removes the other. Two kills cost two actions.",
+      "from": 5423,
+      "speechFrames": 513,
+      "preRollFrames": 0,
+      "duration": 537,
+      "audio": "audio/cleave-demo.wav",
+      "captions": [
+        {
+          "text": "This Hono is beside two enemy Muju.",
+          "start": 0,
+          "end": 113
+        },
+        {
+          "text": "Its first hit does four against defense three and removes one.",
+          "start": 113,
+          "end": 256
+        },
+        {
+          "text": "That unlocks its second attack.",
+          "start": 256,
+          "end": 326
+        },
+        {
+          "text": "One more action removes the other.",
+          "start": 326,
+          "end": 424
+        },
+        {
+          "text": "Two kills cost two actions.",
+          "start": 424,
+          "end": 513
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        33,
+        44,
+        56,
+        67,
+        78,
+        113,
+        119,
+        134,
+        143,
+        152,
+        165,
+        178,
+        188,
+        201,
+        220,
+        234,
+        256,
+        262,
+        279,
+        287,
+        298,
+        326,
+        332,
+        340,
+        355,
+        379,
+        391,
+        424,
+        432,
+        447,
+        463,
+        479
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "cleave-finish",
+      "speaker": "COACH",
+      "text": "Now two team actions remain. This Hono has used both its attacks. It may still move, but it cannot attack a third time this turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "cleave",
+        "stage": 2
+      },
+      "displayText": "Now two team actions remain. This Hono has used both its attacks. It may still move, but it cannot attack a third time this turn.",
+      "from": 5960,
+      "speechFrames": 288,
+      "preRollFrames": 0,
+      "duration": 312,
+      "audio": "audio/cleave-finish.wav",
+      "captions": [
+        {
+          "text": "Now two team actions remain.",
+          "start": 0,
+          "end": 80
+        },
+        {
+          "text": "This Hono has used both its attacks.",
+          "start": 80,
+          "end": 164
+        },
+        {
+          "text": "It may still move, but it cannot attack a third time this",
+          "start": 164,
+          "end": 266
+        },
+        {
+          "text": "turn.",
+          "start": 266,
+          "end": 288
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        22,
+        32,
+        44,
+        80,
+        95,
+        110,
+        116,
+        124,
+        133,
+        140,
+        164,
+        167,
+        174,
+        184,
+        205,
+        210,
+        216,
+        225,
+        239,
+        245,
+        251,
+        260,
+        266
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "cleave-limits",
+      "speaker": "COACH",
+      "text": "You may move between attacks at the normal cost. If your attack leaves the target on the board, your piece cannot attack again this turn. Even a zero damage hit closes the chain. Another teammate’s later kill cannot reopen it.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "The chain closes if the target survives",
+        "body": "Moving between attacks is allowed.\nA surviving target closes that attacker’s chain.\nAnother piece’s later kill cannot reopen it."
+      },
+      "displayText": "You may move between attacks at the normal cost. If your attack leaves the target on the board, your piece cannot attack again this turn. Even a zero damage hit closes the chain. Another teammate’s later kill cannot reopen it.",
+      "from": 6272,
+      "speechFrames": 461,
+      "preRollFrames": 0,
+      "duration": 485,
+      "audio": "audio/cleave-limits.wav",
+      "captions": [
+        {
+          "text": "You may move between attacks at the normal cost.",
+          "start": 0,
+          "end": 112
+        },
+        {
+          "text": "If your attack leaves the target on the board, your piece cannot",
+          "start": 112,
+          "end": 217
+        },
+        {
+          "text": "attack again this turn.",
+          "start": 217,
+          "end": 268
+        },
+        {
+          "text": "Even a zero damage hit closes the chain.",
+          "start": 268,
+          "end": 356
+        },
+        {
+          "text": "Another teammate’s later kill cannot reopen it.",
+          "start": 356,
+          "end": 461
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        13,
+        24,
+        35,
+        49,
+        62,
+        68,
+        77,
+        112,
+        115,
+        124,
+        136,
+        145,
+        152,
+        158,
+        165,
+        169,
+        191,
+        197,
+        205,
+        217,
+        229,
+        238,
+        246,
+        268,
+        276,
+        283,
+        293,
+        303,
+        313,
+        327,
+        335,
+        356,
+        368,
+        391,
+        397,
+        409,
+        427,
+        440
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "31",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The spoon changed no numbers. File it in the drawer.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The spoon changed no numbers. File it in the drawer.",
+      "from": 6757,
+      "speechFrames": 137,
+      "preRollFrames": 0,
+      "duration": 157,
+      "audio": "audio/31.wav",
+      "captions": [
+        {
+          "text": "The spoon changed no numbers.",
+          "start": 0,
+          "end": 94
+        },
+        {
+          "text": "File it in the drawer.",
+          "start": 94,
+          "end": 137
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        23,
+        41,
+        60,
+        94,
+        103,
+        109,
+        113,
+        124
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "32",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Filed. Overruled by the shield that never moves.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "Filed. Overruled by the shield that never moves.",
+      "from": 6914,
+      "speechFrames": 138,
+      "preRollFrames": 0,
+      "duration": 198,
+      "audio": "audio/32.wav",
+      "captions": [
+        {
+          "text": "Filed. Overruled by the shield that never moves.",
+          "start": 0,
+          "end": 138
+        }
+      ],
+      "wordFrames": [
+        0,
+        46,
+        56,
+        61,
+        68,
+        76,
+        93,
+        100
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "question": "If that Hi hits now, does the Sjor survive?",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "soundtrack": {
+    "id": "before-dawn",
+    "title": "Another Game Before Dawn",
+    "source": "muju/music-auditions/full-versions/before-dawn-full-v1.mp3",
+    "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 7112
+}

@@ -1,0 +1,1253 @@
+{
+  "id": "R08",
+  "title": "Keep Your Pieces Safe",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "Helmet fitted. I am ready for the safety round.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: two quiz podiums, lettered D THREE and D TWO. Pip stands at the wrong one, wearing a helmet, one hand on a buzzer.]"
+      ],
+      "displayText": "Helmet fitted. I am ready for the safety round.",
+      "from": 0,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 179,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "Helmet fitted. I am ready for the safety round.",
+          "start": 0,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        42,
+        47,
+        53,
+        62,
+        70,
+        76,
+        85
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "The helmet is not defense. This video has no answer timer. Take your time.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [
+        "[board: Click lifts the buzzer off the desk and shuts it in a drawer.]"
+      ],
+      "displayText": "The helmet is not defense. This video has no answer timer. Take your time.",
+      "from": 179,
+      "speechFrames": 177,
+      "preRollFrames": 0,
+      "duration": 204,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "The helmet is not defense.",
+          "start": 0,
+          "end": 76
+        },
+        {
+          "text": "This video has no answer timer.",
+          "start": 76,
+          "end": 146
+        },
+        {
+          "text": "Take your time.",
+          "start": 146,
+          "end": 177
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        15,
+        27,
+        35,
+        76,
+        82,
+        89,
+        99,
+        106,
+        117,
+        146,
+        149,
+        155
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then I will answer slowly. Helmet on.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "Then I will answer slowly. Helmet on.",
+      "from": 383,
+      "speechFrames": 116,
+      "preRollFrames": 0,
+      "duration": 218,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "Then I will answer slowly.",
+          "start": 15,
+          "end": 95
+        },
+        {
+          "text": "Helmet on.",
+          "start": 95,
+          "end": 116
+        }
+      ],
+      "wordFrames": [
+        15,
+        19,
+        24,
+        33,
+        42,
+        95,
+        96
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "From the drawer. Proposal: the helmet counts as defense. Overruled. The card says one.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: the drawer marked PIP'S AMENDMENTS (PENDING) opens. One card comes out.]"
+      ],
+      "displayText": "From the drawer. Proposal: the helmet counts as defense. Overruled. The card says one.",
+      "from": 601,
+      "speechFrames": 233,
+      "preRollFrames": 0,
+      "duration": 253,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "From the drawer. Proposal: the helmet counts as defense.",
+          "start": 13,
+          "end": 148
+        },
+        {
+          "text": "Overruled. The card says one.",
+          "start": 148,
+          "end": 233
+        }
+      ],
+      "wordFrames": [
+        13,
+        20,
+        32,
+        56,
+        85,
+        95,
+        95,
+        106,
+        116,
+        148,
+        184,
+        189,
+        195,
+        206
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Hello. Somebody wants our Hi.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: White Hi on D four. Black Sjor on D seven. Sign: only this Sjor can reach the Hi. Both banks empty.]"
+      ],
+      "displayText": "Hello. Somebody wants our Hi.",
+      "from": 854,
+      "speechFrames": 86,
+      "preRollFrames": 0,
+      "duration": 106,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "Hello. Somebody wants our Hi.",
+          "start": 4,
+          "end": 86
+        }
+      ],
+      "wordFrames": [
+        4,
+        34,
+        45,
+        52,
+        75
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Sjor's speed is one. One square, one action.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Sjor's speed is one. One square, one action.",
+      "from": 960,
+      "speechFrames": 146,
+      "preRollFrames": 0,
+      "duration": 166,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "The Sjor's speed is one.",
+          "start": 8,
+          "end": 80
+        },
+        {
+          "text": "One square, one action.",
+          "start": 80,
+          "end": 146
+        }
+      ],
+      "wordFrames": [
+        8,
+        8,
+        23,
+        32,
+        42,
+        80,
+        87,
+        111,
+        125
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "counting, even beats",
+      "text": "The Sjor's attack is two. Water beats Fire, so add one. That makes three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Sjor's attack is two. Water beats Fire, so add one. That makes three.",
+      "from": 1126,
+      "speechFrames": 182,
+      "preRollFrames": 0,
+      "duration": 202,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "The Sjor's attack is two.",
+          "start": 2,
+          "end": 70
+        },
+        {
+          "text": "Water beats Fire, so add one.",
+          "start": 70,
+          "end": 141
+        },
+        {
+          "text": "That makes three.",
+          "start": 141,
+          "end": 182
+        }
+      ],
+      "wordFrames": [
+        2,
+        7,
+        21,
+        30,
+        39,
+        70,
+        76,
+        85,
+        103,
+        109,
+        115,
+        141,
+        146,
+        154
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three damage against defense one. A hit removes the Hi.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Three damage against defense one. A hit removes the Hi.",
+      "from": 1328,
+      "speechFrames": 134,
+      "preRollFrames": 0,
+      "duration": 154,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "Three damage against defense one.",
+          "start": 3,
+          "end": 76
+        },
+        {
+          "text": "A hit removes the Hi.",
+          "start": 76,
+          "end": 134
+        }
+      ],
+      "wordFrames": [
+        3,
+        11,
+        24,
+        38,
+        54,
+        76,
+        85,
+        93,
+        112,
+        125
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then the Hi steps back one square, to D three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Then the Hi steps back one square, to D3.",
+      "from": 1482,
+      "speechFrames": 144,
+      "preRollFrames": 0,
+      "duration": 164,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "Then the Hi steps back one square, to D3.",
+          "start": 2,
+          "end": 144
+        }
+      ],
+      "wordFrames": [
+        2,
+        12,
+        27,
+        37,
+        47,
+        59,
+        71,
+        86,
+        103,
+        114
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Sjor cannot stand on our Hi. It must stop next door, on D four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: a ghost Hi shows D three. The Sjor's path lights up square by square, down to D four.]"
+      ],
+      "displayText": "The Sjor cannot stand on our Hi. It must stop next door, on D4.",
+      "from": 1646,
+      "speechFrames": 161,
+      "preRollFrames": 0,
+      "duration": 181,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "The Sjor cannot stand on our Hi.",
+          "start": 0,
+          "end": 68
+        },
+        {
+          "text": "It must stop next door, on D4.",
+          "start": 68,
+          "end": 161
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        16,
+        30,
+        43,
+        51,
+        61,
+        68,
+        85,
+        93,
+        102,
+        112,
+        133,
+        139,
+        148
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "counting, even beats",
+      "text": "That trip is three squares. Three squares is three actions.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "That trip is three squares. Three squares is three actions.",
+      "from": 1827,
+      "speechFrames": 137,
+      "preRollFrames": 0,
+      "duration": 157,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "That trip is three squares.",
+          "start": 0,
+          "end": 70
+        },
+        {
+          "text": "Three squares is three actions.",
+          "start": 70,
+          "end": 137
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        17,
+        26,
+        37,
+        70,
+        74,
+        86,
+        95,
+        106
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Then the hit. Four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Then the hit. Four.",
+      "from": 1984,
+      "speechFrames": 108,
+      "preRollFrames": 0,
+      "duration": 128,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "Then the hit. Four.",
+          "start": 0,
+          "end": 108
+        }
+      ],
+      "wordFrames": [
+        0,
+        43,
+        44,
+        53
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "13",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Four is their whole turn. It fits.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: A DANGER IS A TRIP PLUS A HIT · both come out of the same four]"
+      ],
+      "displayText": "Four is their whole turn. It fits.",
+      "from": 2112,
+      "speechFrames": 111,
+      "preRollFrames": 0,
+      "duration": 131,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "Four is their whole turn.",
+          "start": 0,
+          "end": 67
+        },
+        {
+          "text": "It fits.",
+          "start": 67,
+          "end": 111
+        }
+      ],
+      "wordFrames": [
+        0,
+        17,
+        25,
+        31,
+        40,
+        67,
+        71
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "14",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Count their trip. Then count their hit.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Count their trip. Then count their hit.",
+      "from": 2243,
+      "speechFrames": 71,
+      "preRollFrames": 0,
+      "duration": 91,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "Count their trip. Then count their hit.",
+          "start": 7,
+          "end": 71
+        }
+      ],
+      "wordFrames": [
+        7,
+        7,
+        14,
+        35,
+        44,
+        51,
+        58
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Their whole turn: four actions.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: the ghost clears. The Hi slides from D four to D two in one trip. The podium cards stay lit: D THREE, four actions. D TWO, a question mark.]"
+      ],
+      "displayText": "Their whole turn: four actions.",
+      "from": 2334,
+      "speechFrames": 116,
+      "preRollFrames": 0,
+      "duration": 136,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "Their whole turn: four actions.",
+          "start": 0,
+          "end": 116
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        22,
+        62,
+        71
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "16",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Hitting the Hi on D three would take all four.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Hitting the Hi on D3 would take all four.",
+      "from": 2470,
+      "speechFrames": 125,
+      "preRollFrames": 0,
+      "duration": 145,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "Hitting the Hi on D3 would take all four.",
+          "start": 0,
+          "end": 125
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        22,
+        32,
+        42,
+        64,
+        71,
+        79,
+        88
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "Now the Hi stands on D two. Can this Sjor reach it and hit it?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Now the Hi stands on D2. Can this Sjor reach it and hit it?",
+      "from": 2615,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 172,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "Now the Hi stands on D2.",
+          "start": 0,
+          "end": 88
+        },
+        {
+          "text": "Can this Sjor reach it and hit it?",
+          "start": 88,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        26,
+        35,
+        49,
+        58,
+        65,
+        88,
+        96,
+        104,
+        105,
+        116,
+        122,
+        134,
+        139
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Say it, point at a podium, or take the time and say nothing.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "displayText": "Say it, point at a podium, or take the time and say nothing.",
+      "from": 2787,
+      "speechFrames": 120,
+      "preRollFrames": 0,
+      "duration": 426,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "Say it, point at a podium, or take the time and say",
+          "start": 5,
+          "end": 100
+        },
+        {
+          "text": "nothing.",
+          "start": 100,
+          "end": 120
+        }
+      ],
+      "wordFrames": [
+        5,
+        9,
+        30,
+        30,
+        35,
+        49,
+        54,
+        65,
+        70,
+        76,
+        84,
+        94,
+        100
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "To hit D two, the Sjor must stand on D three. That trip is four squares.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: piece step] [board: the Sjor walks from D seven down to D three, four squares. The action tray empties. The hit never happens.]"
+      ],
+      "displayText": "To hit D2, the Sjor must stand on D3. That trip is four squares.",
+      "from": 3213,
+      "speechFrames": 210,
+      "preRollFrames": 0,
+      "duration": 230,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "To hit D2, the Sjor must stand on D3.",
+          "start": 0,
+          "end": 130
+        },
+        {
+          "text": "That trip is four squares.",
+          "start": 130,
+          "end": 210
+        }
+      ],
+      "wordFrames": [
+        0,
+        15,
+        22,
+        52,
+        56,
+        63,
+        71,
+        83,
+        91,
+        130,
+        139,
+        148,
+        167,
+        179
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Sjor arrived beside it, with no action left to attack. So: no.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Sjor arrived beside it, with no action left to attack. So: no.",
+      "from": 3443,
+      "speechFrames": 180,
+      "preRollFrames": 0,
+      "duration": 200,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "The Sjor arrived beside it, with no action left to attack.",
+          "start": 17,
+          "end": 129
+        },
+        {
+          "text": "So: no.",
+          "start": 129,
+          "end": 180
+        }
+      ],
+      "wordFrames": [
+        17,
+        35,
+        41,
+        53,
+        65,
+        75,
+        80,
+        88,
+        95,
+        102,
+        108,
+        129,
+        151
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "The hit would be a fifth action. There is no fifth action.",
+      "beat": "EXPLAIN",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "The hit would be a fifth action. There is no fifth action.",
+      "from": 3643,
+      "speechFrames": 132,
+      "preRollFrames": 0,
+      "duration": 159,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "The hit would be a fifth action.",
+          "start": 0,
+          "end": 87
+        },
+        {
+          "text": "There is no fifth action.",
+          "start": 87,
+          "end": 132
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        20,
+        31,
+        35,
+        40,
+        49,
+        87,
+        91,
+        95,
+        103,
+        110
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Name for the file: the Missing Fifth.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Name for the file: the Missing Fifth.",
+      "from": 3802,
+      "speechFrames": 99,
+      "preRollFrames": 0,
+      "duration": 119,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "Name for the file: the Missing Fifth.",
+          "start": 0,
+          "end": 99
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        22,
+        27,
+        52,
+        55,
+        63
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "23",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Our Hi has speed two. D four to D two was one trip, one action.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Our Hi has speed two. D4 to D2 was one trip, one action.",
+      "from": 3921,
+      "speechFrames": 159,
+      "preRollFrames": 0,
+      "duration": 179,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "Our Hi has speed two.",
+          "start": 1,
+          "end": 72
+        },
+        {
+          "text": "D4 to D2 was one trip, one action.",
+          "start": 72,
+          "end": 159
+        }
+      ],
+      "wordFrames": [
+        1,
+        15,
+        21,
+        34,
+        43,
+        72,
+        78,
+        85,
+        91,
+        98,
+        105,
+        113,
+        122,
+        136,
+        145
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The counting did it. The helmet has filed a complaint.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The counting did it. The helmet has filed a complaint.",
+      "from": 4100,
+      "speechFrames": 102,
+      "preRollFrames": 0,
+      "duration": 122,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "The counting did it.",
+          "start": 6,
+          "end": 41
+        },
+        {
+          "text": "The helmet has filed a complaint.",
+          "start": 41,
+          "end": 102
+        }
+      ],
+      "wordFrames": [
+        6,
+        12,
+        20,
+        27,
+        41,
+        55,
+        62,
+        80,
+        80,
+        88
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "The Sjor is standing on D three now. Next turn it is one action away.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Sjor is standing on D3 now. Next turn it is one action away.",
+      "from": 4222,
+      "speechFrames": 146,
+      "preRollFrames": 0,
+      "duration": 166,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "The Sjor is standing on D3 now.",
+          "start": 0,
+          "end": 90
+        },
+        {
+          "text": "Next turn it is one action away.",
+          "start": 90,
+          "end": 146
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        16,
+        24,
+        37,
+        48,
+        54,
+        60,
+        90,
+        93,
+        109,
+        112,
+        117,
+        125,
+        132
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Four squares. Speed two. Two actions, then the hit. Three.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE · safe from: this Sjor, this turn, checked · every other enemy: not checked · Black's crystals: not checked]",
+        "[card: PODIUM THREE · the same squares · a visitor with speed two]"
+      ],
+      "displayText": "Four squares. Speed two. Two actions, then the hit. Three.",
+      "from": 4388,
+      "speechFrames": 215,
+      "preRollFrames": 0,
+      "duration": 235,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "Four squares. Speed two.",
+          "start": 0,
+          "end": 110
+        },
+        {
+          "text": "Two actions, then the hit.",
+          "start": 110,
+          "end": 182
+        },
+        {
+          "text": "Three.",
+          "start": 182,
+          "end": 215
+        }
+      ],
+      "wordFrames": [
+        0,
+        16,
+        76,
+        79,
+        110,
+        116,
+        143,
+        151,
+        157,
+        182
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "27",
+      "speaker": "PIP",
+      "cue": "delighted realization",
+      "text": "So D two was never the safe part. The Sjor's speed was.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "So D2 was never the safe part. The Sjor's speed was.",
+      "from": 4623,
+      "speechFrames": 177,
+      "preRollFrames": 0,
+      "duration": 197,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "So D2 was never the safe part.",
+          "start": 15,
+          "end": 107
+        },
+        {
+          "text": "The Sjor's speed was.",
+          "start": 107,
+          "end": 177
+        }
+      ],
+      "wordFrames": [
+        15,
+        20,
+        32,
+        45,
+        62,
+        68,
+        77,
+        81,
+        107,
+        114,
+        141,
+        150
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One to ask whoever plays with you. Which retreat would you pick, and why?",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: TABLE TASK · walk their nearest piece toward yours with a finger · count out loud · stop at four]"
+      ],
+      "displayText": "One to ask whoever plays with you. Which retreat would you pick, and why?",
+      "from": 4820,
+      "speechFrames": 141,
+      "preRollFrames": 0,
+      "duration": 161,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "One to ask whoever plays with you.",
+          "start": 6,
+          "end": 72
+        },
+        {
+          "text": "Which retreat would you pick, and why?",
+          "start": 72,
+          "end": 141
+        }
+      ],
+      "wordFrames": [
+        6,
+        6,
+        17,
+        26,
+        35,
+        45,
+        53,
+        72,
+        76,
+        88,
+        96,
+        102,
+        120,
+        130
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "29",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Count their trip. Then count their hit. The buzzer stays in the drawer.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Count their trip. Then count their hit. The buzzer stays in the drawer.",
+      "from": 4981,
+      "speechFrames": 134,
+      "preRollFrames": 0,
+      "duration": 154,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "Count their trip. Then count their hit.",
+          "start": 5,
+          "end": 86
+        },
+        {
+          "text": "The buzzer stays in the drawer.",
+          "start": 86,
+          "end": 134
+        }
+      ],
+      "wordFrames": [
+        5,
+        12,
+        19,
+        37,
+        50,
+        58,
+        64,
+        86,
+        96,
+        104,
+        112,
+        116,
+        127
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Today was plenty. Next time, a clock that resets only when an attack removes an enemy.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "Today was plenty. Next time, a clock that resets only when an attack removes an enemy.",
+      "from": 5135,
+      "speechFrames": 176,
+      "preRollFrames": 0,
+      "duration": 236,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "Today was plenty. Next time, a clock that resets only when an",
+          "start": 0,
+          "end": 125
+        },
+        {
+          "text": "attack removes an enemy.",
+          "start": 125,
+          "end": 176
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        21,
+        52,
+        58,
+        74,
+        76,
+        82,
+        89,
+        103,
+        112,
+        121,
+        125,
+        136,
+        149,
+        157
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    }
+  ],
+  "question": "Now the Hi stands on D2. Can this Sjor reach it and hit it?",
+  "version": 6,
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "rules": "v2.7",
+  "soundtrack": {
+    "id": "unequal-routes",
+    "title": "Unequal Routes",
+    "source": "muju/music-auditions/full-versions/unequal-routes-full-v1.mp3",
+    "sha256": "2354f06bdb9863f9ebc13bd3620a202ba27c4e07d91e84c900564247f80a96e7"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 5371
+}

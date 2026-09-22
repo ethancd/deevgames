@@ -1,0 +1,11 @@
+{
+  "hash": "9d522b86f59a961bd331f1e6e4d201ac50d92c022349456b8b45a6322dd0e573",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "The square under it is holding ten.",
+  "speechText": "The square under it is holding ten.",
+  "duration": 2.5,
+  "bytes": 120044,
+  "createdAt": "2026-09-10T14:30:10.133Z"
+}

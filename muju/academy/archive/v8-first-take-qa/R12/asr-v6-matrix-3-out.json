@@ -1,0 +1,189 @@
+{
+  "text": "With one attack, the Kimubunda can finish he, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan, and Mazask. Every unlit card survives that single hit.",
+  "words": [
+    {
+      "word": "With",
+      "start": 0.0,
+      "end": 0.18,
+      "probability": 0.9531143307685852
+    },
+    {
+      "word": "one",
+      "start": 0.18,
+      "end": 0.56,
+      "probability": 0.9570541381835938
+    },
+    {
+      "word": "attack,",
+      "start": 0.56,
+      "end": 1.04,
+      "probability": 0.9902494549751282
+    },
+    {
+      "word": "the",
+      "start": 1.62,
+      "end": 1.68,
+      "probability": 0.9887692928314209
+    },
+    {
+      "word": "Kimubunda",
+      "start": 1.68,
+      "end": 2.5,
+      "probability": 0.6468174358208975
+    },
+    {
+      "word": "can",
+      "start": 2.5,
+      "end": 3.08,
+      "probability": 0.99064040184021
+    },
+    {
+      "word": "finish",
+      "start": 3.08,
+      "end": 3.5,
+      "probability": 0.9973883032798767
+    },
+    {
+      "word": "he,",
+      "start": 3.5,
+      "end": 3.88,
+      "probability": 0.4668194353580475
+    },
+    {
+      "word": "Hono,",
+      "start": 4.52,
+      "end": 4.86,
+      "probability": 0.7833147943019867
+    },
+    {
+      "word": "Kagari,",
+      "start": 5.52,
+      "end": 5.9,
+      "probability": 0.5889531075954437
+    },
+    {
+      "word": "Radi,",
+      "start": 6.78,
+      "end": 7.14,
+      "probability": 0.4494549483060837
+    },
+    {
+      "word": "Umeme,",
+      "start": 7.6,
+      "end": 8.2,
+      "probability": 0.5527636408805847
+    },
+    {
+      "word": "Kimubunga,",
+      "start": 8.54,
+      "end": 9.56,
+      "probability": 0.7441651932713285
+    },
+    {
+      "word": "Sjor,",
+      "start": 10.12,
+      "end": 10.36,
+      "probability": 0.14676373094941178
+    },
+    {
+      "word": "Göl,",
+      "start": 10.9,
+      "end": 11.18,
+      "probability": 0.28065983661144855
+    },
+    {
+      "word": "Gölge,",
+      "start": 11.56,
+      "end": 12.06,
+      "probability": 0.618251534178853
+    },
+    {
+      "word": "Karanlık,",
+      "start": 12.72,
+      "end": 13.46,
+      "probability": 0.591621987754479
+    },
+    {
+      "word": "Muju,",
+      "start": 13.98,
+      "end": 14.28,
+      "probability": 0.6701266169548035
+    },
+    {
+      "word": "Sachita,",
+      "start": 14.98,
+      "end": 15.42,
+      "probability": 0.425984944216907
+    },
+    {
+      "word": "Sachakuna,",
+      "start": 16.08,
+      "end": 16.72,
+      "probability": 0.688410739103953
+    },
+    {
+      "word": "Yan,",
+      "start": 17.54,
+      "end": 17.66,
+      "probability": 0.24721774458885193
+    },
+    {
+      "word": "and",
+      "start": 18.24,
+      "end": 18.56,
+      "probability": 0.9961552023887634
+    },
+    {
+      "word": "Mazask.",
+      "start": 18.56,
+      "end": 18.92,
+      "probability": 0.4056117609143257
+    },
+    {
+      "word": "Every",
+      "start": 19.42,
+      "end": 19.78,
+      "probability": 0.9940920472145081
+    },
+    {
+      "word": "unlit",
+      "start": 19.78,
+      "end": 20.22,
+      "probability": 0.599928468465805
+    },
+    {
+      "word": "card",
+      "start": 20.22,
+      "end": 20.52,
+      "probability": 0.986741840839386
+    },
+    {
+      "word": "survives",
+      "start": 20.52,
+      "end": 20.96,
+      "probability": 0.9990845918655396
+    },
+    {
+      "word": "that",
+      "start": 20.96,
+      "end": 21.36,
+      "probability": 0.9977530837059021
+    },
+    {
+      "word": "single",
+      "start": 21.36,
+      "end": 21.76,
+      "probability": 0.9985437393188477
+    },
+    {
+      "word": "hit.",
+      "start": 21.76,
+      "end": 22.04,
+      "probability": 0.9962177872657776
+    }
+  ],
+  "audioSha256": "f0212c70f1187821973ef1079e5b839b525437c8325909fe2efb792d08273542",
+  "sourceText": "With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan and Mazask. Every unlit card survives that single hit.",
+  "model": "faster-whisper small.en int8, local only",
+  "duration": 22.4
+}

@@ -1,0 +1,29 @@
+{
+  "source": "Favorites and note fields read from the visible round-two comparison page on 2026-09-12. Snapshot, not a live sync.",
+  "url": "http://127.0.0.1:8766/round-2/",
+  "favorites": ["01A", "02A", "03C", "04C", "05B"],
+  "takes": [
+    {"label":"01A","id":"muju-field-elevenlabs-take-1","favorite":true,"notes":"Lovely, good boingy springy plant"},
+    {"label":"01B","id":"muju-field-elevenlabs-take-2","favorite":false,"notes":"A little slow and less springy"},
+    {"label":"01C","id":"muju-field-elevenlabs-take-3","favorite":false,"notes":"This isn't melody enough"},
+    {"label":"02A","id":"golge-square-elevenlabs-take-1","favorite":true,"notes":"A little sneaky"},
+    {"label":"02B","id":"golge-square-elevenlabs-take-2","favorite":false,"notes":"A little too atonal"},
+    {"label":"02C","id":"golge-square-elevenlabs-take-3","favorite":false,"notes":"Too bright for shadows"},
+    {"label":"03A","id":"open-room-elevenlabs-take-1","favorite":false,"notes":"idk kind of forgettable"},
+    {"label":"03B","id":"open-room-elevenlabs-take-2","favorite":false,"notes":""},
+    {"label":"03C","id":"open-room-elevenlabs-take-3","favorite":true,"notes":"That's fun enough"},
+    {"label":"04A","id":"unequal-routes-elevenlabs-take-1","favorite":false,"notes":""},
+    {"label":"04B","id":"unequal-routes-elevenlabs-take-2","favorite":false,"notes":""},
+    {"label":"04C","id":"unequal-routes-elevenlabs-take-3","favorite":true,"notes":""},
+    {"label":"05A","id":"before-dawn-elevenlabs-take-1","favorite":false,"notes":""},
+    {"label":"05B","id":"before-dawn-elevenlabs-take-2","favorite":true,"notes":""},
+    {"label":"05C","id":"before-dawn-elevenlabs-take-3","favorite":false,"notes":"Good vocals! "}
+  ],
+  "interpretation_for_next_batch": [
+    "Keep a memorable complete melody at the center of every arrangement.",
+    "Create a distinct elemental personality through phrasing and groove.",
+    "Keep rhythmic elasticity and forward motion, including in calm tracks.",
+    "Use an audible tonal center; avoid ambiguous wandering harmony.",
+    "Sparse vocals received positive feedback, but these element trials remain instrumental."
+  ]
+}

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Muju Hono Tanka — soundtrack playlist</title>
+<style>
+:root{color-scheme:dark;--bg:#121721;--panel:#1b2432;--line:#354155;--ink:#f1f3f5;--muted:#aebacb;--accent:#e5bc77}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,sans-serif}main{max-width:1120px;margin:auto;padding:42px 28px 70px}header{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:34px}h1{font-size:clamp(28px,5vw,43px);letter-spacing:-.035em;line-height:1.15;margin:6px 0 10px}p{margin:0}.eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:12px;color:var(--accent)}.subtle{color:var(--muted);font-size:14px}nav{display:flex;gap:18px;flex-wrap:wrap}a{color:var(--accent);text-underline-offset:4px;font-size:14px}.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px;align-items:start}.player{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:28px;position:sticky;top:24px}.disc-art{height:180px;display:grid;place-items:center;overflow:hidden;margin-bottom:25px;border-radius:10px;background:linear-gradient(135deg,#222e41,#151d2a)}.disc{width:150px;height:150px;border:1px solid var(--accent);border-radius:50%;display:grid;place-items:center;box-shadow:0 0 0 16px #ffffff04,0 0 0 32px #ffffff03}.disc:before{content:'';width:58px;height:58px;background:var(--accent);border-radius:50%;box-shadow:inset 0 0 0 20px #1b2432}.category{color:var(--accent);font-size:13px;letter-spacing:.12em;text-transform:uppercase}h2{font-size:26px;line-height:1.25;margin:7px 0 8px;font-weight:620;min-height:65px}.transport{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 16px}button{font:inherit;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:8px;padding:10px 14px;min-height:44px}button:hover{border-color:var(--accent)}.primary{background:var(--accent);color:#14202b;border-color:var(--accent);font-weight:650;min-width:112px}audio{width:100%;height:44px}.settings{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0 12px}.toggle{font-size:14px}.toggle[aria-pressed=true]{border-color:var(--accent);color:var(--accent);background:#ffffff06}.level{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);margin-bottom:22px}.level input{accent-color:var(--accent);height:18px;width:18px}.bottom{display:flex;align-items:center;justify-content:space-between;gap:15px}.state{color:var(--muted);font-size:13px;min-height:21px}.tracklist{list-style:none;margin:0;padding:0;display:grid;gap:8px}.row{display:flex;align-items:center;gap:16px;text-align:left;width:100%;border-radius:11px;padding:16px 18px;background:#161e2b}.row[aria-current=true]{background:var(--panel);border-color:var(--accent)}.number{width:24px;flex-shrink:0;font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}.track-info{flex:1}.track-title{display:block;font-size:16px}.track-category{display:block;font-size:12px;color:var(--muted);margin-top:4px}.duration{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}.queue-header{display:flex;justify-content:space-between;margin:0 4px 14px;gap:12px}.queue-header h2{font-size:15px;min-height:0;margin:0}.foot{margin-top:30px;font-size:13px;color:var(--muted)}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:4px}@media(max-width:760px){main{padding:25px 16px 45px}header{align-items:start;flex-direction:column;gap:16px}.layout{grid-template-columns:1fr}.player{position:static;padding:22px}.disc-art{height:120px}.disc{height:100px;width:100px}h2{min-height:0}.row{padding:14px}.transport button{flex:1}}
+</style>
+<style>.seek-form{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px;font-size:14px}.seek-form input{width:92px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:10px;font:inherit}.cue-bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.cue-bar button{font-size:13px;padding:7px 10px}.cue-help{color:var(--muted);font-size:12px;margin-top:7px}</style>
+</head>
+<body>
+<main>
+<header><div><p class="eyebrow">The soundtrack · Full versions</p><h1>Muju Hono Tanka</h1><p class="subtle" id="disc-length"></p></div><nav><a href="../full-versions/">Mixes &amp; notes</a><a href="../round-7/">Auditions</a></nav></header>
+<div class="layout">
+<section class="player" aria-label="Now playing">
+<div class="disc-art" aria-hidden="true"><div class="disc"></div></div>
+<p class="category" id="category"></p><h2 id="now-title"></h2><p class="subtle" id="source"></p>
+<div class="transport"><button id="previous" aria-label="Previous track">Previous</button><button class="primary" id="play">Play</button><button id="next" aria-label="Next track">Next</button></div>
+<audio id="audio" controls preload="metadata"></audio>
+<form class="seek-form" id="seek-form"><label for="seek-time">Jump to</label><input id="seek-time" aria-label="Jump to time" placeholder="1:18" autocomplete="off"><button type="submit">Go</button></form>
+<div class="cue-bar" id="track-cues" aria-label="Review passage"></div><p class="cue-help" id="cue-help" hidden></p>
+<div class="settings"><button class="toggle" id="repeat-track" aria-pressed="false">Repeat track</button><button class="toggle" id="repeat-disc" aria-pressed="true">Repeat disc</button></div>
+<label class="level"><input type="checkbox" id="even-volume" checked>Even volume</label>
+<div class="bottom"><p class="state" id="state" role="status" aria-live="polite">Ready when you are.</p><a id="download" download>Download MP3</a></div>
+</section>
+<section aria-label="Playlist"><div class="queue-header"><h2>On this disc</h2><span class="subtle" id="track-count"></span></div><ol class="tracklist" id="queue"></ol></section>
+</div>
+<p class="foot">Tracks play in order. Choose Repeat track to stay with one song, or Repeat disc to keep the whole playlist going. Playback starts when you press play.</p>
+</main>
+<script>
+const DATA = __PLAYLIST_DATA__;
+const tracks=DATA.tracks;
+const audio=document.getElementById('audio');
+const playButton=document.getElementById('play');
+const state=document.getElementById('state');
+const repeatTrackButton=document.getElementById('repeat-track');
+const repeatDiscButton=document.getElementById('repeat-disc');
+const even=document.getElementById('even-volume');
+const key='muju-soundtrack-playlist-v1';
+let saved={};try{saved=JSON.parse(localStorage.getItem(key)||'{}');}catch{}
+let repeatTrack=saved.repeatTrack===true;
+let repeatDisc=!repeatTrack && saved.repeatDisc!==false;
+let index=Math.max(0,tracks.findIndex(t=>t.id===saved.trackId));
+let applyingVolume=false;
+let pendingSeek=null;
+let baseVolume=typeof saved.volume==='number'?Math.max(0,Math.min(1,saved.volume)):.8;
+even.checked=saved.even!==false;
+const buttons=[];
+function clock(n){n=Math.round(n);return `${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`;}
+function persist(){try{localStorage.setItem(key,JSON.stringify({trackId:tracks[index].id,repeatTrack,repeatDisc,volume:baseVolume,even:even.checked}));}catch{}}
+function afterEnd(current,count,trackRepeat,discRepeat){if(trackRepeat)return current;if(current+1<count)return current+1;return discRepeat?0:null;}
+function refreshModes(){repeatTrackButton.setAttribute('aria-pressed',String(repeatTrack));repeatDiscButton.setAttribute('aria-pressed',String(repeatDisc));}
+function setLevel(){applyingVolume=true;audio.volume=Math.min(1,baseVolume*(even.checked?tracks[index].gain:1));queueMicrotask(()=>{applyingVolume=false;});}
+async function start(){try{await audio.play();}catch{state.textContent='Press play to start playback.';}}
+function parseTime(value){if(!/^\d+(?::[0-5]?\d(?:\.\d+)?)?$/.test(value.trim()))return null;const parts=value.trim().split(':').map(Number);return parts.length===2?parts[0]*60+parts[1]:parts[0];}
+function seekTo(seconds,play=true){if(!Number.isFinite(seconds)||seconds<0||seconds>=tracks[index].duration){state.textContent=`Enter a time before ${clock(tracks[index].duration)}.`;return;}if(audio.readyState<1){pendingSeek={id:tracks[index].id,seconds,play};audio.load();return;}audio.currentTime=seconds;state.textContent=`Jumped to ${clock(seconds)}`;if(play)start();}
+function selectTrack(next,autoplay=false){index=next;pendingSeek=null;const track=tracks[index];audio.src=track.file+(track.file.includes('?')?'&':'?')+'seek=2';audio.setAttribute('aria-label',track.title);document.getElementById('now-title').textContent=track.title;document.getElementById('category').textContent=track.category;document.getElementById('source').textContent=track.source_label;document.documentElement.style.setProperty('--accent',track.color);const download=document.getElementById('download');download.href=track.file;download.download=track.file.split('/').pop();buttons.forEach((button,i)=>button.setAttribute('aria-current',String(i===index)));const cues=document.getElementById('track-cues');cues.replaceChildren();for(const cue of track.review_cues||[]){const button=document.createElement('button');button.type='button';button.textContent=cue.label;button.addEventListener('click',()=>seekTo(cue.start));cues.append(button);}document.getElementById('cue-help').textContent=track.cue_help||'';document.getElementById('cue-help').hidden=!(track.review_cues||[]).length;state.textContent=`Track ${index+1} of ${tracks.length}`;setLevel();persist();if(autoplay)start();}
+document.getElementById('disc-length').textContent=`${tracks.length} full tracks · ${clock(DATA.total_seconds)} of music`;
+document.getElementById('track-count').textContent=`${tracks.length} tracks`;
+tracks.forEach((track,i)=>{const item=document.createElement('li');const button=document.createElement('button');button.className='row';button.setAttribute('aria-label',`Play ${track.title}`);const number=document.createElement('span');number.className='number';number.textContent=String(i+1).padStart(2,'0');const info=document.createElement('span');info.className='track-info';const title=document.createElement('span');title.className='track-title';title.textContent=track.title;const category=document.createElement('span');category.className='track-category';category.textContent=track.category;info.append(title,category);const duration=document.createElement('span');duration.className='duration';duration.textContent=clock(track.duration);button.append(number,info,duration);button.addEventListener('click',()=>selectTrack(i,true));buttons.push(button);item.append(button);document.getElementById('queue').append(item);});
+playButton.addEventListener('click',()=>audio.paused?start():audio.pause());
+document.getElementById('seek-form').addEventListener('submit',event=>{event.preventDefault();const seconds=parseTime(document.getElementById('seek-time').value);if(seconds===null){state.textContent='Use a time such as 1:18 or 78 seconds.';return;}seekTo(seconds,!audio.paused);});
+audio.addEventListener('loadedmetadata',()=>{if(pendingSeek&&pendingSeek.id===tracks[index].id){const request=pendingSeek;pendingSeek=null;seekTo(request.seconds,request.play);}});
+document.getElementById('next').addEventListener('click',()=>selectTrack((index+1)%tracks.length,true));
+document.getElementById('previous').addEventListener('click',()=>{if(audio.currentTime>3){audio.currentTime=0;start();}else selectTrack((index-1+tracks.length)%tracks.length,true);});
+repeatTrackButton.addEventListener('click',()=>{repeatTrack=!repeatTrack;if(repeatTrack)repeatDisc=false;refreshModes();persist();});
+repeatDiscButton.addEventListener('click',()=>{repeatDisc=!repeatDisc;if(repeatDisc)repeatTrack=false;refreshModes();persist();});
+even.addEventListener('change',()=>{setLevel();persist();});
+audio.addEventListener('volumechange',()=>{if(!applyingVolume){const gain=even.checked?tracks[index].gain:1;baseVolume=Math.max(0,Math.min(1,audio.volume/gain));persist();}});
+audio.addEventListener('play',()=>{playButton.textContent='Pause';state.textContent=`Playing · ${index+1} of ${tracks.length}`;});
+audio.addEventListener('pause',()=>{playButton.textContent='Play';});
+audio.addEventListener('ended',()=>{const next=afterEnd(index,tracks.length,repeatTrack,repeatDisc);if(next===null){state.textContent='Disc finished.';playButton.textContent='Play';}else selectTrack(next,true);});
+audio.addEventListener('error',()=>{state.textContent='Audio could not load. Try the MP3 download link.';playButton.textContent='Play';});
+refreshModes();selectTrack(index);
+</script>
+</body>
+</html>

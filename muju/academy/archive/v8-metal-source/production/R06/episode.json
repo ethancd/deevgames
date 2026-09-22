@@ -1,0 +1,334 @@
+{
+  "id": "R06",
+  "title": "The Promotion Staircase",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "cheerfully wrong",
+      "text": "I bought a Hi and put three hats on it. Same-day expert.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: Pip has opened a hat shop beside the board. A sign reads SAME-DAY EXPERTS. Three hats wobble in a stack on the new Hi at C3. The top one slides off and rolls under the table.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Those are hats. That is a costume.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "A real hat is bought in the Place step. One hat. Never on the day you arrive.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "COACH",
+      "cue": "recap, brisk",
+      "text": "C three again. Yesterday's Hi moved on. Today a new one arrived there.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: C three. Yesterday's Hi has walked on. A new Hi stands there with a paper tag.]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Filed. Underneath: the star-shaped delivery zone. Overruled by the box.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[card: PIP'S AMENDMENTS (PENDING). Click files THREE HATS AT ONCE and lifts out the card underneath.]"
+      ]
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Fire climbs a staircase. The Hi, then the Hono, then the Kagari.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: FIRE STAIRCASE: the Hi costs 2 · the Hono costs 6 · the Kagari costs 12]"
+      ]
+    },
+    {
+      "id": "07",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Small fire. Then flame. Then watch-fire.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "A promotion happens in the Place step. It costs crystals, not actions.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One step up, in your own element, once per piece per turn.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Watch one. A Sjor costs four crystals. A Straumr costs eight.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: DEMO. Place phase. Bank 4. A White Sjor on a plain square, tagged HERE BEFORE THIS TURN, not yet promoted.] [card: WATER STAIRCASE: the Sjor costs 4 · the Straumr costs 8]"
+      ]
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Eight take away four leaves four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: shop chime] [board: four crystals leave the bank. The Sjor grows into a Straumr. Bank ticks 4 to 0.]"
+      ]
+    },
+    {
+      "id": "12",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Pay the gap. One step up.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Carefully enunciate Pay THE gap. Say pay, not pave. A small space between pay and the. Do not add words."
+    },
+    {
+      "id": "13",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Two hats above a Hi. Never three. No secret fourth-floor elevator.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "A piece that arrived this turn cannot climb today. It waits until next turn.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "D four: here before this turn. C three: arrived today.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: back to the board. Place phase. Bank 4. A White Hi on D4 wearing a paper tag HERE BEFORE THIS TURN. A White Hi on C3 wearing a paper tag ARRIVED TODAY.] [card: THIS PROMOTION COSTS 4]"
+      ]
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Our bank has four crystals. This promotion costs four.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "Which Hi can climb the staircase right now?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "PIP",
+      "cue": "quietly certain",
+      "text": "One of them is still wearing today's tag. I think that decides it.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "There is no rush on this one. Watch it with me if you would rather.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "The hat settled on the one that was already here. Pip named the tag first.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: a hat floats over the C3 Hi. Its ARRIVED TODAY tag lights up, and the hat lifts away. It settles on the D4 Hi, which grows into a Hono. Bank ticks 4 to 0.] [sfx: shop chime]"
+      ]
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Arrival: today. Promotion: not today.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "New today. It may walk, hit and collect. It may not climb.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "23",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then my sign is wrong. New policy. Hats fit the ones who were already here.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "dawning concern",
+      "text": "Was that the best four crystals I ever spent?",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "That is a different count. Today we only proved it was allowed.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Metal climbs the same way. The Inyan, the Mazask, the Tanka.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: Pip crosses out the shop sign and letters NEXT-DAY EXPERTS.]",
+        "[card: EVIDENCE. Proves: who may promote, and the price. Not checked: whether four crystals were better spent elsewhere.]",
+        "[card: METAL LADDER: the Inyan costs 5 · the Mazask costs 9 · the Tanka costs 17]"
+      ]
+    },
+    {
+      "id": "27",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Stone. Wall. Great.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Slip a paper strip under each piece with the turn it arrived.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: WHO ARRIVED WHEN?]"
+      ]
+    },
+    {
+      "id": "promotion-prices",
+      "speaker": "COACH",
+      "text": "For every element, tier one to tier two costs four crystals. Tier two to tier three costs eight. A promoted piece can act immediately. There is no fourth tier.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "The same promotion prices for all six elements",
+        "body": "T1 → T2: pay 4\nT2 → T3: pay 8\nOne step per piece per turn. Never on its purchase turn.\nPromoted pieces act immediately. T3 is the top."
+      }
+    },
+    {
+      "id": "29",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The two spare hats go in a box. For pieces that were already here yesterday.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Stop here whenever you like. Next time: who sends our army a bill?",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "question": "Which Hi can climb the staircase right now?",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "soundtrack": {
+    "id": "before-dawn",
+    "title": "Another Game Before Dawn",
+    "source": "muju/music-auditions/full-versions/before-dawn-full-v1.mp3",
+    "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709"
+  },
+  "speechProvider": "openai"
+}

@@ -1,0 +1,348 @@
+{
+  "status": "Round one completed: twelve Hono auditions generated and decode-checked. Later rounds await listening selection. This packet includes no credentials or audio data; see SOUNDTRACK_AUDITION_RESULTS-2026-09-11.md.",
+  "date": "2026-09-11",
+  "scope": "Personal/family soundtrack hosted on the user's own website.",
+  "round_one": {
+    "cards": [
+      "hono-lantern",
+      "hono-garden",
+      "hono-current"
+    ],
+    "takes_per_card_per_provider": 2,
+    "total_audio_requests": 12,
+    "sequence": "One Hono/Lantern request per provider first; inspect downloaded files before spending on the rest."
+  },
+  "round_two": {
+    "selection": "Use Muju and Gölge cards matching the direction selected by listening.",
+    "takes_per_card_per_provider": 2,
+    "total_audio_requests": 8
+  },
+  "round_three": {
+    "selection": "Choose two surviving concepts and request a roughly 90-second development from both providers.",
+    "takes_per_concept_per_provider": 1,
+    "total_audio_requests": 4,
+    "lyria_model": "lyria-3.5",
+    "elevenlabs_music_length_ms": 90000,
+    "note": "New longer generations may differ from short takes. Prompt is not an exact extension guarantee."
+  },
+  "round_four_optional": {
+    "selection": "Two 30-second takes of the same sparse vocal closer per provider.",
+    "total_audio_requests": 4,
+    "lyric": "Leave a light beside the board.\nThere's another morning still.",
+    "note": "Use only once around the middle, surrounded by instrumentals. Switch ElevenLabs force_instrumental to false or use a separately validated composition plan."
+  },
+  "proposed_limits": {
+    "max_lyria_estimated_generation_usd": 2,
+    "max_elevenlabs_audio_minutes": 12,
+    "no_automatic_paid_retries_after_ambiguous_timeout": true,
+    "live_account_price_check_required": true
+  },
+  "cards": [
+    {
+      "id": "hono-lantern",
+      "element": "fire",
+      "title": "Hono / Banked Fire",
+      "direction": "Lantern Circuit",
+      "bpm": 116,
+      "meter": "4/4",
+      "musical_brief": "Intimate Japanese koto-like plucks with occasional gentle pitch bends after the attack. A short rising spark, a held note, then a low reply. A soft pulse-wave voice echoes only the last two notes. Warm electric bass, mellow electric-piano chords, and understated broken-beat drums. Quiet confidence and banked heat.",
+      "listen_for": "Can the koto gesture and chip reply feel like one catchy phrase while the drums stay out of the way?",
+      "providers": {
+        "lyria": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication_environment": "GEMINI_API_KEY",
+          "authentication_header": "x-goog-api-key",
+          "body": {
+            "model": "lyria-3-clip-preview",
+            "input": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n116 BPM. Meter: 4/4. Intimate Japanese koto-like plucks with occasional gentle pitch bends after the attack. A short rising spark, a held note, then a low reply. A soft pulse-wave voice echoes only the last two notes. Warm electric bass, mellow electric-piano chords, and understated broken-beat drums. Quiet confidence and banked heat."
+          }
+        },
+        "elevenlabs": {
+          "method": "POST",
+          "url": "https://api.elevenlabs.io/v1/music",
+          "authentication_environment": "ELEVENLABS_API_KEY",
+          "authentication_header": "xi-api-key",
+          "body": {
+            "model_id": "music_v2",
+            "music_length_ms": 30000,
+            "force_instrumental": true,
+            "prompt": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n116 BPM. Meter: 4/4. Intimate Japanese koto-like plucks with occasional gentle pitch bends after the attack. A short rising spark, a held note, then a low reply. A soft pulse-wave voice echoes only the last two notes. Warm electric bass, mellow electric-piano chords, and understated broken-beat drums. Quiet confidence and banked heat."
+          }
+        }
+      }
+    },
+    {
+      "id": "hono-garden",
+      "element": "fire",
+      "title": "Hono / Ember Glass",
+      "direction": "Crystal Garden",
+      "bpm": 104,
+      "meter": "4/4",
+      "musical_brief": "The same intimate Japanese koto-like rising phrase, gentle bend, and low reply, surrounded by transparent FM bells and warm dub echoes. Spacious plucked resonance, a gently rolling bass, and sparse soft ticks. Luminous embers drifting in a dark room. Keep an audible pulse and a recognizable melody throughout.",
+      "listen_for": "Does the spacious arrangement still move forward, and is the Fire identity recognizable?",
+      "providers": {
+        "lyria": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication_environment": "GEMINI_API_KEY",
+          "authentication_header": "x-goog-api-key",
+          "body": {
+            "model": "lyria-3-clip-preview",
+            "input": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n104 BPM. Meter: 4/4. The same intimate Japanese koto-like rising phrase, gentle bend, and low reply, surrounded by transparent FM bells and warm dub echoes. Spacious plucked resonance, a gently rolling bass, and sparse soft ticks. Luminous embers drifting in a dark room. Keep an audible pulse and a recognizable melody throughout."
+          }
+        },
+        "elevenlabs": {
+          "method": "POST",
+          "url": "https://api.elevenlabs.io/v1/music",
+          "authentication_environment": "ELEVENLABS_API_KEY",
+          "authentication_header": "xi-api-key",
+          "body": {
+            "model_id": "music_v2",
+            "music_length_ms": 30000,
+            "force_instrumental": true,
+            "prompt": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n104 BPM. Meter: 4/4. The same intimate Japanese koto-like rising phrase, gentle bend, and low reply, surrounded by transparent FM bells and warm dub echoes. Spacious plucked resonance, a gently rolling bass, and sparse soft ticks. Luminous embers drifting in a dark room. Keep an audible pulse and a recognizable melody throughout."
+          }
+        }
+      }
+    },
+    {
+      "id": "hono-current",
+      "element": "fire",
+      "title": "Hono / Quickkindle",
+      "direction": "Sixfold Current",
+      "bpm": 128,
+      "meter": "4/4",
+      "musical_brief": "The same Japanese koto-like rising phrase, gentle bend, and low reply, in a nimble arrangement with light syncopated breakbeats and smooth bass. Short pulse-wave responses fit between plucked phrases. Soft drum transients and limited cymbal activity. Melodic phrases remain spacious while the rhythm supplies momentum. Playful quickness.",
+      "listen_for": "Is the energy enjoyable for a whole match, with no busy percussion masking the tune?",
+      "providers": {
+        "lyria": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication_environment": "GEMINI_API_KEY",
+          "authentication_header": "x-goog-api-key",
+          "body": {
+            "model": "lyria-3-clip-preview",
+            "input": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n128 BPM. Meter: 4/4. The same Japanese koto-like rising phrase, gentle bend, and low reply, in a nimble arrangement with light syncopated breakbeats and smooth bass. Short pulse-wave responses fit between plucked phrases. Soft drum transients and limited cymbal activity. Melodic phrases remain spacious while the rhythm supplies momentum. Playful quickness."
+          }
+        },
+        "elevenlabs": {
+          "method": "POST",
+          "url": "https://api.elevenlabs.io/v1/music",
+          "authentication_environment": "ELEVENLABS_API_KEY",
+          "authentication_header": "xi-api-key",
+          "body": {
+            "model_id": "music_v2",
+            "music_length_ms": 30000,
+            "force_instrumental": true,
+            "prompt": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n128 BPM. Meter: 4/4. The same Japanese koto-like rising phrase, gentle bend, and low reply, in a nimble arrangement with light syncopated breakbeats and smooth bass. Short pulse-wave responses fit between plucked phrases. Soft drum transients and limited cymbal activity. Melodic phrases remain spacious while the rhythm supplies momentum. Playful quickness."
+          }
+        }
+      }
+    },
+    {
+      "id": "muju-lantern",
+      "element": "plant",
+      "title": "Muju / A Field of Small Decisions",
+      "direction": "Lantern Circuit",
+      "bpm": 108,
+      "meter": "4/4 with a duple huayno figure",
+      "musical_brief": "An original melody informed by Quechua/Andean huayno phrasing, with a light long-short-short rhythmic figure. Rounded harp-like plucks and two soft chip voices alternate notes to complete one tune. Warm bass and relaxed dancing percussion. Begin with a small figure and weave it into a richer pattern. Patient growth and lively attention.",
+      "listen_for": "Can two voices share a memorable melody, and does the rhythmic figure remain audible?",
+      "providers": {
+        "lyria": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication_environment": "GEMINI_API_KEY",
+          "authentication_header": "x-goog-api-key",
+          "body": {
+            "model": "lyria-3-clip-preview",
+            "input": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n108 BPM. Meter: 4/4 with a duple huayno figure. An original melody informed by Quechua/Andean huayno phrasing, with a light long-short-short rhythmic figure. Rounded harp-like plucks and two soft chip voices alternate notes to complete one tune. Warm bass and relaxed dancing percussion. Begin with a small figure and weave it into a richer pattern. Patient growth and lively attention."
+          }
+        },
+        "elevenlabs": {
+          "method": "POST",
+          "url": "https://api.elevenlabs.io/v1/music",
+          "authentication_environment": "ELEVENLABS_API_KEY",
+          "authentication_header": "xi-api-key",
+          "body": {
+            "model_id": "music_v2",
+            "music_length_ms": 30000,
+            "force_instrumental": true,
+            "prompt": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n108 BPM. Meter: 4/4 with a duple huayno figure. An original melody informed by Quechua/Andean huayno phrasing, with a light long-short-short rhythmic figure. Rounded harp-like plucks and two soft chip voices alternate notes to complete one tune. Warm bass and relaxed dancing percussion. Begin with a small figure and weave it into a richer pattern. Patient growth and lively attention."
+          }
+        }
+      }
+    },
+    {
+      "id": "muju-garden",
+      "element": "plant",
+      "title": "Muju / Glasshouse Morning",
+      "direction": "Crystal Garden",
+      "bpm": 100,
+      "meter": "4/4 with a duple huayno figure",
+      "musical_brief": "Quechua/Andean huayno-informed long-short-short motion, played lightly on rounded plucked sounds. Two soft electronic flute-like voices alternate notes in one continuous original melody. Harp-like resonance, gentle bell harmonics, warm bass, and abundant space. The interlocking melody supplies the momentum even with sparse drums. A garden slowly waking up.",
+      "listen_for": "Does the weave carry motion without becoming anonymous ambient music?",
+      "providers": {
+        "lyria": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication_environment": "GEMINI_API_KEY",
+          "authentication_header": "x-goog-api-key",
+          "body": {
+            "model": "lyria-3-clip-preview",
+            "input": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n100 BPM. Meter: 4/4 with a duple huayno figure. Quechua/Andean huayno-informed long-short-short motion, played lightly on rounded plucked sounds. Two soft electronic flute-like voices alternate notes in one continuous original melody. Harp-like resonance, gentle bell harmonics, warm bass, and abundant space. The interlocking melody supplies the momentum even with sparse drums. A garden slowly waking up."
+          }
+        },
+        "elevenlabs": {
+          "method": "POST",
+          "url": "https://api.elevenlabs.io/v1/music",
+          "authentication_environment": "ELEVENLABS_API_KEY",
+          "authentication_header": "xi-api-key",
+          "body": {
+            "model_id": "music_v2",
+            "music_length_ms": 30000,
+            "force_instrumental": true,
+            "prompt": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n100 BPM. Meter: 4/4 with a duple huayno figure. Quechua/Andean huayno-informed long-short-short motion, played lightly on rounded plucked sounds. Two soft electronic flute-like voices alternate notes in one continuous original melody. Harp-like resonance, gentle bell harmonics, warm bass, and abundant space. The interlocking melody supplies the momentum even with sparse drums. A garden slowly waking up."
+          }
+        }
+      }
+    },
+    {
+      "id": "muju-current",
+      "element": "plant",
+      "title": "Muju / Growing Room",
+      "direction": "Sixfold Current",
+      "bpm": 128,
+      "meter": "4/4",
+      "musical_brief": "An original interlocking melody informed by Andean shared-note playing. Retain a clearly audible long-short-short huayno figure in the plucked accompaniment. Pair rounded harp-like attack with two mellow chip voices, soft electronic breakbeats, and a smooth repeating bass. The melody gradually branches into a second line. Bouncy and generous, with uncluttered upper frequencies.",
+      "listen_for": "Does the Andean rhythmic and melodic idea survive the faster electronic treatment?",
+      "providers": {
+        "lyria": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication_environment": "GEMINI_API_KEY",
+          "authentication_header": "x-goog-api-key",
+          "body": {
+            "model": "lyria-3-clip-preview",
+            "input": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n128 BPM. Meter: 4/4. An original interlocking melody informed by Andean shared-note playing. Retain a clearly audible long-short-short huayno figure in the plucked accompaniment. Pair rounded harp-like attack with two mellow chip voices, soft electronic breakbeats, and a smooth repeating bass. The melody gradually branches into a second line. Bouncy and generous, with uncluttered upper frequencies."
+          }
+        },
+        "elevenlabs": {
+          "method": "POST",
+          "url": "https://api.elevenlabs.io/v1/music",
+          "authentication_environment": "ELEVENLABS_API_KEY",
+          "authentication_header": "xi-api-key",
+          "body": {
+            "model_id": "music_v2",
+            "music_length_ms": 30000,
+            "force_instrumental": true,
+            "prompt": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n128 BPM. Meter: 4/4. An original interlocking melody informed by Andean shared-note playing. Retain a clearly audible long-short-short huayno figure in the plucked accompaniment. Pair rounded harp-like attack with two mellow chip voices, soft electronic breakbeats, and a smooth repeating bass. The melody gradually branches into a second line. Bouncy and generous, with uncluttered upper frequencies."
+          }
+        }
+      }
+    },
+    {
+      "id": "golge-lantern",
+      "element": "shadow",
+      "title": "Gölge / One Square Out of Sight",
+      "direction": "Lantern Circuit",
+      "bpm": 112,
+      "meter": "4/4; 9/8 is a separate optional experiment",
+      "musical_brief": "Turkish bağlama-like plucked phrasing with brief ornamental turns and a returning note that keeps moving to a different rhythmic position. Warm electric-piano harmony, rounded bass, discreet broken-beat drums, and a mellow pulse-wave response. Short filtered echoes at phrase endings. Sly, poised, quietly inviting, with a faint smile.",
+      "listen_for": "Are the ornamental turns distinctive and the displaced answer easy to follow?",
+      "providers": {
+        "lyria": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication_environment": "GEMINI_API_KEY",
+          "authentication_header": "x-goog-api-key",
+          "body": {
+            "model": "lyria-3-clip-preview",
+            "input": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n112 BPM. Meter: 4/4. Turkish bağlama-like plucked phrasing with brief ornamental turns and a returning note that keeps moving to a different rhythmic position. Warm electric-piano harmony, rounded bass, discreet broken-beat drums, and a mellow pulse-wave response. Short filtered echoes at phrase endings. Sly, poised, quietly inviting, with a faint smile."
+          }
+        },
+        "elevenlabs": {
+          "method": "POST",
+          "url": "https://api.elevenlabs.io/v1/music",
+          "authentication_environment": "ELEVENLABS_API_KEY",
+          "authentication_header": "xi-api-key",
+          "body": {
+            "model_id": "music_v2",
+            "music_length_ms": 30000,
+            "force_instrumental": true,
+            "prompt": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n112 BPM. Meter: 4/4. Turkish bağlama-like plucked phrasing with brief ornamental turns and a returning note that keeps moving to a different rhythmic position. Warm electric-piano harmony, rounded bass, discreet broken-beat drums, and a mellow pulse-wave response. Short filtered echoes at phrase endings. Sly, poised, quietly inviting, with a faint smile."
+          }
+        }
+      }
+    },
+    {
+      "id": "golge-garden",
+      "element": "shadow",
+      "title": "Gölge / Moon Behind the Screen",
+      "direction": "Crystal Garden",
+      "bpm": 100,
+      "meter": "4/4",
+      "musical_brief": "Turkish bağlama-like ornamented plucks and soft electronic echoes. A small original melody returns with one note delayed; the echo answers from a different register. Dark warm chords, soft bass, sparse brushed percussion, and long spaces around individual gestures. Intimate and curious. A quiet pulse remains audible beneath the atmosphere.",
+      "listen_for": "Does it feel curious and inviting, and can you remember the phrase after it stops?",
+      "providers": {
+        "lyria": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication_environment": "GEMINI_API_KEY",
+          "authentication_header": "x-goog-api-key",
+          "body": {
+            "model": "lyria-3-clip-preview",
+            "input": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n100 BPM. Meter: 4/4. Turkish bağlama-like ornamented plucks and soft electronic echoes. A small original melody returns with one note delayed; the echo answers from a different register. Dark warm chords, soft bass, sparse brushed percussion, and long spaces around individual gestures. Intimate and curious. A quiet pulse remains audible beneath the atmosphere."
+          }
+        },
+        "elevenlabs": {
+          "method": "POST",
+          "url": "https://api.elevenlabs.io/v1/music",
+          "authentication_environment": "ELEVENLABS_API_KEY",
+          "authentication_header": "xi-api-key",
+          "body": {
+            "model_id": "music_v2",
+            "music_length_ms": 30000,
+            "force_instrumental": true,
+            "prompt": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n100 BPM. Meter: 4/4. Turkish bağlama-like ornamented plucks and soft electronic echoes. A small original melody returns with one note delayed; the echo answers from a different register. Dark warm chords, soft bass, sparse brushed percussion, and long spaces around individual gestures. Intimate and curious. A quiet pulse remains audible beneath the atmosphere."
+          }
+        }
+      }
+    },
+    {
+      "id": "golge-current",
+      "element": "shadow",
+      "title": "Gölge / Borrowed Tempo",
+      "direction": "Sixfold Current",
+      "bpm": 128,
+      "meter": "4/4",
+      "musical_brief": "Turkish bağlama-like ornamental turns over light broken beats and smooth bass. A short plucked motif is answered by a mellow pulse wave, then its answer shifts to a new offbeat on the next repetition. Keep the melodic register narrow and drum transients soft. Rhythmic feints and friendly mischief with plenty of space for concentration.",
+      "listen_for": "Do the rhythmic feints add personality without demanding conscious counting?",
+      "providers": {
+        "lyria": {
+          "method": "POST",
+          "url": "https://generativelanguage.googleapis.com/v1beta/interactions",
+          "authentication_environment": "GEMINI_API_KEY",
+          "authentication_header": "x-goog-api-key",
+          "body": {
+            "model": "lyria-3-clip-preview",
+            "input": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n128 BPM. Meter: 4/4. Turkish bağlama-like ornamental turns over light broken beats and smooth bass. A short plucked motif is answered by a mellow pulse wave, then its answer shifts to a new offbeat on the next repetition. Keep the melodic register narrow and drum transients soft. Rhythmic feints and friendly mischief with plenty of space for concentration."
+          }
+        },
+        "elevenlabs": {
+          "method": "POST",
+          "url": "https://api.elevenlabs.io/v1/music",
+          "authentication_environment": "ELEVENLABS_API_KEY",
+          "authentication_header": "xi-api-key",
+          "body": {
+            "model_id": "music_v2",
+            "music_length_ms": 30000,
+            "force_instrumental": true,
+            "prompt": "Create a 30-second instrumental excerpt for a thoughtful, playful strategy game and family listening. Start with the groove already present. Warm, focused, gently energizing, memorable on repeated listens. Keep the bass rounded, the percussion quiet, the arrangement spacious, and the perceived loudness steady. Feature one short original melody with a clear answering phrase. No vocals, speech, chants, dramatic drops, trailer impacts, piercing hi-hats, long intro, or final crash. Leave the final phrase open. Cultural references describe instrumental phrasing; compose new music.\n\n128 BPM. Meter: 4/4. Turkish bağlama-like ornamental turns over light broken beats and smooth bass. A short plucked motif is answered by a mellow pulse wave, then its answer shifts to a new offbeat on the next repetition. Keep the melodic register narrow and drum transients soft. Rhythmic feints and friendly mischief with plenty of space for concentration."
+          }
+        }
+      }
+    }
+  ]
+}

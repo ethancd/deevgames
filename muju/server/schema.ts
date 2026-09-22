@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import { MAX_BLACK_CRYSTAL_HANDICAP } from '../src/game/rules';
+import { TIME_CONTROL_PRESETS } from '../src/online/timeControl';
+import type { RoomSnapshot } from '../src/online/types';
+import { invitePattern, shortInvitePattern } from '../src/online/invitations';
 
 export const roomIdSchema = z.string().regex(/^[a-f0-9]{32}$/);
 export const tokenSchema = z.string().min(32).max(128);
@@ -22,10 +26,36 @@ export const actionRequestSchema = z.object({
   requestId: z.string().min(8).max(100),
   actions: z.array(actionSchema).min(1).max(32),
 }).strict();
+export const stageVersionSchema = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+export const stageIdSchema = z.string().regex(/^[a-f0-9]{32}$/);
+export const stageRequestSchema = z.object({
+  requestId: actionRequestSchema.shape.requestId,
+  expectedTurnNumber: z.number().int().positive(),
+  expectedStageVersion: stageVersionSchema,
+  commitWhenRemainingMs: z.number().int().positive().max(15000000)
+    .describe('Total milliseconds until flag-fall (delay plus bank). Positive, no greater than this turn’s starting allowance. Already due fires now; 5000 can spend almost your entire bank.'),
+  actions: actionRequestSchema.shape.actions,
+  fallbacks: z.array(actionRequestSchema.shape.actions).max(3).default([])
+    .describe('Up to three complete fallback batches, tried in exactly this order after the primary batch.'),
+}).strict();
+export const cancelStageSchema = stageRequestSchema.pick({ requestId: true, expectedTurnNumber: true, expectedStageVersion: true });
 export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 'black']).default('white'),
   actionsPerTurn: z.literal(4).default(4),
+  blackCrystalHandicap: z.number().int().min(0).max(MAX_BLACK_CRYSTAL_HANDICAP).default(0)
+    .describe('Creation only. Grant Black 1–20 starting crystals. Black skips its first Place & Promote phase with 1–2 crystals; with 3–20 it can place/promote. Omit or use 0 for no handicap. White still moves first.'),
+  timeControl: z.union([
+    z.enum(['blitz', 'rapid', 'classical']).transform(key => {
+      const { delaySeconds, bankSeconds } = TIME_CONTROL_PRESETS[key];
+      return { delaySeconds, bankSeconds };
+    }),
+    z.object({
+      delaySeconds: z.number().int().min(0).max(600).describe('Free seconds per full player turn (0–600). Unused delay never accumulates.'),
+      bankSeconds: z.number().int().min(1).max(14400).describe('Personal bank in seconds per player (1–14400); used only after the turn delay.'),
+    }).strict(),
+  ]).nullable().optional().describe('Creation only. Omit/null for untimed, select blitz (10s/2min), rapid (30s/10min), classical (60s/30min), or supply custom delaySeconds/bankSeconds. Starts on join; running out loses.'),
 }).strict();
-export const joinSchema = z.object({ name: nameSchema, inviteCode: tokenSchema }).strict();
+export const shortInviteSchema = z.string().regex(shortInvitePattern);
+export const joinSchema = z.object({ name: nameSchema, inviteCode: z.string().regex(invitePattern) }).strict();
 export const historyQuerySchema = z.object({
   before: z.coerce.number().int().positive().optional(),
   after: z.coerce.number().int().nonnegative().optional(),
@@ -34,5 +64,5 @@ export const historyQuerySchema = z.object({
 }).strict();
 
 export class RoomError extends Error {
-  constructor(public status: number, public code: string, message: string) { super(message); }
+  constructor(public status: number, public code: string, message: string, public room?: RoomSnapshot) { super(message); }
 }

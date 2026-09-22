@@ -1,0 +1,558 @@
+{
+  "id": "R12",
+  "title": "Lightning: Express Delivery",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "ZIP",
+      "cue": "rapid, breathless",
+      "text": "Delivered. Ahead of schedule.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: DISPATCH DEPARTMENT. Tickets on nails. No clock anywhere. A sign: WE DO NOT PROMISE A TIME. WE PROMISE A PRICE. A smaller sign under it: SPEED CHANGES WHAT A TRIP COSTS. IT NEVER CHANGES WHAT A HIT DOES. Zip holds an envelope on the far side of a wall of pieces.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Delivered to the square beside the recipient.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "Next door is not the same as finished. The hit costs one more action.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Memo from the Toast Department. Never declare breakfast early.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: THE THREE QUESTIONS. Which stat helps this job? How many actions does it take? What will this piece owe next turn?]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]",
+        "[card: MEMO FROM THE TOAST DEPARTMENT]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Same idea in this office. Arriving is not finishing.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ticket one. The path is four squares. The Radi has speed three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: ticket one on its nail. An open path of four empty squares is drawn, then frozen. Radi card: speed three. Tray of four tokens.]",
+        "[card: four squares. Speed three.]"
+      ]
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three squares fit in one action. One square is left over.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: piece step] [sfx: token removed] [board: the Radi walks three squares and stops. One token leaves the tray.]"
+      ]
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Each action covers up to three squares. The final part still uses a whole action. Two altogether.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: piece step] [sfx: token removed] [board: the Radi walks the last square. A second token leaves the tray.]"
+      ]
+    },
+    {
+      "id": "09",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "New ticket. The path is five squares. My Radi has speed three.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: ticket two on its nail. An open path of five empty squares is drawn, then frozen. The Radi card still reads speed three. The tray is full again.]",
+        "[card: five squares. Speed three.]"
+      ]
+    },
+    {
+      "id": "10",
+      "speaker": "ZIP",
+      "cue": "question, open",
+      "text": "How many actions does that trip cost me?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Take longer if you want. Or watch the tray with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "How many actions does that trip cost me?"
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Two actions.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: token removed] [sfx: token removed] [board: the Radi walks three squares and stops. Then two more. Two tokens leave the tray.]"
+      ]
+    },
+    {
+      "id": "13",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "Three squares, then two left over. I would like fewer leftovers.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "14",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Speed five, five squares. That has to be one action.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: Kimubunga card beside the same five-square path. Speed five.]"
+      ]
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One action. A saving.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "16",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "Saved where? Put it on my receipt.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "curious, thinking aloud",
+      "text": "Click. Was that action spent?",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: one unused token lifts out of the tray and sits by itself on the bench]"
+      ]
+    },
+    {
+      "id": "18",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Not spent.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "We saved an action. We have not chosen its next job.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "20",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "This is the Umeme. Hits for two. Shield of one. Walks four. Takes nothing. That is the Umeme.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "21",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "This is the Kimubunga. Hits for three. Shield of one. Walks five. Takes nothing. That is the Kimubunga.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "I painted racing stripes on the mining bucket.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: LIGHTNING PRICES. BUY: a Radi costs three crystals, and it is the only Lightning piece you can buy. CLIMB: Radi to Umeme, four more. Umeme to Kimubunga, eight more. TOLLS: nothing, one, two.]",
+        "[board: the Radi ends its turn on a square holding ten crystals. The income counter stays at zero.]"
+      ]
+    },
+    {
+      "id": "23",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The stripes do not reach underground. Income: zero.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "24",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "Then I am standing on ten crystals decoratively.",
+      "beat": "EXPLAIN",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Fast feet. Small hit. Empty bucket.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "New ticket. My Radi spends one action on that Inyan.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: separate attack trial, with its own action tray. A fresh White Radi stands beside a fresh Black Inyan. Neither has acted. A spare Black piece remains elsewhere. Cards: Radi attack one. Inyan defense three. This is not the Kimubunga trip.]"
+      ]
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "An action bought a hit. Did it buy a finish?",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: one token leaves the separate trial's tray for the attack]"
+      ]
+    },
+    {
+      "id": "28",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Sparks burn the Garden Wall. The Radi's one becomes two. The Inyan's defense is three.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Radi. Attack one. Lightning against Metal, add one. Two. The Inyan. Defense three.]"
+      ]
+    },
+    {
+      "id": "29",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Inyan survived. That Radi is done attacking. A spare action does not buy a second swing.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk, dull] [board: two of the Inyan's three shield pips go dark; one stays lit; the Radi's attack marker greys out]"
+      ]
+    },
+    {
+      "id": "30",
+      "speaker": "ZIP",
+      "cue": "mock-formal announcement",
+      "text": "Delivered a strongly worded inconvenience. Speed buys travel. It has never once bought damage.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: the trip costs two actions and the hit does not finish the Inyan. Not checked: what a second attacker could do.]"
+      ]
+    },
+    {
+      "id": "31",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Receipt: zero captures.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "32",
+      "speaker": "ZIP",
+      "cue": "",
+      "text": "Take both tickets. Price a nine-square path for my Radi, then for my Kimubunga.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: LIGHTNING. Fast feet. Small hit. Empty bucket. The department work card is added to the deck.]"
+      ]
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for Lightning. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      }
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Radi. Attack one, defense one, speed three, and Mining zero. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Radi can finish Hi, Hono, Radi, Umeme and Kimubunga. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Radi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_1",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_1",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Umeme. Attack two, defense one, speed four, and Mining zero. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Umeme can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Muju, Sachita and Inyan. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Umeme is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_2",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_2",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Kimubunga. Attack three, defense one, speed five, and Mining zero. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan and Mazask. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Kimubunga is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_3",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "lightning_3",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "33",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Fast feet. Small hit. Empty bucket.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "34",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Stopping there is fine. Next time: what is a slow piece with a big shield for?",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "version": 6,
+  "rules": "v2.7",
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "question": "How many actions does that trip cost me?",
+  "soundtrack": {
+    "id": "umeme-held-charge",
+    "title": "Umeme / Held Charge",
+    "source": "muju/music-auditions/full-versions/umeme-held-charge-full-v1.mp3",
+    "sha256": "ce2a37c87e38f5b8af6b40a0666f3a42ad03079838d5939cb39713961050773e"
+  },
+  "speechProvider": "openai"
+}

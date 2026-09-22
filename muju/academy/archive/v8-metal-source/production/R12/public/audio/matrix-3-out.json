@@ -1,0 +1,63 @@
+{
+  "provider": "openai",
+  "hash": "ae771cd7f370b8add258c5e9f3dc8af6ebbb87866d28f50edca9fcf6d873e6b8",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan and Mazask. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the kee-moo-BOON-gah can finish Hee, HOH-noh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, Gurl, GURL-geh, kah-rahn-luk, Moo-joo, sah-CHEE-tah, sah-chah-KOO-nah, In-yahn and MAH-zahsk. Every unlit card survives that single hit.",
+  "duration": 21.6,
+  "bytes": 1036844,
+  "createdAt": "2026-09-13T10:38:57.473Z",
+  "captions": [
+    {
+      "text": "With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi,",
+      "start": 0,
+      "end": 198
+    },
+    {
+      "text": "Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna,",
+      "start": 198,
+      "end": 484
+    },
+    {
+      "text": "Inyan and Mazask. Every unlit card survives that single hit.",
+      "start": 484,
+      "end": 648
+    }
+  ],
+  "wordFrames": [
+    0,
+    6,
+    14,
+    43,
+    44,
+    76,
+    83,
+    94,
+    115,
+    142,
+    175,
+    198,
+    225,
+    269,
+    293,
+    308,
+    343,
+    379,
+    410,
+    444,
+    484,
+    508,
+    516,
+    551,
+    565,
+    579,
+    591,
+    610,
+    620,
+    632
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "39ff9eb7ba768b4be28526c493c963bfb1ed44b78b2bfecc9988e28620cfdbae"
+}

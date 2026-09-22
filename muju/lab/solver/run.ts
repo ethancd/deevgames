@@ -28,7 +28,7 @@ const data = { modelVersion: 2, variant, turnFrontiers, catalogueHash: createHas
   assumptions: ['Open shortest-path distances, no traffic or enemy moves.',
     `Strike grid: ${catalogue.length} targets, all 18 open-board distances, action budgets 1/2/3; cells are not matchup probabilities.`,
     'Kill frontiers: at most four distinct bodies in independent approach lanes, six shared actions; no tech gates.',
-    'Mining: passive collection on one finite cell of 4/8/10 for up to six turns; no protection or other miners.',
+    'Mining: passive collection on one finite cell of 4/8/16 for up to six turns; no protection or other miners.',
     'Roles: least-cost SINGLE qualifying piece in declared strike/mining/occupation tasks; neither army optimality nor frequency.',
     'Access: maintained starting F1/W1/P1 and external income paid at turn end, upkeep before next placement; earliest single-line exemplar, not expected match timing.'],
   checks: { distinctStatProfiles: new Set(catalogue.map(d => JSON.stringify([catalogue.map(t => [getAttackModifier(d.element, t.element), getAttackModifier(t.element, d.element)]), d.attack, d.defense, d.speed, d.mining, d.cost]))).size,
@@ -55,7 +55,7 @@ lines.push('', '## Marginal stat values (one extra point, holding opponents fixe
   '|---|---:|---:|---:|---|---:|');
 for (const d of rows) {
   const c = d.value.changes, defense = c.defense.defenseKillCost[0];
-  lines.push(`| ${d.id} | ${c.attack.killCells}/${d.value.base.cells} | ${c.speed.killCells}/${d.value.base.cells} / ${c.speed.strikeActionsSaved.toFixed(2)} | ${c.mining.incomeAt6.ordinary} / ${c.mining.incomeAt6.shelf} / ${c.mining.incomeAt6.rich} | ${defense.before ?? 'unbreakable'} → ${defense.after ?? 'unbreakable'} | ${d.value.attackSpeedSynergy.extraKillCellsBeyondAdditive} |`);
+  lines.push(`| ${d.id} | ${c.attack.killCells}/${d.value.base.cells} | ${c.speed.killCells}/${d.value.base.cells} / ${(c.speed.strikeActionsSaved?.toFixed(2) ?? 'unreachable before')} | ${c.mining.incomeAt6.ordinary} / ${c.mining.incomeAt6.shelf} / ${c.mining.incomeAt6.rich} | ${defense.before ?? 'unbreakable'} → ${defense.after ?? 'unbreakable'} | ${d.value.attackSpeedSynergy.extraKillCellsBeyondAdditive} |`);
 }
 lines.push('', '## Earliest financed exemplar (own turns)', '',
   'Income is external crystals per turn, paid AFTER placement/promotion. Starting units are free. No enemy or travel; tier rent is modeled here. Promotion permits immediate action; freshly placed pieces cannot promote again that turn.', '',

@@ -1,0 +1,79 @@
+{
+  "provider": "openai",
+  "hash": "0577e8fbe9ed71bec5ce74821934eae49e38e0d3a0679da35735bc173aaff4e3",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Radi is one shot by Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachakuna, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health RAH-dee is one shot by Hee, HOH-noh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-chah-KOO-nah, MAH-zahsk and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "duration": 23.85,
+  "bytes": 1144844,
+  "createdAt": "2026-09-13T10:38:47.908Z",
+  "captions": [
+    {
+      "text": "Now the red side.",
+      "start": 0,
+      "end": 56
+    },
+    {
+      "text": "A full health Radi is one shot by Hi, Hono, Kagari, Radi,",
+      "start": 56,
+      "end": 239
+    },
+    {
+      "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+      "start": 239,
+      "end": 485
+    },
+    {
+      "text": "Sachakuna, Mazask and Tanka.",
+      "start": 485,
+      "end": 606
+    },
+    {
+      "text": "Every unlit attacker needs help or earlier damage.",
+      "start": 606,
+      "end": 716
+    }
+  ],
+  "wordFrames": [
+    0,
+    10,
+    17,
+    23,
+    56,
+    58,
+    66,
+    76,
+    89,
+    95,
+    104,
+    114,
+    133,
+    154,
+    178,
+    210,
+    239,
+    272,
+    316,
+    340,
+    368,
+    401,
+    417,
+    446,
+    485,
+    529,
+    559,
+    563,
+    606,
+    614,
+    626,
+    640,
+    654,
+    665,
+    683,
+    694
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "c4cd475d2965721fb2a52a8ffb05aeb141ec214b5c3a50538d3b18ec4a676ace"
+}

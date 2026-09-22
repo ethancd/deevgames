@@ -1,5 +1,6 @@
 import React from 'react'
 import ActionPill, {ActionPillProps} from "./action";
+import {activateOnKey, actionCost} from './touchControls'
 
 function ActivitiesList ({ activities, actionDictionary }: ActivityListProps): JSX.Element {
   return (
@@ -21,6 +22,7 @@ function Activity({id, actionType, imageUrl, actionPill }: ActivityProps): JSX.E
   return (
       <li
       className={`local-activity ${actionType.toLowerCase()} ${actionPill == null ? 'inactive' : ''}`}
+      role="button" tabIndex={0} onKeyDown={activateOnKey} aria-label={`${actionType.toLowerCase()}, ${actionPill ? actionCost(actionPill) : 'unavailable'}`}
       key={actionType}
       data-entity-id={id}
       data-action-type={actionType}>

@@ -1,0 +1,46 @@
+{
+  "provider": "openai",
+  "hash": "df9c3ad1e139e41b9553d9d72102c6e4c09fed23a2ce8e44ca9d5b872d294cb4",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Muju can finish no full health unit. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the Moo-joo can finish no full health unit. Every unlit card survives that single hit.",
+  "duration": 7.2,
+  "bytes": 345644,
+  "createdAt": "2026-09-13T10:39:20.848Z",
+  "captions": [
+    {
+      "text": "With one attack, the Muju can finish no full health unit.",
+      "start": 0,
+      "end": 128
+    },
+    {
+      "text": "Every unlit card survives that single hit.",
+      "start": 128,
+      "end": 216
+    }
+  ],
+  "wordFrames": [
+    0,
+    6,
+    16,
+    43,
+    46,
+    55,
+    63,
+    71,
+    84,
+    93,
+    100,
+    128,
+    136,
+    147,
+    155,
+    169,
+    178,
+    188
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "0d8c763411c66910655d33962143630c40a038723bb2abbf66b363a768178a75"
+}

@@ -1,0 +1,2 @@
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R08/12/sentence-1.wav'
+file '/Users/ashkie/src/deevgames/muju/academy/archive/retakes/R08/12/sentence-2.wav'

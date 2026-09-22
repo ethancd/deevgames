@@ -1,0 +1,68 @@
+{
+  "provider": "openai",
+  "hash": "10da9f8e8e590b708ae26330249262ac36a8fde5920fe7132e3a06bdbc238dba",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Karanlık can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Muju, Sachita and Inyan. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the kah-rahn-luk can finish Hee, HOH-noh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, Moo-joo, sah-CHEE-tah and In-yahn. Every unlit card survives that single hit.",
+  "duration": 19.85,
+  "bytes": 952844,
+  "createdAt": "2026-09-13T10:39:19.889Z",
+  "captions": [
+    {
+      "text": "With one attack, the Karanlık can finish Hi, Hono, Kagari, Radi,",
+      "start": 0,
+      "end": 197
+    },
+    {
+      "text": "Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık,",
+      "start": 197,
+      "end": 428
+    },
+    {
+      "text": "Muju, Sachita and Inyan.",
+      "start": 428,
+      "end": 516
+    },
+    {
+      "text": "Every unlit card survives that single hit.",
+      "start": 516,
+      "end": 596
+    }
+  ],
+  "wordFrames": [
+    0,
+    5,
+    14,
+    44,
+    46,
+    70,
+    79,
+    90,
+    110,
+    143,
+    175,
+    197,
+    226,
+    269,
+    287,
+    315,
+    347,
+    366,
+    397,
+    428,
+    456,
+    484,
+    486,
+    516,
+    524,
+    535,
+    544,
+    556,
+    567,
+    578
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "7a47d6999ad7920c2e4df8cd265dbd0fa5063d98709817b704e62c4fa4a73d3d"
+}

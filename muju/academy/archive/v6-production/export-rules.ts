@@ -1,0 +1,43 @@
+import fs from 'node:fs';
+import assert from 'node:assert/strict';
+import {UNIT_DEFINITIONS as units} from '../src/game/units';
+import {calculateAttackPower, resolveCombat,canAttack} from '../src/game/combat';
+import {createEmptyBoard,createInitialGameState} from '../src/game/board';
+import {getMoveCost} from '../src/game/movement';
+import {getPromotionCost} from '../src/game/promotion';
+import {endTurn} from '../src/game/turn';
+import {UNEQUAL_ROUTES_MAP} from '../src/game/resourceMap';
+import type {Unit} from '../src/game/types';
+const root = new URL('./', import.meta.url);
+function unit(id:string,owner:'white'|'black',x:number):Unit {
+ return {id:owner,definitionId:id,owner,position:{x,y:0},damageTaken:0,canActThisTurn:true,hasAttacked:false,attackedThisTurn:[],lastAttackKilled:false} as Unit;
+}
+const matrix=units.map(a=>({id:a.id,targets:units.filter(b=>{
+ const attacker=unit(a.id,'white',0),defender=unit(b.id,'black',1);
+ const expected=calculateAttackPower(attacker,defender)>=b.defense;
+ const actual=resolveCombat({...createEmptyBoard(),units:[attacker,defender]},attacker.id,defender.position).eliminated;
+ assert.equal(actual,expected,`${a.id} → ${b.id}`);return actual;
+}).map(b=>b.id)}));
+const bonks=matrix.map(a=>({...a,threats:matrix.filter(b=>b.targets.includes(a.id)).map(b=>b.id)}));
+fs.writeFileSync(new URL('catalog.json',root),JSON.stringify(units,null,2));
+fs.writeFileSync(new URL('bonk-matrix.json',root),JSON.stringify(bonks,null,2));
+fs.writeFileSync(new URL('map.json',root),JSON.stringify(UNEQUAL_ROUTES_MAP));
+const demonstrations:string[]=[];
+const board=createEmptyBoard();
+assert.equal(getMoveCost({x:2,y:2},{x:2,y:5},2,board),2);demonstrations.push('R02: C3 to C6 at Speed 2 costs 2 of 4 actions.');
+assert.equal(getMoveCost({x:3,y:6},{x:3,y:3},1,board)!+1,4);
+assert.equal(getMoveCost({x:3,y:6},{x:3,y:2},1,board)!+1,5);
+demonstrations.push('R08: D7 to D4 and attack fits 4; D7 to D3 and attack requires 5.');
+for(const u of units)assert.equal(getPromotionCost(unit(u.id,'white',0)),u.tier===1?4:u.tier===2?8:null);
+demonstrations.push('R06: all six elements use promotion costs 4 and 8, with no T4.');
+const hono=unit('fire_2','white',1),left={...unit('plant_1','black',0),id:'left'},right={...unit('plant_1','black',2),id:'right'};
+let b=resolveCombat({...board,units:[hono,left,right]},'white',left.position).board;
+assert.equal(b.units.length,2);assert.equal(canAttack(b.units.find(u=>u.id==='white')!),true);
+b=resolveCombat(b,'white',right.position).board;assert.equal(b.units.length,1);assert.equal(canAttack(b.units[0]),false);
+demonstrations.push('R03: Hono kills two DEF-3 Muju, then has no third attack.');
+const initial=createInitialGameState();assert.equal(initial.turn.actionsRemaining,4);
+const ending=endTurn({...initial,phase:'playing',inactivityPlies:9,progressThisTurn:false});
+assert.equal(ending.victoryReason,'inactivity');assert.equal(ending.winner,null);assert.ok(ending.players.white.resources>0);
+demonstrations.push('R09: positive mining income on the tenth quiet turn still draws.');
+fs.writeFileSync(new URL('rules-verification.json',root),JSON.stringify({rules:'v2.7',fullHealth:true,adjacent:true,matchupChecks:324,demonstrations,passed:true,mapTotal:UNEQUAL_ROUTES_MAP.reduce((a,b)=>a+b,0)},null,2));
+console.log('324 ordered matchups and revised movement, Cleave, promotion and draw demonstrations passed.');

@@ -1,0 +1,54 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier two: the Sachita. Attack one, defense three, speed one, and Mining four. Look at the green side first.",
+  "speechText": "Tier two: the sah-chee-tah. Attack one, defense three, speed one, and Mining four. Look at the green side first.",
+  "hash": "25e865c9b9dd269164ab28d54c9aa31ba93f9bd948005d5c69006412f56a44c6",
+  "duration": 10.3,
+  "bytes": 494478,
+  "retakeMethod": "sentence-by-sentence-v1",
+  "retakeReason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences.",
+  "createdAt": "2026-09-13T10:51:12.530Z",
+  "captions": [
+    {
+      "text": "Tier two: the Sachita.",
+      "start": 0,
+      "end": 98
+    },
+    {
+      "text": "Attack one, defense three, speed one, and Mining four.",
+      "start": 98,
+      "end": 227
+    },
+    {
+      "text": "Look at the green side first.",
+      "start": 227,
+      "end": 309
+    }
+  ],
+  "wordFrames": [
+    0,
+    7,
+    40,
+    43,
+    98,
+    98,
+    123,
+    128,
+    157,
+    163,
+    188,
+    191,
+    201,
+    227,
+    232,
+    239,
+    244,
+    251,
+    263
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "25e865c9b9dd269164ab28d54c9aa31ba93f9bd948005d5c69006412f56a44c6"
+}

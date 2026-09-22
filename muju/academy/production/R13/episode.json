@@ -1,0 +1,508 @@
+{
+  "id": "R13",
+  "title": "Water: Captain Bucket",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "BUBBLES",
+      "cue": "proud announcement",
+      "text": "The bucket has applied for the position of warship.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a bucket with a paper sail, parked on the candidate chair. Two more chairs behind it, lettered HIRED and NOT HIRED, both empty. Sign above: WATER DEPARTMENT. Smaller sign under it: ELEMENTS CHANGE ATTACK. NEVER DEFENSE. Game board unchanged.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Speed one. It has applied for a very slow war.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "BUBBLES",
+      "cue": "proud announcement",
+      "text": "The bucket has a sail, a captain, and the best shield in the department. We are ready for anything.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "COACH",
+      "cue": "recap, brisk",
+      "text": "Last time the Hi on C three finished a Yan. What did Fire add?",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: THE THREE QUESTIONS. Which stat helps this job? How many actions does it take? What will this piece owe next turn?]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]",
+        "[card: C three, and the Hi who lives there]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Plus one against Metal. Today the Deep End puts out the Sparks. Water takes one away.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "06",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "One job. Two pieces want it. First up is the Sjor.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: THE JOB. Survive two Hi for one whole turn.]"
+      ]
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Hi has attack two. Water beats Fire, so take one away.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: BOARD ONE. Two fresh Hi standing beside a fresh Sjor. Every other card dim.]"
+      ]
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Each Hi does one damage. A fresh Sjor has defense two.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: each Hi, one damage] [card: the Sjor, defense two]"
+      ]
+    },
+    {
+      "id": "09",
+      "speaker": "BUBBLES",
+      "cue": "gently, slower",
+      "text": "One, then one. Not hired. The shield was one short.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk] [sfx: bonk] [sfx: piece removed] [board: the Sjor tips into the tray. The bucket moves to the NOT HIRED chair.]"
+      ]
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "New piece. New turn. Two fresh Hi again. A fresh Straumr has defense three.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: BOARD TWO. A fresh position. Two fresh Hi, neither used yet. A fresh Straumr where the Sjor stood.] [card: the Straumr, defense three]"
+      ]
+    },
+    {
+      "id": "11",
+      "speaker": "BUBBLES",
+      "cue": "question, open",
+      "text": "The same two Hi. Does my Straumr survive the turn?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Remember the Bonk Lab dare? This is it. Count it, or watch the board with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "The same two Hi. Does my Straumr survive the turn?"
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "The Straumr is standing. One defense left.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk, dull] [sfx: bonk, dull] [board: the damage marker climbs to two. The Straumr is still standing. Both Hi grey out.]"
+      ]
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "gently, slower",
+      "text": "Neither Hi finished it. Each of them is done attacking for the turn.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "BUBBLES",
+      "cue": "proud announcement",
+      "text": "The shield held. Two attackers were not enough. That is a crewing problem.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "16",
+      "speaker": "BUBBLES",
+      "cue": "",
+      "text": "Two buckets is not the whole navy.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: two Hi against one Straumr. Not checked: a third attacker, and Black's reply.]"
+      ]
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "curious, thinking aloud",
+      "text": "I do not know what Black brings to this square next. We have not counted that.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Big shield. Slow boat.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: THE HELMET'S FILE. Bucket safety sticker: awarded. Defense: unchanged.]"
+      ]
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Defense three, and one square per action.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "20",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "Turned down for one job. Hired for another. I am putting that on a sticker.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Sjor · the Straumr · the Aegirinn.]"
+      ]
+    },
+    {
+      "id": "21",
+      "speaker": "BUBBLES",
+      "cue": "counting, even beats",
+      "text": "This is the Sjor. Shield of two. Takes two crystals. That is the Sjor.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "At your own turn end it takes from the square it is standing on.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: a Sjor standing on a square holding four crystals] [card: this square, four crystals] [card: INCOME. At your own turn end. From the square you are standing on. Never the square you left.]"
+      ]
+    },
+    {
+      "id": "23",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Mining two. Four crystals here. Took two. Two left.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [sfx: crystal clink] [board: four becomes two]"
+      ]
+    },
+    {
+      "id": "24",
+      "speaker": "BUBBLES",
+      "cue": "counting, even beats",
+      "text": "This is the Aegirinn. Shield of four. Takes three. That is the Aegirinn.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Next turn the Sjor owes nothing. The Straumr owes one. The Aegirinn owes two.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Big shield. Slow boat.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: WATER WORK CARD. Defense two, three, four · speed one, one, two · Mining two, two, three · toll nothing, one, two. Added to the deck.]"
+      ]
+    },
+    {
+      "id": "27",
+      "speaker": "BUBBLES",
+      "cue": "",
+      "text": "The captain is aware of the boat situation.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[board: the paper sail slumps sideways into the bucket]"
+      ]
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for water. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      }
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Sjor. Attack two, defense two, speed one, and Mining two. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Sjor can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_1",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Yan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_1",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_1",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Straumr. Attack two, defense three, speed one, and Mining two. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Straumr can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_2",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Straumr is one shot by Kagari, Aegirinn, Gölge, Karanlık, Sachakuna and Tanka. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_2",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_2",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Aegirinn. Attack three, defense four, speed two, and Mining three. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Aegirinn can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_3",
+        "focus": "out"
+      }
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Aegirinn is one shot by Karanlık. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_3",
+        "focus": "in"
+      }
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "water_3",
+        "focus": "both"
+      }
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "A dare. Give the bucket one job for one turn. Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "29",
+      "speaker": "BUBBLES",
+      "cue": "",
+      "text": "Two was not enough. I am recruiting for life.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "version": 8,
+  "rules": "v2.9",
+  "updatedLabel": "Video version 8 · Last updated Sep 18 2026 CDT",
+  "question": "The same two Hi. Does my Straumr survive the turn?",
+  "soundtrack": {
+    "id": "straumr-hardanger",
+    "title": "Straumr / Under the Current",
+    "source": "muju/music-auditions/full-versions/straumr-hardanger-full-v2-blended.mp3",
+    "sha256": "878d93e0b9474694a566ae3110225c1e78a565ca672e8fdeb074d67af24e5f0b"
+  },
+  "speechProvider": "openai"
+}

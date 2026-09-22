@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { RESOURCE_MAP_NAME, UNEQUAL_ROUTES_MAP } from '../game/resourceMap';
+import { MAX_RESOURCE_RESERVE, RESOURCE_MAP_NAME, UNEQUAL_ROUTES_MAP } from '../game/resourceMap';
 import { CellReserve } from './CellReserve';
 import './MapPainter.css';
 
@@ -12,7 +12,7 @@ function loadDraft(): number[] {
   try {
     const saved: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
     if (Array.isArray(saved) && saved.length === SIZE * SIZE &&
-      saved.every(value => Number.isInteger(value) && value >= 0 && value <= 10)) return saved;
+      saved.every(value => Number.isInteger(value) && value >= 0 && value <= MAX_RESOURCE_RESERVE)) return saved;
   } catch { /* Start with the default map if storage is unavailable or the draft is invalid. */ }
   return [...UNEQUAL_ROUTES_MAP];
 }
@@ -58,7 +58,7 @@ export function MapPainter() {
     });
   };
   const paint = (index: number, amount: number) => change(current => {
-    const next = Math.max(0, Math.min(10, current[index] + amount));
+    const next = Math.max(0, Math.min(MAX_RESOURCE_RESERVE, current[index] + amount));
     const opposite = SIZE * SIZE - 1 - index;
     return current.map((value, i) => i === index || (lockSymmetry && i === opposite) ? next : value);
   });
@@ -129,7 +129,7 @@ export function MapPainter() {
                   ref={node => { cells.current[index] = node; }}
                   tabIndex={activeCell === index ? 0 : -1}
                   aria-label={`${coordinate}, ${value} crystal${value === 1 ? '' : 's'}${home ? `, ${home} home` : ''}`}
-                  title={`${coordinate}: ${value} / 10 crystals`}
+                  title={`${coordinate}: ${value} / ${MAX_RESOURCE_RESERVE} crystals`}
                   onFocus={() => setActiveCell(index)}
                   onClick={event => paint(index, paintAmount(event))}
                   onContextMenu={event => { event.preventDefault(); paint(index, -paintAmount(event)); }}
@@ -158,7 +158,7 @@ export function MapPainter() {
       <div className="painter-map-actions">
         <button type="button" onClick={() => change(() => [...UNEQUAL_ROUTES_MAP])}>Reset to default</button>
         <button type="button" onClick={() => change(() => Array(SIZE * SIZE).fill(0))}>Clear map</button>
-        <span>0–10 per square</span>
+        <span>0–{MAX_RESOURCE_RESERVE} per square</span>
       </div>
     </section>
 

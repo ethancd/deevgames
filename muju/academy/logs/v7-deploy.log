@@ -1,0 +1,223 @@
+deploy	Set up job	﻿2026-09-13T13:02:08.4818119Z Current runner version: '2.337.0'
+deploy	Set up job	2026-09-13T13:02:08.4840632Z ##[group]Runner Image Provisioner
+deploy	Set up job	2026-09-13T13:02:08.4841519Z Hosted Compute Agent
+deploy	Set up job	2026-09-13T13:02:08.4842086Z Version: 20260828.587
+deploy	Set up job	2026-09-13T13:02:08.4842639Z Commit: abac92662cab4cc7352de4f9f9d2e2419aad9c29
+deploy	Set up job	2026-09-13T13:02:08.4843259Z Build Date: 2026-08-28T16:44:25Z
+deploy	Set up job	2026-09-13T13:02:08.4843859Z Worker ID: {8e70ecd5-97ed-45d3-8131-176152fd8fb9}
+deploy	Set up job	2026-09-13T13:02:08.4844504Z Azure Region: centralus
+deploy	Set up job	2026-09-13T13:02:08.4844991Z ##[endgroup]
+deploy	Set up job	2026-09-13T13:02:08.4846177Z ##[group]Operating System
+deploy	Set up job	2026-09-13T13:02:08.4846878Z Ubuntu
+deploy	Set up job	2026-09-13T13:02:08.4847364Z 24.04.5
+deploy	Set up job	2026-09-13T13:02:08.4847851Z LTS
+deploy	Set up job	2026-09-13T13:02:08.4848287Z ##[endgroup]
+deploy	Set up job	2026-09-13T13:02:08.4848778Z ##[group]Runner Image
+deploy	Set up job	2026-09-13T13:02:08.4849295Z Image: ubuntu-24.04
+deploy	Set up job	2026-09-13T13:02:08.4849812Z Version: 20260907.300.1
+deploy	Set up job	2026-09-13T13:02:08.4850726Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20260907.300/images/ubuntu/Ubuntu2404-Readme.md
+deploy	Set up job	2026-09-13T13:02:08.4852477Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20260907.300
+deploy	Set up job	2026-09-13T13:02:08.4853299Z ##[endgroup]
+deploy	Set up job	2026-09-13T13:02:08.4854369Z ##[group]GITHUB_TOKEN Permissions
+deploy	Set up job	2026-09-13T13:02:08.4856353Z Contents: read
+deploy	Set up job	2026-09-13T13:02:08.4857040Z Metadata: read
+deploy	Set up job	2026-09-13T13:02:08.4857550Z Packages: read
+deploy	Set up job	2026-09-13T13:02:08.4858010Z ##[endgroup]
+deploy	Set up job	2026-09-13T13:02:08.4859777Z Secret source: Actions
+deploy	Set up job	2026-09-13T13:02:08.4860539Z Cache mode: write
+deploy	Set up job	2026-09-13T13:02:08.4861127Z Prepare workflow directory
+deploy	Set up job	2026-09-13T13:02:08.5135854Z Prepare all required actions
+deploy	Set up job	2026-09-13T13:02:08.5177552Z Getting action download info
+deploy	Set up job	2026-09-13T13:02:08.8728536Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+deploy	Set up job	2026-09-13T13:02:08.9769050Z Download action repository 'cloudflare/wrangler-action@v3' (SHA:9acf94ace14e7dc412b076f2c5c20b8ce93c79cd)
+deploy	Set up job	2026-09-13T13:02:09.3252316Z Complete job name: deploy
+deploy	Run actions/checkout@v4	﻿2026-09-13T13:02:09.3820883Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3828489Z ##[group]Run actions/checkout@v4
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3829214Z with:
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3829708Z   repository: ethancd/ashkie-pages
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3833309Z   token: ***
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3833779Z   ssh-strict: true
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3834290Z   ssh-user: git
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3834764Z   persist-credentials: true
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3835236Z   clean: true
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3835715Z   sparse-checkout-cone-mode: true
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3836272Z   fetch-depth: 1
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3836982Z   fetch-tags: false
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3837584Z   show-progress: true
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3838023Z   lfs: false
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3838480Z   submodules: false
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3839123Z   set-safe-directory: true
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3839637Z   allow-unsafe-pr-checkout: false
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.3840338Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.4938453Z Syncing repository: ethancd/ashkie-pages
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.4942256Z ##[group]Getting Git version info
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.4957465Z Working directory is '/home/runner/work/ashkie-pages/ashkie-pages'
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6111679Z [command]/usr/bin/git version
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6112607Z git version 2.55.0
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6115038Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6121411Z Temporarily overriding HOME='/home/runner/work/_temp/4053014f-f700-414b-94db-c89b4a315a52' before making global git config changes
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6123139Z Adding repository directory to the temporary git global config as a safe directory
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6124647Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ashkie-pages/ashkie-pages
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6126999Z Deleting the contents of '/home/runner/work/ashkie-pages/ashkie-pages'
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6128574Z ##[group]Initializing the repository
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6129461Z [command]/usr/bin/git init /home/runner/work/ashkie-pages/ashkie-pages
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6130557Z hint: Using 'master' as the name for the initial branch. This default branch name
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6131725Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6132708Z hint: to use in all of your new repositories, which will suppress this warning,
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6133663Z hint: call:
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6134268Z hint:
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6134936Z hint: 	git config --global init.defaultBranch <name>
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6135649Z hint:
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6136371Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6138127Z hint: 'development'. The just-created branch can be renamed via this command:
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6139117Z hint:
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6139646Z hint: 	git branch -m <name>
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6140273Z hint:
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6141159Z hint: Disable this message with "git config set advice.defaultBranchName false"
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6142549Z Initialized empty Git repository in /home/runner/work/ashkie-pages/ashkie-pages/.git/
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6144844Z [command]/usr/bin/git remote add origin https://github.com/ethancd/ashkie-pages
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6170981Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6172434Z ##[group]Disabling automatic garbage collection
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6173382Z [command]/usr/bin/git config --local gc.auto 0
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6175529Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6176812Z ##[group]Setting up auth
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6177828Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6180580Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6219538Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6223338Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6429596Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6460360Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6619636Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6647271Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6649250Z ##[group]Fetching the repository
+deploy	Run actions/checkout@v4	2026-09-13T13:02:09.6656141Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +50d790a3cbb819128830ad4ff70bb2480daec7fc:refs/remotes/origin/main
+deploy	Run actions/checkout@v4	2026-09-13T13:02:25.5253166Z From https://github.com/ethancd/ashkie-pages
+deploy	Run actions/checkout@v4	2026-09-13T13:02:25.5258182Z  * [new ref]         50d790a3cbb819128830ad4ff70bb2480daec7fc -> origin/main
+deploy	Run actions/checkout@v4	2026-09-13T13:02:25.5262021Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-09-13T13:02:25.5263236Z ##[group]Determining the checkout info
+deploy	Run actions/checkout@v4	2026-09-13T13:02:25.5264608Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-09-13T13:02:25.5266985Z [command]/usr/bin/git sparse-checkout disable
+deploy	Run actions/checkout@v4	2026-09-13T13:02:25.5312201Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+deploy	Run actions/checkout@v4	2026-09-13T13:02:25.5340700Z ##[group]Checking out the ref
+deploy	Run actions/checkout@v4	2026-09-13T13:02:25.5343343Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.6052415Z Updating files:  71% (7737/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.6242247Z Updating files:  72% (7834/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.6451829Z Updating files:  73% (7943/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.6751406Z Updating files:  74% (8052/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.6825342Z Updating files:  75% (8160/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.7271560Z Updating files:  76% (8269/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.7838939Z Updating files:  77% (8378/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.7980664Z Updating files:  78% (8487/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.8132842Z Updating files:  79% (8596/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.8319379Z Updating files:  80% (8704/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.8377332Z Updating files:  81% (8813/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.8447047Z Updating files:  82% (8922/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.8514497Z Updating files:  83% (9031/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.8581007Z Updating files:  84% (9140/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.8765979Z Updating files:  85% (9248/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.9127463Z Updating files:  86% (9357/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.9454834Z Updating files:  87% (9466/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.9728677Z Updating files:  88% (9575/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.9883472Z Updating files:  89% (9684/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:26.9974329Z Updating files:  90% (9792/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:27.0121056Z Updating files:  91% (9901/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:27.0253261Z Updating files:  92% (10010/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:27.0448480Z Updating files:  93% (10119/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:27.0619691Z Updating files:  94% (10228/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:27.0891008Z Updating files:  95% (10336/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:27.1073159Z Updating files:  96% (10445/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:27.6044747Z Updating files:  97% (10554/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:28.2803380Z Updating files:  97% (10587/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:28.2950784Z Updating files:  98% (10663/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:28.3088879Z Updating files:  99% (10772/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:28.3107050Z Updating files: 100% (10880/10880)
+deploy	Run actions/checkout@v4	2026-09-13T13:02:28.3108073Z Updating files: 100% (10880/10880), done.
+deploy	Run actions/checkout@v4	2026-09-13T13:02:28.3407779Z Switched to a new branch 'main'
+deploy	Run actions/checkout@v4	2026-09-13T13:02:28.3447593Z branch 'main' set up to track 'origin/main'.
+deploy	Run actions/checkout@v4	2026-09-13T13:02:28.3501549Z ##[endgroup]
+deploy	Run actions/checkout@v4	2026-09-13T13:02:28.3558894Z [command]/usr/bin/git log -1 --format=%H
+deploy	Run actions/checkout@v4	2026-09-13T13:02:28.3577629Z 50d790a3cbb819128830ad4ff70bb2480daec7fc
+deploy	Check offline manifest is current	﻿2026-09-13T13:02:28.3787835Z ##[group]Run python3 tools/build_offline_manifest.py --check
+deploy	Check offline manifest is current	2026-09-13T13:02:28.3788436Z [36;1mpython3 tools/build_offline_manifest.py --check[0m
+deploy	Check offline manifest is current	2026-09-13T13:02:28.3815004Z shell: /usr/bin/bash -e {0}
+deploy	Check offline manifest is current	2026-09-13T13:02:28.3815407Z ##[endgroup]
+deploy	Check offline manifest is current	2026-09-13T13:02:29.2938632Z offline-manifest.json is current: 7666 URLs, 436.4 MB
+deploy	Stage site files (exclude tooling)	﻿2026-09-13T13:02:29.3024869Z ##[group]Run mkdir -p /tmp/site
+deploy	Stage site files (exclude tooling)	2026-09-13T13:02:29.3025306Z [36;1mmkdir -p /tmp/site[0m
+deploy	Stage site files (exclude tooling)	2026-09-13T13:02:29.3025762Z [36;1mrsync -a --exclude-from=.deployignore ./ /tmp/site/[0m
+deploy	Stage site files (exclude tooling)	2026-09-13T13:02:29.3049605Z shell: /usr/bin/bash -e {0}
+deploy	Stage site files (exclude tooling)	2026-09-13T13:02:29.3049956Z ##[endgroup]
+deploy	Run cloudflare/wrangler-action@v3	﻿2026-09-13T13:02:36.2769621Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:36.2771009Z ##[group]Run cloudflare/wrangler-action@v3
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:36.2771352Z with:
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:36.2771978Z   apiToken: ***
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:36.2772335Z   accountId: ***
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:36.2772732Z   command: pages deploy /tmp/site --project-name ashkie-pages --branch "main"
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:36.2773142Z   quiet: false
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:36.2773420Z ##[endgroup]
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:36.3571351Z ##[group]🔍 Checking for existing Wrangler installation
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:36.3638339Z [command]/usr/local/bin/npx --no-install wrangler --version
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:40.9417205Z npm error npx canceled due to missing packages and no YES option: ["wrangler@4.131.1"]
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:40.9418948Z npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2026-09-13T13_02_37_590Z-debug-0.log
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:40.9646118Z ⚠️ Wrangler not found or version is incompatible. Installing...
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:40.9668133Z ##[endgroup]
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:40.9677640Z ##[group]📥 Installing Wrangler
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:40.9678189Z [command]/usr/local/bin/npm i wrangler@3.90.0
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:47.3344229Z npm warn deprecated rollup-plugin-inject@3.0.2: This package has been deprecated and is no longer maintained. Please use @rollup/plugin-inject.
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:47.4127513Z npm warn deprecated sourcemap-codec@1.4.8: Please use @jridgewell/sourcemap-codec instead
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.1278199Z 
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.1279301Z added 70 packages in 10s
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.1279893Z 
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.1280247Z 11 packages are looking for funding
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.1281003Z   run `npm fund` for details
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.1406167Z ✅ Wrangler installed
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.1408952Z ##[endgroup]
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.1421620Z [command]/usr/local/bin/npx --no-install wrangler --version
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.8082744Z 3.90.0
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.8378675Z ##[group]🚀 Running Wrangler Commands
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:51.8389888Z [command]/usr/local/bin/npx wrangler pages deploy /tmp/site --project-name ashkie-pages --branch main
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:53.0690259Z [33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mWarning: Your working directory is a git repo and has uncommitted changes[0m
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:53.0691465Z 
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:53.0691853Z   To silence this warning, pass in --commit-dirty=true
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:53.0692276Z 
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:53.0692367Z 
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:02:56.8789904Z Uploading... (7642/7694)
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:03.3817953Z Uploading... (7650/7694)
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:03.7803805Z Uploading... (7658/7694)
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:05.3813164Z Uploading... (7666/7694)
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:08.1948793Z Uploading... (7675/7694)
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:09.6821107Z Uploading... (7684/7694)
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:10.6491344Z Uploading... (7694/7694)
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:10.6492732Z ✨ Success! Uploaded 52 files (7642 already uploaded) (14.29 sec)
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:10.6493405Z 
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:11.3664830Z ✨ Uploading _headers
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:11.3665965Z ✨ Uploading _redirects
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:12.3063457Z 🌎 Deploying...
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:13.7868762Z ✨ Deployment complete! Take a peek over at https://940c3823.ashkie-pages.pages.dev
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:14.0240498Z ##[endgroup]
+deploy	Run cloudflare/wrangler-action@v3	2026-09-13T13:03:14.0241735Z 🏁 Wrangler Action completed
+deploy	Show deployment URL	﻿2026-09-13T13:03:14.0343395Z ##[group]Run {
+deploy	Show deployment URL	2026-09-13T13:03:14.0343751Z [36;1m{[0m
+deploy	Show deployment URL	2026-09-13T13:03:14.0344017Z [36;1m  echo "Deployed \`main\`:"[0m
+deploy	Show deployment URL	2026-09-13T13:03:14.0344382Z [36;1m  echo "- https://940c3823.ashkie-pages.pages.dev"[0m
+deploy	Show deployment URL	2026-09-13T13:03:14.0344811Z [36;1m  echo "-  (stable branch alias)"[0m
+deploy	Show deployment URL	2026-09-13T13:03:14.0345129Z [36;1m} >> "$GITHUB_STEP_SUMMARY"[0m
+deploy	Show deployment URL	2026-09-13T13:03:14.0366395Z shell: /usr/bin/bash -e {0}
+deploy	Show deployment URL	2026-09-13T13:03:14.0366942Z ##[endgroup]
+deploy	Post Run actions/checkout@v4	﻿2026-09-13T13:03:14.0519535Z Node 20 is being deprecated. This workflow is running with Node 24 by default. If you need to temporarily use Node 20, you can set the ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true environment variable. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.0520580Z Post job cleanup.
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1297998Z [command]/usr/bin/git version
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1367845Z git version 2.55.0
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1457587Z Temporarily overriding HOME='/home/runner/work/_temp/077d5735-52cc-4711-a068-f01f780262da' before making global git config changes
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1458904Z Adding repository directory to the temporary git global config as a safe directory
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1460124Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/ashkie-pages/ashkie-pages
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1462055Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1518142Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1838574Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1867617Z http.https://github.com/.extraheader
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1894343Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.1935280Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.2236009Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+deploy	Post Run actions/checkout@v4	2026-09-13T13:03:14.2297988Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+deploy	Complete job	﻿2026-09-13T13:03:14.2888003Z Cleaning up orphan processes
+deploy	Complete job	2026-09-13T13:03:14.3092825Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, cloudflare/wrangler-action@v3. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

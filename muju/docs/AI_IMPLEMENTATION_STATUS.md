@@ -1,5 +1,12 @@
 # Current branch status — v2.6, 2026-09-12
 
+Current Metal v2.9 verification (2026-09-18): Speed 0 is supported in movement,
+home-defense bounds, JS/WASM tactics and positional evaluation. Yan can strike
+adjacent targets; it cannot approach distant targets until promoted. Fresh
+`lab/results/ai-wasm-tactics-1789744884022` covers 28 fixtures / 84 decisions,
+with 42 of 42 expected rescues cleared; this is correctness evidence, not a
+new playing-strength claim.
+
 The combined simplification branch uses the **real public GameState** in MCTS
 and worker protocol **2**. Observation/event masking, belief particles, queue
 reconciliation and re-determinization have been deleted. Both banks are public.

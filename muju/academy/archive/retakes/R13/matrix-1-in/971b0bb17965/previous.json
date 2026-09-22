@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "6a5fba7330e765076a070da84415bdc4774b199775460c96e38f16a220b48280",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Yan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health Shore is one shot by HOH-noh, kah-GAH-ree, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-CHEE-tah, sah-chah-KOO-nah, Yahn, MAH-zahsk and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "duration": 21.9,
+  "bytes": 1051244,
+  "createdAt": "2026-09-18T17:14:51.551Z"
+}

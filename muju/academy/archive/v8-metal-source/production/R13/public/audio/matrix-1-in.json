@@ -1,0 +1,73 @@
+{
+  "provider": "openai",
+  "hash": "b5ce17915d8343449457c9a03538cb0f8ac4ea352269d9d3ea2a37385df6d4b4",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health Shore is one shot by HOH-noh, kah-GAH-ree, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-CHEE-tah, sah-chah-KOO-nah, In-yahn, MAH-zahsk and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "duration": 24.4,
+  "bytes": 1171244,
+  "createdAt": "2026-09-13T10:39:07.296Z",
+  "captions": [
+    {
+      "text": "Now the red side.",
+      "start": 0,
+      "end": 50
+    },
+    {
+      "text": "A full health Sjor is one shot by Hono, Kagari, Kimubunga, Sjor,",
+      "start": 50,
+      "end": 273
+    },
+    {
+      "text": "Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan,",
+      "start": 273,
+      "end": 551
+    },
+    {
+      "text": "Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "start": 551,
+      "end": 732
+    }
+  ],
+  "wordFrames": [
+    0,
+    7,
+    11,
+    16,
+    50,
+    53,
+    62,
+    73,
+    84,
+    100,
+    109,
+    118,
+    126,
+    172,
+    204,
+    251,
+    273,
+    302,
+    336,
+    356,
+    392,
+    434,
+    472,
+    518,
+    551,
+    578,
+    581,
+    619,
+    629,
+    643,
+    658,
+    673,
+    683,
+    698,
+    709
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "ccc2c648709a625eadb1643c91f7266984e9d0f71dfd2701da567ebac661e900"
+}

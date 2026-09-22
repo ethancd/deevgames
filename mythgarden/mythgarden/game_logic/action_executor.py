@@ -366,14 +366,17 @@ class ActionExecutor:
             items_at_rarity = location.item_pool.filter(rarity=rarity)
 
             # find the item types among items at this rarity, then pick a random type to filter on
-            available_types = list(items_at_rarity.values_list("item_type", flat=True).distinct())
+            available_types = sorted(set(items_at_rarity.values_list("item_type", flat=True)))
+            if not available_types:
+                rarities.remove(rarity)
+                continue
 
             item_type = random.choice(available_types)
 
             choices = items_at_rarity.filter(item_type=item_type)
 
             if choices.count() > 0:
-                item = choices.order_by('?').first()
+                item = random.choice(list(choices.order_by('pk')))
                 return item
             else:
                 # 'No items found in location with that rarity, so we try other rarities.

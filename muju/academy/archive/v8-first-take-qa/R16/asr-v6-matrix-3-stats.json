@@ -1,0 +1,129 @@
+{
+  "text": "Tier 3. The Tonka. Attack 2, Defense 5, Speed 2, and My Name 5. Look at the green side first.",
+  "words": [
+    {
+      "word": "Tier",
+      "start": 0.0,
+      "end": 0.5,
+      "probability": 0.6276547312736511
+    },
+    {
+      "word": "3.",
+      "start": 0.5,
+      "end": 1.0,
+      "probability": 0.8160018920898438
+    },
+    {
+      "word": "The",
+      "start": 1.5,
+      "end": 1.56,
+      "probability": 0.9608690738677979
+    },
+    {
+      "word": "Tonka.",
+      "start": 1.56,
+      "end": 2.16,
+      "probability": 0.8321250975131989
+    },
+    {
+      "word": "Attack",
+      "start": 3.02,
+      "end": 3.06,
+      "probability": 0.9286951422691345
+    },
+    {
+      "word": "2,",
+      "start": 3.06,
+      "end": 3.46,
+      "probability": 0.9293514490127563
+    },
+    {
+      "word": "Defense",
+      "start": 4.0,
+      "end": 4.04,
+      "probability": 0.8856148719787598
+    },
+    {
+      "word": "5,",
+      "start": 4.04,
+      "end": 4.5,
+      "probability": 0.9888924956321716
+    },
+    {
+      "word": "Speed",
+      "start": 4.96,
+      "end": 5.16,
+      "probability": 0.9817011952400208
+    },
+    {
+      "word": "2,",
+      "start": 5.16,
+      "end": 5.52,
+      "probability": 0.9946839213371277
+    },
+    {
+      "word": "and",
+      "start": 5.94,
+      "end": 6.0,
+      "probability": 0.9917369484901428
+    },
+    {
+      "word": "My",
+      "start": 6.0,
+      "end": 6.28,
+      "probability": 0.6501281261444092
+    },
+    {
+      "word": "Name",
+      "start": 6.28,
+      "end": 6.46,
+      "probability": 0.9053346514701843
+    },
+    {
+      "word": "5.",
+      "start": 6.46,
+      "end": 6.84,
+      "probability": 0.9932466745376587
+    },
+    {
+      "word": "Look",
+      "start": 7.46,
+      "end": 7.56,
+      "probability": 0.9933207631111145
+    },
+    {
+      "word": "at",
+      "start": 7.56,
+      "end": 7.7,
+      "probability": 0.998738706111908
+    },
+    {
+      "word": "the",
+      "start": 7.7,
+      "end": 7.82,
+      "probability": 0.997647225856781
+    },
+    {
+      "word": "green",
+      "start": 7.82,
+      "end": 8.04,
+      "probability": 0.9130775928497314
+    },
+    {
+      "word": "side",
+      "start": 8.04,
+      "end": 8.38,
+      "probability": 0.9957234859466553
+    },
+    {
+      "word": "first.",
+      "start": 8.38,
+      "end": 8.72,
+      "probability": 0.987329363822937
+    }
+  ],
+  "audioSha256": "978a024061b91352ed14caf302abeb2bb5a1ef54c5dd7625840f31be072bd1b6",
+  "sourceText": "Tier three: the Tanka. Attack two, defense five, speed two, and Mining five. Look at the green side first.",
+  "model": "faster-whisper small.en int8, local only",
+  "duration": 9.15
+}

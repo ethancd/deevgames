@@ -1,0 +1,16 @@
+OK   offline-manifest.json parses as JSON
+OK   entry count matches this checkout (7681)
+OK   manifest invariants (7681 urls, 493.9 MB)
+OK   sw.js serves as JavaScript (application/javascript)
+OK   sw.js is not long-cached (no-cache, no-store, must-revalidate)
+OK   app.webmanifest parses, display=standalone (Home Screen eviction exemption)
+OK   /icons/icon-180.png is a real image (image/png)
+OK   /icons/icon-192.png is a real image (image/png)
+OK   /icons/icon-512.png is a real image (image/png)
+OK   /offline fallback page present
+OK   Muju Hono Tanka is first and Mythgarden is second on the home page
+OK   /maps redirects to /maps/
+OK   /bubble-pop.html redirects to /bubble-pop
+OK   20 sampled urls match the manifest byte-for-byte
+
+offline mode verified at https://ashkie.com

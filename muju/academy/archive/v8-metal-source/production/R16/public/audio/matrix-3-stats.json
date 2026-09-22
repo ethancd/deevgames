@@ -1,0 +1,54 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Tier three: the Tanka. Attack two, defense five, speed two, and Mining four. Look at the green side first.",
+  "speechText": "Tier three: the Tahn-kah. Attack two, defense five, speed two, and Mining four. Look at the green side first.",
+  "hash": "5102d2ca9ee6b11d7b2e14c09a4290cde7896f0f310f4ff68c90c271df6a31d5",
+  "duration": 9.55,
+  "bytes": 458478,
+  "retakeMethod": "sentence-by-sentence-v1",
+  "retakeReason": "Local speech checks flagged omitted wording, pronunciation, or an unclear word; regenerate complete sentences.",
+  "createdAt": "2026-09-13T10:51:18.056Z",
+  "captions": [
+    {
+      "text": "Tier three: the Tanka.",
+      "start": 0,
+      "end": 82
+    },
+    {
+      "text": "Attack two, defense five, speed two, and Mining four.",
+      "start": 82,
+      "end": 214
+    },
+    {
+      "text": "Look at the green side first.",
+      "start": 214,
+      "end": 287
+    }
+  ],
+  "wordFrames": [
+    0,
+    7,
+    34,
+    35,
+    82,
+    90,
+    117,
+    121,
+    151,
+    157,
+    184,
+    184,
+    193,
+    214,
+    218,
+    226,
+    230,
+    239,
+    252
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "5102d2ca9ee6b11d7b2e14c09a4290cde7896f0f310f4ff68c90c271df6a31d5"
+}

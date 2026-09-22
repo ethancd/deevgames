@@ -1,0 +1,65 @@
+{
+  "provider": "openai",
+  "hash": "79a43d8a9d74091d882fc05400d3de59d8eb7f09f5808ca8607e83a3dbec57f7",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Inyan is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health In-yahn is one shot by Hee, hohnoh, kah-GAH-ree, oo-MEH-meh, kee-moo-BOON-gah and kah-rahn-luk. Every unlit attacker needs help or earlier damage.",
+  "duration": 14,
+  "bytes": 672044,
+  "createdAt": "2026-09-13T10:39:30.873Z",
+  "captions": [
+    {
+      "text": "Now the red side.",
+      "start": 0,
+      "end": 46
+    },
+    {
+      "text": "A full health Inyan is one shot by Hi, Hono, Kagari, Umeme,",
+      "start": 46,
+      "end": 228
+    },
+    {
+      "text": "Kimubunga and Karanlık. Every unlit attacker needs help or earlier",
+      "start": 228,
+      "end": 395
+    },
+    {
+      "text": "damage.",
+      "start": 395,
+      "end": 420
+    }
+  ],
+  "wordFrames": [
+    0,
+    8,
+    13,
+    19,
+    46,
+    47,
+    55,
+    64,
+    77,
+    89,
+    97,
+    106,
+    115,
+    145,
+    168,
+    197,
+    228,
+    253,
+    266,
+    304,
+    319,
+    332,
+    346,
+    356,
+    367,
+    383,
+    395
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "1641377b6cacfaf183b2d85a0be847cefa6a1f93c807113e4648d0cc19da9fbe"
+}

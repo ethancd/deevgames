@@ -1,0 +1,73 @@
+{
+  "provider": "openai",
+  "hash": "d24c25588e1973bd06acb585855a31d89eaccbff16b58baa6537e423970638e0",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the red side. A full health Gölge is one shot by Hono, Kagari, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan, Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+  "speechText": "Now the red side. A full health GURL-geh is one shot by HOH-noh, kah-GAH-ree, kee-moo-BOON-gah, Shore, STROWM-ur, AY-gear-in, Gurl, GURL-geh, kah-rahn-luk, sah-CHEE-tah, sah-chah-KOO-nah, In-yahn, MAH-zahsk and Tahn-kah. Every unlit attacker needs help or earlier damage.",
+  "duration": 22.45,
+  "bytes": 1077644,
+  "createdAt": "2026-09-13T10:39:16.346Z",
+  "captions": [
+    {
+      "text": "Now the red side.",
+      "start": 0,
+      "end": 50
+    },
+    {
+      "text": "A full health Gölge is one shot by Hono, Kagari, Kimubunga, Sjor,",
+      "start": 50,
+      "end": 274
+    },
+    {
+      "text": "Straumr, Aegirinn, Göl, Gölge, Karanlık, Sachita, Sachakuna, Inyan,",
+      "start": 274,
+      "end": 510
+    },
+    {
+      "text": "Mazask and Tanka. Every unlit attacker needs help or earlier damage.",
+      "start": 510,
+      "end": 674
+    }
+  ],
+  "wordFrames": [
+    0,
+    8,
+    15,
+    25,
+    50,
+    53,
+    63,
+    73,
+    91,
+    108,
+    118,
+    127,
+    136,
+    169,
+    205,
+    250,
+    274,
+    307,
+    334,
+    353,
+    384,
+    416,
+    446,
+    484,
+    510,
+    532,
+    539,
+    573,
+    584,
+    597,
+    611,
+    625,
+    634,
+    641,
+    654
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "6b7f23d6526b891381cb2cea94e8362949c6c217c5c5ca8ef34a22e627a8dbff"
+}

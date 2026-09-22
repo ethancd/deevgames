@@ -1,0 +1,81 @@
+{
+  "label": "19D",
+  "source_label": "19A",
+  "source_job": "umeme-held-charge-elevenlabs-take-1",
+  "source_audio": "umeme-held-charge-elevenlabs-take-1.mp3",
+  "source_sha256": "21961ac1b0719738db92b5f6f4b302f6edd805305939786186f1de7fb6363a48",
+  "source_seconds_kept": 29,
+  "regenerated_seconds": 16,
+  "user_request": "Branch from 19A without woodwind; target the instrument entering at 30-31 seconds.",
+  "instrument_identification": "Exact instrument unconfirmed. Timestamp comes from the user; the ending is regenerated with a closed plucked-string/electronic palette.",
+  "estimated_usd_at_full_output_rate": 0.1125,
+  "request": {
+    "model_id": "music_v2",
+    "store_for_inpainting": true,
+    "seed": 6142904,
+    "composition_plan": {
+      "chunks": [
+        {
+          "song_id": "z6FMHh2z1p5OsdpoGDd7",
+          "range": {
+            "start_ms": 0,
+            "end_ms": 29000
+          }
+        },
+        {
+          "text": "[Instrumental]",
+          "duration_ms": 16000,
+          "positive_styles": [
+            "entirely instrumental, no voices",
+            "continue directly from the kept opening, matching its tempo, key, melodic hook, bass movement and quiet groove",
+            "124 BPM target, 4/4, clear D major, chill but energizing melodic electronica",
+            "INSTRUMENTATION CHANGE IS THE PRIORITY: the new high melodic voice that entered around 30-31 seconds in the source must be absent; keep the arrangement built from the voices heard BEFORE that entrance",
+            "the allowed melodic voices are a rounded clearly electronic mid-register synth, a woody plucked Swahili-coast udi lute and a resonant plucked kanuni zither; use these existing voices for every melodic answer",
+            "the electric synth has a smooth but audibly electronic harmonic edge and no breath noise or wind-instrument imitation",
+            "retain the held charge, gentle harmonic suspense, short deliberate gap, precise rising leap and memorable answering hook",
+            "warm electric bass, restrained broken-beat drums and sparse hand-drum detail, with the same light low end and comfortable treble",
+            "keep one lead voice at a time, with short udi and kanuni replies; do not introduce a new solo instrument in the final section",
+            "make a recognizable return to the original hook over these last sixteen seconds, maintain the same listening level and leave a natural open phrase at the end"
+          ],
+          "negative_styles": [
+            "woodwinds",
+            "flute",
+            "clarinet",
+            "oboe",
+            "bassoon",
+            "recorder",
+            "piccolo",
+            "saxophone",
+            "panpipes",
+            "ney flute",
+            "reed instruments",
+            "wind instruments",
+            "whistling",
+            "breathy flute-like synth",
+            "reedy synth lead",
+            "vocals",
+            "speech",
+            "humming",
+            "choir",
+            "new countermelody entering around 30 seconds",
+            "bowed strings",
+            "brass",
+            "constant fast arpeggios",
+            "crackling sound effects",
+            "rolling thunder",
+            "huge drop"
+          ],
+          "context_adherence": "high",
+          "conditioning_ref": {
+            "song_id": "z6FMHh2z1p5OsdpoGDd7",
+            "range": {
+              "start_ms": 0,
+              "end_ms": 29000
+            }
+          },
+          "condition_strength": "high"
+        }
+      ]
+    }
+  }
+}

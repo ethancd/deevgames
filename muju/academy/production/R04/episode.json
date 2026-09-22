@@ -1,0 +1,341 @@
+{
+  "id": "R04",
+  "title": "The Crystal Payday",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "I watered this square so it would grow more crystals.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a White Muju stands on a square near home. Pip lowers a watering can over it. Nothing happens. A puddle spreads. Beside the square, an empty bucket and a laminated sign reading PAYDAY.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "It had four crystals. It has four crystals. Squares run out. They never fill up.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then today we find out what four actually pays.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "From the drawer. Proposal: add a Mining button. Overruled. There is no Mining button.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: PIP'S AMENDMENTS (PENDING). Click slides the drawer open and lifts out one card.]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "This is the Muju. Its Mining number is three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Muju. Mining three.] [board: the Muju's square labelled RESERVE 4. Every other square dimmed.]"
+      ]
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The square under it holds four crystals. That is the reserve: the crystals still sitting in the square.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "07",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bucket three. Puddle four. Took three.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [board: your turn ends. Three crystals slide off the square into the bank. The square flips from 4 to 1.]"
+      ]
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "It took the smaller of those two numbers.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "09",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "I am standing professionally.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Moving or attacking does not stop payday. Collect from the square where you end.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Now it is your next turn end. Nobody has touched this square.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVERY piece of yours collects at your turn end, even one that moved, attacked, was bought, or put on a new hat this turn.]",
+        "[board: same Muju, same square, now labelled RESERVE 1. Card beside it: the Muju, Mining three. Banner: YOUR NEXT TURN END. NOBODY ELSE TOUCHED THIS SQUARE.]"
+      ]
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Muju still has Mining three. The square has one crystal left.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "How many crystals does the Muju collect now?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "14",
+      "speaker": "PIP",
+      "cue": "cheerfully wrong",
+      "text": "Three. Bigger number, bigger bucket.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "No rush on this one. Or just watch the bucket with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "One crystal, and room to spare in the bucket.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: the Muju tips its bucket over the square. One crystal rattles in. The bucket is still mostly empty. The square flips from 1 to 0 and goes grey.] [sfx: crystal clink]"
+      ]
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three was the Muju's number. One was the square's number. Next payday here is an Empty Payday.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bucket or puddle. You carry the smaller one.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "In rules words: a piece takes its Mining number, or whatever the square has left. Whichever is smaller.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "20",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "I tried telling it an encouraging story. Still empty.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Reserve: unchanged.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Turn one dial. This Radi has Mining zero.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: this square, this piece, this turn end. Not checked: every other square, and what Black does next.]",
+        "[card: the Radi. Mining zero.] [board: a Radi standing on a square labelled RESERVE 16]"
+      ]
+    },
+    {
+      "id": "23",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The square under it is holding sixteen.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "trailing off, inviting",
+      "text": "Bucket or puddle.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bucket. The bucket is zero. The Radi collects nothing.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "PIP",
+      "cue": "dawning concern",
+      "text": "So my business needs crystals where the piece ends. The square it left pays nothing.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Whether it is still standing there next turn, I do not know yet.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "28",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The Standing Business is closing. The new one picks squares. I call it the chief financial bucket.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "map",
+      "speaker": "COACH",
+      "text": "New games use this Unequal routes map. Home squares hold eight crystals each. The brighter expansion squares hold sixteen each. Ordinary ground holds four, and the middle cluster holds eight. Empty squares are roads with no crystals. That makes five hundred four crystals altogether. Mining lowers a square's reserve. It never refills.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "map"
+      }
+    },
+    {
+      "id": "all-miners",
+      "speaker": "COACH",
+      "text": "Every friendly piece collects at your turn end, including pieces bought or promoted that turn. Mining uses no actions. The bank is spendable money; total income remembers everything you collected, even after you spend it.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Every friendly piece gets payday",
+        "body": "Moved, attacked, bought or promoted: still collects.\nMining costs 0 actions.\nBank = crystals available to spend.\nTotal income = all crystals collected so far."
+      }
+    },
+    {
+      "id": "29",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Before you end a practice turn, say the payday out loud. Then watch what arrives.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: SAY THE PAYDAY. THEN WATCH IT ARRIVE.]"
+      ]
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Today was plenty if you want it to be. Next time the shop opens. What can our crystals buy?",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "question": "How many crystals does the Muju collect now?",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "soundtrack": {
+    "id": "open-room",
+    "title": "Open Room, Lantern On",
+    "source": "muju/music-auditions/full-versions/open-room-full-v1.mp3",
+    "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+  },
+  "speechProvider": "openai"
+}

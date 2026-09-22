@@ -1,0 +1,67 @@
+{
+  "provider": "openai",
+  "hash": "895efc75dd28b135d5e83a94b9376d5d375c5866f6afe676466b55ca964635a4",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "For every element, tier one to tier two costs four crystals. Tier two to tier three costs eight. A promoted piece can act immediately. There is no fourth tier.",
+  "speechText": "For every element, tier one to tier two costs four crystals. Tier two to tier three costs eight. A promoted piece can act immediately. There is no fourth tier.",
+  "duration": 10.2,
+  "bytes": 489644,
+  "createdAt": "2026-09-13T10:38:24.006Z",
+  "captions": [
+    {
+      "text": "For every element, tier one to tier two costs four crystals.",
+      "start": 0,
+      "end": 136
+    },
+    {
+      "text": "Tier two to tier three costs eight.",
+      "start": 136,
+      "end": 209
+    },
+    {
+      "text": "A promoted piece can act immediately.",
+      "start": 209,
+      "end": 271
+    },
+    {
+      "text": "There is no fourth tier.",
+      "start": 271,
+      "end": 306
+    }
+  ],
+  "wordFrames": [
+    0,
+    6,
+    17,
+    46,
+    46,
+    55,
+    61,
+    65,
+    77,
+    89,
+    102,
+    136,
+    137,
+    143,
+    148,
+    152,
+    164,
+    181,
+    209,
+    219,
+    229,
+    241,
+    254,
+    264,
+    271,
+    278,
+    285,
+    292,
+    299
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "2b680cace1075f4a77d1941a90fee30476f9a8cd4d185a02859deee73be88b6f"
+}

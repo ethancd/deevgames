@@ -1,0 +1,11 @@
+{
+  "hash": "492dd60f2dc35cdfb96479943d5f2294ad050440bdc2a1a9ae924c7610a0c49b",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Two. The patch could not pay five.",
+  "speechText": "Two. The patch could not pay five.",
+  "duration": 3.4,
+  "bytes": 163244,
+  "createdAt": "2026-09-10T15:58:20.486Z"
+}

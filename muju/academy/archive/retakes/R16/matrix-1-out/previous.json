@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "05e2bf471e7754b2b62293e824d0329ab08a4e68d4c8fe800257d625ac44cc7b",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Inyan can finish Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the In-yahn can finish Shore, Gurl, GURL-geh and kah-rahn-luk. Every unlit card survives that single hit.",
+  "duration": 9.65,
+  "bytes": 463244,
+  "createdAt": "2026-09-13T10:39:29.107Z"
+}

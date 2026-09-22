@@ -1,0 +1,11 @@
+{
+  "hash": "b5e6da03ef0e46923c11c7503c1f429be8a9900fe67c6acd49a23d847629a793",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Metal climbs the same way. The Inyan, the Mazask, the Tanka.",
+  "speechText": "Metal climbs the same way. The In-yahn, the MAH-zahsk, the Tahn-kah.",
+  "duration": 5.4,
+  "bytes": 259244,
+  "createdAt": "2026-09-10T14:31:19.979Z"
+}

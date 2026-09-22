@@ -1,0 +1,52 @@
+{
+  "n": 20,
+  "pairs": [
+    [
+      "Aware:Rush",
+      "Aware:Expand"
+    ],
+    [
+      "Aware:Rush",
+      "Aware:AntiRush"
+    ],
+    [
+      "Aware:Balanced",
+      "Aware:Turtle"
+    ],
+    [
+      "Invade:MiningDenial",
+      "Guard:AntiRush"
+    ],
+    [
+      "Siege:3",
+      "Guard:AntiRush"
+    ],
+    [
+      "Siege:3",
+      "Aware:Rush"
+    ],
+    [
+      "Aware:InvestT1",
+      "Aware:InvestT3"
+    ],
+    [
+      "Aware:Rush",
+      "Aware:Rush"
+    ],
+    [
+      "Aware:Balanced",
+      "Aware:Balanced"
+    ]
+  ],
+  "maps": [
+    "current",
+    "alternate",
+    "homeExpansionOnly",
+    "centerOnly"
+  ],
+  "seedBase": 9121648,
+  "hash": "fff70dd25f4420cb03f65ebb6400a20a25f754373f86c230251ee92097512af2",
+  "actions": 4,
+  "cap": "unresolved",
+  "started": "2026-09-12T21:08:39.543Z"
+}

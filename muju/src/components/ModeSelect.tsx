@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { BlackCrystalHandicap } from './BlackCrystalHandicap';
 import type { GameMode, GameConfig, PlayerId } from '../game/types';
 import type { AIDifficulty } from '../ai/types';
 import { getActionsPerTurn } from '../game/rules';
@@ -25,6 +26,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   const [playerDifficulty, setPlayerDifficulty] = useState<AIDifficulty>('medium');
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('medium');
   const [savedGame] = useState(loadGameState);
+  const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
 
   const handleSideChange = (side: PlayerId) => {
     setPlayerSide(side);
@@ -71,13 +73,13 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         break;
     }
 
-    onStartGame({ ...config, newGame });
+    onStartGame({ ...config, blackCrystalHandicap, newGame });
   };
 
   return (
     <div className="mode-select min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-6">
-        <a href="../" className="text-sm text-cyan-300">← Deev Games</a>
+        <a href="https://deevgames.pages.dev/" className="text-sm text-cyan-300">← Deev Games</a>
         <h1 className="text-3xl font-bold text-center">Muju Hono Tanka</h1>
         <p className="text-gray-400 text-center">Select Game Mode</p>
 
@@ -85,7 +87,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         <div className="space-y-3">
           {onOnline && <button onClick={onOnline} className="w-full p-4 rounded-lg border-2 border-cyan-700 hover:border-cyan-400 text-left">
             <div className="font-semibold">Play online</div>
-            <div className="text-sm text-gray-400">Invite a person or an LLM · two devices, one game</div>
+            <div className="text-sm text-gray-400">Host, join, or watch a live game</div>
           </button>}
           <button
             onClick={() => setSelectedMode('vs-ai')}
@@ -205,6 +207,8 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
             </div>
           </div>
         )}
+
+        {selectedMode && <BlackCrystalHandicap value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
 
         {/* Start button */}
         {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · Draw after 10 consecutive turns without a kill.</p>}

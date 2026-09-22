@@ -1,0 +1,11 @@
+{
+  "hash": "e8f815ec4939d21a108708202676f6a8a1a41dd7f65f58a07aabbc83810e6972",
+  "model": "gpt-4o-mini-tts",
+  "voice": "cedar",
+  "speaker": "CLICK",
+  "originalText": "Sparks burn the Garden Wall. The Radi's one becomes two. The Inyan's defense is three.",
+  "speechText": "Sparks burn the Garden Wall. The RAH-dee's one becomes two. The In-yahn's defense is three.",
+  "duration": 6.5,
+  "bytes": 312044,
+  "createdAt": "2026-09-10T15:57:26.802Z"
+}

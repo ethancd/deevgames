@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Compare the first Hono soundtrack auditions for Muju Hono Tanka.">
+<title>Hono — soundtrack auditions</title>
+<style>
+:root{color-scheme:dark;--bg:#101521;--panel:#182131;--ink:#edf3ff;--muted:#aabbd4;--line:#33445c;--accent:#ffc769}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:1160px;margin:auto;padding:36px 24px 54px}header{border-bottom:1px solid var(--line);padding-bottom:24px}.eyebrow{color:var(--accent);font-size:14px;letter-spacing:.13em;text-transform:uppercase;margin:0 0 8px}h1{font-size:clamp(1.8rem,4vw,2.7rem);line-height:1.15;margin:0 0 14px;font-weight:650}p{margin:0}.intro{max-width:720px;color:var(--muted)}.toolbar{display:flex;align-items:center;gap:16px 24px;flex-wrap:wrap;margin:24px 0}.toolbar label{display:flex;gap:9px;align-items:center}.volume{min-width:210px}.volume input{max-width:150px;accent-color:var(--accent)}input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}.status{color:var(--muted);font-size:14px;margin-bottom:24px}.directions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.direction{min-width:0}.direction h2{font-size:22px;margin:0 0 6px}.description{color:var(--muted);min-height:75px;margin:0 0 20px;font-size:15px}.take{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:16px;min-width:0}.take-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.take h3{font-size:18px;margin:0}.badge{color:var(--muted);font-size:14px}.reveal{color:var(--accent);font-size:14px;margin:0 0 10px}.take audio{width:100%;height:40px;margin:2px 0 12px}button{font:inherit;color:var(--ink);border:1px solid var(--line);background:transparent;border-radius:7px;padding:7px 11px;cursor:pointer;min-height:40px}button[aria-pressed=true]{background:var(--accent);color:#172033;border-color:var(--accent)}button:hover{border-color:var(--accent)}a{color:var(--accent);text-underline-offset:3px}.actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.actions a{font-size:14px}.note-label{display:block;font-size:14px;margin-top:14px}.notes{width:100%;font:inherit;font-size:16px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:9px;min-height:74px;resize:vertical}.prompt{margin-top:14px;font-size:14px}.prompt summary{cursor:pointer}.prompt p{color:var(--muted);margin-top:10px;white-space:pre-wrap}.foot{color:var(--muted);border-top:1px solid var(--line);padding-top:20px;margin-top:28px;font-size:14px}.error{color:#ffc7bc;font-size:14px}.empty{padding:18px;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}[hidden]{display:none!important}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:4px}@media(max-width:950px){.directions{grid-template-columns:1fr}.description{min-height:0;margin-bottom:16px}.direction{margin-bottom:16px}.takes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.take{margin-bottom:0}}@media(max-width:600px){main{padding:24px 16px}.takes{grid-template-columns:1fr}.toolbar{align-items:flex-start;flex-direction:column}.volume input{max-width:none;width:160px}}
+</style>
+</head>
+<body>
+<main>
+<header><p class="eyebrow" id="eyebrow">Muju Hono Tanka · Round one</p><h1 id="heading">One small fire. Three directions.</h1><p class="intro" id="intro">Compare the Hono sketches. Which would you leave on for another game? Save a favorite, or leave a note for the next pass.</p></header>
+<nav aria-label="Audition rounds" style="margin-top:18px"><a id="other-round" hidden></a></nav>
+<div class="toolbar">
+<label class="volume">Volume <input id="volume" type="range" min="0" max="1" value="0.8" step="0.01" aria-label="Playback volume"></label>
+<label><input id="match" type="checkbox" checked>Even volume</label>
+<label><input id="reveal" type="checkbox">Reveal providers</label>
+<button id="pause" type="button">Pause all</button>
+</div>
+<p class="status" id="status"></p>
+<div id="directions" class="directions"></div>
+<p class="foot">“Even volume” uses approximate RMS level matching while preserving the original audio files. Favorites and notes stay in this browser. These are audition excerpts; seamless game loops come after selection.</p>
+</main>
+<script>
+const DATA = __AUDITION_DATA__;
+const root = document.getElementById('directions');
+const volume = document.getElementById('volume');
+const matching = document.getElementById('match');
+const reveal = document.getElementById('reveal');
+const players = [];
+const saveKey = DATA.save_key || 'muju-hono-audition-round-one-v1';
+if(DATA.title) document.title=DATA.title;
+for(const key of ['eyebrow','heading','intro'])if(DATA[key])document.getElementById(key).textContent=DATA[key];
+if(DATA.footer_text)document.querySelector('.foot').textContent=DATA.footer_text;
+if(DATA.other_round_url){const link=document.getElementById('other-round');link.href=DATA.other_round_url;link.textContent=DATA.other_round_label;link.hidden=false;}
+if(DATA.navigation){const nav=document.getElementById('other-round').parentElement;nav.replaceChildren();for(const [i,item] of DATA.navigation.entries()){if(i)nav.append(document.createTextNode(' · '));const link=document.createElement('a');link.href=item.url;link.textContent=item.label;nav.append(link);}}
+if(DATA.round_number>=2){
+ document.body.classList.add('round-two');reveal.closest('label').hidden=true;
+ const style=document.createElement('style');style.textContent='.round-two .directions{grid-template-columns:1fr}.round-two .direction{margin-bottom:22px}.round-two .description{min-height:0;margin-bottom:16px}.round-two .takes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.round-two .take{margin-bottom:0}@media(max-width:950px){.round-two .takes{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.round-two .takes{grid-template-columns:1fr}}';document.head.append(style);
+}
+if(DATA.full_length){const style=document.createElement('style');style.textContent='.round-two .takes{grid-template-columns:1fr}.round-two .take{max-width:740px}';document.head.append(style);}
+let saved = {};
+try { saved = JSON.parse(localStorage.getItem(saveKey) || '{}'); } catch (_) {}
+function persist(){try{localStorage.setItem(saveKey, JSON.stringify(saved));}catch(_){}}
+function node(tag, cls, text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;}
+document.getElementById('status').textContent = DATA.status;
+for(const direction of DATA.directions){
+ const section=node('section','direction');
+ section.append(node('h2','',direction.name),node('p','description',direction.description));
+ if(direction.assessment)section.append(node('p','description',direction.assessment));
+ const takes=node('div','takes');section.append(takes);
+ for(const track of direction.tracks){
+  const article=node('article','take');const top=node('div','take-top');
+  const durationLabel=DATA.full_length?`${Math.floor(Math.round(track.duration)/60)}:${String(Math.round(track.duration)%60).padStart(2,'0')}`:`${track.duration.toFixed(1)} sec`;
+  top.append(node('h3','',track.label),node('span','badge',durationLabel));article.append(top);
+  if(track.variant){const variant=node('p','reveal',track.variant+(track.vocal_trial?' · brief vocal trial':''));article.append(variant);}
+  const source=node('p','reveal',`${track.provider_label} · ${track.model} · take ${track.take}`);source.hidden=true;source.dataset.reveal='';article.append(source);
+  const audio=document.createElement('audio');audio.controls=true;audio.preload='metadata';audio.src=track.file+(track.file.includes('?')?'&':'?')+'seek=2';audio.setAttribute('aria-label',`${direction.name}, ${track.label}`);article.append(audio);
+  const error=node('p','error');error.hidden=true;article.append(error);
+  audio.addEventListener('error',()=>{error.textContent='This file could not be played. Try the original MP3 link.';error.hidden=false;});
+  audio.addEventListener('play',()=>players.forEach(p=>{if(p.audio!==audio)p.audio.pause();}));
+  const controls=node('div','actions');const favorite=node('button','', 'Favorite');favorite.type='button';favorite.setAttribute('aria-pressed',String(!!saved[track.id]?.favorite));
+  favorite.addEventListener('click',()=>{saved[track.id]={...saved[track.id],favorite:!saved[track.id]?.favorite};favorite.setAttribute('aria-pressed',String(saved[track.id].favorite));persist();});
+  const download=node('a','', 'Original MP3');download.href=track.file;download.download=track.file;controls.append(favorite,download);article.append(controls);
+  if(Number.isFinite(track.transition_preview_seconds)){const check=node('button','','Check transition');check.type='button';check.addEventListener('click',()=>{audio.currentTime=track.transition_preview_seconds;audio.play().catch(()=>{error.textContent='Press play on the audio control to listen.';error.hidden=false;});});controls.append(check);}
+  const label=node('label','note-label','Listening notes');label.htmlFor='note-'+track.id;article.append(label);
+  const note=node('textarea','notes');note.id='note-'+track.id;note.rows=2;note.placeholder='A hook you liked, something too busy…';note.value=saved[track.id]?.notes||'';
+  note.addEventListener('input',()=>{saved[track.id]={...saved[track.id],notes:note.value};persist();});article.append(note);
+  const details=node('details','prompt');details.append(node('summary','','Musical brief'),node('p','',track.prompt));article.append(details);
+  takes.append(article);players.push({audio,gain:track.match_gain});
+ }
+ if(!direction.tracks.length)takes.append(node('p','empty','No completed takes yet.'));
+ root.append(section);
+}
+function levels(){players.forEach(p=>{p.audio.volume=Math.min(1,Number(volume.value)*(matching.checked?p.gain:1));});}
+volume.addEventListener('input',levels);matching.addEventListener('change',levels);levels();
+reveal.addEventListener('change',()=>document.querySelectorAll('[data-reveal]').forEach(e=>{e.hidden=!reveal.checked;}));
+document.getElementById('pause').addEventListener('click',()=>players.forEach(p=>p.audio.pause()));
+</script>
+</body>
+</html>

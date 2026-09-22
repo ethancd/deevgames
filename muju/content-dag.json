@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "path_base": "repository root",
+  "edge_meaning": "depends_on points upstream; an upstream change requires downstream review, not necessarily a file edit. This is an impact and release-order DAG, not an import graph.",
+  "kinds": {
+    "piece-stats": ["catalogue"],
+    "rules": ["rule-contract"],
+    "map-economy": ["board-rules"],
+    "ai": ["wasm-tactics", "ai-search"],
+    "mcp": ["mcp-tools"],
+    "online": ["server-runtime"],
+    "ui": ["browser-ui"],
+    "academy": ["academy-lessons"],
+    "release": ["game-validation", "academy-package"]
+  },
+  "historical": [
+    "muju/academy/archive/",
+    "muju/academy/logs/",
+    "muju/lab/results/",
+    "muju/lab/experiments/",
+    "muju/lab/maps/",
+    "outputs/"
+  ],
+  "historical_exceptions": ["muju/lab/results/current-static/current.json", "muju/lab/results/current-static/current.md"],
+  "nodes": [
+    {
+      "id": "rule-contract", "title": "Agreed rules and change intent", "depends_on": [],
+      "paths": ["muju/SPEC.md", "muju/JUDGMENT_LOG.md"],
+      "update": ["State exact old/new behavior, affected units, edge cases and intended rules revision. User-approved changes take precedence over old specs. Update SPEC and append rationale to JUDGMENT_LOG without rewriting historical decisions."],
+      "verify": ["Resolve differences between intended rules, executable behavior and published descriptions. Historical documents are not current authority."]
+    },
+    {
+      "id": "catalogue", "title": "Canonical piece definitions and elemental relationships", "depends_on": ["rule-contract"],
+      "paths": ["muju/src/game/units.ts", "muju/src/game/types.ts", "muju/src/game/elements.ts"],
+      "update": ["Change canonical definitions, stable IDs, stats, costs and elemental relationships. Check promotion cost differences and tier/stock limits. Read the applicable SPEC sections even when starting here."],
+      "verify": ["Exercise changed stat boundaries and elemental matchups against real combat, movement, mining and promotion behavior; verify all consumers use current definitions."]
+    },
+    {
+      "id": "board-rules", "title": "Map, setup and shared rule constants", "depends_on": ["rule-contract"],
+      "paths": ["muju/src/game/board.ts", "muju/src/game/resourceMap.ts", "muju/src/game/rules.ts"],
+      "update": ["Update board reserves, setup, action budgets and handicap limits as applicable. Check palette, map painter, starting income and symmetry expectations."],
+      "verify": ["Test setup and economy against the intended map and rule constants; preserve explicitly historical map fixtures."]
+    },
+    {
+      "id": "transitions", "title": "Canonical legality and state transitions", "depends_on": ["catalogue", "board-rules"],
+      "paths": ["muju/src/game/", "muju/src/ai/simulate.ts", "muju/src/hooks/useGameState.ts", "muju/lab/harness/"],
+      "update": ["Review legality, combat, movement, promotion, spawning, upkeep, mining, turn timing, inactivity, victory and home-checkmate. Keep UI, server and simulations on the same transition; adjust lab invariants where the rule itself changes."],
+      "verify": ["Add or adapt meaningful regression cases for the changed rule, including illegal-action behavior and identical resulting states in local, AI and server paths."]
+    },
+    {
+      "id": "rules-docs", "title": "Current rules, AI explanation and public design copy", "depends_on": ["transitions"],
+      "paths": ["muju/SPEC.md", "muju/AI_ENGINE_README.md", "muju/docs/AI_IMPLEMENTATION_STATUS.md", "muju/docs/STRATEGY_GUIDE-2026-09-12.md", "muju/docs/strategy-guide-codex-vs-claude.md", "docs/game-design-dossier.md", "portfolio/index.html"],
+      "update": ["Synchronize current rule tables, examples, costs, terminology and supported strategy claims. Review dated guides used as current advice; mark superseded claims or issue a new revision instead of silently rewriting historical evidence."],
+      "verify": ["Search by piece ID, display name, stat label and old numeric phrase across active docs. Check examples with the current engine. Do not claim old balance studies establish new strategic strength."]
+    },
+    {
+      "id": "browser-ui", "title": "Browser controls, instructions and visual representations", "depends_on": ["transitions"],
+      "paths": ["muju/src/components/", "muju/src/App.tsx", "muju/src/main.tsx", "muju/src/hooks/useAI.ts", "muju/src/index.css", "muju/src/utils/colors.ts", "muju/index.html", "muju/public/previews/"],
+      "update": ["Inspect UnitShop, UnitInfo, InstructionsModal, VisualKey, AnalysisScreen, MapPainter, action/reach previews and unit artwork for copied facts or numeric assumptions. Reuse canonical data where possible. Regenerate affected previews."],
+      "verify": ["Inspect desktop and phone play: instructions, stat cards, legal highlights, purchase/promotion, turn endings and analysis. Ensure the AI worker still runs."]
+    },
+    {
+      "id": "persistence", "title": "Saved games, migrations, history and replay compatibility", "depends_on": ["transitions"],
+      "paths": ["muju/src/game/migrate.ts", "muju/src/game/replay.ts", "muju/src/game/moveHistory.ts", "muju/src/utils/persistence.ts", "muju/src/components/TurnReplay.tsx", "muju/src/online/RoomHistory.tsx"],
+      "update": ["Decide how existing saves, active rooms and historical replays behave under the change. Add migration/version handling if needed; preserve old evidence and stored histories."],
+      "verify": ["Load an existing save/room, undo where supported, restart the server and replay a completed game. Explicitly report incompatibilities and their handling."]
+    },
+    {
+      "id": "wasm-tactics", "title": "Compiled tactical solver and canonical witness validation", "depends_on": ["transitions"],
+      "paths": ["muju/assembly/tactics.ts", "muju/src/ai/wasm/", "muju/asconfig.json"],
+      "update": ["Review duplicated tactical semantics and ABI assumptions. kernel.ts packs stats and attack powers from canonical definitions; do not invent a second stat table. Rebuild tactics.wasm when affected."],
+      "verify": ["Replay solver witnesses through canonical legality/transitions. Compare TS and WASM on changed combat/movement/promotion cases, including bounded-search unknown results."],
+      "commands": [{"cwd": "muju", "run": "npm run ai:wasm", "effect": "Rebuilds generated WASM; also runs automatically before npm test/build."}]
+    },
+    {
+      "id": "ai-search", "title": "Deterministic game AI, evaluation, planning and worker", "depends_on": ["transitions", "wasm-tactics"],
+      "paths": ["muju/src/ai/", "muju/lab/ai/", "muju/AI_ENGINE_PLAN.md", "muju/AI_ENGINE_QUESTIONS.md"],
+      "update": ["Review moves, evaluation, beam plans, MCTS, placement strategies, budgets, tactical sharpening and worker protocol. Rules changes may alter reach, affordability and threat assumptions even when stats import automatically. Historical design plans are context, not implementation authority."],
+      "verify": ["Check legal complete turns, reproducibility under fixed seeds/work budgets, worker execution and deadlines. Separate rule correctness from strength; run targeted matchups when balance claims are made."],
+      "commands": [{"cwd": "muju", "run": "npm run ai:tactics", "effect": "Runs tactical cases and writes a fresh lab result directory; inspect results."}]
+    },
+    {
+      "id": "server-runtime", "title": "Authoritative multiplayer host, schemas and online client", "depends_on": ["transitions", "persistence"],
+      "paths": ["muju/server/rooms.ts", "muju/server/schema.ts", "muju/server/http.ts", "muju/server/index.ts", "muju/server/clockPressure.ts", "muju/src/online/", "muju/ONLINE.md"],
+      "update": ["Review room transitions, validation, clocks, staging, invitations, observations, persistence and client/server compatibility. Document any protocol change and handling of active games."],
+      "verify": ["Check create/join/play, revision and idempotency handling, clocks/staging where relevant, persisted rooms and reconnects."]
+    },
+    {
+      "id": "mcp-tools", "title": "MCP rules, legal actions, previews and analysis helpers", "depends_on": ["server-runtime", "ai-search"],
+      "paths": ["muju/server/mcp.ts", "muju/server/stdio.ts", "muju/server/observation.ts", "muju/server/agentSchema.ts", "muju/server/notation.ts", "muju/server/analysis/", "muju/tools/benchmark-analysis.ts"],
+      "update": ["Review muju_rules text and catalogue, tool descriptions, schemas/defaults, legal actions, preview and play parity. Recheck geometry, economy, units, tactics and exchange helpers for hardcoded budgets/claims and changed search bounds."],
+      "verify": ["Assert rules/analysis return current stats and legal witnesses, then exercise HTTP MCP and stdio as applicable. Distinguish bounded estimates from proofs; update benchmark evidence when helper behavior changes."]
+    },
+    {
+      "id": "agent-guides", "title": "Published agent skills and MCP usage documentation", "depends_on": ["mcp-tools", "rules-docs"],
+      "paths": ["muju/public/skills/", "muju/server/skills.ts", "muju/docs/MCP_TOOL_TAPS.md", "muju/docs/ANALYSIS_TOOLS.md", "muju/ONLINE.md"],
+      "update": ["Update public Muju and time-awareness skill files, TAPs, analysis documentation and live tool examples. Vite copies public skills into dist; the production server serves those copies."],
+      "verify": ["Compare documentation to tool discovery and actual responses. Check both /SKILL.md on the Node host and the static /muju/skills/ copies after release."]
+    },
+    {
+      "id": "balance-analysis", "title": "Current static balance report and relevant fresh experiments", "depends_on": ["transitions", "ai-search"],
+      "paths": ["muju/lab/solver/", "muju/lab/results/current-static/current.json", "muju/lab/results/current-static/current.md"],
+      "update": ["Review solver assumptions and regenerate current-static. Run new experiments only when needed to support changed claims; record source/rules hashes, configuration and seeds. Leave frozen map studies, baselines and dated results intact."],
+      "verify": ["Check catalogue/model freshness and explain changed dominance or witness results rather than weakening checks merely to pass. Static values are separate from AI weights."],
+      "commands": [{"cwd": "muju", "run": "npm run balance:static", "effect": "Regenerates current-static outputs."}, {"cwd": "muju", "run": "npm run balance:check && npm run balance:types", "effect": "Checks current outputs and solver types."}]
+    },
+    {
+      "id": "academy-data", "title": "Academy current rule snapshots, catalogues, map and matchup matrices", "depends_on": ["transitions"],
+      "paths": ["muju/academy/export-rules.ts", "muju/academy/rules-snapshot/", "muju/academy/catalog.json", "muju/academy/map.json", "muju/academy/bonk-matrix.json", "muju/academy/rules-verification.json", "muju/academy/metal-v29-provenance.json", "muju/academy/production/R??/source-rules/", "muju/academy/production/R??/src/catalog.json", "muju/academy/production/R??/src/map.json", "muju/academy/production/R??/src/bonk-matrix.json"],
+      "update": ["Read Academy README and STATUS first. Adapt export-rules.ts assertions/version to the intended rule change, export from live src/game, then propagate current data to every affected active episode. Audit imports and provenance of rules-snapshot and each episode source-rules: they contain historical assumptions and rendering subsets, so do not blindly replace them."],
+      "verify": ["Check all ordered full-health matchups and affected demonstrations, map totals and copies. A single attack/defense change can alter incoming/outgoing matrices in every element lesson R11–R16. Regeneration of JSON alone does not update narration or rendered videos."],
+      "commands": [{"cwd": "muju", "run": "node --import tsx academy/export-rules.ts", "effect": "Writes Academy JSON after assertions pass. Review/update expectations before running."}]
+    },
+    {
+      "id": "academy-lessons", "title": "Academy lesson scripts, examples and renderer sources", "depends_on": ["academy-data", "rules-docs", "browser-ui", "server-runtime"],
+      "paths": ["muju/academy/README.md", "muju/academy/STATUS.md", "muju/academy/BIBLE.md", "muju/academy/ALL-SCRIPTS.md", "muju/academy/CURRICULUM-AND-BATCHES.md", "muju/academy/PIPELINE-NOTES.md", "muju/academy/production/R??/episode.json", "muju/academy/production/R??/src/", "muju/academy/production/R??/scripts/", "muju/academy/supplement.tsx", "muju/academy/update-visuals.py"],
+      "update": ["Audit active R01–R16 episode.json and renderer sources for spoken facts, cards, boards, examples, captions and summaries. Record affected episode IDs and why others are unchanged. Preserve repaired current scripts; revise.py and propagate-economy.py are one-time historical migrations and must not be rerun over current production."],
+      "verify": ["Validate each changed example against current engine state, action budget and timing. Cross-element counter matchups matter. Check visible revision/date labels and current source provenance; do not resurrect retired R17–R27."]
+    },
+    {
+      "id": "academy-audio", "title": "Academy narration, local transcription and caption timing", "depends_on": ["academy-lessons"],
+      "paths": ["muju/academy/audio-batch.py", "muju/academy/prepare-audio.py", "muju/academy/retake-openai.mjs", "muju/academy/transcribe-local.py", "muju/academy/align-current.py", "muju/academy/timeline.mjs", "muju/academy/production/R??/public/audio/", "muju/academy/production/R??/speech-directions.json"],
+      "update": ["Regenerate only changed speech with the established OpenAI cast and pronunciation, preserve unchanged takes, and refresh the changed-clip inventory consumed by transcribe-local.py. Verify locally with faster-whisper, align captions, and regenerate timelines. Inspect hardcoded temporary runtime/model paths before running scripts."],
+      "verify": ["No unresolved spoken-fact, missing-word, pronunciation or caption-timing errors. Bind ASR and caption evidence to current audio hashes. Old clip inventories and successful historical logs do not verify new narration."]
+    },
+    {
+      "id": "academy-video", "title": "Final videos, mastering, posters, transcripts and visual QA", "depends_on": ["academy-audio"],
+      "paths": ["muju/academy/render-batch.py", "muju/academy/render.mjs", "muju/academy/master.mjs", "muju/academy/remaster-batch.py", "muju/academy/final-frames.py", "muju/academy/stills-batch.py", "muju/academy/review-final.py", "muju/academy/production/R??/output/", "muju/academy/production/R??/qa/", "muju/academy/production/R??/public/music/", "muju/academy/production/R??/public/art/"],
+      "update": ["Render affected episodes, master with existing soundtracks, and regenerate affected posters/transcripts. Review actual final exports before recording review-final.py --visual-reviewed evidence. Inspect batch script/runtime paths and current episode configuration first."],
+      "verify": ["Require full decode, source-audio correlation, complete duration, quiet holds, loudness/peak checks, readable cards/boards and correct matrices. final-review.json must identify exact final video and timeline hashes; never mechanically assert that unseen frames were reviewed."]
+    },
+    {
+      "id": "game-validation", "title": "Game, AI, server, MCP and browser regression gates", "depends_on": ["rules-docs", "browser-ui", "persistence", "wasm-tactics", "ai-search", "server-runtime", "mcp-tools", "agent-guides", "balance-analysis"],
+      "paths": ["muju/tests/", "muju/e2e/", "muju/vitest.config.ts", "muju/playwright.config.ts", "muju/playwright.online.config.ts", "muju/server/tsconfig.json", "muju/tsconfig.json"],
+      "update": ["Adapt meaningful changed-rule regression cases and fixtures. Retain explicit historical compatibility fixtures; do not replace every occurrence of an old number. Investigate failures against intended behavior."],
+      "verify": ["Run targeted checks during iteration, then release gates. For general local browser tests first serve the built game at MUJU_BASE_URL (default http://127.0.0.1:8927/muju/); the online suite starts its own isolated host."],
+      "commands": [{"cwd": "muju", "run": "npm run server:types && npm test && npm run build", "effect": "Checks types/tests and rebuilds WASM plus browser artifacts."}, {"cwd": "muju", "run": "npm run test:online:e2e", "effect": "Runs Playwright against an isolated in-memory Node host on port 8928."}, {"cwd": "muju", "run": "npm run test:e2e -- e2e/ai-worker.spec.ts", "effect": "Requires the built game served at MUJU_BASE_URL and an installed browser."}]
+    },
+    {
+      "id": "static-package", "title": "Complete deevgames static release artifact", "depends_on": ["game-validation"],
+      "paths": ["build-all.sh", "tools/verify_site.py", "tools/smoke-site.cjs", "muju/vite.config.ts", "muju/package.json", "muju/package-lock.json", "index.html", "README.md"],
+      "update": ["Build all three games with locked dependencies and Node 24; stage only the generated _site directory. Confirm current rules, skill assets and compiled AI land in the artifact. Check hub/game navigation and public dossier copy."],
+      "verify": ["The full build verifies links, required pages and file sizes. Serve _site on an unused port and run tools/smoke-site.cjs against it; inspect actual gameplay."],
+      "commands": [{"cwd": ".", "run": "bash build-all.sh", "effect": "Builds muju, forge and oracle and replaces generated _site; their dependencies must already be installed."}]
+    },
+    {
+      "id": "server-package", "title": "Node host release with persistent room storage", "depends_on": ["game-validation"],
+      "paths": ["muju/Dockerfile", "muju/compose.yaml", "muju/.dockerignore"],
+      "update": ["Build the Node host including its own browser dist and copied public skill files. Verify deployed source revision, persistent disk configuration, public URL/CORS and protocol compatibility."],
+      "verify": ["Test the built image and restart persistence. Preserve /app/data/rooms.sqlite and existing room data. Static Pages publication does not update this service."]
+    },
+    {
+      "id": "academy-package", "title": "Versioned Academy site package and historical redirects", "depends_on": ["academy-video"],
+      "paths": ["muju/academy/build-release.py", "muju/academy/verify-live.py", "muju/academy/verify-withdrawal.py"],
+      "update": ["Review the explicit mixed v7/v8 Metal release revisions, summaries, catalogue and economy in builder/verifier. Locate a current ashkie-pages checkout, review its instructions/workflow, choose a fresh archive outside the site, then validate before packaging. Do not assume the old /private/tmp checkout still exists."],
+      "verify": ["Run build-release.py with production root, site checkout and fresh external archive using --check-only before packaging. Verify exact hashed videos/posters/transcripts, course page, release.json, offline-manifest handling and static-before-wildcard redirects. The builder explicitly verifies the Metal v2.9 mixed v7/v8 release."],
+      "external": ["ethancd/ashkie-pages: muju-academy/, _redirects, offline-manifest.json, ./check, tools/verify_muju_videos.py and deployment workflow"]
+    },
+    {
+      "id": "static-deploy", "title": "Publish Cloudflare Pages deevgames", "depends_on": ["static-package"],
+      "paths": [".github/workflows/deploy.yml"],
+      "update": ["Follow root README deployment flow. Publish validated _site through the workflow or documented Wrangler command; master is production and other branches are previews. Check fetched origin/master freshness and preserve unrelated work."],
+      "verify": ["Record source revision, artifact identity, actual publish result and deployment URL. A green workflow can mean checks-only when credentials are absent; confirm the deploy step actually ran."],
+      "external": ["Cloudflare Pages project deevgames; documented public base https://deevgames.pages.dev"]
+    },
+    {
+      "id": "server-deploy", "title": "Publish authoritative multiplayer/MCP host", "depends_on": ["server-package"],
+      "paths": [],
+      "update": ["Inspect the current Render service and deploy the verified matching source/image through its configured release path. The repository has no verified automatic server deployment workflow; discover the live service configuration instead of inventing a deploy command. Follow ONLINE.md persistent disk and health settings."],
+      "verify": ["Record service/release identity and revision. Verify /api/muju/health, /muju/, /SKILL.md and MCP discovery/rules. Exercise a changed-rule preview and legal action in a fresh disposable room; verify existing storage survived."],
+      "external": ["Documented Node/MCP host https://deevgames-muju.onrender.com; Render web service with /app/data persistence"]
+    },
+    {
+      "id": "academy-deploy", "title": "Publish Muju Academy on ashkie.com", "depends_on": ["academy-package"],
+      "paths": [],
+      "update": ["Publish the prepared Academy-only changes via the current ashkie-pages workflow, following that checkout's release checks. Preserve unrelated website changes and previous media archives."],
+      "verify": ["Record website revision/deployment URL. Install the adapted verify-live.py as tools/verify_muju_videos.py in the website checkout before running it there. Verify page and release manifest, exact media bytes/hashes, range seeking, historical redirects and retired assets, then inspect the live course."],
+      "external": ["https://ashkie.com/muju-academy/; ethancd/ashkie-pages deployment workflow"]
+    },
+    {
+      "id": "release-verification", "title": "Cross-surface completion evidence", "depends_on": ["static-deploy", "server-deploy", "academy-deploy"],
+      "paths": ["muju/docs/changes/"],
+      "update": ["Write a change-specific completion record with every affected node disposition, exact source/artifact revisions, tests, affected lesson IDs, publish results and live verification evidence. Update current Academy STATUS and append decision context as appropriate."],
+      "verify": ["Compare the changed piece/rule across browser UI, local AI behavior, online engine, MCP rules and analysis, public agent skills and live Academy lessons/transcripts. Every applicable release must be verified or explicitly blocked. Do not call an end-to-end update complete when a surface is still stale or a publish is unverified."]
+    }
+  ]
+}

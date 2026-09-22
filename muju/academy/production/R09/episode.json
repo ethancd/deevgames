@@ -1,0 +1,350 @@
+{
+  "id": "R09",
+  "title": "The Ten Quiet Turns",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Louder, then. And faster.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a clock in slippers, asleep on a cushion. Pip jogs a lap around it, blowing a small trumpet. The clock does not stir.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Running in circles is exercise. It is not a clock reset.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then I will try the drum. Quietly. In case it is listening.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "delighted realization",
+      "text": "A second thing to count. I have waited nine episodes.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: Click is handed a strip of ten spaces. Nine are filled. One is empty.]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Click, how many quiet turns have we counted?",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[card: QUIET BULLETIN · nine of ten · outlook: quiet]"
+      ]
+    },
+    {
+      "id": "06",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Nine. Nine finished player turns with no enemy killed by attack.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "A quiet turn has no enemy killed by attack. Collecting crystals does not reset this clock.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: ONE FINISHED PLAYER TURN FILLS ONE SPACE · not one round · not ten actions]",
+        "[card: A QUIET TURN · nobody removed by an attack · no crystals at the end]"
+      ]
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ten quiet turns in a row, and the game is a draw.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "09",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Four things happened, and one was letting a Hono go. The clock slept through all four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: a practice strip beside the real one. Pip buys a piece and it sleeps. Pip promotes a piece and it sleeps. Pip hits a Sjor, the Sjor is still standing, and it sleeps. Pip cannot pay a Hono's bill and lets the Hono go, and it sleeps.]",
+        "[card: DOES NOT WAKE THE CLOCK BY ITSELF · buying · promoting · a hit they survive · letting a piece go at the bill]"
+      ],
+      "performanceNote": "Hono is pronounced ho-no, two smooth syllables, with no k sound. Read the exact words."
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "quietly certain",
+      "text": "Dramatic is not the same as busy. I think walking all the way across still counts as quiet.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Walking never resets it. Neither does mining, buying, promoting, or a hit the target survives.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: separate White Action practice position. A White Hi walks A five to J five along an open row for five actions and stops on a square with zero reserve. No attack kill this turn; every other White ending square also has zero reserve. End turn: the practice strip gains one space. No automatic fight occurs along the walk.]"
+      ]
+    },
+    {
+      "id": "12",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "That square paid. The quiet clock kept counting.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [board: reset that practice position. The same Hi makes the same walk; J five now holds one crystal. At White turn end the Hi collects it, and the practice strip resets to zero.]"
+      ]
+    },
+    {
+      "id": "13",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "An attack kill. Back to zero. A crystal does not do that.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "A kill is an enemy removed by an attack.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "A payday still fills your bank. It does not reset the quiet count.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ending A finishes with no attack kill, even though it collects one crystal.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: ENDING A · no kill · no crystals] [card: ENDING B · no kill · one crystal] [board: the strip stays at nine. Nothing moves.]"
+      ]
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ending B removes an enemy by attack. Another enemy remains on the board.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "The strip is at nine. Which ending draws?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Choose a card, or watch both and see.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ending A was quiet, so it added one. The tenth space filled.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: clock settle] [board: the tenth space fills. Every piece stops where it stands. The arrow to the next turn greys out and stays grey.]",
+        "[card: QUIET BULLETIN · ten of ten · outlook: finished]"
+      ]
+    },
+    {
+      "id": "21",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Ten quiet turns is a draw. Nobody wins and nobody loses.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Black's turn never starts. That is the Quiet Ten.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "23",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ending B killed an enemy by attack. That reset the count, and this turn ends at zero.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [board: back to nine. Ending B: one crystal drops into the bank and all ten spaces sweep empty in one pass.]"
+      ]
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "So a busy payday can still be a quiet turn.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "One attack removes an enemy. The strip goes back to zero the moment that piece leaves.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE · proves: what resets this clock and what does not · not checked: what either player will choose to do]",
+        "[card: ending A, but one attack removes an enemy piece]"
+      ]
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Unless that was their last piece. Then White has already won, and the clock never gets asked.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "27",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "I counted the clock. I did not count Black.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "28",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Filed. Overruled by the Quiet Ten.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: MINI GAME · two separate positions, each starting at quiet nine · no attack kills · a Muju ends on zero reserve, then on one reserve · all other friendly units collect zero · compare the endings]",
+        "[board: Pip drops the trumpet card into the drawer marked PIP'S AMENDMENTS (PENDING).]"
+      ]
+    },
+    {
+      "id": "29",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Attack kill. Back to zero. A crystal does not do that.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "draw-timing",
+      "speaker": "COACH",
+      "text": "The tenth quiet turn ends in a draw after mining, before the next turn starts. Even a piece waiting on the enemy home cannot override it. Ten player turns means five complete rounds. The warning turns amber at seven.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Quiet 10 ends the game before the next turn",
+        "body": "Mine → update quiet count → draw at 10.\nThe next home check never happens after a draw.\n10 player turns = 5 full rounds. Warning at 7."
+      }
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Nobody needs to answer quickly. This clock counts game turns, not your thinking time.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "31",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "That is enough for today if you want.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "question": "The strip is at nine. Which ending draws?",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "soundtrack": {
+    "id": "before-dawn",
+    "title": "Another Game Before Dawn",
+    "source": "muju/music-auditions/full-versions/before-dawn-full-v1.mp3",
+    "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709"
+  },
+  "speechProvider": "openai"
+}

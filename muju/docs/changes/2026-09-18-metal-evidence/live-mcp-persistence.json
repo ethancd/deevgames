@@ -1,0 +1,48 @@
+{
+  "persistentRoomSurvived": true,
+  "catalogue": [
+    {
+      "id": "metal_1",
+      "name": "Yan",
+      "element": "metal",
+      "tier": 1,
+      "archetype": "expand",
+      "attack": 1,
+      "defense": 3,
+      "speed": 0,
+      "mining": 3,
+      "cost": 5
+    },
+    {
+      "id": "metal_2",
+      "name": "Mazask",
+      "element": "metal",
+      "tier": 2,
+      "archetype": "expand",
+      "attack": 1,
+      "defense": 4,
+      "speed": 1,
+      "mining": 4,
+      "cost": 9
+    },
+    {
+      "id": "metal_3",
+      "name": "Tanka",
+      "element": "metal",
+      "tier": 3,
+      "archetype": "expand",
+      "attack": 2,
+      "defense": 5,
+      "speed": 2,
+      "mining": 5,
+      "cost": 17
+    }
+  ],
+  "phasingPreserved": true,
+  "tools": 15,
+  "purchasePreviewAndPlay": true,
+  "yanMoves": 0,
+  "whiteHarvestIncludingYan": 9,
+  "promotionCost": 4,
+  "qaRoomResigned": true
+}

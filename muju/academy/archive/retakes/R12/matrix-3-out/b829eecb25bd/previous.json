@@ -1,0 +1,14 @@
+{
+  "provider": "openai",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Kimubunga can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan and Mazask. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the kee-moo-boon-gah can finish Hee, hoh-noh, kah-gah-ree, rah-dee, oo-meh-meh, kee-moo-boon-gah, Shore. Gurl. gurl-geh. kah-rahn-luk, Moo-joo, sah-chee-tah, sah-chah-koo-nah, Yahn, and mah-zahsk. Every unlit card survives that single hit.",
+  "hash": "787001223dffb94dfa13ecb5d08a726c62bd1f44b22546768729b2b6c77a5a31",
+  "duration": 25.4,
+  "bytes": 1219278,
+  "retakeMethod": "sentence-by-sentence-v1",
+  "retakeReason": "Two local models confirm a skipped or mispronounced unit name; isolate the neighboring names with spoken sentence boundaries.",
+  "createdAt": "2026-09-18T17:28:56.498Z"
+}

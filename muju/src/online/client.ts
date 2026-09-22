@@ -1,5 +1,8 @@
-import type { ActionRequest, ObserverConnection, OnlineConnection, RoomAdmission, RoomChange, RoomConnection, RoomSnapshot } from './types';
+import type { ActionRequest, ActiveRoom, ObserverConnection, OnlineConnection, RoomAdmission, RoomChange, RoomConnection, RoomSnapshot } from './types';
 import type { PlayerId } from '../game/types';
+import type { TimeControl, TimeControlPreset } from './timeControl';
+import { invitationCodeFromPath, invitePattern, watchCodeFromPath } from './invitations';
+export { invitationUrl, observerUrl } from './invitations';
 
 export function normalizeServer(value: string) {
   const url = new URL(value);
@@ -24,7 +27,7 @@ export function parseSeatCredentials(input: string, fallbackServer: string): Roo
   const inviteCode = value.inviteCode ?? parsed.invitation?.inviteCode;
   return { roomId: value.roomId, player: value.player, token: value.token,
     serverUrl: normalizeServer(unwrapLink(server)),
-    ...(typeof inviteCode === 'string' && /^[a-f0-9]{64}$/.test(inviteCode) ? { inviteCode } : {}) };
+    ...(typeof inviteCode === 'string' && invitePattern.test(inviteCode) ? { inviteCode } : {}) };
 }
 
 export function parseObserverConnection(input: string, fallbackServer: string): ObserverConnection {
@@ -40,6 +43,18 @@ export function parseObserverConnection(input: string, fallbackServer: string): 
 export class OnlineError extends Error {
   constructor(message: string, public code: string, public status: number) { super(message); }
 }
+export async function resolveObserverConnection(input: string, fallbackServer: string): Promise<ObserverConnection> {
+  const value = unwrapLink(input);
+  if (roomIdPattern.test(value)) return parseObserverConnection(value, fallbackServer);
+  let link;
+  try { link = new URL(value); }
+  catch { throw new Error('Paste a watch link, room link, or room ID.'); }
+  const code = watchCodeFromPath(link.pathname);
+  if (!code) return parseObserverConnection(value, fallbackServer);
+  const serverUrl = normalizeServer(link.origin);
+  const { roomId } = await roomRequest<{ roomId: string }>(serverUrl, `/watch/${code}`);
+  return { serverUrl, roomId };
+}
 export async function roomRequest<T>(serverUrl: string, path: string, body?: unknown, token?: string, signal?: AbortSignal, timeoutMs = 10000): Promise<T> {
   const response = await fetch(`${normalizeServer(serverUrl)}/api/muju/rooms${path}`, {
     method: body === undefined ? 'GET' : 'POST',
@@ -53,7 +68,8 @@ export async function roomRequest<T>(serverUrl: string, path: string, body?: unk
   if (!response.ok) throw new OnlineError(result.error ?? 'Request failed.', result.code ?? 'REQUEST_FAILED', response.status);
   return result as T;
 }
-export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 4) => roomRequest<RoomAdmission>(serverUrl, '', { name, side, actionsPerTurn });
+export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 4, timeControl?: TimeControl | TimeControlPreset | null, blackCrystalHandicap = 0) => roomRequest<RoomAdmission>(serverUrl, '', { name, side, actionsPerTurn, timeControl, ...(blackCrystalHandicap > 0 ? { blackCrystalHandicap } : {}) });
+export const listActiveRooms = (serverUrl: string, signal?: AbortSignal) => roomRequest<{ rooms: ActiveRoom[] }>(serverUrl, '', undefined, undefined, signal);
 export const joinRoom = (serverUrl: string, roomId: string, name: string, inviteCode: string) => roomRequest<RoomAdmission>(serverUrl, `/${roomId}/join`, { name, inviteCode });
 export const restoreSeat = (c: RoomConnection) => roomRequest<RoomSnapshot>(c.serverUrl, `/${c.roomId}/restore`, { player: c.player }, c.token);
 export const readRoom = (c: OnlineConnection, signal?: AbortSignal) => roomRequest<RoomSnapshot>(c.serverUrl, `/${c.roomId}`, undefined, c.token, signal);
@@ -73,9 +89,18 @@ export function loadConnection(server: string, room: string): (RoomConnection & 
   }
   catch { return null; }
 }
-export function observerUrl(serverUrl: string, roomId: string) {
-  return `${normalizeServer(serverUrl)}/muju/?room=${roomId}&watch=1`;
+export function analysisUrl(connection: OnlineConnection, sequence?: number) {
+  return `/muju/analysis?room=${connection.roomId}&server=${encodeURIComponent(connection.serverUrl)}${connection.player ? '' : '&watch=1'}${sequence === undefined ? '' : `&event=${sequence}`}`;
 }
-export function invitationUrl(serverUrl: string, roomId: string, inviteCode: string) {
-  return `${normalizeServer(serverUrl)}/muju/?room=${roomId}#invite=${inviteCode}`;
+export async function resolveInvitationLink(input: string) {
+  const link = new URL(unwrapLink(input));
+  const serverUrl = normalizeServer(link.origin);
+  const shortCode = invitationCodeFromPath(link.pathname);
+  if (shortCode) {
+    const { roomId } = await roomRequest<{ roomId: string }>(serverUrl, `/invitations/${shortCode}`);
+    return { serverUrl, roomId, inviteCode: shortCode };
+  }
+  const roomId = link.searchParams.get('room');
+  if (!roomId || !roomIdPattern.test(roomId)) throw new Error('Paste the complete invitation link.');
+  return { serverUrl, roomId, inviteCode: new URLSearchParams(link.hash.slice(1)).get('invite') };
 }

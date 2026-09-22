@@ -1,0 +1,2050 @@
+{
+  "id": "R15",
+  "title": "Plant: The Payday Garden",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar",
+    "EMBER": "ash",
+    "ZIP": "verse",
+    "BUBBLES": "shimmer",
+    "MURMUR": "sage",
+    "CLANK": "onyx"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "Watering Can and Refill Company. Empty squares refilled while you wait.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a row of garden patches. Sign above: PLANT DEPARTMENT. Smaller sign under it: INCOME IS THE SMALLER NUMBER. Pip holds a watering can lettered REFILLS, with a small company logo.]"
+      ],
+      "displayText": "Watering Can and Refill Company. Empty squares refilled while you wait.",
+      "from": 0,
+      "speechFrames": 182,
+      "preRollFrames": 0,
+      "duration": 202,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "Watering Can and Refill Company.",
+          "start": 0,
+          "end": 106
+        },
+        {
+          "text": "Empty squares refilled while you wait.",
+          "start": 106,
+          "end": 182
+        }
+      ],
+      "wordFrames": [
+        0,
+        20,
+        29,
+        48,
+        59,
+        106,
+        110,
+        124,
+        142,
+        161,
+        172
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "The logo is finished.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The logo is finished.",
+      "from": 202,
+      "speechFrames": 66,
+      "preRollFrames": 0,
+      "duration": 86,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "The logo is finished.",
+          "start": 7,
+          "end": 66
+        }
+      ],
+      "wordFrames": [
+        7,
+        7,
+        15,
+        28
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The logo is always finished. The squares are pending.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "The logo is always finished. The squares are pending.",
+      "from": 288,
+      "speechFrames": 153,
+      "preRollFrames": 0,
+      "duration": 255,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "The logo is always finished.",
+          "start": 3,
+          "end": 83
+        },
+        {
+          "text": "The squares are pending.",
+          "start": 83,
+          "end": 153
+        }
+      ],
+      "wordFrames": [
+        3,
+        8,
+        19,
+        35,
+        53,
+        83,
+        91,
+        101,
+        136
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "From the drawer. Proposal: bigger buckets. Overruled by the Empty Payday.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[card: THE THREE QUESTIONS. Which stat helps this job? How many actions does it take? What will this piece owe next turn?]",
+        "[card: ROSTER KEY. Hit = base attack before elements. Shield = full defense. Walk = squares per action. Take = maximum crystals at own turn end, limited by reserve. Keep beside every roster recital.]",
+        "[board: Click opens the drawer marked PIP'S AMENDMENTS (PENDING).]"
+      ],
+      "displayText": "From the drawer. Proposal: bigger buckets. Overruled by the Empty Payday.",
+      "from": 543,
+      "speechFrames": 177,
+      "preRollFrames": 0,
+      "duration": 197,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "From the drawer. Proposal: bigger buckets.",
+          "start": 21,
+          "end": 124
+        },
+        {
+          "text": "Overruled by the Empty Payday.",
+          "start": 124,
+          "end": 177
+        }
+      ],
+      "wordFrames": [
+        21,
+        25,
+        39,
+        59,
+        91,
+        97,
+        124,
+        136,
+        142,
+        149,
+        152
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "You take the smaller number. Your Mining, or what the square has left.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "You take the smaller number. Your Mining, or what the square has left.",
+      "from": 740,
+      "speechFrames": 182,
+      "preRollFrames": 0,
+      "duration": 202,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "You take the smaller number.",
+          "start": 0,
+          "end": 87
+        },
+        {
+          "text": "Your Mining, or what the square has left.",
+          "start": 87,
+          "end": 182
+        }
+      ],
+      "wordFrames": [
+        0,
+        20,
+        30,
+        44,
+        56,
+        87,
+        93,
+        114,
+        123,
+        133,
+        141,
+        147,
+        161
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Welcome to the garden. Stop one. My finest patch.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: stop one on the tour. A Muju on a patch holding eight crystals.] [card: the Muju, Mining three] [card: this patch, eight crystals]"
+      ],
+      "displayText": "Welcome to the garden. Stop one. My finest patch.",
+      "from": 942,
+      "speechFrames": 170,
+      "preRollFrames": 0,
+      "duration": 190,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "Welcome to the garden.",
+          "start": 4,
+          "end": 65
+        },
+        {
+          "text": "Stop one. My finest patch.",
+          "start": 65,
+          "end": 170
+        }
+      ],
+      "wordFrames": [
+        4,
+        14,
+        25,
+        36,
+        65,
+        73,
+        109,
+        117,
+        131
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Muju's Mining is three. This square has eight crystals still in it.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Muju's Mining is three. This square has eight crystals still in it.",
+      "from": 1132,
+      "speechFrames": 179,
+      "preRollFrames": 0,
+      "duration": 199,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "The Muju's Mining is three.",
+          "start": 1,
+          "end": 96
+        },
+        {
+          "text": "This square has eight crystals still in it.",
+          "start": 96,
+          "end": 179
+        }
+      ],
+      "wordFrames": [
+        1,
+        10,
+        36,
+        44,
+        63,
+        96,
+        106,
+        114,
+        124,
+        134,
+        147,
+        161,
+        166
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "At your own turn end it takes three from the square it stands on.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "At your own turn end it takes three from the square it stands on.",
+      "from": 1331,
+      "speechFrames": 144,
+      "preRollFrames": 0,
+      "duration": 164,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "At your own turn end it takes three from the square it",
+          "start": 0,
+          "end": 123
+        },
+        {
+          "text": "stands on.",
+          "start": 123,
+          "end": 144
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        16,
+        29,
+        50,
+        60,
+        69,
+        77,
+        89,
+        96,
+        111,
+        111,
+        123,
+        128
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Eight. Now five. This one goes the wrong way.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [sfx: crystal clink] [sfx: crystal clink] [board: eight becomes five]"
+      ],
+      "displayText": "Eight. Now five. This one goes the wrong way.",
+      "from": 1495,
+      "speechFrames": 128,
+      "preRollFrames": 0,
+      "duration": 148,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "Eight. Now five. This one goes the wrong way.",
+          "start": 0,
+          "end": 128
+        }
+      ],
+      "wordFrames": [
+        0,
+        44,
+        44,
+        75,
+        80,
+        88,
+        96,
+        102,
+        109
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Stop two. Sachakuna. Its Mining is eight. This patch has two crystals left.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: stop two. A Sachakuna on a small patch. Pip's laminated sign reads PATCH EIGHT. PAYS EIGHT.] [card: the Sachakuna, Mining eight] [card: this patch, two crystals]"
+      ],
+      "displayText": "Stop two. Sachakuna. Its Mining is eight. This patch has two crystals left.",
+      "from": 1643,
+      "speechFrames": 341,
+      "preRollFrames": 0,
+      "duration": 361,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "Stop two. Sachakuna. Its Mining is eight.",
+          "start": 0,
+          "end": 220
+        },
+        {
+          "text": "This patch has two crystals left.",
+          "start": 220,
+          "end": 341
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        60,
+        128,
+        138,
+        155,
+        173,
+        220,
+        231,
+        244,
+        261,
+        273,
+        287
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "11",
+      "speaker": "PIP",
+      "cue": "question, open",
+      "text": "So what is the payday here?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "So what is the payday here?",
+      "from": 2004,
+      "speechFrames": 96,
+      "preRollFrames": 0,
+      "duration": 116,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "So what is the payday here?",
+          "start": 7,
+          "end": 96
+        }
+      ],
+      "wordFrames": [
+        7,
+        30,
+        40,
+        48,
+        56,
+        64
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Say it, point at it, or watch the patch with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "question": "So what is the payday here?",
+      "displayText": "Say it, point at it, or watch the patch with me.",
+      "from": 2120,
+      "speechFrames": 116,
+      "preRollFrames": 0,
+      "duration": 422,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "Say it, point at it, or watch the patch with me.",
+          "start": 2,
+          "end": 116
+        }
+      ],
+      "wordFrames": [
+        2,
+        13,
+        41,
+        46,
+        52,
+        65,
+        74,
+        80,
+        94,
+        94,
+        102
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Two. The patch could not pay eight.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [sfx: crystal clink] [board: two crystals leave. The patch drains to a puddle.]"
+      ],
+      "displayText": "Two. The patch could not pay eight.",
+      "from": 2542,
+      "speechFrames": 110,
+      "preRollFrames": 0,
+      "duration": 130,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "Two. The patch could not pay eight.",
+          "start": 0,
+          "end": 110
+        }
+      ],
+      "wordFrames": [
+        0,
+        29,
+        34,
+        44,
+        53,
+        61,
+        71
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "14",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Eight. My gardener is an eight.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Eight. My gardener is an eight.",
+      "from": 2672,
+      "speechFrames": 89,
+      "preRollFrames": 0,
+      "duration": 109,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "Eight. My gardener is an eight.",
+          "start": 0,
+          "end": 89
+        }
+      ],
+      "wordFrames": [
+        0,
+        26,
+        33,
+        49,
+        61,
+        67
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "The patch is a two. The smaller number wins.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The patch is a two. The smaller number wins.",
+      "from": 2781,
+      "speechFrames": 105,
+      "preRollFrames": 0,
+      "duration": 125,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "The patch is a two.",
+          "start": 1,
+          "end": 55
+        },
+        {
+          "text": "The smaller number wins.",
+          "start": 55,
+          "end": 105
+        }
+      ],
+      "wordFrames": [
+        1,
+        7,
+        19,
+        29,
+        39,
+        55,
+        65,
+        75,
+        86
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "gently, slower",
+      "text": "Next payday, standing right here: nothing. It is empty now. It does not refill.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Next payday, standing right here: nothing. It is empty now. It does not refill.",
+      "from": 2906,
+      "speechFrames": 176,
+      "preRollFrames": 0,
+      "duration": 196,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "Next payday, standing right here: nothing.",
+          "start": 4,
+          "end": 100
+        },
+        {
+          "text": "It is empty now.",
+          "start": 100,
+          "end": 138
+        },
+        {
+          "text": "It does not refill.",
+          "start": 138,
+          "end": 176
+        }
+      ],
+      "wordFrames": [
+        4,
+        12,
+        47,
+        47,
+        59,
+        81,
+        100,
+        102,
+        113,
+        120,
+        138,
+        144,
+        150,
+        159
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "PIP",
+      "cue": "dawning concern",
+      "text": "The company is closing. The can is a warning now.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: Pip tips the REFILLS can over the puddle. Nothing happens. Pip crosses out REFILLS and letters FOR PLANTS, NOT CRYSTALS.]"
+      ],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible.",
+      "displayText": "The company is closing. The can is a warning now.",
+      "from": 3102,
+      "speechFrames": 143,
+      "preRollFrames": 0,
+      "duration": 163,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "The company is closing.",
+          "start": 0,
+          "end": 80
+        },
+        {
+          "text": "The can is a warning now.",
+          "start": 80,
+          "end": 143
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        21,
+        42,
+        80,
+        87,
+        96,
+        109,
+        119,
+        122
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "And the next patch is a whole action away. Somebody could stand there first.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: this patch, these two paydays. Not checked: who else can walk here.]"
+      ],
+      "displayText": "And the next patch is a whole action away. Somebody could stand there first.",
+      "from": 3265,
+      "speechFrames": 138,
+      "preRollFrames": 0,
+      "duration": 158,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "And the next patch is a whole action away.",
+          "start": 0,
+          "end": 102
+        },
+        {
+          "text": "Somebody could stand there first.",
+          "start": 102,
+          "end": 138
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        10,
+        21,
+        30,
+        38,
+        43,
+        55,
+        65,
+        102,
+        102,
+        109,
+        115,
+        123
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "This is the Muju. Shield of three. Takes three crystals. That is the Muju.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Muju · the Sachita · the Sachakuna.]"
+      ],
+      "displayText": "This is the Muju. Shield of three. Takes three crystals. That is the Muju.",
+      "from": 3423,
+      "speechFrames": 179,
+      "preRollFrames": 0,
+      "duration": 199,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "This is the Muju.",
+          "start": 0,
+          "end": 55
+        },
+        {
+          "text": "Shield of three. Takes three crystals.",
+          "start": 55,
+          "end": 137
+        },
+        {
+          "text": "That is the Muju.",
+          "start": 137,
+          "end": 179
+        }
+      ],
+      "wordFrames": [
+        0,
+        16,
+        22,
+        27,
+        55,
+        58,
+        65,
+        92,
+        95,
+        106,
+        137,
+        144,
+        158,
+        162
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "20",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "This is the Sachita. Shield of three. Takes five crystals. That is the Sachita.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "This is the Sachita. Shield of three. Takes five crystals. That is the Sachita.",
+      "from": 3622,
+      "speechFrames": 254,
+      "preRollFrames": 0,
+      "duration": 274,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "This is the Sachita.",
+          "start": 0,
+          "end": 74
+        },
+        {
+          "text": "Shield of three. Takes five crystals.",
+          "start": 74,
+          "end": 195
+        },
+        {
+          "text": "That is the Sachita.",
+          "start": 195,
+          "end": 254
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        28,
+        35,
+        74,
+        87,
+        94,
+        131,
+        139,
+        151,
+        195,
+        205,
+        218,
+        223
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "21",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "This is the Sachakuna. Many growing things. Shield of four. Takes eight crystals.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "This is the Sachakuna. Many growing things. Shield of four. Takes eight crystals.",
+      "from": 3896,
+      "speechFrames": 222,
+      "preRollFrames": 0,
+      "duration": 242,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "This is the Sachakuna.",
+          "start": 0,
+          "end": 78
+        },
+        {
+          "text": "Many growing things. Shield of four.",
+          "start": 78,
+          "end": 181
+        },
+        {
+          "text": "Takes eight crystals.",
+          "start": 181,
+          "end": 222
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        19,
+        24,
+        78,
+        86,
+        97,
+        143,
+        146,
+        151,
+        181,
+        186,
+        194
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "22",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Plant beats Water. Our Muju adds one to attack zero. The Garden Wall drains the Deep End.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: the Muju beside a fresh Sjor] [card: the Muju against Water, one damage]"
+      ],
+      "displayText": "Plant beats Water. Our Muju adds one to attack zero. The Garden Wall drains the Deep End.",
+      "from": 4138,
+      "speechFrames": 219,
+      "preRollFrames": 0,
+      "duration": 239,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "Plant beats Water. Our Muju adds one to attack zero.",
+          "start": 0,
+          "end": 146
+        },
+        {
+          "text": "The Garden Wall drains the Deep End.",
+          "start": 146,
+          "end": 219
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        27,
+        57,
+        69,
+        72,
+        85,
+        98,
+        102,
+        114,
+        146,
+        153,
+        161,
+        177,
+        189,
+        198,
+        206
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "One damage is not a finish. A fresh Sjor has defense two.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One damage is not a finish. A fresh Sjor has defense two.",
+      "from": 4377,
+      "speechFrames": 140,
+      "preRollFrames": 0,
+      "duration": 160,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "One damage is not a finish.",
+          "start": 6,
+          "end": 76
+        },
+        {
+          "text": "A fresh Sjor has defense two.",
+          "start": 76,
+          "end": 140
+        }
+      ],
+      "wordFrames": [
+        6,
+        10,
+        23,
+        31,
+        37,
+        43,
+        76,
+        81,
+        88,
+        97,
+        112,
+        124
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Next turn the Muju owes nothing. The Sachita owes one. The Sachakuna owes two.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Next turn the Muju owes nothing. The Sachita owes one. The Sachakuna owes two.",
+      "from": 4537,
+      "speechFrames": 227,
+      "preRollFrames": 0,
+      "duration": 247,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "Next turn the Muju owes nothing.",
+          "start": 7,
+          "end": 101
+        },
+        {
+          "text": "The Sachita owes one.",
+          "start": 101,
+          "end": 168
+        },
+        {
+          "text": "The Sachakuna owes two.",
+          "start": 168,
+          "end": 227
+        }
+      ],
+      "wordFrames": [
+        7,
+        14,
+        31,
+        42,
+        47,
+        58,
+        101,
+        106,
+        124,
+        137,
+        168,
+        178,
+        198,
+        210
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Pick where you end. Collect what's there.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: PLANT WORK CARD. Mining three, five, eight · speed one · defense three, three, four · toll nothing, one, two. Added to the deck.]",
+        "[card: MISSION. Mark where your Plant piece stands for its next two paydays. Cross off the crystals it takes.]"
+      ],
+      "displayText": "Pick where you end. Collect what's there.",
+      "from": 4784,
+      "speechFrames": 114,
+      "preRollFrames": 0,
+      "duration": 134,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "Pick where you end.",
+          "start": 10,
+          "end": 78
+        },
+        {
+          "text": "Collect what's there.",
+          "start": 78,
+          "end": 114
+        }
+      ],
+      "wordFrames": [
+        10,
+        13,
+        26,
+        34,
+        78,
+        78,
+        98
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Crystals never come back.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Crystals never come back.",
+      "from": 4918,
+      "speechFrames": 60,
+      "preRollFrames": 0,
+      "duration": 80,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "Crystals never come back.",
+          "start": 0,
+          "end": 60
+        }
+      ],
+      "wordFrames": [
+        0,
+        18,
+        34,
+        44
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "matrix-intro",
+      "speaker": "COACH",
+      "text": "Now the bonk matrix for plant. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Read one tier at a time",
+        "body": "Green: this unit one-shots the enemy.\nRed: that enemy one-shots this unit.\nBoth at full health · adjacent · one legal attack.\nThis is damage, not a movement or safety prediction."
+      },
+      "displayText": "Now the bonk matrix for plant. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+      "from": 4998,
+      "speechFrames": 446,
+      "preRollFrames": 0,
+      "duration": 470,
+      "audio": "audio/matrix-intro.wav",
+      "captions": [
+        {
+          "text": "Now the bonk matrix for plant.",
+          "start": 0,
+          "end": 76
+        },
+        {
+          "text": "We check all eighteen enemy unit types, including matching types.",
+          "start": 76,
+          "end": 229
+        },
+        {
+          "text": "Both pieces start at full health and are already next to each",
+          "start": 229,
+          "end": 361
+        },
+        {
+          "text": "other. One attack, not a whole turn.",
+          "start": 361,
+          "end": 446
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        14,
+        28,
+        39,
+        48,
+        76,
+        82,
+        92,
+        112,
+        131,
+        142,
+        154,
+        176,
+        188,
+        200,
+        229,
+        240,
+        257,
+        279,
+        286,
+        296,
+        307,
+        322,
+        327,
+        340,
+        350,
+        357,
+        361,
+        380,
+        384,
+        407,
+        413,
+        417,
+        422
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-stats",
+      "speaker": "COACH",
+      "text": "Tier one: the Muju. Attack zero, defense three, speed one, and Mining three. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_1",
+        "focus": "out"
+      },
+      "displayText": "Tier one: the Muju. Attack zero, defense three, speed one, and Mining three. Look at the green side first.",
+      "from": 5468,
+      "speechFrames": 297,
+      "preRollFrames": 0,
+      "duration": 321,
+      "audio": "audio/matrix-1-stats.wav",
+      "captions": [
+        {
+          "text": "Tier one: the Muju.",
+          "start": 0,
+          "end": 94
+        },
+        {
+          "text": "Attack zero, defense three, speed one, and Mining three.",
+          "start": 94,
+          "end": 240
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 240,
+          "end": 297
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        46,
+        48,
+        94,
+        95,
+        121,
+        127,
+        154,
+        160,
+        189,
+        193,
+        204,
+        240,
+        244,
+        250,
+        254,
+        261,
+        272
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Muju can finish no full health unit. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_1",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Muju can finish no full health unit. Every unlit card survives that single hit.",
+      "from": 5789,
+      "speechFrames": 216,
+      "preRollFrames": 0,
+      "duration": 240,
+      "audio": "audio/matrix-1-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Muju can finish no full health unit.",
+          "start": 0,
+          "end": 128
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 128,
+          "end": 216
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        16,
+        43,
+        46,
+        55,
+        63,
+        71,
+        84,
+        93,
+        100,
+        128,
+        136,
+        147,
+        155,
+        169,
+        178,
+        188
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Muju is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_1",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Muju is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.",
+      "from": 6029,
+      "speechFrames": 419,
+      "preRollFrames": 0,
+      "duration": 443,
+      "audio": "audio/matrix-1-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 45
+        },
+        {
+          "text": "A full health Muju is one shot by Hi, Hono, Kagari, Umeme,",
+          "start": 45,
+          "end": 229
+        },
+        {
+          "text": "Kimubunga and Karanlık. Every unlit attacker needs help or earlier",
+          "start": 229,
+          "end": 398
+        },
+        {
+          "text": "damage.",
+          "start": 398,
+          "end": 419
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        14,
+        20,
+        45,
+        46,
+        54,
+        65,
+        81,
+        89,
+        98,
+        105,
+        112,
+        140,
+        164,
+        193,
+        229,
+        275,
+        284,
+        316,
+        328,
+        342,
+        356,
+        364,
+        374,
+        386,
+        398
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-1-read",
+      "speaker": "COACH",
+      "text": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_1",
+        "focus": "both"
+      },
+      "displayText": "That is the tier one card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 6472,
+      "speechFrames": 311,
+      "preRollFrames": 0,
+      "duration": 371,
+      "audio": "audio/matrix-1-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier one card.",
+          "start": 0,
+          "end": 82
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 82,
+          "end": 152
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 152,
+          "end": 278
+        },
+        {
+          "text": "finish the other.",
+          "start": 278,
+          "end": 311
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        22,
+        28,
+        34,
+        44,
+        82,
+        86,
+        94,
+        103,
+        112,
+        120,
+        152,
+        155,
+        163,
+        170,
+        177,
+        185,
+        192,
+        199,
+        230,
+        236,
+        250,
+        263,
+        278,
+        287,
+        294
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-stats",
+      "speaker": "COACH",
+      "text": "Tier two: the Sachita. Attack one, defense three, speed one, and Mining five. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_2",
+        "focus": "out"
+      },
+      "displayText": "Tier two: the Sachita. Attack one, defense three, speed one, and Mining five. Look at the green side first.",
+      "from": 6843,
+      "speechFrames": 282,
+      "preRollFrames": 0,
+      "duration": 306,
+      "audio": "audio/matrix-2-stats.wav",
+      "captions": [
+        {
+          "text": "Tier two: the Sachita.",
+          "start": 0,
+          "end": 76
+        },
+        {
+          "text": "Attack one, defense three, speed one, and Mining five.",
+          "start": 76,
+          "end": 231
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 231,
+          "end": 282
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        34,
+        34,
+        76,
+        83,
+        110,
+        116,
+        146,
+        152,
+        179,
+        182,
+        191,
+        231,
+        234,
+        239,
+        242,
+        249,
+        260
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Sachita can finish Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_2",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Sachita can finish Sjor, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "from": 7149,
+      "speechFrames": 278,
+      "preRollFrames": 0,
+      "duration": 302,
+      "audio": "audio/matrix-2-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Sachita can finish Sjor, Göl, Gölge and Karanlık.",
+          "start": 0,
+          "end": 185
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 185,
+          "end": 278
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        13,
+        41,
+        42,
+        56,
+        66,
+        76,
+        102,
+        111,
+        136,
+        142,
+        185,
+        196,
+        208,
+        218,
+        237,
+        248,
+        260
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Sachita is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_2",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Sachita is one shot by Hi, Hono, Kagari, Umeme, Kimubunga and Karanlık. Every unlit attacker needs help or earlier damage.",
+      "from": 7451,
+      "speechFrames": 473,
+      "preRollFrames": 0,
+      "duration": 497,
+      "audio": "audio/matrix-2-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 72
+        },
+        {
+          "text": "A full health Sachita is one shot by Hi, Hono, Kagari, Umeme,",
+          "start": 72,
+          "end": 283
+        },
+        {
+          "text": "Kimubunga and Karanlık. Every unlit attacker needs help or earlier",
+          "start": 283,
+          "end": 447
+        },
+        {
+          "text": "damage.",
+          "start": 447,
+          "end": 473
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        17,
+        23,
+        72,
+        74,
+        86,
+        100,
+        125,
+        138,
+        147,
+        158,
+        166,
+        191,
+        217,
+        247,
+        283,
+        320,
+        322,
+        356,
+        366,
+        380,
+        395,
+        408,
+        419,
+        435,
+        447
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-2-read",
+      "speaker": "COACH",
+      "text": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_2",
+        "focus": "both"
+      },
+      "displayText": "That is the tier two card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 7948,
+      "speechFrames": 300,
+      "preRollFrames": 0,
+      "duration": 360,
+      "audio": "audio/matrix-2-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier two card.",
+          "start": 0,
+          "end": 70
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 70,
+          "end": 144
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 144,
+          "end": 271
+        },
+        {
+          "text": "finish the other.",
+          "start": 271,
+          "end": 300
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        19,
+        26,
+        29,
+        39,
+        70,
+        74,
+        82,
+        89,
+        97,
+        109,
+        144,
+        147,
+        157,
+        166,
+        175,
+        181,
+        187,
+        193,
+        223,
+        228,
+        241,
+        256,
+        271,
+        281,
+        288
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-stats",
+      "speaker": "COACH",
+      "text": "Tier three: the Sachakuna. Attack two, defense four, speed one, and Mining eight. Look at the green side first.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_3",
+        "focus": "out"
+      },
+      "displayText": "Tier three: the Sachakuna. Attack two, defense four, speed one, and Mining eight. Look at the green side first.",
+      "from": 8308,
+      "speechFrames": 278,
+      "preRollFrames": 0,
+      "duration": 302,
+      "audio": "audio/matrix-3-stats.wav",
+      "captions": [
+        {
+          "text": "Tier three: the Sachakuna.",
+          "start": 0,
+          "end": 92
+        },
+        {
+          "text": "Attack two, defense four, speed one, and Mining eight.",
+          "start": 92,
+          "end": 228
+        },
+        {
+          "text": "Look at the green side first.",
+          "start": 228,
+          "end": 278
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        36,
+        38,
+        92,
+        93,
+        123,
+        124,
+        148,
+        155,
+        181,
+        183,
+        193,
+        228,
+        231,
+        235,
+        239,
+        245,
+        257
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-out",
+      "speaker": "COACH",
+      "text": "With one attack, the Sachakuna can finish Hi, Hono, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_3",
+        "focus": "out"
+      },
+      "displayText": "With one attack, the Sachakuna can finish Hi, Hono, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık. Every unlit card survives that single hit.",
+      "from": 8610,
+      "speechFrames": 503,
+      "preRollFrames": 0,
+      "duration": 527,
+      "audio": "audio/matrix-3-out.wav",
+      "captions": [
+        {
+          "text": "With one attack, the Sachakuna can finish Hi, Hono, Radi, Umeme,",
+          "start": 0,
+          "end": 224
+        },
+        {
+          "text": "Kimubunga, Sjor, Straumr, Göl, Gölge and Karanlık.",
+          "start": 224,
+          "end": 410
+        },
+        {
+          "text": "Every unlit card survives that single hit.",
+          "start": 410,
+          "end": 503
+        }
+      ],
+      "wordFrames": [
+        0,
+        4,
+        16,
+        48,
+        49,
+        85,
+        103,
+        115,
+        143,
+        169,
+        194,
+        224,
+        267,
+        287,
+        322,
+        338,
+        368,
+        374,
+        410,
+        419,
+        433,
+        444,
+        462,
+        473,
+        485
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-in",
+      "speaker": "COACH",
+      "text": "Now the red side. A full health Sachakuna is one shot by Hono, Kagari and Kimubunga. Every unlit attacker needs help or earlier damage.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_3",
+        "focus": "in"
+      },
+      "displayText": "Now the red side. A full health Sachakuna is one shot by Hono, Kagari and Kimubunga. Every unlit attacker needs help or earlier damage.",
+      "from": 9137,
+      "speechFrames": 371,
+      "preRollFrames": 0,
+      "duration": 395,
+      "audio": "audio/matrix-3-in.wav",
+      "captions": [
+        {
+          "text": "Now the red side.",
+          "start": 0,
+          "end": 56
+        },
+        {
+          "text": "A full health Sachakuna is one shot by Hono, Kagari and Kimubunga.",
+          "start": 56,
+          "end": 259
+        },
+        {
+          "text": "Every unlit attacker needs help or earlier damage.",
+          "start": 259,
+          "end": 371
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        16,
+        23,
+        56,
+        59,
+        68,
+        80,
+        104,
+        118,
+        128,
+        136,
+        143,
+        179,
+        211,
+        212,
+        259,
+        271,
+        283,
+        294,
+        303,
+        314,
+        328,
+        339
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "matrix-3-read",
+      "speaker": "COACH",
+      "text": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 2,
+      "directions": [],
+      "supplement": {
+        "kind": "matrix",
+        "unit": "plant_3",
+        "focus": "both"
+      },
+      "displayText": "That is the tier three card. Pause here to compare any names. The same enemy can appear on both sides: whoever attacks first may finish the other.",
+      "from": 9532,
+      "speechFrames": 281,
+      "preRollFrames": 0,
+      "duration": 341,
+      "audio": "audio/matrix-3-read.wav",
+      "captions": [
+        {
+          "text": "That is the tier three card.",
+          "start": 0,
+          "end": 85
+        },
+        {
+          "text": "Pause here to compare any names.",
+          "start": 85,
+          "end": 139
+        },
+        {
+          "text": "The same enemy can appear on both sides: whoever attacks first may",
+          "start": 139,
+          "end": 253
+        },
+        {
+          "text": "finish the other.",
+          "start": 253,
+          "end": 281
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        28,
+        35,
+        42,
+        54,
+        85,
+        88,
+        95,
+        100,
+        108,
+        114,
+        139,
+        142,
+        148,
+        156,
+        164,
+        170,
+        176,
+        181,
+        210,
+        215,
+        227,
+        241,
+        253,
+        262,
+        269
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "That completes the garden rules. Keep the three bonk cards beside your practice board.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Articulate every word and every sentence in the supplied text. Do not drop the final sentence. Hono is pronounced hoh-noh as a normal two-syllable name, never as letters. Keep the small final phrases fully audible.",
+      "displayText": "That completes the garden rules. Keep the three bonk cards beside your practice board.",
+      "from": 9873,
+      "speechFrames": 150,
+      "preRollFrames": 0,
+      "duration": 170,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "That completes the garden rules.",
+          "start": 0,
+          "end": 64
+        },
+        {
+          "text": "Keep the three bonk cards beside your practice board.",
+          "start": 64,
+          "end": 150
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        21,
+        28,
+        34,
+        64,
+        68,
+        74,
+        82,
+        94,
+        105,
+        117,
+        125,
+        133
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "28",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Pick where you end. Collect what's there. The can goes in the drawer.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "Pick where you end. Collect what's there. The can goes in the drawer.",
+      "from": 10043,
+      "speechFrames": 164,
+      "preRollFrames": 0,
+      "duration": 224,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Pick where you end.",
+          "start": 16,
+          "end": 68
+        },
+        {
+          "text": "Collect what's there. The can goes in the drawer.",
+          "start": 68,
+          "end": 164
+        }
+      ],
+      "wordFrames": [
+        16,
+        17,
+        24,
+        29,
+        68,
+        68,
+        79,
+        108,
+        113,
+        123,
+        131,
+        136,
+        146
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "version": 8,
+  "rules": "v2.9",
+  "updatedLabel": "Video version 8 · Last updated Sep 18 2026 CDT",
+  "question": "So what is the payday here?",
+  "soundtrack": {
+    "id": "muju-charango",
+    "title": "Muju / A Field of Small Decisions",
+    "source": "muju/music-auditions/full-versions/muju-charango-full-v2-blended.mp3",
+    "sha256": "8c25a1b64577b2bc755093f33c92bbf74cbb12a9c17a6a96eb752c80416825e5"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 10267
+}

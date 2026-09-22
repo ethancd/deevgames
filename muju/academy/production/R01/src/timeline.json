@@ -1,0 +1,1308 @@
+{
+  "id": "R01",
+  "title": "The Board Has Two Front Doors",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "I have installed a doorbell on Black's home.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: the real starting board. White home A one and Black home J ten carry owner badges as well as colour. A small felt welcome mat lies beside each home corner. Pip is screwing a doorbell onto the far corner.]"
+      ],
+      "displayText": "I have installed a doorbell on Black's home.",
+      "from": 0,
+      "speechFrames": 114,
+      "preRollFrames": 0,
+      "duration": 134,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "I have installed a doorbell on Black's home.",
+          "start": 0,
+          "end": 114
+        }
+      ],
+      "wordFrames": [
+        0,
+        8,
+        16,
+        28,
+        41,
+        49,
+        58,
+        70
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "On their home. Not near it.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "On their home. Not near it.",
+      "from": 134,
+      "speechFrames": 93,
+      "preRollFrames": 0,
+      "duration": 113,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "On their home. Not near it.",
+          "start": 0,
+          "end": 93
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        23,
+        51,
+        59,
+        65
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Yes. So they know I arrived. And I find out tomorrow whether I stayed.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Yes. So they know I arrived. And I find out tomorrow whether I stayed.",
+      "from": 247,
+      "speechFrames": 206,
+      "preRollFrames": 0,
+      "duration": 226,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "Yes. So they know I arrived.",
+          "start": 3,
+          "end": 99
+        },
+        {
+          "text": "And I find out tomorrow whether I stayed.",
+          "start": 99,
+          "end": 206
+        }
+      ],
+      "wordFrames": [
+        3,
+        24,
+        43,
+        57,
+        66,
+        88,
+        99,
+        111,
+        120,
+        129,
+        136,
+        151,
+        175,
+        193
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Hello. Pip has just described the rule we came for.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "Hello. Pip has just described the rule we came for.",
+      "from": 473,
+      "speechFrames": 113,
+      "preRollFrames": 0,
+      "duration": 215,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "Hello. Pip has just described the rule we came for.",
+          "start": 5,
+          "end": 113
+        }
+      ],
+      "wordFrames": [
+        5,
+        32,
+        37,
+        44,
+        54,
+        66,
+        78,
+        80,
+        88,
+        93
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ten rows. Ten columns. A Hi, a Sjor and a Muju in White's corner.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: the ten by ten grid, rows numbered down the side, columns lettered along the bottom. White Hi on B one, White Sjor on B two, White Muju on A two. Black's three in the far corner.]"
+      ],
+      "displayText": "Ten rows. Ten columns. A Hi, a Sjor and a Muju in White's corner.",
+      "from": 688,
+      "speechFrames": 179,
+      "preRollFrames": 0,
+      "duration": 199,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "Ten rows. Ten columns.",
+          "start": 1,
+          "end": 80
+        },
+        {
+          "text": "A Hi, a Sjor and a Muju in White's corner.",
+          "start": 80,
+          "end": 179
+        }
+      ],
+      "wordFrames": [
+        1,
+        12,
+        38,
+        50,
+        80,
+        91,
+        97,
+        111,
+        118,
+        127,
+        136,
+        137,
+        156,
+        166
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "White's home is A one, this corner. Black's home is J ten, the far corner.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: A one lights. Then J ten lights. Both corner squares are empty.]"
+      ],
+      "displayText": "White's home is A1, this corner. Black's home is J10, the far corner.",
+      "from": 887,
+      "speechFrames": 201,
+      "preRollFrames": 0,
+      "duration": 221,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "White's home is A1, this corner.",
+          "start": 0,
+          "end": 114
+        },
+        {
+          "text": "Black's home is J10, the far corner.",
+          "start": 114,
+          "end": 201
+        }
+      ],
+      "wordFrames": [
+        0,
+        18,
+        21,
+        33,
+        44,
+        67,
+        75,
+        114,
+        120,
+        126,
+        141,
+        152,
+        173,
+        178,
+        186
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Same starting team. Different front doors. Two ways to win.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Same starting team. Different front doors. Two ways to win.",
+      "from": 1108,
+      "speechFrames": 129,
+      "preRollFrames": 0,
+      "duration": 149,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "Same starting team. Different front doors.",
+          "start": 9,
+          "end": 97
+        },
+        {
+          "text": "Two ways to win.",
+          "start": 97,
+          "end": 129
+        }
+      ],
+      "wordFrames": [
+        9,
+        12,
+        23,
+        49,
+        60,
+        68,
+        97,
+        102,
+        108,
+        115
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Last piece gone? The game is done.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: one side of the board empties, piece by piece. Every removal has an attacker standing next door first. Nothing moves onto a square it emptied.]",
+        "[sfx: piece removed]"
+      ],
+      "displayText": "Last piece gone? The game is done.",
+      "from": 1257,
+      "speechFrames": 74,
+      "preRollFrames": 0,
+      "duration": 94,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "Last piece gone? The game is done.",
+          "start": 4,
+          "end": 74
+        }
+      ],
+      "wordFrames": [
+        4,
+        9,
+        17,
+        36,
+        44,
+        44,
+        58
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The other way is to stand on the other player's home.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The other way is to stand on the other player's home.",
+      "from": 1351,
+      "speechFrames": 83,
+      "preRollFrames": 0,
+      "duration": 103,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "The other way is to stand on the other player's home.",
+          "start": 1,
+          "end": 83
+        }
+      ],
+      "wordFrames": [
+        1,
+        4,
+        12,
+        19,
+        24,
+        39,
+        39,
+        44,
+        48,
+        57,
+        70
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "You have to still be standing there when your next turn starts.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "You have to still be standing there when your next turn starts.",
+      "from": 1454,
+      "speechFrames": 113,
+      "preRollFrames": 0,
+      "duration": 133,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "You have to still be standing there when your next turn starts.",
+          "start": 1,
+          "end": 113
+        }
+      ],
+      "wordFrames": [
+        1,
+        5,
+        13,
+        23,
+        27,
+        43,
+        43,
+        53,
+        60,
+        66,
+        75,
+        84
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "PIP",
+      "cue": "delighted realization",
+      "text": "Arrive. Survive. High five?",
+      "beat": "SHOW",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "Arrive. Survive. High five?",
+      "from": 1587,
+      "speechFrames": 117,
+      "preRollFrames": 0,
+      "duration": 144,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "Arrive. Survive. High five?",
+          "start": 2,
+          "end": 117
+        }
+      ],
+      "wordFrames": [
+        2,
+        59,
+        83,
+        85
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "A home threat means standing on the corner that could end the game.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: two cards face up on the table. One reads A one. One reads J ten.]"
+      ],
+      "displayText": "A home threat means standing on the corner that could end the game.",
+      "from": 1731,
+      "speechFrames": 128,
+      "preRollFrames": 0,
+      "duration": 148,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "A home threat means standing on the corner that could end the",
+          "start": 0,
+          "end": 108
+        },
+        {
+          "text": "game.",
+          "start": 108,
+          "end": 128
+        }
+      ],
+      "wordFrames": [
+        0,
+        2,
+        15,
+        26,
+        43,
+        55,
+        61,
+        67,
+        74,
+        87,
+        95,
+        102,
+        108
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "Which corner does White have to reach?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Which corner does White have to reach?",
+      "from": 1879,
+      "speechFrames": 87,
+      "preRollFrames": 0,
+      "duration": 107,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "Which corner does White have to reach?",
+          "start": 5,
+          "end": 87
+        }
+      ],
+      "wordFrames": [
+        5,
+        11,
+        23,
+        46,
+        52,
+        62,
+        76
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One card says A one. The other says J ten.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "One card says A1. The other says J10.",
+      "from": 1986,
+      "speechFrames": 125,
+      "preRollFrames": 0,
+      "duration": 145,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "One card says A1.",
+          "start": 3,
+          "end": 65
+        },
+        {
+          "text": "The other says J10.",
+          "start": 65,
+          "end": 125
+        }
+      ],
+      "wordFrames": [
+        3,
+        10,
+        20,
+        31,
+        40,
+        65,
+        74,
+        80,
+        95,
+        107
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Put a finger on one, or just look at both.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "displayText": "Put a finger on one, or just look at both.",
+      "from": 2131,
+      "speechFrames": 101,
+      "preRollFrames": 0,
+      "duration": 407,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "Put a finger on one, or just look at both.",
+          "start": 9,
+          "end": 101
+        }
+      ],
+      "wordFrames": [
+        9,
+        12,
+        27,
+        27,
+        36,
+        56,
+        66,
+        76,
+        81,
+        90
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "J ten. Black's home.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: a practice position. Black's Hi has stepped off I ten. Black's Sjor stands on J nine. A White Hi walks I ten to J ten along a clear path. The J ten card lights. The A one card goes grey.]",
+        "[sfx: doorbell, one chime]"
+      ],
+      "displayText": "J10. Black's home.",
+      "from": 2538,
+      "speechFrames": 77,
+      "preRollFrames": 0,
+      "duration": 97,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "J10. Black's home.",
+          "start": 0,
+          "end": 77
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        40,
+        56
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "A one is White's own home. Your own home threatens nobody.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "A1 is White's own home. Your own home threatens nobody.",
+      "from": 2635,
+      "speechFrames": 156,
+      "preRollFrames": 0,
+      "duration": 176,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "A1 is White's own home.",
+          "start": 14,
+          "end": 79
+        },
+        {
+          "text": "Your own home threatens nobody.",
+          "start": 79,
+          "end": 156
+        }
+      ],
+      "wordFrames": [
+        14,
+        18,
+        21,
+        33,
+        42,
+        51,
+        79,
+        84,
+        92,
+        103,
+        117
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "curious, thinking aloud",
+      "text": "Now the part that catches people. Does arriving finish the game right there?",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Now the part that catches people. Does arriving finish the game right there?",
+      "from": 2811,
+      "speechFrames": 137,
+      "preRollFrames": 0,
+      "duration": 157,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "Now the part that catches people.",
+          "start": 0,
+          "end": 73
+        },
+        {
+          "text": "Does arriving finish the game right there?",
+          "start": 73,
+          "end": 137
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        17,
+        23,
+        38,
+        38,
+        73,
+        76,
+        90,
+        102,
+        112,
+        114,
+        124
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "PIP",
+      "cue": "quietly certain",
+      "text": "It does not. My doorbell only says somebody came.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "It does not. My doorbell only says somebody came.",
+      "from": 2968,
+      "speechFrames": 155,
+      "preRollFrames": 0,
+      "duration": 175,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "It does not. My doorbell only says somebody came.",
+          "start": 2,
+          "end": 155
+        }
+      ],
+      "wordFrames": [
+        2,
+        11,
+        25,
+        61,
+        71,
+        87,
+        109,
+        121,
+        134
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "It did not step on the mat. It reached across.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[board: the turn marker flips to Black. Same position. Black's Sjor stays on J nine and does not move. One bonk reaches across to J ten. The White visitor is removed. The mat lies there with nothing on it.]",
+        "[sfx: bonk]",
+        "[sfx: piece removed]",
+        "[sfx: door latch]"
+      ],
+      "displayText": "It did not step on the mat. It reached across.",
+      "from": 3143,
+      "speechFrames": 86,
+      "preRollFrames": 0,
+      "duration": 106,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "It did not step on the mat.",
+          "start": 0,
+          "end": 59
+        },
+        {
+          "text": "It reached across.",
+          "start": 59,
+          "end": 86
+        }
+      ],
+      "wordFrames": [
+        0,
+        3,
+        9,
+        18,
+        24,
+        29,
+        39,
+        59,
+        60,
+        67
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Pip is right. The visitor has to be there when White's next turn starts.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Pip is right. The visitor has to be there when White's next turn starts.",
+      "from": 3249,
+      "speechFrames": 140,
+      "preRollFrames": 0,
+      "duration": 160,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "Pip is right. The visitor has to be there when White's next",
+          "start": 7,
+          "end": 114
+        },
+        {
+          "text": "turn starts.",
+          "start": 114,
+          "end": 140
+        }
+      ],
+      "wordFrames": [
+        7,
+        9,
+        17,
+        45,
+        49,
+        58,
+        70,
+        75,
+        80,
+        85,
+        94,
+        104,
+        114,
+        118
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "And the game has to still be going.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "And the game has to still be going.",
+      "from": 3409,
+      "speechFrames": 87,
+      "preRollFrames": 0,
+      "duration": 107,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "And the game has to still be going.",
+          "start": 2,
+          "end": 87
+        }
+      ],
+      "wordFrames": [
+        2,
+        10,
+        23,
+        32,
+        42,
+        52,
+        57,
+        66
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "COACH",
+      "cue": "gently, slower",
+      "text": "Home waits a turn. The last piece does not.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Home waits a turn. The last piece does not.",
+      "from": 3516,
+      "speechFrames": 126,
+      "preRollFrames": 0,
+      "duration": 146,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "Home waits a turn.",
+          "start": 2,
+          "end": 74
+        },
+        {
+          "text": "The last piece does not.",
+          "start": 74,
+          "end": 126
+        }
+      ],
+      "wordFrames": [
+        2,
+        15,
+        34,
+        53,
+        74,
+        77,
+        88,
+        97,
+        105
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The doorbell rang. Then it had nothing to announce.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The doorbell rang. Then it had nothing to announce.",
+      "from": 3662,
+      "speechFrames": 110,
+      "preRollFrames": 0,
+      "duration": 130,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "The doorbell rang. Then it had nothing to announce.",
+          "start": 6,
+          "end": 110
+        }
+      ],
+      "wordFrames": [
+        6,
+        11,
+        27,
+        56,
+        62,
+        66,
+        73,
+        81,
+        108
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "We know which door. Nobody has counted the walk.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "We know which door. Nobody has counted the walk.",
+      "from": 3792,
+      "speechFrames": 107,
+      "preRollFrames": 0,
+      "duration": 127,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "We know which door.",
+          "start": 0,
+          "end": 50
+        },
+        {
+          "text": "Nobody has counted the walk.",
+          "start": 50,
+          "end": 107
+        }
+      ],
+      "wordFrames": [
+        0,
+        6,
+        17,
+        25,
+        50,
+        60,
+        71,
+        76,
+        83
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Now one thing is different. A Black piece is standing on our corner.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: J ten is the corner White must reach. Not checked: the path, the reply, the money.]",
+        "[board: one thing changes. A Black Hi is standing on A one, on Pip's mat.]"
+      ],
+      "displayText": "Now one thing is different. A Black piece is standing on our corner.",
+      "from": 3919,
+      "speechFrames": 156,
+      "preRollFrames": 0,
+      "duration": 176,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "Now one thing is different.",
+          "start": 0,
+          "end": 77
+        },
+        {
+          "text": "A Black piece is standing on our corner.",
+          "start": 77,
+          "end": 156
+        }
+      ],
+      "wordFrames": [
+        0,
+        21,
+        30,
+        37,
+        46,
+        77,
+        79,
+        87,
+        97,
+        110,
+        119,
+        128,
+        134
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Same rule, other direction. Black's next turn start is the moment that matters.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Same rule, other direction. Black's next turn start is the moment that matters.",
+      "from": 4095,
+      "speechFrames": 180,
+      "preRollFrames": 0,
+      "duration": 200,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "Same rule, other direction.",
+          "start": 10,
+          "end": 85
+        },
+        {
+          "text": "Black's next turn start is the moment that matters.",
+          "start": 85,
+          "end": 180
+        }
+      ],
+      "wordFrames": [
+        10,
+        14,
+        36,
+        43,
+        85,
+        89,
+        98,
+        106,
+        116,
+        130,
+        137,
+        146,
+        178
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Waiting.",
+      "beat": "TRANSFER",
+      "hold": 0.9,
+      "directions": [
+        "[board: Pip raises a hand and holds it up. One full beat of silence.]"
+      ],
+      "displayText": "Waiting.",
+      "from": 4295,
+      "speechFrames": 26,
+      "preRollFrames": 0,
+      "duration": 53,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Waiting.",
+          "start": 13,
+          "end": 26
+        }
+      ],
+      "wordFrames": [
+        13
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "29",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Arrive. Survive. Next turn: high five.",
+      "beat": "TRANSFER",
+      "hold": 1.2,
+      "directions": [],
+      "displayText": "Arrive. Survive. Next turn: high five.",
+      "from": 4348,
+      "speechFrames": 134,
+      "preRollFrames": 0,
+      "duration": 170,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "Arrive. Survive. Next turn: high five.",
+          "start": 16,
+          "end": 134
+        }
+      ],
+      "wordFrames": [
+        16,
+        36,
+        69,
+        75,
+        96,
+        101
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "That is enough for today if you want.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "That is enough for today if you want.",
+      "from": 4518,
+      "speechFrames": 75,
+      "preRollFrames": 0,
+      "duration": 95,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "That is enough for today if you want.",
+          "start": 0,
+          "end": 75
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        22,
+        28,
+        37,
+        52,
+        59,
+        64
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "setup",
+      "speaker": "COACH",
+      "text": "White moves first. Each side starts with a Hi, a Sjor and a Muju. White begins on B one, B two and A two. Black begins on I ten, I nine and J nine.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "setup"
+      },
+      "displayText": "White moves first. Each side starts with a Hi, a Sjor and a Muju. White begins on B1, B2 and A2. Black begins on I10, I9 and J9.",
+      "from": 4613,
+      "speechFrames": 392,
+      "preRollFrames": 0,
+      "duration": 416,
+      "audio": "audio/setup.wav",
+      "captions": [
+        {
+          "text": "White moves first. Each side starts with a Hi, a Sjor and",
+          "start": 0,
+          "end": 146
+        },
+        {
+          "text": "a Muju. White begins on B1, B2 and A2.",
+          "start": 146,
+          "end": 295
+        },
+        {
+          "text": "Black begins on I10, I9 and J9.",
+          "start": 295,
+          "end": 392
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        28,
+        61,
+        65,
+        76,
+        85,
+        92,
+        97,
+        118,
+        123,
+        143,
+        146,
+        149,
+        178,
+        186,
+        196,
+        203,
+        228,
+        253,
+        256,
+        295,
+        297,
+        308,
+        315,
+        346,
+        368,
+        370
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "31",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Next time: how far can one piece walk in one go?",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Next time: how far can one piece walk in one go?",
+      "from": 5029,
+      "speechFrames": 119,
+      "preRollFrames": 0,
+      "duration": 139,
+      "audio": "audio/31.wav",
+      "captions": [
+        {
+          "text": "Next time: how far can one piece walk in one go?",
+          "start": 4,
+          "end": 119
+        }
+      ],
+      "wordFrames": [
+        4,
+        10,
+        35,
+        39,
+        47,
+        56,
+        64,
+        75,
+        86,
+        95,
+        104
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "32",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "I am keeping the mats. They say welcome. They do not say for how long.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "I am keeping the mats. They say welcome. They do not say for how long.",
+      "from": 5168,
+      "speechFrames": 158,
+      "preRollFrames": 0,
+      "duration": 218,
+      "audio": "audio/32.wav",
+      "captions": [
+        {
+          "text": "I am keeping the mats.",
+          "start": 0,
+          "end": 64
+        },
+        {
+          "text": "They say welcome. They do not say for how long.",
+          "start": 64,
+          "end": 158
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        14,
+        25,
+        33,
+        64,
+        67,
+        76,
+        107,
+        109,
+        116,
+        125,
+        132,
+        137,
+        146
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "question": "Which corner does White have to reach?",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "soundtrack": {
+    "id": "open-room",
+    "title": "Open Room, Lantern On",
+    "source": "muju/music-auditions/full-versions/open-room-full-v1.mp3",
+    "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 5386
+}

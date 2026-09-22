@@ -1,8 +1,21 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import { loadConnection, observerUrl, parseObserverConnection, parseSeatCredentials, readRoom, waitRoom } from '../src/online/client';
+import { invitationUrl, loadConnection, observerUrl, parseObserverConnection, parseSeatCredentials, readRoom, resolveInvitationLink, resolveObserverConnection, waitRoom } from '../src/online/client';
 
 const seat = { roomId: 'a'.repeat(32), player: 'white', token: 'b'.repeat(64), serverUrl: 'https://muju.example' };
 afterEach(() => { vi.unstubAllGlobals(); localStorage.clear(); });
+
+it('shares and resolves six-letter invitations on the selected host, retaining legacy links', async () => {
+  const link = invitationUrl(`${seat.serverUrl}/`, seat.roomId, 'abcdef');
+  expect(link).toBe(`${seat.serverUrl}/join/abcdef`);
+  const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ roomId: seat.roomId }) });
+  vi.stubGlobal('fetch', fetch);
+  expect(await resolveInvitationLink(link)).toEqual({ serverUrl: seat.serverUrl, roomId: seat.roomId, inviteCode: 'abcdef' });
+  expect(fetch.mock.calls[0][0]).toBe(`${seat.serverUrl}/api/muju/rooms/invitations/abcdef`);
+  expect(parseSeatCredentials(JSON.stringify({ ...seat, inviteCode: 'abcdef' }), seat.serverUrl).inviteCode).toBe('abcdef');
+  const legacy = invitationUrl(seat.serverUrl, seat.roomId, 'c'.repeat(64));
+  expect(await resolveInvitationLink(legacy)).toEqual({ serverUrl: seat.serverUrl, roomId: seat.roomId, inviteCode: 'c'.repeat(64) });
+  expect(fetch).toHaveBeenCalledTimes(1);
+});
 
 it('imports browser and MCP credentials, including Markdown URLs, code fences and optional invitations', () => {
   const markdown = `[${seat.serverUrl}](${seat.serverUrl})`;
@@ -40,4 +53,20 @@ it('watch links and live reads contain neither seat nor invitation credentials',
     expect(url).not.toContain(seat.token);
     expect(init.method).toBe('GET');
   }
+});
+
+it('resolves short watch links as observers even with a saved seat, and accepts old links and room IDs', async () => {
+  const link = observerUrl(`${seat.serverUrl}/`, seat.roomId, 'uvwxyz');
+  expect(link).toBe(`${seat.serverUrl}/watch/uvwxyz`);
+  localStorage.setItem(`muju:online:${seat.serverUrl}:${seat.roomId}`, JSON.stringify(seat));
+  const fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ roomId: seat.roomId }) });
+  vi.stubGlobal('fetch', fetch);
+  const observer = { serverUrl: seat.serverUrl, roomId: seat.roomId };
+  expect(await resolveObserverConnection(link, 'https://another.example')).toEqual(observer);
+  expect(fetch.mock.calls[0][0]).toBe(`${seat.serverUrl}/api/muju/rooms/watch/uvwxyz`);
+  expect(fetch.mock.calls[0][1].headers).not.toHaveProperty('Authorization');
+  expect(await resolveObserverConnection(observerUrl(seat.serverUrl, seat.roomId), seat.serverUrl)).toEqual(observer);
+  expect(await resolveObserverConnection(seat.roomId, seat.serverUrl)).toEqual(observer);
+  expect(fetch).toHaveBeenCalledTimes(1);
+  expect(loadConnection(seat.serverUrl, seat.roomId)).toEqual(seat);
 });

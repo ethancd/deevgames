@@ -1,0 +1,45 @@
+{
+  "actions": 6,
+  "n": 20,
+  "pairs": [
+    [
+      "Aware:Rush",
+      "Aware:Expand"
+    ],
+    [
+      "Aware:Rush",
+      "Aware:AntiRush"
+    ],
+    [
+      "Aware:Balanced",
+      "Aware:Turtle"
+    ],
+    [
+      "Invade:MiningDenial",
+      "Guard:AntiRush"
+    ],
+    [
+      "Siege:3",
+      "Guard:AntiRush"
+    ],
+    [
+      "Siege:3",
+      "Aware:Rush"
+    ],
+    [
+      "Aware:Rush",
+      "Aware:Rush"
+    ],
+    [
+      "Aware:Balanced",
+      "Aware:Balanced"
+    ]
+  ],
+  "seedBase": 9122026,
+  "maxTurns": 120,
+  "maxPlies": 8000,
+  "sourceHash": "22fc86135dcd5c5296a70a8a70187d29c51bc0ac5be90d60752c9bdb3e07086d",
+  "policy": "Existing scripted policies, unchanged; home-aware wrappers use bounded search.",
+  "capPolicy": "Caps are recorded as unresolved, regardless of harness adjudication.",
+  "started": "2026-09-12T05:29:57.038Z"
+}

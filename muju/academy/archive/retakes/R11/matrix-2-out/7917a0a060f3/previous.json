@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "e3a696124b5b4105d96aaa7d9ad7b84f6ca2dd8b05c637846b41b6d77f2f6962",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Hono can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Yan and Mazask. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the hohnoh can finish Hee, hohnoh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, Gurl, GURL-geh, kah-rahn-luk, Moo-joo, sah-CHEE-tah, sah-chah-KOO-nah, Yahn and MAH-zahsk. Every unlit card survives that single hit.",
+  "duration": 19.4,
+  "bytes": 931244,
+  "createdAt": "2026-09-18T17:14:41.996Z"
+}

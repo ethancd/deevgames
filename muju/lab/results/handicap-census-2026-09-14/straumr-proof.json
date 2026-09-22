@@ -1,0 +1,136 @@
+{
+  "whiteStates": 797,
+  "distinctStraumrSquares": 24,
+  "pairs": 19128,
+  "maxOptimisticDamage": 2,
+  "defense": 3,
+  "counts": {
+    "0": 17475,
+    "1": 14,
+    "2": 1639
+  },
+  "claim": "No legal White W2 can capture a Black Straumr promoted on B1 under handicap 4. This does not prove a win or immunity on later turns.",
+  "method": "Relaxed action/crystal knapsack includes every original attacker or its promotion and up to two T1 purchases. Uses unobstructed Manhattan approaches and independently ideal spawn cells; ignoring blockers overestimates attainable damage. Each attacker can hit a surviving target only once.",
+  "examples": [
+    {
+      "w": 792,
+      "targetSquare": "H9",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "I8",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "I10",
+      "optimisticDamageBound": 0
+    },
+    {
+      "w": 792,
+      "targetSquare": "H10",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "G10",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "I9",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "G9",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "F9",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "J8",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "H8",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "G8",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "J7",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "I7",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "H7",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "I6",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "J9",
+      "optimisticDamageBound": 0
+    },
+    {
+      "w": 792,
+      "targetSquare": "J10",
+      "optimisticDamageBound": 0
+    },
+    {
+      "w": 792,
+      "targetSquare": "F10",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "E9",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "F8",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "G7",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "J6",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "H6",
+      "optimisticDamageBound": 2
+    },
+    {
+      "w": 792,
+      "targetSquare": "I5",
+      "optimisticDamageBound": 2
+    }
+  ]
+}

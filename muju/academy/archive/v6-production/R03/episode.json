@@ -1,0 +1,394 @@
+{
+  "id": "R03",
+  "title": "The Bonk Lab",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "I have issued the lab spoon a small shield.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: the Bonk Lab bench. White Hi on D five and on F five. Black Sjor on E five. A spare Black Muju on J nine, off the bench. Every piece fresh. White in Action with four actions. Pip holds a very official spoon with a tiny felt shield taped to it.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "A shield taped to a spoon is a shield taped to a spoon.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then it is decoration. It still looks important.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "recap, brisk",
+      "text": "Last time, any piece blocked the hallway. Now we count the hit.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: last episode's blocked hallway at C four, for two seconds.]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One action buys one attack. Up, down, left or right.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: the Hi. Attack two. The Sjor. Defense two.]"
+      ]
+    },
+    {
+      "id": "06",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "One? The card says attack two.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: the Hi on D five attacks E five and does not move.]",
+        "[sfx: bonk, dull]",
+        "[board: one damage marker lands on the Sjor. One of its two shield pips goes dark. The card still reads attack two.]"
+      ]
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Water beats Fire. The Sjor is Water. The Hi is Fire.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: one row only. Water beats Fire.]"
+      ]
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "curious, thinking aloud",
+      "text": "Check the two elements. The attacker's number goes up one, or down one.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "09",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Attack two. Take one away. One damage. Never below nothing.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "10",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Elements change the hit. They never change the shield.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "11",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The spoon is not an attack bonus.",
+      "beat": "SHOW",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "12",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "That Hi already swung once this turn. Now a different question.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "performanceNote": "Pronounce swung clearly with a final ng sound. Read That Hi already swung once this turn. Do not say swum."
+    },
+    {
+      "id": "13",
+      "speaker": "PIP",
+      "cue": "quietly certain",
+      "text": "I would send that Hi again. I cannot. It did not finish the job.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Pip is ahead of me. Leave the target standing, and that piece is done attacking for the turn.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Name for the file: the Closed Chain.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "The Hi on F five has not attacked. The Sjor has one shield left.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: the White Hi on F five, fresh, has not attacked. The Sjor shows one shield pip still lit. Both numbers stay on screen. Nothing moves.]"
+      ]
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "If nobody finishes it, the Sjor heals on its own next turn.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "If that Hi hits now, does the Sjor survive?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Take longer if you want. Or watch with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Two shields, two bonks, two attackers. The Sjor is off the board.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bonk]",
+        "[board: the second Hi attacks from F five and does not move. The last shield pip goes dark. The Sjor tips over and lands in the tray. The two one-damage lines stay on screen, unchanged.]",
+        "[sfx: piece removed]"
+      ]
+    },
+    {
+      "id": "21",
+      "speaker": "COACH",
+      "cue": "gently, slower",
+      "text": "The first Hi could not finish it. A second attacker could.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Checked: this defender. Nobody hits back during an attack.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "23",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Sparks burn the Garden Wall.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: two fresh Hi remove one fresh Sjor for two actions. Not checked: other defenders, what Black does on Black's turn.]",
+        "[card: the three-team wheel, one-way arrows. Fire and Lightning: the Sparks. Plant and Metal: the Garden Wall. Water and Shadow: the Deep End. Element symbols as well as colour.]"
+      ]
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "rhyme couplet, light lilt",
+      "text": "The Garden Wall drains the Deep End. The Deep End puts out the Sparks.",
+      "beat": "TRANSFER",
+      "hold": 0.9,
+      "directions": []
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "In rules words: Fire and Lightning beat Plant and Metal.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Plant and Metal beat Water and Shadow. Water and Shadow beat Fire and Lightning.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "27",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "We can keep the chart. This is a lab, not a memory test.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Only the defender changes. A Straumr on E five. Same team. One more shield.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: one thing changes. The Sjor is gone and a Straumr stands on E five. Both Hi are back, fresh, on D five and F five.]",
+        "[card: the Straumr. Water. Defense three.]"
+      ]
+    },
+    {
+      "id": "29",
+      "speaker": "COACH",
+      "cue": "trailing off, inviting",
+      "text": "The dare. Are both Hi enough?",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "That is enough for today if you want.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "cleave-rule",
+      "speaker": "COACH",
+      "text": "A kill can unlock another attack by that same piece. This is Cleave. Tier one gets at most one attack, tier two gets two, and tier three gets three. Every attack still costs one of your four shared actions.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Cleave: earn the next attack",
+        "body": "T1: at most 1 attack\nT2: at most 2 attacks\nT3: at most 3 attacks\nEvery attack costs 1 of the team’s 4 actions."
+      }
+    },
+    {
+      "id": "cleave-demo",
+      "speaker": "COACH",
+      "text": "This Hono is beside two enemy Muju. Its first hit does four against defense three and removes one. That unlocks its second attack. One more action removes the other. Two kills cost two actions.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "cleave",
+        "stage": 0
+      }
+    },
+    {
+      "id": "cleave-finish",
+      "speaker": "COACH",
+      "text": "Now two team actions remain. This Hono has used both its attacks. It may still move, but it cannot attack a third time this turn.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "cleave",
+        "stage": 2
+      }
+    },
+    {
+      "id": "cleave-limits",
+      "speaker": "COACH",
+      "text": "You may move between attacks at the normal cost. If your attack leaves the target on the board, your piece cannot attack again this turn. Even a zero damage hit closes the chain. Another teammate’s later kill cannot reopen it.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "The chain closes if the target survives",
+        "body": "Moving between attacks is allowed.\nA surviving target closes that attacker’s chain.\nAnother piece’s later kill cannot reopen it."
+      }
+    },
+    {
+      "id": "31",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The spoon changed no numbers. File it in the drawer.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "32",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Filed. Overruled by the shield that never moves.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "question": "If that Hi hits now, does the Sjor survive?",
+  "version": 6,
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "rules": "v2.7",
+  "soundtrack": {
+    "id": "before-dawn",
+    "title": "Another Game Before Dawn",
+    "source": "muju/music-auditions/full-versions/before-dawn-full-v1.mp3",
+    "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709"
+  },
+  "speechProvider": "openai"
+}

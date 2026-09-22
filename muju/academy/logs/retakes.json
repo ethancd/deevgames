@@ -1,0 +1,15 @@
+[
+  {
+    "episode": "R04",
+    "id": "map",
+    "reason": "The full-paragraph take dropped the words square reserve; record each complete sentence separately.",
+    "force": true
+  },
+  {
+    "episode": "R15",
+    "id": "10",
+    "speechText": "Stop two. sah-chah-koo-nah. Its Mining is eight. This patch has two crystals left.",
+    "reason": "Give the unit name and the revised Mining eight a clear separate sentence.",
+    "force": true
+  }
+]

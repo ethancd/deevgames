@@ -1,0 +1,28 @@
+{
+  "productionFilesVerifiedUnchanged": 102,
+  "changedProductionFiles": [],
+  "experimentSources": {
+    "lab/experiments/depth-economy/.gitignore": "b2f3de0955ccc665077c6b627a7ea10d716f73ed0360d530a11f486922cfe95f",
+    "lab/experiments/depth-economy/PLAN.md": "1d2e54daebd71695919a831768d31a675786917bf087a2f608ed87ac193848e3",
+    "lab/experiments/depth-economy/analyze.py": "e88bd545b4fde706b8f05d9d890c55885bdf7066813074bcb4c22d5fff38eb85",
+    "lab/experiments/depth-economy/common.ts": "0784e709942ee73bb66483b419f3aa83e0831cde794b7463758c5a34123a872d",
+    "lab/experiments/depth-economy/counterfactual.ts": "339e1ff29b38e73c990eefb8c23a4c4c3db29db39d0fbc7a78892d4cf6560a4b",
+    "lab/experiments/depth-economy/finalize.py": "b4d3ae81f2a829d5224273a0c71e2de3da0804f0bda0a22c29669f7fc1a77e4e",
+    "lab/experiments/depth-economy/inspect.ts": "d0ac33ac2be646502a2d1f27763f55d0db02fe0531359c989035b583ff1a3a96",
+    "lab/experiments/depth-economy/policies.ts": "73430fcc7b77602c9abb372b3be614162629e76a3d3ee7653a01795d1bc0d7db",
+    "lab/experiments/depth-economy/prepare.py": "bf7d007bdd3acf7f28dec83b0ab0b15c8ae27262c42b9b6f5c409534044bcdc2",
+    "lab/experiments/depth-economy/real-ai.ts": "47f4d884ff0128d6e73823271522f16f7e398ab08d9e24fcae67d364958bed60",
+    "lab/experiments/depth-economy/report.py": "f381a341bd9f9d5ebd1c071b065e2480372327e7fff0a129def0773522a546c9",
+    "lab/experiments/depth-economy/reproduce.sh": "e7cf96ff7ee06aec00820d34fc6a381ec88c632481ceb0d4928a58b6c9f6e0d8",
+    "lab/experiments/depth-economy/run.ts": "20bf11799221399a4ba1fa0ff4077c29c21c7966707fb54058af403892c17938",
+    "lab/experiments/depth-economy/scenarios.ts": "eeb719cf7e58f19f57521447dae43c449e2d4b5670ed5412110a68c342ff1d4e",
+    "lab/experiments/depth-economy/telemetry.ts": "6984aefb2da301a499049df3e621ff4c8f1edc447474061b2f7ae515834c1d7a",
+    "lab/experiments/depth-economy/tsconfig.json": "cd52ff30f6e85db02b00c126eec1bea1c719eddbf198c72db16dcd09feaac223",
+    "lab/experiments/depth-economy/validate.ts": "6773a5940ce5af468d3dcf6bfe12de9bf39ce641837005d7d5714e3aa6cf2f75",
+    "lab/experiments/depth-economy/witnesses.ts": "592b0d3c9f38a49bbd5d7574eed0c7469e4ac64f92bdfc513c12f5ce9cabc829"
+  },
+  "baselineGameTests": 456,
+  "mainScreenGames": 5760,
+  "counterfactualBranches": 288,
+  "independentReplays": 25
+}

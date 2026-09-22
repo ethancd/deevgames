@@ -1,0 +1,1380 @@
+{
+  "id": "R09",
+  "title": "The Ten Quiet Turns",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Louder, then. And faster.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a clock in slippers, asleep on a cushion. Pip jogs a lap around it, blowing a small trumpet. The clock does not stir.]"
+      ],
+      "displayText": "Louder, then. And faster.",
+      "from": 0,
+      "speechFrames": 81,
+      "preRollFrames": 0,
+      "duration": 101,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "Louder, then. And faster.",
+          "start": 0,
+          "end": 81
+        }
+      ],
+      "wordFrames": [
+        0,
+        27,
+        44,
+        58
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Running in circles is exercise. It is not a clock reset.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "Running in circles is exercise. It is not a clock reset.",
+      "from": 101,
+      "speechFrames": 149,
+      "preRollFrames": 0,
+      "duration": 176,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "Running in circles is exercise.",
+          "start": 17,
+          "end": 89
+        },
+        {
+          "text": "It is not a clock reset.",
+          "start": 89,
+          "end": 149
+        }
+      ],
+      "wordFrames": [
+        17,
+        17,
+        27,
+        36,
+        46,
+        89,
+        90,
+        96,
+        105,
+        122,
+        122
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Then I will try the drum. Quietly. In case it is listening.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "Then I will try the drum. Quietly. In case it is listening.",
+      "from": 277,
+      "speechFrames": 164,
+      "preRollFrames": 0,
+      "duration": 266,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "Then I will try the drum.",
+          "start": 3,
+          "end": 98
+        },
+        {
+          "text": "Quietly. In case it is listening.",
+          "start": 98,
+          "end": 164
+        }
+      ],
+      "wordFrames": [
+        3,
+        12,
+        34,
+        42,
+        52,
+        70,
+        98,
+        120,
+        127,
+        134,
+        142,
+        150
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "delighted realization",
+      "text": "A second thing to count. I have waited nine episodes.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: Click is handed a strip of ten spaces. Nine are filled. One is empty.]"
+      ],
+      "displayText": "A second thing to count. I have waited nine episodes.",
+      "from": 543,
+      "speechFrames": 123,
+      "preRollFrames": 0,
+      "duration": 143,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "A second thing to count.",
+          "start": 0,
+          "end": 61
+        },
+        {
+          "text": "I have waited nine episodes.",
+          "start": 61,
+          "end": 123
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        14,
+        22,
+        37,
+        61,
+        65,
+        79,
+        80,
+        100
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Click, how many quiet turns have we counted?",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[card: QUIET BULLETIN · nine of ten · outlook: quiet]"
+      ],
+      "displayText": "Click, how many quiet turns have we counted?",
+      "from": 686,
+      "speechFrames": 95,
+      "preRollFrames": 0,
+      "duration": 115,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "Click, how many quiet turns have we counted?",
+          "start": 6,
+          "end": 95
+        }
+      ],
+      "wordFrames": [
+        6,
+        35,
+        38,
+        47,
+        59,
+        65,
+        71,
+        85
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Nine. Nine finished player turns with no enemy killed by attack.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Nine. Nine finished player turns with no enemy killed by attack.",
+      "from": 801,
+      "speechFrames": 152,
+      "preRollFrames": 0,
+      "duration": 172,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "Nine. Nine finished player turns with no enemy killed by attack.",
+          "start": 0,
+          "end": 152
+        }
+      ],
+      "wordFrames": [
+        0,
+        30,
+        43,
+        52,
+        62,
+        75,
+        90,
+        98,
+        106,
+        116,
+        123
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "A quiet turn has no enemy killed by attack. Collecting crystals does not reset this clock.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: ONE FINISHED PLAYER TURN FILLS ONE SPACE · not one round · not ten actions]",
+        "[card: A QUIET TURN · nobody removed by an attack · no crystals at the end]"
+      ],
+      "displayText": "A quiet turn has no enemy killed by attack. Collecting crystals does not reset this clock.",
+      "from": 973,
+      "speechFrames": 204,
+      "preRollFrames": 0,
+      "duration": 224,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "A quiet turn has no enemy killed by attack.",
+          "start": 0,
+          "end": 128
+        },
+        {
+          "text": "Collecting crystals does not reset this clock.",
+          "start": 128,
+          "end": 204
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        17,
+        31,
+        44,
+        56,
+        66,
+        79,
+        86,
+        128,
+        137,
+        147,
+        161,
+        169,
+        180,
+        187
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "08",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ten quiet turns in a row, and the game is a draw.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Ten quiet turns in a row, and the game is a draw.",
+      "from": 1197,
+      "speechFrames": 99,
+      "preRollFrames": 0,
+      "duration": 119,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "Ten quiet turns in a row, and the game is a draw.",
+          "start": 9,
+          "end": 99
+        }
+      ],
+      "wordFrames": [
+        9,
+        13,
+        27,
+        37,
+        45,
+        51,
+        64,
+        67,
+        76,
+        78,
+        83,
+        94
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Four things happened, and one was letting a Hono go. The clock slept through all four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: a practice strip beside the real one. Pip buys a piece and it sleeps. Pip promotes a piece and it sleeps. Pip hits a Sjor, the Sjor is still standing, and it sleeps. Pip cannot pay a Hono's bill and lets the Hono go, and it sleeps.]",
+        "[card: DOES NOT WAKE THE CLOCK BY ITSELF · buying · promoting · a hit they survive · letting a piece go at the bill]"
+      ],
+      "performanceNote": "Hono is pronounced ho-no, two smooth syllables, with no k sound. Read the exact words.",
+      "displayText": "Four things happened, and one was letting a Hono go. The clock slept through all four.",
+      "from": 1316,
+      "speechFrames": 161,
+      "preRollFrames": 0,
+      "duration": 181,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "Four things happened, and one was letting a Hono go.",
+          "start": 4,
+          "end": 100
+        },
+        {
+          "text": "The clock slept through all four.",
+          "start": 100,
+          "end": 161
+        }
+      ],
+      "wordFrames": [
+        4,
+        7,
+        15,
+        37,
+        44,
+        49,
+        54,
+        60,
+        71,
+        72,
+        100,
+        104,
+        110,
+        120,
+        131,
+        141
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "quietly certain",
+      "text": "Dramatic is not the same as busy. I think walking all the way across still counts as quiet.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Dramatic is not the same as busy. I think walking all the way across still counts as quiet.",
+      "from": 1497,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 206,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "Dramatic is not the same as busy.",
+          "start": 4,
+          "end": 70
+        },
+        {
+          "text": "I think walking all the way across still counts as quiet.",
+          "start": 70,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        4,
+        16,
+        26,
+        31,
+        39,
+        44,
+        53,
+        70,
+        85,
+        90,
+        99,
+        108,
+        109,
+        115,
+        127,
+        153,
+        161,
+        180
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Walking never resets it. Neither does mining, buying, promoting, or a hit the target survives.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: separate White Action practice position. A White Hi walks A five to J five along an open row for five actions and stops on a square with zero reserve. No attack kill this turn; every other White ending square also has zero reserve. End turn: the practice strip gains one space. No automatic fight occurs along the walk.]"
+      ],
+      "displayText": "Walking never resets it. Neither does mining, buying, promoting, or a hit the target survives.",
+      "from": 1703,
+      "speechFrames": 207,
+      "preRollFrames": 0,
+      "duration": 227,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "Walking never resets it.",
+          "start": 0,
+          "end": 66
+        },
+        {
+          "text": "Neither does mining, buying, promoting, or a hit the target survives.",
+          "start": 66,
+          "end": 207
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        29,
+        43,
+        66,
+        69,
+        78,
+        100,
+        121,
+        151,
+        152,
+        157,
+        163,
+        174,
+        182
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "12",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "That square paid. The quiet clock kept counting.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [board: reset that practice position. The same Hi makes the same walk; J five now holds one crystal. At White turn end the Hi collects it, and the practice strip resets to zero.]"
+      ],
+      "displayText": "That square paid. The quiet clock kept counting.",
+      "from": 1930,
+      "speechFrames": 114,
+      "preRollFrames": 0,
+      "duration": 134,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "That square paid. The quiet clock kept counting.",
+          "start": 0,
+          "end": 114
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        17,
+        44,
+        47,
+        57,
+        67,
+        76
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "13",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "An attack kill. Back to zero. A crystal does not do that.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "An attack kill. Back to zero. A crystal does not do that.",
+      "from": 2064,
+      "speechFrames": 134,
+      "preRollFrames": 0,
+      "duration": 154,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "An attack kill. Back to zero.",
+          "start": 0,
+          "end": 85
+        },
+        {
+          "text": "A crystal does not do that.",
+          "start": 85,
+          "end": 134
+        }
+      ],
+      "wordFrames": [
+        0,
+        4,
+        13,
+        43,
+        49,
+        55,
+        85,
+        90,
+        98,
+        98,
+        112,
+        117
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "A kill is an enemy removed by an attack.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "A kill is an enemy removed by an attack.",
+      "from": 2218,
+      "speechFrames": 96,
+      "preRollFrames": 0,
+      "duration": 116,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "A kill is an enemy removed by an attack.",
+          "start": 4,
+          "end": 96
+        }
+      ],
+      "wordFrames": [
+        4,
+        4,
+        15,
+        28,
+        39,
+        43,
+        57,
+        64,
+        82
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "A payday still fills your bank. It does not reset the quiet count.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "A payday still fills your bank. It does not reset the quiet count.",
+      "from": 2334,
+      "speechFrames": 132,
+      "preRollFrames": 0,
+      "duration": 152,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "A payday still fills your bank.",
+          "start": 0,
+          "end": 76
+        },
+        {
+          "text": "It does not reset the quiet count.",
+          "start": 76,
+          "end": 132
+        }
+      ],
+      "wordFrames": [
+        0,
+        4,
+        17,
+        37,
+        49,
+        55,
+        76,
+        79,
+        83,
+        90,
+        101,
+        107,
+        115
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "16",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ending A finishes with no attack kill, even though it collects one crystal.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: ENDING A · no kill · no crystals] [card: ENDING B · no kill · one crystal] [board: the strip stays at nine. Nothing moves.]"
+      ],
+      "displayText": "Ending A finishes with no attack kill, even though it collects one crystal.",
+      "from": 2486,
+      "speechFrames": 143,
+      "preRollFrames": 0,
+      "duration": 163,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "Ending A finishes with no attack kill, even though it collects one",
+          "start": 0,
+          "end": 122
+        },
+        {
+          "text": "crystal.",
+          "start": 122,
+          "end": 143
+        }
+      ],
+      "wordFrames": [
+        0,
+        9,
+        20,
+        32,
+        42,
+        52,
+        62,
+        83,
+        91,
+        97,
+        101,
+        110,
+        122
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ending B removes an enemy by attack. Another enemy remains on the board.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Ending B removes an enemy by attack. Another enemy remains on the board.",
+      "from": 2649,
+      "speechFrames": 168,
+      "preRollFrames": 0,
+      "duration": 188,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "Ending B removes an enemy by attack.",
+          "start": 0,
+          "end": 107
+        },
+        {
+          "text": "Another enemy remains on the board.",
+          "start": 107,
+          "end": 168
+        }
+      ],
+      "wordFrames": [
+        0,
+        22,
+        34,
+        53,
+        61,
+        67,
+        76,
+        107,
+        115,
+        127,
+        143,
+        149,
+        152
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "The strip is at nine. Which ending draws?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The strip is at nine. Which ending draws?",
+      "from": 2837,
+      "speechFrames": 107,
+      "preRollFrames": 0,
+      "duration": 127,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "The strip is at nine.",
+          "start": 5,
+          "end": 59
+        },
+        {
+          "text": "Which ending draws?",
+          "start": 59,
+          "end": 107
+        }
+      ],
+      "wordFrames": [
+        5,
+        11,
+        17,
+        25,
+        31,
+        59,
+        64,
+        77
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Choose a card, or watch both and see.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "displayText": "Choose a card, or watch both and see.",
+      "from": 2964,
+      "speechFrames": 96,
+      "preRollFrames": 0,
+      "duration": 402,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "Choose a card, or watch both and see.",
+          "start": 8,
+          "end": 96
+        }
+      ],
+      "wordFrames": [
+        8,
+        8,
+        22,
+        22,
+        38,
+        48,
+        60,
+        74
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ending A was quiet, so it added one. The tenth space filled.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: clock settle] [board: the tenth space fills. Every piece stops where it stands. The arrow to the next turn greys out and stays grey.]",
+        "[card: QUIET BULLETIN · ten of ten · outlook: finished]"
+      ],
+      "displayText": "Ending A was quiet, so it added one. The tenth space filled.",
+      "from": 3366,
+      "speechFrames": 149,
+      "preRollFrames": 0,
+      "duration": 169,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "Ending A was quiet, so it added one.",
+          "start": 0,
+          "end": 100
+        },
+        {
+          "text": "The tenth space filled.",
+          "start": 100,
+          "end": 149
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        24,
+        38,
+        56,
+        64,
+        69,
+        75,
+        100,
+        116,
+        132,
+        132
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Ten quiet turns is a draw. Nobody wins and nobody loses.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Ten quiet turns is a draw. Nobody wins and nobody loses.",
+      "from": 3535,
+      "speechFrames": 170,
+      "preRollFrames": 0,
+      "duration": 190,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "Ten quiet turns is a draw.",
+          "start": 0,
+          "end": 103
+        },
+        {
+          "text": "Nobody wins and nobody loses.",
+          "start": 103,
+          "end": 170
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        32,
+        43,
+        59,
+        73,
+        103,
+        104,
+        116,
+        132,
+        142
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Black's turn never starts. That is the Quiet Ten.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Black's turn never starts. That is the Quiet Ten.",
+      "from": 3725,
+      "speechFrames": 144,
+      "preRollFrames": 0,
+      "duration": 164,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "Black's turn never starts.",
+          "start": 24,
+          "end": 86
+        },
+        {
+          "text": "That is the Quiet Ten.",
+          "start": 86,
+          "end": 144
+        }
+      ],
+      "wordFrames": [
+        24,
+        37,
+        41,
+        52,
+        86,
+        93,
+        100,
+        109,
+        113
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Ending B killed an enemy by attack. That reset the count, and this turn ends at zero.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal clink] [board: back to nine. Ending B: one crystal drops into the bank and all ten spaces sweep empty in one pass.]"
+      ],
+      "displayText": "Ending B killed an enemy by attack. That reset the count, and this turn ends at zero.",
+      "from": 3889,
+      "speechFrames": 185,
+      "preRollFrames": 0,
+      "duration": 205,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "Ending B killed an enemy by attack.",
+          "start": 0,
+          "end": 88
+        },
+        {
+          "text": "That reset the count, and this turn ends at zero.",
+          "start": 88,
+          "end": 185
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        34,
+        38,
+        46,
+        52,
+        61,
+        88,
+        95,
+        104,
+        110,
+        133,
+        137,
+        143,
+        152,
+        161,
+        167
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "So a busy payday can still be a quiet turn.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "So a busy payday can still be a quiet turn.",
+      "from": 4094,
+      "speechFrames": 134,
+      "preRollFrames": 0,
+      "duration": 154,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "So a busy payday can still be a quiet turn.",
+          "start": 0,
+          "end": 134
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        20,
+        31,
+        46,
+        67,
+        79,
+        86,
+        91,
+        101
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "25",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "One attack removes an enemy. The strip goes back to zero the moment that piece leaves.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE · proves: what resets this clock and what does not · not checked: what either player will choose to do]",
+        "[card: ending A, but one attack removes an enemy piece]"
+      ],
+      "displayText": "One attack removes an enemy. The strip goes back to zero the moment that piece leaves.",
+      "from": 4248,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 206,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "One attack removes an enemy.",
+          "start": 0,
+          "end": 77
+        },
+        {
+          "text": "The strip goes back to zero the moment that piece leaves.",
+          "start": 77,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        27,
+        45,
+        57,
+        77,
+        87,
+        96,
+        105,
+        111,
+        117,
+        125,
+        141,
+        152,
+        162,
+        169
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Unless that was their last piece. Then White has already won, and the clock never gets asked.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Unless that was their last piece. Then White has already won, and the clock never gets asked.",
+      "from": 4454,
+      "speechFrames": 189,
+      "preRollFrames": 0,
+      "duration": 209,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "Unless that was their last piece.",
+          "start": 7,
+          "end": 81
+        },
+        {
+          "text": "Then White has already won, and the clock never gets asked.",
+          "start": 81,
+          "end": 189
+        }
+      ],
+      "wordFrames": [
+        7,
+        8,
+        27,
+        32,
+        39,
+        49,
+        81,
+        88,
+        94,
+        102,
+        121,
+        122,
+        142,
+        154,
+        154,
+        166,
+        174
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "I counted the clock. I did not count Black.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "I counted the clock. I did not count Black.",
+      "from": 4663,
+      "speechFrames": 95,
+      "preRollFrames": 0,
+      "duration": 115,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "I counted the clock.",
+          "start": 2,
+          "end": 48
+        },
+        {
+          "text": "I did not count Black.",
+          "start": 48,
+          "end": 95
+        }
+      ],
+      "wordFrames": [
+        2,
+        5,
+        14,
+        30,
+        48,
+        49,
+        59,
+        66,
+        73
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Filed. Overruled by the Quiet Ten.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: MINI GAME · two separate positions, each starting at quiet nine · no attack kills · a Muju ends on zero reserve, then on one reserve · all other friendly units collect zero · compare the endings]",
+        "[board: Pip drops the trumpet card into the drawer marked PIP'S AMENDMENTS (PENDING).]"
+      ],
+      "displayText": "Filed. Overruled by the Quiet Ten.",
+      "from": 4778,
+      "speechFrames": 110,
+      "preRollFrames": 0,
+      "duration": 130,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Filed. Overruled by the Quiet Ten.",
+          "start": 21,
+          "end": 110
+        }
+      ],
+      "wordFrames": [
+        21,
+        42,
+        58,
+        63,
+        70,
+        79
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "29",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Attack kill. Back to zero. A crystal does not do that.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Attack kill. Back to zero. A crystal does not do that.",
+      "from": 4908,
+      "speechFrames": 198,
+      "preRollFrames": 0,
+      "duration": 218,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "Attack kill. Back to zero.",
+          "start": 20,
+          "end": 151
+        },
+        {
+          "text": "A crystal does not do that.",
+          "start": 151,
+          "end": 198
+        }
+      ],
+      "wordFrames": [
+        20,
+        53,
+        79,
+        83,
+        92,
+        151,
+        157,
+        166,
+        172,
+        177,
+        182
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "draw-timing",
+      "speaker": "COACH",
+      "text": "The tenth quiet turn ends in a draw after mining, before the next turn starts. Even a piece waiting on the enemy home cannot override it. Ten player turns means five complete rounds. The warning turns amber at seven.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Quiet 10 ends the game before the next turn",
+        "body": "Mine → update quiet count → draw at 10.\nThe next home check never happens after a draw.\n10 player turns = 5 full rounds. Warning at 7."
+      },
+      "displayText": "The tenth quiet turn ends in a draw after mining, before the next turn starts. Even a piece waiting on the enemy home cannot override it. Ten player turns means five complete rounds. The warning turns amber at seven.",
+      "from": 5126,
+      "speechFrames": 431,
+      "preRollFrames": 0,
+      "duration": 455,
+      "audio": "audio/draw-timing.wav",
+      "captions": [
+        {
+          "text": "The tenth quiet turn ends in a draw after mining, before the",
+          "start": 0,
+          "end": 112
+        },
+        {
+          "text": "next turn starts. Even a piece waiting on the enemy home cannot",
+          "start": 112,
+          "end": 223
+        },
+        {
+          "text": "override it. Ten player turns means five complete rounds.",
+          "start": 223,
+          "end": 364
+        },
+        {
+          "text": "The warning turns amber at seven.",
+          "start": 364,
+          "end": 431
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        14,
+        28,
+        41,
+        52,
+        57,
+        61,
+        68,
+        80,
+        89,
+        107,
+        112,
+        120,
+        127,
+        157,
+        162,
+        167,
+        173,
+        182,
+        188,
+        191,
+        198,
+        209,
+        223,
+        239,
+        268,
+        274,
+        283,
+        298,
+        311,
+        323,
+        335,
+        364,
+        368,
+        376,
+        388,
+        398,
+        410
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Nobody needs to answer quickly. This clock counts game turns, not your thinking time.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Nobody needs to answer quickly. This clock counts game turns, not your thinking time.",
+      "from": 5581,
+      "speechFrames": 159,
+      "preRollFrames": 0,
+      "duration": 179,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "Nobody needs to answer quickly.",
+          "start": 5,
+          "end": 72
+        },
+        {
+          "text": "This clock counts game turns, not your thinking time.",
+          "start": 72,
+          "end": 159
+        }
+      ],
+      "wordFrames": [
+        5,
+        16,
+        25,
+        40,
+        40,
+        72,
+        81,
+        90,
+        102,
+        115,
+        130,
+        132,
+        140,
+        145
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "31",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "That is enough for today if you want.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "That is enough for today if you want.",
+      "from": 5760,
+      "speechFrames": 92,
+      "preRollFrames": 0,
+      "duration": 152,
+      "audio": "audio/31.wav",
+      "captions": [
+        {
+          "text": "That is enough for today if you want.",
+          "start": 0,
+          "end": 92
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        20,
+        27,
+        35,
+        48,
+        54,
+        57
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "question": "The strip is at nine. Which ending draws?",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "soundtrack": {
+    "id": "before-dawn",
+    "title": "Another Game Before Dawn",
+    "source": "muju/music-auditions/full-versions/before-dawn-full-v1.mp3",
+    "sha256": "40803953d9ee66df69974e92f842d2914972938c626acdbf17594b1c4406d709"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 5912
+}

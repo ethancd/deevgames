@@ -1,0 +1,1322 @@
+{
+  "id": "R07",
+  "title": "Bigger Pieces Have Bills",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "Fan mail. Addressed to The Very Impressive Army.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: a teller window. Pip is at the counter holding up a small envelope addressed to The Very Impressive Army.]"
+      ],
+      "displayText": "Fan mail. Addressed to The Very Impressive Army.",
+      "from": 0,
+      "speechFrames": 110,
+      "preRollFrames": 0,
+      "duration": 137,
+      "audio": "audio/01.wav",
+      "captions": [
+        {
+          "text": "Fan mail. Addressed to The Very Impressive Army.",
+          "start": 0,
+          "end": 110
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        34,
+        56,
+        64,
+        67,
+        84,
+        92
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "It is a bill. Three crystals, due when your turn starts.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "It is a bill. Three crystals, due when your turn starts.",
+      "from": 137,
+      "speechFrames": 146,
+      "preRollFrames": 0,
+      "duration": 173,
+      "audio": "audio/02.wav",
+      "captions": [
+        {
+          "text": "It is a bill.",
+          "start": 5,
+          "end": 50
+        },
+        {
+          "text": "Three crystals, due when your turn starts.",
+          "start": 50,
+          "end": 146
+        }
+      ],
+      "wordFrames": [
+        5,
+        8,
+        13,
+        19,
+        50,
+        58,
+        89,
+        94,
+        99,
+        107,
+        112
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "My fan is very picky about timing.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true,
+      "displayText": "My fan is very picky about timing.",
+      "from": 310,
+      "speechFrames": 120,
+      "preRollFrames": 0,
+      "duration": 222,
+      "audio": "audio/03.wav",
+      "captions": [
+        {
+          "text": "My fan is very picky about timing.",
+          "start": 6,
+          "end": 120
+        }
+      ],
+      "wordFrames": [
+        6,
+        13,
+        28,
+        39,
+        58,
+        65,
+        81
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "04",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Hello. We bought that Hi on C three. Does it owe anything?",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[music: bed out]",
+        "[board: C three, with the Hi we bought last time standing on it.]"
+      ],
+      "displayText": "Hello. We bought that Hi on C3. Does it owe anything?",
+      "from": 532,
+      "speechFrames": 155,
+      "preRollFrames": 0,
+      "duration": 175,
+      "audio": "audio/04.wav",
+      "captions": [
+        {
+          "text": "Hello. We bought that Hi on C3.",
+          "start": 4,
+          "end": 112
+        },
+        {
+          "text": "Does it owe anything?",
+          "start": 112,
+          "end": 155
+        }
+      ],
+      "wordFrames": [
+        4,
+        28,
+        37,
+        44,
+        54,
+        60,
+        76,
+        87,
+        112,
+        118,
+        127,
+        129
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "05",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Nothing. Tier one never gets mail.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Nothing. Tier one never gets mail.",
+      "from": 707,
+      "speechFrames": 96,
+      "preRollFrames": 0,
+      "duration": 116,
+      "audio": "audio/05.wav",
+      "captions": [
+        {
+          "text": "Nothing. Tier one never gets mail.",
+          "start": 6,
+          "end": 96
+        }
+      ],
+      "wordFrames": [
+        6,
+        38,
+        46,
+        56,
+        74,
+        83
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "06",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "Upkeep is the toll a big piece pays, at your own turn start.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: TIER MEANS HOW FAR A PIECE HAS CLIMBED · the Hi is tier one · the Hono is tier two · the Tanka is tier three]",
+        "[board: one coin drops through a small gate in the counter as the word lands.]"
+      ],
+      "displayText": "Upkeep is the toll a big piece pays, at your own turn start.",
+      "from": 823,
+      "speechFrames": 140,
+      "preRollFrames": 0,
+      "duration": 160,
+      "audio": "audio/06.wav",
+      "captions": [
+        {
+          "text": "Upkeep is the toll a big piece pays, at your own turn",
+          "start": 0,
+          "end": 124
+        },
+        {
+          "text": "start.",
+          "start": 124,
+          "end": 140
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        25,
+        36,
+        40,
+        49,
+        56,
+        64,
+        90,
+        92,
+        100,
+        110,
+        124
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "counting, even beats",
+      "text": "Tier one owes nothing. Tier two owes one. Tier three owes two.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: three envelopes stamped 0, 1 and 2, in front of the Hi, the Hono and the Tanka. The bank counter shows two.]"
+      ],
+      "displayText": "Tier one owes nothing. Tier two owes one. Tier three owes two.",
+      "from": 983,
+      "speechFrames": 200,
+      "preRollFrames": 0,
+      "duration": 220,
+      "audio": "audio/07.wav",
+      "captions": [
+        {
+          "text": "Tier one owes nothing.",
+          "start": 8,
+          "end": 78
+        },
+        {
+          "text": "Tier two owes one.",
+          "start": 78,
+          "end": 147
+        },
+        {
+          "text": "Tier three owes two.",
+          "start": 147,
+          "end": 200
+        }
+      ],
+      "wordFrames": [
+        8,
+        8,
+        21,
+        37,
+        78,
+        78,
+        101,
+        110,
+        147,
+        147,
+        170,
+        182
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "08",
+      "speaker": "PIP",
+      "cue": "cheerfully wrong",
+      "text": "Then we let the Hi go. Off the board, and we save a fortune.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: KEEPING A PIECE MEANS PAYING ITS ENVELOPE · nobody pays, that piece walks away]"
+      ],
+      "displayText": "Then we let the Hi go. Off the board, and we save a fortune.",
+      "from": 1203,
+      "speechFrames": 188,
+      "preRollFrames": 0,
+      "duration": 208,
+      "audio": "audio/08.wav",
+      "captions": [
+        {
+          "text": "Then we let the Hi go.",
+          "start": 5,
+          "end": 88
+        },
+        {
+          "text": "Off the board, and we save a fortune.",
+          "start": 88,
+          "end": 188
+        }
+      ],
+      "wordFrames": [
+        5,
+        13,
+        25,
+        31,
+        46,
+        46,
+        88,
+        96,
+        103,
+        118,
+        133,
+        143,
+        153,
+        168
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Letting the Hi go saves zero crystals. And tier one may never be let go.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Letting the Hi go saves zero crystals. And tier one may never be let go.",
+      "from": 1411,
+      "speechFrames": 164,
+      "preRollFrames": 0,
+      "duration": 184,
+      "audio": "audio/09.wav",
+      "captions": [
+        {
+          "text": "Letting the Hi go saves zero crystals.",
+          "start": 7,
+          "end": 99
+        },
+        {
+          "text": "And tier one may never be let go.",
+          "start": 99,
+          "end": 164
+        }
+      ],
+      "wordFrames": [
+        7,
+        12,
+        21,
+        27,
+        36,
+        58,
+        70,
+        99,
+        106,
+        111,
+        121,
+        135,
+        141,
+        148,
+        154
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "My loophole has become a regular hole.",
+      "beat": "SHOW",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "My loophole has become a regular hole.",
+      "from": 1595,
+      "speechFrames": 128,
+      "preRollFrames": 0,
+      "duration": 155,
+      "audio": "audio/10.wav",
+      "captions": [
+        {
+          "text": "My loophole has become a regular hole.",
+          "start": 0,
+          "end": 128
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        30,
+        41,
+        48,
+        59,
+        68
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "11",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Extremely responsible is doing a lot of work in that plan.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Extremely responsible is doing a lot of work in that plan.",
+      "from": 1750,
+      "speechFrames": 134,
+      "preRollFrames": 0,
+      "duration": 154,
+      "audio": "audio/11.wav",
+      "captions": [
+        {
+          "text": "Extremely responsible is doing a lot of work in that plan.",
+          "start": 7,
+          "end": 134
+        }
+      ],
+      "wordFrames": [
+        7,
+        22,
+        40,
+        63,
+        71,
+        79,
+        83,
+        99,
+        99,
+        110,
+        118
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "12",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Nothing, one, two.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Nothing, one, two.",
+      "from": 1904,
+      "speechFrames": 62,
+      "preRollFrames": 0,
+      "duration": 82,
+      "audio": "audio/12.wav",
+      "captions": [
+        {
+          "text": "Nothing, one, two.",
+          "start": 7,
+          "end": 62
+        }
+      ],
+      "wordFrames": [
+        7,
+        26,
+        39
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "13",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "And tier one always stays.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "And tier one always stays.",
+      "from": 1986,
+      "speechFrames": 75,
+      "preRollFrames": 0,
+      "duration": 95,
+      "audio": "audio/13.wav",
+      "captions": [
+        {
+          "text": "And tier one always stays.",
+          "start": 0,
+          "end": 75
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        19,
+        30,
+        55
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "14",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bank: two.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[card: ALL THREE] [card: THE HI AND THE TANKA]",
+        "[board: two crystals in the bank. The envelope on the Hi lies open. The other two are sealed. Nothing moves.]"
+      ],
+      "displayText": "Bank: two.",
+      "from": 2081,
+      "speechFrames": 44,
+      "preRollFrames": 0,
+      "duration": 64,
+      "audio": "audio/14.wav",
+      "captions": [
+        {
+          "text": "Bank: two.",
+          "start": 2,
+          "end": 44
+        }
+      ],
+      "wordFrames": [
+        2,
+        19
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "15",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "All three envelopes: three.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "All three envelopes: three.",
+      "from": 2145,
+      "speechFrames": 95,
+      "preRollFrames": 0,
+      "duration": 115,
+      "audio": "audio/15.wav",
+      "captions": [
+        {
+          "text": "All three envelopes: three.",
+          "start": 0,
+          "end": 95
+        }
+      ],
+      "wordFrames": [
+        0,
+        13,
+        35,
+        64
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "16",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Hi and the Tanka: two.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Hi and the Tanka: two.",
+      "from": 2260,
+      "speechFrames": 84,
+      "preRollFrames": 0,
+      "duration": 104,
+      "audio": "audio/16.wav",
+      "captions": [
+        {
+          "text": "The Hi and the Tanka: two.",
+          "start": 0,
+          "end": 84
+        }
+      ],
+      "wordFrames": [
+        0,
+        10,
+        13,
+        30,
+        41,
+        63
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "17",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "Which card can two crystals pay for?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Which card can two crystals pay for?",
+      "from": 2364,
+      "speechFrames": 80,
+      "preRollFrames": 0,
+      "duration": 100,
+      "audio": "audio/17.wav",
+      "captions": [
+        {
+          "text": "Which card can two crystals pay for?",
+          "start": 0,
+          "end": 80
+        }
+      ],
+      "wordFrames": [
+        0,
+        11,
+        25,
+        34,
+        42,
+        51,
+        60
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "18",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Put a finger on one, or take your time and look at both.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true,
+      "displayText": "Put a finger on one, or take your time and look at both.",
+      "from": 2464,
+      "speechFrames": 140,
+      "preRollFrames": 0,
+      "duration": 446,
+      "audio": "audio/18.wav",
+      "captions": [
+        {
+          "text": "Put a finger on one, or take your time and look at",
+          "start": 8,
+          "end": 136
+        },
+        {
+          "text": "both.",
+          "start": 136,
+          "end": 140
+        }
+      ],
+      "wordFrames": [
+        8,
+        18,
+        34,
+        34,
+        44,
+        63,
+        70,
+        76,
+        81,
+        91,
+        106,
+        110,
+        136
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Two crystals cannot open all three. So the Hono is let go.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bill thud] [board: the second card lights. The Hono steps back from the counter and off the table, its envelope still sealed. Then both crystals slide onto the Tanka envelope and it opens.]"
+      ],
+      "displayText": "Two crystals cannot open all three. So the Hono is let go.",
+      "from": 2910,
+      "speechFrames": 186,
+      "preRollFrames": 0,
+      "duration": 206,
+      "audio": "audio/19.wav",
+      "captions": [
+        {
+          "text": "Two crystals cannot open all three.",
+          "start": 2,
+          "end": 87
+        },
+        {
+          "text": "So the Hono is let go.",
+          "start": 87,
+          "end": 186
+        }
+      ],
+      "wordFrames": [
+        2,
+        13,
+        28,
+        49,
+        60,
+        72,
+        87,
+        99,
+        114,
+        130,
+        154,
+        163
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Then two crystals opened the Tanka envelope, and the Hi owed nothing.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Then two crystals opened the Tanka envelope, and the Hi owed nothing.",
+      "from": 3116,
+      "speechFrames": 177,
+      "preRollFrames": 0,
+      "duration": 197,
+      "audio": "audio/20.wav",
+      "captions": [
+        {
+          "text": "Then two crystals opened the Tanka envelope, and the Hi owed nothing.",
+          "start": 0,
+          "end": 177
+        }
+      ],
+      "wordFrames": [
+        0,
+        12,
+        30,
+        42,
+        59,
+        74,
+        78,
+        108,
+        120,
+        135,
+        137,
+        154
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "21",
+      "speaker": "PIP",
+      "cue": "dawning concern",
+      "text": "We do not pay part of it. We keep less of us.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "We do not pay part of it. We keep less of us.",
+      "from": 3313,
+      "speechFrames": 141,
+      "preRollFrames": 0,
+      "duration": 161,
+      "audio": "audio/21.wav",
+      "captions": [
+        {
+          "text": "We do not pay part of it.",
+          "start": 0,
+          "end": 85
+        },
+        {
+          "text": "We keep less of us.",
+          "start": 85,
+          "end": 141
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        17,
+        29,
+        39,
+        51,
+        58,
+        85,
+        91,
+        100,
+        117,
+        124
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "dry aside",
+      "text": "Proves what two crystals pay. Not which pieces we want.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE · proves: two crystals keep the Hi and the Tanka · also payable: the Hi and the Hono, or the Hi alone · not checked: which pieces this army actually wants]"
+      ],
+      "displayText": "Proves what two crystals pay. Not which pieces we want.",
+      "from": 3474,
+      "speechFrames": 146,
+      "preRollFrames": 0,
+      "duration": 166,
+      "audio": "audio/22.wav",
+      "captions": [
+        {
+          "text": "Proves what two crystals pay.",
+          "start": 35,
+          "end": 110
+        },
+        {
+          "text": "Not which pieces we want.",
+          "start": 110,
+          "end": 146
+        }
+      ],
+      "wordFrames": [
+        35,
+        36,
+        49,
+        61,
+        69,
+        110,
+        112,
+        119,
+        126,
+        133
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "23",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "I will pay this turn's bill from this turn's payday. Here is a receipt.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[card: pay the bill from today's payday]"
+      ],
+      "displayText": "I will pay this turn's bill from this turn's payday. Here is a receipt.",
+      "from": 3640,
+      "speechFrames": 156,
+      "preRollFrames": 0,
+      "duration": 176,
+      "audio": "audio/23.wav",
+      "captions": [
+        {
+          "text": "I will pay this turn's bill from this turn's payday.",
+          "start": 3,
+          "end": 120
+        },
+        {
+          "text": "Here is a receipt.",
+          "start": 120,
+          "end": 156
+        }
+      ],
+      "wordFrames": [
+        3,
+        7,
+        17,
+        26,
+        36,
+        47,
+        51,
+        70,
+        79,
+        92,
+        120,
+        124,
+        128,
+        142
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "24",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "Your receipt cannot mine.",
+      "beat": "TRANSFER",
+      "hold": 0.9,
+      "directions": [],
+      "displayText": "Your receipt cannot mine.",
+      "from": 3816,
+      "speechFrames": 86,
+      "preRollFrames": 0,
+      "duration": 113,
+      "audio": "audio/24.wav",
+      "captions": [
+        {
+          "text": "Your receipt cannot mine.",
+          "start": 4,
+          "end": 86
+        }
+      ],
+      "wordFrames": [
+        4,
+        13,
+        25,
+        40
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "This turn's bill comes before healing and payday. Today's income can pay next turn's bill.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: Pip lowers the receipt onto a crystal square. It does not dig. Then it goes into the drawer marked PIP'S AMENDMENTS (PENDING).]"
+      ],
+      "displayText": "This turn's bill comes before healing and payday. Today's income can pay next turn's bill.",
+      "from": 3929,
+      "speechFrames": 174,
+      "preRollFrames": 0,
+      "duration": 194,
+      "audio": "audio/25.wav",
+      "captions": [
+        {
+          "text": "This turn's bill comes before healing and payday.",
+          "start": 4,
+          "end": 105
+        },
+        {
+          "text": "Today's income can pay next turn's bill.",
+          "start": 105,
+          "end": 174
+        }
+      ],
+      "wordFrames": [
+        4,
+        9,
+        32,
+        32,
+        43,
+        54,
+        65,
+        77,
+        105,
+        119,
+        129,
+        139,
+        144,
+        153,
+        168
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "26",
+      "speaker": "COACH",
+      "cue": "stating the rule, level",
+      "text": "The Standing Bill comes back every turn you own a Hono or a Tanka.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "The Standing Bill comes back every turn you own a Hono or a Tanka.",
+      "from": 4123,
+      "speechFrames": 158,
+      "preRollFrames": 0,
+      "duration": 178,
+      "audio": "audio/26.wav",
+      "captions": [
+        {
+          "text": "The Standing Bill comes back every turn you own a Hono or",
+          "start": 0,
+          "end": 125
+        },
+        {
+          "text": "a Tanka.",
+          "start": 125,
+          "end": 158
+        }
+      ],
+      "wordFrames": [
+        0,
+        7,
+        24,
+        36,
+        51,
+        60,
+        76,
+        83,
+        89,
+        94,
+        102,
+        109,
+        125,
+        138
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "One game for your table. Put counters beside each card, then add them up.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: TABLE GAME · counters beside each card · add them up · move that many crystals out of the bank first]"
+      ],
+      "displayText": "One game for your table. Put counters beside each card, then add them up.",
+      "from": 4301,
+      "speechFrames": 144,
+      "preRollFrames": 0,
+      "duration": 164,
+      "audio": "audio/27.wav",
+      "captions": [
+        {
+          "text": "One game for your table.",
+          "start": 3,
+          "end": 65
+        },
+        {
+          "text": "Put counters beside each card, then add them up.",
+          "start": 65,
+          "end": 144
+        }
+      ],
+      "wordFrames": [
+        3,
+        11,
+        21,
+        28,
+        36,
+        65,
+        68,
+        82,
+        93,
+        104,
+        122,
+        126,
+        132,
+        136
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "28",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Nothing, one, two.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "Nothing, one, two.",
+      "from": 4465,
+      "speechFrames": 51,
+      "preRollFrames": 0,
+      "duration": 71,
+      "audio": "audio/28.wav",
+      "captions": [
+        {
+          "text": "Nothing, one, two.",
+          "start": 6,
+          "end": 51
+        }
+      ],
+      "wordFrames": [
+        6,
+        24,
+        36
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "upkeep-flow",
+      "speaker": "COACH",
+      "text": "If your bank covers every bill, payment is automatic. Otherwise, choose an affordable group to keep. All tier one pieces must stay. The review upkeep setting also lets you release bigger pieces voluntarily. Losing your last piece loses the game.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Pay before healing and Place",
+        "body": "Enough crystals: payment is automatic.\nOtherwise choose an affordable group. All T1 must stay.\nReview upkeep each turn: optionally release T2 or T3.\nNo pieces left means elimination."
+      },
+      "displayText": "If your bank covers every bill, payment is automatic. Otherwise, choose an affordable group to keep. All tier one pieces must stay. The review upkeep setting also lets you release bigger pieces voluntarily. Losing your last piece loses the game.",
+      "from": 4536,
+      "speechFrames": 492,
+      "preRollFrames": 0,
+      "duration": 516,
+      "audio": "audio/upkeep-flow.wav",
+      "captions": [
+        {
+          "text": "If your bank covers every bill, payment is automatic.",
+          "start": 0,
+          "end": 118
+        },
+        {
+          "text": "Otherwise, choose an affordable group to keep.",
+          "start": 118,
+          "end": 207
+        },
+        {
+          "text": "All tier one pieces must stay.",
+          "start": 207,
+          "end": 279
+        },
+        {
+          "text": "The review upkeep setting also lets you release bigger pieces voluntarily.",
+          "start": 279,
+          "end": 425
+        },
+        {
+          "text": "Losing your last piece loses the game.",
+          "start": 425,
+          "end": 492
+        }
+      ],
+      "wordFrames": [
+        0,
+        14,
+        19,
+        26,
+        37,
+        49,
+        72,
+        74,
+        85,
+        118,
+        140,
+        148,
+        155,
+        165,
+        176,
+        182,
+        207,
+        215,
+        222,
+        232,
+        242,
+        251,
+        279,
+        282,
+        290,
+        303,
+        314,
+        329,
+        338,
+        344,
+        353,
+        366,
+        379,
+        425,
+        431,
+        437,
+        445,
+        457,
+        472,
+        480
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "promotion-bill",
+      "speaker": "COACH",
+      "text": "A newly promoted piece pays its new tier bill on your next turn, not again today. A home occupation win is checked before any of these bills.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Tomorrow’s tier bill",
+        "body": "Promotion now → new upkeep next own turn.\nHome win check → upkeep → full heal → Place."
+      },
+      "displayText": "A newly promoted piece pays its new tier bill on your next turn, not again today. A home occupation win is checked before any of these bills.",
+      "from": 5052,
+      "speechFrames": 335,
+      "preRollFrames": 0,
+      "duration": 359,
+      "audio": "audio/promotion-bill.wav",
+      "captions": [
+        {
+          "text": "A newly promoted piece pays its new tier bill on your next",
+          "start": 0,
+          "end": 118
+        },
+        {
+          "text": "turn, not again today.",
+          "start": 118,
+          "end": 209
+        },
+        {
+          "text": "A home occupation win is checked before any of these bills.",
+          "start": 209,
+          "end": 335
+        }
+      ],
+      "wordFrames": [
+        0,
+        5,
+        19,
+        35,
+        50,
+        70,
+        76,
+        85,
+        91,
+        99,
+        106,
+        110,
+        118,
+        148,
+        154,
+        164,
+        209,
+        216,
+        224,
+        238,
+        251,
+        265,
+        275,
+        292,
+        305,
+        311,
+        316
+      ],
+      "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions"
+    },
+    {
+      "id": "29",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "And tier one always stays.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [],
+      "displayText": "And tier one always stays.",
+      "from": 5411,
+      "speechFrames": 95,
+      "preRollFrames": 0,
+      "duration": 115,
+      "audio": "audio/29.wav",
+      "captions": [
+        {
+          "text": "And tier one always stays.",
+          "start": 7,
+          "end": 95
+        }
+      ],
+      "wordFrames": [
+        7,
+        19,
+        33,
+        45,
+        74
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Stopping here is fine. Next time we count somebody else's trip.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": [],
+      "displayText": "Stopping here is fine. Next time we count somebody else's trip.",
+      "from": 5526,
+      "speechFrames": 135,
+      "preRollFrames": 0,
+      "duration": 195,
+      "audio": "audio/30.wav",
+      "captions": [
+        {
+          "text": "Stopping here is fine.",
+          "start": 5,
+          "end": 61
+        },
+        {
+          "text": "Next time we count somebody else's trip.",
+          "start": 61,
+          "end": 135
+        }
+      ],
+      "wordFrames": [
+        5,
+        18,
+        25,
+        35,
+        61,
+        70,
+        77,
+        85,
+        90,
+        102,
+        115
+      ],
+      "captionAlignment": "Verified published take; numeric coordinates normalized"
+    }
+  ],
+  "question": "Which card can two crystals pay for?",
+  "version": 7,
+  "updatedLabel": "Video version 7 · Last updated at 07:25 Sep 13 2026 CDT",
+  "rules": "v2.8",
+  "soundtrack": {
+    "id": "open-room",
+    "title": "Open Room, Lantern On",
+    "source": "muju/music-auditions/full-versions/open-room-full-v1.mp3",
+    "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+  },
+  "speechProvider": "openai",
+  "audioComplete": true,
+  "durationInFrames": 5721
+}

@@ -1,0 +1,59 @@
+{
+  "provider": "openai",
+  "hash": "a24b0e04ec06ec0986fd0cb622ad889b125ecf0b6bd38444405c99968a1435f5",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "With one attack, the Aegirinn can finish Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık. Every unlit card survives that single hit.",
+  "speechText": "With one attack, the AY-gear-in can finish Hee, HOH-noh, kah-GAH-ree, RAH-dee, oo-MEH-meh, kee-moo-BOON-gah, Shore, STROWM-ur, Gurl, GURL-geh and kah-rahn-luk. Every unlit card survives that single hit.",
+  "duration": 16.4,
+  "bytes": 787244,
+  "createdAt": "2026-09-13T10:39:15.393Z",
+  "scriptEditNote": "List punctuation now follows the verified spoken list.",
+  "captions": [
+    {
+      "text": "With one attack, the Aegirinn can finish Hi, Hono, Kagari, Radi,",
+      "start": 0,
+      "end": 187
+    },
+    {
+      "text": "Umeme, Kimubunga, Sjor, Straumr, Göl, Gölge, Karanlık.",
+      "start": 187,
+      "end": 407
+    },
+    {
+      "text": "Every unlit card survives that single hit.",
+      "start": 407,
+      "end": 492
+    }
+  ],
+  "wordFrames": [
+    0,
+    5,
+    14,
+    45,
+    49,
+    64,
+    73,
+    83,
+    107,
+    133,
+    161,
+    187,
+    220,
+    263,
+    286,
+    313,
+    335,
+    366,
+    407,
+    418,
+    431,
+    441,
+    457,
+    464,
+    476
+  ],
+  "captionAlignment": "Local faster-whisper word timestamps matched to canonical numeric captions",
+  "captionAudioSha256": "4b15cf8245d67289599dc7aa6a5f6a2e3b6413146864a140141c5a6d8e4abed6"
+}

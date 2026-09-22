@@ -1,0 +1,381 @@
+{
+  "id": "R10",
+  "title": "One Turn at the Practice Table",
+  "fps": 30,
+  "voices": {
+    "COACH": "marin",
+    "PIP": "coral",
+    "CLICK": "cedar"
+  },
+  "lines": [
+    {
+      "id": "01",
+      "speaker": "PIP",
+      "cue": "proud announcement",
+      "text": "My checklist. One box. Do the turn correctly.",
+      "beat": "INVITATION",
+      "hold": 0.9,
+      "directions": [
+        "[music: bed in, low]",
+        "[board: Pip stands behind a clipboard taller than Pip, with one enormous empty checkbox on it. Board unchanged.]"
+      ]
+    },
+    {
+      "id": "02",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Pay. Place. Act. Mine.",
+      "beat": "INVITATION",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "03",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "Four things. Then I am issuing three more boxes. With names.",
+      "beat": "INVITATION",
+      "hold": 3.4,
+      "directions": [],
+      "titleBump": true
+    },
+    {
+      "id": "04",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Filed by Pip. Pay this morning's bill with this evening's payday.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": [
+        "[board: the enormous box splits into four: PAY, PLACE, ACT, MINE]",
+        "[music: bed out]",
+        "[card: PIP'S AMENDMENTS (PENDING). One card lifts out of the drawer.]"
+      ]
+    },
+    {
+      "id": "05",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Good to see you, Pip. Overruled. This morning's bill needs crystals already in the bank.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "06",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "My promise was perfectly good. It was just facing backwards.",
+      "beat": "RECALL",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "07",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "First box. Pay the bills. A big piece pays a toll when our own turn starts.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: CHAPTER ONE. PAY AND PLACE.]",
+        "[board: White turn start. Bank 5. A Hono at D four. The Muju at B two. Black Sjor at I nine. The strip highlights PAY.]"
+      ]
+    },
+    {
+      "id": "08",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Hono owes one. The Muju owes nothing. Bank five. Now bank four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: bill thud] [board: bank 5 to 4]"
+      ]
+    },
+    {
+      "id": "09",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Second box. The shop. A Hi at C three costs three crystals and no actions.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[board: after paying, White heals and resets its pieces. The strip highlights PLACE. A Hi appears on C three. Bank 4 to 1. No token leaves the tray of four.]",
+        "[sfx: shop chime]"
+      ]
+    },
+    {
+      "id": "10",
+      "speaker": "PIP",
+      "cue": "cheerfully wrong",
+      "text": "Then the bank says four.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "11",
+      "speaker": "CLICK",
+      "cue": "deadpan, flat",
+      "text": "One.",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": []
+    },
+    {
+      "id": "12",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "The box was right. My math needed the box.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "13",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Third box. This trip: one action.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": [
+        "[card: CHAPTER TWO. ACT AND MINE.]",
+        "[board: the strip highlights ACT. The Hi steps from C three to C four. One token leaves the tray of four.]",
+        "[sfx: piece step] [sfx: token removed]"
+      ]
+    },
+    {
+      "id": "14",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "That trip was one square. A Hi may walk two squares for the same action.",
+      "beat": "SHOW",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "15",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Three actions are unused, and that is allowed. The last box is the one we count together.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "16",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Hono. Mining one. One crystal still sitting in that square.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": [
+        "[board: the strip highlights MINE. Three squares light up: one crystal under the Hono, three under the Muju, none under the Hi. Bank card reads two.]"
+      ]
+    },
+    {
+      "id": "17",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The Muju. Mining three. Three crystals still sitting in that square.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "18",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "The new Hi. Mining one. Its square is empty.",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "19",
+      "speaker": "COACH",
+      "cue": "question, open",
+      "text": "At our turn end, how much income arrives?",
+      "beat": "TRY",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "20",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Take as long as you like. Or watch it happen with me.",
+      "beat": "TRY",
+      "hold": 10.2,
+      "directions": [],
+      "thinking": true
+    },
+    {
+      "id": "21",
+      "speaker": "COACH",
+      "cue": "reveal, land it",
+      "text": "Four crystals arrived.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[sfx: crystal cascade] [board: one crystal, then three, then none, tumble into the bank. Bank 2 to 6. Both source squares dim to zero.]",
+        "[card: one and three and none. Four crystals. Bank one becomes bank five.]"
+      ]
+    },
+    {
+      "id": "22",
+      "speaker": "CLICK",
+      "cue": "",
+      "text": "Bank one. Now bank five.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "23",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Even a new piece that moved can collect. This Hi took nothing because its square was empty.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "24",
+      "speaker": "PIP",
+      "cue": "",
+      "text": "I have ticked every box. The board declined to congratulate me.",
+      "beat": "EXPLAIN",
+      "hold": 0.65,
+      "directions": [
+        "[card: EVIDENCE. Proves: the four boxes happened in order. Not checked: whether it was a good turn.]"
+      ]
+    },
+    {
+      "id": "25",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Now look at tomorrow morning's bill. The Hono still owes one.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": [
+        "[board: the strip resets to PAY. The four new crystals sit in the bank.]"
+      ]
+    },
+    {
+      "id": "26",
+      "speaker": "PIP",
+      "cue": "delighted realization",
+      "text": "So tonight's crystals can pay tomorrow's toll.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "27",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "They can. They were never allowed to pay this morning's.",
+      "beat": "TRANSFER",
+      "hold": 0.65,
+      "directions": []
+    },
+    {
+      "id": "28",
+      "speaker": "COACH",
+      "cue": "",
+      "text": "Take the mission card. Play that turn twice, then meet me at the Toast Department.",
+      "beat": "EXIT",
+      "hold": 0.65,
+      "directions": [
+        "[card: MISSION. Play this turn twice. Change only where the new Hi stops. Write down both paydays.]"
+      ]
+    },
+    {
+      "id": "public",
+      "speaker": "COACH",
+      "text": "The board, crystals, purchases, promotions and quiet count are public. There is no hidden build queue. If no legal purchase or promotion is available, the game skips straight to actions.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Everything you need to count is public",
+        "body": "Board · damage · reserves · banks · income · quiet count\nNo build queue or hidden production.\nPlace is skipped when no legal choice exists."
+      }
+    },
+    {
+      "id": "controls",
+      "speaker": "COACH",
+      "text": "Tap an empty reachable square to move. Tap an enemy to preview a trip and attack, then confirm to spend the actions. Undo works inside the current turn. End Actions collects income and hands the turn over.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Playing your turn",
+        "body": "Empty reachable square → move\nEnemy → preview movement + attack → confirm\nUndo stays within this turn.\nEnd Actions → mining → next player"
+      }
+    },
+    {
+      "id": "options",
+      "speaker": "COACH",
+      "text": "Before a new game, Black can receive an optional starting gift of one to twenty crystals. White still starts with zero. Three or more lets Black shop on its first turn. Both players still get four actions.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Optional Black crystal handicap",
+        "body": "Off by default. Black may start with 1–20 crystals.\nAt 1–2: first turn begins with actions.\nAt 3–20: Black can enter Place on turn 1.\nBoth sides always get 4 actions."
+      }
+    },
+    {
+      "id": "timed",
+      "speaker": "COACH",
+      "text": "Online rooms can use a clock or be untimed. Check the chosen clock settings before starting. Running out of allowed time loses a timed game. Resigning also gives the other player the win. These video questions have no timer.",
+      "cue": "warm, unhurried",
+      "beat": "SHOW",
+      "hold": 0.8,
+      "directions": [],
+      "supplement": {
+        "kind": "card",
+        "title": "Choose the game’s clock before starting",
+        "body": "Online play: timed or untimed\nCheck the room’s chosen time settings.\nTimeout or resignation gives the opponent the win.\nPause these videos whenever you like."
+      }
+    },
+    {
+      "id": "29",
+      "speaker": "CLICK",
+      "cue": "counting, even beats",
+      "text": "Pay. Place. Act. Mine.",
+      "beat": "EXIT",
+      "hold": 1.2,
+      "directions": []
+    },
+    {
+      "id": "30",
+      "speaker": "COACH",
+      "cue": "warm, unhurried",
+      "text": "Pay the bills first. Mine crystals last. Stopping here is fine.",
+      "beat": "EXIT",
+      "hold": 2,
+      "directions": []
+    }
+  ],
+  "question": "At our turn end, how much income arrives?",
+  "version": 6,
+  "updatedLabel": "Video version 6 · Last updated at 05:38 Sep 13 2026 CDT",
+  "rules": "v2.7",
+  "soundtrack": {
+    "id": "open-room",
+    "title": "Open Room, Lantern On",
+    "source": "muju/music-auditions/full-versions/open-room-full-v1.mp3",
+    "sha256": "dddd8b6ca2bbfe869424f59b7d26673f5f09e72533b68cfcad60fc3042a9fa42"
+  },
+  "speechProvider": "openai"
+}

@@ -1,0 +1,12 @@
+{
+  "provider": "openai",
+  "hash": "eba3af7042fbe0a908a60b9a0e6e8016e4372a67a2fdde7c840ef298060d2f5e",
+  "model": "gpt-4o-mini-tts",
+  "voice": "marin",
+  "speaker": "COACH",
+  "originalText": "Now the bonk matrix for water. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+  "speechText": "Now the bonk matrix for water. We check all eighteen enemy unit types, including matching types. Both pieces start at full health and are already next to each other. One attack, not a whole turn.",
+  "duration": 10.7,
+  "bytes": 513644,
+  "createdAt": "2026-09-13T10:39:02.913Z"
+}
