@@ -17,7 +17,7 @@ let solver: TacticalSolver;
 beforeAll(async () => { solver = await instantiateTactics(readFileSync('src/ai/wasm/tactics.wasm')); });
 
 function request(): SearchRequest {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   return { version: AI_PROTOCOL, type: 'search', gameId: 'test', requestId: 1, revision: 0, player: 'white', state, difficulty: 'easy', seed: 831, decisionMs: 1000, fixedWork: 5000 };
 }
 
@@ -165,7 +165,7 @@ it('a version:2 request still ignores mode/engine and returns the unchanged per-
 });
 
 it('legalPrefix truncates at the first illegal action, keeping the legal actions before and dropping everything after', () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   const legalFirst = phaseEndAction(state); // {type:'END_PLACE_PHASE'} — always legal on the initial position
   const illegal = { type: 'MOVE' as const, unitId: 'does-not-exist', to: { x: 0, y: 0 } };
   const wouldBeLegalLater = { type: 'END_ACTION_PHASE' as const };
@@ -174,7 +174,7 @@ it('legalPrefix truncates at the first illegal action, keeping the legal actions
 });
 
 it('legalPrefix returns every action of an already-legal sequence unchanged', () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   const legalFirst = phaseEndAction(state);
   const prefix = legalPrefix(state, [legalFirst]);
   expect(prefix).toEqual([legalFirst]);
@@ -197,7 +197,7 @@ const STUB_STATS: HardSearchStats = {
 it('findBestTurn sends mode:"turn" and resolves a normalized result from a type:"result" (v2) response', async () => {
   const workers: FakeWorker[] = [];
   const c = new AIWorkerClient(() => { const w = new FakeWorker(); workers.push(w); return w; }, 'game', 1);
-  const s = createInitialGameState();
+  const s = createInitialGameState(undefined, 4, 0, 'phasing');
   const pending = c.findBestTurn(s, 'easy', 1000, 0);
   const posted = workers[0].sent[0];
   expect(posted.mode).toBe('turn');
@@ -213,7 +213,7 @@ it('findBestTurn sends mode:"turn" and resolves a normalized result from a type:
 it('findBestTurn forwards progress events without resolving, then resolves on the terminal message', async () => {
   const workers: FakeWorker[] = [];
   const c = new AIWorkerClient(() => { const w = new FakeWorker(); workers.push(w); return w; }, 'game', 1);
-  const s = createInitialGameState();
+  const s = createInitialGameState(undefined, 4, 0, 'phasing');
   const progressEvents: number[] = [];
   const pending = c.findBestTurn(s, 'hard', 1000, 0, { onProgress: p => progressEvents.push(p.depth) });
   const posted = workers[0].sent[0];
@@ -236,7 +236,7 @@ it('findBestTurn forwards progress events without resolving, then resolves on th
 it('findBestTurn rejects on a type:"error" response', async () => {
   const workers: FakeWorker[] = [];
   const c = new AIWorkerClient(() => { const w = new FakeWorker(); workers.push(w); return w; }, 'game', 1);
-  const pending = c.findBestTurn(createInitialGameState(), 'medium', 1000, 0);
+  const pending = c.findBestTurn(createInitialGameState(undefined, 4, 0, 'phasing'), 'medium', 1000, 0);
   const posted = workers[0].sent[0];
   workers[0].reply({ ...posted, type: 'error', message: 'boom' });
   await expect(pending).rejects.toThrow('boom');
@@ -249,7 +249,7 @@ it('findBestTurn rejects on a type:"error" response', async () => {
 it('ignores a response whose identity does not match the in-flight request', async () => {
   const workers: FakeWorker[] = [];
   const c = new AIWorkerClient(() => { const w = new FakeWorker(); workers.push(w); return w; }, 'game', 1);
-  const pending = c.findBestTurn(createInitialGameState(), 'hard', 1000, 0, { engine: 'hard' });
+  const pending = c.findBestTurn(createInitialGameState(undefined, 4, 0, 'phasing'), 'hard', 1000, 0, { engine: 'hard' });
   const posted = workers[0].sent[0];
   expect(posted.engine).toBe('hard');
   let settled = false;

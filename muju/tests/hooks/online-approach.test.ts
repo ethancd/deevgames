@@ -13,7 +13,7 @@ vi.mock('../../src/online/client', () => ({
 }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 function start() {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   state.board.units = [createUnit('fire_1','white',{x:0,y:0}), createUnit('plant_1','black',{x:4,y:0}), createUnit('water_1','black',{x:9,y:9})];
   const unit = state.board.units[0];
   let room: RoomSnapshot = {id:'test-room', revision:1, ready:true, seats:{white:'W',black:'B'}, state, updatedAt:'now', history:[]};
@@ -59,7 +59,7 @@ it('removes move dots when the selected online unit spends its last action', asy
 });
 
 it('enables online undo from server history and sends it with the current revision', async () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   const room: RoomSnapshot = {id:'test-room', revision:7, ready:true, canUndo:true,
     seats:{white:'W',black:'B'}, state, updatedAt:'now', history:[]};
   vi.mocked(playRoom).mockResolvedValue({...room, revision:8, canUndo:false});

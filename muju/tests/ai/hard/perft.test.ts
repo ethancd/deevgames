@@ -376,7 +376,7 @@ describe('authored.jsonl (the retired Standard corpus)', () => {
 
 describe('corpus.ts mirror180 (DESIGN F10, core/tables.ts rot180)', () => {
   it('flips every unit\'s square (99 - s) and swaps owner', () => {
-    const initial = createInitialGameState();
+    const initial = createInitialGameState(undefined, 4, 0, 'phasing');
     const mirrored = mirror180(initial);
     expect(mirrored.board.units).toHaveLength(initial.board.units.length);
     for (const u of initial.board.units) {
@@ -388,7 +388,7 @@ describe('corpus.ts mirror180 (DESIGN F10, core/tables.ts rot180)', () => {
   });
 
   it('swaps currentPlayer and player resource pools', () => {
-    const initial = createInitialGameState();
+    const initial = createInitialGameState(undefined, 4, 0, 'phasing');
     const withBank = { ...initial, players: { white: { ...initial.players.white, resources: 5 }, black: { ...initial.players.black, resources: 9 } } };
     const mirrored = mirror180(withBank);
     expect(mirrored.turn.currentPlayer).toBe('black');
@@ -404,7 +404,7 @@ describe('corpus.ts mirror180 (DESIGN F10, core/tables.ts rot180)', () => {
   });
 
   it('mirrors resourceLayers per-cell (cell (x,y) <- cell (9-x,9-y))', () => {
-    const initial = createInitialGameState();
+    const initial = createInitialGameState(undefined, 4, 0, 'phasing');
     const mirrored = mirror180(initial);
     for (let y = 0; y < 10; y++) {
       for (let x = 0; x < 10; x++) {
