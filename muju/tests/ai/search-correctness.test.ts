@@ -9,12 +9,12 @@ import { runMCTS } from '../../src/ai/search/mcts';
 import type { MCTSChild } from '../../src/ai/search/types';
 
 it('does not collapse different destinations for the same moving piece',()=>{
- const s=createInitialGameState(); const plans=beamSearchPlans(s,'white',{maxSteps:1,beamWidth:100,outputPlans:100});
+ const s=createInitialGameState(undefined, 4, 0, 'phasing'); const plans=beamSearchPlans(s,'white',{maxSteps:1,beamWidth:100,outputPlans:100});
  const moves=plans.filter(p=>p.actions[0]?.type==='MOVE');expect(moves.length).toBeGreaterThan(3);
  expect(new Set(moves.map(p=>p.id)).size).toBe(moves.length);
 });
 it('evaluates consecutive same-player attacks from a fixed perspective',()=>{
- const s=createInitialGameState();s.board.units=[createUnitFromDefinition('fire_3','white',{x:2,y:2},'w'),createUnitFromDefinition('plant_1','black',{x:2,y:3},'b')];
+ const s=createInitialGameState(undefined, 4, 0, 'phasing');s.board.units=[createUnitFromDefinition('fire_3','white',{x:2,y:2},'w'),createUnitFromDefinition('plant_1','black',{x:2,y:3},'b')];
  expect(tacticalSharpen(s,'white',1)).toBeGreaterThan(10000);
  expect(tacticalSharpen(s,'black',1)).toBeLessThan(-10000);
  s.turn.actionsRemaining=0;
@@ -26,18 +26,19 @@ it('opponent selection minimizes root payoff instead of cooperating',()=>{
  expect(selectChild(n,0,1,1)?.plan.id).toBe('good');expect(selectChild(n,0,1,-1)?.plan.id).toBe('bad');
 });
 it('expands alternative root choices rather than searching only its first child',()=>{
- const s=createInitialGameState();s.turn.phase='place';s.players.white.resources=5;
+ const s=createInitialGameState(undefined, 4, 0, 'phasing');s.turn.phase='place';s.players.white.resources=5;
  const gen=vi.fn((state:typeof s)=>state.turn.currentPlayer==='white'&&state.board.units.length===6 ? [
   {id:'bad',actions:[{type:'END_PLACE_PHASE' as const}],score:0,tags:[]},
   {id:'good',actions:[{type:'BUY_UNIT' as const,definitionId:'fire_1',position:{x:0,y:0}}],score:0,tags:[]},
  ]:[]);
- const plan=runMCTS(s,'white',{iterations:40,timeLimitMs:5000,progressiveWideningAlpha:0.5},gen,state=>state.board.units.length>6?100:-100);
+ // A purchase is a pending summon in Phasing, so the payoff reads the commitment.
+ const plan=runMCTS(s,'white',{iterations:40,timeLimitMs:5000,progressiveWideningAlpha:0.5},gen,state=>(state.pendingSummons?.length??0)>0?100:-100);
  expect(plan.id).toBe('good');
 });
 it('does not double-penalize promotion spending or resign with reserve assets',async()=>{
  const {scorePartialPlan}=await import('../../src/ai/planner/scoring');
  const {shouldResign}=await import('../../src/ai/evaluation');
- const s=createInitialGameState();s.turn.phase='place';s.players.white.resources=20;s.players.white.resourcesGained=20;
+ const s=createInitialGameState(undefined, 4, 0, 'phasing');s.turn.phase='place';s.players.white.resources=20;s.players.white.resourcesGained=20;
  const unit=s.board.units.find(u=>u.owner==='white'&&u.definitionId==='plant_1')!;
  const promote={id:'promote',actions:[{type:'PROMOTE_UNIT' as const,unitId:unit.id}],score:0,tags:[]};
  const pass={id:'pass',actions:[{type:'END_PLACE_PHASE' as const}],score:0,tags:[]};

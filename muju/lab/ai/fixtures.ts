@@ -3,7 +3,8 @@ import type { GameState, PlayerId } from '../../src/game/types';
 import type { AIAction } from '../../src/ai/types';
 export interface TacticalFixture { name: string; state: GameState; targetId: string; expected: 'proved' | 'disproved'; witness?: AIAction[] }
 function fixture(name: string, defenders: [string, number, number][], invader = 'metal_3', actions = 4, resources = 0, placement = false): TacticalFixture {
-  const state = createInitialGameState();
+  // Phasing is the only ruleset since 2026-09-21.
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   state.board.units = [createUnit(invader, 'black', { x: 0, y: 0 }), ...defenders.map(([d,x,y]) => createUnit(d, 'white', {x,y}))];
   state.board.units.forEach((u, i) => { u.id = i === 0 ? 'invader' : `defender-${i}`; u.placedThisTurn = false; });
   state.turn.actionsRemaining = actions; state.turn.phase = placement ? 'place' : 'action';

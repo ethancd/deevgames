@@ -100,7 +100,7 @@ it('leaves a caller that never opted in on the preset, whatever wall budget it p
   expect(presetConfigFor('easy').scaleToBudget).toBe(false);
   const engine = new AIEngineV2('easy');
   engine.setSeed(831); engine.setTacticalSolver(solver);
-  const result = await engine.findBestAction(createInitialGameState(), 30000);
+  const result = await engine.findBestAction(createInitialGameState(undefined, 4, 0, 'phasing'), 30000);
   expect(result.debug!.config).toEqual(presetConfigFor('easy'));
   expect(result.timeMs).toBeLessThan(aiTurnBudgetMs('easy', 'quick'));
 });
@@ -119,7 +119,7 @@ it('is pure: the configuration handed in is never mutated', () => {
  * along the same line, pinned above.
  */
 it('makes an easy search genuinely use a longer allowance', { timeout: 30_000 }, async () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   const run = async (budgetMs: number) => {
     const engine = new AIEngineV2('easy');
     engine.setSeed(831); engine.setTacticalSolver(solver); engine.setConfig({ scaleToBudget: true });
@@ -140,7 +140,7 @@ it('makes an easy search genuinely use a longer allowance', { timeout: 30_000 },
 });
 
 it('scales a v2 whole-turn request and leaves a per-action request on the preset', async () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   const base: SearchRequest = { version: AI_PROTOCOL, type: 'search', gameId: 'scaling', requestId: 1, revision: 0,
     player: 'white', state, difficulty: 'easy', seed: 831, decisionMs: 1200 };
   const handler = createSearchHandler(solver);

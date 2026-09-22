@@ -6,7 +6,7 @@ import type { AIDifficulty } from '../ai/types';
 import { AI_PACES, AI_PACE_LABEL, AI_TURN_SECONDS, formatTurnSeconds, type AIPace } from '../ai/turnTime';
 import { getActionsPerTurn } from '../game/rules';
 import { INACTIVITY_LIMIT } from '../game/inactivity';
-import { loadAIPace, loadGameState } from '../utils/persistence';
+import { loadAIPace, loadGameState, loadRetiredSave } from '../utils/persistence';
 
 const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
 
@@ -38,6 +38,10 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   const [playerPace, setPlayerPace] = useState<AIPace>(savedPace.white);
   const [aiPace, setAiPace] = useState<AIPace>(savedPace[playerSide === 'white' ? 'black' : 'white']);
   const [savedGame] = useState(loadGameState);
+  // Read AFTER `loadGameState`, which is what moves a retired-rules save into
+  // the archive. A game played under the rules retired on 2026-09-21 is never
+  // resumed, but it is still the player's game: offer it for review.
+  const [retiredSave] = useState(loadRetiredSave);
   const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
   /** Which modes put an engine in a seat, for the difficulty/pace copy. */
   const aiMode = selectedMode === 'vs-ai' || selectedMode === 'ai-vs-ai';
@@ -281,6 +285,10 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
           className="w-full p-3 rounded-lg border border-gray-600 disabled:text-gray-500">
           Continue saved game · {getActionsPerTurn(savedGame)} actions
         </button>}
+        {retiredSave && <a href="/muju/analysis?local=1&retired=1"
+          className="block w-full p-3 rounded-lg border border-gray-700 text-center text-sm text-gray-400">
+          Review your saved Standard game →
+        </a>}
       </div>
     </div>
   );
