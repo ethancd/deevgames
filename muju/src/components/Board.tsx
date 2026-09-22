@@ -19,6 +19,8 @@ interface BoardProps {
   pendingMovePath?: Position[]; // For showing partial movement path
   movementRange?: MovementRangePosition[]; // For showing movement range preview with actions remaining
   attackFrontier?: Position[];
+  koTargets?: Position[]; // Enemies the selected unit could eliminate with its next attack
+  koThreats?: Position[]; // My units the inspected enemy could eliminate on its coming turn
   previewPosition?: Position;
   previewUnitPosition?: Position;
   showResources?: boolean;
@@ -41,6 +43,8 @@ export function Board({
   pendingMovePath = [],
   movementRange = [],
   attackFrontier = [],
+  koTargets = [],
+  koThreats = [],
   onCellClick,
   onUnitClick, onSummonClick, selectedSummon,
   previewPosition, previewUnitPosition, showResources = false, actionsRemaining = 4,
@@ -62,6 +66,12 @@ export function Board({
 
   const isPendingMove = (pos: Position) =>
     pendingMovePath.some((p) => p.x === pos.x && p.y === pos.y);
+
+  const isKoTarget = (pos: Position) =>
+    koTargets.some((p) => p.x === pos.x && p.y === pos.y);
+
+  const isKoThreat = (pos: Position) =>
+    koThreats.some((p) => p.x === pos.x && p.y === pos.y);
 
   const getMovementRangeActions = (pos: Position): number | undefined => {
     const rangePos = movementRange.find(
@@ -104,6 +114,8 @@ export function Board({
                   isPendingMove={isPendingMove(pos)}
                   movementRangeActions={getMovementRangeActions(pos)}
                   isAttackFrontier={attackFrontier.some(p => p.x === x && p.y === y)}
+                  isKoTarget={isKoTarget(pos)}
+                  isKoThreat={isKoThreat(pos)}
                   isPreview={(previewPosition?.x === x && previewPosition?.y === y) || (previewUnitPosition?.x === x && previewUnitPosition?.y === y)}
                   showResources={showResources}
                   moveCost={getMovementRangeActions(pos) !== undefined ? actionsRemaining - getMovementRangeActions(pos)! : undefined}

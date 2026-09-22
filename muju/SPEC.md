@@ -220,8 +220,15 @@ action budget for movement and adds red dots on the perimeter of the potential
 attack area: up to three movement actions
 at current Speed, then one adjacent attack. The outline follows current
 blockers and clips to board edges. It includes occupied opposing targets but
-does not indicate a guaranteed kill, promotions, or paths opened by earlier
-attacks. It previews a fresh enemy turn, independently of spent turn flags.
+does not by itself indicate a guaranteed kill, promotions, or paths opened by
+earlier attacks — a target that a single attack would actually eliminate gets
+its own KO badge instead (see the visual key): ☠ on an enemy the selected
+unit could eliminate with its next attack (move-then-attack included), or ⚠
+on one of your units that an inspected enemy could eliminate on its own
+coming turn, projected onto a fresh, full-actions turn. Either badge is a
+single attacker's projection and never sums two units' attacks into a
+combination kill. It previews a fresh enemy turn, independently of spent turn
+flags.
 
 If the game continues, start the next player's turn in this order:
 

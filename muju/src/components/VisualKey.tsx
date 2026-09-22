@@ -24,5 +24,12 @@ export function VisualKey() {
     <section><h3>Rank belongs on the base</h3><div className="rank-examples">{([1, 2, 3] as Tier[]).map(tier => <figure key={tier}><UnitArtwork owner="white" element="water" tier={tier} /><figcaption>Tier {tier}</figcaption></figure>)}</div>
       <p>Count the one to three rank marks. Higher tiers have larger bases; tier 3 gains an inner rim. Tier is a rank, not a universal attack value—tap a unit to compare its actual stats. A red badge shows damage.</p>
     </section>
+    <section><h3>KO indicators</h3>
+      <div className="ko-key-examples">
+        <figure><div className="ko-key-example board-cell ko-target"><span aria-hidden="true" className="ko-badge ko-badge-target">☠</span></div><figcaption>☠ Select your unit: this enemy dies to its next attack (a plain red ring means only a wound)</figcaption></figure>
+        <figure><div className="ko-key-example board-cell ko-threat"><span aria-hidden="true" className="ko-badge ko-badge-threat">⚠</span></div><figcaption>⚠ Inspect an enemy: this unit of yours dies to its next attack, next turn</figcaption></figure>
+      </div>
+      <p>Both badges account for a move first if the attacker needs it, and use the current elemental matchup and remaining defense. Each is a single attacker's projection — it never adds two units' attacks together to call a combination kill.</p>
+    </section>
   </div>;
 }

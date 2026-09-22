@@ -180,6 +180,16 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .board-cell.preview-cell::after { box-shadow: inset 0 0 0 2px #f5d780; background: #ffeca322; }
 .board-cell.attack-target::after { border: 2px solid #ff7b82; border-radius: 35%; }
 .board-cell.attack-target.preview-cell::after { border-color: #ffbeac; background: #ff575733; }
+/* KO overlays: eliminable enemies (forward, from the selected unit) get a
+   stronger red ring than a plain attack target; units the inspected enemy
+   could eliminate next turn (reverse) get a distinct amber ring, so the two
+   directions never read as the same warning. */
+.board-cell.ko-target::after { border: 3px solid #ff1f2d; border-radius: 30%; box-shadow: inset 0 0 0 1px #ff1f2d, inset 0 0 6px #ff1f2daa; }
+.board-cell.ko-target.preview-cell::after { border-color: #ff6a5a; }
+.board-cell.ko-threat::after { border: 3px solid #ffb454; border-radius: 30%; box-shadow: inset 0 0 0 1px #ffb454; }
+.ko-badge { position: absolute; bottom: 1px; font-size: 13px; line-height: 1; z-index: 6; pointer-events: none; text-shadow: 0 1px 2px #000, 0 0 2px #000; }
+.ko-badge-target { right: 2px; color: #ff2d3a; }
+.ko-badge-threat { left: 2px; color: #ffb454; }
 .range-marker { height: 6px; width: 6px; pointer-events: none; border-radius: 50%; z-index: 2; margin-right: 8%; }
 .range-marker.near { background: #fff5cd; box-shadow: 0 0 0 1px #183549; }
 .range-marker.far { height: 6px; width: 6px; border: 1px solid #fff5cd; opacity: .7; box-shadow: 0 0 0 .5px #183549aa; }
@@ -237,6 +247,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .army-examples .element-icon { height: 16px; width: 16px; }
 .rank-examples { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; text-align: center; font-size: 11px; margin-block: 12px; }
 .rank-examples .unit-art { width: 45px; height: 50px; margin: auto; }
+.ko-key-examples { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin: 14px 0; }
+.ko-key-example { width: 44px; height: 44px; margin: auto; background: #192a38; }
+.ko-key-examples figcaption { text-align: left; font-size: 11px; margin-top: 6px; line-height: 1.4; }
 
 /* Turn rent and public inactivity clock. */
 .rent-warning { color: #f59e0b !important; }

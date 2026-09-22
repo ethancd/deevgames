@@ -37,6 +37,7 @@ import { SummoningStatus } from './SummoningStatus';
 import { getSpawnInvalidReason } from '../game/spawning';
 import { findAttackApproach, getMovementRange, getAttackFrontier, type MovementRangePosition } from '../game/movement';
 import { calculateAttackPower, calculateDefense } from '../game/combat';
+import { ownKoTargets, enemyKoThreats } from '../game/koIndicators';
 import { PlayDialog } from './PlayDialog';
 import type { Position, GameConfig, PlayerId, Element, Unit } from '../game/types';
 import type { ReactNode } from 'react';
@@ -248,6 +249,22 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       ? getAttackFrontier(unit, state.board, actionsPerTurn - 1)
       : [];
   }, [summonPreview, selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, inspectOnly, state.turn.currentPlayer, state.board, actionsPerTurn]);
+
+  // Forward KO: with an own unit selected, every enemy it could eliminate with
+  // its next attack this turn (move-then-attack included), using the actions
+  // it actually has left right now.
+  const koTargets = useMemo(() => {
+    if (inspectOnly || state.turn.phase !== 'action' || !selectedUnitData || selectedUnitData.owner !== state.turn.currentPlayer) return [];
+    return ownKoTargets(selectedUnitData, state.board, state.turn.actionsRemaining);
+  }, [inspectOnly, state.turn.phase, state.turn.currentPlayer, state.turn.actionsRemaining, selectedUnitData, state.board]);
+
+  // Reverse KO: with an enemy inspected, every one of the opposing side's
+  // units it could eliminate on its own coming turn (a fresh turn projection;
+  // see koIndicators.ts).
+  const koThreats = useMemo(() => {
+    if (!viewedEnemyUnitData) return [];
+    return enemyKoThreats(viewedEnemyUnitData, state.board, actionsPerTurn);
+  }, [viewedEnemyUnitData, state.board, actionsPerTurn]);
 
   const latestState = useRef(state); latestState.current = state;
   const getCurrentState = useCallback(() => latestState.current, []);
@@ -924,12 +941,13 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
             validSpawns={showReplay ? [] : validSpawns}
             invalidSpawnPosition={showReplay ? null : spawnFeedback?.position ?? null}
             pendingMovePath={showReplay ? [] : previewPath} movementRange={showReplay ? [] : movementRange} attackFrontier={showReplay ? [] : attackFrontier}
+            koTargets={showReplay ? [] : koTargets} koThreats={showReplay ? [] : koThreats}
             previewPosition={showReplay ? replayFrame?.position : online?.playingIncoming ? online.incomingFrame?.position : preview?.position} previewUnitPosition={showReplay ? undefined : previewLanding}
             showResources={showResources} actionsRemaining={showingReach ? actionsPerTurn : state.turn.actionsRemaining}
             selectedSummon={viewedSummon?.id} onSummonClick={handleSummonClick} onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || (showingReach && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
+          <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || (showingReach && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack · ☠ eliminates · ⚠ danger')}</span>
           <button disabled={showReplay} className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>
