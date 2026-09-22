@@ -9,7 +9,8 @@ Only centaur permits hosted analysis and briefings; bare also rejects legal
 lists, previews, undo and staged play. Tool-builder permits custom client code but
 not hosted analysis. Ordinary rooms omit this field and retain all current
 behavior. See [engine seat and match protocol](docs/ENGINE-SEAT-MATCH-2026-09-19.md)
-for capabilities, isolation requirements and the guarded Standard-only Node seat.
+for capabilities, isolation requirements and the guarded, default-closed Phasing
+Hard Node seat.
 For a scored study, use the optional `MUJU_MATCH_ROOM_ID` single-room service on
 a dedicated listener/database after the operator admits both seats. That mode
 denies creation, joining, listing and every cross-room route/tool; stdio adopts
@@ -19,19 +20,19 @@ issued credentials and pins expected policy/protocol, time control and handicap.
 This infrastructure is prepared; no Phasing Hard match or strength result is claimed.
 
 
-## Optional Phasing games
+## The turn
 
-Choose **Phasing** while hosting, or pass `ruleset: "phasing"` to room creation.
-The default is `standard`; the choice is immutable and visible to both seats and
-observers. Existing rooms remain Standard. Phasing starts in Act, then collects
-mining and pays upkeep with `END_ACTION_PHASE`; promote and commit summons in
-Prepare (`phase: "place"`), then hand over with `END_PLACE_PHASE`. Both phases
-share the full-turn clock. Black's handicap never adds an opening Place phase in
-Phasing. Public commitments, arrivals and refunds persist in history and saved
-positions. MCP strategic analysis models Phasing turn order, summons and upkeep;
-manual analysis, observations, legal actions and previews work normally.
-See [complete Phasing rules](docs/PHASING-2026-09-16.md). Sections below describing
-pre-action upkeep and instant purchases refer to Standard.
+Muju has one rule set. Every room plays it; there is nothing to choose and
+nothing to pass. A turn starts in Act, then collects mining and pays upkeep with
+`END_ACTION_PHASE`; promote pieces and commit public tier-1 summons in Prepare
+(`phase: "place"`), then hand over with `END_PLACE_PHASE`. Preparation always
+ends explicitly, even when nothing is affordable, and spending every action does
+not end the turn. All phases share one full-turn clock. Black's handicap never
+adds an opening phase: both seats begin in Act. Public commitments, arrivals and
+refunds persist in history and saved positions. MCP strategic analysis, manual
+analysis, observations, legal actions and previews all model this turn.
+See [the specification](SPEC.md); `docs/PHASING-2026-09-16.md` is the superseded
+dated record of the era when this was an optional variant.
 
 
 One authoritative host serves the existing browser game, persistent two-seat rooms,
@@ -46,10 +47,10 @@ use the updated Plant stats. Refresh an open browser after the release. See
 ## Black crystal handicap
 
 Local new-game setup and **Play online → Host a game** offer **Black crystal
-handicap**: Off (standard), or any whole number from 1 to 20. Black starts with
-exactly that many crystals; White starts with 0 and moves first. With 1 or 2,
-Black skips its opening Place & Promote phase. With 3–20, it enters that phase
-and uses normal purchase/promotion costs. Both sides retain four actions.
+handicap**: Off, or any whole number from 1 to 20. Black starts with
+exactly that many crystals; White starts with 0 and moves first. The handicap
+never changes the opening phase: both players begin their first turn in Act, and
+crystals are first spent in that turn's Prepare. Both sides retain four actions.
 
 HTTP room creation and `muju_create_room` accept `blackCrystalHandicap`, for
 example `{ "name": "Host", "side": "white", "blackCrystalHandicap": 8 }`.
@@ -532,24 +533,28 @@ This host is intended for invited games, not an unrestricted high-volume
 matchmaking service. No paid infrastructure is provisioned
 by these files.
 
-Saved rooms have a rules version; bump `RULES_VERSION` (Standard) and
-`PHASING_RULES_VERSION` in `server/rooms.ts` when changing incompatible game rules.
+Saved rooms have a rules version. One constant survives:
+`PHASING_RULES_VERSION` in `server/rooms.ts`, currently `muju-phasing-2` — bump it
+when changing incompatible game rules. The Standard constant is retired: it is
+exported as `RETIRED_STANDARD_VERSION` so stored rows can still be recognised,
+and no room is ever created under it.
 Older rooms fail with an explicit error instead of silently continuing under
 different rules. Version 4 upgrades version-2/3 rooms in place to four actions and
 resets the new kill-only clock to zero. It subtracts actions already spent,
 preserves the board, seats and final results, and clears old undo/replay history.
 Reconnects receive an updated revision.
 
-The twenty-ply inactivity draw (rules revision `muju-phasing-2`, 2026-09-19)
-advances both rule sets: new Standard rooms are `muju-online-6` and new Phasing
-rooms `muju-phasing-2`. `muju-online-5` is reserved by the unmerged
-`codex/phasing-only-canonical` branch, which uses it for its single canonical rule
-set, so Standard skips it. Rooms stored as `muju-online-4` or `muju-phasing-1` are
-never replayed under the longer clock: their rows stay in the database untouched,
-the active-games lobby omits them, the archived list still shows their result, and
-any read or command returns `RULES_CHANGED` ("This room uses older rules. Create a
-new room."). Version-2/3 rooms keep their existing in-place upgrade, which restarts
-the quiet clock rather than carrying it across the change.
+New rooms are **`muju-phasing-2`** (the twenty-ply inactivity draw, 2026-09-19),
+and that is the only revision the server opens. `muju-online-2`, `muju-online-3`,
+`muju-online-4`, `muju-online-5`, `muju-online-6` and `muju-phasing-1` are retired
+identifiers on the `RULES_CHANGED` path. A stored room under any of them is never
+replayed under current rules and is never migrated in place: its row stays in the
+database untouched, the active-games lobby omits it, the archived list still shows
+its result and labels it retired, and any read or command returns `RULES_CHANGED`
+("This room uses older rules. Create a new room."). The in-place upgrade that
+version-2/3 rooms once received is gone with the Standard retirement — reinterpreting
+a stored room under a different rule set is exactly what this path exists to prevent.
+See `SPEC.md` §1 "Stored artefacts by rules revision" and `JUDGMENT_LOG.md` J-022.
 
 ## HTTP API and verification
 

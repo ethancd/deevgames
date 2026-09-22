@@ -161,11 +161,12 @@ manufacture a universal minimum defense. These limits are exposed in the API and
 skill rather than concealed behind a safety score.
 
 
-## Phasing analysis
+## Turn timing in analysis
 
-`muju_rules({ruleset:"phasing"})` selects variant-specific timing prose. Observations,
-legal actions and clocks expose `ruleset`, `turn`, `upkeepPending`, and
-`endTurnAction`. In Phasing the full-turn handoff is `END_PLACE_PHASE`.
+`muju_rules()` returns the timing prose; there is one rule set and no argument to
+select. Observations, legal actions and clocks expose `ruleset`, `turn`,
+`upkeepPending` and `endTurnAction`. The full-turn handoff is always
+`END_PLACE_PHASE`.
 
 Analysis uses engine handoff: outgoing Act ends, mining occurs once, outgoing upkeep
 is settled, then preparation ends without further spending. Existing incoming
@@ -178,13 +179,17 @@ remaining attack or movement opportunity; it does not become another Act when en
 Reply analysis does not choose discretionary future preparation or search multiple
 turns. Include your intended preparation in `hypotheticalActions` to inspect its
 actual consequences. Home checkmate before outgoing upkeep is resolved reports
-`unknown`; preview mining/upkeep first. Phasing rescue witnesses begin in defender
+`unknown`; preview mining/upkeep first. Rescue witnesses begin in defender
 Act after healing, with no pre-action payment or promotion.
 
 Economy forecasts record harvest and upkeep as separate balances, include existing
 summon arrivals/refunds, and stop at the first unaffordable keep-all payment or game
 result. Current summon support is conditional, not a promise about the arrival board.
-Built-in AI remains Standard-only.
+
+The built-in browser AI plays these same rules: easy and medium run `AIEngineV2`,
+hard runs the newer `src/ai/hard` search engine, and `?hardAi=0` on the game URL
+opts a seat back to the previous hard engine. No strength claim is made for either
+engine here; see `docs/hard-ai/RELEASE-2026-09-21-phasing.md`.
 
 ## See also
 

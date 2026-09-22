@@ -102,8 +102,8 @@ revision stays unchanged, and your clock continues. No candidate is generated,
 reordered, repaired or extended.
 
 End-turn commands are optional, so partial batches are allowed. To hand over,
-Standard requires `END_ACTION_PHASE`; Phasing requires `END_PLACE_PHASE` after
-mining/upkeep and preparation. Phasing `END_ACTION_PHASE` alone keeps the same
+`END_PLACE_PHASE` is required, after mining/upkeep and preparation.
+`END_ACTION_PHASE` alone keeps the same
 player, deadline and pending stage. Recheck batches after live phase changes. Spending all AP or executing a partial batch does
 not stop the clock. `UNDO` and upkeep preferences retain their ordinary send-alone
 restrictions. A full batch cannot enter the opponent's turn. An immediate home
@@ -188,6 +188,6 @@ begins are skipped; samples start with the next newly started full turn. Current
 bank balances remain authoritative. Existing timing history survives restart.
 The window is cumulative, not a rolling trend or a prediction of game length.
 
-The single-action example above is Standard. A complete Phasing candidate can use
+The example above stages a single action. A complete-turn candidate adds
 `END_ACTION_PHASE`, any required `PAY_UPKEEP` and desired preparation, followed by
 `END_PLACE_PHASE`. Never assume a partial staged batch stops the clock.
