@@ -70,6 +70,26 @@ Labels: Water "Old Norse"; Shadow "Turkish"; Plant "Quechua"; Metal "Tamil" / "S
 5. Soundtrack titles, `public/music/` file names and the Metal track's Lakota flute brief are
    unchanged (owner); `docs/ROADMAP.md` carries the Tamil-instrument redo.
 
-## Gates
+## Gates (final run on the merged lane state, worktree `~/src/deevgames-rename`)
 
-Filled by the coordinator after the final run on the merged lane state; see "Release".
+- `npm run server:types` clean; `npm test` 2945 passed, 1 skipped, 212 files (after the three
+  coordinator reverts; the two `phasing-evidence` pin failures were the reverted harness comment);
+  `npm run build` clean. Lane A: online e2e 84/84, metal+mobile e2e 18/18, balance check/types
+  pass. DAG `check` passes. CI run 35754662847 on the branch: success (the first run,
+  35752541993, failed on root `tools/smoke-site.cjs` still asserting the old hub link name; fixed
+  in 2f… "Rename: root smoke and site verifiers look for Muju Hono Irumbu").
+
+## Release
+
+| # | Node | Disposition | Evidence |
+|---|---|---|---|
+| 19 | static-package | changed | `bash build-all.sh` on master 271056b5 from the main checkout; CI's build/verify/smoke steps green on the same tree |
+| 20 | server-package | changed | Render rebuilt from the merge of PR #28 (271056b5); health returned `{"ok":true,"game":"Muju Hono Irumbu","protocol":1}` after a 502 window during the rebuild |
+| 21 | academy-package | changed (notice only) | ashkie-pages `e783072a` on main: three-paragraph course notice spliced from `build-release.py` via AST, `tools/verify_muju_videos.py` updated, offline manifest regenerated (7748 URLs), `./check` no FAILs |
+| 22 | static-deploy | changed | `npx wrangler pages deploy _site --project-name deevgames --branch master` → https://7aaa6954.deevgames.pages.dev; production `/muju/` title "Muju Hono Irumbu", hub link renamed |
+| 23 | server-deploy | changed | live `muju_rules` catalogue lists Honō, Ægirinn, Loş, Sach'akuna, Poṉ, Veḷḷi, Irumbu and no old name; `/SKILL.md` serves the `muju-hono-irumbu` skill; `/muju/skills/muju-hono-tanka/SKILL.md` still 200 (compat copy) |
+| 24 | academy-deploy | changed | push to ashkie-pages main deployed; `verify_muju_videos.py https://ashkie.com` exit 0 (notice assertions, 16/16 episodes, retired/replaced redirects); `verify_offline.sh https://ashkie.com` exit 0; home page shows "Muju Hono Irumbu" |
+| 25 | release-verification | changed | this table; screenshots in `2026-09-22-rename-evidence/` |
+
+Deferred, by owner decision: Academy re-voice (15 episodes), soundtrack retitling, suite-bundle
+re-binding (with the next measurement campaign).
