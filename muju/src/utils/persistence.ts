@@ -1,7 +1,6 @@
 import { LEGACY_INACTIVITY_LIMIT, resolveInactivityDraw } from '../game/inactivity';
 import type { GameState, PlayerId } from '../game/types';
 import { getActionsPerTurn, isActionsPerTurn, isBlackCrystalHandicap, isRuleset } from '../game/rules';
-import { migrateLegacyGame } from '../game/migrate';
 import { startHistory, type LocalGameHistory } from '../game/analysis';
 import { DEFAULT_AI_PACE, isAIPace, type AIPace } from '../ai/turnTime';
 
@@ -9,14 +8,30 @@ import { DEFAULT_AI_PACE, isAIPace, type AIPace } from '../ai/turnTime';
 // v8 (rules revision `muju-phasing-2`, 2026-09-19): the inactivity draw is twenty
 // quiet plies instead of ten. The version exists so a resumed save is never judged
 // under a clock its players did not agree to: see `loadGameState`.
-export const SCHEMA_VERSION = 8;
+// v9 (2026-09-21): Standard retired. A save whose `state.ruleset` is not
+// `'phasing'` is archived, never resumed — the rules it was played under are no
+// longer implemented as a playable turn, and resuming it would be exactly the
+// silent reinterpretation the content DAG's `persistence` node forbids. The
+// payload is MOVED byte-for-byte to `RETIRED_STORAGE_KEY`, never deleted and
+// never rewritten, and stays readable through `loadRetiredSave` /
+// `loadRetiredHistory` so the analysis screen can show the game.
+export const SCHEMA_VERSION = 9;
+
+/** The schema that first recorded the twenty-ply clock; earlier saves counted differently. */
+const TWENTY_PLY_CLOCK_SCHEMA = 8;
 
 /** Every save schema this build still reads. Anything else starts a fresh game. */
-const READABLE_SCHEMA_VERSIONS: readonly number[] = [5, 6, 7, SCHEMA_VERSION];
+const READABLE_SCHEMA_VERSIONS: readonly number[] = [5, 6, 7, TWENTY_PLY_CLOCK_SCHEMA, SCHEMA_VERSION];
 
 const STORAGE_KEY = 'elemental-tactics-save';
+/**
+ * Where a retired-rules save is kept. Written once, by `loadGameState`, with the
+ * bytes it found under `STORAGE_KEY`; never written again while it is occupied,
+ * and never written by play, by `saveGameState` or by a preference edit.
+ */
+export const RETIRED_STORAGE_KEY = 'elemental-tactics-save-retired';
 
-interface PersistedState {
+export interface PersistedState {
   schemaVersion: number;
   timestamp: number;
   state: GameState;
@@ -77,15 +92,23 @@ export function loadGameState(): GameState | null {
     const persisted: PersistedState = JSON.parse(raw);
 
     // Version mismatch - start fresh
-    const legacy = persisted.schemaVersion === 5;
     if (!READABLE_SCHEMA_VERSIONS.includes(persisted.schemaVersion)) {
       console.log('Schema version mismatch, starting fresh game');
       clearGameState();
       return null;
     }
 
+    // Standard was retired on 2026-09-21. A save recorded under it is moved to the
+    // retired slot and reported as "no saved game": it is never resumed, because the
+    // turn it was played with no longer exists, and never deleted, because it is the
+    // only copy. A pre-v7 save has no `ruleset` at all, which meant Standard.
+    if (persisted.state?.ruleset !== 'phasing') {
+      archiveRetiredSave(raw);
+      return null;
+    }
+
     // Basic validation - check required fields exist
-    if (!validateGameState(persisted.state, legacy)) {
+    if (!validateGameState(persisted.state)) {
       console.log('Invalid saved state, starting fresh game');
       clearGameState();
       return null;
@@ -97,20 +120,68 @@ export function loadGameState(): GameState | null {
     // position that is still playing restarts its clock instead of carrying a count
     // whose meaning changed. That is the same choice `migrateLegacyGame` made when the
     // clock's reset rule changed, and it never revives a finished game.
-    const preTwentyPlyClock = persisted.schemaVersion < SCHEMA_VERSION;
-    const adjudicated = legacy ? migrateLegacyGame(persisted.state) :
-      resolveInactivityDraw({ ...persisted.state, actionsPerTurn: getActionsPerTurn(persisted.state) },
-        preTwentyPlyClock ? LEGACY_INACTIVITY_LIMIT : undefined);
+    const preTwentyPlyClock = persisted.schemaVersion < TWENTY_PLY_CLOCK_SCHEMA;
+    const adjudicated = resolveInactivityDraw({ ...persisted.state, actionsPerTurn: getActionsPerTurn(persisted.state) },
+      preTwentyPlyClock ? LEGACY_INACTIVITY_LIMIT : undefined);
     const state = preTwentyPlyClock && adjudicated.phase === 'playing' && (adjudicated.inactivityPlies ?? 0) !== 0
       ? { ...adjudicated, inactivityPlies: 0 } : adjudicated;
     // Stamp the revision once, keeping the score, so the restart cannot repeat.
-    if (preTwentyPlyClock) saveGameState(state, persisted.history);
+    if (persisted.schemaVersion < SCHEMA_VERSION) saveGameState(state, persisted.history);
     return state;
   } catch (e) {
     console.warn('Failed to load game state:', e);
     clearGameState();
     return null;
   }
+}
+
+/**
+ * Move a retired-rules payload out of the playable slot without changing a byte
+ * of it. The retired slot is written at most once: if it is already occupied the
+ * original stays where it is and the main slot is left alone too, because
+ * overwriting either one would destroy the only copy of a game somebody played.
+ */
+function archiveRetiredSave(raw: string): void {
+  try {
+    if (localStorage.getItem(RETIRED_STORAGE_KEY) !== null) {
+      console.log('A retired-rules save is already archived; leaving this one untouched.');
+      return;
+    }
+    localStorage.setItem(RETIRED_STORAGE_KEY, raw);
+    // Only after the bytes are safely under the retired key.
+    localStorage.removeItem(STORAGE_KEY);
+    console.log('Standard rules were retired; this save was archived for review.');
+  } catch (e) {
+    // A save we could not move is a save we do not touch.
+    console.warn('Failed to archive the retired-rules save:', e);
+  }
+}
+
+/**
+ * The archived retired-rules save, for review only. Its state is never resumed
+ * and never re-simulated: `AnalysisScreen` disables "Explore from here" for it.
+ */
+export function loadRetiredSave(): PersistedState | null {
+  try {
+    const raw = localStorage.getItem(RETIRED_STORAGE_KEY);
+    if (!raw) return null;
+    const persisted: PersistedState = JSON.parse(raw);
+    // Permissive on purpose: an archive is evidence, not a position to play from.
+    return validateGameState(persisted.state, true) ? persisted : null;
+  } catch (e) {
+    console.warn('Failed to read the retired-rules save:', e);
+    return null;
+  }
+}
+
+/** The archived game's score, so a retired game can still be paged through. */
+export function loadRetiredHistory(): LocalGameHistory | null {
+  const persisted = loadRetiredSave();
+  if (!persisted) return null;
+  const history = persisted.history;
+  if (history && typeof history.complete === 'boolean' && Array.isArray(history.frames) && history.frames.length &&
+    history.frames.every(frame => frame && typeof frame.label === 'string' && typeof frame.turn === 'string' && validateGameState(frame.state, true))) return history;
+  return startHistory(persisted.state, false);
 }
 
 /** Each seat's stored pace, dropping anything `isAIPace` does not recognise. */

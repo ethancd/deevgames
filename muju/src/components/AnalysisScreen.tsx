@@ -5,7 +5,7 @@ import { gameReducer } from '../hooks/useGameState';
 import { applyAction } from '../ai/simulate';
 import { type MoveHistoryEntry, type RoomMoveHistory } from '../game/moveHistory';
 import { analysisFrames, localFrame, turnKey, type AnalysisFrame as LocalFrame } from '../game/analysis';
-import { loadGameHistory } from '../utils/persistence';
+import { loadGameHistory, loadRetiredHistory } from '../utils/persistence';
 import type { AIAction } from '../ai/types';
 import type { GameConfig, GameState, PlayerId, Position } from '../game/types';
 import { resolveObserverConnection, roomRequest } from '../online/client';
@@ -25,14 +25,17 @@ export function AnalysisScreen() {
   const [query] = useState(() => new URLSearchParams(window.location.search));
   const roomId = query.get('room'), server = query.get('server') || window.location.origin;
   const local = !roomId && query.get('local') === '1';
-  const [localHistory] = useState(() => local ? loadGameHistory() : null);
+  // `retired=1` opens the archived retired-rules save. It is a read-only review:
+  // the position is never re-simulated, so nothing is reinterpreted under Phasing.
+  const retired = local && query.get('retired') === '1';
+  const [localHistory] = useState(() => !local ? null : retired ? loadRetiredHistory() : loadGameHistory());
   const hasScore = !!roomId || local;
-  const [initial] = useState(() => createInitialGameState(undefined, undefined, 0, query.get('ruleset') === 'phasing' ? 'phasing' : 'standard'));
+  const [initial] = useState(() => createInitialGameState(undefined, undefined, 0, 'phasing'));
   const [frames, setFrames] = useState<Frame[]>([]), [cursor, setCursor] = useState(() => Math.max(0, (localHistory?.frames.length ?? 1) - 1));
   const [position, setPosition] = useState<GameState>(initial);
   const [variation, setVariation] = useState<Variation | null>(hasScore ? null : { frames: [localFrame(initial)], cursor: 0 });
   const [selected, setSelected] = useState<string | null>(null);
-  const [loading, setLoading] = useState(!!roomId), [error, setError] = useState(local && !localHistory ? 'No saved game is available on this device.' : '');
+  const [loading, setLoading] = useState(!!roomId), [error, setError] = useState(local && !localHistory ? retired ? 'No retired-rules game is archived on this device.' : 'No saved game is available on this device.' : '');
   const [refresh, setRefresh] = useState(0), [partial, setPartial] = useState(!!localHistory && !localHistory.complete), [roomInput, setRoomInput] = useState('');
   const cache = useRef(new Map<string, GameState>());
   const reviewing = hasScore && !variation;
@@ -146,12 +149,12 @@ export function AnalysisScreen() {
       {timeline.map((frame, i) => <option key={i} value={i}>{i}. {frame.turn} · {frame.label}</option>)}
     </select></label>
     <div className="analysis-actions">
-      {reviewing ? <button disabled={loading || !!error || rawState.phase !== 'playing'} onClick={() => setVariation({ frames: [localFrame(rawState, 'Variation starts here')], cursor: 0 })}>Explore from here</button> : <span>You control both players</span>}
+      {reviewing ? <button disabled={loading || !!error || rawState.phase !== 'playing' || rawState.ruleset !== 'phasing'} onClick={() => setVariation({ frames: [localFrame(rawState, 'Variation starts here')], cursor: 0 })}>Explore from here</button> : <span>You control both players</span>}
       {hasScore && <button onClick={() => { setVariation(null); setRefresh(value => value + 1); }}>Return to game score</button>}
       {partial && <small>Earlier positions were not recorded.</small>}
+      {rawState.ruleset !== 'phasing' && <p role="note">Retired Standard rules · review only</p>}
     </div>
     {error && <p role="alert">{error} <button onClick={() => local ? window.location.reload() : setRefresh(value => value + 1)}>Reload score</button></p>}
-    {!hasScore && <a href={`/muju/analysis?ruleset=${state.ruleset === 'phasing' ? 'standard' : 'phasing'}`}>New {state.ruleset === 'phasing' ? 'Standard' : 'Phasing'} analysis board</a>}
     {!hasScore && <details><summary>Analyze an online room</summary><form onSubmit={async event => {
       event.preventDefault();
       try { const connection = await resolveObserverConnection(roomInput, window.location.origin);
