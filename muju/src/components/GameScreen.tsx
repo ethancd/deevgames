@@ -623,14 +623,14 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       return;
     }
 
-    // === Tab: Cycle all pieces, own first, each side in A–J then 1–10 order ===
+    // === Tab: Cycle all pieces, own first, each side in 1–10 then A–J order ===
     if (key === 'tab') {
       e.preventDefault();
       if (pendingMovePath.length > 0 && state.selectedUnit) {
         moveUnit(state.selectedUnit, pendingMovePath[pendingMovePath.length - 1]);
         setPendingMovePath([]);
       }
-      const byCoordinate = (a: Unit, b: Unit) => a.position.x - b.position.x || a.position.y - b.position.y;
+      const byCoordinate = (a: Unit, b: Unit) => a.position.y - b.position.y || a.position.x - b.position.x;
       const order = [...[...playerOwnUnits].sort(byCoordinate),
         ...state.board.units.filter(u => u.owner !== currentPlayer).sort(byCoordinate)];
       if (order.length === 0) return;

@@ -9,7 +9,7 @@ test('Phasing upkeep choice stays open, can be undone past, and the keyboard dri
   state.board.units[0].definitionId = 'fire_2'; state.board.units[1].definitionId = 'water_3'; state.board.units[2].definitionId = 'plant_3';
   state.players.white.resources = 4;
   const cellOf = (u: { position: { x: number; y: number } }) => page.getByTestId(`cell-${u.position.x}-${u.position.y}`);
-  const byCoordinate = (a: typeof state.board.units[number], b: typeof a) => a.position.x - b.position.x || a.position.y - b.position.y;
+  const byCoordinate = (a: typeof state.board.units[number], b: typeof a) => a.position.y - b.position.y || a.position.x - b.position.x;
   const mine = state.board.units.filter(u => u.owner === 'white').sort(byCoordinate);
   const theirs = state.board.units.filter(u => u.owner === 'black').sort(byCoordinate);
 
@@ -21,7 +21,7 @@ test('Phasing upkeep choice stays open, can be undone past, and the keyboard dri
   await page.getByRole('button', { name: 'Pass & Play' }).click();
   await page.getByRole('button', { name: /Continue saved game/ }).click();
 
-  // Tab visits own pieces, then the opponent's, in A–J then 1–10 order; Escape clears.
+  // Tab visits own pieces, then the opponent's, in 1–10 then A–J order; Escape clears.
   for (const unit of [...mine, ...theirs]) { await page.keyboard.press('Tab'); await expect(cellOf(unit)).toBeFocused(); await expect(page.locator('.unit-detail')).toBeVisible(); }
   await page.keyboard.press('Tab'); await expect(cellOf(mine[0])).toBeFocused();
   await page.keyboard.press('Shift+Tab'); await expect(cellOf(theirs.at(-1)!)).toBeFocused();

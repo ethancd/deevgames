@@ -83,7 +83,7 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
   </>},
   {title:'Read the board', content:<VisualKey />},
   {title:'Keyboard controls', content:<>
-    <p>Tab cycles every piece: yours first, then your opponent’s, each in A–J then 1–10 order; Shift+Tab goes back. N cycles only your pieces. Arrow keys prepare movement; a full Speed of steps commits automatically. Escape cancels pending movement, then clears the selection. Enter completes the phase and Command/Ctrl+Z undoes within the current turn, wherever focus rests; in the upkeep choice, Enter pays for the checked pieces.</p>
+    <p>Tab cycles every piece: yours first, then your opponent’s, each in 1–10 then A–J order; Shift+Tab goes back. N cycles only your pieces. Arrow keys prepare movement; a full Speed of steps commits automatically. Escape cancels pending movement, then clears the selection. Enter completes the phase and Command/Ctrl+Z undoes within the current turn, wherever focus rests; in the upkeep choice, Enter pays for the checked pieces.</p>
     <p>During Prepare, 1–6 or A S D F G H select a tier-1 summon by element (Fire, Lightning, Water, Shadow, Plant, Metal); click an empty highlighted square to commit it. P promotes the selected eligible piece. Space operates a focused button.</p>
     <p>U opens and closes the unit guide. Inside it, 1–3 choose the tier, A S D F G H choose the element, and Tab steps through every piece from tier 1 upward.</p>
   </>},
