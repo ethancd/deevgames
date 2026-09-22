@@ -7,14 +7,19 @@
  * prevent. The archived save stays fully reviewable; only exploring from it is
  * refused, and the screen says why.
  */
-import { afterEach, expect, it } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, expect, it } from 'vitest';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { AnalysisScreen } from '../../src/components/AnalysisScreen';
 import { createInitialGameState } from '../../src/game/board';
 import { startHistory } from '../../src/game/analysis';
 import { RETIRED_STORAGE_KEY } from '../../src/utils/persistence';
 import type { Ruleset } from '../../src/game/types';
 
+beforeEach(() => {
+  // jsdom has no native <dialog> behaviour; `PlayDialog` (the Game menu) needs these two.
+  HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };
+  HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); };
+});
 afterEach(() => { cleanup(); localStorage.clear(); });
 
 const save = (key: string, ruleset: Ruleset, schemaVersion: number) => {
@@ -26,6 +31,7 @@ const open = (search: string) => {
   render(<AnalysisScreen />);
 };
 const explore = () => screen.getByRole('button', { name: 'Explore from here' });
+const badge = () => document.querySelector('.ruleset-badge')?.textContent;
 
 it('reviews the archived Standard save but refuses to explore from it', () => {
   save(RETIRED_STORAGE_KEY, 'standard', 8);
@@ -51,5 +57,24 @@ it('says so plainly when nothing is archived on this device', () => {
 it('offers a fresh Phasing board, never a Standard one', () => {
   open('');
   expect(screen.queryByText(/Standard/)).toBeNull();
-  expect(document.querySelector('.ruleset-badge')?.textContent).toBe('Phasing');
+  expect(badge()).toBe('Phasing');
+});
+
+/**
+ * The Game menu's "Reset analysis" is rendered by `GameScreen` on every analysis
+ * screen, the retired review included. Seeding it from the reviewed position's
+ * ruleset would hand back a fresh, fully playable Standard board — the same
+ * affordance the deleted `?ruleset=standard` link was, and with the "review only"
+ * note still on screen. It seeds Phasing instead.
+ */
+it('resets the retired review to a Phasing board, never a fresh Standard one', () => {
+  save(RETIRED_STORAGE_KEY, 'standard', 8);
+  open('?local=1&retired=1');
+  expect(badge()).toBe('Standard');
+
+  fireEvent.click(screen.getByRole('button', { name: 'Game menu' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Reset analysis' }));
+
+  expect(badge()).toBe('Phasing');
+  expect(screen.queryByRole('note')).toBeNull();
 });

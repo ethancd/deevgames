@@ -128,7 +128,9 @@ export function AnalysisScreen() {
     setUpkeepReview: (player: PlayerId, enabled: boolean) => setVariation(current => current ? { ...current,
       frames: current.frames.map((frame, i) => i === current.cursor ? { ...frame, state: gameReducer(frame.state, { type: 'SET_UPKEEP_REVIEW', player, enabled }) } : frame) } : null),
     resign: () => dispatch([{ type: 'RESIGN' }]), applyAIAction: useCallback((action: AIAction) => dispatch([action]), [dispatch]),
-    resetGame: () => setVariation({ frames: [localFrame(createInitialGameState(undefined, undefined, state.blackCrystalHandicap, state.ruleset))], cursor: 0 }),
+    // Always Phasing, never the reviewed position's ruleset: on `?retired=1` that would
+    // hand the archived Standard game back as a fresh, fully playable Standard board.
+    resetGame: () => setVariation({ frames: [localFrame(createInitialGameState(undefined, undefined, state.blackCrystalHandicap, 'phasing'))], cursor: 0 }),
     undo: () => go(index - 1), canUndo: !!variation && index > 0,
     selectedUnitData: state.selectedUnit ? getUnitById(state.board, state.selectedUnit) : null,
     isPlayerTurn: true, canEndTurn: state.turn.phase === 'action',

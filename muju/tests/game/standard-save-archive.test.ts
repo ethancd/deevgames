@@ -157,7 +157,9 @@ it('never overwrites an occupied retired slot, and never deletes the save it cou
   const secondRaw = write(7, second);
   expect(loadGameState()).toBeNull();
   // The archive is the only copy of the first game, so it wins; and the second
-  // save is left exactly where it is rather than being thrown away.
+  // save is left exactly where it is rather than being thrown away — until the
+  // next new game overwrites the main key, which is unreachable in practice:
+  // once a device has archived, only Phasing saves are ever written there.
   expect(localStorage.getItem(RETIRED_STORAGE_KEY)).toBe(firstRaw);
   expect(localStorage.getItem(KEY)).toBe(secondRaw);
 });
