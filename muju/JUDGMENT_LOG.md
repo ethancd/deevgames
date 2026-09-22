@@ -429,10 +429,17 @@ User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan t
     `/muju/analysis?local=1&retired=1` with "Explore from here" disabled — the
     one client-side path that could have reinterpreted a Standard position under
     Phasing rules is closed by that condition.
-  - *No in-place migration.* `MIGRATABLE_RULES_VERSIONS` is removed and
-    `src/game/migrate.ts` is deleted with its importers. Migrating a Standard
-    room into the current revision is the forbidden silent reinterpretation;
-    production holds zero such rows in any case.
+  - *No in-place migration.* `MIGRATABLE_RULES_VERSIONS` and the `legacy` room
+    branch are removed with their importers, so no stored room is reinterpreted.
+    Migrating a Standard room into the current revision is the forbidden silent
+    reinterpretation; production holds zero such rows in any case.
+    `src/game/migrate.ts` itself is left **byte-untouched**:
+    `lab/hard-ai/suites/phasing/canonical.ts` hashes every `.ts` under `src/game`
+    into the `rulesSourcesSha256` that the committed v2 suite fixtures pin, so
+    deleting the file breaks the canonical source binding and with it the suite
+    contract test and the Phasing suite measure. `migrateLegacyGame` is therefore
+    unreferenced dead code as of this entry; removing it is filed as a separate
+    change that carries the fixture re-pin it requires.
 - **Reproducibility anchors:** two tags, and `standard-final` does **not** move.
   `standard-final` stays where it is, at commit `71a2c511` (2026-09-18), and is
   pushed as it stands. It is an *annotated* tag, so `2b0f2bc0` is its tag-object
