@@ -1,0 +1,26 @@
+{
+  "schema": "muju-phasing-suite-floor-v2",
+  "manifestSha256": "454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453",
+  "declaredAt": "2026-09-22T06:40:08.000Z",
+  "seed": 1,
+  "profile": "desktop",
+  "engineSourceSha256": "8ad95e28265e61ba3a224e096e8702b95e50c54b39fa758054436a99f3cf1f88",
+  "weightsSha256": "ec9816169afe7983e03ea220eb30b8d4c1d05cbdaefc5f07a9e8a4061e12cdf5",
+  "allowedMiss": {
+    "tactics": 6,
+    "invariants": 1,
+    "home-mate": 0,
+    "economy": 0,
+    "summon-disruption": 1,
+    "home-fortify": 0
+  },
+  "supersedes": {
+    "ledgerSeq": 1,
+    "chain": "d7774d6d6a7265383d4c69c8d32fa469fd2195c5ff2702d5493b14464a25d430"
+  },
+  "coverage": "all",
+  "fallback": "veto",
+  "illegalOrDivergent": "veto",
+  "unresolvedProof": "veto",
+  "rationale": "Re-declared engineering floors for the SAME v2 authored release (manifestSha256 454fe137...), against the phasing-only cutover build. Schema stays muju-phasing-suite-floor-v2 because no v3 contract schema exists (contract.ts:73-85), and the manifest hash is the v2 manifest's own, unchanged: this contract re-reads the v2 case set on a new engine build, it does not author a new one. The allowedMiss vector is the frozen V1_ALLOWED_MISS budget (tactics 6, invariants 1, home-mate 0, economy 0, summon-disruption 1, home-fortify 0) that contract.ts refuses to let move in either direction, so minimumEarned stays DERIVED from this manifest's own offered counts (tactics 63-6=57, invariants 15-1=14, home-mate 28-0=28, economy 20-0=20, summon-disruption 14-1=13, home-fortify 6-0=6) and no floor here can have been set from an observed outcome. engineSourceSha256 and weightsSha256 preregister the build these floors are declared against: they are hashJson(engineSourceHashes()) over 78 source files and weightIdentity(DEFAULT_WEIGHTS) read off worktree deevgames-pc-lane1 at branch claude/pc-lane1 (merge d68db689) without running a search, and the weights are the shipped phasing-hand-priors-v1 vector (version 2). assertContractBuild refuses any other build rather than crediting it. The v2 manifest has already been read once, so supersedes names ledger seq 1 and carries that line's chain value, which is the only way measure.ts unblocks a second reading of a manifest. This reading is INFORMATIONAL under preregistration amendment A6 of the 2026-09-21 phasing-only cutover: it is not a ship gate, and the invariants family is expected to land below its floor of 14. This file is committed by itself, with no result.json, cases.jsonl, started.json, failure.json, ledger line or any path under a results directory in the same commit, and the measurement is a separate, later run; resolveContractCommit refuses an untracked or working-tree-modified contract, which is what makes this a preregistration rather than a description. No engine outcome, corpus, opening or sealed set was read to write it."
+}
