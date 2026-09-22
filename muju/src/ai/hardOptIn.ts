@@ -31,6 +31,13 @@
  * this stays what it always was: a page-URL override for demos and
  * measurement, ignored on easy/medium.
  *
+ * DEVICE PROFILE. `?hardProfile=phone` / `?hardProfile=desktop` (or
+ * `localStorage['muju.hardProfile']`) forces the search TABLES the Hard seat's
+ * engine is built from; without it `resolveHardDeviceProfile()` picks one from
+ * the device itself, so a phone stops running the desktop shape. The tables are
+ * `src/ai/hard/config.ts`'s, and its `deviceProfilePatch` is what goes on the
+ * wire as the request's `hard` patch.
+ *
  * WHAT THE ENGINE DOES WITH IT. The allowance reaches `HardEngine.searchTurn`
  * as `targetMs` (and, since A11, as `deadlineMs`), and an explicit `targetMs`
  * is used verbatim — the device profile's `time.maxMs` is the default the
@@ -51,12 +58,18 @@
  * asserts on. They are process-wide and monotonic: nothing resets them but a
  * reload.
  */
-import { hardEnabled } from './hard/config';
+import { hardEnabled, type DeviceProfileName } from './hard/config';
 
 export const HARD_AI_STORAGE_KEY = 'muju.hardAi';
 export const HARD_AI_QUERY_PARAM = 'hardAi';
 /** Page-URL override for the Hard seat's whole-turn budget, in milliseconds. */
 export const HARD_AI_MS_QUERY_PARAM = 'hardMs';
+/** Page-URL override for the DEVICE PROFILE the Hard seat's engine is built
+ * from: `?hardProfile=phone` or `?hardProfile=desktop`, with
+ * `localStorage['muju.hardProfile']` as the stored spelling — the same two
+ * forms, read in the same order, as `?hardAi`. See `resolveHardDeviceProfile`. */
+export const HARD_AI_PROFILE_QUERY_PARAM = 'hardProfile';
+export const HARD_AI_PROFILE_STORAGE_KEY = 'muju.hardProfile';
 /** Every `[hard-ai]` console line starts with this, so a test can grep for it. */
 export const HARD_AI_LOG_PREFIX = '[hard-ai]';
 
@@ -155,10 +168,19 @@ export function noteHardPlanReplayed(): void { hardDiag().plansReplayed++; }
  * used to be the one fallback kind that left no trace in the console at all, so
  * "the AI played instantly and badly" could not be settled from a bug report
  * (`ai-production-wiring.md` §6g).
+ *
+ * COUNTED PER DECISION, LOGGED ONCE PER TURN. Every floored decision is a fact
+ * the counter keeps — `e2e/hard-ai.spec.ts` and `tests/ai/hard-hook-fallback.test.ts`
+ * read the total — but the LINE says one thing about the whole turn, and under
+ * Phasing `fallbackDecisionsRemaining` is `actionsRemaining + 3` (seven in an
+ * opening Act), so logging each one buried the console in seven byte-identical
+ * copies every turn for the rest of the game. `useAI` passes `announce` true on
+ * the turn's first floored decision and false afterwards; it owns the turn, and
+ * this module has no idea where a turn begins.
  */
-export function noteHardBudgetExhausted(): void {
+export function noteHardBudgetExhausted(announce = true): void {
   hardDiag().budgetExhausted++;
-  console.warn(`${HARD_AI_LOG_PREFIX} turn budget exhausted — this turn overran its allowance; the remaining decisions run on the minimum search floor`);
+  if (announce) console.warn(`${HARD_AI_LOG_PREFIX} turn budget exhausted — this turn overran its allowance; its remaining decisions all run on the minimum search floor (logged once per turn; the budgetExhausted counter has one per decision)`);
 }
 
 /**
@@ -176,19 +198,24 @@ export function recordHardFallback(kind: HardFallbackKind, detail?: string): voi
   console.warn(`${HARD_AI_LOG_PREFIX} fallback ${kind}${detail === undefined ? '' : `: ${detail}`} — finishing this turn on the v2 path within the turn's remaining allowance`);
 }
 
-/** Reads `?hardAi` / `localStorage['muju.hardAi']`, query string first.
+/** Reads ONE page flag — query string first, then `localStorage`.
  * Every access is guarded: a worker/SSR context has no `window`, and a browser
  * with site data blocked THROWS on `localStorage`. */
-function readHardAiFlag(): string | null {
+function readPageFlag(queryParam: string, storageKey: string): string | null {
   if (typeof window === 'undefined') return null;
   try {
-    const fromQuery = new URLSearchParams(window.location.search).get(HARD_AI_QUERY_PARAM);
+    const fromQuery = new URLSearchParams(window.location.search).get(queryParam);
     if (fromQuery !== null) return fromQuery;
   } catch { /* no usable location; fall through to storage */ }
   try {
-    return window.localStorage.getItem(HARD_AI_STORAGE_KEY);
+    return window.localStorage.getItem(storageKey);
   } catch { /* storage blocked */ }
   return null;
+}
+
+/** Reads `?hardAi` / `localStorage['muju.hardAi']`, query string first. */
+function readHardAiFlag(): string | null {
+  return readPageFlag(HARD_AI_QUERY_PARAM, HARD_AI_STORAGE_KEY);
 }
 
 /**
@@ -249,4 +276,79 @@ export function readHardTurnBudgetMs(): number | null {
   const ms = Math.min(HARD_AI_MS_MAX, Math.max(HARD_AI_MS_MIN, requested));
   console.warn(`${HARD_AI_LOG_PREFIX} ${HARD_AI_MS_QUERY_PARAM}=${requested} — this game funds the hard seat's turn with ${ms} ms (clamped to [${HARD_AI_MS_MIN}, ${HARD_AI_MS_MAX}]; without it the seat gets the allowance of the pace the player picked)`);
   return ms;
+}
+
+/** A handheld's short side in CSS px (see `detectDeviceProfile`). */
+const PHONE_MAX_SHORT_SIDE_PX = 820;
+/** Logical cores at or below which a coarse-pointer device is phone-class. */
+const PHONE_MAX_CORES = 4;
+/** `profileFor`'s own DESIGN §6.3 memory trigger. */
+const PHONE_MAX_MEMORY_GB = 2;
+
+/**
+ * WHICH DEVICE PROFILE THIS GAME'S HARD ENGINE IS BUILT FROM (A-F2, 2026-09-21).
+ *
+ * Until now `src/ai/hard/config.ts`'s `profileFor` was called from no
+ * production code at all, so a phone ran the DESKTOP search shape — `K 24`,
+ * widths `[6,4,3,2]`, a 512 K-entry macro table — inside the same whole-turn
+ * clock as a workstation. This is the hint that fixes that. It is read ONCE per
+ * game by `useAI` (cached in a ref that `cancel` clears, exactly like the route
+ * and the `?hardMs` budget), never per search, so one turn can never be split
+ * across two engine shapes.
+ *
+ * THE RULE, and why it is this one. A device is treated as a phone when
+ *
+ *   `navigator.deviceMemory` ≤ 2 GB                                   (a), or
+ *   the PRIMARY pointer is coarse AND
+ *     (the viewport's short side ≤ 820 CSS px OR ≤ 4 logical cores)   (b).
+ *
+ * (a) is `profileFor`'s own DESIGN §6.3 trigger, taken verbatim; Chrome and
+ * friends report it, Safari does not, which is why it cannot be the only test.
+ * (b) asks the question a handheld actually answers differently: `(pointer:
+ * coarse)` is TRUE only when the primary input is a finger, so a touchscreen
+ * laptop driven by a mouse stays desktop, and it is then confirmed by a small
+ * viewport or a small core count. The short side rather than the width so an
+ * orientation change cannot flip the answer, and 820 px because a 10" tablet
+ * in portrait (810) is a phone-class chip while a 12.9" iPad Pro (1024, eight
+ * cores) is not. Core count is the second arm so that a large, slow tablet
+ * still gets the small tables.
+ *
+ * A HINT, NOT A MEASUREMENT: nothing here is throughput. The engine measures
+ * its own `unitsPerMs` after the first search and sizes every later rung from
+ * that; this only decides which TABLES it starts with, which is the part it
+ * cannot discover for itself. Anything the rule gets wrong is one page-URL flag
+ * away from being corrected in either direction, which is why the override
+ * exists and why the answer is logged.
+ */
+function detectDeviceProfile(): DeviceProfileName {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return 'desktop';
+  const nav = navigator as Navigator & { deviceMemory?: number };
+  if (typeof nav.deviceMemory === 'number' && nav.deviceMemory <= PHONE_MAX_MEMORY_GB) return 'phone';
+  let coarse = false;
+  try {
+    coarse = typeof window.matchMedia === 'function' && window.matchMedia('(pointer: coarse)').matches;
+  } catch { /* no usable media query support; fall back to the touch count */ }
+  // Only reached on a browser with no `matchMedia` at all: more than one touch
+  // point is the oldest available "this is a touchscreen" signal.
+  if (!coarse && typeof window.matchMedia !== 'function') coarse = (nav.maxTouchPoints ?? 0) > 1;
+  if (!coarse) return 'desktop';
+  const shortSide = Math.min(window.innerWidth || 0, window.innerHeight || 0);
+  const cores = nav.hardwareConcurrency;
+  const small = shortSide > 0 && shortSide <= PHONE_MAX_SHORT_SIDE_PX;
+  return small || (typeof cores === 'number' && cores <= PHONE_MAX_CORES) ? 'phone' : 'desktop';
+}
+
+/**
+ * The hint `useAI` sends, override first: `?hardProfile=phone|desktop` (or
+ * `localStorage['muju.hardProfile']`) decides on its own, and any other value
+ * is ignored rather than guessed at. Logged once per game like every other read
+ * in this module, so "the AI is slow on my phone" can be settled from the
+ * console alone.
+ */
+export function resolveHardDeviceProfile(): DeviceProfileName {
+  const raw = readPageFlag(HARD_AI_PROFILE_QUERY_PARAM, HARD_AI_PROFILE_STORAGE_KEY)?.trim().toLowerCase();
+  const forced = raw === 'phone' || raw === 'desktop' ? raw : null;
+  const device = forced ?? detectDeviceProfile();
+  console.warn(`${HARD_AI_LOG_PREFIX} device profile ${device}${forced === null ? '' : ` (forced by ${HARD_AI_PROFILE_QUERY_PARAM}=${forced})`} — this game builds the hard engine from the ${device} tables (override with ?${HARD_AI_PROFILE_QUERY_PARAM}=phone or =desktop)`);
+  return device;
 }

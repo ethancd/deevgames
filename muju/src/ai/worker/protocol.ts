@@ -35,7 +35,20 @@ export interface SearchRequest extends Identity {
   engine?: 'v2' | 'hard';
   /** hard only: overrides the device rung (CI/SPRT/lab always set it). */
   work?: number;
-  /** hard only. */
+  /**
+   * hard only: the configuration the worker builds this game's engine from,
+   * merged over `DESKTOP` (`worker/handler.ts` → `HardEngine`'s constructor).
+   *
+   * ABSENT ≡ DESKTOP, and that is now a MEANINGFUL default rather than an
+   * accident: since 2026-09-21 this is also how the DEVICE PROFILE reaches the
+   * worker. `useAI` resolves one hint per game (`resolveHardDeviceProfile()`,
+   * `src/ai/hardOptIn.ts`) and sends `deviceProfilePatch(...)`
+   * (`src/ai/hard/config.ts`) — the PHONE search tables — only when the hint
+   * says phone; a desktop game sends no field, so its request, the engine it
+   * builds and `hard@desktop`'s configuration identity are byte-for-byte what
+   * they were. A patch that names `weights` is honoured verbatim, which is why
+   * the device patch deliberately omits that key (see `hardPatch`).
+   */
   hard?: Partial<HardConfig>;
 }
 

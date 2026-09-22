@@ -114,10 +114,20 @@ it('raises a banner when an action inside the plan is refused by the rules', asy
   unmount();
 });
 
-it('logs a [hard-ai] line when a turn overruns its whole allowance', async () => {
+it('logs ONE [hard-ai] line per turn that overruns its whole allowance', async () => {
   // The engine reports having spent more than the turn was funded with, so the
   // per-action share is floored at `MIN_TURN_SEARCH_MS` — the one fallback kind
   // that used to leave no trace anywhere.
+  //
+  // COUNTED PER DECISION, LOGGED ONCE PER TURN (2026-09-21). Under Phasing
+  // `fallbackDecisionsRemaining` is `actionsRemaining + 3`, so an overrunning
+  // opening turn floors up to seven decisions; logging each one put seven
+  // byte-identical lines in the console every turn for the rest of the game,
+  // which is how a real signal becomes unreadable. The counter still takes all
+  // of them — `e2e/hard-ai.spec.ts` reads the total — and the line says the one
+  // thing that is true of the whole turn.
+  const exhausted = () => vi.mocked(console.warn).mock.calls.map(call => String(call[0]))
+    .filter(line => line.startsWith(`${HARD_AI_LOG_PREFIX} turn budget exhausted`));
   turnSearch.mockImplementation((_s: GameState, decisionMs: number) => ({ actions: [], source: 'fallback',
     fallback: 'engine-error', scoreCc: 0, depth: 1, work: 0, engineUsed: 'hard',
     timeMs: decisionMs * 2 } as unknown as FindTurnResult));
@@ -130,11 +140,21 @@ it('logs a [hard-ai] line when a turn overruns its whole allowance', async () =>
       real = gameReducer(real, { type: 'APPLY_AI_ACTION', aiAction: action });
     }, 'white');
   });
-  expect(hardDiag().budgetExhausted).toBeGreaterThan(0);
-  const lines = vi.mocked(console.warn).mock.calls.map(call => String(call[0]));
-  const exhausted = lines.filter(line => line.startsWith(`${HARD_AI_LOG_PREFIX} turn budget exhausted`));
-  expect(exhausted.length).toBe(hardDiag().budgetExhausted);
-  expect(exhausted[0]).toContain('overran its allowance');
+  expect(hardDiag().budgetExhausted).toBeGreaterThan(1);
+  expect(exhausted()).toHaveLength(1);
+  expect(exhausted()[0]).toContain('overran its allowance');
+  expect(exhausted()[0]).toContain('logged once per turn');
   expect(real.turn.currentPlayer).toBe('black');
+
+  // PER TURN, not per game: the next overrunning turn says so again.
+  const spentOnTurnOne = hardDiag().budgetExhausted;
+  let second = phasing();
+  await act(async () => {
+    await result.current.executeAITurn(second, action => {
+      second = gameReducer(second, { type: 'APPLY_AI_ACTION', aiAction: action });
+    }, 'white');
+  });
+  expect(hardDiag().budgetExhausted).toBeGreaterThan(spentOnTurnOne);
+  expect(exhausted()).toHaveLength(2);
   unmount();
 });

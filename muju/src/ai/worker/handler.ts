@@ -72,6 +72,11 @@ const constructHardEngine: HardEngineFactory = async patch => {
  * `hardEnginePatch`); this is the same correction at the worker boundary, for
  * a caller that posts a profile object straight down the wire. An explicit
  * non-placeholder vector is always honoured.
+ *
+ * The browser's own device-profile patch (`deviceProfilePatch`,
+ * `src/ai/hard/config.ts`, 2026-09-21) omits `weights` at the source for the
+ * same reason, so on the shipped path this stays the belt-and-braces it was
+ * written as — it is what protects a future caller that forgets.
  */
 function hardPatch(patch: Partial<HardConfig> | undefined): Partial<HardConfig> | undefined {
   if (patch?.weights === undefined || patch.weights.version !== 0) return patch;

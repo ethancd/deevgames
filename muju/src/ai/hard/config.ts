@@ -716,3 +716,47 @@ export function profileFor(unitsPerMs: number, deviceMemoryGb: number | undefine
   cfg.profile = { unitsPerMs, samples: 0 };
   return cfg;
 }
+
+/**
+ * WHICH PROFILE A BROWSER SEAT ACTUALLY RUNS (A-F2, 2026-09-21).
+ *
+ * `profileFor` has existed since M4 and, until this change, was called from
+ * nowhere but `tests/ai/hard/interfaces.test.ts`: every device — a phone
+ * included — built its engine from `DESKTOP`, i.e. `K 24`, widths
+ * `[6,4,3,2]`, `ttBitsMacro 19`. `useAI` now resolves ONE device hint per game
+ * (`resolveHardDeviceProfile()`, `src/ai/hardOptIn.ts`, which also documents
+ * the rule and its `?hardProfile` override) and sends the phone tables as the
+ * request's ordinary `hard` patch, which `worker/handler.ts` already applies
+ * to the one engine it builds per game.
+ *
+ * ABSENT ≡ DESKTOP, and that is the whole compatibility story: `'desktop'`
+ * returns `undefined`, so a desktop request stays byte-for-byte the request
+ * that shipped before — no `hard` field, `new HardEngine(undefined)`, and
+ * `hard@desktop`'s resolved configuration (the identity every ladder row and
+ * `tests/lab/ablate.test.ts`'s frozen hash are keyed on) untouched. Only a
+ * device that answers "phone" sends anything at all.
+ *
+ * WEIGHTS AND BOOK ARE OMITTED DELIBERATELY. `HardEngine`'s constructor
+ * substitutes `DEFAULT_WEIGHTS` only when the patch names no `weights` field
+ * at all, and every profile here carries the version-0 placeholder, so posting
+ * a whole profile object WITH its weights silently buys a material-only
+ * evaluation — the mistake `worker/handler.ts`'s `hardPatch` exists to catch.
+ * Omitting both fields means a phone plays the shipped weight vector and the
+ * same book as a desktop, on smaller tables. That is the only difference.
+ *
+ * The throughput handed to `profileFor` is the phone profile's own cold value
+ * (= `INITIAL_UNITS_PER_MS`): the main thread has measured nothing when it
+ * picks, and the engine overwrites the number with its own measurement after
+ * the first search. A later version could send a MEASURED throughput and let
+ * `profileFor` reach MIDRANGE as well; today the hint is two-valued by design
+ * (see `resolveHardDeviceProfile`).
+ */
+export type DeviceProfileName = 'desktop' | 'phone';
+
+/** The `hard` config patch a `DeviceProfileName` puts on the wire, or
+ * `undefined` for the desktop default. A fresh object every call. */
+export function deviceProfilePatch(device: DeviceProfileName): Partial<HardConfig> | undefined {
+  if (device !== 'phone') return undefined;
+  const { weights: _weights, book: _book, ...tables } = profileFor(PHONE_SHAPE.unitsPerMs, undefined);
+  return tables;
+}

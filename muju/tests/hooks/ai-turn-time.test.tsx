@@ -32,26 +32,14 @@ vi.mock('../../src/ai/worker/client', () => ({
 import { useAI } from '../../src/hooks/useAI';
 
 const END_ACTION: AIAction = { type: 'END_ACTION_PHASE' };
-/** Phasing is the only ruleset since 2026-09-21, so a whole AI turn mines and
- * prepares, then hands over; `END_ACTION_PHASE` alone leaves the seat in Prepare. */
-const HAND_OVER: AIAction = { type: 'END_PLACE_PHASE' };
-const WHOLE_TURN: AIAction[] = [END_ACTION, HAND_OVER];
-/**
- * A Phasing turn has three searchable segments under one mover (Act, the upkeep
- * decision, Prepare), so the FIRST search of a turn may spend the allowance less
- * the floor the two later segments reserve — an eighth of the turn budget each
- * (`src/ai/turnFunding.ts`). The mocked engine returns a whole turn in one
- * search, so that first request is the only one this turn makes.
- */
-const firstSearchMs = (turnBudgetMs: number) => turnBudgetMs * 3 / 4;
 
 /** Runs one whole AI turn and reports what each search was funded with. */
 async function turnAllowances(difficulty: AIDifficulty, pace?: AIPace): Promise<number[]> {
-  let real = createInitialGameState(undefined, 4, 0, 'phasing');
+  let real = createInitialGameState();
   const allowances: number[] = [];
   turnSearch.mockImplementation((_state: GameState, decisionMs: number) => {
     allowances.push(decisionMs);
-    return { actions: WHOLE_TURN, scoreCc: 0, depth: 1, work: 0, source: 'search', timeMs: 0 };
+    return { actions: [END_ACTION], scoreCc: 0, depth: 1, work: 0, source: 'search', timeMs: 0 };
   });
   const { result, unmount } = renderHook(() => useAI({ difficulty, pace, thinkingDelay: 0 }));
   await act(async () => {
@@ -72,13 +60,13 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); localStorage.clear(); });
 it('funds the turn with the chosen pace on every difficulty', async () => {
   for (const difficulty of ['easy', 'medium', 'hard'] as const) {
     for (const pace of ['quick', 'normal', 'deep'] as const) {
-      expect([difficulty, pace, await turnAllowances(difficulty, pace)]).toEqual([difficulty, pace, [firstSearchMs(AI_TURN_SECONDS[difficulty][pace] * 1000)]]);
+      expect([difficulty, pace, await turnAllowances(difficulty, pace)]).toEqual([difficulty, pace, [AI_TURN_SECONDS[difficulty][pace] * 1000]]);
     }
   }
 });
 
 it('treats an omitted pace as the default one', async () => {
-  expect(await turnAllowances('medium')).toEqual([firstSearchMs(AI_TURN_SECONDS.medium[DEFAULT_AI_PACE] * 1000)]);
+  expect(await turnAllowances('medium')).toEqual([AI_TURN_SECONDS.medium[DEFAULT_AI_PACE] * 1000]);
 });
 
 /**
@@ -90,7 +78,7 @@ it('treats an omitted pace as the default one', async () => {
  * dial has to stand still through them instead of emptying mid-turn.
  */
 it('counts the dial in search time and pauses it while the plan is dispatched', async () => {
-  let real = createInitialGameState(undefined, 4, 0, 'phasing');
+  let real = createInitialGameState();
   let release!: (result: FindTurnResult) => void;
   turnSearch.mockImplementation(() => new Promise<FindTurnResult>(resolve => { release = resolve; }));
   const { result, unmount } = renderHook(() => useAI({ difficulty: 'hard', pace: 'normal', thinkingDelay: 200 }));
@@ -103,7 +91,7 @@ it('counts the dial in search time and pauses it while the plan is dispatched', 
   expect(result.current.turnSpentMs).toBe(0);
   expect(typeof result.current.turnSearchingSince).toBe('number');
 
-  await act(async () => { release({ actions: WHOLE_TURN, scoreCc: 0, depth: 1, work: 0, source: 'search', timeMs: 12_000 } as unknown as FindTurnResult); });
+  await act(async () => { release({ actions: [END_ACTION], scoreCc: 0, depth: 1, work: 0, source: 'search', timeMs: 12_000 } as unknown as FindTurnResult); });
   // The search is over and its 12 s are debited from the turn; the dispatch
   // that follows is not, so the dial is frozen rather than running.
   expect(result.current.turnSpentMs).toBe(12_000);
@@ -120,12 +108,16 @@ it('counts the dial in search time and pauses it while the plan is dispatched', 
 // HARD SEAT ONLY, and it still wins over the chosen pace.
 it('lets ?hardMs outrank the hard seat’s pace, and leaves the other seats alone', async () => {
   window.history.replaceState({}, '', `/muju/?${HARD_AI_MS_QUERY_PARAM}=3000`);
-  expect(await turnAllowances('hard', 'deep')).toEqual([firstSearchMs(3000)]);
-  expect(await turnAllowances('medium', 'deep')).toEqual([firstSearchMs(AI_TURN_SECONDS.medium.deep * 1000)]);
+  expect(await turnAllowances('hard', 'deep')).toEqual([3000]);
+  expect(await turnAllowances('medium', 'deep')).toEqual([AI_TURN_SECONDS.medium.deep * 1000]);
 });
 
 it('keeps the pace with the saved game, defaulting anything missing or invalid', () => {
-  const state = createInitialGameState(undefined, 4, 0, 'phasing');
+  // A PHASING state, explicitly: since the Standard retirement `loadGameState`
+  // moves a non-Phasing payload to the retired key and answers null, so a save
+  // built from `board.ts`'s historical default would be archived here and this
+  // test would be asserting the archive path instead of the pace it is about.
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   saveGameState(state, undefined, { white: 'deep', black: 'normal' });
   expect(loadAIPace()).toEqual({ white: 'deep', black: 'normal' });
   expect(loadGameState()).toEqual(state);

@@ -358,6 +358,13 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .online-lobby button.primary { background: #0e7490; }
 .online-lobby button:disabled { opacity: .5; cursor: default; }
 .online-help, .online-banner details { font-size: .82rem; color: #94a3b8; }
+/* The lobby's stand-in for a dead "Analyze →" link. A retired-rules room is
+   still listed and still labelled, but the server answers RULES_CHANGED, so
+   there is nothing to open (`src/online/ArchivedGames.tsx`). Muted and
+   un-underlined so it does not read as an affordance, and `flex: none` because
+   the row it sits in is the flex line `.active-game` lays out
+   (`src/online/ActiveGames.css`, where the link it replaces gets its sizing). */
+.archived-retired { flex: none; max-width: 12rem; font-size: .78rem; line-height: 1.25; color: #94a3b8; }
 .online-banner { border: 1px solid #28576c; background: #0d2230; padding: 12px; border-radius: 10px; margin-bottom: 10px; overflow-wrap: anywhere; }
 .online-banner > strong, .online-banner > span { display: block; }
 .online-banner > span { font-size: .85rem; margin: 4px 0; color: #a5d9e9; }
