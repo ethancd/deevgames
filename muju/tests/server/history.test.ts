@@ -28,7 +28,7 @@ function setup(edit?: (state: GameState) => void) {
   return { path, store, host, guest, id, play };
 }
 
-it('records actual moves, mining reserves and incoming upkeep atomically, with no preview or retry duplicates', () => {
+it('records actual moves, mining reserves and the mover’s upkeep atomically, with no preview or retry duplicates', () => {
   const { store, host, id } = setup();
   const hi = store.get(id).state.board.units.find(u => u.owner === 'white' && u.definitionId === 'fire_1')!;
   const move = { type: 'MOVE' as const, unitId: hi.id, to: { x: 2, y: 0 } };
@@ -48,7 +48,8 @@ it('records actual moves, mining reserves and incoming upkeep atomically, with n
   if (mining.kind !== 'mining') throw new Error('Expected mining');
   expect(mining.takes.reduce((sum, take) => sum + take.amount, 0)).toBe(result.state.lastIncome!.total);
   for (const take of mining.takes) expect(take.reservesBefore - take.reservesAfter).toBe(take.amount);
-  expect(history.entries[2]).toMatchObject({ kind: 'upkeep', paid: 0, player: 'black', turnNumber: 1, automatic: true });
+  // Mining and upkeep both belong to the seat that ended its action phase.
+  expect(history.entries[2]).toMatchObject({ kind: 'upkeep', paid: 0, player: 'white', turnNumber: 1, automatic: true });
   expect(history.total).toBe(3);
   expect(store.get(id)).not.toHaveProperty('moveHistory');
 });
@@ -56,9 +57,10 @@ it('records actual moves, mining reserves and incoming upkeep atomically, with n
 it('removes an undone purchase/promotion batch from the score while retaining its audit', () => {
   const { store, id, play } = setup(state => { state.turn.phase = 'place'; state.players.white.resources = 20; });
   const hi = store.get(id).state.board.units.find(u => u.owner === 'white' && u.definitionId === 'fire_1')!;
-  play('white', [{ type: 'BUY_UNIT', definitionId: 'fire_1', position: { x: 0, y: 0 } }, { type: 'PROMOTE_UNIT', unitId: hi.id }, { type: 'END_PLACE_PHASE' }]);
+  // Both happen in Prepare, and END_PLACE_PHASE would end the turn the undo has to stay inside.
+  play('white', [{ type: 'BUY_UNIT', definitionId: 'fire_1', position: { x: 0, y: 0 } }, { type: 'PROMOTE_UNIT', unitId: hi.id }]);
   expect(store.moveHistory(id).entries).toMatchObject([
-    { kind: 'purchase', notation: '+🔥1@A1', cost: 3, bankAfter: 17 },
+    { kind: 'purchase', notation: '◌🔥1@A1', cost: 3, bankAfter: 17 },
     { kind: 'promotion', notation: '↑🔥2@B1', previousDefinitionId: 'fire_1', cost: 4, bankAfter: 13 },
   ]);
   play('white', [{ type: 'UNDO' }]);
@@ -67,32 +69,43 @@ it('removes an undone purchase/promotion batch from the score while retaining it
   expect(store.get(id).state.players.white.resources).toBe(20);
 });
 
-it('undoes automatic upkeep without removing opponent mining, then records voluntary releases and survives reconnect', () => {
+it('undoes the mover’s own mining and upkeep without removing the opponent’s, then records voluntary releases and survives reconnect', () => {
   const { store, path, id, play } = setup(state => {
     state.turn.currentPlayer = 'black'; state.players.white.resources = 5;
     state.board.units.find(u => u.owner === 'white' && u.definitionId === 'fire_1')!.definitionId = 'fire_2';
   });
-  play('black', [{ type: 'END_ACTION_PHASE' }]);
-  expect(store.moveHistory(id).entries).toMatchObject([
+  play('black', [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]);
+  const opponent = store.moveHistory(id).entries;
+  expect(opponent).toMatchObject([
     { kind: 'mining', player: 'black', turnNumber: 1 },
-    { kind: 'upkeep', player: 'white', turnNumber: 2, paid: 1, automatic: true, bankBefore: 5, bankAfter: 4 },
+    { kind: 'upkeep', player: 'black', turnNumber: 1, paid: 0, automatic: true },
   ]);
-  expect(store.position(id, 1).state).toMatchObject({ upkeepPending: true, players: { white: { resources: 5 } } });
-  expect(store.position(id, 2).state).toMatchObject({ upkeepPending: false, players: { white: { resources: 4 } } });
+  play('white', [{ type: 'END_ACTION_PHASE' }]);
+  expect(store.moveHistory(id).entries.slice(2)).toMatchObject([
+    { kind: 'mining', player: 'white', turnNumber: 2, bankBefore: 5, bankAfter: 11 },
+    { kind: 'upkeep', player: 'white', turnNumber: 2, paid: 1, automatic: true, bankBefore: 11, bankAfter: 10 },
+  ]);
+  expect(store.position(id, 4).state).toMatchObject({ players: { white: { resources: 10 } } });
   play('white', [{ type: 'UNDO' }]);
-  expect(() => store.position(id, 2)).toThrow('undone');
-  expect(store.moveHistory(id).entries.map(e => e.kind)).toEqual(['mining']);
+  expect(() => store.position(id, 4)).toThrow('undone');
+  // Black's completed turn keeps both of its records; White's are gone.
+  expect(store.moveHistory(id).entries).toEqual(opponent);
+  expect(store.get(id).state.players.white.resources).toBe(5);
+
+  // Reviewing the keep-set stops the same transition so the seat can release.
+  play('white', [{ type: 'SET_UPKEEP_REVIEW', enabled: true }]);
+  play('white', [{ type: 'END_ACTION_PHASE' }]);
   const pending = store.get(id).state;
   expect(pending.upkeepPending).toBe(true);
   play('white', [{ type: 'PAY_UPKEEP', keepUnitIds: pending.board.units.filter(u => u.owner === 'white' && u.definitionId !== 'fire_2').map(u => u.id) }]);
   const payment = store.moveHistory(id).entries.at(-1)!;
-  expect(payment).toMatchObject({ kind: 'upkeep', automatic: false, paid: 0, bankAfter: 5,
+  expect(payment).toMatchObject({ kind: 'upkeep', automatic: false, paid: 0, bankAfter: 11,
     released: [{ name: 'Hono', symbol: '🔥2', square: 'B1' }] });
   const reopened = new RoomStore(path); stores.push(reopened);
   expect(reopened.moveHistory(id)).toEqual(store.moveHistory(id));
   play('white', [{ type: 'UNDO' }]);
-  expect(reopened.moveHistory(id).entries.map(e => e.kind)).toEqual(['mining']);
-  expect(reopened.moveHistory(id, { includeUndone: true }).entries).toHaveLength(3);
+  expect(reopened.moveHistory(id).entries.map(e => e.kind)).toEqual(['mining', 'upkeep', 'mining']);
+  expect(reopened.moveHistory(id, { includeUndone: true }).entries).toHaveLength(6);
 });
 
 it('records damaging attacks and captures without moving the attacker onto the target', () => {
@@ -144,8 +157,12 @@ it('records adjudicated checkmate and omits canceled commands and unearned minin
   });
   const invader = store.get(id).state.board.units[0];
   play('white', [{ type: 'MOVE', unitId: invader.id, to: { x: 9, y: 9 } }, { type: 'END_ACTION_PHASE' }]);
+  // The occupation is adjudicated at the transition, so the move itself is not
+  // yet marked mate; the mining it earned and the upkeep it paid still count.
   expect(store.moveHistory(id).entries).toMatchObject([
-    { kind: 'move', notation: '🔥1 J9→J10#', ap: 1 },
+    { kind: 'move', notation: '🔥1 J9→J10', ap: 1 },
+    { kind: 'mining', player: 'white', total: 1 },
+    { kind: 'upkeep', player: 'white', notation: 'Upkeep −0 ◆#' },
     { kind: 'result', winner: 'white', reason: 'home-checkmate' },
   ]);
 });

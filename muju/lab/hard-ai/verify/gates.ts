@@ -8,6 +8,7 @@
  * reference) and a real `criterion`.
  */
 import { INACTIVITY_LIMIT } from '../../../src/game/inactivity';
+import { PHASING_FIXTURES } from '../perft/phasing-fixtures';
 
 export interface Gate {
   id: string;
@@ -53,7 +54,19 @@ export const GATES: Gate[] = [
       metrics.perftActions_initial_4 === 14959 &&
       metrics.perftMidStates_initial === 1053 &&
       metrics.perftTurns_initial === 797 &&
-      metrics.fixturesChecked === 11 &&
+      // 2026-09-22: derived from the fixture set itself, not a literal. This
+      // read `=== 11`, the size of the Standard perft fixture set that existed
+      // when the row was written; the Phasing-only replica landed at `142f0904`
+      // with the seven fixtures of `perft/phasing-fixtures.ts`, so M1 — the
+      // first gate, which `verify/run.ts` breaks on — had failed ever since,
+      // with everything else in the row green. `hard:perft --check` reports
+      // `fixturesChecked: fixtures.length` (`perft/run.ts:299`) over
+      // `buildAllFixtures()`, i.e. exactly `PHASING_FIXTURES.length`, so adding
+      // or retiring a fixture now moves the criterion with it instead of
+      // silently reddening the gate. (The `eleven` in
+      // `recall/build-fixtures.ts` is `positions/authored.jsonl`, a different
+      // corpus that this number has never counted.)
+      metrics.fixturesChecked === PHASING_FIXTURES.length &&
       metrics.fixturesMismatch === 0 &&
       metrics.depsViolations === 0 &&
       metrics.vitestFailures === 0 &&

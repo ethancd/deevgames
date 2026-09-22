@@ -230,20 +230,22 @@ describe('Board Module', () => {
     });
   });
 
+  // Phasing is the only ruleset since 2026-09-21; these setup assertions are
+  // turn-order-indifferent, so they simply say so out loud.
   describe('createInitialGameState', () => {
     it('creates a valid game state', () => {
-      const state = createInitialGameState();
+      const state = createInitialGameState(undefined,4,0,'phasing');
       expect(state.phase).toBe('playing');
       expect(state.winner).toBeNull();
     });
 
     it('places 6 units (3 per player)', () => {
-      const state = createInitialGameState();
+      const state = createInitialGameState(undefined,4,0,'phasing');
       expect(state.board.units).toHaveLength(6);
     });
 
     it('each player has correct starting units', () => {
-      const state = createInitialGameState();
+      const state = createInitialGameState(undefined,4,0,'phasing');
       const whiteUnits = getPlayerUnits(state.board, 'white');
       const blackUnits = getPlayerUnits(state.board, 'black');
 
@@ -255,15 +257,15 @@ describe('Board Module', () => {
     });
 
     it('players start with 0 resources', () => {
-      const state = createInitialGameState();
+      const state = createInitialGameState(undefined,4,0,'phasing');
       expect(state.players.white.resources).toBe(0);
       expect(state.players.black.resources).toBe(0);
     });
 
-    it('turn starts with player in action phase (place skipped when empty)', () => {
-      const state = createInitialGameState();
+    it('turn starts with white in Act', () => {
+      const state = createInitialGameState(undefined,4,0,'phasing');
       expect(state.turn.currentPlayer).toBe('white');
-      // Place phase is skipped at game start since nothing to place/promote
+      // Under Phasing a turn opens in Act by rule; Prepare comes after mining.
       expect(state.turn.phase).toBe('action');
       expect(state.turn.turnNumber).toBe(1);
     });

@@ -29,11 +29,14 @@ export function ArchivedGames({ server }: { server: string }) {
     {!!archive?.rooms.length && <ul className="active-games-list">{archive.rooms.map(room => <li key={room.id} className="active-game">
       <div className="active-game-info">
         <strong>{room.seats.white ?? 'White'} vs {room.seats.black ?? 'Black'}</strong>
-        <span>{rulesetLabel(room)} · Turn {room.turnNumber}</span>
+        <span>{rulesetLabel(room)}{room.retiredRules ? ' · retired' : ''} · Turn {room.turnNumber}</span>
         <span>{room.reason === 'abandoned' ? 'Closed · no moves for 24 hours' : room.winner ? `${room.seats[room.winner] ?? room.winner} won · ${room.reason?.replaceAll('-', ' ')}` : 'Draw'}</span>
         <small>Archived <time dateTime={room.archivedAt}>{new Date(room.archivedAt).toLocaleString()}</time></small>
       </div>
-      <a href={analysisUrl({ roomId: room.id, serverUrl: server })}>Analyze →</a>
+      {room.retiredRules
+        // The server answers RULES_CHANGED for these rooms, so the link would be dead.
+        ? <span className="archived-retired">Review unavailable · previous rules</span>
+        : <a href={analysisUrl({ roomId: room.id, serverUrl: server })}>Analyze →</a>}
     </li>)}</ul>}
     {archive?.nextCursor && <button disabled={loading} onClick={() => setCursor(archive.nextCursor!)}>More archived games</button>}
   </details>;

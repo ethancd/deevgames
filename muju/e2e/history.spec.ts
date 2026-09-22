@@ -32,19 +32,30 @@ for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 
     await expect(history).toContainText('🔥1 B1→C1');
     await play('white', [{ type: 'UNDO' }]);
     await expect(history).not.toContainText('🔥1 B1→C1');
+    // Phasing: END_ACTION_PHASE mines and settles upkeep for the seat that is
+    // still to prepare; END_PLACE_PHASE is what hands the turn over.
     await play('white', [{ type: 'END_ACTION_PHASE' }]);
     await expect(history).toContainText('Mining +6 ◆');
     await history.getByText('Mining by piece', { exact: true }).first().click();
     await expect(history).toContainText('Reserves 8 → 7');
     await expect(history).toContainText('Reserves 8 → 6');
     await expect(history).toContainText('Reserves 8 → 5');
-    await play('black', [{ type: 'END_ACTION_PHASE' }]);
-    await play('white', [{ type: 'PROMOTE_UNIT', unitId: hi.id }, { type: 'END_ACTION_PHASE' }]);
+    await play('white', [{ type: 'END_PLACE_PHASE' }]);
+    await play('black', [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]);
+    // A promotion is a Prepare action, after this turn's mining.
+    await play('white', [{ type: 'END_ACTION_PHASE' }]);
+    await play('white', [{ type: 'PROMOTE_UNIT', unitId: hi.id }, { type: 'END_PLACE_PHASE' }]);
     await expect(history).toContainText('↑🔥2@B1');
-    await play('black', [{ type: 'END_PLACE_PHASE' }, { type: 'END_ACTION_PHASE' }]);
+    await play('black', [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]);
+    // The tier-2 piece now costs rent, paid automatically inside the same step.
+    await play('white', [{ type: 'END_ACTION_PHASE' }]);
     await expect(history).toContainText('Upkeep −1 ◆');
     await play('white', [{ type: 'UNDO' }]);
     await expect(history).not.toContainText('Upkeep −1 ◆');
+    // Asking to review upkeep holds the choice open instead of paying it, which
+    // is the only way a Phasing seat releases a piece it could afford.
+    await play('white', [{ type: 'SET_UPKEEP_REVIEW', enabled: true }]);
+    await play('white', [{ type: 'END_ACTION_PHASE' }]);
     const pending = await read();
     await play('white', [{ type: 'PAY_UPKEEP', keepUnitIds: pending.state.board.units.filter(u => u.owner === 'white' && u.id !== hi.id).map(u => u.id) }]);
     await expect(history).toContainText('release 🔥2@B1');

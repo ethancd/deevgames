@@ -21,7 +21,8 @@ for (const viewport of [{width:900,height:1000},{width:390,height:844},{width:12
     await page.goto(`?room=${roomId}#invite=${host.inviteCode}`);
     await page.getByLabel('Your name',{exact:true}).fill('Human');
     await page.getByRole('button',{name:'Join room'}).click();
-    await expect(page.getByRole('button',{name:'End turn →'})).toBeEnabled();
+    // Phasing: the Act phase ends with "Mine & prepare →", the turn with "End turn →".
+    await expect(page.getByRole('button',{name:'Mine & prepare →'})).toBeEnabled();
     const launcher=page.getByRole('button',{name:'↶ Instant replay',exact:true});
     await expect(launcher).toBeDisabled();
     await page.getByTestId('cell-1-0').click();
@@ -34,15 +35,18 @@ for (const viewport of [{width:900,height:1000},{width:390,height:844},{width:12
     await page.getByTestId('cell-2-0').click(); await arrived;
     await expect(page.getByText('Confirming move…',{exact:true})).toBeVisible();
     sameGeometry(await geometry(page),initial);
-    release(); await expect(page.getByRole('button',{name:'End turn →'})).toBeEnabled();
+    release(); await expect(page.getByRole('button',{name:'Mine & prepare →'})).toBeEnabled();
     await page.unroute('**/api/muju/rooms/*/actions');
     sameGeometry(await geometry(page),initial);
+    await page.getByRole('button',{name:'Mine & prepare →'}).click();
     await page.getByRole('button',{name:'End turn →'}).click();
     await expect(page.locator('.turn-strip')).toContainText('Opponent');
     sameGeometry(await geometry(page),initial);
     const room=await (await request.get(`/api/muju/rooms/${roomId}`)).json();
     const unit=room.state.board.units.find((u:any)=>u.owner==='black'&&u.definitionId==='fire_1');
-    const actions=[{type:'MOVE',unitId:unit.id,to:{x:3,y:9}},{type:'END_ACTION_PHASE'}];
+    // A whole Phasing turn, or the seat never comes back and "Instant replay"
+    // stays disabled ("Available during your turn").
+    const actions=[{type:'MOVE',unitId:unit.id,to:{x:3,y:9}},{type:'END_ACTION_PHASE'},{type:'END_PLACE_PHASE'}];
     expect((await request.post(`/api/muju/rooms/${roomId}/actions`,{headers:{Authorization:`Bearer ${host.credentials.token}`},data:{expectedRevision:room.revision,requestId:'opponent-turn',actions}})).ok()).toBe(true);
     await expect(launcher).toBeEnabled({ timeout: 12000 });
     sameGeometry(await geometry(page),initial);
@@ -74,6 +78,9 @@ for (const viewport of [{width:900,height:1000},{width:390,height:844},{width:12
     await page.getByRole('button',{name:'Next replay action'}).click();
     await page.getByRole('button',{name:'Next replay action'}).click();
     await expect(page.getByTestId('cell-4-9')).toHaveAttribute('aria-label',/black Hi/);
+    await page.getByRole('button',{name:'Next replay action'}).click();
+    await expect(page.getByTestId('cell-3-9')).toHaveAttribute('aria-label',/black Hi/);
+    // The turn's last recorded step is its own handover, and nothing moves on it.
     await page.getByRole('button',{name:'Next replay action'}).click();
     await expect(page.getByTestId('cell-3-9')).toHaveAttribute('aria-label',/black Hi/);
     await expect(page.getByRole('button',{name:'Next replay action'})).toBeDisabled();

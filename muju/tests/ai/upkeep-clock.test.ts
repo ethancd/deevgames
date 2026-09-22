@@ -9,7 +9,7 @@ import {startTurn} from '../../src/game/turn';
 import {playGame} from '../../lab/harness/runner';
 import type {ScriptedBot} from '../../lab/harness/types';
 it('Medium takes a kill to reset an imminent draw despite passive income',async()=>{
- let s=createInitialGameState();s.inactivityPlies=INACTIVITY_LIMIT-1;s.players.white.resources=12;s.players.white.resourcesGained=12;
+ let s=createInitialGameState(undefined, 4, 0, 'phasing');s.inactivityPlies=INACTIVITY_LIMIT-1;s.players.white.resources=12;s.players.white.resourcesGained=12;
  s.board.units=[createUnit('plant_3','white',{x:4,y:4}),createUnit('metal_3','white',{x:3,y:4}),createUnit('plant_1','black',{x:4,y:5}),createUnit('plant_1','black',{x:8,y:8})];
  const engine=new AIEngineV2('medium');let remaining=4000;
  for(let i=0;i<8&&s.turn.currentPlayer==='white'&&s.phase==='playing';i++){
@@ -17,9 +17,14 @@ it('Medium takes a kill to reset an imminent draw despite passive income',async(
  }
  expect(s.victoryReason).not.toBe('inactivity');expect(s.lastIncome?.total).toBeGreaterThan(0);expect(s.inactivityPlies).toBe(0);
 },10000);
-it('pending rent has no tactical proof; the paid board can prove the rescue',()=>{
- let s=createInitialGameState();s.board.units=[createUnit('fire_2','white',{x:1,y:0}),createUnit('plant_1','white',{x:1,y:1}),createUnit('fire_1','black',{x:0,y:0})];s.players.white.resources=1;s.players.white.resourcesGained=1;s.reviewUpkeep={white:true};s=startTurn(s,'white');const target=s.board.units[2].id;
- expect(referenceTactics(s,target,3000,new SearchBudget()).status).toBe('unknown');s=applyAction(s,{type:'PAY_UPKEEP',keepUnitIds:s.board.units.filter(u=>u.owner==='white').map(u=>u.id)});expect(referenceTactics(s,target,3000,new SearchBudget()).status).toBe('proved');
+// Phasing charges rent AFTER the action phase, so the order is the other way
+// round: the kill is provable while the seat is acting, and the pending rent
+// that follows makes every tactical action illegal until it is settled.
+it('the acting board can prove the rescue; pending rent has no tactical proof',()=>{
+ let s=createInitialGameState(undefined, 4, 0, 'phasing');s.board.units=[createUnit('fire_2','white',{x:1,y:0}),createUnit('plant_1','white',{x:1,y:1}),createUnit('fire_1','black',{x:0,y:0})];s.players.white.resources=1;s.players.white.resourcesGained=1;s.reviewUpkeep={white:true};s=startTurn(s,'white');const target=s.board.units[2].id;
+ expect(referenceTactics(s,target,3000,new SearchBudget()).status).toBe('proved');
+ const pending=applyAction(s,{type:'END_ACTION_PHASE'});expect(pending.upkeepPending).toBe(true);
+ expect(referenceTactics(pending,target,3000,new SearchBudget()).status).toBe('unknown');
 });
 it('harness records a real inactivity draw separately from its safety cap',async()=>{
  const pass:ScriptedBot={kind:'scripted',name:'Pass',chooseAction:()=>null};const {record}=await playGame({bots:{white:pass,black:pass},seed:1,engineHash:'test',runId:'clock',options:{maxTurns:120}});

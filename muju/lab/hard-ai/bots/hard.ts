@@ -227,6 +227,20 @@ export function resetHardBotTiming(): void {
 }
 
 /**
+ * The ONE label `MUJU_HARD_WEIGHTS` applies to (`hard@env`).
+ *
+ * Until 2026-09-21 the hook applied to EVERY `hard@*` bot in the process, with
+ * its own comment saying "not for merge as-is". A `hard@X` vs `hard@Y` row run
+ * with the variable set therefore gave BOTH seats the same vector and recorded
+ * the row under two names that no longer described two engines; `hard@desktop`
+ * — the frozen champion and the label `tools/engine-seat/runner.ts` plays real
+ * online rooms with — was one of them. Scoping it to a label makes the seat
+ * that reads the file say so in its own name, and leaves every other label
+ * resolving exactly as `src/ai/hard/config.ts` defines it.
+ */
+export const ENV_WEIGHTS_LABEL = 'env';
+
+/**
  * `hard@<label>` -> a `HardConfig` patch (DESIGN §7.7's engine registry).
  *
  * `lab` is the fixed-work lab profile; a `-<n>k`/`-<n>m` suffix on it is
@@ -256,6 +270,11 @@ export function hardConfigFor(label: string): Partial<HardConfig> {
       return { ...LAB, useLmr: true, useAspiration: true, useFutility: true, useExtensions: true };
     case 'desktop':
       return { ...DESKTOP };
+    // The DESKTOP shape, and the ONLY label `MUJU_HARD_WEIGHTS` reaches
+    // (`ENV_WEIGHTS_LABEL` below). `hard@env` vs `hard@desktop` is therefore a
+    // weights-only comparison with the vector named on the seat that uses it.
+    case ENV_WEIGHTS_LABEL:
+      return { ...DESKTOP };
     case 'midrange':
       return { ...MIDRANGE };
     case 'phone':
@@ -263,7 +282,7 @@ export function hardConfigFor(label: string): Partial<HardConfig> {
       return { ...PHONE };
     default:
       throw new Error(
-        `hard@${label}: unknown label. Known: lab, lab-dfpn, lab-refined, desktop, midrange, phone, ` +
+        `hard@${label}: unknown label. Known: lab, lab-dfpn, lab-refined, desktop, env, midrange, phone, ` +
           `ablate:<arm> (an optional -<n>k/-<n>m suffix is documentary)`,
       );
   }
@@ -295,8 +314,12 @@ function envWeights(path: string): Weights {
 
 export function hardEnginePatch(profile: string | Partial<HardConfig> = 'lab', weights?: Weights): Partial<HardConfig> {
   const patch: Partial<HardConfig> = typeof profile === 'string' ? hardConfigFor(profile) : { ...profile };
-  // SCRATCH EXPERIMENT HOOK (not for merge as-is): MUJU_HARD_WEIGHTS=<weights json> overrides every hard@* bot in this process.
-  if (weights === undefined && process.env.MUJU_HARD_WEIGHTS) weights = envWeights(process.env.MUJU_HARD_WEIGHTS);
+  // `MUJU_HARD_WEIGHTS=<weights json>` supplies the vector for `hard@env` ONLY
+  // (see `ENV_WEIGHTS_LABEL`); every other label, and every non-string profile,
+  // ignores the variable.
+  const envLabel =
+    typeof profile === 'string' && profile.replace(/-(?:\d+(?:k|m)|units)$/i, '') === ENV_WEIGHTS_LABEL;
+  if (envLabel && weights === undefined && process.env.MUJU_HARD_WEIGHTS) weights = envWeights(process.env.MUJU_HARD_WEIGHTS);
   const resolved = weights ?? (patch.weights === undefined || patch.weights.version === 0 ? DEFAULT_WEIGHTS : patch.weights);
   return { ...patch, weights: resolved };
 }

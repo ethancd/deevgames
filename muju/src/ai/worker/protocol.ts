@@ -35,23 +35,21 @@ export interface SearchRequest extends Identity {
   engine?: 'v2' | 'hard';
   /** hard only: overrides the device rung (CI/SPRT/lab always set it). */
   work?: number;
-  /** hard only. */
-  hard?: Partial<HardConfig>;
   /**
-   * THE PHASING PREVIEW MARKER, and the only thing that opens the worker's
-   * Phasing guard. Absent (the default, and every request any shipped code path
-   * sends) means a `ruleset: 'phasing'` state is refused with "AI supports
-   * Standard rules only…", exactly as before the preview existed.
+   * hard only: the configuration the worker builds this game's engine from,
+   * merged over `DESKTOP` (`worker/handler.ts` → `HardEngine`'s constructor).
    *
-   * The CALLER resolves the gate, never the worker: `useAI` sets this from
-   * `readPhasingAiPreview()` (`src/ai/phasingPreview.ts`) — the personal
-   * `?phasingAi=1` / `localStorage['muju.phasingAi']='1'` opt-in — and from
-   * nothing else. The worker reads no flag, no storage and no URL of its own,
-   * so a request that arrives without the marker cannot reach a Phasing search
-   * however the page was loaded. The version stays 3: an older reader ignores
-   * an unknown field, and its absence means what it always meant.
+   * ABSENT ≡ DESKTOP, and that is now a MEANINGFUL default rather than an
+   * accident: since 2026-09-21 this is also how the DEVICE PROFILE reaches the
+   * worker. `useAI` resolves one hint per game (`resolveHardDeviceProfile()`,
+   * `src/ai/hardOptIn.ts`) and sends `deviceProfilePatch(...)`
+   * (`src/ai/hard/config.ts`) — the PHONE search tables — only when the hint
+   * says phone; a desktop game sends no field, so its request, the engine it
+   * builds and `hard@desktop`'s configuration identity are byte-for-byte what
+   * they were. A patch that names `weights` is honoured verbatim, which is why
+   * the device patch deliberately omits that key (see `hardPatch`).
    */
-  phasingPreview?: boolean;
+  hard?: Partial<HardConfig>;
 }
 
 /**

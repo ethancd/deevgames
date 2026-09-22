@@ -94,9 +94,10 @@ describe('MCP and HTTP interoperability', () => {
     const observed = await call(client, 'muju_observe', { roomId, player: 'white', briefing: true });
     expect(observed.briefing.clockPressure).toEqual(observed.clockPressure);
     const unitId = observed.units.find((unit: any) => unit.owner === 'white' && unit.definitionId === 'fire_1').id;
-    const move = { type: 'MOVE', unitId, to: 'C1' }, end = { type: 'END_ACTION_PHASE' };
+    // A whole Phasing turn: act, then mine and pay upkeep, then hand over.
+    const move = { type: 'MOVE', unitId, to: 'C1' }, end = { type: 'END_ACTION_PHASE' }, handOver = { type: 'END_PLACE_PHASE' };
     const body = { requestId: 'mcp-stage-primary', expectedTurnNumber: 1, expectedStageVersion: 0,
-      commitWhenRemainingMs: 1000, actions: [move, end] };
+      commitWhenRemainingMs: 1000, actions: [move, end, handOver] };
     const accepted = await call(client, 'muju_stage', { roomId, token, ...body });
     expect(accepted.pending.actions[0].to).toEqual({ x: 2, y: 0 });
     expect(await (await fetch(endpoint, { headers: auth })).json()).toMatchObject({ version: 1, pending: accepted.pending });
@@ -117,7 +118,7 @@ describe('MCP and HTTP interoperability', () => {
     const cancelled = await call(client, 'muju_cancel_stage', { roomId, token, requestId: 'mcp-cancel-stage', expectedTurnNumber: 1, expectedStageVersion: 2 });
     expect(cancelled).toMatchObject({ version: 3, pending: null, latestReceipt: { status: 'cancelled' } });
     const finalBody = { ...body, expectedStageVersion: 3, requestId: 'mcp-final-stage',
-      actions: [{ type: 'MOVE', unitId: 'private-illegal-primary', to: 'H8' }], fallbacks: [[move, end], [{ type: 'RESIGN' }]] };
+      actions: [{ type: 'MOVE', unitId: 'private-illegal-primary', to: 'H8' }], fallbacks: [[move, end, handOver], [{ type: 'RESIGN' }]] };
     const finalStage = await call(client, 'muju_stage', { roomId, token, ...finalBody });
     clock.mockReturnValue(now + 4000);
     const racingPlay = await client.callTool({ name: 'muju_play', arguments: { roomId, token, expectedRevision: 1,
@@ -130,7 +131,7 @@ describe('MCP and HTTP interoperability', () => {
     const changed = await call(client, 'muju_wait_for_change', { roomId, afterRevision: 1, timeoutMs: 0, briefing: true, player: 'black' });
     expect(changed).toMatchObject({ changed: true, revision: 2, room: { activePlayer: 'black',
       clockPressure: { players: { white: { completedTurns: 1, meanElapsedMs: 4000, meanBankSpentMs: 2000 } } } } });
-    expect(changed.events[0].actions).toEqual([move, end]);
+    expect(changed.events[0].actions).toEqual([move, end, handOver]);
     expect(changed.room.staging).toBeUndefined();
     expect(JSON.stringify(changed)).not.toContain('private-illegal-primary');
     expect(JSON.stringify(await call(client, 'muju_history', { roomId }))).not.toContain('candidateIndex');
@@ -163,7 +164,8 @@ describe('MCP and HTTP interoperability', () => {
     expect(JSON.stringify(clock).length).toBeLessThan(2200);
     const legal = await call(client, 'muju_legal_actions', { roomId, limit: 1 });
     expect(legal.clock.runningPlayer).toBe('white');
-    const command = { roomId, token: hosted.credentials.token, expectedRevision: 1, requestId: 'timed-preview-turn', actions: [{ type: 'END_ACTION_PHASE' }] };
+    const command = { roomId, token: hosted.credentials.token, expectedRevision: 1, requestId: 'timed-preview-turn',
+      actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] };
     const preview = await call(client, 'muju_preview', command);
     expect(preview.room.activePlayer).toBe('black');
     expect(preview.room.clock).toBeUndefined();
@@ -179,7 +181,8 @@ describe('MCP and HTTP interoperability', () => {
     expect(late.structuredContent).toMatchObject({ code: 'TIME_EXPIRED', room: { winner: 'black', victoryReason: 'timeout' } });
     const response = await fetch(`${url}/api/muju/rooms/${roomId}/actions`, { method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${hosted.credentials.token}` },
-      body: JSON.stringify({ expectedRevision: 1, requestId: 'late-http-request', actions: [{ type: 'END_ACTION_PHASE' }] }) });
+      body: JSON.stringify({ expectedRevision: 1, requestId: 'late-http-request',
+        actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] }) });
     expect(response.status).toBe(409);
     expect(await response.json()).toMatchObject({ code: 'TIME_EXPIRED', room: { state: { victoryReason: 'timeout' } } });
     const history = await call(client, 'muju_history', { roomId });
@@ -302,7 +305,8 @@ describe('MCP and HTTP interoperability', () => {
     expect(moved.units).toEqual(preview.room.units);
     expect((await call(white, 'muju_play', input)).revision).toBe(moved.revision);
     const wait = call(black, 'muju_wait_for_change', { roomId, afterRevision: moved.revision, timeoutMs: 3000 });
-    await call(white, 'muju_play', { roomId, token: host.credentials.token, expectedRevision: moved.revision, requestId: 'mcp-end-white', actions: [{ type: 'END_ACTION_PHASE' }] });
+    await call(white, 'muju_play', { roomId, token: host.credentials.token, expectedRevision: moved.revision,
+      requestId: 'mcp-end-white', actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] });
     const change = await wait;
     expect(change.changed).toBe(true); expect(change.room.turn.currentPlayer).toBe('black');
     const final = await call(black, 'muju_play', { roomId, token: guest.credentials.token, expectedRevision: change.room.revision,
@@ -377,7 +381,7 @@ it.each([false, true])('notifies MCP about human moves, undo and handoff without
   expect((await call(client, 'muju_legal_actions', { roomId, type: 'UNDO' })).total).toBe(1);
   await call(client, 'muju_play', { roomId, token: host.credentials.token, expectedRevision: 2,
     requestId: 'mcp-human-undo', actions: [{ type: 'UNDO' }] });
-  await humanPlay(3, [{ type: 'END_ACTION_PHASE' }]);
+  await humanPlay(3, [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]);
   const change = await call(client, 'muju_wait_for_change', { roomId, afterRevision: 2, timeoutMs: 0 });
   expect(change.events.map((e: any) => e.actions[0].type)).toEqual(['UNDO', 'END_ACTION_PHASE']);
   expect(change.room).toMatchObject({ activePlayer: 'black', canUndo: false });
@@ -396,8 +400,9 @@ it.each([false, true])('discovers, creates and plays a crystal-handicap room thr
     expect(host.room).toMatchObject({ blackCrystalHandicap: amount, players: { black: { resources: amount }, white: { resources: 0 } } });
     const guest = await call(client, 'muju_join_room', { roomId: host.credentials.roomId, inviteCode: host.invitation.inviteCode, name: 'White' });
     const turn = await call(client, 'muju_play', { roomId: host.credentials.roomId, token: guest.credentials.token,
-      expectedRevision: guest.room.revision, requestId: `handicap-white-${amount}`, actions: [{ type: 'END_ACTION_PHASE' }] });
-    expect(turn.turn).toMatchObject({ currentPlayer: 'black', phase: amount < 3 ? 'action' : 'place', actionsRemaining: 4 });
+      expectedRevision: guest.room.revision, requestId: `handicap-white-${amount}`,
+      actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] });
+    expect(turn.turn).toMatchObject({ currentPlayer: 'black', phase: 'action', actionsRemaining: 4 });
     expect(turn.players.black.resources).toBe(amount);
   }
   for (const amount of [-1, 21, 1.5]) {
@@ -410,10 +415,18 @@ it.each([false, true])('plays, previews, analyzes and stages a complete Phasing 
   const now = 1800000000000, clock = vi.spyOn(Date, 'now').mockReturnValue(now);
   cleanups.push(() => clock.mockRestore());
   const { store, url } = await setup(), client = await clientFor(url, stdio);
+  // ONE RULESET (2026-09-21). `ruleset` is accepted and ignored for one release
+  // because the published SKILL.md told agents to pass it, so both spellings
+  // return the same payload — and it is the PHASING payload either way.
   const rules = await call(client, 'muju_rules', { ruleset: 'phasing' });
-  expect(rules).toMatchObject({ ruleset: 'phasing', endTurnAction: 'END_PLACE_PHASE' });
+  expect(rules).toMatchObject({ ruleset: { name: 'phasing', revision: 'muju-phasing-2', immutable: true, retired: ['standard'] },
+    endTurnAction: 'END_PLACE_PHASE' });
   expect(rules.upkeep).toContain('outgoing');
-  expect((await call(client, 'muju_rules')).endTurnAction).toBe('END_ACTION_PHASE');
+  expect(rules.rulesets).toBeUndefined();
+  expect(await call(client, 'muju_rules')).toEqual(rules);
+  // An agent that still asks for the retired rule set gets a named error.
+  const retired = await client.callTool({ name: 'muju_rules', arguments: { ruleset: 'standard' } });
+  expect(retired.isError).toBe(true);
   const hosted = await call(client, 'muju_create_room', { name: 'Phasing White', ruleset: 'phasing', timeControl: 'rapid', blackCrystalHandicap: 0 });
   const { roomId, token } = hosted.credentials;
   const guest = await call(client, 'muju_join_room', { roomId, name: 'Phasing Black', inviteCode: hosted.invitation.inviteCode });

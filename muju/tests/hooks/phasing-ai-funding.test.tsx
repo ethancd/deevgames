@@ -4,11 +4,11 @@ import { createInitialGameState } from '../../src/game/board';
 import { gameReducer } from '../../src/hooks/useGameState';
 import { phaseEndAction } from '../../src/game/legality';
 import { AI_PACES, AI_TURN_SECONDS, aiTurnBudgetMs, type AIPace } from '../../src/ai/turnTime';
-import { PREPARE_RESERVE_DIVISOR } from '../../src/ai/turnFunding';
-import { PHASING_AI_STORAGE_KEY } from '../../src/ai/phasingPreview';
+import { PREPARE_RESERVE_DIVISOR, fallbackDecisionsRemaining, prepareReserveMs, segmentsAfter, turnSearchAllowance } from '../../src/ai/turnFunding';
+import { applyAction } from '../../src/ai/simulate';
 import type { GameState, PlayerId } from '../../src/game/types';
 import type { AIAction, AIDifficulty } from '../../src/ai/types';
-import type { FindActionOptions, FindTurnOptions, FindTurnResult } from '../../src/ai/worker/client';
+import type { FindTurnOptions, FindTurnResult } from '../../src/ai/worker/client';
 
 /**
  * ONE ALLOWANCE PER TURN, ACROSS A WHOLE PHASING TURN.
@@ -40,8 +40,8 @@ vi.mock('../../src/ai/worker/client', () => ({
     async findBestTurn(state: GameState, _d: AIDifficulty, decisionMs: number, _r: number, options?: FindTurnOptions) {
       return turnSearch(state, decisionMs, options) as Promise<FindTurnResult>;
     }
-    async findBestAction(state: GameState, _d: AIDifficulty, decisionMs: number, _r: number, options?: FindActionOptions) {
-      return actionSearch(state, decisionMs, options);
+    async findBestAction(state: GameState, _d: AIDifficulty, decisionMs: number) {
+      return actionSearch(state, decisionMs);
     }
   },
   SearchCancelled: class extends Error {},
@@ -52,7 +52,6 @@ import { useAI, MIN_TURN_SEARCH_MS } from '../../src/hooks/useAI';
 interface Search {
   phase: 'action' | 'upkeep' | 'prepare';
   decisionMs: number;
-  preview: boolean | undefined;
 }
 
 const segmentOf = (state: GameState): Search['phase'] =>
@@ -73,8 +72,8 @@ interface RunOptions {
 async function runTurn({ difficulty = 'medium', pace, initial, player = 'white', spend = () => 0 }: RunOptions = {}) {
   let real = initial ?? createInitialGameState(undefined, 4, 0, 'phasing');
   const searches: Search[] = [];
-  turnSearch.mockImplementation((state: GameState, decisionMs: number, options?: FindTurnOptions) => {
-    searches.push({ phase: segmentOf(state), decisionMs, preview: options?.phasingPreview });
+  turnSearch.mockImplementation((state: GameState, decisionMs: number) => {
+    searches.push({ phase: segmentOf(state), decisionMs });
     return { actions: [phaseEndAction(state)], scoreCc: 0, depth: 1, work: 0, source: 'search',
       engineUsed: 'v2', timeMs: spend(decisionMs) } as unknown as FindTurnResult;
   });
@@ -229,30 +228,18 @@ it('gives a Standard turn that needs a second search the entire remainder', asyn
 });
 
 /* ------------------------------------------------------------------ *
- * THE PREVIEW MARKER.
+ * THE PER-ACTION FALLBACK IS FUNDED THE SAME WAY.
  * ------------------------------------------------------------------ */
 
-it('marks a Phasing request only with the opt-in, and never marks a Standard one', async () => {
-  // Off (the default): the request goes out unmarked, and the real worker
-  // refuses it exactly as it always did.
-  expect((await runTurn({})).searches.map(s => s.preview)).toEqual([undefined, undefined]);
-
-  localStorage.setItem(PHASING_AI_STORAGE_KEY, '1');
-  expect((await runTurn({})).searches.map(s => s.preview)).toEqual([true, true]);
-  // The opt-in says nothing about Standard, which never carries a marker.
-  expect((await runTurn({ initial: createInitialGameState() })).searches.map(s => s.preview)).toEqual([undefined]);
-});
-
-it('carries the marker onto the per-action fallback path as well', async () => {
-  localStorage.setItem(PHASING_AI_STORAGE_KEY, '1');
+it('splits the per-action fallback across the whole Phasing turn', async () => {
   let real = createInitialGameState(undefined, 4, 0, 'phasing');
-  const fallbackCalls: Array<{ decisionMs: number; preview: boolean | undefined; segment: string }> = [];
+  const fallbackCalls: Array<{ decisionMs: number; segment: string }> = [];
   // The whole-turn search proposes something the canonical rules refuse, which
   // is what drops the rest of the turn onto the per-action loop.
   turnSearch.mockImplementation(() => ({ actions: [{ type: 'MOVE', unitId: 'no-such-unit', to: { x: 0, y: 0 } }],
     scoreCc: 0, depth: 1, work: 0, source: 'search', engineUsed: 'v2', timeMs: 0 } as unknown as FindTurnResult));
-  actionSearch.mockImplementation((state: GameState, decisionMs: number, options?: FindActionOptions) => {
-    fallbackCalls.push({ decisionMs, preview: options?.phasingPreview, segment: segmentOf(state) });
+  actionSearch.mockImplementation((state: GameState, decisionMs: number) => {
+    fallbackCalls.push({ decisionMs, segment: segmentOf(state) });
     return { plan: { actions: [phaseEndAction(state)], score: 0 }, nodesSearched: 0, timeMs: 0, depth: 1 };
   });
   const { result, unmount } = renderHook(() => useAI({ difficulty: 'medium', pace: 'quick', thinkingDelay: 0 }));
@@ -261,7 +248,6 @@ it('carries the marker onto the per-action fallback path as well', async () => {
   });
   unmount();
   expect(fallbackCalls.length).toBeGreaterThan(0);
-  for (const call of fallbackCalls) expect(call.preview).toBe(true);
   // Act's share is one of `actionsRemaining + 3` decisions, not one of four
   // Act actions: the upkeep decision and Prepare are counted too, so the turn
   // cannot hand its whole remainder out before it reaches them.
@@ -272,4 +258,66 @@ it('carries the marker onto the per-action fallback path as well', async () => {
   expect(fallbackCalls[0].decisionMs).toBe(budget / 7);
   expect(fallbackCalls.at(-1)!.segment).toBe('prepare');
   expect(real.turn.currentPlayer).toBe('black');
+});
+
+/* ------------------------------------------------------------------ *
+ * THE ARITHMETIC ITSELF (`src/ai/turnFunding.ts`), lifted out of the
+ * deleted `tests/ai/phasing-preview.test.ts` when the opt-in it also
+ * covered was retired with the Standard ruleset on 2026-09-21.
+ * ------------------------------------------------------------------ */
+
+/** Act → END_ACTION_PHASE lands the mover in Prepare, past mining and upkeep. */
+function phasingPrepare(): GameState {
+  return applyAction(createInitialGameState(undefined, 4, 0, 'phasing'), { type: 'END_ACTION_PHASE' });
+}
+
+it('counts the Phasing segments still to be searched after the current one', () => {
+  const act = createInitialGameState(undefined, 4, 0, 'phasing');
+  expect(act.turn.phase).toBe('action');
+  expect(segmentsAfter(act)).toBe(2);                                   // upkeep + Prepare
+  expect(segmentsAfter({ ...act, upkeepPending: true })).toBe(1);       // Prepare
+  const prepare = phasingPrepare();
+  expect(prepare.turn.phase).toBe('place');
+  expect(segmentsAfter(prepare)).toBe(0);                               // last segment
+});
+
+it('reserves nothing at all under the retired Standard rules, in either phase', () => {
+  // Kept as an ARCHIVE assertion: a stored Standard game still renders and
+  // still funds a search the way it always did.
+  const standard = createInitialGameState();
+  expect(segmentsAfter(standard)).toBe(0);
+  expect(segmentsAfter({ ...standard, turn: { ...standard.turn, phase: 'place' } })).toBe(0);
+  expect(segmentsAfter({ ...standard, upkeepPending: true })).toBe(0);
+  expect(prepareReserveMs(standard, 30_000)).toBe(0);
+  expect(turnSearchAllowance(standard, 12_345, 30_000, 1)).toBe(12_345);
+  expect(turnSearchAllowance(standard, 0, 30_000, 1)).toBe(1);
+});
+
+it('leaves a floor for the later Phasing segments and gives the last one the whole remainder', () => {
+  const budget = 8000, eighthOf = budget / PREPARE_RESERVE_DIVISOR;
+  const act = createInitialGameState(undefined, 4, 0, 'phasing');
+  expect(turnSearchAllowance(act, budget, budget, 1)).toBe(budget - 2 * eighthOf);
+  expect(turnSearchAllowance({ ...act, upkeepPending: true }, budget, budget, 1)).toBe(budget - eighthOf);
+  expect(turnSearchAllowance(phasingPrepare(), budget, budget, 1)).toBe(budget);
+});
+
+it('never asks for more than the turn has left, and never for zero', () => {
+  const act = createInitialGameState(undefined, 4, 0, 'phasing');
+  for (const remaining of [0, 1, 50, 900, 3000]) {
+    const asked = turnSearchAllowance(act, remaining, 3000, 1);
+    expect(asked).toBeLessThanOrEqual(Math.max(1, remaining));
+    expect(asked).toBeGreaterThanOrEqual(1);
+  }
+});
+
+it('splits the per-action fallback by the decisions actually still to come', () => {
+  const standard = createInitialGameState();
+  expect(fallbackDecisionsRemaining({ ...standard, turn: { ...standard.turn, phase: 'action', actionsRemaining: 3 } })).toBe(3);
+  expect(fallbackDecisionsRemaining({ ...standard, turn: { ...standard.turn, phase: 'action', actionsRemaining: 0 } })).toBe(1);
+  expect(fallbackDecisionsRemaining({ ...standard, turn: { ...standard.turn, phase: 'place' } })).toBe(4);
+
+  const act = createInitialGameState(undefined, 4, 0, 'phasing');
+  expect(fallbackDecisionsRemaining(act)).toBe(act.turn.actionsRemaining + 3);
+  expect(fallbackDecisionsRemaining({ ...act, upkeepPending: true, turn: { ...act.turn, phase: 'place' } })).toBe(3);
+  expect(fallbackDecisionsRemaining(phasingPrepare())).toBe(2);
 });

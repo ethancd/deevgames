@@ -3,12 +3,14 @@ import { createInitialGameState, createUnit } from '../../src/game/board';
 import { canAttack, getAttackCount, resolveCombat, resolveCombinedCombat } from '../../src/game/combat';
 import { applyAction } from '../../src/ai/simulate';
 import { startTurn } from '../../src/game/turn';
+import { afterEach } from 'vitest';
 import { isLegalAction } from '../../src/game/legality';
 import { loadGameState, saveGameState } from '../../src/utils/persistence';
 import type { GameState, Unit } from '../../src/game/types';
 
+/** Phasing is the only ruleset since 2026-09-21. */
 function arena(tier: number) {
-  const s = createInitialGameState();
+  const s = createInitialGameState(undefined, 4, 0, 'phasing');
   s.players.white.resources=20;s.players.white.resourcesGained=20;
   const attacker = createUnit(`fire_${tier}`, 'white', { x: 5, y: 5 });
   s.board.units = [attacker, ...[{x:5,y:4},{x:6,y:5},{x:5,y:6},{x:4,y:5}].map(p=>createUnit('fire_1','black',p)),createUnit('water_3','black',{x:9,y:8})];
@@ -18,6 +20,8 @@ function attack(s: GameState, a: Unit, target: Unit) {
   return applyAction(s,{type:'ATTACK',unitId:a.id,targetPosition:target.position});
 }
 function current(s: GameState, a: Unit) { return s.board.units.find(u=>u.id===a.id)!; }
+
+afterEach(() => localStorage.clear());
 
 describe('Cleave', () => {
   for (const tier of [1,2,3]) it(`Tier ${tier} stops at ${tier} paid lethal attacks`,()=>{
@@ -35,15 +39,24 @@ describe('Cleave', () => {
     expect(current(restored,attacker).lastAttackKilled).toBe(false);
     expect(canAttack(current(restored,attacker))).toBe(true);
   });
-  it('actually places a Tier I and prevents it sweeping three adjacent enemies',()=>{
-    let s=createInitialGameState();s.turn.phase='place';
+  it('summons a Tier I that arrives next turn and cannot sweep three adjacent enemies',()=>{
+    let s=createInitialGameState(undefined,4,0,'phasing');s.turn.phase='place';
     s.board.units=[createUnit('plant_1','white',{x:4,y:4}),...[[5,4],[6,5],[5,6]].map(([x,y])=>createUnit('fire_1','black',{x,y}))];
     s.players.white.resources=3;s.players.white.resourcesGained=3;
     const place={type:'BUY_UNIT' as const,definitionId:'fire_1',position:{x:4,y:3}};
     expect(isLegalAction(s,place)).toBe(true);s=applyAction(s,place);
-    // Move the placed unit to a square beside all three enemies.
-    const fresh=s.board.units.at(-1)!;
-    expect(fresh.placedThisTurn).toBe(true);
+    // A purchase is a public commitment, not a placement: nothing is on the board yet.
+    expect(s.board.units.some(u=>u.position.x===4&&u.position.y===3)).toBe(false);
+    expect(s.pendingSummons).toMatchObject([{owner:'white',definitionId:'fire_1',position:{x:4,y:3}}]);
+    // Hand over, let black pass a whole turn, and take delivery at the next own start.
+    s=applyAction(s,{type:'END_PLACE_PHASE'});
+    expect(s.turn.currentPlayer).toBe('black');
+    s=applyAction(applyAction(s,{type:'END_ACTION_PHASE'}),{type:'END_PLACE_PHASE'});
+    expect(s.turn).toMatchObject({currentPlayer:'white',phase:'action'});
+    expect(s.pendingSummons).toEqual([]);
+    // Move the arrived unit to a square beside all three enemies.
+    const fresh=s.board.units.find(u=>u.owner==='white'&&u.position.x===4&&u.position.y===3)!;
+    expect(fresh.placedThisTurn).toBe(false);
     s=applyAction(s,{type:'MOVE',unitId:fresh.id,to:{x:5,y:5}});
     const victims=s.board.units.filter(u=>u.owner==='black');
     s=attack(s,fresh,victims[0]);expect(s.board.units.some(u=>u.id===victims[0].id)).toBe(false);

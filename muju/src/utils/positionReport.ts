@@ -1,18 +1,31 @@
 /**
- * "REPORT THIS POSITION" — the preview's one feedback affordance.
+ * "REPORT THIS POSITION" — the game's one feedback affordance for a bad AI move.
  *
- * The Phasing AI preview exists so the game's owner can play the unreleased
- * engines long before a release gate passes, and the only thing that makes that
- * worth doing is a cheap way to say "here, this move was wrong". This builds
- * the blob that says it: enough to reproduce the position exactly and to tell
- * which engine, which allowance and which rules produced the move.
+ * The only thing that turns "the AI played badly" into something actionable is a
+ * cheap way to say "here, this move was wrong". This builds the blob that says
+ * it: enough to reproduce the position exactly and to tell which engine, which
+ * allowance and which rules produced the move. It is the channel that produced
+ * the three reports the 2026-09-20 engine repair was aimed at.
+ *
+ * AVAILABLE IN EVERY LOCAL GAME since the Phasing-only cutover (2026-09-21). It
+ * was preview-only while the Phasing AI was an opt-in behind `?phasingAi=1`;
+ * that preview is retired, so `GameScreen` renders the button in every local
+ * game — vs AI, Watch AI and Pass & Play — and only online and analysis boards
+ * are excluded. Pass & Play has no engine in a seat, and the report then simply
+ * carries no AI turn, which is still a replayable position.
+ *
+ * THE WIRE KIND IS UNCHANGED: reports still say `muju-phasing-preview-report`.
+ * It is a format identifier for the payload, not a statement about where the
+ * button lives, and every reader is outside this repo (nothing here branches on
+ * it) — a report is pasted into a chat, so the readers that matter are the ones
+ * already holding older reports under that kind. Renaming it would split one
+ * format into two for no gain, so the kind and `POSITION_REPORT_VERSION` stay
+ * as they are.
  *
  * DEPENDENCY-FREE AND TINY, on purpose. It is a pure function over the live
  * state plus a clipboard write at the call site, so it cannot affect a game it
  * is reporting on, and it ships nothing the rest of the app does not already
- * carry. It exists ONLY in preview mode — `GameScreen` renders the button
- * behind the same opt-in that opened the AI seats, and a normal build has no
- * button, no handler and no report.
+ * carry.
  *
  * NOTHING IS SENT ANYWHERE. It goes to the clipboard; the owner pastes it
  * wherever he likes.

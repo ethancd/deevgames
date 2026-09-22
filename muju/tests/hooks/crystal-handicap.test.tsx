@@ -15,9 +15,16 @@ it.each([1, 2, 3, 20])('starts and resumes a %i-crystal game without regranting 
   fireEvent.change(select, { target: { value: String(amount) } });
   fireEvent.click(screen.getByRole('button', { name: 'Start Game' }));
   expect(loadGameState()?.players.black.resources).toBe(amount);
+  // Phasing opens BOTH seats in Act whatever the handicap: the crystals no
+  // longer buy a placement phase to open in (2026-09-21). White's Act ends with
+  // Mine & prepare, and only End turn hands over.
+  fireEvent.click(screen.getByRole('button', { name: /Mine & prepare/ }));
+  expect(loadGameState()?.turn).toMatchObject({ currentPlayer: 'white', phase: 'place' });
   fireEvent.click(screen.getByRole('button', { name: /End turn/ }));
   const saved = loadGameState();
-  expect(saved?.turn.phase).toBe(amount < 3 ? 'action' : 'place');
+  expect(saved?.turn).toMatchObject({ currentPlayer: 'black', phase: 'action', actionsRemaining: 4 });
+  // The handicap is not regranted at the start of black's turn either.
+  expect(saved?.players.black.resources).toBe(amount);
   view.unmount(); view = render(<App />);
   fireEvent.click(screen.getByRole('button', { name: /^Pass & Play/ }));
   fireEvent.change(screen.getByRole('combobox', { name: 'Black crystal handicap' }), { target: { value: '8' } });

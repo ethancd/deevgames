@@ -105,7 +105,9 @@ type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'blackCrystalHandi
 
 function getInitialSession(options: InitialGameOptions): ReplaySession {
   const saved = options.newGame ? null : loadGameHistory();
-  const state = (saved && loadGameState()) ?? createInitialGameState(undefined, options.actionsPerTurn, options.blackCrystalHandicap, options.ruleset);
+  // Phasing is the only ruleset a new local game can be started under; a caller
+  // that says nothing gets it rather than `board.ts`'s historical default.
+  const state = (saved && loadGameState()) ?? createInitialGameState(undefined, options.actionsPerTurn, options.blackCrystalHandicap, options.ruleset ?? 'phasing');
   return { state, history: saved ?? startHistory(state, true), historyUndoLengths: [],
     recording: emptyRecording(), undoLengths: [], turnStartUndo: null };
 }

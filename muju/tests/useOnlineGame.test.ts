@@ -13,7 +13,7 @@ it('pauses hidden tabs, resumes from the last revision, ignores cancelled respon
   const pending: ((change: RoomChange) => void)[] = [];
   vi.mocked(waitRoom).mockImplementation(() => new Promise(resolve => pending.push(resolve)));
   const initial: RoomSnapshot = { id: 'test-room', revision: 1, ready: true, seats: { white: 'A', black: 'B' },
-    state: createInitialGameState(), history: [], updatedAt: new Date().toISOString() };
+    state: createInitialGameState(undefined, 4, 0, 'phasing'), history: [], updatedAt: new Date().toISOString() };
   const connection = { roomId: initial.id, player: 'white' as const, token: 'test-token', serverUrl: 'http://localhost' };
   const { result, unmount } = renderHook(() => useOnlineGame(connection, initial, () => {}));
   await waitFor(() => expect(waitRoom).toHaveBeenCalledTimes(1));
@@ -37,7 +37,7 @@ it('pauses hidden tabs, resumes from the last revision, ignores cancelled respon
 it('blocks every observer command even if invoked outside the read-only UI', () => {
   vi.mocked(waitRoom).mockImplementation(() => new Promise(() => {}));
   const initial: RoomSnapshot = { id: 'observer-room', revision: 2, ready: true, canUndo: true,
-    seats: { white: 'A', black: 'B' }, state: createInitialGameState(), history: [], updatedAt: '' };
+    seats: { white: 'A', black: 'B' }, state: createInitialGameState(undefined, 4, 0, 'phasing'), history: [], updatedAt: '' };
   const connection = { roomId: initial.id, serverUrl: 'http://localhost' };
   const { result, unmount } = renderHook(() => useOnlineGame(connection, initial, () => {}));
   const game = result.current.game;

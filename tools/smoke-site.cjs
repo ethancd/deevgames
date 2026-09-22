@@ -46,7 +46,11 @@ const screenshots = process.env.QA_SCREENSHOTS;
         if (i) assert(cells[i-1].right <= cell.x + 1, 'Board cells overlap');
       });
       await fits(); await picture('muju');
-      // End-turn income is public and persists across a reload.
+      // Mining and affordable upkeep settle inside the turn ("Mine & prepare"),
+      // and only "End turn" hands the device over. The income is public from the
+      // moment it is mined, and persists across a reload.
+      await page.getByRole('button', {name: /Mine & prepare/}).click();
+      assert.equal(await page.locator('.income-recap summary').innerText(), 'Player 1 collected 6 ◆ · turn 1');
       await page.getByRole('button', {name: /End turn/}).click();
       await page.getByText('Tap anywhere to continue').click();
       assert.equal(await page.locator('.income-recap summary').innerText(), 'Player 1 collected 6 ◆ · turn 1');

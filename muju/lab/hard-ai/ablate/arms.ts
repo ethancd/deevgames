@@ -950,38 +950,160 @@ SPECS.push({
 });
 
 
-// --- SCRATCH (gap-fill reader, 2026-09-20): hand-prior repair arms -------------
-// default-v1 (git 43b87b6) adapted to the 62-feature Phasing schema. NOT in the repo.
-function handPriorsPatch(label: string, opts: { bankExcess: number; priors: boolean }): Partial<HardConfig> {
+/**
+ * The hand-prior repair, as ablations OF THE DEFAULT rather than towards it.
+ *
+ * HISTORY. The four arms that stood here from 2026-09-20 to 2026-09-21 —
+ * `hand-priors`, `hand-priors-pc`, `bootstrap-pc`, `bank25-pc` — were written
+ * while `DEFAULT_WEIGHTS` was still the five-nonzero M6 bootstrap and the
+ * within-turn pending credit was label-gated on a `+pc` suffix. They built the
+ * candidate vector by ADDING the priors to a clone of the default, and named
+ * the scorer credit in their `change` lines. Both premises died at `71b41a39`,
+ * which made the credit unconditional and the priors the default; from that
+ * commit `hand-priors` ≡ `hand-priors-pc` ≡ `bank25-pc` ≡ `hard@desktop`
+ * (silent A/A rows), and `bootstrap-pc` was not the bootstrap at all — it was
+ * the default with BankExcess back at 100. The arms lied about what they
+ * measured, which is the one thing an ablation may never do.
+ *
+ * WHAT REPLACES THEM. Three arms that subtract from the shipped vector, which
+ * is what the sweep in `docs/hard-ai/phasing/repair-2026-09-20/results/` was
+ * actually comparing: the whole repair off (`weights-bootstrap-m6`), the bank
+ * discount off (`weights-bank100`), the tactical priors off with the discount
+ * kept (`weights-no-priors`). No arm needs to say anything about the scorer any
+ * more, because every arm shares it.
+ */
+
+/**
+ * The retired M6 accounting bootstrap: the only five entries it priced.
+ * `tests/ai/hard/fixtures/hand-priors-nonzero.ts` holds the same list for the
+ * eval tests, and `tests/lab/ablate.test.ts` asserts the two agree.
+ */
+const BOOTSTRAP_M6_NONZERO: readonly (readonly [number, number])[] = [
+  [F.Material, 100], [F.BankLiquid, 100], [F.BankExcess, 100], [F.EconDelta, 100], [F.PendingValue, 1],
+];
+/** The accounting core both vectors share — everything but the bank discount. */
+const ACCOUNTING_CORE = BOOTSTRAP_M6_NONZERO.filter(([i]) => i !== F.BankExcess);
+
+/** A vector holding exactly `nonzero`; catalogue material and schema carried over. */
+function sparseArmWeights(nonzero: readonly (readonly [number, number])[], label: string): Partial<HardConfig> {
+  const base = cloneWeights(DEFAULT_WEIGHTS);
+  const w = new Int32Array(base.w.length);
+  for (const [index, value] of nonzero) w[index] = value;
+  return { weights: finishArmWeights(base, w, armWeightsLabel(label)) };
+}
+
+/** The default with one feature overwritten. */
+function weightOverride(index: number, value: number, label: string): Partial<HardConfig> {
   const base = cloneWeights(DEFAULT_WEIGHTS);
   const w = Int32Array.from(base.w);
-  const s = (i: number, v: number): void => { w[i] = v; };
-  // accounting pins kept from the bootstrap: BankLiquid 100, EconDelta 100, PendingValue 1
-  s(F.BankExcess, opts.bankExcess);
-  if (opts.priors) {
-    s(F.HomeInvaded, -4000);
-    s(F.SpawnArea, 30); s(F.SpawnReserve, 8); s(F.SpawnZero, -800); s(F.AnchorDepth, 25);
-    s(F.Infiltration, 90); s(F.CornerSeal, -60);
-    s(F.HomeThreat, -400); s(F.HomeCountdown, -180); s(F.HomePlug, 220); s(F.HomeRescuers, 90);
-    s(F.Exposure, -20); s(F.DrawPressure, -8); s(F.ActionsLeft, 40);
-    // zero by contract: Rent, PstMine (single forecast), BankConvertible, ElementCoverage (stale cash option)
-    // stage 2: economy overlap terms (24-27) stay 0; HangingBuy(29) stays 0 (slot redefined)
-    s(F.Hanging, -50); s(F.ApproachRetreat, -25); s(F.ApproachStrand, -10); s(F.StrandPunish, 20);
-    s(F.KillAvailable, 35); s(F.CleaveExposure, -40); s(F.AnchorFragility, -120);
-    s(F.BlockingDeficit, -150); s(F.CornerInfiltration, 300);
-    s(F.Inv1SpawnZero, -800); s(F.Inv2CornerSeal, -300); s(F.Inv3RetreatSquare, -250);
-    s(F.Inv4StrandUnpunished, -100); s(F.Inv6FragileAnchor, -120); s(F.Inv7PromoteNoRunway, -600);
-    s(F.Inv8NoPreAdjacency, -150); s(F.Inv9ChipAcrossTurn, -150); s(F.Inv10HomeReachable, -400);
-    s(F.Inv12CleaveLine, -40); s(F.Inv13Turtle, -200); s(F.Inv14LiquidityFloor, -200);
-    s(F.Inv16ClockDiscipline, -200); s(F.Inv19SoftMinerExposed, -150); s(F.Inv20StrandNoRetreat, -250);
-    // Inv5/15/17/18 structural zero; Inv11 (homeBare, bank>=3 story) zero by continuation-map C
-  }
-  return { weights: finishArmWeights(base, w, label) };
+  w[index] = value;
+  return { weights: finishArmWeights(base, w, armWeightsLabel(label)) };
 }
-SPECS.push({ name: 'hand-priors', factor: 'weights', change: 'SCRATCH: default-v1 priors adapted to 62 features + BankExcess 25; scorer unchanged', patch: handPriorsPatch('scratch-hand-priors-v1', { bankExcess: 25, priors: true }), rootDiagnostic: true });
-SPECS.push({ name: 'hand-priors-pc', factor: 'weights', change: 'SCRATCH: hand-priors + within-turn scorer credits pending principal (label suffix +pc)', patch: handPriorsPatch('scratch-hand-priors-v1+pc', { bankExcess: 25, priors: true }), rootDiagnostic: true });
-SPECS.push({ name: 'bootstrap-pc', factor: 'weights', change: 'SCRATCH: bootstrap vector unchanged + within-turn scorer credits pending principal', patch: handPriorsPatch('scratch-bootstrap+pc', { bankExcess: 100, priors: false }), rootDiagnostic: true });
-SPECS.push({ name: 'bank25-pc', factor: 'weights', change: 'SCRATCH: bootstrap + BankExcess 25 + pending-principal scorer credit, no tactical priors', patch: handPriorsPatch('scratch-bank25+pc', { bankExcess: 25, priors: false }), rootDiagnostic: true });
+
+SPECS.push({
+  name: 'weights-bootstrap-m6',
+  factor: 'weights',
+  change: 'the whole 2026-09-20 repair off: the retired M6 accounting bootstrap (Material 100, BankLiquid 100, BankExcess 100, EconDelta 100, PendingValue 1; every other feature 0), built from that list and not from the default',
+  patch: sparseArmWeights(BOOTSTRAP_M6_NONZERO, 'bootstrap-m6'),
+  rootDiagnostic: true,
+});
+SPECS.push({
+  name: 'weights-bank100',
+  factor: 'weights',
+  change: 'the bank discount off: the default with BankExcess back at 100, so cash above the free eight is worth as much as liquid cash again; the tactical priors stay. The discount is the repair\'s master switch (spend 24% -> 93% vs Rush)',
+  patch: weightOverride(F.BankExcess, 100, 'bank100'),
+  rootDiagnostic: true,
+});
+SPECS.push({
+  name: 'weights-no-priors',
+  factor: 'weights',
+  change: 'the tactical priors off, the bank discount kept: the M6 accounting core with BankExcess 25 and every home/safety/space/invariant weight 0. Isolates the discount from the 38 default-v1 coefficients it shipped beside',
+  patch: sparseArmWeights([...ACCOUNTING_CORE, [F.BankExcess, 25]], 'no-priors'),
+  rootDiagnostic: true,
+});
+
+// --- L6 STRENGTH KNOBS (2026-09-21) ------------------------------------------
+// APPEND-ONLY BLOCK. Everything above this line is owned by the CI/repair lane
+// of the 2026-09-21 cutover; these seven arms are added after it so the two
+// edits never meet. They price the four ranked generator/evaluation changes of
+// `ai-strength-lab.md` §2 — R1b, R2, R3, R4 — each of which ships in
+// `src/ai/hard/**` behind a knob that is ABSENT on every profile, so
+// `hard@desktop` is byte-identical and its pinned hash does not move.
+//
+// FACTOR `evalFix`, NOT A NEW ONE. All four knobs live in one optional block,
+// `EvalFix.strength` (`src/ai/hard/config.ts StrengthKnobs`), because
+// `HardEngine`'s constructor stamps `config.evalFix` — and nothing else — onto
+// every `NodeTables` and onto its `Evaluator`, and `NodeTables` is the only
+// configuration `gen/promote.ts` and `eval/pending.ts` receive. `factorsOf`
+// serialises the whole block through `evalFixKey` (extended below) and
+// `maskFactor`'s `evalFix` case restores the whole block, so the one-factor
+// invariant covers these arms exactly as it covers `eval-correct-v1`, which
+// also sets several keys of one block.
+//
+// SCREEN THEM IN FIXED WORK. Every knob here is a GENERATOR or EVALUATION
+// change, visible under `--work fixed:50000` (unlike `work-fit`/`calib`), so
+// the screening rows need no idle box: `--a hard@ablate:<arm> --b Rush --work
+// fixed:50000 --handicaps 0 --pairs 16 --seed 7101 --openings p1-dev.jsonl`.
+// Read behaviour before result (spend, upkeep-eliminations, illegal actions,
+// divergences, fallbacks); adoption is a separate commit that flips a default
+// in `config.ts`, never an edit here.
+SPECS.push({
+  name: 'gen-purchase-score',
+  factor: 'evalFix',
+  change:
+    'R1b: strength.purchaseScoreBeforeTruncate — planPurchases writes every enumerated multiset × assignment, scores all of them and truncates to maxPlans AFTER sortPlans, instead of stopping the write loop at 12 plans in cheapest-definition-first enumeration order (at bank >= 12 the shipped menu is fire_1 x1..4 and nothing else)',
+  patch: { evalFix: { strength: { purchaseScoreBeforeTruncate: true } } },
+});
+SPECS.push({
+  name: 'gen-promote-strength',
+  factor: 'evalFix',
+  change:
+    'R2: strength.promoteStrengthMission — bestMission offers a fallback STRENGTH promotion worth (dAtk + dDef) x ACTION_VALUE_CC when no FORTIFY/SURVIVE/ANCHOR/INCOME/REACH mission applies, instead of returning -1 and never proposing the candidate (504 of 5,525 legal promotions offered in the knobs probe; fire_1->2 once in 2,940 opportunities)',
+  patch: { evalFix: { strength: { promoteStrengthMission: true } } },
+});
+SPECS.push({
+  name: 'gen-promote-rent211',
+  factor: 'evalFix',
+  change:
+    'R3: strength.promoteOrderingRentPv 422 -> 211 — half rent in the promotion ORDERING expression only (the upkeep keep-set and the EconDelta leaf forecast keep RENT_PV), so promotion combos stop ranking below bare purchase plans in buildCombos; 32 of 40 proposals score <= 0 today',
+  patch: { evalFix: { strength: { promoteOrderingRentPv: 211 } } },
+});
+SPECS.push({
+  name: 'gen-promote-rent0',
+  factor: 'evalFix',
+  change:
+    'R3 endpoint: strength.promoteOrderingRentPv 422 -> 0 — the promotion ordering charges no rent at all; the leaf still charges the real one, so this is the upper bound on what the ordering change can buy',
+  patch: { evalFix: { strength: { promoteOrderingRentPv: 0 } } },
+});
+SPECS.push({
+  name: 'eval-atrisk-8',
+  factor: 'evalFix',
+  change:
+    'R4: strength.pendingAtRiskShare16 0 -> 8 — an at-risk pending summon keeps half its service present value instead of none, so a purchase against an aggressive opponent (which flags every commitment) stops losing every tie to the first-ordered plain turn. The summon-disruption suite family is the canary',
+  patch: { evalFix: { strength: { pendingAtRiskShare16: 8 } } },
+});
+SPECS.push({
+  name: 'eval-atrisk-4',
+  factor: 'evalFix',
+  change: 'R4 at a quarter: strength.pendingAtRiskShare16 0 -> 4, the milder half of the at-risk credit pair',
+  patch: { evalFix: { strength: { pendingAtRiskShare16: 4 } } },
+});
+SPECS.push({
+  name: 'stack-r1234',
+  factor: 'evalFix',
+  change:
+    'R1b + R2 + R3(211) + R4(8) together: the whole 2026-09-21 strength stack in one block. ONE factor for the reason eval-correct-v1 is one — factorsOf serialises the block and maskFactor restores it — but four knobs, so it is read as a ceiling for the four single-knob arms above and never as evidence about any one of them',
+  patch: {
+    evalFix: {
+      strength: {
+        purchaseScoreBeforeTruncate: true,
+        promoteStrengthMission: true,
+        promoteOrderingRentPv: 211,
+        pendingAtRiskShare16: 8,
+      },
+    },
+  },
+});
 
 export const ARMS: readonly AblationArm[] = Object.freeze(SPECS.map(registerArm));
 
@@ -1034,6 +1156,29 @@ export function armHardConfig(name: string): HardConfig {
 
 // --- E3.2 lane 12: the correctness flags (B1-B5) ------------------------------
 
+/**
+ * The 2026-09-21 strength knobs in a fixed key order (`config.ts
+ * StrengthKnobs`), for `evalFixKey`. Referenced off `EvalFix` rather than
+ * imported by name so the import list above — which the CI/repair lane of the
+ * cutover owns this pass — is left alone.
+ *
+ * A key added by a later lane MUST be added here, for the reason `searchFixKey`
+ * states: `factorsOf` is what the one-factor invariant reads, and a knob it
+ * cannot see is a knob an arm could move without declaring it.
+ */
+export function strengthKey(s: NonNullable<EvalFix['strength']> | undefined): string {
+  if (s === undefined) return '';
+  const on = [
+    s.purchaseScoreBeforeTruncate === true ? 'purchaseScore' : '',
+    s.promoteStrengthMission === true ? 'promoteStrength' : '',
+    s.promoteOrderingRentPv === undefined ? '' : `promoteRentPv=${s.promoteOrderingRentPv}`,
+    s.pendingAtRiskShare16 === undefined ? '' : `atRisk16=${s.pendingAtRiskShare16}`,
+  ].filter(x => x !== '');
+  // An empty block is still a PRESENT block, and `canonicalJson` serialises it,
+  // so it reads as moved rather than as the champion.
+  return `strength=${on.length === 0 ? 'none' : on.join(',')}`;
+}
+
 export function evalFixKey(fix: EvalFix | undefined): string {
   if (fix === undefined) return 'absent';
   const on = [
@@ -1043,6 +1188,7 @@ export function evalFixKey(fix: EvalFix | undefined): string {
     fix.inv3RetreatConjunct === true ? 'b4' : '',
     fix.rentOnce === true ? 'b5' : '',
     fix.approachTieOrder === true ? 'b6' : '',
+    strengthKey(fix.strength),
   ].filter(x => x !== '');
   return on.length === 0 ? 'none' : on.join('+');
 }

@@ -17,11 +17,14 @@ import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/
 import { RENT_PV } from '../../../src/ai/hard/core/income';
 import { CC, MAX_SLOTS, Result, Reason, type PackedState } from '../../../src/ai/hard/types';
 import {
+  MISSION_NAMES,
   Mission,
   newPromoCandidate,
   planPromotions,
   type PromoCandidate,
 } from '../../../src/ai/hard/gen/promote';
+import { ACTION_VALUE_CC } from '../../../src/ai/hard/tables/economy';
+import type { EvalFix } from '../../../src/ai/hard/config';
 import { applyAction } from '../../../src/ai/simulate';
 import { isLegalAction } from '../../../src/game/legality';
 import { analyzeHomeDefense, analyzeHomeDefenseEvidence } from '../../../src/game/homeCheckmate';
@@ -346,4 +349,104 @@ it('FORTIFY can close the rescue route by reinforcing a blocker rather than the 
   rep.make(p, paMake(AKind.PROMOTE, c.slot), newUndo());
   expect(p.result).toBe(Result.WHITE_WIN);
   expect(p.reason).toBe(Reason.HOME_CHECKMATE);
+});
+
+/**
+ * R2/R3 (2026-09-21): `EvalFix.strength.promoteStrengthMission` and
+ * `promoteOrderingRentPv`, both absent on every profile. The first case pins
+ * that a plain combat upgrade is still NOT proposed by default — the behaviour
+ * the knob exists to change — and the rest pin the knob's arithmetic.
+ */
+describe('gen/promote.ts strength knobs (strength.promoteStrengthMission, promoteOrderingRentPv)', () => {
+  /** A lone White Yan at E5, no enemy within reach, nothing to fortify. */
+  const lone = (): GameState =>
+    buildState({
+      units: [
+        { def: 'fire_1', owner: 'white', x: 4, y: 4, id: 'w-yan' },
+        { def: 'plant_1', owner: 'black', x: 9, y: 9, id: 'b-corner' },
+      ],
+      white: 20,
+      black: 6,
+      current: 'white',
+      phase: 'place',
+      turnNumber: 5,
+    });
+
+  function withKnob<T>(strength: NonNullable<EvalFix['strength']>, fn: () => T): T {
+    tables.evalFix = { strength };
+    try {
+      return fn();
+    } finally {
+      tables.evalFix = null;
+    }
+  }
+
+  it('proposes nothing for fire_1 -> fire_2 by default: no mission claims a plain combat upgrade', () => {
+    const { p, t } = prepare(lone());
+    expect(t.evalFix).toBeNull();
+    expect(promotionsOf(p, t)).toHaveLength(0);
+  });
+
+  it('offers STRENGTH when the knob is on, priced at (dAtk + dDef) x ACTION_VALUE_CC', () => {
+    const { p, t } = prepare(lone());
+    const [c] = withKnob({ promoteStrengthMission: true }, () => promotionsOf(p, t));
+    expect(c).toBeDefined();
+    expect(c.mission).toBe(Mission.STRENGTH);
+    expect(MISSION_NAMES[Mission.STRENGTH]).toBe('STRENGTH');
+    const def = p.defId[c.slot];
+    const next = nextOf(p, c.slot);
+    const combat = cat.atk[next] - cat.atk[def] + (cat.def[next] - cat.def[def]);
+    expect(combat).toBeGreaterThan(0);
+    const material = (cat.cost[next] - cat.cost[def]) * CC;
+    const rent = RENT_PV * (cat.upkeep[next] - cat.upkeep[def]);
+    expect(c.scoreCc).toBe(combat * ACTION_VALUE_CC + material - c.cost * CC - rent);
+  });
+
+  it('charges the ordering rent the knob names, and RENT_PV when it names none', () => {
+    const { p, t } = prepare(lone());
+    const scoreAt = (rentPv?: number): number =>
+      withKnob(
+        rentPv === undefined
+          ? { promoteStrengthMission: true }
+          : { promoteStrengthMission: true, promoteOrderingRentPv: rentPv },
+        () => promotionsOf(p, t)[0].scoreCc,
+      );
+    const upkeepStep = cat.upkeep[nextOf(p, 0)] - cat.upkeep[p.defId[0]];
+    expect(upkeepStep).toBeGreaterThan(0);
+    const full = scoreAt();
+    expect(scoreAt(RENT_PV)).toBe(full);
+    expect(scoreAt(211)).toBe(full + (RENT_PV - 211) * upkeepStep);
+    expect(scoreAt(0)).toBe(full + RENT_PV * upkeepStep);
+    // Ordering only: the knob never makes a promotion legal or illegal, and it
+    // never changes which mission claimed the candidate.
+    expect(withKnob({ promoteStrengthMission: true, promoteOrderingRentPv: 0 }, () => promotionsOf(p, t))[0].mission).toBe(
+      Mission.STRENGTH,
+    );
+  });
+
+  it('re-prices an ordinary mission with the same rent knob, and leaves the mission alone', () => {
+    // A water_1 in an enemy one-shot band: SURVIVE, which exists with or
+    // without the strength knob.
+    const state = buildState({
+      units: [
+        { def: 'water_1', owner: 'white', x: 4, y: 4, id: 'w-hi' },
+        { def: 'shadow_1', owner: 'black', x: 4, y: 5, id: 'b-sjor' },
+        { def: 'plant_1', owner: 'black', x: 9, y: 9, id: 'b-corner' },
+      ],
+      white: 20,
+      black: 6,
+      current: 'white',
+      phase: 'place',
+      turnNumber: 5,
+    });
+    const { p, t } = prepare(state);
+    const slot = promotionsOf(p, t).find(c => p.defId[c.slot] === DEF_INDEX.get('water_1'))!;
+    expect(slot.mission).toBe(Mission.SURVIVE);
+    const upkeepStep = cat.upkeep[nextOf(p, slot.slot)] - cat.upkeep[p.defId[slot.slot]];
+    const cheaper = withKnob({ promoteOrderingRentPv: 211 }, () =>
+      promotionsOf(p, t).find(c => c.slot === slot.slot)!,
+    );
+    expect(cheaper.mission).toBe(Mission.SURVIVE);
+    expect(cheaper.scoreCc).toBe(slot.scoreCc + (RENT_PV - 211) * upkeepStep);
+  });
 });

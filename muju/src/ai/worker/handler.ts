@@ -72,6 +72,11 @@ const constructHardEngine: HardEngineFactory = async patch => {
  * `hardEnginePatch`); this is the same correction at the worker boundary, for
  * a caller that posts a profile object straight down the wire. An explicit
  * non-placeholder vector is always honoured.
+ *
+ * The browser's own device-profile patch (`deviceProfilePatch`,
+ * `src/ai/hard/config.ts`, 2026-09-21) omits `weights` at the source for the
+ * same reason, so on the shipped path this stays the belt-and-braces it was
+ * written as — it is what protects a future caller that forgets.
  */
 function hardPatch(patch: Partial<HardConfig> | undefined): Partial<HardConfig> | undefined {
   if (patch?.weights === undefined || patch.weights.version !== 0) return patch;
@@ -104,13 +109,6 @@ export function createSearchHandler(solver?: TacticalSolver, warning?: string, c
     const { version, gameId, requestId, revision, player } = request;
     const identity = { version, gameId, requestId, revision, player };
     try {
-      // THE PHASING GUARD. No release gate has passed for either engine under
-      // the Phasing ruleset, so a Phasing state is refused unless the REQUEST
-      // ITSELF carries the preview marker `useAI` sets from the personal
-      // `?phasingAi=1` opt-in (`src/ai/phasingPreview.ts`). The worker reads no
-      // flag of its own: a request without the marker is refused byte for byte
-      // as it was before the preview existed, whatever the page did.
-      if (request.state.ruleset === 'phasing' && !request.phasingPreview) throw new Error('AI supports Standard rules only. Phasing is available for human play.');
       // Protocol 2 stays accepted (M3): a `version: 2` request with no `mode`
       // is byte-compatible and gets the unchanged per-action reply. Master's
       // line here is still the pre-M3 `version !== AI_PROTOCOL`; the merge of

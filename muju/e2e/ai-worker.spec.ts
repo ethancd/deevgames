@@ -1,17 +1,23 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createInitialGameState, createUnit } from '../src/game/board';
-import { tacticalFixtures } from '../lab/ai/fixtures';
+import { phasingTacticalFixtures } from '../lab/ai/fixtures';
 import { applyActions } from '../src/ai/simulate';
+import { SCHEMA_VERSION } from '../src/utils/persistence';
 import type { GameState } from '../src/game/types';
+
+/** The only ruleset since 2026-09-21. A save recorded under any other one is
+ * archived by `loadGameState` and never offered for resume, so every seeded
+ * position here is Phasing and every turn is Act → Mine & prepare → End turn. */
+const phasing = () => createInitialGameState(undefined, undefined, 0, 'phasing');
 async function start(page: Page, state: GameState, watch = false) {
-  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({schemaVersion:6,timestamp:Date.now(),state:saved})),state);
+  await page.addInitScript(({saved,schemaVersion}) => localStorage.setItem('elemental-tactics-save', JSON.stringify({schemaVersion,timestamp:Date.now(),state:saved})),{saved:state,schemaVersion:SCHEMA_VERSION});
   await page.goto('./');
   await page.getByRole('button',{name:watch?'Watch AI Spectate AI vs AI match':'vs AI Play against the computer',exact:true}).click();
   for (const select of await page.locator('select').filter({has:page.locator('option[value="hard"]')}).all()) await select.selectOption('hard');
   await page.getByRole('button',{name:/Continue saved game/}).click();
 }
 test('built worker loads hashed WASM and performs a coordinated home rescue',async({page,context},info)=>{
-  const fixture=tacticalFixtures().find(f=>f.name==='Metal III / two Shadow III / rotated black')!;
+  const fixture=phasingTacticalFixtures().find(f=>f.name==='Phasing / Metal III / two Shadow III / rotated black')!;
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   const binary=context.waitForEvent('response',r=>r.url().endsWith('.wasm'));
   const worker=page.waitForEvent('worker');
@@ -26,7 +32,7 @@ test('built worker loads hashed WASM and performs a coordinated home rescue',asy
   expect(errors).toEqual([]);await expect(page.getByRole('alert')).toHaveCount(0);
 });
 test('menu responds during Hard search; mode switch terminates the old worker',async({page},info)=>{
-  const s=createInitialGameState();s.turn.currentPlayer='black';s.players.black.resources=s.players.black.resourcesGained=10;
+  const s=phasing();s.turn.currentPlayer='black';s.players.black.resources=s.players.black.resourcesGained=10;
   const workerPromise=page.waitForEvent('worker');await start(page,s);const worker=await workerPromise;
   const closed=worker.waitForEvent('close');
   const elapsed=await page.evaluate(async()=>{
@@ -41,7 +47,7 @@ test('menu responds during Hard search; mode switch terminates the old worker',a
   await info.attach('menu-response-ms',{body:JSON.stringify({elapsedMs:elapsed,browser:page.context().browser()?.version()}),contentType:'application/json'});
 });
 test('restart during search cannot dispatch an old result into the new game',async({page})=>{
-  const s=createInitialGameState();s.turn.currentPlayer='black';
+  const s=phasing();s.turn.currentPlayer='black';
   const workerPromise=page.waitForEvent('worker');await start(page,s);const worker=await workerPromise;
   const closed=worker.waitForEvent('close');page.on('dialog',d=>d.accept());
   await page.getByRole('button',{name:'Game menu',exact:true}).click();await page.getByRole('button',{name:'New game',exact:true}).click();await closed;
@@ -52,20 +58,20 @@ test('restart during search cannot dispatch an old result into the new game',asy
 });
 test('WASM fetch failure stays in the worker and exposes a usable JS fallback',async({page,context})=>{
   await context.route('**/*.wasm',route=>route.abort());
-  const fixture=tacticalFixtures().find(f=>f.name==='cheap invasion / one attack / rotated black')!;
+  const fixture=phasingTacticalFixtures().find(f=>f.name==='Phasing / cheap invasion / one attack / rotated black')!;
   await start(page,fixture.state);
   await expect(page.getByTestId('cell-9-9')).not.toHaveAttribute('aria-label',/white Muju/,{timeout:10000});
   await expect(page.getByText('AI is using its backup engine.',{exact:true})).toBeVisible();
 });
 test('pause terminates native computation and resume starts a fresh worker',async({page})=>{
-  const workerPromise=page.waitForEvent('worker');await start(page,createInitialGameState(),true);const worker=await workerPromise;
+  const workerPromise=page.waitForEvent('worker');await start(page,phasing(),true);const worker=await workerPromise;
   const closed=worker.waitForEvent('close');await page.getByRole('button',{name:'Pause',exact:true}).click();await closed;
   await expect(page.getByRole('button',{name:'Resume',exact:true})).toBeVisible();
   const next=page.waitForEvent('worker');await page.getByRole('button',{name:'Resume',exact:true}).click();await next;
 });
 
 test('Hard worker executes kill, paid move, Cleave to clear home',async({page})=>{
-  const s=createInitialGameState();s.turn.currentPlayer='black';s.turn.actionsRemaining=3;
+  const s=phasing();s.turn.currentPlayer='black';s.turn.actionsRemaining=3;
   const attacker=createUnit('fire_2','black',{x:7,y:9});
   s.board.units=[attacker,createUnit('fire_1','white',{x:9,y:9}),createUnit('fire_1','white',{x:8,y:9}),...[7,8,9].map(x=>{
     const u=createUnit('metal_3','black',{x,y:8});u.canActThisTurn=false;return u;
@@ -81,16 +87,22 @@ test('Hard worker executes kill, paid move, Cleave to clear home',async({page})=
 });
 
 test('Hard worker spends its fourth action on a capture before handing the turn back', async ({page}, info) => {
-  const initial = createInitialGameState();
+  const initial = phasing();
   const whiteHi = initial.board.units.find(unit => unit.owner === 'white' && unit.definitionId === 'fire_1')!;
   const whiteSjor = initial.board.units.find(unit => unit.owner === 'white' && unit.definitionId === 'water_1')!;
   const blackHi = initial.board.units.find(unit => unit.owner === 'black' && unit.definitionId === 'fire_1')!;
-  // Black needs three movement actions to reach H6, then its fourth action kills H5.
-  whiteHi.position={x:7,y:4};whiteSjor.position={x:2,y:3};
-  const state=applyActions(initial,[{type:'END_ACTION_PHASE'}]);
+  // One move then a kill, inside Black's Act phase: White's Hi stands two squares
+  // from Black's, deep in Black's own spawn rectangles. (Until 2026-09-21 this
+  // fixture stood at H5, four actions away; the Phasing engine spends its mining
+  // on summons rather than walking the whole turn for one tier-1 piece — a
+  // strength question for the measurement stage, not a harness one.)
+  whiteHi.position={x:6,y:9};whiteSjor.position={x:2,y:3};
+  // A Phasing turn hands over on END_PLACE_PHASE; END_ACTION_PHASE only mines
+  // and settles upkeep for the seat that is still to prepare.
+  const state=applyActions(initial,[{type:'END_ACTION_PHASE'},{type:'END_PLACE_PHASE'}]);
   expect(state.turn.currentPlayer).toBe('black');
   expect(state.turn.actionsRemaining).toBe(4);
-  expect(state.players.white.resources).toBe(6);
+  expect(state.players.white.resources).toBe(5);
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   const workerPromise = page.waitForEvent('worker');
@@ -109,7 +121,7 @@ test('Hard worker spends its fourth action on a capture before handing the turn 
   }, {whiteId: whiteHi.id, blackId: blackHi.id}), {timeout: 20_000}).toEqual({
     player: 'white', turn: 2, whiteHiAlive: false, blackHiAlive: true,
   });
-  await expect(page.getByTestId('cell-7-4')).not.toHaveAttribute('aria-label', /white Hi/);
+  await expect(page.getByTestId('cell-6-9')).not.toHaveAttribute('aria-label', /white Hi/);
   expect(errors).toEqual([]);
   await expect(page.getByRole('alert')).toHaveCount(0);
   await expect(page.getByText('AI is using its backup engine.', {exact: true})).toHaveCount(0);

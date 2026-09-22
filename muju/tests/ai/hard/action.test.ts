@@ -233,7 +233,7 @@ describe('core/action: canonical boundary', () => {
 
 describe('core/action: ids for units bought during the search', () => {
   it('matches the id the canonical engine assigns (simulate.ts:14-20)', () => {
-    let state: GameState = createInitialGameState();
+    let state: GameState = createInitialGameState(undefined, 4, 0, 'phasing');
     state = {
       ...state,
       players: { ...state.players, white: { ...state.players.white, resources: 12 } },
@@ -241,8 +241,11 @@ describe('core/action: ids for units bought during the search', () => {
     };
     const square = getAllSpawnPositions('white', state.board).sort((a, b) => a.y * 10 + a.x - (b.y * 10 + b.x))[0];
     const bought = applyAction(state, { type: 'BUY_UNIT', definitionId: 'fire_1', position: square });
-    const newIds = bought.board.units.filter(u => !state.board.units.some(o => o.id === u.id)).map(u => u.id);
+    // A purchase is a pending summon in Phasing, and the id it is minted with is
+    // the one the arrival carries (`simulate.ts nextUnitId` counts both lists).
+    const newIds = (bought.pendingSummons ?? []).map(s => s.id);
     expect(newIds).toHaveLength(1);
+    expect(bought.board.units).toHaveLength(state.board.units.length);
 
     // The packed mirror: six starting units with their canonical ids, then the
     // bought unit in the next free slot with no `originIds` entry.
@@ -332,7 +335,7 @@ describe('core/action: ids for units bought during the search', () => {
   });
 
   it('matches successive canonical buys in one turn', () => {
-    const initial = createInitialGameState();
+    const initial = createInitialGameState(undefined, 4, 0, 'phasing');
     // Widen White's spawn rectangle to 5x5 by pushing its Muju anchor to E5,
     // so three successive buys all have a legal square.
     let state: GameState = {
@@ -349,13 +352,17 @@ describe('core/action: ids for units bought during the search', () => {
     const starting = state.board.units.map(u => u.id);
     const boughtIds: string[] = [];
     for (let buy = 0; buy < 3; buy++) {
+      // Each commitment holds its square until it arrives, so the next buy takes
+      // the next free one rather than stacking on the same square.
+      const taken = new Set((state.pendingSummons ?? []).map(p => p.position.y * 10 + p.position.x));
       const square = getAllSpawnPositions('white', state.board)
         .map(pos => pos.y * 10 + pos.x)
+        .filter(sq => !taken.has(sq))
         .sort((a, b) => a - b)[0];
       const next = applyAction({ ...state, turn: { ...state.turn, phase: 'place' } }, {
         type: 'BUY_UNIT', definitionId: 'fire_1', position: { x: square % 10, y: (square / 10) | 0 },
       });
-      const added = next.board.units.find(u => !state.board.units.some(o => o.id === u.id));
+      const added = (next.pendingSummons ?? []).find(p => !(state.pendingSummons ?? []).some(o => o.id === p.id));
       expect(added).toBeDefined();
       boughtIds.push((added as { id: string }).id);
       state = next;

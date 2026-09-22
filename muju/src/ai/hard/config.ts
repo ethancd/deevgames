@@ -467,6 +467,83 @@ export interface EvalFix {
    * `inv3RetreatConjunct`, so with B4 off this flag changes nothing.
    */
   approachTieOrder?: boolean;
+  /**
+   * The 2026-09-21 STRENGTH knobs (`StrengthKnobs`). ABSENT ON EVERY PROFILE,
+   * like every other key of this block, so the champion is byte-identical and
+   * `hard@desktop`'s resolved configuration hash does not move; only the
+   * `hard@ablate:gen-*`/`eval-atrisk-*`/`stack-r1234` arms set it.
+   *
+   * They are not correctness fixes and they do not belong to E3.2's B1-B6 set;
+   * they ride on this block because `HardEngine`'s constructor stamps
+   * `config.evalFix` — and only `config.evalFix` — onto every `NodeTables` it
+   * allocates and onto its `Evaluator`, and `NodeTables` is the only
+   * configuration `gen/promote.ts` and `eval/pending.ts` receive at all
+   * (`planPromotions(p, t, max, out)`, `pendingDiagnostics(p, t, sc, ply, out)`).
+   * Carrying them in their "natural" homes — `GenConfig.promote`, the evaluator's
+   * own construction path — would mean changing `gen/generate.ts`, `engine.ts`
+   * and `tables/context.ts`, which the 2026-09-21 cutover plan puts outside this
+   * lane. Moving them to a dedicated `genFix` block once those files are open is
+   * a rename with no behaviour change; see `docs/hard-ai/phasing/` follow-ups.
+   */
+  strength?: StrengthKnobs;
+}
+
+// --- gen/{purchase,promote}.ts, eval/pending.ts (2026-09-21 strength lane) ----
+/**
+ * The four ranked generator/evaluation changes of the 2026-09-21 strength pass,
+ * each behind its own knob and each ABSENT (= today's behaviour) by default.
+ * Absent means the champion's code path runs bit for bit: every read below is
+ * `=== true` or `?? <today's constant>`, so an unset block cannot change a
+ * single emitted plan, candidate or feature value.
+ *
+ * Adoption (flipping one of these on by default) is a separate commit, taken
+ * only after the ladder rows the arms exist to produce; the arms are
+ * `hard@ablate:gen-purchase-score`, `gen-promote-strength`,
+ * `gen-promote-rent211`, `gen-promote-rent0`, `eval-atrisk-8`, `eval-atrisk-4`
+ * and `stack-r1234` (`lab/hard-ai/ablate/arms.ts`).
+ */
+export interface StrengthKnobs {
+  /**
+   * R1b. `gen/purchase.ts planPurchases` writes purchase plans into `out` in
+   * enumeration order and stops at `cfg.maxPlans` BEFORE it scores and sorts
+   * them, so at bank ≥ 12 the 12 plans it keeps are `fire_1 ×1..4` at three
+   * assignments each — the cheapest definition in catalogue order — and
+   * `water_1`/`plant_1` can never be bought however good they are. True writes
+   * every multiset × assignment the buffer holds, scores all of them, sorts,
+   * and only then truncates to `cfg.maxPlans`. The empty plan stays at index 0
+   * either way (`sortPlans` starts at index 2 and never moves index 0).
+   */
+  purchaseScoreBeforeTruncate?: boolean;
+  /**
+   * R2. `gen/promote.ts bestMission` returns -1 — no candidate — for a
+   * promotion that is not FORTIFY/SURVIVE/ANCHOR/INCOME/REACH, so a plain
+   * strength upgrade (`fire_1 → fire_2`) is never offered at all: 504 of 5,525
+   * legal promotions were offered in the knobs probe, `fire_1→2` once in 2,940
+   * opportunities. True adds a fallback `Mission.STRENGTH` whose benefit is
+   * `(Δatk + Δdef) × ACTION_VALUE_CC` when that sum is positive.
+   */
+  promoteStrengthMission?: boolean;
+  /**
+   * R3. The present value, per crystal of added upkeep, that the promotion
+   * ORDERING expression charges (`gen/promote.ts`, `scoreCc`). Absent means
+   * `RENT_PV` (422), today's value — which puts 32 of 40 proposals at or below
+   * zero, so promotion combos rank below bare purchase plans in `buildCombos`.
+   * Ordering only: the leaf still charges the real rent through the `EconDelta`
+   * forecast, so this cannot make the search PLAY a promotion it dislikes, only
+   * make it look at one. The shared `RENT_PV` — which also ranks the upkeep
+   * keep-set in `gen/upkeep.ts` — is untouched.
+   */
+  promoteOrderingRentPv?: number;
+  /**
+   * R4. The share, in SIXTEENTHS, of a pending summon's service present value
+   * that `eval/pending.ts` credits when the commitment is flagged at risk.
+   * Absent means 0 — today's behaviour, where an at-risk purchase is worth
+   * exactly its principal, so against an aggressive opponent (which flags every
+   * commitment) a purchase loses every tie to the first-ordered plain turn.
+   * 8 is 50 %, 4 is 25 %. Sixteenths, and `(pv * share) >> 4`, so the credit is
+   * exact integer arithmetic on every box (DESIGN F18).
+   */
+  pendingAtRiskShare16?: number;
 }
 
 // --- search/{pvs,time,order}.ts, gen/generate.ts (E4 lanes 3, 4, 5) ---
@@ -638,4 +715,48 @@ export function profileFor(unitsPerMs: number, deviceMemoryGb: number | undefine
   const cfg = makeConfig(shape, null);
   cfg.profile = { unitsPerMs, samples: 0 };
   return cfg;
+}
+
+/**
+ * WHICH PROFILE A BROWSER SEAT ACTUALLY RUNS (A-F2, 2026-09-21).
+ *
+ * `profileFor` has existed since M4 and, until this change, was called from
+ * nowhere but `tests/ai/hard/interfaces.test.ts`: every device — a phone
+ * included — built its engine from `DESKTOP`, i.e. `K 24`, widths
+ * `[6,4,3,2]`, `ttBitsMacro 19`. `useAI` now resolves ONE device hint per game
+ * (`resolveHardDeviceProfile()`, `src/ai/hardOptIn.ts`, which also documents
+ * the rule and its `?hardProfile` override) and sends the phone tables as the
+ * request's ordinary `hard` patch, which `worker/handler.ts` already applies
+ * to the one engine it builds per game.
+ *
+ * ABSENT ≡ DESKTOP, and that is the whole compatibility story: `'desktop'`
+ * returns `undefined`, so a desktop request stays byte-for-byte the request
+ * that shipped before — no `hard` field, `new HardEngine(undefined)`, and
+ * `hard@desktop`'s resolved configuration (the identity every ladder row and
+ * `tests/lab/ablate.test.ts`'s frozen hash are keyed on) untouched. Only a
+ * device that answers "phone" sends anything at all.
+ *
+ * WEIGHTS AND BOOK ARE OMITTED DELIBERATELY. `HardEngine`'s constructor
+ * substitutes `DEFAULT_WEIGHTS` only when the patch names no `weights` field
+ * at all, and every profile here carries the version-0 placeholder, so posting
+ * a whole profile object WITH its weights silently buys a material-only
+ * evaluation — the mistake `worker/handler.ts`'s `hardPatch` exists to catch.
+ * Omitting both fields means a phone plays the shipped weight vector and the
+ * same book as a desktop, on smaller tables. That is the only difference.
+ *
+ * The throughput handed to `profileFor` is the phone profile's own cold value
+ * (= `INITIAL_UNITS_PER_MS`): the main thread has measured nothing when it
+ * picks, and the engine overwrites the number with its own measurement after
+ * the first search. A later version could send a MEASURED throughput and let
+ * `profileFor` reach MIDRANGE as well; today the hint is two-valued by design
+ * (see `resolveHardDeviceProfile`).
+ */
+export type DeviceProfileName = 'desktop' | 'phone';
+
+/** The `hard` config patch a `DeviceProfileName` puts on the wire, or
+ * `undefined` for the desktop default. A fresh object every call. */
+export function deviceProfilePatch(device: DeviceProfileName): Partial<HardConfig> | undefined {
+  if (device !== 'phone') return undefined;
+  const { weights: _weights, book: _book, ...tables } = profileFor(PHONE_SHAPE.unitsPerMs, undefined);
+  return tables;
 }

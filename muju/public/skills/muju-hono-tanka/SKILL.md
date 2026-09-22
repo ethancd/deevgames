@@ -32,21 +32,29 @@ substitute for that restricted service. Follow the match's separate sandbox
 policy; do not move a position to another solver to bypass it. Ordinary rooms without `matchPolicy` retain the complete
 workflow below.
 
-## Check the match ruleset
+## The turn
 
-`ruleset` defaults to `standard`. Creation can explicitly select `phasing`.
-Read the observation's `ruleset` and call `muju_rules({ruleset})` before choosing actions.
-`endTurnAction` in observations, legal actions and clocks names the full-turn handoff.
+Muju has one rule set. There is nothing to select at creation and no `ruleset`
+argument to pass; call `muju_rules()` before choosing actions. Since 2026-09-21
+`muju_rules` reports it as an **object** — `ruleset: {name: "phasing", revision,
+immutable: true, retired: ["standard"]}` — so read `ruleset.name`; `muju_observe`
+still reports the bare **string** `ruleset: "phasing"`. `endTurnAction` in
+observations, legal actions and clocks names the full-turn handoff, and it is
+always `END_PLACE_PHASE`.
 
-In **Phasing**, both players begin in Act. `END_ACTION_PHASE` mines once and pays
+Both players begin in Act. `END_ACTION_PHASE` mines once and pays
 upkeep, but keeps the same player and clock running. Resolve `PAY_UPKEEP` if needed,
 then promote actual pieces or `BUY_UNIT` to commit public pending summons in
-`phase: "place"`. `END_PLACE_PHASE` hands over the full turn. At next own turn
+`phase: "place"`. `END_PLACE_PHASE` hands over the full turn, and it is always
+required — preparation never ends by itself, even when nothing is affordable, and
+spending every action does not end the turn. At next own turn
 start, legal summons materialize; occupied or unsupported summons fully refund.
 Pending summons are not occupants or combatants. Arrivals act that turn and may
 promote at its end. Pending summons are public, unlike private staged action
-batches. Observe, legal actions, preview and manual analysis support this ruleset;
-MCP strategic analysis also models Phasing. Built-in AI remains Standard-only.
+batches. Observe, legal actions, preview, manual analysis and MCP strategic
+analysis all model this turn. The built-in browser AI plays it too: easy and
+medium run `AIEngineV2`, hard runs the newer search engine, and `?hardAi=0` on the
+game URL opts a seat back to the previous hard engine.
 Tactical witnesses cover the modeled action phase, including pieces that already
 arrived. End-of-turn promotions and new commitments cannot attack that turn;
 future discretionary preparation is outside a next-turn reply model.
@@ -83,12 +91,12 @@ consume one copy. Check `isError` before using a result.
 
 ## Start or resume
 
-1. Read `muju_rules({ruleset})` for the selected rules and unit catalogue. Costs and balance
+1. Read `muju_rules()` for the rules and unit catalogue. Costs and balance
    can change; use the live catalogue. Rules are also the resource `muju://rules`.
    The expansion-economy map has 8-crystal home squares and 16-crystal expansions,
    with 504 crystals total and Plant Mining 3/5/8. Existing rooms can have older
    maps; plan from their actual remaining reserves.
-2. Host with `muju_create_room({name, side, ruleset?, timeControl?, blackCrystalHandicap?})` (four shared actions per turn), or join with
+2. Host with `muju_create_room({name, side, timeControl?, blackCrystalHandicap?})` (four shared actions per turn), or join with
    `muju_join_room({roomId, inviteCode, name})`. New invitation URLs use
    `/join/abcdef`: the six lowercase letters are the `inviteCode`. Resolve the
    `roomId` with `GET /api/muju/rooms/invitations/abcdef` on that host before
@@ -127,17 +135,17 @@ When requested, pass `blackCrystalHandicap` as a whole number from **1 to 20**
 when creating a room. For example,
 `muju_create_room({name:"Host", side:"white", blackCrystalHandicap:8})` gives
 Black exactly 8 starting crystals, regardless of which side the host controls.
-Omit the option or use `0` for a standard game. It is fixed at creation and cannot
+Omit the option or use `0` for no handicap. It is fixed at creation and cannot
 be changed in an existing room. White still starts with 0 crystals and moves first.
 
-In Standard, Black skips Place & Promote on turn 1 with **1 or 2** crystals, since the cheapest
-purchase costs 3. With **3–20**, Black begins its first turn in Place & Promote;
-normal costs, spawn rules and promotion restrictions apply. A 3-crystal grant
-permits a cheap purchase; promoting an existing tier-1 unit costs 4. Both players
+Both players always start in Act, regardless of handicap: the grant never adds an
+opening phase. Black first spends it in that turn's Prepare, at normal costs and
+under the usual spawn and promotion rules. A 3-crystal grant funds one cheap
+summon; promoting an existing tier-1 unit costs 4. Both players
 retain four actions. The grant is not mined income and is not awarded again.
 Read `blackCrystalHandicap`, each player's current `resources`, and the actual
-`turn.phase` in observations; use legal actions instead of assuming placement is
-available. In Phasing both players always start in Act, regardless of handicap.
+`turn.phase` in observations; use legal actions instead of assuming a purchase is
+available.
 Saved games, undo and reconnects retain the grant and current balance.
 
 ## Play on the clock
@@ -157,8 +165,9 @@ and time used. Custom limits: 0–600 seconds of delay, 1–14,400 seconds of ba
 
 Each player has a separate bank carried across their own turns. Each full turn
 gets a fresh free delay, then that player's bank drains; unused delay is discarded.
-Upkeep, placement and all actions share one delay. Partial plays, undo, previews,
-reads and retries never reset it. Running out loses with `victoryReason:"timeout"`.
+One delay covers all four actions, mining and upkeep, and preparation together.
+Partial plays, undo, previews, reads and retries never reset it. Running out loses
+with `victoryReason:"timeout"`.
 
 Read the rules and prepare **before joining**: White's clock starts when the second
 player joins. It keeps running through thinking, waiting, disconnects, replay and
@@ -187,8 +196,8 @@ expiry wins at the deadline and moves are never backdated. Model effort remains
 a client concern.
 
 Do not wait on your own running turn. Complete the full turn before the deadline:
-Standard ends with `END_ACTION_PHASE`; Phasing ends with `END_PLACE_PHASE` after
-actions, mining/upkeep and preparation. Zero AP does not end a Phasing turn. Reduce previews when short on time; prefer a
+the turn ends with `END_PLACE_PHASE`, after actions, mining/upkeep and
+preparation. Spending all AP does not end the turn. Reduce previews when short on time; prefer a
 legal atomic turn batch. Preview separates `liveClock`, `liveClockPressure` and
 `liveStaging` for the real game,
 while its `room` is hypothetical. Late play/preview returns `isError:true`,
@@ -203,8 +212,8 @@ Report the winner and stop. Clocks stop on any game result; undo never refunds t
   as `home-checkmate`. Upkeep choices, promotions, movement, blocker clearing and
   combined damage count; new purchases are blocked by home occupation. Three
   attacks against the same corner occupier require at least five actions, so only
-  two attacks can land in a four-action reply. In Phasing an invader must first
-  survive outgoing mining/upkeep; defender rescue uses actual pieces in Act with
+  two attacks can land in a four-action reply. An invader must first
+  survive its own outgoing mining/upkeep; defender rescue uses actual pieces in Act with
   no pre-action promotion or upkeep release. Occupied home prevents pending arrivals. An inconclusive proof preserves the
   ordinary reply turn. Read the returned result: immediate checkmate cancels the
   remaining queued actions in a batch, including `END_ACTION_PHASE`.
@@ -226,8 +235,8 @@ Report the winner and stop. Clocks stop on any game result; undo never refunds t
   characters. Batches of up to 32 actions are atomic and cannot cross into the
   opponent's turn. Preview results are hypothetical, with no reservation.
 - MCP positions accept `A1`–`J10` or zero-indexed `{x,y}`. A1 is top left for
-  both players; the board does not rotate. Standard hands over on
-  `END_ACTION_PHASE`; Phasing hands over on `END_PLACE_PHASE`.
+  both players; the board does not rotate. `END_ACTION_PHASE` mines and pays
+  upkeep without handing over; `END_PLACE_PHASE` hands over.
 - Affordable upkeep is automatic by default. If upkeep is pending, submit
   `PAY_UPKEEP` with all tier 1 unit IDs plus an affordable subset of higher tiers.
   Legal actions show one affordable set, not every possible set.
@@ -236,8 +245,13 @@ Report the winner and stop. Clocks stop on any game result; undo never refunds t
   plan needs a new ID. `UNDO` restores your previous command within this turn
   when `canUndo` is true; `RESIGN` concedes your seat.
 
-Standard example (for Phasing append `END_PLACE_PHASE` after any required upkeep
-and desired preparation), replacing the placeholders with current values:
+A complete turn, replacing the placeholders with current values. It runs Act,
+then mining and upkeep, then preparation, then the handoff — all four parts, in
+one atomic batch. `A1` is used as the summon square because it is White's own
+start corner: it is empty at the opening and lies inside every White spawn
+rectangle, so the commitment is legal whichever unit the `MOVE` uses, provided
+that unit does not step onto `A1` itself. Do not copy a square blindly — `B1` is
+White's starting Hi square, and buying onto an occupied square is rejected:
 
 ```json
 {
@@ -247,10 +261,26 @@ and desired preparation), replacing the placeholders with current values:
   "requestId": "white-opening-001",
   "actions": [
     { "type": "MOVE", "unitId": "UNIT_ID", "to": "C1" },
-    { "type": "END_ACTION_PHASE" }
+    { "type": "END_ACTION_PHASE" },
+    { "type": "BUY_UNIT", "definitionId": "fire_1", "position": "A1" },
+    { "type": "END_PLACE_PHASE" }
   ]
 }
 ```
+
+`END_ACTION_PHASE` mines and settles upkeep; if upkeep is not affordable
+automatically, or upkeep review is enabled, insert your own `PAY_UPKEEP` between
+it and the preparation actions. `BUY_UNIT` commits a **public pending summon** at
+that square — the piece does not appear now and cannot act this turn. Two tests
+apply, and both are real. At **commit** time the square must already be empty and
+inside one of your current unblocked spawn rectangles, with no other own
+commitment on it, or the action is rejected and takes the whole atomic batch with
+it. At **arrival** — your next turn start — it materializes if the square is then
+empty and still supported, and otherwise refunds in full. Read your own legal
+squares from `briefing.sections.spawn` or `muju_legal_actions` rather than reusing
+a square from this example. `PROMOTE_UNIT` belongs in the same preparation
+segment, and a piece that arrived at this turn's start may promote there.
+Omitting `END_PLACE_PHASE` leaves your own turn running against your clock.
 
 ## Read a turn in one call
 
@@ -295,8 +325,8 @@ purchase. Full lines also contain its deterministic instance ID.
 `targets.squares`, or rectangular `targets.regions` (`from`, `to`).
 
 - Before exposing a valuable unit, query `threats` on its instance ID with
-  `hypotheticalActions` containing the **whole proposed turn**, normally through
-  `END_ACTION_PHASE` in Standard or `END_PLACE_PHASE` in Phasing. Include actual
+  `hypotheticalActions` containing the **whole proposed turn**, through
+  `END_PLACE_PHASE`. Include actual
   preparation decisions in the proposed turn. Set
   `deep:true` for combinations, and read each lethal line's `exposure` reply.
   `exposure.replies` checks each participating attacker, assuming the attacking
@@ -308,11 +338,10 @@ purchase. Full lines also contain its deterministic instance ID.
   or `blockPurchases`. It is one ply and generally best-found, not minimax.
 - Before a home attempt, query `checkmate` with the proposed sequence. It exposes
   the same bounded prover used by the engine, including rescue categories.
-  In Standard, a rescue witness starts **before defender upkeep**. If upkeep was automatic,
-  undo that payment in its own command before previewing the reply. Otherwise
-  enable upkeep review before handoff. Do not pay upkeep twice. Phasing rescue
-  witnesses instead start in the defender’s Act after healing; no upfront upkeep.
-  Before outgoing Phasing upkeep is resolved, checkmate reports unknown. Rare long replies
+  A rescue witness starts in the defender’s Act after turn-start healing, with no
+  upfront upkeep and no pre-action promotions. Before your own outgoing
+  mining/upkeep is resolved, checkmate reports unknown: preview
+  `END_ACTION_PHASE` and any required `PAY_UPKEEP` first. Rare long replies
   use `witnessCommands`, each at most 32 actions, instead of one witness.
 - `survival` on empty squares compares independent catalogue defenders and gives
   bounds on minimum surviving defense. Exact minima appear only when the bounds
@@ -327,14 +356,14 @@ purchase. Full lines also contain its deterministic instance ID.
 
 Every analysis identifies source revision, perspective, turn/phase, `stateKind`,
 hypothetical assumptions, `search`, and `next`. An enemy-turn model explicitly
-ends the current player's turn with the engine, credits that outgoing harvest,
-then applies incoming upkeep, healing and AP reset in Standard. In Phasing, it
+ends the current player's turn with the engine: it
 ends actions if needed, mines once, pays outgoing upkeep, ends preparation without
 new spending, resolves incoming summons/refunds and heals/resets the incoming army.
-It never credits incoming future harvest or prepays Phasing incoming upkeep. Unaffordable/reviewed outgoing upkeep uses the engine's
+It never credits incoming future harvest, and there is no incoming upkeep to prepay.
+Unaffordable/reviewed outgoing upkeep uses the engine's
 default keep-set; supply your own `PAY_UPKEEP` in the proposed sequence to override
-it. Generic searches retain automatic upkeep; only the Standard home prover covers
-voluntary alternatives to an automatic payment.
+it. Generic searches retain that automatic keep-set; the home prover's rescue
+begins after healing, so it has no automatic payment to undo.
 
 `hypotheticalActions` use the play schema and must remain within one player's
 turn; invalid batches fail atomically. `UNDO` and upkeep preferences require the
@@ -387,13 +416,11 @@ Send `actions:[{"type":"UNDO"}]` alone to `muju_play`, with your token, the
 latest revision and a new request ID. `canUndo` means the current player can
 reverse their latest command, including placement, promotion and starting actions.
 An atomic batch is one undo step. Turn end and game completion clear undo history.
-In Standard, the incoming player's positive automatic upkeep payment creates a new first undo
-step. Undo later commands first, then undo upkeep to refund it and reopen
-`PAY_UPKEEP` before healing. Choose a new affordable keep-set containing every tier
-1 unit. This does not reverse the opponent's completed turn or income. In Phasing,
-mining and automatic upkeep form one outgoing END_ACTION_PHASE undo step. Undo
+There is no incoming upkeep, so a turn never opens with an upkeep undo step.
+Mining and automatic upkeep form one outgoing `END_ACTION_PHASE` undo step. Undo
 back to Act, enable upkeep review in its own command, then mine/pay with a chosen
-keep-set. END_PLACE_PHASE clears undo and hands over; there is no incoming upkeep.
+keep-set containing every tier-1 unit. Undo does not reverse the opponent's
+completed turn or income. `END_PLACE_PHASE` clears undo and hands over.
 
 `muju_wait_for_change` is the supported way to detect human moves. Use the latest
 revision as `afterRevision`; moves between calls return immediately. Changed

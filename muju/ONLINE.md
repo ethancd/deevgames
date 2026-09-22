@@ -9,7 +9,8 @@ Only centaur permits hosted analysis and briefings; bare also rejects legal
 lists, previews, undo and staged play. Tool-builder permits custom client code but
 not hosted analysis. Ordinary rooms omit this field and retain all current
 behavior. See [engine seat and match protocol](docs/ENGINE-SEAT-MATCH-2026-09-19.md)
-for capabilities, isolation requirements and the guarded Standard-only Node seat.
+for capabilities, isolation requirements and the guarded, default-closed Phasing
+Hard Node seat.
 For a scored study, use the optional `MUJU_MATCH_ROOM_ID` single-room service on
 a dedicated listener/database after the operator admits both seats. That mode
 denies creation, joining, listing and every cross-room route/tool; stdio adopts
@@ -19,19 +20,19 @@ issued credentials and pins expected policy/protocol, time control and handicap.
 This infrastructure is prepared; no Phasing Hard match or strength result is claimed.
 
 
-## Optional Phasing games
+## The turn
 
-Choose **Phasing** while hosting, or pass `ruleset: "phasing"` to room creation.
-The default is `standard`; the choice is immutable and visible to both seats and
-observers. Existing rooms remain Standard. Phasing starts in Act, then collects
-mining and pays upkeep with `END_ACTION_PHASE`; promote and commit summons in
-Prepare (`phase: "place"`), then hand over with `END_PLACE_PHASE`. Both phases
-share the full-turn clock. Black's handicap never adds an opening Place phase in
-Phasing. Public commitments, arrivals and refunds persist in history and saved
-positions. MCP strategic analysis models Phasing turn order, summons and upkeep;
-manual analysis, observations, legal actions and previews work normally.
-See [complete Phasing rules](docs/PHASING-2026-09-16.md). Sections below describing
-pre-action upkeep and instant purchases refer to Standard.
+Muju has one rule set. Every room plays it; there is nothing to choose and
+nothing to pass. A turn starts in Act, then collects mining and pays upkeep with
+`END_ACTION_PHASE`; promote pieces and commit public tier-1 summons in Prepare
+(`phase: "place"`), then hand over with `END_PLACE_PHASE`. Preparation always
+ends explicitly, even when nothing is affordable, and spending every action does
+not end the turn. All phases share one full-turn clock. Black's handicap never
+adds an opening phase: both seats begin in Act. Public commitments, arrivals and
+refunds persist in history and saved positions. MCP strategic analysis, manual
+analysis, observations, legal actions and previews all model this turn.
+See [the specification](SPEC.md); `docs/PHASING-2026-09-16.md` is the superseded
+dated record of the era when this was an optional variant.
 
 
 One authoritative host serves the existing browser game, persistent two-seat rooms,
@@ -46,10 +47,10 @@ use the updated Plant stats. Refresh an open browser after the release. See
 ## Black crystal handicap
 
 Local new-game setup and **Play online → Host a game** offer **Black crystal
-handicap**: Off (standard), or any whole number from 1 to 20. Black starts with
-exactly that many crystals; White starts with 0 and moves first. With 1 or 2,
-Black skips its opening Place & Promote phase. With 3–20, it enters that phase
-and uses normal purchase/promotion costs. Both sides retain four actions.
+handicap**: Off, or any whole number from 1 to 20. Black starts with
+exactly that many crystals; White starts with 0 and moves first. The handicap
+never changes the opening phase: both players begin their first turn in Act, and
+crystals are first spent in that turn's Prepare. Both sides retain four actions.
 
 HTTP room creation and `muju_create_room` accept `blackCrystalHandicap`, for
 example `{ "name": "Host", "side": "white", "blackCrystalHandicap": 8 }`.
@@ -76,8 +77,13 @@ The separate Cloudflare Pages workflow also follows `master`. Its publishing
 step requires configured Cloudflare credentials; a green build without that
 step is not evidence of a new Pages deployment.
 
-Hard-AI research stays on a development branch until strength and device
-gates pass. See [the recovery plan](docs/hard-ai/RECOVERY-PLAN-2026-09-16.md).
+The Hard difficulty runs the `src/ai/hard` engine in the browser
+(`hardEnabled = true`); `?hardAi=0` opts a seat back to `AIEngineV2`, which also
+plays easy and medium. Gates 0, 2 and 3 of
+[the preregistration](docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md) are still
+owed — amendment A6 there waives their ordering, not the gates — so nothing here
+claims the engine is stronger. See
+[the release record](docs/hard-ai/RELEASE-2026-09-21-phasing.md).
 
 ## Start a host
 
@@ -264,7 +270,12 @@ Suggested agent instructions:
 > the board, query legal actions for the unit you want to use, and preview useful
 > sequences. Play using the observed revision. Wait for changes between turns.
 
-Example `muju_play` arguments (replace IDs and revision with returned values):
+Example `muju_play` arguments for one complete turn (replace IDs and revision with
+returned values). The summon square is `A1`, White's own start corner: empty at
+the opening and inside every White spawn rectangle, so it is legal whichever unit
+the `MOVE` uses, provided that unit does not step onto `A1` itself. `B1` is
+White's starting Hi square — a `BUY_UNIT` there at the opening is rejected, and
+the batch is atomic, so the whole turn would be lost:
 
 ```json
 {
@@ -274,10 +285,21 @@ Example `muju_play` arguments (replace IDs and revision with returned values):
   "requestId": "white-opening-001",
   "actions": [
     { "type": "MOVE", "unitId": "UNIT_ID_FROM_OBSERVE", "to": "C1" },
-    { "type": "END_ACTION_PHASE" }
+    { "type": "END_ACTION_PHASE" },
+    { "type": "BUY_UNIT", "definitionId": "fire_1", "position": "A1" },
+    { "type": "END_PLACE_PHASE" }
   ]
 }
 ```
+
+The batch is not a turn without `END_PLACE_PHASE`. `END_ACTION_PHASE` only mines and
+settles upkeep and leaves you in preparation on your own clock; `END_PLACE_PHASE` is
+what hands over.
+
+A `BUY_UNIT` square is tested twice: at commit time it must be empty, inside a
+current unblocked spawn rectangle and free of another own commitment, or the
+action is illegal; at your next turn start it is tested again on that board, and
+only that second test refunds.
 
 Coordinates are A1–J10, with A1 at top left. MCP accepts square names or `{x,y}`
 objects (zero indexed); the HTTP API uses `{x,y}`. Unit IDs come from observations;
@@ -299,7 +321,7 @@ The setting is fixed at creation, including while waiting for the opponent.
 These are delay clocks: **each player has their own bank, shared across their own
 turns**. A full turn gets a fresh free allowance; after it runs out, only the active
 player’s bank counts down. Unused allowance does not accumulate. Running out loses.
-The allowance covers upkeep, placement and all four actions together. Moves,
+The allowance covers all four actions, mining and upkeep, and preparation together. Moves,
 starting the action phase, undo, previews, reads and retries never reset it.
 
 | Preset | Free delay / personal bank | Approximate pace |
@@ -336,13 +358,15 @@ loss is `deadlineAtMs - serverNowMs`; subtract elapsed time locally and allow fo
 network latency. `muju_clock({roomId})` reads just clocks, revision, turn owner and
 result without downloading the board. Untimed rooms return `clock:null`.
 
-Do not wait on your own turn. Finish with `END_ACTION_PHASE` before the deadline;
-spending the last AP alone does not stop the clock. Limit speculative tool calls
-when time is short and prefer a legal atomic turn batch. Preview returns its real
-clock separately as `liveClock`; the returned board is hypothetical. Late play or
-preview calls return `isError:true`, `code:"TIME_EXPIRED"` and the actual terminal
-`room` (HTTP uses status 409). No requested actions run. Identical retries of a
-previously successful command still return the current room without applying twice.
+Do not wait on your own turn. Complete the whole turn before the deadline: actions,
+`END_ACTION_PHASE` (mining and upkeep), preparation, then `END_PLACE_PHASE`. Spending
+the last AP alone does not stop the clock, and `END_ACTION_PHASE` alone does not hand
+over. Limit speculative tool calls when time is short and prefer a legal atomic turn
+batch. Preview returns its real clock separately as `liveClock`; the returned board
+is hypothetical. Late play or preview calls return `isError:true`,
+`code:"TIME_EXPIRED"` and the actual terminal `room` (HTTP uses status 409). No
+requested actions run. Identical retries of a previously successful command still
+return the current room without applying twice.
 
 Ticks do not change revision or generate network updates. A timeout advances the
 revision once, wakes `muju_wait_for_change`, records a persistent result/position,
@@ -374,9 +398,10 @@ SQLite transactions settle expiry, then due stages, then incoming operations.
 The first legal whole batch in your order executes through normal engine,
 history, replay and undo handling. Invalid candidates have no partial effects;
 all-illegal consumes the stage with a private failure and leaves the clock running.
-The server never repairs moves or appends `END_ACTION_PHASE`. A partial batch can
-still flag. Live handoff or any result clears pending stages. Stale replacement or
-cancellation cannot undo executed moves.
+The server never repairs moves or appends a missing `END_ACTION_PHASE` or the
+turn-ending `END_PLACE_PHASE`. A partial batch can still flag. Live handoff or any
+result clears pending stages. Stale replacement or cancellation cannot undo
+executed moves.
 
 An indexed 250 ms sweep runs independently of MCP connections, also settling due
 work on restart and room operations. This is not a real-time guarantee. Expiry wins
@@ -469,7 +494,8 @@ Their connections contain no token, and the UI and dispatch layer prohibit moves
   victory, or against an old `expectedRevision`. Refresh and plan again after a
   `STALE_REVISION` error.
 - Batches of up to 32 actions are all-or-nothing and may not play the opponent's
-  turn. Placement can automatically advance to the action phase under existing rules.
+  turn. Preparation never advances by itself: a batch must include `END_PLACE_PHASE`
+  to hand over.
 - Retry the **identical body and requestId** after an uncertain response. A repeated
   command returns the current room without applying it twice. The last 256 command
   receipts per room survive restarts. Changed bodies must use new request IDs.
@@ -532,24 +558,25 @@ This host is intended for invited games, not an unrestricted high-volume
 matchmaking service. No paid infrastructure is provisioned
 by these files.
 
-Saved rooms have a rules version; bump `RULES_VERSION` (Standard) and
-`PHASING_RULES_VERSION` in `server/rooms.ts` when changing incompatible game rules.
+Saved rooms have a rules version. One constant survives:
+`PHASING_RULES_VERSION` in `server/rooms.ts`, currently `muju-phasing-2` — bump it
+when changing incompatible game rules. The Standard constant is retired: it is
+exported as `RETIRED_STANDARD_VERSION` so stored rows can still be recognised,
+and no room is ever created under it.
 Older rooms fail with an explicit error instead of silently continuing under
-different rules. Version 4 upgrades version-2/3 rooms in place to four actions and
-resets the new kill-only clock to zero. It subtracts actions already spent,
-preserves the board, seats and final results, and clears old undo/replay history.
-Reconnects receive an updated revision.
+different rules.
 
-The twenty-ply inactivity draw (rules revision `muju-phasing-2`, 2026-09-19)
-advances both rule sets: new Standard rooms are `muju-online-6` and new Phasing
-rooms `muju-phasing-2`. `muju-online-5` is reserved by the unmerged
-`codex/phasing-only-canonical` branch, which uses it for its single canonical rule
-set, so Standard skips it. Rooms stored as `muju-online-4` or `muju-phasing-1` are
-never replayed under the longer clock: their rows stay in the database untouched,
-the active-games lobby omits them, the archived list still shows their result, and
-any read or command returns `RULES_CHANGED` ("This room uses older rules. Create a
-new room."). Version-2/3 rooms keep their existing in-place upgrade, which restarts
-the quiet clock rather than carrying it across the change.
+New rooms are **`muju-phasing-2`** (the twenty-ply inactivity draw, 2026-09-19),
+and that is the only revision the server opens. `muju-online-2`, `muju-online-3`,
+`muju-online-4`, `muju-online-5`, `muju-online-6` and `muju-phasing-1` are retired
+identifiers on the `RULES_CHANGED` path. A stored room under any of them is never
+replayed under current rules and is never migrated in place: its row stays in the
+database untouched, the active-games lobby omits it, the archived list still shows
+its result and labels it retired, and any read or command returns `RULES_CHANGED`
+("This room uses older rules. Create a new room."). The in-place upgrade that
+version-2/3 rooms once received is gone with the Standard retirement — reinterpreting
+a stored room under a different rule set is exactly what this path exists to prevent.
+See `SPEC.md` §1 "Stored artefacts by rules revision" and `JUDGMENT_LOG.md` J-022.
 
 ## HTTP API and verification
 
@@ -596,14 +623,17 @@ seat authorization, atomic batches, origin validation, malformed requests and dr
 The browser Undo button and MCP `muju_play` with `actions: [{"type":"UNDO"}]`
 reverse the current player’s latest command. An atomic batch is one undo step.
 Undo covers purchases, promotions, upkeep choices, movement, attacks, and ending
-placement. It persists across reconnects, but stops at turn end or game completion.
-`canUndo` reports availability; revision and request-ID checks apply to undo too.
-When your turn starts with a positive automatic upkeep payment, that payment is
-your first undo step. Undo later actions first, then undo upkeep to refund the
-crystals and reopen the keep/release selector, before healing. The opponent's
-completed turn, income and turn handoff remain committed. Confirming the selector
-pays only the new keep-set and can itself be undone. Unaffordable upkeep still
-opens the selector immediately; zero-cost automatic upkeep adds no undo step.
+the action phase. It persists across reconnects, but stops at turn end or game
+completion. `canUndo` reports availability; revision and request-ID checks apply
+to undo too. There is no incoming upkeep, so a turn never opens with an upkeep
+undo step: this turn's mining and its automatic upkeep payment are one
+reversible `END_ACTION_PHASE` step, and undoing it returns you to Act with the
+crystals and the keep-set as they were. To choose a keep-set, undo back to Act,
+enable upkeep review in its own command (`SET_UPKEEP_REVIEW`, sent alone), then
+end the action phase and submit the payment with a keep-set containing every
+tier-1 unit. Unaffordable upkeep opens the selector immediately; zero-cost
+automatic upkeep adds no separate undo step. The opponent's completed turn,
+income and turn handoff remain committed, and `END_PLACE_PHASE` clears undo.
 
 Use `muju_wait_for_change({roomId, afterRevision, timeoutMs:25000})` as the
 supported move notification mechanism for either MCP transport. Set `afterRevision`
@@ -659,15 +689,16 @@ indicates that earlier positions were not recorded.
 Each recorded event has a compressed state snapshot in SQLite. The original
 state is available at sequence 0. Movement also retains its prior state, route
 and speed so intermediate AP positions have the correct location and remaining
-actions. A turn-end position precedes positive automatic upkeep, allowing that
-payment to be undone without losing the outgoing player's mining outcome.
+actions. A recorded position precedes that turn's `END_ACTION_PHASE` mining and
+upkeep, so that one step can be undone and replayed without losing the outgoing
+player's mining outcome.
 Historical positions are fetched on demand; normal room updates stay compact.
 The public positions endpoint rejects undone events and out-of-range steps.
 
 ### Instant replay
 
 During your turn, **Instant replay** plays the previous
-turn's placements, promotions, moves and attacks on the existing battlefield. Each
+turn's purchases, promotions, moves and attacks on the existing battlefield. Each
 action spent moving gets its own frame, following a legal route in hops up to the
 unit's speed. The selector on the replay button remembers **Fast** (0.3 seconds),
 **Slow** (1 second, the default), or **Step through** (manual back/forward controls,

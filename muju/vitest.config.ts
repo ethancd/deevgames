@@ -69,14 +69,19 @@ const PHASING_QUARANTINE = [
   // OWNER: M6/M7 (eval).
   'tests/lab/eval-audit.test.ts',               // 7/10 fail
   // recall over eval weights. The five label/identity tests PASS on this tree;
-  // the two that remain are blocked on something no port can supply: the M6
-  // accounting bootstrap sets only five weights, so `eval-no-safety` zeroes 21
-  // weights that are already zero and is a byte-identical player to `base`.
-  // These two tests measure that an arm MOVES a recall column, and it no longer
-  // can. `tests/lab/ablate.test.ts` records the same fact as `A_A_WEIGHT_ARMS`.
-  // OWNER: whichever milestone lands a TUNED Phasing weight vector; until then
-  // no E3 weights row is strength evidence.
-  'tests/lab/recall.test.ts',                   // 2/7 fail (was 5/7 before the label migration)
+  // the two that remain measure a real recall column and both now read zero.
+  // `lab/hard-ai/recall/fixtures.jsonl`'s single position carries no `ruleset`,
+  // i.e. the retired Standard rules, and the Phasing-only replica refuses to
+  // pack it (`src/ai/hard/core/state.ts`: `pack: ruleset "standard" is not
+  // "phasing"`), which `recall/run.ts prepare()` turns into a skipped position.
+  // Measured 2026-09-21 with MUJU_RUN_QUARANTINE=1: `base.positions === 0` and
+  // `arm.positions === 0`, so the two cases compare two empty measurements
+  // rather than two engines.
+  // OWNER: whoever re-captures the recall corpus as Phasing positions. The note
+  // that stood here blamed `A_A_WEIGHT_ARMS` — a list `tests/lab/ablate.test.ts`
+  // emptied on 2026-09-20 when `phasing-hand-priors-v1` landed, and which no
+  // longer exists anywhere in the tree.
+  'tests/lab/recall.test.ts',                   // 2/7 fail (Standard-only corpus)
 ]
 
 export default defineConfig({

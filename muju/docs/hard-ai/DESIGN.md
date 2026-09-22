@@ -1,5 +1,7 @@
 # Muju Hard AI — BINDING DESIGN (v1, 2026-09-14)
 
+**Note, 2026-09-21, amended 2026-09-22:** the `hard:spsa` and `hard:book` npm scripts named below (`:229-230`, `:260-261`, `:1507`) are **dead entries**: they are present in `package.json` but their targets (`lab/hard-ai/tune/spsa.ts`, `lab/hard-ai/book/build.ts`) have never existed, so running either fails with module-not-found. They were deleted on 2026-09-21 and **restored on 2026-09-22 and retained as dead entries**, because the committed v2 release-suite manifest (`lab/hard-ai/suites/phasing/fixtures/v2/manifest.json`) pins `muju/package.json`'s bytes in its artifact map and their removal made the Gate-0 suite unloadable; deleting them again belongs to the next bundle re-authoring. The design text is left as written — implementing SPSA or the book means writing the target, at which point the script line becomes live. See `RELEASE-2026-09-21-phasing.md`.
+
 Worktree `/Users/ashkie/src/deevgames-muju-hardai` (branch `claude/muju-hard-ai`, v2.8 snapshot). All
 paths are relative to `muju/` unless absolute. This document is the contract a fleet of parallel coding
 agents implements against. Every exported interface below is normative: a change requires a dated

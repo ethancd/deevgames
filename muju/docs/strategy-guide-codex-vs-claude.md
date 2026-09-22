@@ -3,6 +3,13 @@ Muju rewards good exchanges, but our game showed how easily a player can win exc
 > Historical analysis: predates v2.9 (2026-09-18). Metal is now Yan/Mazask/Tanka with ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot relocate until promoted; old Metal movement and matchup advice is not current evidence.
 >
 > Also predates v3.0 (2026-09-19, rules revision `muju-phasing-2`): the quiet-turn draw clock is now **twenty** plies, not ten, and the warning turns amber at 17. What resets it is unchanged. Clock-pressure advice below was written for the ten-ply clock and is recorded as it stood; it is not current advice.
+>
+> Also predates the 2026-09-21 retirement of Standard (`SPEC.md` v3.1). Every line
+> below assumes the Standard turn — a Place phase before actions, purchases that
+> appear and act the same turn, upkeep paid at turn start. Under the current rules a
+> purchase is a public summon that arrives a full turn later, mining and upkeep settle
+> at `END_ACTION_PHASE`, and promotions happen after that. Tempo advice in particular
+> does not carry over. Recorded as it stood; it is not current advice.
 
 That was a judgment about the position, not a demonstrated forced win. One game also cannot establish an optimal strategy. But it offered useful lessons about expansion, upkeep, movement, and the limits of tactical success.
 

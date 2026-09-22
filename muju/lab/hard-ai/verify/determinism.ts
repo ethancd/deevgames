@@ -50,7 +50,7 @@ import { setCombatHandicap } from '../../../src/game/combat';
 import { setElementGraph } from '../../../src/game/elements';
 import { setUpkeepVariant } from '../../../src/game/upkeep';
 import { HardEngine } from '../../../src/ai/hard/engine';
-import { hardConfigFor } from '../bots/hard';
+import { hardEnginePatch } from '../bots/hard';
 
 const REPO_ROOT = path.resolve(import.meta.dirname, '../../..');
 const OPENINGS_PATH = path.resolve(import.meta.dirname, '../positions/openings.jsonl');
@@ -146,7 +146,16 @@ async function runBatch(engine: string, decisions: readonly Decision[]): Promise
   if (!aiv2 && !isHardEngine(engine)) {
     throw new Error(`hard:determinism: "${engine}" has no deterministic decision path (aiv2-* and hard@* only)`);
   }
-  const patch = isHardEngine(engine) ? hardConfigFor(engine.slice('hard@'.length)) : null;
+  // 2026-09-22: `hardEnginePatch`, not `hardConfigFor`. A profile object's
+  // `weights` field is always PRESENT and carries M4's `placeholder-m4` vector
+  // (`version: 0`), while `HardEngine`'s `DEFAULT_WEIGHTS` substitution is
+  // guarded on `cfg.weights === undefined` — so `hardConfigFor` built an engine
+  // whose evaluator threw `Phasing weight schema/version mismatch` from
+  // `assertCurrentWeights`, and this tool could not run ANY `hard@*` engine.
+  // Every other lab call site already resolves the vector through the adapter
+  // (`bots/hard.ts:315-325`, `suites/run.ts:91-107`, `ladder/identity.ts:329`);
+  // this was the one that was missed.
+  const patch = isHardEngine(engine) ? hardEnginePatch(engine.slice('hard@'.length)) : null;
   const out: DecisionSummary[] = [];
   for (const d of decisions) {
     if (patch !== null) {

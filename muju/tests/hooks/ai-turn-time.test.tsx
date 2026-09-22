@@ -113,7 +113,11 @@ it('lets ?hardMs outrank the hard seat’s pace, and leaves the other seats alon
 });
 
 it('keeps the pace with the saved game, defaulting anything missing or invalid', () => {
-  const state = createInitialGameState();
+  // A PHASING state, explicitly: since the Standard retirement `loadGameState`
+  // moves a non-Phasing payload to the retired key and answers null, so a save
+  // built from `board.ts`'s historical default would be archived here and this
+  // test would be asserting the archive path instead of the pace it is about.
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   saveGameState(state, undefined, { white: 'deep', black: 'normal' });
   expect(loadAIPace()).toEqual({ white: 'deep', black: 'normal' });
   expect(loadGameState()).toEqual(state);

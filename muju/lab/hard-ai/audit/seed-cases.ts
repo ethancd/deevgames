@@ -53,7 +53,8 @@ function body(defId: string, owner: PlayerId, x: number, y: number): Unit {
 }
 
 function position(units: Unit[], whiteCrystals: number, opts: { upkeepPending?: boolean } = {}): GameState {
-  const s = createInitialGameState();
+  // Phasing is the only ruleset since 2026-09-21.
+  const s = createInitialGameState(undefined, 4, 0, 'phasing');
   return {
     ...s,
     board: { ...s.board, units },

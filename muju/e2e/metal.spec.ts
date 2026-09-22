@@ -4,7 +4,7 @@ import { SCHEMA_VERSION } from '../src/utils/persistence';
 
 for (const width of [1280,390]) test(`Yan's stationary moves, stats and adjacent attack at ${width}px`, async ({page},info) => {
   await page.setViewportSize({width,height:844});
-  const state=createInitialGameState();
+  const state=createInitialGameState(undefined,undefined,0,'phasing');
   state.board.units=[createUnit('metal_1','white',{x:2,y:2}),createUnit('water_1','black',{x:2,y:3}),createUnit('plant_1','black',{x:8,y:8})];
   state.turn.phase='action';
   await page.addInitScript(({state,schemaVersion})=>{

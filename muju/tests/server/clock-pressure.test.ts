@@ -31,7 +31,8 @@ function setup(path?: string) {
   const endTurn = (elapsed: number) => {
     const room = store.get(id);
     vi.setSystemTime(room.clock!.turnStartedAtMs! + elapsed);
-    return play([...(room.state.turn.phase === 'place' ? [{ type: 'END_PLACE_PHASE' } as const] : []), { type: 'END_ACTION_PHASE' }]);
+    // Mine and pay upkeep, then hand over; a turn interrupted mid-upkeep resumes at Prepare.
+    return play([...(room.state.turn.phase === 'action' ? [{ type: 'END_ACTION_PHASE' } as const] : []), { type: 'END_PLACE_PHASE' }]);
   };
   return { store, id, tokens, play, endTurn };
 }
@@ -70,7 +71,7 @@ describe('measured clock pressure', () => {
     expect(store.get(id).clockPressure?.players.white.completedTurns).toBe(0);
     const ended = endTurn(5000);
     expect(ended.clockPressure?.players.white).toMatchObject({ completedTurns: 1, totalElapsedMs: 5000, totalBankSpentMs: 3000 });
-    const retry = store.act(id, tokens.white, { expectedRevision: 3, requestId: 'command-3', actions: [{ type: 'END_ACTION_PHASE' }] });
+    const retry = store.act(id, tokens.white, { expectedRevision: 3, requestId: 'command-3', actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] });
     expect(retry.clockPressure).toEqual(ended.clockPressure);
   });
 
@@ -127,10 +128,10 @@ describe('measured clock pressure', () => {
       players: { white: { completedTurns: 0 }, black: { completedTurns: 0 } } });
     // The already-running Black turn is skipped. The next complete White turn is measured.
     vi.setSystemTime(epoch + 7000);
-    restored.act(id, tokens.black, { expectedRevision: 2, requestId: 'old-black-turn-end', actions: [{ type: 'END_ACTION_PHASE' }] });
+    restored.act(id, tokens.black, { expectedRevision: 2, requestId: 'old-black-turn-end', actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] });
     vi.setSystemTime(epoch + 11000);
     const next = restored.act(id, tokens.white, { expectedRevision: 3, requestId: 'new-white-turn-end',
-      actions: [{ type: 'END_PLACE_PHASE' }, { type: 'END_ACTION_PHASE' }] });
+      actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] });
     expect(next.clockPressure?.players.white).toMatchObject({ completedTurns: 1, totalElapsedMs: 4000, totalBankSpentMs: 2000 });
     expect(next.clockPressure?.players.black.completedTurns).toBe(0);
     const untimed = restored.create({ name: 'Untimed' });

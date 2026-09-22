@@ -9,6 +9,7 @@ import { SearchBudget } from '../../src/ai/runtime';
 import { phasingTacticalFixtures } from './fixtures';
 import { applyAction } from '../../src/ai/simulate';
 import { isLegalAction } from '../../src/game/legality';
+import { listSourceFiles } from './source-files';
 import { playGame } from '../harness/runner';
 import { createBot } from '../harness/bots';
 import type { EngineBot, GameRecord } from '../harness/types';
@@ -19,7 +20,7 @@ if(existsSync(out))throw new Error(`Refusing to overwrite results: ${out}`);mkdi
 const sha=(b:Buffer)=>createHash('sha256').update(b).digest('hex');
 const bytes=readFileSync('src/ai/wasm/tactics.wasm'), started=performance.now(), solver=await instantiateTactics(bytes);
 const coldInstantiateMs=performance.now()-started;
-const sourceFiles=execFileSync('rg',['--files','src','assembly'],{encoding:'utf8'}).trim().split('\n').sort();
+const sourceFiles=listSourceFiles(['src','assembly'],null);
 const sourceHash=createHash('sha256');for(const file of sourceFiles) {sourceHash.update(file);sourceHash.update(readFileSync(file));}
 const metadata={schema:'muju-ai-validation-v1',mode,base:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
   sourceSha256:sourceHash.digest('hex'),sourceDiffSha256:sha(Buffer.from(execFileSync('git',['diff'],{encoding:'utf8'}))),catalogueSha256:sha(readFileSync('src/game/units.ts')),

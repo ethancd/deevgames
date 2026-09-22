@@ -18,10 +18,21 @@ import {
 } from '../../lab/hard-ai/audit/families';
 import { enumeratePlacePhase } from '../../lab/hard-ai/audit/place-enum';
 
-/** The canonical initial state starts in the ACTION phase (turn 1 has no place
- * phase), so every fixture here opens its own place phase explicitly. */
+/**
+ * The canonical initial state starts in the ACTION phase (turn 1 has no place
+ * phase), so every fixture here opens its own place phase explicitly.
+ *
+ * EXPLICITLY THE RETIRED RULES. `lab/hard-ai/audit/{families,place-enum}.ts`
+ * model the Standard place phase — a purchase puts a body on the board that may
+ * strike at once, and `finishPlacement` auto-advances a spent bank. Under
+ * Phasing a purchase is a pending summon that arrives next turn and
+ * END_PLACE_PHASE hands over, so this taxonomy cannot be repointed without
+ * rewriting those two lab modules (measured 2026-09-21: three cases fail on the
+ * flag alone). Naming the ruleset here keeps that visible instead of resting on
+ * `board.ts`'s historical default.
+ */
 function baseState(): GameState {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'standard');
   return {
     ...state,
     board: { ...state.board, units: [] },

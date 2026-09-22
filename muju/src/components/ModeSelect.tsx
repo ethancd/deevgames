@@ -1,6 +1,3 @@
-import { RulesetSelect } from './RulesetSelect';
-import type { Ruleset } from '../game/types';
-import { rulesetLabel } from '../game/rules';
 import { useState } from 'react';
 import { BlackCrystalHandicap } from './BlackCrystalHandicap';
 import { MusicButton } from '../music/MusicPlayer';
@@ -9,8 +6,7 @@ import type { AIDifficulty } from '../ai/types';
 import { AI_PACES, AI_PACE_LABEL, AI_TURN_SECONDS, formatTurnSeconds, type AIPace } from '../ai/turnTime';
 import { getActionsPerTurn } from '../game/rules';
 import { INACTIVITY_LIMIT } from '../game/inactivity';
-import { loadAIPace, loadGameState } from '../utils/persistence';
-import { readPhasingAiPreview } from '../ai/phasingPreview';
+import { loadAIPace, loadGameState, loadRetiredSave } from '../utils/persistence';
 
 const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
 
@@ -42,20 +38,13 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   const [playerPace, setPlayerPace] = useState<AIPace>(savedPace.white);
   const [aiPace, setAiPace] = useState<AIPace>(savedPace[playerSide === 'white' ? 'black' : 'white']);
   const [savedGame] = useState(loadGameState);
+  // Read AFTER `loadGameState`, which is what moves a retired-rules save into
+  // the archive. A game played under the rules retired on 2026-09-21 is never
+  // resumed, but it is still the player's game: offer it for review.
+  const [retiredSave] = useState(loadRetiredSave);
   const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
-  const [ruleset, setRuleset] = useState<Ruleset>('standard');
-  /**
-   * THE PHASING AI PREVIEW, read once when the mode screen mounts. Without it
-   * this screen behaves exactly as it always has: the ruleset control appears
-   * for Pass & Play only, the AI modes say "AI plays Standard rules", and
-   * `handleStart` refuses to start a Phasing game in any other mode. With it,
-   * the AI modes get the same control, badged as an unreleased preview.
-   * See `src/ai/phasingPreview.ts`.
-   */
-  const [previewOptIn] = useState(readPhasingAiPreview);
-  /** Which modes may choose a ruleset at all. */
+  /** Which modes put an engine in a seat, for the difficulty/pace copy. */
   const aiMode = selectedMode === 'vs-ai' || selectedMode === 'ai-vs-ai';
-  const canChooseRuleset = selectedMode === 'pass-play' || (previewOptIn && aiMode);
 
   const handleSideChange = (side: PlayerId) => {
     setPlayerSide(side);
@@ -106,12 +95,11 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         break;
     }
 
-    const chosenRules = newGame ? (canChooseRuleset ? ruleset : 'standard') : savedGame?.ruleset ?? 'standard';
-    // THE GUARD, unchanged without the opt-in: a Phasing game may only start in
-    // Pass & Play, because the AI seats of the other modes have no release gate
-    // under those rules. The preview opt-in is the only thing that widens it.
-    if (chosenRules === 'phasing' && selectedMode !== 'pass-play' && !previewOptIn) return;
-    onStartGame({ ...config, ruleset: chosenRules, blackCrystalHandicap, newGame });
+    // ONE RULESET. Phasing has been the only offered rules since 2026-09-21, in
+    // every mode and for both a new game and a resumed one: a save that is not
+    // Phasing is archived by `loadGameState` and never handed back here
+    // (`src/utils/persistence.ts`), so there is nothing else this can be.
+    onStartGame({ ...config, ruleset: 'phasing', blackCrystalHandicap, newGame });
   };
 
   return (
@@ -277,10 +265,8 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
           </div>
         )}
 
-        {canChooseRuleset && <RulesetSelect value={ruleset} onChange={setRuleset} aiPreview={previewOptIn && aiMode} />}
         {aiMode && <p className="text-sm text-gray-400">Difficulty is how well the AI understands the game; thinking time is how long it looks before moving. It plays as soon as it is ready.</p>}
-        {aiMode && !previewOptIn && <p className="text-sm text-gray-400">AI plays Standard rules. Try Phasing in Pass &amp; Play or online.</p>}
-        {selectedMode && <BlackCrystalHandicap phasing={canChooseRuleset && ruleset === 'phasing'} value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
+        {selectedMode && <BlackCrystalHandicap value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />}
 
         {/* Start button */}
         {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · Draw after {INACTIVITY_LIMIT} consecutive turns without a kill.</p>}
@@ -295,10 +281,14 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
         >
           Start Game
         </button>
-        {savedGame && <button disabled={!selectedMode || (savedGame.ruleset === 'phasing' && selectedMode !== 'pass-play' && !previewOptIn)} onClick={() => handleStart(false)}
+        {savedGame && <button disabled={!selectedMode} onClick={() => handleStart(false)}
           className="w-full p-3 rounded-lg border border-gray-600 disabled:text-gray-500">
-          Continue saved game · {rulesetLabel(savedGame)} · {getActionsPerTurn(savedGame)} actions
+          Continue saved game · {getActionsPerTurn(savedGame)} actions
         </button>}
+        {retiredSave && <a href="/muju/analysis?local=1&retired=1"
+          className="block w-full p-3 rounded-lg border border-gray-700 text-center text-sm text-gray-400">
+          Review your saved Standard game →
+        </a>}
       </div>
     </div>
   );

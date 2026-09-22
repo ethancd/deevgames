@@ -103,17 +103,31 @@ function exposure(p: PackedState, t: NodeTables, victim: Side, out: PendingDiagn
   }
 }
 
+/**
+ * The share of an AT-RISK commitment's service PV this node credits, in
+ * sixteenths. 0 — no credit, the champion's rule — unless an arm set
+ * `EvalFix.strength.pendingAtRiskShare16`; at 0 the expression below reduces to
+ * the `? 0 :` it replaced, integer for integer.
+ */
+function atRiskShare16(t: NodeTables): number {
+  const knob = t.evalFix === null ? undefined : t.evalFix.strength?.pendingAtRiskShare16;
+  return knob === undefined ? 0 : knob;
+}
+
 /** Caller supplies completed chronological economy tables. Output is reusable;
  * the module scratch is synchronous/non-reentrant like the kill/BFS modules. */
 export function pendingDiagnostics(p: PackedState, t: NodeTables, sc: Scratch, ply: number, out: PendingDiagnostics): PendingDiagnostics {
   out.valueCc.fill(0); out.risk.fill(0); out.arrivalThreatCc.fill(0); out.arrivalDependentVictims.fill(0); out.disruptPressureCc.fill(0);
+  const share16 = atRiskShare16(t);
   for (let side = 0; side < 2; side++) {
     const owner = side as Side;
     if (p.pendCount[owner] === 0) continue;
     exposure(p, t, owner, out);
     for (let q = 0; q < BOARD; q++) {
       const index = owner * PEND_STRIDE + q;
-      if (p.pendDef[index] !== 0) out.valueCc[owner] += CC * p.pendCost[index] + (out.risk[index] ? 0 : t.econ[owner].pendingServicePVcc[q]);
+      if (p.pendDef[index] === 0) continue;
+      const pv = t.econ[owner].pendingServicePVcc[q];
+      out.valueCc[owner] += CC * p.pendCost[index] + (out.risk[index] ? (pv * share16) >> 4 : pv);
     }
     const arrived = t.econ[owner].pendingOwnAct;
     if (arrived === null) continue; // Terminal precedence is authoritative.

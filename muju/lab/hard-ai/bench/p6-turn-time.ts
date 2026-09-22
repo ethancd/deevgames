@@ -57,7 +57,8 @@ import { Replica, allocState } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { newKeepSetTable, type KeepSetTable } from '../../../src/ai/hard/core/action';
 import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/tables/context';
-import { Evaluator, terminalScore } from '../../../src/ai/hard/eval/evaluate';
+import { Evaluator } from '../../../src/ai/hard/eval/evaluate';
+import { withinTurnScore } from '../../../src/ai/hard/eval/turnScore';
 import { TurnPool, type Turn } from '../../../src/ai/hard/gen/turn';
 import { TurnGenerator, newGenStats, outCapacityFor, type GenStats } from '../../../src/ai/hard/gen/generate';
 import { WORK_LADDER, WorkClass, WorkMeter, chooseWork, now, targetMs } from '../../../src/ai/hard/search/time';
@@ -151,13 +152,10 @@ class RootPhases {
   constructor(readonly cfg: HardConfig) {
     this.gen = new TurnGenerator(this.rep, cfg.gen, this.pool, this.sc);
     this.out = new Array<Turn>(outCapacityFor(cfg.gen));
-    // DESIGN §5.4's within-turn score, exactly as `engine.ts` and
-    // `recall/run.ts` build it: stage-0 + stage-1 from the mover's side.
-    this.score = (p, sc, ply) => {
-      const terminal = terminalScore(p, this.mover, ply);
-      if (terminal !== null) return terminal;
-      return this.evaluator.stage0(p, this.mover) + this.evaluator.stage1(p, this.mover, sc, ply);
-    };
+    // DESIGN §5.4's within-turn score, from the one helper `engine.ts` uses
+    // (`eval/turnScore.ts`): terminal, else stage-0 + stage-1 from the mover's
+    // side plus the pending-summon credit.
+    this.score = (p, sc, ply) => withinTurnScore(this.evaluator, p, this.mover, sc, ply);
   }
 
   measure(state: GameState, wallMs: number, rungOverride: number | null): Record<string, number | string> {

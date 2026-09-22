@@ -8,7 +8,7 @@ import { isLegalAction } from '../../src/game/legality';
 import { getUnitDefinition } from '../../src/game/units';
 
 function adjacentCapture(player: PlayerId) {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   const opponent = player === 'white' ? 'black' : 'white';
   const attacker = createUnit('fire_1', player, { x: 4, y: 4 });
   const target = createUnit('fire_1', opponent, { x: 4, y: 3 });

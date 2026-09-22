@@ -39,13 +39,14 @@ import { hardConfigFor, hardEnginePatch } from '../../lab/hard-ai/bots/hard';
 import { recallEnginePatch } from '../../lab/hard-ai/recall/run';
 import { DESKTOP } from '../../src/ai/hard/config';
 import { HardEngine } from '../../src/ai/hard/engine';
-import { DEFAULT_WEIGHTS, WEIGHTS_VERSION } from '../../src/ai/hard/eval/weights';
+import { DEFAULT_WEIGHTS, WEIGHTS_VERSION, weightsHash } from '../../src/ai/hard/eval/weights';
 import { F, FEATURE_COUNT } from '../../src/ai/hard/eval/features';
 import { EVAL_GROUPS, INVARIANT_FEATURES, STAGE2_FEATURES } from '../../lab/hard-ai/audit/eval-groups';
 import { WORK_LADDER, WORK_LADDER_FINE, chooseWork } from '../../src/ai/hard/search/time';
 import { DEFAULT_MATCH_OPTIONS, type MatchOptions } from '../../lab/harness/types';
 import type { GameState } from '../../src/game/types';
 import type { ReleaseSlot } from '../../lab/hard-ai/ladder/heavy';
+import { BOOTSTRAP_M6_NONZERO, HAND_PRIORS_NONZERO, sparseWeights } from '../ai/hard/fixtures/hand-priors-nonzero';
 
 /**
  * E1.3 "Controlled ablations" (EPIC-PLAN §4 E1.3, §5 campaign 3). Three things
@@ -195,7 +196,16 @@ function weightArmLabel(name: (typeof ALL_WEIGHT_ARMS)[number]): string {
  * value below byte for byte, which is how this move was attributed to A4 rather
  * than to any concurrent edit under `src/ai/hard/**`.
  */
-const DESKTOP_WALL3000_HASH = '4464b19120dcda961f119f47e79c8d16640313365bac50975ddd75693ca69318';
+const DESKTOP_WALL3000_HASH = '2c485153f22afad810639da52dc59a3e7e13c1187cc2cce9cb0bf9611e90abdd';
+/**
+ * The same arm under the M6 accounting bootstrap: identical configuration, the
+ * five-nonzero `DEFAULT_WEIGHTS` that 2026-09-20's `phasing-hand-priors-v1`
+ * replaced (`docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md`). Every E1/E4
+ * manifest recorded between `e701ccc0` and `71b41a39` quotes it, so it is kept
+ * here to stay findable; substituting the bootstrap vector on today's resolved
+ * configuration reproduces it byte for byte.
+ */
+const DESKTOP_WALL3000_HASH_BOOTSTRAP_M6 = '4464b19120dcda961f119f47e79c8d16640313365bac50975ddd75693ca69318';
 /** The same arm under `muju-phasing-1` (the 10-ply clock), M6 weights and all;
  * every Phasing row recorded before 2026-09-19 quotes it. */
 const DESKTOP_WALL3000_HASH_PHASING_1 = '7bc3711a6c5468a9cc972eb38801c045e816a356428f284d0e60b8e7313eeb0e';
@@ -496,7 +506,10 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     // `muju-phasing-1` value: 17b02fe2e6bc19b091eabece38aba660a8cac368b3ba544128005336c14acb20
     // — superseded by A4's 20-ply draw clock (DESKTOP_WALL3000_HASH's third
     // move); forcing the revision back on today's configuration reproduces it.
-    expect(arm.configHash).toBe('a18b84f8f89e57281c49139959fd9563865bee5461a0c10211e44897259b8b11');
+    // M6-bootstrap value: a18b84f8f89e57281c49139959fd9563865bee5461a0c10211e44897259b8b11
+    // — superseded by the 2026-09-20 hand priors (DESKTOP_WALL3000_HASH's
+    // fourth move), which every hard@* configuration carries.
+    expect(arm.configHash).toBe('6c8f9bb176bf1f365d6a4e6ca2e285c8117e3d5d7b73b6bb963d974cd562754e');
     expect(hardConfigFor('ablate:search-iter-fit').searchFix?.iterFit).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -529,7 +542,9 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     // — superseded by M6's DEFAULT_WEIGHTS, as above.
     // `muju-phasing-1` value: 9f6014597d880b049418c4ceafd29306b6d54c824abe630d109836a8dafc7f12
     // — superseded by A4's 20-ply draw clock, as above.
-    expect(arm.configHash).toBe('1aef0a8b094f9bf5dd1c8fc8ba9efe5aaa7975078cfa5127152727f45f79c99e');
+    // M6-bootstrap value: 1aef0a8b094f9bf5dd1c8fc8ba9efe5aaa7975078cfa5127152727f45f79c99e
+    // — superseded by the 2026-09-20 hand priors, as above.
+    expect(arm.configHash).toBe('6e3d2936d0564c13b331fe5435da15452e4ae4572636cdb898bfd045bd52973c');
     expect(hardConfigFor('ablate:search-reach-cache').searchFix?.reachCache).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -596,10 +611,12 @@ describe('E4.2 search arms (factor `searchFix`)', () => {
     expect(requireArm('base').configHash).toBe(DESKTOP_WALL3000_HASH);
     // The Standard identity of the same arm is a DIFFERENT hash, and this tree
     // can no longer produce it (`ladder/identity.ts`, clause 3). Neither is the
-    // M4-era Phasing identity, which this tree cannot mint either now that the
-    // champion evaluates with the M6 accounting bootstrap — nor the
-    // `muju-phasing-1` identity it carried until A4 moved the draw clock.
-    for (const superseded of [DESKTOP_WALL3000_HASH_STANDARD, DESKTOP_WALL3000_HASH_PHASING_M4, DESKTOP_WALL3000_HASH_PHASING_1]) {
+    // M4-era Phasing identity, nor the `muju-phasing-1` identity it carried
+    // until A4 moved the draw clock, nor the M6-bootstrap identity it carried
+    // until the 2026-09-20 hand priors replaced `DEFAULT_WEIGHTS`. All four are
+    // kept so a reader of an older manifest can find the hash it quotes.
+    for (const superseded of [DESKTOP_WALL3000_HASH_STANDARD, DESKTOP_WALL3000_HASH_PHASING_M4,
+      DESKTOP_WALL3000_HASH_PHASING_1, DESKTOP_WALL3000_HASH_BOOTSTRAP_M6]) {
       expect(DESKTOP_WALL3000_HASH).not.toBe(superseded);
       expect(requireArm('base').configHash).not.toBe(superseded);
     }
@@ -700,38 +717,47 @@ describe('E3.1 weight-group arms (factor `weights`)', () => {
    *    (`PendingValue`, `RentShortfall`), safety 19 -> 21 (`ArrivalThreat`,
    *    `DisruptPressure`), `FEATURE_COUNT` 58 -> 62, so `STAGE2_FEATURES` went
    *    35 -> 39. The `home` (11) and `space` (14) groups are unchanged.
-   *  - `DEFAULT_WEIGHTS` is no longer a tuned vector. M6 replaced the Standard
-   *    champion with the hand-derived accounting bootstrap
-   *    (`docs/hard-ai/phasing/M6-BOOTSTRAP-CONTRACT.md`), which sets exactly
-   *    FIVE entries: Material(0), BankLiquid(2), BankExcess(3), EconDelta(23)
-   *    and PendingValue(58). Everything else is a deliberate zero.
+   *  - `DEFAULT_WEIGHTS` moved twice. M6 replaced the Standard champion with the
+   *    hand-derived accounting bootstrap
+   *    (`docs/hard-ai/phasing/M6-BOOTSTRAP-CONTRACT.md`), which set exactly FIVE
+   *    entries: Material(0), BankLiquid(2), BankExcess(3), EconDelta(23) and
+   *    PendingValue(58); everything else was a deliberate zero. On 2026-09-20
+   *    the repair replaced THAT with `phasing-hand-priors-v1`, which prices 43
+   *    of 62 — the accounting core, a 25 cc bank discount, and the Standard-era
+   *    `default-v1` values for every feature whose meaning survives Phasing
+   *    (`docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md`).
    *
-   * THE CONSEQUENCE IS STATED RATHER THAN HIDDEN, in `A_A_WEIGHT_ARMS` below:
-   * against this vector most weight arms zero weights that are already zero and
-   * are therefore byte-identical players to `base` — exactly the "silent A/A
-   * row" `arms.ts` refuses to register an `eval-no-material` arm to avoid (E0's
-   * I2 lesson). They are kept registered because they are the E3 instrument and
-   * become meaningful again the moment a TUNED Phasing vector replaces the
-   * bootstrap; until then no E3 weight row may be read as strength evidence.
+   * THE E3 INSTRUMENT IS LIVE AGAIN. Under the bootstrap most weight arms zeroed
+   * weights that were already zero and were therefore byte-identical players to
+   * `base` — the "silent A/A row" `arms.ts` refuses to register an
+   * `eval-no-material` arm to avoid (E0's I2 lesson). The list below recorded
+   * which, and said it was expected to shrink to nothing when a priced Phasing
+   * vector landed. It has: every one of the nine arms now removes live weight.
+   * The counts are still not the group sizes — five invariants and several
+   * economy terms are deliberately 0 — so they stay derived and pinned.
    */
   it('counts the LIVE weights each arm removes, overlaps included', () => {
     const live = (name: (typeof ALL_WEIGHT_ARMS)[number]): number =>
       WEIGHT_ARM_GROUPS[name].filter(i => DEFAULT_WEIGHTS.w[i] !== 0).length;
     // Standard-era sizes/live counts, for a reader of an E3 report:
     // economy 13/13, home 11/11, safety 19/19, space 14/10, invariants 20/18,
-    // stage2 35/33.
+    // stage2 35/33. M6-bootstrap live counts: economy 4, stage01 2, everything
+    // else 0.
     expect(WEIGHT_ARM_GROUPS['eval-no-economy'].length).toBe(15);
-    expect(live('eval-no-economy')).toBe(4);
+    expect(live('eval-no-economy')).toBe(6);
     expect(WEIGHT_ARM_GROUPS['eval-no-home'].length).toBe(11);
-    expect(live('eval-no-home')).toBe(0);
+    expect(live('eval-no-home')).toBe(10);
     expect(WEIGHT_ARM_GROUPS['eval-no-safety'].length).toBe(21);
-    expect(live('eval-no-safety')).toBe(0);
+    expect(live('eval-no-safety')).toBe(17);
     expect(WEIGHT_ARM_GROUPS['eval-no-space'].length).toBe(14);
-    expect(live('eval-no-space')).toBe(0);
+    expect(live('eval-no-space')).toBe(9);
     expect(WEIGHT_ARM_GROUPS['eval-no-invariants'].length).toBe(20);
-    expect(live('eval-no-invariants')).toBe(0);
+    expect(live('eval-no-invariants')).toBe(15);
     expect(WEIGHT_ARM_GROUPS['eval-stage01'].length).toBe(35 + (FEATURE_COUNT - 58));
-    expect(live('eval-stage01')).toBe(2);
+    expect(live('eval-stage01')).toBe(26);
+    expect(live('eval-no-threat-stack')).toBe(7);
+    expect(live('eval-no-anchor')).toBe(3);
+    expect(live('eval-no-safety-inv')).toBe(7);
     // The two cross-cutting arms are nested, and both cut across the groups.
     const inv = new Set(INVARIANT_FEATURES);
     expect([...inv].every(i => STAGE2_FEATURES.includes(i))).toBe(true);
@@ -748,34 +774,28 @@ describe('E3.1 weight-group arms (factor `weights`)', () => {
    * that state is the difference between a known limitation of the M6 bootstrap
    * and a silently vacuous experiment.
    *
-   * This list is expected to SHRINK to nothing when a tuned Phasing vector
-   * lands; an arm leaving it is a pass, an arm joining it is a regression worth
-   * failing over.
+   * The list was expected to SHRINK to nothing when a priced Phasing vector
+   * landed; an arm leaving it is a pass, an arm joining it is a regression worth
+   * failing over. `phasing-hand-priors-v1` emptied it on 2026-09-20 — under the
+   * M6 bootstrap it held seven arms (anchor, home, invariants, safety,
+   * safety-inv, space, threat-stack) and only `eval-no-economy` and
+   * `eval-stage01` bit. That is the designed success signal, so the test now
+   * asserts emptiness, and the identity loop below is kept for the day an arm
+   * rejoins.
    */
-  it('names the weight arms that are A/A against the M6 bootstrap, rather than hiding them', () => {
+  it('names the weight arms that are A/A against the default vector, rather than hiding them', () => {
     const live = (name: (typeof ALL_WEIGHT_ARMS)[number]): number =>
       WEIGHT_ARM_GROUPS[name].filter(i => DEFAULT_WEIGHTS.w[i] !== 0).length;
     const vacuous = ALL_WEIGHT_ARMS.filter(n => live(n) === 0);
-    expect([...vacuous].sort()).toEqual(
-      [
-        'eval-no-anchor',
-        'eval-no-home',
-        'eval-no-invariants',
-        'eval-no-safety',
-        'eval-no-safety-inv',
-        'eval-no-space',
-        'eval-no-threat-stack',
-      ].sort(),
-    );
-    // Every one of them still differs from `base` by IDENTITY, so a row can
-    // never be mistaken for a champion row even while it plays like one.
+    expect(vacuous).toEqual([]);
+    // Were one to rejoin, it would still differ from `base` by IDENTITY, so a
+    // row can never be mistaken for a champion row even while it plays like one.
     for (const name of vacuous) {
       expect(armHardConfig(name).weights.label).not.toBe(BASE_WEIGHTS_LABEL);
       expect(requireArm(name).configHash).not.toBe(requireArm('base').configHash);
     }
-    // And the two arms that DO still bite are the two the bootstrap's five live
-    // weights fall in.
-    expect(ALL_WEIGHT_ARMS.filter(n => live(n) > 0).sort()).toEqual(['eval-no-economy', 'eval-stage01']);
+    // Every weight arm bites: the E3 instrument measures something again.
+    expect(ALL_WEIGHT_ARMS.filter(n => live(n) > 0).sort()).toEqual([...ALL_WEIGHT_ARMS].sort());
   });
 
   it('is a stage-2-only cut for eval-stage01: stage 0 and stage 1 are untouched', () => {
@@ -802,10 +822,15 @@ describe('E3.1 weight-group arms (factor `weights`)', () => {
     expect(union.length).toBe(21);
     // Under Standard every one of the 19 was LIVE in `default-v1`, so each
     // sub-arm removed what its size said (lane 5's "live weights removed"
-    // column). Under the M6 accounting bootstrap NONE of the 21 is live, so all
-    // three sub-arms are A/A — asserted here in that direction rather than
-    // dropped, so the day a tuned Phasing vector lands this test says so.
-    for (const i of union) expect(DEFAULT_WEIGHTS.w[i], `${BASE_WEIGHTS_LABEL} w[${i}]`).toBe(0);
+    // column). Under the M6 accounting bootstrap NONE of the 21 was live and
+    // all three sub-arms were A/A; that tripwire was written to fire the day a
+    // priced Phasing vector landed, and it did. `phasing-hand-priors-v1` prices
+    // 17 of the 21 — ArrivalThreat, DisruptPressure, HangingBuy and Inv17 stay
+    // 0 by contract — so the live count replaces the all-zero assertion.
+    const liveSafety = union.filter(i => DEFAULT_WEIGHTS.w[i] !== 0);
+    expect(liveSafety, `${BASE_WEIGHTS_LABEL} live safety weights`).toHaveLength(17);
+    expect(union.filter(i => DEFAULT_WEIGHTS.w[i] === 0).sort((a, b) => a - b))
+      .toEqual([F.HangingBuy, F.Inv17SelfBlock, F.ArrivalThreat, F.DisruptPressure].sort((a, b) => a - b));
   });
 
   /**
@@ -849,6 +874,81 @@ describe('E3.1 weight-group arms (factor `weights`)', () => {
  *    index, and at that index equals `default-v1` (not some other number,
  *    and not still zero).
  */
+/**
+ * The 2026-09-20 repair, as ablations OF the shipped vector.
+ *
+ * The four arms these replaced (`hand-priors`, `hand-priors-pc`,
+ * `bootstrap-pc`, `bank25-pc`) were written while `DEFAULT_WEIGHTS` was still
+ * the M6 bootstrap and the within-turn pending credit was gated on a `+pc`
+ * label. After `71b41a39` made both the default, three of the four were
+ * byte-identical to `hard@desktop` and the fourth was the default with
+ * BankExcess back at 100 despite being named `bootstrap-pc`. An arm whose name
+ * lies is worse than no arm, so they were replaced by three that subtract.
+ */
+describe('the hand-prior repair arms (factor `weights`)', () => {
+  const REPAIR_ARMS = ['weights-bootstrap-m6', 'weights-bank100', 'weights-no-priors'] as const;
+
+  it('retired the four scratch arms whose names stopped being true', () => {
+    for (const gone of ['hand-priors', 'hand-priors-pc', 'bootstrap-pc', 'bank25-pc']) {
+      expect(findArm(gone), gone).toBeUndefined();
+    }
+    for (const name of REPAIR_ARMS) expect(requireArm(name).factor).toBe('weights');
+  });
+
+  it('weights-bootstrap-m6 IS the retired bootstrap, built from the list and not from the default', () => {
+    const w = armHardConfig('weights-bootstrap-m6').weights;
+    expect([...w.w].flatMap((value, index) => value ? [[index, value]] : []))
+      .toEqual(BOOTSTRAP_M6_NONZERO.map(pair => [...pair]));
+    // The same five entries `tests/ai/hard/fixtures/hand-priors-nonzero.ts`
+    // holds for the eval tests: one bootstrap, two copies, asserted equal.
+    expect(weightsHash(w)).toBe(weightsHash(sparseWeights(BOOTSTRAP_M6_NONZERO, w.label)));
+    // And it is emphatically NOT the default, which is the bug in the arms it
+    // replaced: three of those four hashed to the champion.
+    expect(weightsHash(w)).not.toBe(weightsHash(DEFAULT_WEIGHTS));
+    expect(requireArm('weights-bootstrap-m6').configHash).not.toBe(DESKTOP_WALL3000_HASH);
+  });
+
+  it('weights-bank100 moves the bank discount and nothing else', () => {
+    const w = armHardConfig('weights-bank100').weights;
+    expect(w.w[F.BankExcess]).toBe(100);
+    expect(DEFAULT_WEIGHTS.w[F.BankExcess]).toBe(25);
+    for (let i = 0; i < FEATURE_COUNT; i++) {
+      if (i === F.BankExcess) continue;
+      expect(w.w[i], `bank100 leaves w[${i}] alone`).toBe(DEFAULT_WEIGHTS.w[i]);
+    }
+  });
+
+  it('weights-no-priors keeps the discount and drops the 38 tactical coefficients', () => {
+    const w = armHardConfig('weights-no-priors').weights;
+    expect([...w.w].flatMap((value, index) => value ? [[index, value]] : [])).toEqual([
+      [F.Material, 100], [F.BankLiquid, 100], [F.BankExcess, 25], [F.EconDelta, 100], [F.PendingValue, 1],
+    ]);
+    // It differs from the bootstrap arm in exactly one entry: the discount.
+    const bootstrap = armHardConfig('weights-bootstrap-m6').weights;
+    const differing = [...w.w].flatMap((value, index) => value === bootstrap.w[index] ? [] : [index]);
+    expect(differing).toEqual([F.BankExcess]);
+    // And from the default in the 38 priors the repair added beside the discount.
+    expect(HAND_PRIORS_NONZERO).toHaveLength(43);
+    const fromDefault = [...w.w].flatMap((value, index) => value === DEFAULT_WEIGHTS.w[index] ? [] : [index]);
+    expect(fromDefault).toHaveLength(38);
+  });
+
+  it('gives all three a hash of their own, distinct from each other and the champion', () => {
+    const hashes = REPAIR_ARMS.map(n => requireArm(n).configHash);
+    expect(new Set(hashes).size).toBe(REPAIR_ARMS.length);
+    for (const h of hashes) {
+      expect(h).not.toBe(DESKTOP_WALL3000_HASH);
+      expect(h).not.toBe(requireArm('base').configHash);
+    }
+    for (const name of REPAIR_ARMS) {
+      expect(armHardConfig(name).weights.label).not.toBe(BASE_WEIGHTS_LABEL);
+      expect(armHardConfig(name).weights.version).toBe(WEIGHTS_VERSION);
+      // An arm prices a judgment change, never a catalogue one.
+      expect([...armHardConfig(name).weights.material]).toEqual([...DEFAULT_WEIGHTS.material]);
+    }
+  });
+});
+
 describe('E4 lane 7: the combined arm and the per-weight safety keep arms', () => {
   it("combined carries eval-no-safety's weight vector and eval-correct-v1's evalFix bundle, and reports two factors", () => {
     const arm = requireArm('combined');

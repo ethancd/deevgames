@@ -358,6 +358,13 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .online-lobby button.primary { background: #0e7490; }
 .online-lobby button:disabled { opacity: .5; cursor: default; }
 .online-help, .online-banner details { font-size: .82rem; color: #94a3b8; }
+/* The lobby's stand-in for a dead "Analyze →" link. A retired-rules room is
+   still listed and still labelled, but the server answers RULES_CHANGED, so
+   there is nothing to open (`src/online/ArchivedGames.tsx`). Muted and
+   un-underlined so it does not read as an affordance, and `flex: none` because
+   the row it sits in is the flex line `.active-game` lays out
+   (`src/online/ActiveGames.css`, where the link it replaces gets its sizing). */
+.archived-retired { flex: none; max-width: 12rem; font-size: .78rem; line-height: 1.25; color: #94a3b8; }
 .online-banner { border: 1px solid #28576c; background: #0d2230; padding: 12px; border-radius: 10px; margin-bottom: 10px; overflow-wrap: anywhere; }
 .online-banner > strong, .online-banner > span { display: block; }
 .online-banner > span { font-size: .85rem; margin: 4px 0; color: #a5d9e9; }
@@ -426,18 +433,11 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 
 .action-budget > span[data-active=false] { visibility: hidden; }
 
-/* Phasing is a public promise of a unit. The dashed silhouette never captures
-   pointer events and stays visible beneath an actual occupant. */
-.ruleset-select { border: 0; padding: 0; min-width: 0; margin: 1rem 0; }
-.ruleset-select legend { font-weight: 650; margin-bottom: .55rem; }
-.ruleset-select > div { display: grid; gap: .5rem; }
-.ruleset-select label { display: flex; align-items: center; gap: .65rem; padding: .8rem; border: 1px solid #526174; border-radius: .65rem; cursor: pointer; }
-.ruleset-select label[data-selected="true"] { border-color: #8acdd8; background: #17333e; }
-.ruleset-select label > span, .ruleset-select label > span > span { display: block; }
-.ruleset-select label > span > span, .ruleset-select p { font-size: .8rem; color: #b7c7d6; line-height: 1.5; }
-.ruleset-select small { font-size: .65rem; margin-left: .5rem; color: #bfe5ed; font-weight: 400; }
-.ruleset-select p { margin: .5rem 0 0; }
+/* The badge that names a game's rules. It stays: an archived game from the
+   retired Standard ruleset is still rendered and still labelled. */
 .ruleset-badge { font-size: .65rem; font-weight: 500; color: #bfe5ed; display: inline-block; }
+/* A summon is a public promise of a unit. The dashed silhouette never captures
+   pointer events and stays visible beneath an actual occupant. */
 .summon-ghost { position: absolute; inset: 9%; border: 2px dashed #c5f5ff; border-radius: 50%; pointer-events: none; display: grid; place-items: center; background: #12253290; }
 .summon-ghost.black { border-color: #d8b9f2; background: #271b3690; }
 .summon-ghost > svg, .summon-ghost > img { width: 82%; height: 82%; opacity: .58; }

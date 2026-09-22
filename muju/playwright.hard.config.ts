@@ -18,12 +18,17 @@ import { defineConfig, devices } from '@playwright/test';
  * (redundant with this milestone's own separate `tsc --noEmit` check, and
  * itself exposed to transient errors from other agents' concurrent edits).
  */
+/** 8927 unless `MUJU_E2E_PORT` says otherwise — the port is a local convenience,
+ * and a box already serving something else on 8927 must not have this config
+ * silently reuse it (`reuseExistingServer`). */
+const port = process.env.MUJU_E2E_PORT ?? '8927';
+
 export default defineConfig({
   testDir: './e2e',
   testMatch: ['hard-ai.spec.ts'],
   workers: 2,
   use: {
-    baseURL: 'http://127.0.0.1:8927/muju/',
+    baseURL: `http://127.0.0.1:${port}/muju/`,
     browserName: 'chromium',
     channel: process.env.CI ? undefined : 'chrome',
     trace: 'retain-on-failure',
@@ -34,8 +39,8 @@ export default defineConfig({
     { name: 'mobile', use: { ...devices['iPhone 13'] } },
   ],
   webServer: {
-    command: 'npx vite build && npm run preview -- --port 8927',
-    url: 'http://127.0.0.1:8927/muju/',
+    command: `npx vite build && npm run preview -- --port ${port}`,
+    url: `http://127.0.0.1:${port}/muju/`,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },

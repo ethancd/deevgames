@@ -1,5 +1,7 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createInitialGameState } from '../src/game/board';
+import { SCHEMA_VERSION } from '../src/utils/persistence';
+import { PREPARE_RESERVE_DIVISOR } from '../src/ai/turnFunding';
 import type { GameState } from '../src/game/types';
 
 /**
@@ -109,8 +111,12 @@ async function instrumentWorker(page: Page, options: InstrumentOptions = {}): Pr
   }, options);
 }
 
+/** Phasing is the only ruleset since 2026-09-21; a save under any other one is
+ * archived on load and never offered for resume. */
+const phasing = () => createInitialGameState(undefined, undefined, 0, 'phasing');
+
 async function start(page: Page, state: GameState, watch: boolean, difficulty: 'easy' | 'medium' | 'hard', query = ''): Promise<void> {
-  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 6, timestamp: Date.now(), state: saved })), state);
+  await page.addInitScript(({ saved, schemaVersion }) => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion, timestamp: Date.now(), state: saved })), { saved: state, schemaVersion: SCHEMA_VERSION });
   // `query` is the page URL's own opt-out / budget override (`?hardAi=0`,
   // `?hardMs=<int>`). Nothing is set by default: the release flag is what
   // turns Hard on now.
@@ -140,7 +146,7 @@ async function savedTurnNumber(page: Page): Promise<number> {
 test('watch-mode game advances multiple turns through the whole-turn worker path', async ({ page }) => {
   await instrumentWorker(page);
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
-  await start(page, createInitialGameState(), true, 'medium');
+  await start(page, phasing(), true, 'medium');
   await expect.poll(async () => page.evaluate(() => {
     const saved = JSON.parse(localStorage.getItem('elemental-tactics-save')!) as { state: GameState };
     return saved.state.turn.turnNumber;
@@ -157,7 +163,7 @@ test('watch-mode game advances multiple turns through the whole-turn worker path
 
 test('an injected mid-plan illegal action falls back to the per-action loop instead of crashing', async ({ page }) => {
   await instrumentWorker(page, { inject: 'v2' });
-  const s = createInitialGameState();
+  const s = phasing();
   s.turn.currentPlayer = 'black';
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await start(page, s, false, 'medium');
@@ -183,7 +189,7 @@ test('difficulty hard runs HardEngine in the worker with no opt-in at all', asyn
   test.setTimeout(120_000);
   await instrumentWorker(page, { budgetMs: 400 });
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
-  await start(page, createInitialGameState(), true, 'hard');
+  await start(page, phasing(), true, 'hard');
   await expect.poll(() => savedTurnNumber(page), { timeout: 90_000 }).toBeGreaterThanOrEqual(2);
 
   const requests = await requestModes(page);
@@ -214,7 +220,7 @@ test('difficulty hard runs HardEngine in the worker with no opt-in at all', asyn
 test('an illegal action injected into a Hard plan is counted and recovered from legally', async ({ page }) => {
   test.setTimeout(120_000);
   await instrumentWorker(page, { inject: 'hard', budgetMs: 400 });
-  const s = createInitialGameState();
+  const s = phasing();
   s.turn.currentPlayer = 'black';
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
   await start(page, s, false, 'hard');
@@ -246,7 +252,7 @@ test('?hardAi=0 routes difficulty hard back to the legacy AIEngineV2', async ({ 
   test.setTimeout(120_000);
   await instrumentWorker(page);
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
-  await start(page, createInitialGameState(), true, 'hard', '?hardAi=0');
+  await start(page, phasing(), true, 'hard', '?hardAi=0');
   await expect.poll(() => savedTurnNumber(page), { timeout: 90_000 }).toBeGreaterThanOrEqual(2);
 
   const requests = await requestModes(page);
@@ -277,15 +283,20 @@ test('?hardMs funds the hard turn, clamped, without touching the engine route', 
   test.setTimeout(120_000);
   await instrumentWorker(page);
   const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
-  await start(page, createInitialGameState(), true, 'hard', '?hardMs=1200');
+  await start(page, phasing(), true, 'hard', '?hardMs=1200');
   await expect.poll(() => savedTurnNumber(page), { timeout: 90_000 }).toBeGreaterThanOrEqual(2);
 
   const requests = await requestModes(page);
   const hardRequests = requests.filter(r => r.mode === 'turn' && r.engine === 'hard');
   expect(hardRequests.length).toBeGreaterThan(0);
   // The first whole-turn request of a turn is funded by the override, never by
-  // the shipped 8000; a mid-turn re-request draws on what is left of it.
-  expect(hardRequests.some(r => r.decisionMs === 1200)).toBe(true);
+  // the shipped 8000; a mid-turn re-request draws on what is left of it. A
+  // Phasing turn spans Act, the upkeep decision and Prepare under that one
+  // allowance, so the Act search asks for the override LESS the floor those two
+  // later segments keep (`src/ai/turnFunding.ts`): 1200 − 2 × 150 = 900.
+  const actAllowance = 1200 - 2 * Math.floor(1200 / PREPARE_RESERVE_DIVISOR);
+  expect(actAllowance).toBe(900);
+  expect(hardRequests.some(r => r.decisionMs === actAllowance)).toBe(true);
   for (const request of hardRequests) expect(request.decisionMs!).toBeLessThanOrEqual(1200);
   const diag = await hardDiag(page);
   expect(diag?.optIn).toBe(true);

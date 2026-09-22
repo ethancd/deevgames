@@ -13,8 +13,6 @@ import { PlayDialog } from '../components/PlayDialog';
 import { TIME_CONTROL_PRESETS, type TimeControlPreset } from './timeControl';
 import { ArchivedGames } from './ArchivedGames';
 import { ActiveGames } from './ActiveGames';
-import { RulesetSelect } from '../components/RulesetSelect';
-import type { Ruleset } from '../game/types';
 import { rulesetLabel } from '../game/rules';
 import { BlackCrystalHandicap } from '../components/BlackCrystalHandicap';
 
@@ -27,7 +25,6 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   const [name, setName] = useState('Player');
   const [side, setSide] = useState<PlayerId>('white');
   const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
-  const [ruleset, setRuleset] = useState<Ruleset>('standard');
   const [timeChoice, setTimeChoice] = useState<TimeControlPreset | 'untimed' | 'custom'>('untimed');
   const [delaySeconds, setDelaySeconds] = useState('30');
   const [bankMinutes, setBankMinutes] = useState('10');
@@ -95,7 +92,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
           || custom.delaySeconds < 0 || custom.delaySeconds > 600 || !Number.isFinite(custom.bankSeconds) || custom.bankSeconds < 1 || custom.bankSeconds > 14400)) {
           throw new Error('Use 0–600 whole seconds per turn and a bank of 1 second to 240 minutes per player.');
         }
-        result = await createRoom(url, name, side, 4, timeChoice === 'untimed' ? null : timeChoice === 'custom' ? custom : timeChoice, blackCrystalHandicap, ruleset);
+        result = await createRoom(url, name, side, 4, timeChoice === 'untimed' ? null : timeChoice === 'custom' ? custom : timeChoice, blackCrystalHandicap);
       }
       else {
         const { serverUrl, roomId, inviteCode } = await resolveInvitationLink(invitation);
@@ -150,8 +147,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     <section aria-label="Host a game"><h3>Host a game</h3>
       <label>Your side<select value={side} onChange={e => setSide(e.target.value as PlayerId)}><option value="white">White · first turn</option><option value="black">Black · second turn</option></select></label>
       <p className="online-help">4 shared actions per turn · Draw after {INACTIVITY_LIMIT} consecutive turns without a kill.</p>
-      <RulesetSelect value={ruleset} onChange={setRuleset} />
-      <BlackCrystalHandicap phasing={ruleset === 'phasing'} value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />
+      <BlackCrystalHandicap value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />
       <label>Time control<select value={timeChoice} onChange={e => setTimeChoice(e.target.value as typeof timeChoice)}>
         <option value="untimed">Untimed</option>
         {Object.entries(TIME_CONTROL_PRESETS).map(([key, preset]) => <option key={key} value={key}>{preset.label} · {preset.delaySeconds}s / {preset.bankSeconds / 60}min · {preset.duration}</option>)}

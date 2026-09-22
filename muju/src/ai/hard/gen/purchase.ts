@@ -397,6 +397,13 @@ function sortPlans(out: PlacePlan[], count: number): void {
  * are part of DESIGN §4.13's signature; this module's scratch is module-level
  * and fixed-size, so neither is read (the arrangement `tables/geometry.ts`
  * already uses).
+ *
+ * R1b (`EvalFix.strength.purchaseScoreBeforeTruncate`, absent by default):
+ * enumeration order is cheapest-definition-first, so the `cfg.maxPlans` cut
+ * below happens BEFORE `sortPlans` and throws away every plan a later multiset
+ * would have scored higher. With the knob on, the write loop fills the whole
+ * caller-owned buffer, `sortPlans` ranks all of it, and the truncation happens
+ * after. Off, every line below runs exactly as it did before the knob existed.
  */
 export function planPurchases(
   p: PackedState,
@@ -438,7 +445,11 @@ export function planPurchases(
   const wanted = Math.min(cfg.maxMultisets, MAX_MULTISETS) * MULTISET_WORDS;
   const msCount = purchaseMultisets(SC_DEFS, defCount, bank, maxBodies, SC_MULTISETS.subarray(0, wanted));
 
-  const limit = Math.min(cfg.maxPlans, out.length);
+  // R1b: score every enumerated plan the buffer holds, then truncate. Off (the
+  // default) `limit` is `cfg.maxPlans` and the truncation is the write loop's
+  // own stopping rule, exactly as before.
+  const scoreBeforeTruncate = t.evalFix !== null && t.evalFix.strength?.purchaseScoreBeforeTruncate === true;
+  const limit = scoreBeforeTruncate ? out.length : Math.min(cfg.maxPlans, out.length);
   const keep = Math.min(cfg.keepPerMultiset > 0 ? cfg.keepPerMultiset : 1, PURCHASE_MAX_BODIES);
   for (let m = 0; m < msCount && written < limit; m++) {
     const base = m * MULTISET_WORDS;
@@ -461,5 +472,8 @@ export function planPurchases(
   }
 
   sortPlans(out, written);
+  // `sortPlans` leaves index 0 — the empty plan — where it is, so the caller
+  // keeps its "buy nothing" option under either rule.
+  if (scoreBeforeTruncate) return Math.min(written, Math.max(1, cfg.maxPlans));
   return written;
 }

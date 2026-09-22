@@ -108,6 +108,7 @@ import { AKind, newKeepSetTable, paA, paB, paKind, type KeepSetTable } from '../
 import { DEF_INDEX } from '../../../src/ai/hard/core/catalog';
 import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/tables/context';
 import { Evaluator, terminalScore } from '../../../src/ai/hard/eval/evaluate';
+import { withinTurnScore } from '../../../src/ai/hard/eval/turnScore';
 import { TurnPool, TurnFlag, decodeTurn, type Turn } from '../../../src/ai/hard/gen/turn';
 import { UNLIMITED_WORK } from '../../../src/ai/hard/gen/actionsearch';
 import {
@@ -485,12 +486,7 @@ class RecallChecker {
     // the terminal instead — `ActionSearch` records mid-turn terminals too
     // (a lethal attack that eliminates, an occupation the gate proves), and on
     // those `p.side` has not flipped, so the mover cannot be read off the state.
-    this.score = (p, sc, ply) => {
-      const mover = this.scoreMover;
-      const terminal = terminalScore(p, mover, ply);
-      if (terminal !== null) return terminal;
-      return this.evaluator.stage0(p, mover) + this.evaluator.stage1(p, mover, sc, ply);
-    };
+    this.score = (p, sc, ply) => withinTurnScore(this.evaluator, p, this.scoreMover, sc, ply);
   }
 
   /** Packs, marks the prover live and builds the level-2 tables. */

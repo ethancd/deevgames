@@ -35,9 +35,9 @@
  * named rather than deleted so the runner can refuse it BY NAME instead of only
  * noticing a hash mismatch. Neither frozen file is ever edited here.
  */
-import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
+import { listSourceFiles } from './source-files';
 import { LADDER_RULES_VERSION } from '../hard-ai/ladder/ruleset';
 
 /**
@@ -57,8 +57,7 @@ export const sha = (s: string | Buffer): string => createHash('sha256').update(s
 
 /** Read hashes only; never read any opening corpus but the dev book the row replays. */
 export function sourceFileHashes(): Record<string, string> {
-  const paths = execFileSync('rg', ['--files', 'src/ai', 'src/game', 'assembly', 'lab/ai', 'lab/harness', '-g', '*.ts'],
-    { encoding: 'utf8' }).trim().split('\n');
+  const paths = listSourceFiles(['src/ai', 'src/game', 'assembly', 'lab/ai', 'lab/harness'], '.ts');
   paths.push('package-lock.json', 'src/ai/wasm/tactics.wasm', 'lab/hard-ai/ladder/elo.ts',
     'lab/hard-ai/ladder/heavy.ts', 'lab/hard-ai/ladder/ruleset.ts', 'lab/hard-ai/ladder/openings.ts',
     'lab/hard-ai/ladder/openings/phasing.ts',

@@ -4,10 +4,14 @@ import { GameScreen } from '../../src/components/GameScreen';
 import { createInitialGameState, createUnit } from '../../src/game/board';
 import { saveGameState } from '../../src/utils/persistence';
 
+/**
+ * Phasing is the only ruleset since 2026-09-21: a save that is not one is
+ * archived by `loadGameState`, so every injected state below says so.
+ */
 afterEach(() => { cleanup(); localStorage.clear(); });
 
 it('uses four actions for enemy reach even with a partially spent current turn', () => {
-  const state=createInitialGameState(undefined,4);state.turn.actionsRemaining=1;
+  const state=createInitialGameState(undefined,4,0,'phasing');state.turn.actionsRemaining=1;
   state.board.units=[createUnit('water_1','black',{x:3,y:3}),createUnit('plant_1','white',{x:9,y:3})];
   saveGameState(state);
   render(<GameScreen config={{mode:'pass-play',controls:{white:'human',black:'human'},aiDifficulty:{white:'medium',black:'medium'}}} onBackToMenu={vi.fn()} />);
@@ -17,7 +21,7 @@ it('uses four actions for enemy reach even with a partially spent current turn',
 });
 
 it('enemy inspection defaults reach on, permits hiding it, and resets on inspecting an unreachable enemy', () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   state.turn.actionsRemaining = 2;
   state.board.units = [
     createUnit('water_1', 'black', {x: 3, y: 3}),

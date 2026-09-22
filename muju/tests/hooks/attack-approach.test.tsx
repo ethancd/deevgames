@@ -7,7 +7,9 @@ import { loadGameState, saveGameState } from '../../src/utils/persistence';
 const config = {mode: 'pass-play', controls: {white: 'human', black: 'human'}, aiDifficulty: {white: 'medium', black: 'medium'}} as const;
 afterEach(() => { cleanup(); localStorage.clear(); });
 function start() {
-  const state = createInitialGameState();
+  // Phasing is the only ruleset since 2026-09-21: a save that is not one is
+  // archived by `loadGameState`, so an injected save has to say so.
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   state.board.units = [createUnit('fire_1', 'white', {x: 0, y: 0}), createUnit('plant_1', 'black', {x: 4, y: 0}), createUnit('water_1', 'black', {x: 9, y: 9})];
   saveGameState(state);
   const view = render(<GameScreen config={config} onBackToMenu={vi.fn()} />);
@@ -53,7 +55,7 @@ it('moves immediately to a manually chosen square, keeps selection, and previews
 });
 
 it('does not offer a move-and-attack when movement would exhaust the action budget', () => {
-  const state = createInitialGameState(); state.turn.actionsRemaining = 1;
+  const state = createInitialGameState(undefined, 4, 0, 'phasing'); state.turn.actionsRemaining = 1;
   state.board.units = [createUnit('fire_1', 'white', {x: 0,y: 0}), createUnit('plant_1', 'black', {x: 3,y: 0})];
   saveGameState(state); render(<GameScreen config={config} onBackToMenu={vi.fn()} />);
   click(0,0); click(3,0);
@@ -62,7 +64,7 @@ it('does not offer a move-and-attack when movement would exhaust the action budg
 });
 
 it('shows no move dots or attack targets when selecting a unit with zero actions', () => {
-  const state = createInitialGameState(); state.turn.actionsRemaining = 0;
+  const state = createInitialGameState(undefined, 4, 0, 'phasing'); state.turn.actionsRemaining = 0;
   state.board.units = [createUnit('fire_1', 'white', {x:0,y:0}), createUnit('plant_1', 'black', {x:1,y:0})];
   saveGameState(state);
   const {container} = render(<GameScreen config={config} onBackToMenu={vi.fn()} />);

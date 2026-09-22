@@ -1,8 +1,11 @@
 Deev Games
 
-Muju includes an opt-in **Phasing** ruleset for human local/online play:
-commit public summons at turn end; they arrive next own turn or refund if disrupted.
-Standard remains the default and AI benchmark. [Variant rules](muju/docs/PHASING-2026-09-16.md).
+Muju has **one rule set** (2026-09-21): act with four shared actions, then mine
+and pay upkeep, then promote pieces and commit public tier-1 summons, then hand
+over. A summon is visible the moment you pay for it and arrives at your next turn
+start — or refunds in full if your opponent takes the square or breaks its
+support. The Standard ruleset was retired; the browser AI plays these rules on
+every difficulty. [Current rules](muju/SPEC.md).
 
 ===
 

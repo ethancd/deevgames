@@ -34,7 +34,9 @@ function setup(path?: string, timeControl: unknown = { delaySeconds: 2, bankSeco
   return { store, id, token, blackToken, move };
 }
 const end: RoomAction = { type: 'END_ACTION_PHASE' };
-const staged = (actions: RoomAction[] = [end], expectedStageVersion = 0, requestId = 'stage-request-1') =>
+/** Mining closes the action phase; the turn itself ends at END_PLACE_PHASE. */
+const endTurn: RoomAction[] = [end, { type: 'END_PLACE_PHASE' }];
+const staged = (actions: RoomAction[] = endTurn, expectedStageVersion = 0, requestId = 'stage-request-1') =>
   ({ requestId, expectedTurnNumber: 1, expectedStageVersion, commitWhenRemainingMs: 1000, actions });
 const cancel = (expectedStageVersion = 1, requestId = 'cancel-request-1') => ({ requestId, expectedTurnNumber: 1, expectedStageVersion });
 const command = (expectedRevision: number, actions: RoomAction[], requestId = `command-${expectedRevision}`) => ({ expectedRevision, actions, requestId });
@@ -42,9 +44,9 @@ const command = (expectedRevision: number, actions: RoomAction[], requestId = `c
 describe('persistent player-authored staged play', () => {
   it('fires at the threshold without clients and publishes only the ordinary committed history', () => {
     const path = file(), { store, id, token, move } = setup(path);
-    const before = store.get(id), result = store.stage(id, token, staged([move, end]));
+    const before = store.get(id), result = store.stage(id, token, staged([move, ...endTurn]));
     expect(result).toMatchObject({ revision: 1, version: 1, pending: { version: 1, turnNumber: 1,
-      triggerAtMs: epoch + 4000, commitWhenRemainingMs: 1000, actions: [move, end] } });
+      triggerAtMs: epoch + 4000, commitWhenRemainingMs: 1000, actions: [move, ...endTurn] } });
     expect(store.get(id)).toEqual(before);
     vi.advanceTimersByTime(3999);
     expect(store.staged(id, token).pending?.id).toBe(result.pending?.id);
@@ -54,12 +56,12 @@ describe('persistent player-authored staged play', () => {
     const saved = JSON.parse(db.prepare('SELECT data FROM rooms WHERE id = ?').get(id)!.data as string); db.close();
     expect(saved.revision).toBe(2);
     expect(saved.state.turn.currentPlayer).toBe('black');
-    expect(saved.history.at(-1).actions).toEqual([move, end]);
+    expect(saved.history.at(-1).actions).toEqual([move, ...endTurn]);
     const status = store.staged(id, token);
     expect(status).toMatchObject({ version: 2, pending: null, latestReceipt: {
-      status: 'executed', candidateIndex: 0, revision: 2, resolvedAtMs: epoch + 4000, appliedActions: [move, end] } });
+      status: 'executed', candidateIndex: 0, revision: 2, resolvedAtMs: epoch + 4000, appliedActions: [move, ...endTurn] } });
     expect(status.clockPressure?.players.white).toMatchObject({ completedTurns: 1, totalElapsedMs: 4000, totalBankSpentMs: 2000 });
-    expect(store.get(id).lastTurnReplay?.frames.map(frame => frame.action)).toEqual([move]);
+    expect(store.get(id).lastTurnReplay?.frames.map(frame => frame.action)).toEqual([move, end]);
     expect(store.moveHistory(id).entries.filter(e => e.kind === 'move')).toHaveLength(1);
   });
 
@@ -114,8 +116,8 @@ describe('persistent player-authored staged play', () => {
     store.stage(id, token, staged());
     vi.setSystemTime(epoch + 4000); // timer has not run
     const attempt = () => operation === 'cancel' ? store.cancelStage(id, token, cancel())
-      : operation === 'replace' ? store.stage(id, token, staged([end], 1, 'racing-replace'))
-      : store.act(id, token, command(1, [end]));
+      : operation === 'replace' ? store.stage(id, token, staged(endTurn, 1, 'racing-replace'))
+      : store.act(id, token, command(1, endTurn));
     expect(attempt).toThrow(operation === 'play' ? 'revision 2' : 'staging state changed');
     expect(store.get(id)).toMatchObject({ revision: 2, state: { turn: { currentPlayer: 'black' } } });
     expect(store.staged(id, token).latestReceipt?.status).toBe('executed');
@@ -126,7 +128,7 @@ describe('persistent player-authored staged play', () => {
     store.stage(id, token, staged());
     vi.setSystemTime(epoch + 3999);
     store.cancelStage(id, token, cancel());
-    const next = store.stage(id, token, { ...staged([end], 2, 'later-stage-request'), commitWhenRemainingMs: 500 });
+    const next = store.stage(id, token, { ...staged(endTurn, 2, 'later-stage-request'), commitWhenRemainingMs: 500 });
     vi.setSystemTime(epoch + 4000);
     expect(store.staged(id, token).pending?.id).toBe(next.pending?.id);
     vi.setSystemTime(epoch + 4500);
@@ -136,15 +138,15 @@ describe('persistent player-authored staged play', () => {
   it('tests whole candidates atomically and executes the first legal batch in player order', () => {
     const { store, id, token, move } = setup();
     const illegal: RoomAction = { type: 'MOVE', unitId: 'missing-private-unit', to: { x: 4, y: 4 } };
-    store.stage(id, token, { ...staged([move, illegal]), fallbacks: [[move, end], [{ type: 'RESIGN' }]] });
+    store.stage(id, token, { ...staged([move, illegal]), fallbacks: [[move, ...endTurn], [{ type: 'RESIGN' }]] });
     vi.setSystemTime(epoch + 4000);
     const result = store.staged(id, token);
-    expect(result.latestReceipt).toMatchObject({ status: 'executed', candidateIndex: 1, appliedActions: [move, end],
+    expect(result.latestReceipt).toMatchObject({ status: 'executed', candidateIndex: 1, appliedActions: [move, ...endTurn],
       failures: [{ candidateIndex: 0, code: 'ILLEGAL_ACTION' }] });
     const room = store.get(id);
     expect(room.state.phase).toBe('playing');
     expect(room.history).toHaveLength(1);
-    expect(room.lastTurnReplay?.frames.map(frame => frame.action)).toEqual([move]);
+    expect(room.lastTurnReplay?.frames.map(frame => frame.action)).toEqual([move, end]);
     expect(store.moveHistory(id).entries.filter(e => e.kind === 'move')).toHaveLength(1);
   });
 
@@ -182,14 +184,15 @@ describe('persistent player-authored staged play', () => {
     const undone = store.act(id, token, command(4, [{ type: 'UNDO' }]));
     expect(undone.state).toEqual(initial);
     expect(undone.staging?.latestReceipt?.status).toBe('executed'); // historical receipt, not a claim the move still stands
-    store.act(id, token, command(5, [end]));
-    expect(store.get(id).lastTurnReplay?.frames).toEqual([]);
+    store.act(id, token, command(5, endTurn));
+    // The undone staged move is in no replay; only the mining that closed the turn is.
+    expect(store.get(id).lastTurnReplay?.frames.map(frame => frame.action)).toEqual([end]);
     expect(store.moveHistory(id).entries.some(e => e.kind === 'move')).toBe(false);
   });
 
   it('re-evaluates fallbacks after a live board change without requiring the old revision', () => {
     const { store, id, token, move } = setup();
-    store.stage(id, token, { ...staged([move, end]), fallbacks: [[end]] });
+    store.stage(id, token, { ...staged([move, ...endTurn]), fallbacks: [endTurn] });
     store.act(id, token, command(1, [move]));
     vi.setSystemTime(epoch + 4000);
     expect(store.staged(id, token).latestReceipt).toMatchObject({ status: 'executed', candidateIndex: 1, revision: 3 });
@@ -204,8 +207,8 @@ describe('persistent player-authored staged play', () => {
     expect(store.staged(id, token).latestReceipt).toMatchObject({ status: 'executed', appliedActions: [{ type: 'UNDO' }] });
     expect(store.get(id).state).toEqual(initial);
     expect(store.moveHistory(id).entries).toEqual([]);
-    store.act(id, token, command(3, [end]));
-    expect(store.get(id).lastTurnReplay?.frames).toEqual([]);
+    store.act(id, token, command(3, endTurn));
+    expect(store.get(id).lastTurnReplay?.frames.map(frame => frame.action)).toEqual([end]);
   });
 
   it('can flag after a legal staged batch that omits end-turn', () => {
@@ -222,13 +225,13 @@ describe('persistent player-authored staged play', () => {
   it.each(['handoff', 'resign'] as const)('clears pending plans on live %s without leaking into another turn', finish => {
     const { store, id, token, blackToken } = setup();
     store.stage(id, token, staged());
-    const room = store.act(id, token, command(1, [finish === 'handoff' ? end : { type: 'RESIGN' }]));
+    const room = store.act(id, token, command(1, finish === 'handoff' ? endTurn : [{ type: 'RESIGN' }]));
     expect(room.staging).toMatchObject({ version: 2, pending: null, latestReceipt: { status: finish === 'handoff' ? 'turn_ended' : 'game_ended' } });
     if (finish === 'handoff') {
-      store.act(id, blackToken, command(2, [end]));
+      store.act(id, blackToken, command(2, endTurn));
       vi.setSystemTime(epoch + 4000);
       expect(store.get(id)).toMatchObject({ revision: 3, state: { turn: { currentPlayer: 'white', turnNumber: 2 } } });
-      expect(() => store.stage(id, token, staged([end], 2, 'old-turn-stage'))).toThrow('own current full turn');
+      expect(() => store.stage(id, token, staged(endTurn, 2, 'old-turn-stage'))).toThrow('own current full turn');
     }
   });
 
@@ -254,7 +257,7 @@ describe('persistent player-authored staged play', () => {
 
   it.each([3000, 4500, 5000, 20000])('settles persisted work after restart at +%i ms without backdating', elapsed => {
     const path = file(), { store, id, token, move } = setup(path);
-    const request = staged([move, end]), accepted = store.stage(id, token, request);
+    const request = staged([move, ...endTurn]), accepted = store.stage(id, token, request);
     close(store); vi.setSystemTime(epoch + elapsed);
     const reopened = open(path), second = open(path);
     let status = reopened.staged(id, token);
@@ -320,12 +323,13 @@ describe('persistent player-authored staged play', () => {
     saved.state.board.units = [invader, createUnit('fire_1', 'black', { x: 4, y: 4 })];
     db.prepare('UPDATE rooms SET data = ? WHERE id = ?').run(JSON.stringify(saved), id); db.close();
     const move: RoomAction = { type: 'MOVE', unitId: invader.id, to: { x: 9, y: 9 } };
-    store.stage(id, token, staged([move, end]));
+    store.stage(id, token, staged([move, ...endTurn]));
     vi.setSystemTime(epoch + 4000);
-    expect(store.staged(id, token).latestReceipt).toMatchObject({ status: 'executed', appliedActions: [move] });
+    // The occupation resolves at the transition, so END_PLACE_PHASE is the prefix left unplayed.
+    expect(store.staged(id, token).latestReceipt).toMatchObject({ status: 'executed', appliedActions: [move, end] });
     const room = store.get(id);
     expect(room.state.victoryReason).toBe('home-checkmate');
-    expect(room.history.at(-1)?.actions).toEqual([move]);
+    expect(room.history.at(-1)?.actions).toEqual([move, end]);
     expect(room.clockPressure?.players.white.completedTurns).toBe(0);
     expect(room.clock?.runningPlayer).toBeNull();
   });

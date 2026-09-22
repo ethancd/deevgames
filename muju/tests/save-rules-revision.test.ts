@@ -1,6 +1,8 @@
 /**
  * Local saves across the twenty-ply inactivity clock (rules revision
- * `muju-phasing-2`, owner decision 2026-09-19).
+ * `muju-phasing-2`, owner decision 2026-09-19). Every save here is a Phasing
+ * save: schema 9 archives anything else instead of resuming it, which
+ * `tests/game/standard-save-archive.test.ts` covers.
  *
  * A save written under the ten-ply clock carries a quiet count that means
  * something else now, so schema v8 exists to tell the two apart. A pre-v8 save is
@@ -22,14 +24,14 @@ const write = (schemaVersion: number, state: unknown, history?: unknown) =>
   localStorage.setItem(KEY, JSON.stringify({ schemaVersion, timestamp: 0, state, history }));
 
 it('pins the schema that records which inactivity clock wrote a save', () => {
-  expect(SCHEMA_VERSION).toBe(8);
+  expect(SCHEMA_VERSION).toBe(9);
   expect(INACTIVITY_LIMIT).toBe(20);
   expect(LEGACY_INACTIVITY_LIMIT).toBe(10);
 });
 
 it('restarts the quiet clock of a pre-v8 game instead of reinterpreting it, keeping board and score', () => {
   for (const schemaVersion of [6, 7]) {
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, undefined, 0, 'phasing');
     state.inactivityPlies = LEGACY_INACTIVITY_LIMIT - 1;
     state.players.white.resources = 11;
     const history = startHistory(state, true);
@@ -51,7 +53,7 @@ it('restarts the quiet clock of a pre-v8 game instead of reinterpreting it, keep
 });
 
 it('keeps a completed pre-v8 draw as a draw rather than reviving it', () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   state.inactivityPlies = LEGACY_INACTIVITY_LIMIT;
   state.phase = 'victory'; state.winner = null; state.victoryReason = 'inactivity';
   write(7, state);
@@ -62,7 +64,7 @@ it('keeps a completed pre-v8 draw as a draw rather than reviving it', () => {
 });
 
 it('adjudicates a pre-v8 position at the limit it was recorded under, not the new one', () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   state.inactivityRule = 'on';
   state.inactivityPlies = LEGACY_INACTIVITY_LIMIT;
   write(7, state);
@@ -71,7 +73,7 @@ it('adjudicates a pre-v8 position at the limit it was recorded under, not the ne
 });
 
 it('leaves a current save alone: its clock is already the twenty-ply one', () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   state.inactivityPlies = LEGACY_INACTIVITY_LIMIT + 1;
   saveGameState(state);
   expect(stored().schemaVersion).toBe(SCHEMA_VERSION);
@@ -82,8 +84,8 @@ it('leaves a current save alone: its clock is already the twenty-ply one', () =>
 });
 
 it('still refuses save schemas it never supported', () => {
-  for (const schemaVersion of [1, 2, 3, 4, 9]) {
-    write(schemaVersion, createInitialGameState());
+  for (const schemaVersion of [1, 2, 3, 4, 10]) {
+    write(schemaVersion, createInitialGameState(undefined, undefined, 0, 'phasing'));
     expect(loadGameState()).toBeNull();
     expect(localStorage.getItem(KEY)).toBeNull();
   }

@@ -1,11 +1,16 @@
 # Muju Academy · Metal revision
 
-Phasing notice preparation, September 19: the release builder now labels these
-recordings as Standard rules and warns that R01, R04–R07, R09 and R10 teach the
-previous turn order. This is a course-page change only, prepared but not deployed.
-The recordings remain v7/v8; a Phasing narration revision is still pending.
+Course notice preparation, September 19: the release builder warns that R01,
+R04–R07, R09 and R10 teach the previous turn order. This is a course-page change
+only, prepared but not deployed. The recordings remain v7/v8; a re-narration is
+still pending.
 See `../docs/changes/2026-09-19-academy-phasing-notice.md` for the exact website
 patch and verification evidence.
+
+Notice reworded, September 21: Standard was retired and the turn order these
+lessons teach is simply the previous one, not one of two rule sets. The notice
+strings in `build-release.py` and the assertions in `verify-live.py` were changed
+together; still prepared, still not deployed. See `STATUS.md`.
 
 Production source for **16 episodes**: ten rules lessons, then Fire, Lightning,
 Water, Shadow, Plant and Metal. The later strategy episodes are retired from

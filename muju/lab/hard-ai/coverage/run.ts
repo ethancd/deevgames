@@ -49,7 +49,8 @@ import { Replica, allocState } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { newKeepSetTable, type KeepSetTable } from '../../../src/ai/hard/core/action';
 import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/tables/context';
-import { Evaluator, terminalScore } from '../../../src/ai/hard/eval/evaluate';
+import { Evaluator } from '../../../src/ai/hard/eval/evaluate';
+import { withinTurnScore } from '../../../src/ai/hard/eval/turnScore';
 import { TurnPool, decodeTurn, type Turn } from '../../../src/ai/hard/gen/turn';
 import { UNLIMITED_WORK } from '../../../src/ai/hard/gen/actionsearch';
 import {
@@ -215,11 +216,8 @@ class Coverage {
     this.refOut = new Array<Turn>(referenceCapacity());
   }
 
-  private readonly score = (p: PackedState, sc: Scratch, ply: number): Centi => {
-    const terminal = terminalScore(p, this.scoreMover, ply);
-    if (terminal !== null) return terminal;
-    return this.evaluator.stage0(p, this.scoreMover) + this.evaluator.stage1(p, this.scoreMover, sc, ply);
-  };
+  private readonly score = (p: PackedState, sc: Scratch, ply: number): Centi =>
+    withinTurnScore(this.evaluator, p, this.scoreMover, sc, ply);
 
   private prepare(state: GameState, ply: number): PackedState | null {
     let p: PackedState;

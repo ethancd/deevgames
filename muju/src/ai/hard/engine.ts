@@ -136,7 +136,8 @@ import { PackError, Replica, allocState, newUndo } from './core/state';
 import { createReachMemo } from './core/movement';
 import { allocTables, buildTables, type NodeTables } from './tables/context';
 import { PhasingEconomyProofCutoff } from './tables/phasing-economy';
-import { Evaluator, terminalScore } from './eval/evaluate';
+import { Evaluator } from './eval/evaluate';
+import { withinTurnScore } from './eval/turnScore';
 import { DEFAULT_WEIGHTS } from './eval/weights';
 import { TurnPool, type Turn } from './gen/turn';
 import { RescueCap, TurnGenerator, newGenStats, outCapacityFor } from './gen/generate';
@@ -352,16 +353,11 @@ export class HardEngine {
       // spends that `TURN` once per within-turn node and scores its end
       // position in the same breath, so charging `EVAL1` here as well would
       // bill the same work twice and halve the rung. See DEVIATIONS under M14.
-      score: (p, scratch, ply) => {
-        const mover = ctx.scoreMover;
-        const terminal = terminalScore(p, mover, ply);
-        if (terminal !== null) return terminal;
-        const baseScore = evaluator.stage0(p, mover) + evaluator.stage1(p, mover, scratch, ply);
-        // Phasing: a bought unit is a PENDING summon whose value lives in stage 2 (PendingValue).
-        // Without this credit every BUY reads as -100 cc per crystal here and the K cut evicts
-        // buying turns before search sees them (docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md).
-        return baseScore + (p.pendCostSum[mover] - p.pendCostSum[1 - mover]) * 100;
-      },
+      // `eval/turnScore.ts` holds the one definition; every lab instrument and
+      // generator test builds its closure from the same helper, so they all
+      // describe the generator that plays. Includes the unconditional pending
+      // summon credit (repair-2026-09-20).
+      score: (p, scratch, ply) => withinTurnScore(evaluator, p, ctx.scoreMover, scratch, ply),
       maxPly,
       ttScratch: newTTEntry(),
       useTT: true,

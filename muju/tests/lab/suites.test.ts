@@ -60,12 +60,38 @@ describe('hard:suite plays with the weights the champion plays with (A7-1)', () 
     expect(patch.weights?.version).not.toBe(0);
   });
 
-  it('is the regression this test exists for: the old path was placeholder-m4', () => {
-    // The pre-A7-1 construction, kept here as the thing that must never return.
-    const before = new HardEngine(hardConfigFor('desktop'));
-    expect(before.config.weights.label).toBe('placeholder-m4');
-    expect(before.config.weights.version).toBe(0);
-    expect(Array.from(before.config.weights.w).every(x => x === 0)).toBe(true);
+  it('is the regression this test exists for: the old path was the placeholder vector', () => {
+    // RE-PINNED 2026-09-22. This case used to be
+    //   `const before = new HardEngine(hardConfigFor('desktop'));`
+    //   `expect(before.config.weights.label).toBe('placeholder-m4');`
+    // and it was wrong twice over on the Phasing tree: the profile vector is
+    // `placeholder-phasing`, not `placeholder-m4`, and the construction itself
+    // now THROWS, because `Evaluator`'s `assertCurrentWeights`
+    // (`src/ai/hard/eval/evaluate.ts` -> `eval/weights.ts`) refuses a version-0
+    // vector. The old assertions could not have run even un-quarantined; they
+    // pinned a construction that no longer exists. Re-pinned to the two facts
+    // that are true and that the regression actually rests on.
+    //
+    // Why this matters beyond this file: `lab/hard-ai/verify/determinism.ts:158`
+    // was still building its engine with `hardConfigFor(...)` on 2026-09-22 and
+    // therefore could not run ANY `hard@*` engine — it died on this exact throw.
+    // It now goes through `hardEnginePatch` like every other lab call site.
+    const profile = hardConfigFor('desktop');
+    // A profile object's `weights` field is always PRESENT and is a version-0
+    // placeholder, which is why `HardEngine`'s `cfg.weights === undefined`
+    // substitution never fires for it. `hardConfigFor` is typed
+    // `Partial<HardConfig>`, so assert the presence first rather than
+    // non-null-asserting it away — "the field is present" is half the point.
+    expect(profile.weights).toBeDefined();
+    const weights = profile.weights!;
+    expect(weights.version).toBe(0);
+    expect(weights.label).toMatch(/placeholder/);
+    expect(Array.from(weights.w).every(x => x === 0)).toBe(true);
+    // And the pre-A7-1 construction is no longer merely wrong, it is refused.
+    expect(() => new HardEngine(profile)).toThrow(/weight schema\/version mismatch/);
+    // The live counterpart of this pin, in a file that is NOT quarantined, is
+    // `tests/lab/baseline-identity.test.ts`'s "resolves hard@* with the trained
+    // evaluation weights, not M4's placeholder".
   });
 
   it('refuses an engine whose resolved vector is still a placeholder', () => {

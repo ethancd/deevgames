@@ -8,7 +8,6 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { createInitialGameState } from '../src/game/board';
 import { getActionsPerTurn, isActionsPerTurn, isPhasing } from '../src/game/rules';
 import { automaticUpkeepUndo } from '../src/game/turn';
-import { migrateLegacyGame, type LegacyGameState } from '../src/game/migrate';
 import { isLegalAction } from '../src/game/legality';
 import { applyAction } from '../src/ai/simulate';
 import type { GameState, PlayerId } from '../src/game/types';
@@ -21,25 +20,29 @@ import { assertMatchCapability, allowsMatchCapability } from './matchPolicy';
 import { completeClockTurn, newClockHistory, projectClockPressure, type ClockHistory } from './clockPressure';
 
 /**
- * Rules revisions this host PLAYS. The twenty-ply inactivity clock (owner
- * decision 2026-09-19, preregistration amendment A4) changes both rule sets, so
- * both versions advance: a stored room is never replayed under a limit its
- * players did not agree to.
+ * The ONE rules revision this host plays. Standard was retired on 2026-09-21
+ * (owner instruction; JUDGMENT_LOG J-022), so `muju-phasing-2` is the only
+ * version a room can be created under, listed as active under, or opened under.
  *
- * `muju-online-5` is reserved by the unmerged T5 branch `codex/phasing-only-canonical`,
- * which uses it for its single canonical rule set and migrates `muju-phasing-1`
- * rooms into it. Standard therefore advances to `muju-online-6` here; when T5
- * rebases it must map `muju-online-6` and `muju-phasing-2` rather than assume
- * `muju-online-4`/`muju-phasing-1`.
+ * Every other version a row can carry — `muju-online-2`, `muju-online-3`,
+ * `muju-online-4`, `muju-online-5` (reserved by the unmerged T5 branch
+ * `codex/phasing-only-canonical` and never written here), `muju-online-6` and
+ * `muju-phasing-1` — is RETIRED. A retired row keeps its bytes untouched and
+ * takes the changed-rules path in `read()`: RULES_CHANGED, never a silent
+ * reinterpretation, never an in-place migration and never a delete. That is
+ * already what production returns for all 37 such rows.
  *
- * Rooms stored under a retired version keep their row untouched and take the
- * existing changed-rules path in `read()`: RULES_CHANGED, never a silent
- * reinterpretation and never a delete.
+ * `PHASING_RULES_VERSION` must not move. `read()` is a hard allow-list, so a new
+ * string would 409 the rooms that open today; it is also the lab identity key
+ * (`src/ai/hard/config.ts` `PHASING_RULES_REVISION`), so changing it would void
+ * every pooled Hard-AI measurement.
  */
-export const RULES_VERSION = 'muju-online-6';
 export const PHASING_RULES_VERSION = 'muju-phasing-2';
-/** Pre-four-action rooms that still migrate in place; `migrateLegacyGame` restarts their quiet clock. */
-const MIGRATABLE_RULES_VERSIONS = ['muju-online-2', 'muju-online-3'];
+/**
+ * The last Standard revision this host ever wrote. Exported so tests and tools
+ * can name it; never creatable, never accepted by `read()`.
+ */
+export const RETIRED_STANDARD_VERSION = 'muju-online-6';
 export const ROOM_IDLE_MS = 24 * 60 * 60 * 1000;
 const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const secret = () => randomBytes(32).toString('hex');
@@ -212,8 +215,9 @@ export class RoomStore {
     const host = Object.keys(room.tokenHashes)[0] as PlayerId;
     room.invitedPlayer ??= host === 'white' ? 'black' : 'white';
   }
+  private isOpen(room: StoredRoom) { return !room.archivedAt; }
   private assertOpen(room: StoredRoom) {
-    if (room.archivedAt) throw new RoomError(410, 'ROOM_ARCHIVED', 'This room was archived after 24 hours without a move. You can still review its game.', this.snapshot(room));
+    if (!this.isOpen(room)) throw new RoomError(410, 'ROOM_ARCHIVED', 'This room was archived after 24 hours without a move. You can still review its game.', this.snapshot(room));
   }
   private startClock(room: StoredRoom, now: number) {
     if (!room.clockBase || !room.timeControl) return;
@@ -233,19 +237,14 @@ export class RoomStore {
     const row = this.db.prepare('SELECT data FROM rooms WHERE id = ?').get(id);
     if (!row) throw new RoomError(404, 'ROOM_NOT_FOUND', 'Room not found. Check the invitation or room ID.');
     const room = JSON.parse(row.data as string) as StoredRoom;
-    const legacy = MIGRATABLE_RULES_VERSIONS.includes(room.rulesVersion);
-    const oldState = room.state as LegacyGameState;
-    const validBudget = legacy ? oldState.actionsPerTurn === undefined || [4, 6].includes(oldState.actionsPerTurn) : isActionsPerTurn(getActionsPerTurn(room.state));
-    if ((!legacy && room.rulesVersion !== RULES_VERSION && room.rulesVersion !== PHASING_RULES_VERSION) || !validBudget) {
+    // One played revision, and no migration path into it. A pre-four-action room
+    // used to be upgraded in place here; under one ruleset that would rewrite a
+    // Standard game as a Phasing-version room, which is the reinterpretation this
+    // retirement exists to prevent. Those rows take the 409 instead.
+    if (room.rulesVersion !== PHASING_RULES_VERSION || !isActionsPerTurn(getActionsPerTurn(room.state))) {
       throw new RoomError(409, 'RULES_CHANGED', 'This room uses older rules. Create a new room.');
     }
-    if (legacy) {
-      room.state = migrateLegacyGame(oldState);
-      room.rulesVersion = RULES_VERSION;
-      // Reconnects see a changed revision. No undo or replay may restore the old rules.
-      room.revision++;
-      room.undoHistory = []; room.undoReplayLengths = []; room.undoMoveSequences = []; room.replayRecording = emptyRecording();
-    } else room.state.actionsPerTurn = getActionsPerTurn(room.state);
+    room.state.actionsPerTurn = getActionsPerTurn(room.state);
     this.initializeLifecycle(room);
     return room;
   }
@@ -299,10 +298,8 @@ export class RoomStore {
       COALESCE(json_extract(data, '$.state.ruleset'), 'standard') AS ruleset,
       json_extract(data, '$.updatedAt') AS updatedAt
       FROM rooms WHERE archived_at IS NULL AND json_extract(data, '$.state.phase') = 'playing'
-      AND ((json_extract(data, '$.rulesVersion') IN (?, ?) AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) = 4)
-        OR (json_extract(data, '$.rulesVersion') IN ('muju-online-2', 'muju-online-3')
-          AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) IN (4, 6)))
-      ORDER BY ready DESC, updatedAt DESC, id`).all(RULES_VERSION, PHASING_RULES_VERSION);
+      AND json_extract(data, '$.rulesVersion') = ? AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) = 4
+      ORDER BY ready DESC, updatedAt DESC, id`).all(PHASING_RULES_VERSION);
     return rows.map(row => ({ id: row.id as string, ready: row.ready === 1,
       seats: JSON.parse(row.seats as string), turnNumber: row.turnNumber as number,
       ruleset: row.ruleset as 'standard' | 'phasing', currentPlayer: row.currentPlayer as PlayerId, updatedAt: row.updatedAt as string }));
@@ -318,13 +315,17 @@ export class RoomStore {
       json_extract(data, '$.state.turn.turnNumber') AS turnNumber,
       json_extract(data, '$.state.turn.currentPlayer') AS currentPlayer,
       COALESCE(json_extract(data, '$.state.ruleset'), 'standard') AS ruleset,
+      json_extract(data, '$.rulesVersion') AS rulesVersion,
       json_extract(data, '$.updatedAt') AS updatedAt,
       json_extract(data, '$.state.winner') AS winner, json_extract(data, '$.state.victoryReason') AS reason
       FROM rooms WHERE archived_at IS NOT NULL ${cursor ? 'AND (archived_at, id) < (?, ?)' : ''}
       ORDER BY archived_at DESC, id DESC LIMIT ?`).all(...(cursor ? [cursor.archived_at, before!] : []), limit + 1);
     const page = rows.slice(0, limit);
+    // A retired row stays listed — its result is still the players' record — but the
+    // lobby needs to know it can never be opened, so the flag rides on the summary.
     return { rooms: page.map(row => ({ id: row.id as string, ready: row.ready === 1, seats: JSON.parse(row.seats as string),
       turnNumber: row.turnNumber as number, currentPlayer: row.currentPlayer as PlayerId, ruleset: row.ruleset as 'standard' | 'phasing',
+      retiredRules: row.rulesVersion !== PHASING_RULES_VERSION,
       updatedAt: row.updatedAt as string, archivedAt: new Date(row.archived_at as number).toISOString(),
       winner: row.winner as PlayerId | null, reason: row.reason as GameState['victoryReason'] })),
       nextCursor: rows.length > limit ? page.at(-1)!.id as string : null };
@@ -380,7 +381,10 @@ export class RoomStore {
       this.settle(room, Date.now());
       // The old server erased consumed invitation hashes. Only the authenticated
       // original host may restore its saved invitation; a bare old link is not proof.
-      if (!room.archivedAt && !room.inviteHash && player !== room.invitedPlayer && inviteCode && joinSchema.shape.inviteCode.safeParse(inviteCode).success) {
+      // `isOpen` is the same question `assertOpen` asks for `act`/`join`/`stage`: a
+      // restore of an archived room is a review, so it returns the snapshot and
+      // writes nothing at all. This is the only write on any read path in this file.
+      if (this.isOpen(room) && !room.inviteHash && player !== room.invitedPlayer && inviteCode && joinSchema.shape.inviteCode.safeParse(inviteCode).success) {
         room.inviteHash = digest(inviteCode);
         this.save(room);
       }
@@ -408,7 +412,7 @@ export class RoomStore {
       : { changed: true, ...metadata, room };
   }
   create(input: unknown): RoomAdmission {
-    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap, ruleset, matchPolicy } = createSchema.parse(input);
+    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap, matchPolicy } = createSchema.parse(input);
     this.settleDue();
     return this.transaction(() => {
       const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms WHERE archived_at IS NULL').get()!.count as number;
@@ -421,9 +425,9 @@ export class RoomStore {
         || this.db.prepare('SELECT 1 FROM room_watch_links WHERE code = ?').get(inviteCode));
       this.db.prepare('INSERT INTO room_invitations (code_hash, room_id) VALUES (?, ?)').run(digest(inviteCode), id);
       const room: StoredRoom = { ...(matchPolicy ? { matchPolicy } : {}), id, revision: 0, ready: false, seats: { white: null, black: null },
-        state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap, ruleset), canUndo: false, undoHistory: [], updatedAt: new Date(Date.now()).toISOString(), history: [],
+        state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap, 'phasing'), canUndo: false, undoHistory: [], updatedAt: new Date(Date.now()).toISOString(), history: [],
         moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
-        rulesVersion: ruleset === 'phasing' ? PHASING_RULES_VERSION : RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
+        rulesVersion: PHASING_RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
       room.createdAt = room.lastMoveAt = room.updatedAt;
       room.invitedPlayer = side === 'white' ? 'black' : 'white';
       room.seats[side] = name;
