@@ -276,8 +276,10 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
    * into a position that replays exactly (`src/utils/positionReport.ts`), and
    * the channel that produced the three reports the 2026-09-20 engine repair
    * was aimed at. It was preview-only while the Phasing AI was an opt-in; with
-   * the preview retired it belongs to every LOCAL game, which is every game
-   * that has an engine in a seat.
+   * the preview retired it belongs to every LOCAL game — vs AI, Watch AI and
+   * Pass & Play. Pass & Play has no engine in a seat: `side` resolves to null
+   * below and the report simply carries no AI turn, which is still a replayable
+   * position. Online and analysis boards stay out (the gate at the menu).
    */
   const [reportStatus, setReportStatus] = useState<string | null>(null);
   const handleReportPosition = useCallback(async (fullJson = false) => {
