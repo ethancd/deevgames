@@ -4,7 +4,8 @@ for (const width of [390, 1280]) test(`Phasing local lifecycle, undo, resume and
   await page.setViewportSize({ width, height: 900 });
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
-  await page.getByRole('radio', { name: /Phasing/ }).check();
+  // No ruleset control since 2026-09-21: Phasing is the only ruleset, and the
+  // badge on the game screen is what says so.
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await expect(page.locator('.ruleset-badge')).toHaveText('Phasing');
   await page.getByRole('button', { name: 'Mine & prepare' }).click();
@@ -20,7 +21,7 @@ for (const width of [390, 1280]) test(`Phasing local lifecycle, undo, resume and
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.reload();
   await page.getByRole('button', { name: 'Pass & Play' }).click();
-  await page.getByRole('button', { name: /Continue saved game · Phasing/ }).click();
+  await page.getByRole('button', { name: /Continue saved game/ }).click();
   await expect(page.getByTestId('summon-0-0')).toBeVisible();
   await page.getByRole('button', { name: 'End turn' }).click();
   await page.getByText('Tap anywhere to continue').click();
@@ -36,13 +37,16 @@ for (const width of [390, 1280]) test(`Phasing local lifecycle, undo, resume and
   await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label', /white Hono, fire, tier 2/);
   await page.screenshot({ path: info.outputPath('phasing-arrival-promotion.png'), fullPage: true });
   await page.getByRole('button', { name: 'How to play' }).click();
-  await expect(page.getByRole('heading', { name: 'Phasing · experimental rules' })).toBeVisible();
+  // One deck since 2026-09-21: these rules are the rules, not an experiment
+  // sitting beside another set.
+  await expect(page.getByRole('heading', { name: 'Your turn', exact: true })).toBeVisible();
+  await expect(page.getByRole('dialog')).toContainText('Choose Mine & prepare to collect mining and pay upkeep.');
+  await expect(page.getByText(/experimental/i)).toHaveCount(0);
 });
 
 test('Phasing online room, public observer, arrivals and analysis retain rules', async ({ page, request }, info) => {
   await page.goto('./');
   await page.getByRole('button', { name: 'Play online' }).click();
-  await page.getByRole('radio', { name: /Phasing/ }).check();
   await page.getByRole('button', { name: 'Create room' }).click();
   await page.getByRole('button', { name: 'Room details', exact: true }).click();
     await page.getByText('Private reconnect details', { exact: true }).click();

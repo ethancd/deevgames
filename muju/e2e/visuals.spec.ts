@@ -1,10 +1,14 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createInitialGameState, createUnit } from '../src/game/board';
 import { UNIT_DEFINITIONS } from '../src/game/units';
+import { SCHEMA_VERSION } from '../src/utils/persistence';
 import type { GameState } from '../src/game/types';
 
+/** Phasing is the only ruleset since 2026-09-21. */
+const phasing = () => createInitialGameState(undefined, undefined, 0, 'phasing');
+
 async function start(page: Page, state: GameState) {
-  await page.addInitScript(saved => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion: 6, timestamp: Date.now(), state: saved })), state);
+  await page.addInitScript(({ saved, schemaVersion }) => localStorage.setItem('elemental-tactics-save', JSON.stringify({ schemaVersion, timestamp: Date.now(), state: saved })), { saved: state, schemaVersion: SCHEMA_VERSION });
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
   await page.getByRole('button', { name: /Continue saved game/ }).click();
@@ -12,7 +16,7 @@ async function start(page: Page, state: GameState) {
 
 test('reserve bricks show 0–16 in equal bottom-aligned slots and toggle back to shading', async ({page}, info) => {
  await page.setViewportSize({width:390,height:664});
- const state=createInitialGameState();
+ const state=phasing();
  for(let count=0;count<=16;count++) state.board.cells[Math.floor(count/10)][count%10].resourceLayers=count;
  await start(page,state);
  await expect(page.getByRole('button',{name:'Reserves'})).toHaveAttribute('aria-pressed','false');
@@ -61,7 +65,7 @@ test('reserve bricks show 0–16 in equal bottom-aligned slots and toggle back t
 
 test('both armies retain 18 distinct labelled pieces, exact ranks and damage on a crowded board', async ({ page }, info) => {
   await page.setViewportSize({ width: 390, height: 664 });
-  const state = createInitialGameState();
+  const state = phasing();
   state.board.units = (['white','black'] as const).flatMap(owner => UNIT_DEFINITIONS.map((def, i) => {
     const unit = createUnit(def.id, owner, { x: 2 + i % 6, y: Math.floor(i / 6) + (owner === 'black' ? 6 : 0) });
     if (i === UNIT_DEFINITIONS.length - 1) unit.damageTaken = 1;
@@ -85,7 +89,7 @@ test('both armies retain 18 distinct labelled pieces, exact ranks and damage on 
 });
 
 test('visual key explains both encodings and does not consume game keyboard actions', async ({ page }) => {
-  await start(page, createInitialGameState());
+  await start(page, phasing());
   await page.getByTestId('cell-1-1').click();
   await page.getByRole('button', { name: 'Key', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Read the board' });

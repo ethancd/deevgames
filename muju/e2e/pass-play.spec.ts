@@ -5,13 +5,14 @@ test('pass and play alternates both human turns', async ({ page }) => {
   await page.getByRole('button', { name: 'Pass & Play' }).click();
   await page.getByRole('button', { name: 'Start Game' }).click();
   for (const player of [2, 1, 2, 1]) {
-    if(await page.getByRole('button',{name:'Start actions →'}).count())await page.getByRole('button',{name:'Start actions →'}).click();
+    await page.getByRole('button', { name: 'Mine & prepare' }).click();
     await page.getByRole('button', { name: 'End turn' }).click();
     const overlay = page.getByText('Pass device to').locator('..');
     await expect(overlay).toContainText(`Player ${player}`);
     await overlay.click();
     await expect(page.locator('.turn-strip')).toContainText(`Player ${player}`);
-    await expect(page.locator('.action-budget strong')).toHaveText(/4 actions|Buy & promote/);
+    // Phasing hands over into Act, never into a preparation phase.
+    await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
   }
 });
 
@@ -19,6 +20,7 @@ test('handoff clears undo and Player 2 can play and undo only their own move', a
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
   await page.getByRole('button', { name: 'Start Game' }).click();
+  await page.getByRole('button', { name: 'Mine & prepare' }).click();
   await page.getByRole('button', { name: 'End turn' }).click();
   await page.getByText('Tap anywhere to continue').click();
   await expect(page.getByRole('button', { name: 'Undo' })).toBeDisabled();

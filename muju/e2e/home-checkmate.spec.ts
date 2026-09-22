@@ -4,7 +4,7 @@ import { SCHEMA_VERSION } from '../src/utils/persistence';
 
 test('a phone shows and saves checkmate immediately on the winning move', async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   state.board.units = [createUnit('plant_1', 'white', { x: 9, y: 8 }), createUnit('fire_1', 'black', { x: 4, y: 4 })];
   await page.addInitScript(({ state, schemaVersion }) => {
     if (sessionStorage.getItem('mate-seeded')) return;
@@ -18,6 +18,10 @@ test('a phone shows and saves checkmate immediately on the winning move', async 
   page.on('worker', worker => workers.push(worker.url()));
   await page.getByTestId('cell-9-8').click();
   await page.getByTestId('cell-9-9').click();
+  // Phasing proves a home checkmate when the invader's action phase ends
+  // (`resolveHomeCheckmate`), so the win lands on Mine & prepare, before any
+  // handover and without the AI ever being asked to think.
+  await page.getByRole('button', { name: 'Mine & prepare →' }).click();
   await expect(page.getByRole('heading', { name: 'You Win!', exact: true })).toBeVisible();
   await expect(page.getByText(/Checkmate!.*no legal reply/)).toBeVisible();
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('elemental-tactics-save')!).state.turn.currentPlayer)).toBe('white');
@@ -44,11 +48,13 @@ test('MCP checkmate ends a queued turn and updates observers immediately', async
   const white = room.state.board.units.find((u: any) => u.owner === 'white' && u.definitionId === 'fire_1').id;
   const blackFire = room.state.board.units.find((u: any) => u.owner === 'black' && u.definitionId === 'fire_1').id;
   const blackWater = room.state.board.units.find((u: any) => u.owner === 'black' && u.definitionId === 'water_1').id;
+  // One Phasing turn per call: the caller's actions run in the Act phase and end
+  // it, and END_PLACE_PHASE hands the turn over after the empty preparation. A
+  // checkmate proved mid-batch cancels whatever is still queued behind it.
   const play = async (actions: object[]) => {
     const credentials = room.state.turn.currentPlayer === 'white' ? host.credentials : guest.credentials;
-    const phase = room.state.turn.phase === 'place' ? [{ type: 'END_PLACE_PHASE' }] : [];
     const result = await call('muju_play', { roomId, token: credentials.token, expectedRevision: room.revision,
-      requestId: `mate-browser-${serial++}`, actions: [...phase, ...actions] });
+      requestId: `mate-browser-${serial++}`, actions: [...actions, { type: 'END_PLACE_PHASE' }] });
     room = await (await request.get(`/api/muju/rooms/${roomId}`)).json();
     return result;
   };
@@ -61,7 +67,9 @@ test('MCP checkmate ends a queued turn and updates observers immediately', async
   const won = await play([{ type: 'MOVE', unitId: white, to: 'J10' }, { type: 'END_ACTION_PHASE' }]);
   expect(won).toMatchObject({ status: 'victory', winner: 'white', victoryReason: 'home-checkmate' });
   expect(room.state.turn.currentPlayer).toBe('white');
-  expect(room.history.at(-1).actions.at(-1).type).toBe('MOVE');
+  // The mate is proved as the action phase ends, and the END_PLACE_PHASE queued
+  // behind it in the same batch is cancelled rather than applied.
+  expect(room.history.at(-1).actions.map((a: { type: string }) => a.type)).toEqual(['MOVE', 'END_ACTION_PHASE']);
   await expect(page.getByRole('heading', { name: 'White LLM Wins!', exact: true })).toBeVisible();
   await expect(page.getByText(/Checkmate!.*no legal reply/)).toBeVisible();
 });

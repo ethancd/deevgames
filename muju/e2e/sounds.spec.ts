@@ -21,7 +21,7 @@ test('phone sound controls persist independently of music; local movement, phasi
   await page.goto('./');
   expect(await starts(page)).toEqual([]);
   await page.getByRole('button',{name:'Pass & Play'}).click();
-  await page.getByRole('radio',{name:/Phasing/}).check();
+  // Phasing is the only ruleset since 2026-09-21; there is no control to pick it.
   await page.getByRole('button',{name:'Start Game',exact:true}).click();
   expect(await starts(page)).toEqual([]);
   await page.getByTestId('cell-1-0').click();
@@ -68,7 +68,7 @@ test('phone sound controls persist independently of music; local movement, phasi
 
 for(const mode of ['slow','fast']) test(`incoming ${mode} moves sound at each visible hop, followed by your turn start`,async({page,request})=>{
   await observeAudio(page);
-  const host=await(await request.post('/api/muju/rooms',{data:{name:'Sound opponent',side:'white',ruleset:'phasing'}})).json();
+  const host=await(await request.post('/api/muju/rooms',{data:{name:'Sound opponent',side:'white'}})).json();
   await page.goto(`?room=${host.room.id}#invite=${host.inviteCode}`);
   await page.getByRole('button',{name:'Join room',exact:true}).click();
   await expect(page.locator('.turn-strip')).toContainText('Sound opponent');

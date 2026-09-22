@@ -22,10 +22,9 @@ async function startVsAI(page: Page, difficulty: 'easy' | 'medium' | 'hard', pac
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
 }
 
-/** Hands the turn to the AI, whichever phase the game opened in. */
+/** Hands the turn to the AI: a Phasing turn is Act, then Prepare. */
 async function endHumanTurn(page: Page): Promise<void> {
-  const startActions = page.getByRole('button', { name: 'Start actions →' });
-  if (await startActions.count()) await startActions.click();
+  await page.getByRole('button', { name: 'Mine & prepare →' }).click();
   await page.getByRole('button', { name: 'End turn →' }).click();
 }
 

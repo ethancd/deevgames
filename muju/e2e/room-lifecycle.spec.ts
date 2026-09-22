@@ -6,8 +6,10 @@ import { DatabaseSync } from 'node:sqlite';
 import { RoomStore, ROOM_IDLE_MS } from '../server/rooms';
 import { createApp } from '../server/http';
 
-for (const ruleset of ['standard', 'phasing']) test(`${ruleset}: the same invitation moves the seat between browsers and the previous browser watches`, async ({ browser, request }) => {
-  const host = await (await request.post('/api/muju/rooms', { data: { name: 'Takeover host', side: 'black', ruleset } })).json();
+// One ruleset since 2026-09-21: rooms are created without naming one, and the
+// server would refuse anything but Phasing.
+test('the same invitation moves the seat between browsers and the previous browser watches', async ({ browser, request }) => {
+  const host = await (await request.post('/api/muju/rooms', { data: { name: 'Takeover host', side: 'black' } })).json();
   const contexts = await Promise.all([browser.newContext(), browser.newContext({ viewport: { width: 390, height: 664 }, hasTouch: true })]);
   const [first, second] = await Promise.all(contexts.map(context => context.newPage()));
   const link = `./?room=${host.room.id}#invite=${host.inviteCode}`;
@@ -56,7 +58,7 @@ test('archived Phasing games leave the active list and remain reviewable on a ph
   await new Promise<void>(resolve => listener.once('listening', resolve));
   const server = `http://127.0.0.1:${(listener.address() as { port: number }).port}`;
   try {
-    const host = store.create({ name: 'Archived White', ruleset: 'phasing' });
+    const host = store.create({ name: 'Archived White' });
     store.join(host.room.id, { name: 'Archived Black', inviteCode: host.inviteCode });
     const unit = host.room.state.board.units.find(unit => unit.owner === 'white' && unit.definitionId === 'fire_1')!;
     store.act(host.room.id, host.credentials.token, { expectedRevision: 1, requestId: 'archive-browser-move', actions: [{ type: 'MOVE', unitId: unit.id, to: { x: 2, y: 0 } }] });

@@ -25,11 +25,12 @@ test('phone lobby discovers games, watches with one tap, and refreshes after a r
     await phone.screenshot({ path: testInfo.outputPath('active-games-phone.png'), fullPage: true });
     await watch.click();
     await expect(phone.getByText('Online · Observer', { exact: true })).toBeVisible();
-    await expect(phone.getByRole('button', { name: /End turn|Start actions|Undo/ })).toHaveCount(0);
+    await expect(phone.getByRole('button', { name: /End turn|Mine & prepare|Undo/ })).toHaveCount(0);
     await phone.reload();
     await expect(phone.getByText('Online · Observer', { exact: true })).toBeVisible();
     await request.post(`/api/muju/rooms/${roomId}/actions`, { headers: { Authorization: `Bearer ${hosted.credentials.token}` },
-      data: { expectedRevision: guest.room.revision, requestId: 'lobby-live-turn', actions: [{ type: 'END_ACTION_PHASE' }] } });
+      data: { expectedRevision: guest.room.revision, requestId: 'lobby-live-turn',
+        actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] } });
     await expect(phone.locator('.turn-strip')).toContainText('Lobby Black');
     await request.post(`/api/muju/rooms/${roomId}/actions`, { headers: { Authorization: `Bearer ${guest.credentials.token}` },
       data: { expectedRevision: guest.room.revision + 1, requestId: 'lobby-game-result', actions: [{ type: 'RESIGN' }] } });

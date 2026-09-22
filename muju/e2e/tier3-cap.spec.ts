@@ -3,7 +3,7 @@ import { createInitialGameState } from '../src/game/board';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
 for(const width of [390,834]) test(`tier-three shop and terminal promotion at ${width}px`,async({page},info)=>{
   await page.setViewportSize({width,height:width===390?844:1112});
-  const state=createInitialGameState();state.turn.phase='place';state.players.white.resources=100;
+  const state=createInitialGameState(undefined,undefined,0,'phasing');state.turn.phase='place';state.players.white.resources=100;
   state.board.units[0].definitionId='fire_2';state.board.units[0].placedThisTurn=false;
   await page.addInitScript(({state,schemaVersion})=>localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion,timestamp:Date.now(),state})),{state,schemaVersion:SCHEMA_VERSION});
   await page.goto('./');await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();

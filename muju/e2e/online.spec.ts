@@ -60,7 +60,7 @@ test('restores a full room on a fresh phone from pasted private credentials', as
     const credentials = JSON.parse(await page.getByLabel('Private seat credentials').inputValue());
     await page.getByRole('button', { name: 'Close dialog' }).click();
     await request.post(`/api/muju/rooms/${credentials.roomId}/join`, { data: { name: 'Opponent', inviteCode: credentials.inviteCode } });
-    await expect(page.getByRole('button', { name: 'End turn' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Mine & prepare' })).toBeEnabled();
     await phone.goto('./');
     await phone.evaluate(() => localStorage.setItem('elemental-tactics-save', 'keep-phone-local-game'));
     await phone.getByRole('button', { name: 'Play online' }).click();
@@ -126,7 +126,7 @@ test('multiple observers watch two MCP agents, inspect, replay, and reload witho
     const guest = await call(black, 'muju_join_room', { roomId, name: 'Black LLM', inviteCode: host.invitation.inviteCode });
     await expect(page.getByText('Watching live · Read only')).toBeVisible();
     for (const viewer of [page, phone]) {
-      await expect(viewer.getByRole('button', { name: /End turn|Start actions|Undo/ })).toHaveCount(0);
+      await expect(viewer.getByRole('button', { name: /End turn|Mine & prepare|Undo/ })).toHaveCount(0);
       await expect(viewer.getByText('Private reconnect details')).toHaveCount(0);
       await viewer.getByTestId('cell-1-0').click();
       await expect(viewer.locator('.decision-panel')).toContainText('Hi');
@@ -136,7 +136,7 @@ test('multiple observers watch two MCP agents, inspect, replay, and reload witho
     const moves = await call(white, 'muju_legal_actions', { roomId, type: 'MOVE', limit: 1 });
     const whiteMove = moves.actions[0].action;
     const ended = await call(white, 'muju_play', { roomId, token: host.credentials.token, expectedRevision: guest.room.revision,
-      requestId: 'observer-white-turn', actions: [whiteMove, { type: 'END_ACTION_PHASE' }] });
+      requestId: 'observer-white-turn', actions: [whiteMove, { type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] });
     for (const viewer of [page, phone]) await expect(viewer.locator('.turn-strip')).toContainText('Black LLM');
     await page.getByRole('combobox', { name: 'Replay mode' }).selectOption('step');
     await page.getByRole('button', { name: '↶ Instant replay', exact: true }).click();
@@ -175,7 +175,7 @@ for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent bro
     await page.getByRole('button', { name: 'Play online' }).click();
     await page.getByLabel('Your name', { exact: true }).fill('Alice');
     await page.getByRole('button', { name: 'Create room' }).click();
-    await expect(page.getByRole('button', { name: 'End turn' })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Mine & prepare' })).toBeDisabled();
     await page.getByRole('button', { name: 'Room details', exact: true }).click();
     const invite = await page.getByLabel('Invite your opponent').inputValue();
     expect(new URL(invite).pathname).toMatch(/^\/join\/[a-z]{6}$/);
@@ -185,16 +185,18 @@ for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent bro
     await guest.getByLabel('Your name', { exact: true }).fill('Bob');
     await guest.getByRole('button', { name: 'Join room' }).click();
     await expect(guest.getByText('Online · You are black')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'End turn' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Mine & prepare' })).toBeEnabled();
     await expect(page.locator('.action-budget strong')).toHaveText(`${actionsPerTurn} actions`);
     await expect(guest.locator('.action-budget i')).toHaveCount(actionsPerTurn);
-    await expect(guest.getByRole('button', { name: 'End turn' })).toBeDisabled();
+    await expect(guest.getByRole('button', { name: 'Mine & prepare' })).toBeDisabled();
     await page.getByTestId('cell-1-0').click();
     await page.getByTestId('cell-2-0').click();
 
     await expect(guest.getByTestId('cell-2-0')).toHaveAttribute('aria-label', /white Hi/);
+    // A Phasing turn ends in two steps: mining and upkeep settle, then preparation hands over.
+    await page.getByRole('button', { name: 'Mine & prepare' }).click();
     await page.getByRole('button', { name: 'End turn' }).click();
-    await expect(guest.getByRole('button', { name: 'End turn' })).toBeEnabled();
+    await expect(guest.getByRole('button', { name: 'Mine & prepare' })).toBeEnabled();
     await expect(guest.getByText('Pass device to')).toHaveCount(0);
     await guest.getByTestId('cell-8-8').click();
     await guest.getByTestId('cell-6-8').click();
@@ -208,6 +210,7 @@ for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent bro
     expect(await guest.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await guest.screenshot({ path: `test-results/online-mobile-${actionsPerTurn}.png`, fullPage: true });
     await page.screenshot({ path: `test-results/online-desktop-${actionsPerTurn}.png`, fullPage: true });
+    await guest.getByRole('button', { name: 'Mine & prepare' }).click();
     await guest.getByRole('button', { name: 'End turn' }).click();
     await expect(page.locator('.turn-strip')).toContainText('Alice');
     await page.reload();
@@ -230,7 +233,7 @@ test('a browser and MCP agent share moves, including retry after a lost response
     await page.goto(hosted.invitation.url);
     await page.getByLabel('Your name', { exact: true }).fill('Human');
     await page.getByRole('button', { name: 'Join room' }).click();
-    await expect(page.getByRole('button', { name: 'End turn' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Mine & prepare' })).toBeEnabled();
     await page.route('**/api/muju/rooms/*/actions', async route => {
       await route.fetch(); // Server commits, but the client never receives the response.
       await route.abort();
@@ -240,11 +243,12 @@ test('a browser and MCP agent share moves, including retry after a lost response
     await page.getByTestId('cell-2-0').click();
 
     await page.getByRole('button', { name: 'Retry same move' }).click();
-    await expect(page.getByRole('button', { name: 'End turn' })).toBeEnabled();
+    await expect(page.getByRole('button', { name: 'Mine & prepare' })).toBeEnabled();
     const moved = await call('muju_observe', { roomId: hosted.credentials.roomId });
     expect(moved.revision).toBe(2); expect(moved.turn.actionsRemaining).toBe(3);
+    await page.getByRole('button', { name: 'Mine & prepare' }).click();
     await page.getByRole('button', { name: 'End turn' }).click();
-    await expect(page.getByRole('button', { name: 'End turn' })).toBeDisabled();
+    await expect(page.getByRole('button', { name: 'Mine & prepare' })).toBeDisabled();
     const observed = await call('muju_observe', { roomId: hosted.credentials.roomId });
     expect(observed.turn.currentPlayer).toBe('black');
     await call('muju_play', { roomId: hosted.credentials.roomId, token: hosted.credentials.token,

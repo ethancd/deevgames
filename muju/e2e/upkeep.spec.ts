@@ -7,27 +7,38 @@ for (const viewport of [{width:390,height:844},{width:1280,height:800}]) {
     const id=host.room.id;
     const read=async()=>await (await request.get(`/api/muju/rooms/${id}`)).json();
     let serial=0;
+    // One Phasing turn for Black: Act, mining and upkeep, then the handover.
     const finishBlack=async()=>{
       const room=await read();
       expect(room.state.turn.currentPlayer).toBe('black');
-      const actions=room.state.turn.phase==='place' ? [{type:'END_PLACE_PHASE'},{type:'END_ACTION_PHASE'}] : [{type:'END_ACTION_PHASE'}];
+      const actions=room.state.turn.phase==='place' ? [{type:'END_PLACE_PHASE'}] : [{type:'END_ACTION_PHASE'},{type:'END_PLACE_PHASE'}];
       expect((await request.post(`/api/muju/rooms/${id}/actions`,{headers:{Authorization:`Bearer ${host.credentials.token}`},
         data:{expectedRevision:room.revision,requestId:`black-upkeep-${serial++}`,actions}})).ok()).toBe(true);
+    };
+    const endWhiteTurn=async()=>{
+      await page.getByRole('button',{name:'Mine & prepare →'}).click();
+      await expect(page.getByRole('button',{name:'End turn →'})).toBeEnabled();
+      await page.getByRole('button',{name:'End turn →'}).click();
     };
     await page.goto(`?room=${id}#invite=${host.inviteCode}`);
     await page.getByLabel('Your name',{exact:true}).fill('Human');
     await page.getByRole('button',{name:'Join room'}).click();
-    await expect(page.getByRole('button',{name:'End turn →'})).toBeEnabled();
-    await page.getByRole('button',{name:'End turn →'}).click();
+    await expect(page.getByRole('button',{name:'Mine & prepare →'})).toBeEnabled();
+    await endWhiteTurn();
     await expect(page.locator('.turn-strip')).toContainText('Opponent');
     await finishBlack();
-    await expect(page.getByRole('button',{name:'Start actions →'})).toBeEnabled();
+    // The promotion is a Prepare action, so it comes after this turn's mining.
+    await expect(page.getByRole('button',{name:'Mine & prepare →'})).toBeEnabled();
+    await page.getByRole('button',{name:'Mine & prepare →'}).click();
     await page.getByTestId('cell-1-0').click();
     await page.getByRole('button',{name:/^Promote ·/}).click();
     await expect(page.getByRole('button',{name:'End turn →'})).toBeEnabled();
     await page.getByRole('button',{name:'End turn →'}).click();
     await expect(page.locator('.turn-strip')).toContainText('Opponent');
     await finishBlack();
+    // Third turn: the tier-2 piece now costs rent, and it is affordable, so
+    // "Mine & prepare" pays it in the same step without asking.
+    await page.getByRole('button',{name:'Mine & prepare →'}).click();
     const undo=page.getByRole('button',{name:'↶ Undo',exact:true});
     await expect(undo).toBeEnabled();
     await expect(page.getByRole('dialog',{name:'Choose upkeep'})).toHaveCount(0);
@@ -35,7 +46,14 @@ for (const viewport of [{width:390,height:844},{width:1280,height:800}]) {
     expect(paid.lastUpkeep.paid).toBe(1);
     await page.reload();
     await expect(undo).toBeEnabled();
+    // Undo returns to the action phase, before mining; asking to review upkeep
+    // then holds the choice open instead of paying it.
     await undo.click();
+    await expect(page.getByRole('button',{name:'Mine & prepare →'})).toBeEnabled();
+    await page.getByRole('button',{name:'Game menu',exact:true}).click();
+    await page.getByRole('checkbox',{name:/Always ask before paying upkeep/}).check();
+    await page.getByRole('button',{name:'Close dialog'}).click();
+    await page.getByRole('button',{name:'Mine & prepare →'}).click();
     const dialog=page.getByRole('dialog',{name:'Choose upkeep'});
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('status')).toContainText(`Upkeep 1 / ${paid.players.white.resources+1} crystals`);

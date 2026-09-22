@@ -1,14 +1,15 @@
 import { test, expect, type Page } from '@playwright/test';
 import { createInitialGameState, createUnit } from '../src/game/board';
+import { SCHEMA_VERSION } from '../src/utils/persistence';
 import type { GameState } from '../src/game/types';
 async function start(page: Page, state: GameState) {
-  await page.addInitScript(saved => { if(!localStorage.getItem('elemental-tactics-save')) localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:6,timestamp:Date.now(),state:saved})); },state);
+  await page.addInitScript(({saved,schemaVersion}) => { if(!localStorage.getItem('elemental-tactics-save')) localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion,timestamp:Date.now(),state:saved})); },{saved:state,schemaVersion:SCHEMA_VERSION});
   await page.goto('./');
   await page.getByRole('button',{name:'Pass & Play'}).click();
   await page.getByRole('button',{name:/Continue saved game/}).click();
 }
 function arena(tier: number) {
-  const s=createInitialGameState();
+  const s=createInitialGameState(undefined,undefined,0,'phasing');
   s.board.units=[createUnit(`fire_${tier}`,'white',{x:5,y:5}),...[[5,4],[6,5],[5,6]].map(([x,y])=>createUnit('fire_1','black',{x,y}))];
   return s;
 }

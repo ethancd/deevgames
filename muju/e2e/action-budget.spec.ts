@@ -6,8 +6,8 @@ test('normal income-earning turns advance the kill-only clock and draw at twenty
   await page.goto('./');await page.getByRole('button',{name:/^Pass & Play/}).click();
   await page.getByRole('button',{name:'Start Game',exact:true}).click();
   for(let ply=1;ply<=INACTIVITY_LIMIT;ply++) {
-    const startActions=page.getByRole('button',{name:/Start actions/});
-    if(await startActions.count()) await startActions.click();
+    // Every Phasing turn: mining and upkeep settle, then preparation hands over.
+    await page.getByRole('button',{name:/Mine & prepare/}).click();
     await page.getByRole('button',{name:/End turn/}).click();
     await expect(page.locator('.progress-clock')).toContainText(`${ply}/${INACTIVITY_LIMIT} turns without a kill`);
     if(ply<INACTIVITY_LIMIT) await page.getByText('Tap anywhere to continue').click();
@@ -19,7 +19,7 @@ test('normal income-earning turns advance the kill-only clock and draw at twenty
   expect(state.players.black.resourcesGained).toBeGreaterThan(0);
 });
 
-test('four-action setup, undo, both turns, resume and a fresh standard game', async ({page}) => {
+test('four-action setup, undo, both turns, resume and a fresh game', async ({page}) => {
   await page.setViewportSize({width:390,height:844});
   await page.goto('./');
   await page.getByRole('button',{name:/^Pass & Play/}).click();
@@ -31,11 +31,12 @@ test('four-action setup, undo, both turns, resume and a fresh standard game', as
   await expect(page.locator('.action-budget strong')).toHaveText('2 actions');
   await page.getByRole('button',{name:/Undo/}).click();
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
+  await page.getByRole('button',{name:/Mine & prepare/}).click();
   await page.getByRole('button',{name:/End turn/}).click();
   await page.getByText('Tap anywhere to continue').click();
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
   await page.reload();await page.getByRole('button',{name:/^Pass & Play/}).click();
-  await page.getByRole('button',{name:/Continue saved game · Standard · 4 actions/}).click();
+  await page.getByRole('button',{name:/Continue saved game · 4 actions/}).click();
   await expect(page.locator('.turn-strip')).toContainText('Player 2');
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
   await expect(page.locator('.progress-clock')).toContainText('4 actions / turn');
@@ -64,9 +65,12 @@ for (const side of ['white','black'] as const) test(`four-action AI plays correc
   await page.getByRole('radio',{name:side==='white'?'White':'Black',exact:true}).check();
   await page.getByLabel('AI Difficulty',{exact:true}).selectOption('easy');
   await page.getByRole('button',{name:'Start Game',exact:true}).click();
-  if(side==='white') await page.getByRole('button',{name:/End turn/}).click();
+  if(side==='white') {
+    await page.getByRole('button',{name:/Mine & prepare/}).click();
+    await page.getByRole('button',{name:/End turn/}).click();
+  }
   await expect(page.locator('.turn-strip')).toContainText(`You · Turn ${side==='white'?2:1}`,{timeout:20000});
-  if(await page.getByRole('button',{name:/Start actions/}).count()) await page.getByRole('button',{name:/Start actions/}).click();
+  // Phasing opens every turn in Act, so the budget is readable straight away.
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
   const budgets=await page.evaluate(()=>JSON.parse(sessionStorage.getItem('tested-budgets')??'[]'));
   expect(budgets.length).toBeGreaterThan(0);expect(budgets.every((n:number)=>n===4)).toBe(true);
