@@ -150,6 +150,9 @@ export function useAI(options: UseAIOptions = {}) {
     let requestStartedAt = 0;
     // See `MAX_TURN_SEARCHES`.
     let turnSearches = 0;
+    /** Whether this turn has already logged its budget-exhausted line; the
+     * counter still takes every floored decision (`noteHardBudgetExhausted`). */
+    let budgetExhaustedLogged = false;
     const valid = () => {
       if (token !== generation.current) return false;
       const real = currentGetter.current?.();
@@ -338,7 +341,7 @@ export function useAI(options: UseAIOptions = {}) {
         // only, so the v2 default path keeps its arithmetic byte for byte.
         const share = remainingCPU / decisionsRemaining;
         let allowance = share;
-        if (useHard && share < MIN_TURN_SEARCH_MS) { allowance = MIN_TURN_SEARCH_MS; noteHardBudgetExhausted(); }
+        if (useHard && share < MIN_TURN_SEARCH_MS) { allowance = MIN_TURN_SEARCH_MS; noteHardBudgetExhausted(!budgetExhaustedLogged); budgetExhaustedLogged = true; }
         searchStarted();
         const result = await client.current.findBestAction(currentState, difficulty, allowance, turnActions.length);
         remainingCPU = Math.max(0, remainingCPU - result.timeMs);

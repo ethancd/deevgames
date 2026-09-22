@@ -155,10 +155,19 @@ export function noteHardPlanReplayed(): void { hardDiag().plansReplayed++; }
  * used to be the one fallback kind that left no trace in the console at all, so
  * "the AI played instantly and badly" could not be settled from a bug report
  * (`ai-production-wiring.md` §6g).
+ *
+ * COUNTED PER DECISION, LOGGED ONCE PER TURN. Every floored decision is a fact
+ * the counter keeps — `e2e/hard-ai.spec.ts` and `tests/ai/hard-hook-fallback.test.ts`
+ * read the total — but the LINE says one thing about the whole turn, and under
+ * Phasing `fallbackDecisionsRemaining` is `actionsRemaining + 3` (seven in an
+ * opening Act), so logging each one buried the console in seven byte-identical
+ * copies every turn for the rest of the game. `useAI` passes `announce` true on
+ * the turn's first floored decision and false afterwards; it owns the turn, and
+ * this module has no idea where a turn begins.
  */
-export function noteHardBudgetExhausted(): void {
+export function noteHardBudgetExhausted(announce = true): void {
   hardDiag().budgetExhausted++;
-  console.warn(`${HARD_AI_LOG_PREFIX} turn budget exhausted — this turn overran its allowance; the remaining decisions run on the minimum search floor`);
+  if (announce) console.warn(`${HARD_AI_LOG_PREFIX} turn budget exhausted — this turn overran its allowance; its remaining decisions all run on the minimum search floor (logged once per turn; the budgetExhausted counter has one per decision)`);
 }
 
 /**
