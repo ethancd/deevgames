@@ -1,3 +1,27 @@
+# Standard retired — the course notice is reworded — 2026-09-21
+
+Rules release, not an Academy release: Standard was retired and the former Phasing
+ruleset is now the only one. The rules revision is unchanged at `muju-phasing-2`,
+so nothing about the recordings' *content* changed on this date — what changed is
+that the turn order R01, R04–R07, R09 and R10 teach is no longer "one of two rule
+sets" but simply the previous rules. See `../SPEC.md` v3.1, `../JUDGMENT_LOG.md`
+J-022 and amendment A6 of `../docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md`.
+
+- **Changed here:** the course notice in `build-release.py` and the matching
+  assertions in `verify-live.py`, in one commit. The notice no longer labels the
+  recordings "Standard rules v2.8 / v2.9" and no longer presents the current turn
+  order as an alternative called "Phasing".
+- **Prepared, not deployed.** The reworded notice reaches players only when the
+  website checkout (`ethancd/ashkie-pages`, `muju-academy/index.html`) is rebuilt
+  and published, and `verify_muju_videos.py` is re-copied there. Until then the
+  live page carries the 2026-09-19 wording, and the new assertions will fail
+  against it — that is the expected ordering, not a regression.
+- **Still owed.** `rules-verification.json` still reads `"rules": "v2.9"`;
+  regenerating it is an Academy release action (`export-rules.ts`), not a text
+  edit, and it is blocked on the media bundle. The v9 re-narration of R01,
+  R04–R07, R09 and R10 is still pending and still needs its own speech-synthesis
+  authorization.
+
 # Affected lessons — quiet-turn draw is twenty plies (2026-09-19, `muju-phasing-2`)
 
 Rules change, not an Academy release: the inactivity draw clock went from 10 quiet
@@ -41,15 +65,16 @@ All 48 exact media assets, 48 seek ranges, 120 historical redirects and 33 retir
 assets passed live verification. Desktop/phone page and R16 playback at 110s
 were visually checked. This supersedes unpublished status in the preparation
 record below. R05–R06 and R11–R16 are v8/rules v2.9; other lessons retain verified
-v7 recordings. Phasing remains a separate variant.
+v7 recordings. (Written while Phasing was still a separate variant; since
+2026-09-21 it is the only rule set — see the block at the top of this file.)
 
 # Metal v2.9 · local release complete · 2026-09-18
 
 All eight affected videos—R05, R06 and R11–R16—are rendered as v8 / rules v2.9,
 mastered and reviewed. The other eight lessons retain their verified v7 media.
 Yan and all three Metal ATK/DEF/Speed/Mining rows match the current game:
-1/3/0/3, 1/4/1/4, 2/5/2/5. Current phasing is retained; the separate phasing
-variant is outside this revision.
+1/3/0/3, 1/4/1/4, 2/5/2/5. Current phasing is retained; the Phasing rule set was
+outside this revision and has since become the only one (2026-09-21).
 
 The user explicitly authorized speech synthesis on 2026-09-18, resolving the
 earlier approval rejection. All 32 changed clips use the established OpenAI cast;
@@ -140,8 +165,11 @@ unrelated work; none was staged or overwritten. The isolated website checkout is
 ## Phasing course notice — prepared, not deployed — 2026-09-19
 
 T7's immediate notice is prepared in `codex/phasing-academy-notice`. The builder
-labels the existing recordings as Standard v2.8/v2.9, names the lessons with the
-previous turn order, and explains the Phasing sequence and delayed summons.
+names the lessons that teach the previous turn order and explains the current
+sequence and delayed summons. (Its wording was revised on 2026-09-21 when Standard
+was retired: it no longer labels the recordings "Standard v2.8/v2.9" and no longer
+calls the current sequence "Phasing". The strings in `build-release.py` and the
+assertions in `verify-live.py` moved together.)
 The live verifier now requires that notice without changing media verification.
 The existing 16 lessons, v7/v8 labels, media, transcripts and release manifest are
 preserved. Desktop and phone notice renders were inspected with no overflow.

@@ -22,10 +22,11 @@ promoted to a 3-attack Aegirinn) were both `proven_possible` kills that
 2. **Turn start:** decide a candidate batch, then `muju_stage` it immediately
    (timed rooms). Now the clock cannot beat you to a reasonable move.
 3. **Verify:** one `muju_analyze` with the candidate as `hypotheticalActions`
-   (through `END_ACTION_PHASE`), topics `threats,spawn`, targets = your units
+   (through `END_PLACE_PHASE` — the *whole* turn, including mining/upkeep and
+   preparation), topics `threats,spawn`, targets = your units
    worth more than a Hi, `deep:true`. Play only if nothing you care about is
    `proven_possible`. Otherwise fix and re-stage.
-4. **Commit:** `muju_play` the batch with `END_ACTION_PHASE`, or let the stage fire.
+4. **Commit:** `muju_play` the batch ending in `END_PLACE_PHASE`, or let the stage fire.
 
 Put step 3 behind a script gate so it costs no thinking time: the script runs
 analyze, prints only `proven_possible` lines, and refuses to play if any hit a
@@ -37,7 +38,7 @@ named unit.
 |---|---|
 | About to join any room | `muju_rules`, then `muju_time_awareness` if the room is timed. White's clock starts the moment Black joins, so decide turn 1 before joining. |
 | Opponent has played you before | `muju_history` on the old room (public, no token). Look for their opening unit path and promotion timing. In both 2026-09-12 games Codex went Sjor → Straumr → Aegirinn by turn 4; the notes only recorded the later Tanka half. |
-| Unsure about a schema or phase rule | Create an untimed scratch room, join it yourself with the invitation, and try the call. `END_PLACE_PHASE` is illegal once nothing is affordable; buy schema is `{type:"BUY_UNIT", definitionId, position}`. Resign the scratch room afterwards. |
+| Unsure about a schema or phase rule | Create an untimed scratch room, join it yourself with the invitation, and try the call. `END_PLACE_PHASE` is **always required** to hand over, including when nothing is affordable; buy schema is `{type:"BUY_UNIT", definitionId, position}` and commits a public pending summon. Resign the scratch room afterwards. |
 
 ## Observation tools
 
@@ -75,11 +76,30 @@ named unit.
 | Timed room, your turn just began | `muju_staged` for the version, then `muju_stage` your best current candidate with `commitWhenRemainingMs` around 120000. Threshold must not exceed delay + bank (630000 on rapid). Never stage only a pass unless you have no candidate at all. |
 | A better batch emerges after analysis | Re-stage with a new `requestId` and the current version, or commit directly with `muju_play`. A live handoff clears the stage. |
 | Candidate depends on the enemy not having moved | Add up to three `fallbacks`; the server tries them in order and never repairs a batch itself. |
-| Playing after a buy that leaves you unable to afford anything | Omit `END_PLACE_PHASE`; placement auto-advances and the explicit command is rejected, which voids the whole batch. |
+| Playing after a buy that leaves you unable to afford anything | Send `END_PLACE_PHASE` anyway. Preparation never ends by itself: omit it and your own turn stays open against your clock until it expires. |
 | Uncertain network outcome | Retry the identical body and `requestId`. Never invent a new ID for a retry. |
 | A batch was rejected | Read the error index. The whole batch is atomic; nothing applied. Refresh the room and legal actions before retrying. |
 | You realise a committed sub-step was wrong, same turn | `UNDO` alone via `muju_play` while `canUndo` is true. It does not refund time. |
-| Bank under about 90 seconds | Stop analysing. Play the staged candidate or the simplest legal batch with `END_ACTION_PHASE`. Spending all AP does not end the turn. |
+| Bank under about 90 seconds | Stop analysing. Play the staged candidate or the simplest legal batch, ending with `END_PLACE_PHASE`. Spending all AP does not end the turn. |
+
+## The turn shape: summons, arrivals and the two end commands
+
+Muju has one rule set, and its turn is Act → `END_ACTION_PHASE` (mine, then pay
+upkeep) → Prepare → `END_PLACE_PHASE`. A purchase is a **public pending summon**
+that arrives a full turn later. The 2026-09-12 habits above were written for a
+turn that no longer exists; these are the additions.
+
+| Trigger | Action |
+|---|---|
+| You are about to send a turn batch | Count four parts: actions, `END_ACTION_PHASE`, any `PAY_UPKEEP` and preparation, `END_PLACE_PHASE`. A batch that stops at `END_ACTION_PHASE` has not handed over and your clock is still running. |
+| You committed a `BUY_UNIT` | Nothing appears this turn and nothing can act. The square, type and cost are public the moment you commit: the opponent sees the summon and gets one whole turn to answer it. |
+| The opponent has a pending summon | Check the **arrival rectangle**, not just the square. Standing a unit on the square, or putting any unit of yours inside every rectangle that supports it, makes the summon vanish. It refunds their full original cost, so you gain the tempo, not the crystals. |
+| Your summon's square may be contested | Only the arrival-turn board matters. A temporary intrusion that leaves before your turn start is harmless; a piece still sitting there at your turn start kills the summon. Re-check with `spawn` on the arrival-turn hypothetical, not on today's board. |
+| A summon of yours was disrupted | The refund is automatic and exact, and it is available during the arrival turn, including that turn's upkeep and preparation. There is no relocation and no replacement purchase. |
+| A piece of yours arrived this turn | It can act immediately in Act, **and** it may promote at that same turn's Prepare. This is the fastest legal climb; plan the promotion crystals before you spend in Act. |
+| You want this turn's income to fund a promotion | It does. Mining settles at `END_ACTION_PHASE`, before Prepare, so read `resources` *after* sending `END_ACTION_PHASE` and decide preparation then. |
+| Planning a home invasion | The invader must survive its own end-of-action upkeep before immediate home-checkmate is adjudicated. Preview `END_ACTION_PHASE` and any required `PAY_UPKEEP` first, or `checkmate` reports `unknown`. |
+| Counting the draw clock | Summoning, arrival and refunds are **not** progress. Only an attack that removes a unit resets the clock, and the clock advances at `END_PLACE_PHASE`. |
 
 ## Habits that cost the 2026-09-12 games
 

@@ -1,5 +1,12 @@
 # Muju Hard AI — handoff (paused 2026-09-14; resumed and paused twice more, 2026-09-14 §10 and 2026-09-15 §11)
 
+> **Newer than this file (2026-09-21):** the engine was repaired for Phasing and shipped.
+> Read `phasing/repair-2026-09-20/HANDOFF.md` for the scorer fix, the
+> `phasing-hand-priors-v1` weights and their measurements, then
+> `RELEASE-2026-09-21-phasing.md` and amendment A6 of
+> `PHASING-PREREGISTRATION-2026-09-18.md` for the Phasing-only cutover that made the
+> repaired engine the default Hard seat. The M1–M14 record below stands as written.
+
 **Current state in one line:** M1–M14 are all green and committed; the whole critical path up to and
 including the search core is done. Groups I (M15–M18) and J (M19, M20) have not been started. Read
 **§11** first — it is the newest pause, it records three milestones whose pass criteria were amended

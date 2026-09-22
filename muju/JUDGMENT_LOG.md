@@ -359,3 +359,104 @@ User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan t
 - **Reversal cost:** low in code (one constant), high in evidence — reverting
   would void `muju-phasing-2` measurements the same way this change voids
   `muju-phasing-1` ones.
+
+
+## J-022: Phasing is the sole ruleset; Standard is retired (SPEC v3.1, rules revision unchanged at `muju-phasing-2`, 2026-09-21)
+
+- **Date:** 2026-09-21. **Owner instruction (Ethan), and that instruction is the
+  authority for this entry:** make Phasing the only deployed ruleset — retire
+  Standard, never display it — make the AI engine good and solid, and finish the
+  repo's next-session list. Recorded in parallel as amendment **A6** of
+  `docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md`, which carries the
+  gate-order half of the same instruction.
+- **Decision:** Phasing is the only rule set Muju offers. Standard cannot be
+  chosen in the browser, hosted online, created over HTTP or MCP, resumed from a
+  local save, or named as an option in any current-authority document. `SPEC.md`
+  v3.1 states the Phasing turn normatively; `docs/PHASING-2026-09-16.md` is
+  superseded and kept as the dated record of the variant era. The ruleset field,
+  `isPhasing`, `rulesetLabel` and the badge survive in code only to render
+  retired records.
+- **Blast radius — deliberately NO rules revision advance.** The rules revision
+  remains **`muju-phasing-2`**. No rule text changed: v3.1 deletes an option and
+  folds an already-shipped variant description into the normative body. Nothing
+  is voided. In particular the 2026-09-20 Hard-engine repair measurements
+  (`docs/hard-ai/phasing/repair-2026-09-20/`, 53–0–11 on held-out openings)
+  remain valid evidence about the engine that ships. Two concrete reasons a bump
+  would have been wrong as well as unnecessary:
+  1. `server/rooms.ts` opens a room only when its stored `rulesVersion` is on a
+     hard allow-list. A new string would 409 the four `muju-phasing-2` rooms that
+     are the only openable rooms in production — retiring Standard would have
+     retired the surviving games too.
+  2. `src/ai/hard/config.ts` pins `muju-phasing-2` as the lab identity carried by
+     every ladder row, suite measurement and weight artefact. Advancing it would
+     unpool the repair evidence from the code that produced it, for a change that
+     alters no rule.
+  This is a deliberate deviation from the `server-runtime` node of
+  `content-dag.json`, whose retire-a-rule-set rule reads "issue a new
+  rulesVersion". That rule exists to stop a stored game being reinterpreted, and
+  nothing here reinterprets a stored game: the retired rows keep returning
+  `RULES_CHANGED` and the production database is neither reset nor rewritten, so
+  the rest of that node's requirement is met as written. J-021's standard also
+  stands — a revision advance means evidence cannot be pooled, and that is
+  exactly the signal this change must not send.
+- **Rationale:** two rule sets cost more than they earned. Every current-authority
+  surface had to describe both (31 of them did, several wrongly — `MCP_TOOL_TAPS.md`
+  told agents to omit `END_PLACE_PHASE`, which hangs an agent's own turn), the
+  browser AI was gated behind a `?phasingAi=1` preview flag so the shipped engine
+  never met a player, and the strength lab had to keep a Standard control alive
+  beside the Phasing one. Phasing is the ruleset the owner wants played; the
+  variant framing was the last thing keeping it from being the game.
+- **Implementation:** browser — the Phasing preview flag and `RulesetSelect` are
+  deleted, `ModeSelect` starts `'phasing'` explicitly, and the worker's Phasing
+  refusal is gone. Server — `server/rooms.ts` creates and opens only
+  `muju-phasing-2`; `RULES_VERSION` becomes the exported, never-creatable
+  `RETIRED_STANDARD_VERSION`; `server/schema.ts` and `muju_rules` take
+  `ruleset: z.literal('phasing')` and an explicit `'standard'` is a 400.
+  Docs — SPEC v3.1 plus banners on the dated records. `createInitialGameState`'s
+  own default stays `'standard'` this pass and every entry point passes
+  `'phasing'` explicitly; flipping the 243 defaulted call sites is filed as a
+  follow-up, not smuggled into this change.
+- **Compatibility:** stated as three decisions, none of which rewrites a stored
+  row.
+  - *Local saves.* `SCHEMA_VERSION = 9`, readable `[5,6,7,8,9]`; a non-Phasing
+    payload is moved byte-for-byte to `elemental-tactics-save-retired` and
+    `loadGameState()` returns null (never `clearGameState()`); the current key
+    stays `elemental-tactics-save`. A Standard save on a player's device is
+    moved, never deleted and never reinterpreted.
+  - *Online archive.* Retired rooms stay listed and 409 on open, which is the
+    status quo since 2026-09-13; the lobby suppresses the dead `Analyze →` link
+    and labels them retired. The local Standard save is reviewable read-only at
+    `/muju/analysis?local=1&retired=1` with "Explore from here" disabled — the
+    one client-side path that could have reinterpreted a Standard position under
+    Phasing rules is closed by that condition.
+  - *No in-place migration.* `MIGRATABLE_RULES_VERSIONS` and the `legacy` room
+    branch are removed with their importers, so no stored room is reinterpreted.
+    Migrating a Standard room into the current revision is the forbidden silent
+    reinterpretation; production holds zero such rows in any case.
+    `src/game/migrate.ts` itself is left **byte-untouched**:
+    `lab/hard-ai/suites/phasing/canonical.ts` hashes every `.ts` under `src/game`
+    into the `rulesSourcesSha256` that the committed v2 suite fixtures pin, so
+    deleting the file breaks the canonical source binding and with it the suite
+    contract test and the Phasing suite measure. `migrateLegacyGame` is therefore
+    unreferenced dead code as of this entry; removing it is filed as a separate
+    change that carries the fixture re-pin it requires.
+- **Reproducibility anchors:** two tags, and `standard-final` does **not** move.
+  `standard-final` stays where it is, at commit `71a2c511` (2026-09-18), and is
+  pushed as it stands. It is an *annotated* tag, so `2b0f2bc0` is its tag-object
+  id, not a commit; the commit it names is `71a2c511`, the last one where the
+  Hard replica, the Standard pins and `docs/hard-ai/RELEASE-2026-09-18.md` are
+  valid for Standard rules — the replica itself became Phasing-only at
+  `142f0904` (2026-09-19). Re-pointing the tag past that commit would silently
+  invalidate the evidence it exists to anchor, so it is left alone. A **new**
+  tag `dual-ruleset-final` is created at the **first parent of this cutover's
+  merge commit on `master`** — the last commit that supported both rule sets,
+  i.e. the tree to check out to build and run Standard, which is what
+  `docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md` §Fixed definitions asks
+  for — and pushed. `standard-final` anchors the Standard-era strength records;
+  `dual-ruleset-final` anchors the last dual-ruleset tree. Every Standard-era
+  strength record, including `docs/hard-ai/RELEASE-2026-09-18.md`, is history
+  with respect to current play.
+- **Reversal cost:** low. Revert the cutover merge and Standard is offered again;
+  saves parked under the retired key survive untouched and become resumable
+  again, because they were never rewritten. The rules revision does not move in
+  either direction, so no measurement has to be redone on the way out.
