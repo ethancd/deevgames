@@ -34,7 +34,7 @@ for (const width of [390, 1280]) test(`Phasing local lifecycle, undo, resume and
   await page.getByRole('button', { name: 'Mine & prepare' }).click();
   await page.getByTestId('cell-0-0').click();
   await page.getByRole('button', { name: /Promote/ }).click();
-  await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label', /white Hono, fire, tier 2/);
+  await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label', /white Honō, fire, tier 2/);
   await page.screenshot({ path: info.outputPath('phasing-arrival-promotion.png'), fullPage: true });
   await page.getByRole('button', { name: 'How to play' }).click();
   // One deck since 2026-09-21: these rules are the rules, not an experiment

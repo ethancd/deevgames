@@ -26,7 +26,7 @@ test('built worker loads hashed WASM and performs a coordinated home rescue',asy
   expect(native.url()).toMatch(/\/muju\/assets\/entry-[^/]+\.js$/);
   const response=await binary;expect(response.ok()).toBe(true);expect(response.headers()['content-type']).toContain('application/wasm');
   const buffer=await response.body();expect([...buffer.subarray(0,4)]).toEqual([0,97,115,109]);
-  await expect(page.getByTestId('cell-9-9')).not.toHaveAttribute('aria-label',/white Tanka/,{timeout:10000});
+  await expect(page.getByTestId('cell-9-9')).not.toHaveAttribute('aria-label',/white Irumbu/,{timeout:10000});
   await closed;
   await page.screenshot({path:info.outputPath('wasm-home-rescue.png')});
   expect(errors).toEqual([]);await expect(page.getByRole('alert')).toHaveCount(0);

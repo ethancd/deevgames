@@ -1,6 +1,6 @@
 # Muju changes
 
-For work on Muju Hono Tanka, read [the content and release DAG](muju/docs/CONTENT_DAG.md)
+For work on Muju Hono Irumbu, read [the content and release DAG](muju/docs/CONTENT_DAG.md)
 before editing. It covers rules, the site, MCP helpers, deterministic AI, saved
 games, balance evidence, Academy, and the three separate deployment targets.
 

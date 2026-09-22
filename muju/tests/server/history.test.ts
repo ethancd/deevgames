@@ -100,7 +100,7 @@ it('undoes the mover’s own mining and upkeep without removing the opponent’s
   play('white', [{ type: 'PAY_UPKEEP', keepUnitIds: pending.board.units.filter(u => u.owner === 'white' && u.definitionId !== 'fire_2').map(u => u.id) }]);
   const payment = store.moveHistory(id).entries.at(-1)!;
   expect(payment).toMatchObject({ kind: 'upkeep', automatic: false, paid: 0, bankAfter: 11,
-    released: [{ name: 'Hono', symbol: '🔥2', square: 'B1' }] });
+    released: [{ name: 'Honō', symbol: '🔥2', square: 'B1' }] });
   const reopened = new RoomStore(path); stores.push(reopened);
   expect(reopened.moveHistory(id)).toEqual(store.moveHistory(id));
   play('white', [{ type: 'UNDO' }]);

@@ -1,17 +1,17 @@
 # Muju MCP tools: trigger-action plans for agent players
 
-Audience: any Claude or Codex session about to play Muju Hono Tanka through the
+Audience: any Claude or Codex session about to play Muju Hono Irumbu through the
 MCP at `/mcp` (live: `https://deevgames-muju.onrender.com/mcp`). This is a
 checklist of *when* to call each tool, written after two rapid games lost by an
 agent that had every tool available and used almost none of them for judgment.
-Rules and schemas live in `muju_rules` and `public/skills/muju-hono-tanka/SKILL.md`;
+Rules and schemas live in `muju_rules` and `public/skills/muju-hono-irumbu/SKILL.md`;
 this file is only about habits.
 
 A TAP is "if <trigger>, then <action>". Follow them mechanically. The engine's
 bounded search is cheaper and more reliable than hand arithmetic, and the two
 decisive blunders in the 2026-09-12 games (a Hi left in reach of a speed-1
 Straumr; a Straumr promoted to "safe" defence 3 the turn before the enemy
-promoted to a 3-attack Aegirinn) were both `proven_possible` kills that
+promoted to a 3-attack Ægirinn) were both `proven_possible` kills that
 `muju_analyze` would have reported in one call.
 
 ## The per-turn loop (three calls, not seven)
@@ -38,7 +38,7 @@ named unit.
 |---|---|
 | About to join any room | `muju_rules`, then `muju_time_awareness` if the room is timed. White's clock starts the moment Black joins, so decide turn 1 before joining. |
 | Reading `ruleset` out of a response | The two tools differ. `muju_rules` returns an **object**: `ruleset: {name:'phasing', revision, immutable, retired:['standard']}` — read `ruleset.name`. `muju_observe` still returns the bare **string** `ruleset: 'phasing'`. Code that treated `rules.ruleset` as a string was written before 2026-09-21 and must be updated. |
-| Opponent has played you before | `muju_history` on the old room (public, no token). Look for their opening unit path and promotion timing. In both 2026-09-12 games Codex went Sjor → Straumr → Aegirinn by turn 4; the notes only recorded the later Tanka half. |
+| Opponent has played you before | `muju_history` on the old room (public, no token). Look for their opening unit path and promotion timing. In both 2026-09-12 games Codex went Sjór → Straumr → Ægirinn by turn 4; the notes only recorded the later Irumbu half. |
 | Unsure about a schema or phase rule | Create an untimed scratch room, join it yourself with the invitation, and try the call. `END_PLACE_PHASE` is **always required** to hand over, including when nothing is affordable; buy schema is `{type:"BUY_UNIT", definitionId, position}` and commits a public pending summon. Resign the scratch room afterwards. |
 
 ## Observation tools
@@ -51,7 +51,7 @@ named unit.
 | `muju_observe` | `quietTurns` is within three of `drawAtQuietTurns` (17 of 20) | The remaining kill-free hand-offs end the game in a draw. Ahead on material or territory: spend the turn on a kill, because only an attack that removes a unit resets the clock — income, movement, purchases, promotions and upkeep losses do not. Behind: keep it quiet. Read both numbers from the observation instead of counting turns yourself; the limit moved from ten plies to twenty on 2026-09-19. |
 | `muju_observe` | Briefing threat list is empty | Do **not** read this as safety. It scans existing single hits only; promotions, purchases and combinations are omitted. Run `muju_analyze`. |
 | `muju_wait_for_change` | Opponent's turn | Pass `briefing:true`, `player`, and the last revision. Act only when `room.activePlayer` is your seat. Stop on `phase:"victory"`. |
-| `muju_wait_for_change` | Result shows the opponent bought or promoted | Re-derive threats before touching your stage; a promotion changes attack values (Straumr 2 → Aegirinn 3 was the kill in game 2). |
+| `muju_wait_for_change` | Result shows the opponent bought or promoted | Re-derive threats before touching your stage; a promotion changes attack values (Straumr 2 → Ægirinn 3 was the kill in game 2). |
 | `muju_legal_actions` | Turn start | Read `total` and skim purchase squares. Do not filter output so aggressively that promotions or enemy squares disappear; that cost an extra round trip in game 2. |
 | `muju_legal_actions` | You believe a move is legal but want the cost | Filter by `unitId`; it lists `actionCost` per destination, so path arithmetic is unnecessary. |
 | `muju_clock` | After any long think or before a second analysis | Cheap fresh read. Timestamps in your context do not tick. |
@@ -63,9 +63,9 @@ named unit.
 |---|---|
 | About to end a turn that leaves any unit costing 5 or more where an enemy could reach | `muju_analyze({topics:["threats"], targets:{unitIds:[...]}, hypotheticalActions:<whole turn>, deep:true})`. Read `kill`: `proven_possible` means move it; `unknown` means read `search.cutoffReason` and `omittedCaseClasses`; only `proven_impossible` with a complete scope is safety. |
 | Choosing a square for a unit ("where can this Hi stand?") | `survival` topic with `targets.squares` for the candidates. This is exactly the turn-3 question in game 2, answered by hand and answered wrong. |
-| Enemy unit sits near your cluster | `exchange` and `reply` topics on it: can you kill it this turn, and what does it cost. Damage stacks within one turn, so the answer is often a combination (Aegirinn 3 + Yan 2 kills an Aegirinn; you need 5 on a Tanka). |
+| Enemy unit sits near your cluster | `exchange` and `reply` topics on it: can you kill it this turn, and what does it cost. Damage stacks within one turn, so the answer is often a combination (Ægirinn 3 + Poṉ 2 kills an Ægirinn; you need 5 on an Irumbu). |
 | Considering a home attempt or the enemy has a unit adjacent to your home | `checkmate` topic before moving. The server resolves proven home-checkmate immediately, with no reply turn. |
-| Planning a forward anchor | `spawn` topic with the anchor move as the hypothetical. Check `blockingSet`: if one cheap enemy unit can step into the rectangle, the anchor is not worth the trip. Game 2's Aegirinn walked 8 squares to anchor a rich patch and a 3-crystal Hi blocked it next turn. |
+| Planning a forward anchor | `spawn` topic with the anchor move as the hypothetical. Check `blockingSet`: if one cheap enemy unit can step into the rectangle, the anchor is not worth the trip. Game 2's Ægirinn walked 8 squares to anchor a rich patch and a 3-crystal Hi blocked it next turn. |
 | Any enemy within 5 squares of a valuable unit | Remember speed-1 units still cover 3 squares plus an attack in 4 AP. `reach` topic lists this; do not trust a mental "it's slow". |
 | Result says `truncated` or a cutoff reason | Split targets or topics across two calls instead of accepting the partial answer. |
 | Untimed room or bank comfortably above 5 minutes | Use `muju_preview` on the final batch too: it shows the post-move board and the same exposure lines. |

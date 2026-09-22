@@ -33,7 +33,7 @@ function splitMoveFrame(before: BoardState, frame: ReplayFrame): ReplayFrame[] {
   const unit = before.units.find(u => u.id === action.unitId);
   if (!unit) return [frame];
   const { speed, name } = getUnitDefinition(unit.definitionId);
-  // Old recordings may contain Metal moves from before Yan became stationary.
+  // Old recordings may contain metal_1 moves from before it became stationary.
   // Preserve their recorded snapshot instead of splitting it with current Speed 0.
   if (speed <= 0) return [frame];
   const path = findPath(unit.position, action.to, before, BOARD_SIZE * BOARD_SIZE);

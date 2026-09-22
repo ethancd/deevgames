@@ -33,6 +33,10 @@ assert 'lesson R09 still says ten' in source,'Notice must name R09 as stating th
 assert 'only an attack that removes a piece' in source,'Notice must state that what resets the clock is unchanged'
 assert 'These recordings have not yet been updated.' in source
 assert 'Current rules v2.9' not in source,'Old recordings must not claim current Phasing rules'
+assert source.count('id="rename-notice"')==1,'Missing or duplicated rename notice'
+assert 'The game is now Muju Hono Irumbu, not Muju Hono Tanka.' in source
+assert 'Hono → Honō' in source and 'Yan → Poṉ' in source and 'Tanka → Irumbu' in source,'Notice must give the old→new list'
+assert 'These recordings still use the old names; they have not yet been updated.' in source
 assert len(videos)==len(set(videos))==16
 assert source.count('Video version 7 · Rules v2.8')==8
 assert source.count('Video version 8 · Rules v2.9')==8

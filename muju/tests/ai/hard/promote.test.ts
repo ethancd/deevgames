@@ -138,7 +138,7 @@ describe('gen/promote.ts planPromotions (DESIGN §5.6)', () => {
   });
 
   it('does not invent a Prepare KILL mission when promotion crosses adjacent target defence', () => {
-    // White Hi (POWER 1 into water) next to a Black Sjor (DEF 2); Hono reaches 2.
+    // White Hi (POWER 1 into water) next to a Black Sjór (DEF 2); Honō reaches 2.
     const { p, t } = prepare(
       buildState({
         units: [
@@ -177,8 +177,8 @@ describe('gen/promote.ts planPromotions (DESIGN §5.6)', () => {
     const hi = promotionsOf(p, t).find(c => p.defId[c.slot] === DEF_INDEX.get('water_1')) as PromoCandidate;
     const def = p.defId[hi.slot];
     const next = nextOf(p, hi.slot);
-    // SURVIVE protects the existing Sjor: benefit is its own material, not
-    // an impossible immediate capture of Göl.
+    // SURVIVE protects the existing Sjór: benefit is its own material, not
+    // an impossible immediate capture of Loş.
     expect(hi.mission).toBe(Mission.SURVIVE);
     const victimValue = cat.cost[def] * CC;
     const material = (cat.cost[next] - cat.cost[def]) * CC;
@@ -265,8 +265,8 @@ describe('gen/promote.ts planPromotions (DESIGN §5.6)', () => {
   });
 });
 
-// Metal v2.9: Yan must be eligible for a movement upgrade even on an empty mine.
-it('REACH: stationary Yan can promote for movement alone', () => {
+// Metal v2.9: Poṉ must be eligible for a movement upgrade even on an empty mine.
+it('REACH: stationary Poṉ can promote for movement alone', () => {
   const {p, t} = prepare(buildState({current:'white', phase:'place', white:20, black:0,
     reserves:new Array<number>(100).fill(0), units:[
       {def:'metal_1',owner:'white',x:2,y:2},
@@ -358,7 +358,7 @@ it('FORTIFY can close the rescue route by reinforcing a blocker rather than the 
  * the knob exists to change — and the rest pin the knob's arithmetic.
  */
 describe('gen/promote.ts strength knobs (strength.promoteStrengthMission, promoteOrderingRentPv)', () => {
-  /** A lone White Yan at E5, no enemy within reach, nothing to fortify. */
+  /** A lone White Poṉ at E5, no enemy within reach, nothing to fortify. */
   const lone = (): GameState =>
     buildState({
       units: [

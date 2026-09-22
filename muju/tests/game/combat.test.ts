@@ -213,7 +213,7 @@ describe('Combat Module', () => {
 
     it('elemental advantage allows kill of otherwise surviving unit', () => {
       let board = createEmptyBoard();
-      // Hi (Fire, Attack 2) vs Sjor (Water, Defense 2)
+      // Hi (Fire, Attack 2) vs Sjór (Water, Defense 2)
       // Normally 2 vs 2 = kill, but let's test with elemental advantage
       const attacker = createUnit('fire_1', 'white', { x: 5, y: 5 }); // Attack: 2
       const defender = createUnit('plant_1', 'black', { x: 5, y: 4 }); // Defense: 3
@@ -344,7 +344,7 @@ describe('Combat Module', () => {
       expect(result.eliminated).toBe(true);
     });
 
-    it('Radi (Lightning, 1 atk) cannot kill Sjor (Water, 2 def)', () => {
+    it('Radi (Lightning, 1 atk) cannot kill Sjór (Water, 2 def)', () => {
       let board = createEmptyBoard();
       const attacker = createUnit('lightning_1', 'white', { x: 0, y: 0 });
       const defender = createUnit('water_1', 'black', { x: 0, y: 1 });
@@ -366,7 +366,7 @@ describe('Combat Module', () => {
       expect(result.eliminated).toBe(false);
     });
 
-    it('Kagari (Fire tier 3, 4 atk) kills Sachakuna (Plant tier 3, 4 def)', () => {
+    it("Kagari (Fire tier 3, 4 atk) kills Sach'akuna (Plant tier 3, 4 def)", () => {
       let board = createEmptyBoard();
       const attacker = createUnit('fire_3', 'white', { x: 0, y: 0 });
       const defender = createUnit('plant_3', 'black', { x: 0, y: 1 });
@@ -393,7 +393,7 @@ describe('Combat Module', () => {
       const attacker1 = createUnit('fire_1', 'white', { x: 0, y: 0 }); // 2 atk
       const attacker2 = createUnit('fire_1', 'white', { x: 1, y: 1 }); // 2 atk
       const attacker3 = createUnit('fire_1', 'white', { x: 2, y: 2 }); // 2 atk
-      const defender = createUnit('water_3', 'black', { x: 5, y: 5 }); // 4 def (Aegirinn)
+      const defender = createUnit('water_3', 'black', { x: 5, y: 5 }); // 4 def (Ægirinn)
 
       // Calculate individual attack powers
       const power1 = calculateAttackPower(attacker1, defender);
@@ -436,7 +436,7 @@ describe('Combat Module', () => {
     });
 
     it('three advantaged 1-atk units CAN kill a 4-def unit', () => {
-      // 3x Inyan units (1 atk each) vs Aegirinn (4 def)
+      // 3x Inyan units (1 atk each) vs Ægirinn (4 def)
       // Metal beats Water: each attacker gets +1
       // Combined: (1+1) + (1+1) + (1+1) = 6 total attack
       // 6 >= 4, defender eliminated
@@ -444,7 +444,7 @@ describe('Combat Module', () => {
       const attacker1 = createUnit('metal_1', 'white', { x: 0, y: 0 }); // 1 atk
       const attacker2 = createUnit('metal_1', 'white', { x: 1, y: 1 }); // 1 atk
       const attacker3 = createUnit('metal_1', 'white', { x: 2, y: 2 }); // 1 atk
-      const defender = createUnit('water_3', 'black', { x: 5, y: 5 }); // 4 def (Aegirinn)
+      const defender = createUnit('water_3', 'black', { x: 5, y: 5 }); // 4 def (Ægirinn)
 
       const power1 = calculateAttackPower(attacker1, defender);
       const power2 = calculateAttackPower(attacker2, defender);
@@ -499,7 +499,7 @@ describe('v2.3 counterplay thresholds', () => {
     expect(result.eliminated).toBe(lethal);
     if (!lethal) expect(result.board.units.find(u => u.id === defender.id)?.damageTaken).toBe(2);
   });
-  it('Kagari alone among all 18 units one-shots a full-health Tanka', () => {
+  it('Kagari alone among all 18 units one-shots a full-health Irumbu', () => {
     const defender = createUnit('metal_3', 'black', {x: 0, y: 1});
     const killers = UNIT_DEFINITIONS.filter(d => {
       const attacker = createUnit(d.id, 'white', {x: 0, y: 0});
@@ -507,7 +507,7 @@ describe('v2.3 counterplay thresholds', () => {
     }).map(d => d.id);
     expect(killers).toEqual(['fire_3']);
   });
-  it('Hi followed by Radi can finish Tanka during one exposure window', () => {
+  it('Hi followed by Radi can finish Irumbu during one exposure window', () => {
     const hi = createUnit('fire_1', 'white', {x: 0, y: 0});
     const radi = createUnit('lightning_1', 'white', {x: 1, y: 1});
     const tanka = createUnit('metal_3', 'black', {x: 0, y: 1});

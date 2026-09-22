@@ -13,7 +13,7 @@
   },
   {
     "id": "fire_2",
-    "name": "Hono",
+    "name": "Honō",
     "element": "fire",
     "tier": 2,
     "archetype": "rush",
@@ -61,7 +61,7 @@
   },
   {
     "id": "lightning_3",
-    "name": "Kimubunga",
+    "name": "Kimbunga",
     "element": "lightning",
     "tier": 3,
     "archetype": "rush",
@@ -73,7 +73,7 @@
   },
   {
     "id": "water_1",
-    "name": "Sjor",
+    "name": "Sjór",
     "element": "water",
     "tier": 1,
     "archetype": "balanced",
@@ -97,7 +97,7 @@
   },
   {
     "id": "water_3",
-    "name": "Aegirinn",
+    "name": "Ægirinn",
     "element": "water",
     "tier": 3,
     "archetype": "balanced",
@@ -109,7 +109,7 @@
   },
   {
     "id": "shadow_1",
-    "name": "Göl",
+    "name": "Loş",
     "element": "shadow",
     "tier": 1,
     "archetype": "balanced",
@@ -157,7 +157,7 @@
   },
   {
     "id": "plant_2",
-    "name": "Sachita",
+    "name": "Mallki",
     "element": "plant",
     "tier": 2,
     "archetype": "expand",
@@ -169,7 +169,7 @@
   },
   {
     "id": "plant_3",
-    "name": "Sachakuna",
+    "name": "Sach'akuna",
     "element": "plant",
     "tier": 3,
     "archetype": "expand",
@@ -181,7 +181,7 @@
   },
   {
     "id": "metal_1",
-    "name": "Yan",
+    "name": "Poṉ",
     "element": "metal",
     "tier": 1,
     "archetype": "expand",
@@ -193,7 +193,7 @@
   },
   {
     "id": "metal_2",
-    "name": "Mazask",
+    "name": "Veḷḷi",
     "element": "metal",
     "tier": 2,
     "archetype": "expand",
@@ -205,7 +205,7 @@
   },
   {
     "id": "metal_3",
-    "name": "Tanka",
+    "name": "Irumbu",
     "element": "metal",
     "tier": 3,
     "archetype": "expand",

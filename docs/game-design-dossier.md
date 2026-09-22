@@ -44,7 +44,7 @@ next own turn or refund. Current AI/balance claims apply to Standard only.
 | **Ninja Tanks** (2013, Rails/jQuery) | 2p simultaneous-action bluffing duel | Shipped at deevgames.com | Decoy/feint fog-of-war: your move and your bluff look identical to the opponent |
 | **Blind Loyalty** / **Hex Strike** | Designed board games | Never implemented | Unknown — designs predate the repo's docs |
 | **FORGE** (React/TS) | 2p card drafting/auction on an expanding grid | Playable hot-seat; no AI, no online | Counter-bid auction where the outbid player keeps their turn |
-| **Muju Hono Tanka** (React/TS) | 2p Go × Chess × StarCraft on a 10×10 grid | Full rules + imperfect-info AI + **balance lab** | Three-phase turns (place → act → queue) + spawn-denial territory |
+| **Muju Hono Irumbu** (React/TS) | 2p Go × Chess × StarCraft on a 10×10 grid | Full rules + imperfect-info AI + **balance lab** | Three-phase turns (place → act → queue) + spawn-denial territory |
 | **Oracle of Delve** (React/TS) | Mobile-first roguelike dungeon crawler | V0 combat prototype + Playwright e2e harness | Layout-invariance testing methodology |
 
 ### Repo projects — wave 2 (consolidated onto master 2026-07-18)
@@ -114,7 +114,7 @@ Two players build tableaus by bidding astrological symbols (♂♀☿☽, 4 of e
 
 **Gaps**: no AI opponent, no animations, no multiplayer, no series integration. Recent master work was minor UI polish only (card titles wrap at a readable size instead of expanding tiles; modal backdrop-click closes; RUINS cells render diagonal X-lines instead of a text label).
 
-### 2.3 Muju Hono Tanka: Elemental Tactics
+### 2.3 Muju Hono Irumbu: Elemental Tactics
 
 Two players occupy opposite corners of a 10×10 grid, combining territorial
 control, tactical combat and an economy. Modes are vs AI, pass-and-play and

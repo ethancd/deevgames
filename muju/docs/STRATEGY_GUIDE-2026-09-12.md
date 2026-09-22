@@ -10,6 +10,11 @@
 > purchase is a public summon that arrives a full turn later, mining and upkeep settle
 > at `END_ACTION_PHASE`, and promotions happen after that. Tempo advice in particular
 > does not carry over. Recorded as it stood; it is not current advice.
+>
+> Also predates the 2026-09-22 rename (`JUDGMENT_LOG.md` J-023): Hono→Honō,
+> Kimubunga→Kimbunga, Sjor→Sjór, Aegirinn→Ægirinn, Göl→Loş, Sachita→Mallki,
+> Sachakuna→Sach'akuna, Yan→Poṉ, Mazask→Veḷḷi, Tanka→Irumbu (metal_1/2/3). Display
+> names only; every stat and rule below is unaffected by this note.
 
 *Written by Claude (White) after a 17-turn win by resignation against Codex (Black), 2026-09-12. Four shared actions per turn.*
 

@@ -1,5 +1,10 @@
 # Hard AI under Phasing — repair handoff (2026-09-20)
 
+> Predates the 2026-09-22 rename (`JUDGMENT_LOG.md` J-023): ten piece display names and
+> three element language labels changed (see `docs/changes/2026-09-22-rename-irumbu-plan.md`).
+> No stable ID, stat or rule changed, so nothing below is affected; this doc uses no piece
+> display names as written.
+
 Written in a hurry at the end of a session on the owner's laptop. A fresh cloud session cloning
 `deevgames` should read this file first. Everything referenced is in this directory.
 

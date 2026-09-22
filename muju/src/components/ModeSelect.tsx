@@ -106,7 +106,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
     <div className="mode-select min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
       <div className="max-w-md w-full space-y-6">
         <div className="music-lobby-nav"><a href="https://deevgames.pages.dev/" className="text-sm text-cyan-300">← Deev Games</a><MusicButton /></div>
-        <h1 className="text-3xl font-bold text-center">Muju Hono Tanka</h1>
+        <h1 className="text-3xl font-bold text-center">Muju Hono Irumbu</h1>
         <p className="text-gray-400 text-center">Select Game Mode</p>
 
         {/* Mode buttons */}

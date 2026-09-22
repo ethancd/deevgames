@@ -72,8 +72,8 @@ describe('Unit Definitions', () => {
     it('returns units in tier order', () => {
       const waterUnits = getUnitsByElement('water');
       const names = waterUnits.map((u) => u.name);
-      expect(names).toContain('Sjor');
-      expect(names).toContain('Aegirinn');
+      expect(names).toContain('Sjór');
+      expect(names).toContain('Ægirinn');
     });
   });
 
@@ -82,13 +82,13 @@ describe('Unit Definitions', () => {
       const next = getNextTierDefinition('fire_1');
       expect(next?.tier).toBe(2);
       expect(next?.element).toBe('fire');
-      expect(next?.name).toBe('Hono');
+      expect(next?.name).toBe('Honō');
     });
 
     it('returns next tier unit for tier 2', () => {
       const next = getNextTierDefinition('plant_2');
       expect(next?.tier).toBe(3);
-      expect(next?.name).toBe('Sachakuna');
+      expect(next?.name).toBe("Sach'akuna");
     });
 
     it('returns null for tier 3 units', () => {
@@ -98,14 +98,14 @@ describe('Unit Definitions', () => {
   });
 
   describe('getPromotionCost', () => {
-    it('calculates correct cost for Hi → Hono', () => {
-      // Hi costs 3, Hono costs 7, so promotion is 4
+    it('calculates correct cost for Hi → Honō', () => {
+      // Hi costs 3, Honō costs 7, so promotion is 4
       const cost = getPromotionCost('fire_1');
       expect(cost).toBe(4);
     });
 
-    it('calculates correct cost for Muju → Sachita', () => {
-      // Muju costs 5, Sachita costs 9, so promotion is 4
+    it('calculates correct cost for Muju → Mallki', () => {
+      // Muju costs 5, Mallki costs 9, so promotion is 4
       const cost = getPromotionCost('plant_1');
       expect(cost).toBe(4);
     });

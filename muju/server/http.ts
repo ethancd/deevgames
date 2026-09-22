@@ -45,7 +45,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
     next();
   });
   app.use(express.json({ limit: '64kb' }));
-  app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Tanka', protocol: 1, ...(scope ? { matchScope: scope } : {}) }));
+  app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Irumbu', protocol: 1, ...(scope ? { matchScope: scope } : {}) }));
   app.post('/api/muju/rooms', (req, res) => res.status(201).json(store.create(req.body)));
   app.get('/api/muju/rooms', (_req, res) => res.json({ rooms: store.listActive() }));
   app.get('/api/muju/rooms/invitations/:code', (req, res) => res.json(store.resolveInvitation(req.params.code)));
@@ -117,7 +117,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
       res.set('Cache-Control', 'no-store').set('X-Robots-Tag', 'noindex, nofollow').sendFile(resolve(options.distPath!, 'index.html'));
     });
     app.get('/', (_req, res) => res.redirect('/muju/'));
-    app.get('/SKILL.md', (_req, res) => res.type('text/markdown').sendFile(resolve(options.distPath!, 'skills/muju-hono-tanka/SKILL.md')));
+    app.get('/SKILL.md', (_req, res) => res.type('text/markdown').sendFile(resolve(options.distPath!, 'skills/muju-hono-irumbu/SKILL.md')));
     app.get('/muju/painter', (_req, res) => res.set('X-Robots-Tag', 'noindex, nofollow').sendFile(resolve(options.distPath!, 'index.html')));
     app.get('/muju/analysis', (_req, res) => res.sendFile(resolve(options.distPath!, 'index.html')));
     app.use('/muju/music', express.static(resolve(options.distPath, 'music'), {

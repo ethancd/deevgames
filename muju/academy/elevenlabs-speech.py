@@ -23,7 +23,10 @@ PRODUCTION = ROOT / 'production'
 BASE = 'https://api.elevenlabs.io/'
 NUMBERS = dict(zip('one two three four five six seven eight nine ten'.split(), range(1, 11)))
 LETTERS = dict(zip('ABCDEFGHIJ', ['Ay', 'Bee', 'See', 'Dee', 'Ee', 'Eff', 'Gee', 'Aitch', 'Eye', 'Jay']))
-NAMES = {'Hi': 'Hee', 'Sjor': 'Shore', 'Muju': 'Moo-joo', 'Hono': 'Hoh-noh', 'Kagari': 'kah-GAH-ree', 'Radi': 'RAH-dee', 'Umeme': 'oo-MEH-meh', 'Kimubunga': 'kee-moo-BOONG-gah', 'Straumr': 'STROWM-ur', 'Aegirinn': 'AY-geer-in', 'Göl': 'Guhl', 'Gölge': 'Guhl-geh', 'Karanlık': 'kah-rahn-LUK', 'Sachita': 'sah-CHEE-tah', 'Sachakuna': 'sah-chah-KOO-nah', 'Inyan': 'In-yahn', 'Mazask': 'MAH-zahsk', 'Tanka': 'Tahn-kah'}
+# 2026-09-22: the rename (docs/changes/2026-09-22-rename-irumbu-BRIEF.md) added every new
+# display name below, alongside its old name, so existing takes keep recognizing/pronouncing
+# correctly. New-name respellings are proposals for a future re-voice, not verified takes.
+NAMES = {'Hi': 'Hee', 'Sjor': 'Shore', 'Sjór': 'Shore', 'Muju': 'Moo-joo', 'Hono': 'Hoh-noh', 'Honō': 'Hoh-noh', 'Kagari': 'kah-GAH-ree', 'Radi': 'RAH-dee', 'Umeme': 'oo-MEH-meh', 'Kimubunga': 'kee-moo-BOONG-gah', 'Kimbunga': 'kim-BOONG-gah', 'Straumr': 'STROWM-ur', 'Aegirinn': 'AY-geer-in', 'Ægirinn': 'AY-geer-in', 'Göl': 'Guhl', 'Loş': 'Lohsh', 'Gölge': 'Guhl-geh', 'Karanlık': 'kah-rahn-LUK', 'Sachita': 'sah-CHEE-tah', 'Mallki': 'MAHL-kee', 'Sachakuna': 'sah-chah-KOO-nah', "Sach'akuna": 'SAH-chah-KOO-nah', 'Inyan': 'In-yahn', 'Yan': 'Yahn', 'Poṉ': 'Pohn', 'Mazask': 'MAH-zahsk', 'Veḷḷi': 'VEL-lee', 'Tanka': 'Tahn-kah', 'Irumbu': 'ee-ROOM-boo'}
 
 
 def write_json(path, value):

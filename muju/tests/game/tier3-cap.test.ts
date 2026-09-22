@@ -13,9 +13,13 @@ import baseline from '../../lab/solver/baseline-v1.3.json';
 const phasing=()=>createInitialGameState(undefined,4,0,'phasing');
 afterEach(()=>localStorage.clear());
 
+/** Display names renamed 2026-09-22 (Muju Hono Irumbu); baseline-v1.3.json is
+ * historical evidence and keeps the pre-rename spelling. See JUDGMENT_LOG.md J-023. */
+const RENAMED_2026_09_22: Record<string,string> = {fire_2:'Honō',lightning_3:'Kimbunga',water_1:'Sjór',water_3:'Ægirinn',shadow_1:'Loş',plant_2:'Mallki',plant_3:"Sach'akuna",metal_1:'Poṉ',metal_2:'Veḷḷi',metal_3:'Irumbu'};
+
 describe('current catalogue boundary', () => {
   it('preserves the 18-unit ladder with approved stats and 3/4/5 purchases plus 4/8 promotions', () => {
-    expect(UNIT_DEFINITIONS).toEqual(baseline.filter(d => d.tier <= 3).map(({buildTime: _removed, ...d}) => ({...d,cost:({fire:3,lightning:3,water:4,shadow:4,plant:5,metal:5}[d.element]!+[0,4,12][d.tier-1]),...(d.element==='metal'?{name:['Yan','Mazask','Tanka'][d.tier-1],speed:d.tier===3?2:d.speed}:{}),...({lightning_1:{attack:1},lightning_2:{attack:2},lightning_3:{mining:0},plant_1:{defense:3},plant_2:{mining:5},plant_3:{mining:8},metal_1:{speed:0,mining:3},metal_2:{attack:1,mining:4},metal_3:{mining:5,defense:5}} as Record<string,object>)[d.id]})));
+    expect(UNIT_DEFINITIONS).toEqual(baseline.filter(d => d.tier <= 3).map(({buildTime: _removed, ...d}) => ({...d,cost:({fire:3,lightning:3,water:4,shadow:4,plant:5,metal:5}[d.element]!+[0,4,12][d.tier-1]),...(RENAMED_2026_09_22[d.id]?{name:RENAMED_2026_09_22[d.id]}:{}),...(d.element==='metal'?{speed:d.tier===3?2:d.speed}:{}),...({lightning_1:{attack:1},lightning_2:{attack:2},lightning_3:{mining:0},plant_1:{defense:3},plant_2:{mining:5},plant_3:{mining:8},metal_1:{speed:0,mining:3},metal_2:{attack:1,mining:4},metal_3:{mining:5,defense:5}} as Record<string,object>)[d.id]})));
     expect(UNIT_DEFINITIONS).toHaveLength(18);
   });
   it('caps Cleave at exactly 1/2/3 for every catalogue entry', () => {

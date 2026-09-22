@@ -13,6 +13,7 @@ const hi = getUnitDefinition('fire_1');
 const hono = getUnitDefinition('fire_2');
 const kagari = getUnitDefinition('fire_3');
 const miner = getUnitDefinition('plant_2');
+const metal1 = getUnitDefinition('metal_1');
 const reserves = [...new Set(UNEQUAL_ROUTES_MAP)].sort((a,b)=>a-b);
 /**
  * ONE DECK. Until 2026-09-21 this file carried two page sets — a Standard deck
@@ -39,7 +40,7 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
   </>},
   {title:'Win the game', content:<>
     <p>Hold the enemy home corner until the start of your next turn, or eliminate every enemy piece. If no legal reply can remove the invader, checkmate wins immediately. Otherwise the defender gets one turn to clear it. An empty army loses even with crystals in the bank.</p>
-    <p>The {BOARD_SIZE}×{BOARD_SIZE} board starts with {INITIAL_MAP_RESOURCES} crystals. Each side begins with Hi, Sjor and Muju, and no crystals in the bank. White moves first.</p>
+    <p>The {BOARD_SIZE}×{BOARD_SIZE} board starts with {INITIAL_MAP_RESOURCES} crystals. Each side begins with Hi, Sjór and Muju, and no crystals in the bank. White moves first.</p>
     <p>After {INACTIVITY_LIMIT} consecutive completed player turns without an enemy kill by attack, the game is a draw. Only an attack kill resets the clock; income, movement, purchases, promotions and upkeep losses do not. The draw is checked at turn end, before the next home check.</p>
   </>},
   {title:'Commit a summon', content:<>
@@ -54,7 +55,7 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
   </>},
   {title:'Movement', content:<>
     <p>Move orthogonally through empty squares. One action moves a piece up to its Speed. Longer moves cost the shortest path length divided by Speed, rounded up. Pieces cannot pass through other pieces.</p>
-    <p>{hi.name} has Speed {hi.speed}. Moving three squares costs {Math.ceil(3/hi.speed)} actions. A piece with positive Speed may move repeatedly while shared actions remain. Yan has Speed 0: it cannot move, but can attack adjacent enemies and promote to gain movement.</p>
+    <p>{hi.name} has Speed {hi.speed}. Moving three squares costs {Math.ceil(3/hi.speed)} actions. A piece with positive Speed may move repeatedly while shared actions remain. {metal1.name} has Speed {metal1.speed}: it cannot move, but can attack adjacent enemies and promote to gain movement.</p>
   </>},
   {title:'Combat & Cleave',content:<>
     <p>Attack an orthogonally adjacent enemy for one action. Damage accumulates until that enemy’s next turn; reaching zero defense eliminates it. There is no retaliation. Pending summons cannot be attacked.</p>

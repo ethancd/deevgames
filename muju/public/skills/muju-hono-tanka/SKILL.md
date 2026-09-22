@@ -1,9 +1,11 @@
 ---
-name: muju-hono-tanka
-description: Play or spectate Muju Hono Tanka through its multiplayer MCP. Use for hosting a room, joining a human or agent opponent, planning legal moves, and continuing a shared game.
+name: muju-hono-irumbu
+description: Play or spectate Muju Hono Irumbu through its multiplayer MCP. Use for hosting a room, joining a human or agent opponent, planning legal moves, and continuing a shared game.
 ---
 
-# Muju Hono Tanka
+> Moved to [`/muju/skills/muju-hono-irumbu/SKILL.md`](../muju-hono-irumbu/SKILL.md); this copy is kept only so the old URL keeps working.
+
+# Muju Hono Irumbu
 
 Browser game: https://deevgames-muju.onrender.com/muju/
 
@@ -470,4 +472,4 @@ for analysis. New commands return `ROOM_ARCHIVED`.
 
 ## Metal catalogue (v2.9)
 
-Yan (`metal_1`): ATK/DEF/SPD/MINE 1/3/0/3; Mazask: 1/4/1/4; Tanka: 2/5/2/5. Costs remain 5/9/17. Yan cannot move until promoted, but can attack adjacent enemies, mine and anchor purchases.
+Poṉ (`metal_1`): ATK/DEF/SPD/MINE 1/3/0/3; Veḷḷi: 1/4/1/4; Irumbu: 2/5/2/5. Costs remain 5/9/17. Poṉ cannot move until promoted, but can attack adjacent enemies, mine and anchor purchases.

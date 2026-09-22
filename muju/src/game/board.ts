@@ -179,20 +179,20 @@ export function getStartCorner(player: PlayerId): Position {
 
 /**
  * Get starting unit positions relative to a corner
- * Player at (0,0): Hi at (1,0), Sjor at (1,1), Muju at (0,1)
- * AI at (9,9): Hi at (8,9), Sjor at (8,8), Muju at (9,8)
+ * Player at (0,0): Hi at (1,0), Sjór at (1,1), Muju at (0,1)
+ * AI at (9,9): Hi at (8,9), Sjór at (8,8), Muju at (9,8)
  */
 export function getStartingPositions(player: PlayerId): Position[] {
   if (player === 'white') {
     return [
       { x: 1, y: 0 }, // Hi (Fire)
-      { x: 1, y: 1 }, // Sjor (Water)
+      { x: 1, y: 1 }, // Sjór (Water)
       { x: 0, y: 1 }, // Muju (Plant)
     ];
   } else {
     return [
       { x: 8, y: 9 }, // Hi (Fire)
-      { x: 8, y: 8 }, // Sjor (Water)
+      { x: 8, y: 8 }, // Sjór (Water)
       { x: 9, y: 8 }, // Muju (Plant)
     ];
   }

@@ -135,7 +135,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     {open && <PlayDialog title="Sound & music" onClose={() => setOpen(false)}>
       <div className="music-panel">
         <SoundControls />
-        <p className="music-caption">Nine full tracks · Muju Hono Tanka</p>
+        <p className="music-caption">Nine full tracks · Muju Hono Irumbu</p>
         <label className="music-track-label">Track
           <select value={index} onChange={event => selectTrack(Number(event.target.value))}>
             {MUSIC_TRACKS.map((song, i) => <option key={song.id} value={i}>{i + 1}. {song.title} · {song.category}</option>)}

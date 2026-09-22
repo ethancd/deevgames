@@ -152,7 +152,7 @@ for(const tier of [1,2]) it(`Tier ${tier} corridor requires kill, move, then ano
   }
 });
 
-it.each([1,2])('Yan attacks at distance %s identically in JS and WASM without zero-speed traps', distance => {
+it.each([1,2])('Poṉ attacks at distance %s identically in JS and WASM without zero-speed traps', distance => {
   const state=createInitialGameState(undefined, 4, 0, 'phasing');
   const yan=createUnit('metal_1','white',{x:2,y:2}), target=createUnit('water_1','black',{x:2,y:2+distance});
   state.board.units=[yan,target,createUnit('plant_1','black',{x:8,y:8})];

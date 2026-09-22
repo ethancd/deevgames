@@ -76,11 +76,11 @@ it('allows inspection during incoming playback, follows the moving unit, and res
   const next = { ...room, revision: 2, state: applyActions(room.state, actions), history: [{ revision: 2, player: 'black' as const, actions }] };
   await act(async () => deliver({ changed: true, revision: next.revision, phase: next.state.phase, room: next }));
   fireEvent.click(screen.getByTestId('cell-3-3'));
-  expect(container.querySelector('.unit-detail')).toHaveTextContent('Sjor');
+  expect(container.querySelector('.unit-detail')).toHaveTextContent('Sjór');
   expect(screen.getByRole('button', { name: 'Hide reach' })).toBeVisible();
   await act(async () => vi.advanceTimersByTime(1000));
   expect(screen.getByTestId('cell-3-4')).toHaveAttribute('aria-pressed', 'true');
-  expect(container.querySelector('.unit-detail')).toHaveTextContent('Sjor');
+  expect(container.querySelector('.unit-detail')).toHaveTextContent('Sjór');
   fireEvent.click(screen.getByTestId('cell-0-0'));
   expect(container.querySelector('.unit-detail')).toHaveTextContent('Phasing in');
   fireEvent.click(screen.getByRole('button', { name: 'Deselect unit' }));

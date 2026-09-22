@@ -1,3 +1,34 @@
+# Current names override (2026-09-22) — notice prepared, not deployed
+
+Owner decision (Ethan, 2026-09-22): the game retitled **Muju Hono Tanka → Muju Hono Irumbu**
+(ASCII `Hono` in the title even though the piece card reads `Honō`), and ten pieces plus three
+element language labels got new display names. Stable IDs, stats, prices and every rule are
+unchanged; the rules revision string stays `muju-phasing-2`. See
+`../docs/changes/2026-09-22-rename-irumbu-BRIEF.md` and the full old→new table and ASCII
+respelling proposals in `BIBLE.md`.
+
+- **The Academy gets a notice, not a re-voice** — repeating the 2026-09-19 phasing-notice
+  pattern. The published v7/v8 videos keep their old-name narration and on-screen cards.
+- **Changed here:** `export-rules.ts` assertions and the top-level `catalog.json` and
+  `rules-verification.json` now use the new piece names (`bonk-matrix.json` and `map.json` are
+  byte-identical — they key by stable ID, not display name). `rules-snapshot/` and every
+  `production/R??/source-rules/` and `production/R??/src/*.json` copy are left alone: they are
+  provenance for what each lesson was actually recorded against, the same disposition STATUS.md
+  already used for the 2026-09-19 draw-clock change.
+- **Pronunciation/ASR lists updated, old names still work:** `transcribe-local.py`,
+  `prepare-audio.py`, `elevenlabs-speech.py`, `retake-openai.mjs` and `transcribe-new.mjs` now
+  recognize and pronounce every new name alongside its old name. No speech was synthesized.
+  `revise.py` and `propagate-economy.py` are one-time historical migrations and were not touched.
+- **Course-page notice extended** in `build-release.py`, with matching `verify-live.py`
+  assertions, the same way the 2026-09-19 T7 notice was prepared: both files compile; a local
+  preview build was checked, not the live site. See
+  `../docs/changes/2026-09-22-rename-irumbu-laneB.md` for the exact evidence and deploy steps.
+- **15 of 16 episodes speak at least one renamed piece** (every lesson except R04); their
+  recorded narration is unchanged and is exactly what the new course-page paragraph explains.
+- **Prepared, not deployed.** The reworded notice reaches players only when the ashkie-pages
+  checkout is rebuilt and published and `verify_muju_videos.py` is re-copied there, same as every
+  earlier text-only Academy preparation on this page.
+
 # Standard retired — the course notice is reworded — 2026-09-21
 
 Rules release, not an Academy release: Standard was retired and the former Phasing

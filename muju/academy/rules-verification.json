@@ -5,12 +5,13 @@
   "matchupChecks": 324,
   "demonstrations": [
     "v2.8: home squares 8, expansions 16, map 504; Plant Mining 3/5/8, limited by the remaining reserve.",
-    "v2.9: Yan/Mazask/Tanka are 1/3/0/3, 1/4/1/4, 2/5/2/5; Yan cannot move; adjacent attacks and reserve-limited income remain legal.",
+    "v2.9: Poṉ/Veḷḷi/Irumbu are 1/3/0/3, 1/4/1/4, 2/5/2/5; Poṉ cannot move; adjacent attacks and reserve-limited income remain legal.",
     "R02: C3 to C6 at Speed 2 costs 2 of 4 actions.",
     "R08: D7 to D4 and attack fits 4; D7 to D3 and attack requires 5.",
     "R06: all six elements use promotion costs 4 and 8, with no T4.",
-    "R03: Hono kills two DEF-3 Muju, then has no third attack.",
-    "R09: positive mining income on the 20th quiet turn still draws (R09 narration still says 10)."
+    "R03: Honō kills two DEF-3 Muju, then has no third attack.",
+    "R09: positive mining income on the 20th quiet turn still draws (R09 narration still says 10).",
+    "2026-09-22: catalogue display names renamed to Honō/Kimbunga/Sjór/Ægirinn/Loş/Mallki/Sach'akuna/Poṉ/Veḷḷi/Irumbu; IDs, stats and rules unchanged."
   ],
   "passed": true,
   "mapTotal": 504

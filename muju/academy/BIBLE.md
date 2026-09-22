@@ -1,3 +1,43 @@
+> Current names override (2026-09-22): the game retitled to **Muju Hono Irumbu** (ASCII `Hono`
+> in the title, no macron, even though the piece card reads `Honō`) and ten pieces plus three
+> element language labels got new display names. Stable IDs, stats, prices and every rule are
+> unchanged; the rules revision string stays `muju-phasing-2`. **The published course keeps its
+> v7/v8 videos, whose narration and on-screen cards still say the old names — this is a notice,
+> not a re-voice.** See `docs/changes/2026-09-22-rename-irumbu-BRIEF.md` and `STATUS.md`.
+>
+> | ID | Old | New |
+> |---|---|---|
+> | fire_2 | Hono | Honō |
+> | lightning_3 | Kimubunga | Kimbunga |
+> | water_1 | Sjor | Sjór |
+> | water_3 | Aegirinn | Ægirinn |
+> | shadow_1 | Göl | Loş |
+> | plant_2 | Sachita | Mallki |
+> | plant_3 | Sachakuna | Sach'akuna |
+> | metal_1 | Yan | Poṉ |
+> | metal_2 | Mazask | Veḷḷi |
+> | metal_3 | Tanka | Irumbu |
+>
+> Unchanged: Hi, Kagari, Radi, Umeme, Straumr, Gölge, Karanlık, Muju.
+>
+> Element language labels: Water "Old Norse"; Shadow "Turkish"; Plant "Quechua"; Metal "Tamil",
+> region "South Asia".
+>
+> This BIBLE's "no non-ASCII in spoken text" rule (below) stands. A future re-voice narrator
+> should use these ASCII respellings for the new non-ASCII names; **they are proposals only, not
+> verified pronunciations** — nobody has recorded or ASR-checked them yet:
+>
+> | New name | ASCII respelling |
+> |---|---|
+> | Honō | Hono |
+> | Sjór | Syor |
+> | Ægirinn | Eye-girin |
+> | Loş | Losh |
+> | Sach'akuna | Sacha-kuna |
+> | Poṉ | Pon |
+> | Veḷḷi | Velli |
+> | Irumbu | Irumbu |
+
 > Current rules override (2026-09-18): Metal v2.9 is Yan/Mazask/Tanka, 1/3/0/3, 1/4/1/4, 2/5/2/5. Earlier production decisions below are historical; current episode.json is authoritative.
 
 > Historical v2.2 production reference. Current rules and scope are in README.md and the v6 episode.json files. Old prices, six-action counts, 27-episode scope, and coordinate-caption conventions below are superseded.

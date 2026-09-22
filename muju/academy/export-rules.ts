@@ -38,11 +38,11 @@ for(const [tier,mining] of [[1,3],[2,5],[3,8]]){
 }
 demonstrations.push('v2.8: home squares 8, expansions 16, map 504; Plant Mining 3/5/8, limited by the remaining reserve.');
 const metal=units.filter(u=>u.element==='metal');
-assert.deepEqual(metal.map(u=>[u.name,u.attack,u.defense,u.speed,u.mining]),[['Yan',1,3,0,3],['Mazask',1,4,1,4],['Tanka',2,5,2,5]]);
+assert.deepEqual(metal.map(u=>[u.name,u.attack,u.defense,u.speed,u.mining]),[['Poṉ',1,3,0,3],['Veḷḷi',1,4,1,4],['Irumbu',2,5,2,5]]);
 for(const u of metal)for(const reserve of [0,2,3,8,16])assert.equal(unitEndOfTurnTake(unit(u.id,'white',0),{position:{x:0,y:0},resourceLayers:reserve} as any),Math.min(u.mining,reserve));
 const board=createEmptyBoard();
 assert.equal(getMoveCost({x:2,y:2},{x:2,y:3},0,board),null);
-demonstrations.push('v2.9: Yan/Mazask/Tanka are 1/3/0/3, 1/4/1/4, 2/5/2/5; Yan cannot move; adjacent attacks and reserve-limited income remain legal.');
+demonstrations.push('v2.9: Poṉ/Veḷḷi/Irumbu are 1/3/0/3, 1/4/1/4, 2/5/2/5; Poṉ cannot move; adjacent attacks and reserve-limited income remain legal.');
 assert.equal(getMoveCost({x:2,y:2},{x:2,y:5},2,board),2);demonstrations.push('R02: C3 to C6 at Speed 2 costs 2 of 4 actions.');
 assert.equal(getMoveCost({x:3,y:6},{x:3,y:3},1,board)!+1,4);
 assert.equal(getMoveCost({x:3,y:6},{x:3,y:2},1,board)!+1,5);
@@ -53,13 +53,19 @@ const hono=unit('fire_2','white',1),left={...unit('plant_1','black',0),id:'left'
 let b=resolveCombat({...board,units:[hono,left,right]},'white',left.position).board;
 assert.equal(b.units.length,2);assert.equal(canAttack(b.units.find(u=>u.id==='white')!),true);
 b=resolveCombat(b,'white',right.position).board;assert.equal(b.units.length,1);assert.equal(canAttack(b.units[0]),false);
-demonstrations.push('R03: Hono kills two DEF-3 Muju, then has no third attack.');
+demonstrations.push('R03: Honō kills two DEF-3 Muju, then has no third attack.');
 const initial=createInitialGameState();assert.equal(initial.turn.actionsRemaining,4);
 const ending=endTurn({...initial,phase:'playing',inactivityPlies:INACTIVITY_LIMIT-1,progressThisTurn:false});
 assert.equal(ending.victoryReason,'inactivity');assert.equal(ending.winner,null);assert.ok(ending.players.white.resources>0);
 // muju-phasing-2 (2026-09-19): the clock is twenty plies. R09's narration still says ten,
 // so the recording is stale until a v9 re-record; see academy/STATUS.md.
 demonstrations.push(`R09: positive mining income on the ${INACTIVITY_LIMIT}th quiet turn still draws (R09 narration still says 10).`);
+// 2026-09-22: display-name rename (owner decision, docs/changes/2026-09-22-rename-irumbu-BRIEF.md).
+// Hono->Honō, Kimubunga->Kimbunga, Sjor->Sjór, Aegirinn->Ægirinn, Göl->Loş, Sachita->Mallki,
+// Sachakuna->Sach'akuna, Yan->Poṉ, Mazask->Veḷḷi, Tanka->Irumbu; title Muju Hono Tanka->Muju Hono
+// Irumbu. Stable IDs, stats, prices and the muju-phasing-2 rules revision are unchanged; every
+// v7/v8 lesson recording still speaks the old names (see academy/STATUS.md and BIBLE.md).
+demonstrations.push('2026-09-22: catalogue display names renamed to Honō/Kimbunga/Sjór/Ægirinn/Loş/Mallki/Sach\'akuna/Poṉ/Veḷḷi/Irumbu; IDs, stats and rules unchanged.');
 fs.writeFileSync(new URL('catalog.json',root),JSON.stringify(units,null,2));
 fs.writeFileSync(new URL('bonk-matrix.json',root),JSON.stringify(bonks,null,2));
 fs.writeFileSync(new URL('map.json',root),JSON.stringify(UNEQUAL_ROUTES_MAP));

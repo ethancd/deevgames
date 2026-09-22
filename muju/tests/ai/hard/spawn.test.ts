@@ -89,7 +89,7 @@ describe('core/spawn.ts', () => {
     });
     const p = replica.pack(state);
     spawnInfo(p, 0, info);
-    // Black's Sjor on B2 sits inside BOTH white rectangles, so white has no anchor.
+    // Black's Sjór on B2 sits inside BOTH white rectangles, so white has no anchor.
     expect(bbCount(info.anchors)).toBe(0);
     expect(info.area).toBe(0);
     expect(info.reserveSum).toBe(0);

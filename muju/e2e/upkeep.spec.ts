@@ -57,10 +57,10 @@ for (const viewport of [{width:390,height:844},{width:1280,height:800}]) {
     const dialog=page.getByRole('dialog',{name:'Choose upkeep'});
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('status')).toContainText(`Upkeep 1 / ${paid.players.white.resources+1} crystals`);
-    await expect(dialog.getByRole('checkbox',{name:/Sjor/})).toBeDisabled();
+    await expect(dialog.getByRole('checkbox',{name:/Sjór/})).toBeDisabled();
     await page.reload();
     await expect(dialog).toBeVisible();
-    const hono=dialog.getByRole('checkbox',{name:/Hono/});
+    const hono=dialog.getByRole('checkbox',{name:/Honō/});
     await hono.uncheck();
     await expect(dialog.getByRole('status')).toContainText('1 released');
     await page.screenshot({path:testInfo.outputPath('upkeep-choice.png'),fullPage:true});

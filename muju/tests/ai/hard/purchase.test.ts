@@ -147,7 +147,7 @@ describe('gen/purchase.ts candidateDefs (DESIGN §5.5 dominance)', () => {
   });
 
   it('keeps shadow_1 when an enemy fire body sits in F17’s (4, 7] band', () => {
-    // Black Hi on G1: BFS 5 from B1, inside Goel's SPD-2 reach and outside Sjor's.
+    // Black Hi on G1: BFS 5 from B1, inside Goel's SPD-2 reach and outside Sjór's.
     const { p, t } = prepare(cornerLocked([{ def: 'fire_1', owner: 'black', x: 6, y: 0, id: 'b-hi' }]));
     expect(defsOf(p, t, 0)).toContain('shadow_1');
   });

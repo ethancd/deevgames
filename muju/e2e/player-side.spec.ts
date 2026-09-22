@@ -72,9 +72,9 @@ test('Black lets the real White AI open at the chosen difficulty and shows its f
   await page.getByTestId('cell-8-8').click();
   await page.getByTestId('cell-6-8').click();
 
-  await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
+  await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjór/);
   await page.getByRole('button', { name: '↶ Undo', exact: true }).click();
-  await expect(page.getByTestId('cell-8-8')).toHaveAttribute('aria-label', /black Sjor/);
+  await expect(page.getByTestId('cell-8-8')).toHaveAttribute('aria-label', /black Sjór/);
   await expect(page.getByRole('button', { name: '↶ Undo', exact: true })).toBeDisabled();
   await expect(page.getByRole('alert')).toHaveCount(0);
   await page.screenshot({ path: test.info().outputPath('black-human-tablet.png') });
@@ -109,14 +109,14 @@ test('Black preference survives the mode menu and reload while resuming the save
   await page.getByTestId('cell-8-8').click();
   await page.getByTestId('cell-6-8').click();
 
-  await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
+  await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjór/);
 
   await page.reload();
   await chooseAI(page);
   await expect(page.getByRole('radio', { name: 'Black', exact: true })).toBeChecked();
   await page.getByRole('button', { name: /Continue saved game/ }).click();
   await expect(page.locator('.turn-strip')).toContainText('You · Turn 4');
-  await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
+  await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjór/);
   await expect(page.getByRole('button', { name: '↶ Undo', exact: true })).toBeDisabled();
   await expect(resources.first()).toContainText('You ◆ 11');
   expect(workers).toEqual([]);
