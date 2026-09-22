@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { RoomStore, ROOM_IDLE_MS } from '../../server/rooms';
 import { RoomError } from '../../server/schema';
-import type { PlayerId, Ruleset } from '../../src/game/types';
+import type { PlayerId } from '../../src/game/types';
 import type { RoomAction } from '../../src/online/types';
 
 const epoch = 1800000000000;
@@ -17,9 +17,9 @@ const open = (path?: string, limit?: number) => { const store = new RoomStore(pa
 const close = (store: RoomStore) => { store.close(); stores.delete(store); };
 const command = (expectedRevision: number, actions: RoomAction[], requestId = `lifecycle-${expectedRevision}`) => ({ expectedRevision, requestId, actions });
 function file() { const dir = mkdtempSync(join(tmpdir(), 'muju-lifecycle-')); directories.push(dir); return join(dir, 'rooms.sqlite'); }
-function setup(options: { side?: PlayerId; ruleset?: Ruleset; timed?: boolean; path?: string } = {}) {
+function setup(options: { side?: PlayerId; timed?: boolean; path?: string } = {}) {
   const store = open(options.path);
-  const host = store.create({ name: 'Host', side: options.side ?? 'white', ruleset: options.ruleset ?? 'standard', timeControl: options.timed ? 'rapid' : null });
+  const host = store.create({ name: 'Host', side: options.side ?? 'white', timeControl: options.timed ? 'rapid' : null });
   const id = host.room.id, guest = store.join(id, { name: 'Guest', inviteCode: host.inviteCode });
   return { store, host, guest, id };
 }
@@ -73,8 +73,8 @@ it('wakes a displaced long poll with INVALID_SEAT and lets spectators keep watch
   await expect(observed).resolves.toMatchObject({ changed: true, room: { revision: 2 } });
 });
 
-it.each(['standard', 'phasing'] as const)('archives an idle %s game at exactly 24 hours, retaining every review position', ruleset => {
-  const { store, id, host } = setup({ ruleset });
+it('archives an idle game at exactly 24 hours, retaining every review position', () => {
+  const { store, id, host } = setup();
   vi.setSystemTime(epoch + 1000);
   const moved = store.act(id, host.credentials.token, command(1, [{ type: 'END_ACTION_PHASE' }]));
   const history = store.moveHistory(id);
@@ -86,7 +86,8 @@ it.each(['standard', 'phasing'] as const)('archives an idle %s game at exactly 2
   const archived = store.get(id);
   expect(archived).toMatchObject({ archivedAt: new Date(epoch + 1000 + ROOM_IDLE_MS).toISOString(), canUndo: false, state: { phase: 'victory', winner: null, victoryReason: 'abandoned', board: moved.state.board } });
   expect(store.listActive()).toEqual([]);
-  expect(store.listArchived().rooms[0]).toMatchObject({ id, ruleset, reason: 'abandoned' });
+  // Archived under the version it played, so the lobby still offers its score.
+  expect(store.listArchived().rooms[0]).toMatchObject({ id, ruleset: 'phasing', retiredRules: false, reason: 'abandoned' });
   expect(store.moveHistory(id).entries.slice(0, -1)).toEqual(history.entries);
   const result = store.moveHistory(id).entries.at(-1)!;
   expect(store.position(id, result.sequence).state).toEqual(archived.state);

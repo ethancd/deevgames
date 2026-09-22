@@ -19,6 +19,8 @@ export interface ArchivedRoom extends ActiveRoom {
   archivedAt: string;
   winner: PlayerId | null;
   reason?: VictoryReason;
+  /** The room was played under a retired rules revision: listed, never openable. */
+  retiredRules?: boolean;
 }
 export interface RoomArchive { rooms: ArchivedRoom[]; nextCursor: string | null }
 export interface MatchPolicy {

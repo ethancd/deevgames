@@ -67,7 +67,7 @@ describe('authoritative per-player delay clocks', () => {
     expect(undone.clock?.delayRemainingMs).toBe(500);
     expect(undone.clock?.deadlineAtMs).toBe(epoch + 5000);
     vi.setSystemTime(epoch + 2500);
-    const preview = store.act(id, host.credentials.token, request(3, [{ type: 'END_ACTION_PHASE' }]), true);
+    const preview = store.act(id, host.credentials.token, request(3, [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]), true);
     expect(preview.state.turn.currentPlayer).toBe('black');
     expect(preview.clock).toMatchObject({ runningPlayer: 'white', delayRemainingMs: 0, bankRemainingMs: { white: 2500, black: 3000 } });
     expect(() => store.act(id, host.credentials.token, request(3, [{ type: 'MOVE', unitId: 'missing', to: { x: 2, y: 0 } }]))).toThrow('illegal');
@@ -75,24 +75,25 @@ describe('authoritative per-player delay clocks', () => {
     expect(legalActions(store.get(id)).clock?.bankRemainingMs.white).toBe(2500);
     expect(observe(store.get(id)).clock?.deadlineAtMs).toBe(epoch + 5000);
     vi.setSystemTime(epoch + 3000);
-    const handoffRequest = request(3, [{ type: 'END_ACTION_PHASE' }]);
+    const handoffRequest = request(3, [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]);
     const black = store.act(id, host.credentials.token, handoffRequest);
     expect(black.clock).toMatchObject({ runningPlayer: 'black', delayRemainingMs: 2000, deadlineAtMs: epoch + 8000, bankRemainingMs: { white: 2000, black: 3000 } });
     vi.setSystemTime(epoch + 3500);
     const retry = store.act(id, host.credentials.token, handoffRequest);
     expect(retry.clock).toMatchObject({ delayRemainingMs: 1500, deadlineAtMs: epoch + 8000 });
-    const preference = store.act(id, host.credentials.token, request(4, [{ type: 'SET_UPKEEP_REVIEW', enabled: true }]));
+    const preference = store.act(id, guest.credentials.token, request(4, [{ type: 'SET_UPKEEP_REVIEW', enabled: true }]));
     expect(preference.clock?.deadlineAtMs).toBe(epoch + 8000);
     vi.setSystemTime(epoch + 4000);
-    const white = store.act(id, guest.credentials.token, request(5, [{ type: 'END_ACTION_PHASE' }]));
-    expect(white.clock).toMatchObject({ runningPlayer: 'white', delayRemainingMs: 2000, deadlineAtMs: epoch + 8000, bankRemainingMs: { white: 2000, black: 3000 } });
-    // Upkeep review, placement and starting the action phase all consume this same turn's delay.
+    // Mining and upkeep are the mover's own work, so the running clock does not change.
+    const mined = store.act(id, guest.credentials.token, request(5, [{ type: 'END_ACTION_PHASE' }]));
+    expect(mined.clock).toMatchObject({ runningPlayer: 'black', delayRemainingMs: 1000, deadlineAtMs: epoch + 8000, bankRemainingMs: { white: 2000, black: 3000 } });
+    // Upkeep review, preparation and the handoff all consume this same turn's delay.
     vi.setSystemTime(epoch + 5000);
     const upkeep = legalActions(store.get(id), { type: 'PAY_UPKEEP' }).actions[0].action;
-    store.act(id, host.credentials.token, request(6, [upkeep as RoomAction]));
+    store.act(id, guest.credentials.token, request(6, [upkeep as RoomAction]));
     vi.setSystemTime(epoch + 6500);
-    const actionPhase = store.act(id, host.credentials.token, request(7, [{ type: 'END_PLACE_PHASE' }]));
-    expect(actionPhase.clock).toMatchObject({ delayRemainingMs: 0, deadlineAtMs: epoch + 8000, bankRemainingMs: { white: 1500, black: 3000 } });
+    const handed = store.act(id, guest.credentials.token, request(7, [{ type: 'END_PLACE_PHASE' }]));
+    expect(handed.clock).toMatchObject({ runningPlayer: 'white', delayRemainingMs: 2000, deadlineAtMs: epoch + 10500, bankRemainingMs: { white: 2000, black: 1500 } });
   });
 
   it.each([false, true])('adjudicates at the exact deadline before a late command and commits the loss despite its error (preview=%s)', preview => {
@@ -119,7 +120,7 @@ describe('authoritative per-player delay clocks', () => {
   it('accepts a handoff just before flag fall, charges only that player, and stops both clocks on resignation', () => {
     const { store, host, guest, id } = setup();
     vi.setSystemTime(epoch + 4999);
-    const handed = store.act(id, host.credentials.token, request(1, [{ type: 'END_ACTION_PHASE' }]));
+    const handed = store.act(id, host.credentials.token, request(1, [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]));
     expect(handed.clock?.bankRemainingMs).toEqual({ white: 1, black: 3000 });
     vi.setSystemTime(epoch + 7999);
     const resigned = store.act(id, guest.credentials.token, request(2, [{ type: 'RESIGN' }]));
