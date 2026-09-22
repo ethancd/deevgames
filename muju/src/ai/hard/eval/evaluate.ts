@@ -33,6 +33,7 @@ import {
   DRAW_CC,
   MATE_PLY_CC,
   MAX_SLOTS,
+  Reason,
   Result,
   WIN_CC,
   type Centi,
@@ -40,6 +41,7 @@ import {
   type Side,
 } from '../types';
 import { Scratch } from '../core/bits';
+import { INACTIVITY_LIMIT } from '../core/state';
 import type { Replica } from '../core/state';
 import type { ReachMemo } from '../core/movement';
 import { allocTables, buildTables, type NodeTables } from '../tables/context';
@@ -194,9 +196,44 @@ export class Evaluator {
 }
 
 /**
+ * What a kill-clock verdict is worth when it is NOT yet forced. A clock ending
+ * that lies more than two hand-offs beyond the root can still be reset by
+ * either side's next kill, and the interior search is candidate-limited, so a
+ * mate-scale score there is an unverified promise: on the ten-ply clock the
+ * terminal sits inside the horizon along every quiet line, and the DESKTOP
+ * profile preferred "hand the turn back" (clock-out found nine hand-offs deep,
+ * scored as a win) over a free capture (2026-09-22, kill-clock lane 5). A
+ * distant clock-out is therefore a mild flat preference, like a draw is a flat
+ * zero; `DrawPressure` carries the growing urgency. Two-thirds of a tier-1.
+ */
+export const KILL_CLOCK_SOFT_CC: Centi = 200;
+/** Hand-offs from the root within which a kill-clock verdict is forced: the
+ * mover's own hand-off (1) or the opponent's single reply (2), which the search
+ * explores full-width at the top of the tree. */
+export const KILL_CLOCK_FORCED_HANDOFFS = 2;
+
+/** The root position's clock, set by the engine when it packs the root. The
+ * default makes every direct caller (tests, tools) treat the verdict as forced. */
+let killClockRootClock = INACTIVITY_LIMIT - 1;
+export function setKillClockRootClock(clock: number): void {
+  killClockRootClock = clock;
+}
+/** Hand-offs between the root and the clock's end, given no kill on the way. */
+export function killClockHandoffsFromRoot(): number {
+  return INACTIVITY_LIMIT - killClockRootClock;
+}
+
+function decidedCc(p: PackedState, ply: number): Centi {
+  if (p.reason === Reason.KILL_CLOCK && killClockHandoffsFromRoot() > KILL_CLOCK_FORCED_HANDOFFS) return KILL_CLOCK_SOFT_CC;
+  return WIN_CC - ply * MATE_PLY_CC;
+}
+
+/**
  * `±(WIN_CC − ply · MATE_PLY_CC)` for a decided position, `DRAW_CC` for a
  * draw, `null` while the game is running (DESIGN §4.15, §5.11.1). `ply` is the
- * distance from the root, so a mate found sooner scores higher.
+ * distance from the root, so a mate found sooner scores higher. A kill-clock
+ * verdict more than `KILL_CLOCK_FORCED_HANDOFFS` beyond the root scores
+ * `±KILL_CLOCK_SOFT_CC` instead (see there).
  */
 export function terminalScore(p: PackedState, root: Side, ply: number): Centi | null {
   switch (p.result) {
@@ -205,9 +242,9 @@ export function terminalScore(p: PackedState, root: Side, ply: number): Centi | 
     case Result.DRAW:
       return DRAW_CC;
     case Result.WHITE_WIN:
-      return root === 0 ? WIN_CC - ply * MATE_PLY_CC : -(WIN_CC - ply * MATE_PLY_CC);
+      return root === 0 ? decidedCc(p, ply) : -decidedCc(p, ply);
     case Result.BLACK_WIN:
-      return root === 1 ? WIN_CC - ply * MATE_PLY_CC : -(WIN_CC - ply * MATE_PLY_CC);
+      return root === 1 ? decidedCc(p, ply) : -decidedCc(p, ply);
     default: {
       const never: never = p.result;
       throw new Error(`terminalScore: unknown result ${String(never)}`);

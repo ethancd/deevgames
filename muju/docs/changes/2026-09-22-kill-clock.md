@@ -54,6 +54,35 @@ invader's next turn start is guaranteed: with the hand-off count c ≤ 8. Save s
    at the kill clock, and the "reference this tree plays under" checks are dormant, not deleted.
 2. `LADDER_RULES_VERSION` follows the harness constant; `tests/lab/baseline-identity` re-pinned.
 3. `GameRecord.inactivityDraw` keeps meaning an actual draw; a kill-clock ending is `winType`.
+4. **Identity-hash re-pins (lane 4).** The revision string is the first field of every resolved
+   configuration hash and every opening digest, so the champion/arm hashes in `tests/lab/ablate`
+   and the literal revision pins in `analyze-phasing`, `openings-p1` and `phasing-harness` moved;
+   each is re-pinned with the old value kept as a named historical constant (`…-lane4.md`).
+5. **Gate 1 is deferred at `muju-phasing-3`.** `lab/ai/gate1.ts` correctly refuses to run because
+   `gate1-references.json` and the frozen bands were adopted under phasing-2 and bands do not cross
+   a revision. The sixteen tests that need an adopted protocol are `it.skipIf(!GATE1_ADOPTED)`; a
+   new always-on test asserts the refusal names the live revision, and the skips re-arm by
+   themselves when an amendment adopts re-frozen bands. No workaround (synthetic bands, flipped
+   adopted record) was taken.
+6. **Hard AI declined a free capture (lane 5 + coordinator).** `e2e/ai-worker.spec.ts:89` failed
+   deterministically: the DESKTOP profile handed the turn back (+657) instead of killing White's
+   Hi (−746). Lane 5 bisected it to the canonical limit change alone. The mechanism, found by
+   probing the exposed root candidates: the `DrawPressure` feature is `sign(mined lead)·clock²·100/limit²`
+   and its frozen weight is **−8**, fitted under the draw clock where the running clock hurt the
+   leader. Under the kill clock that polarity rewards the trailer for letting the clock run, and
+   halving the limit quadrupled the per-ply magnitude, which was enough to flip the depth-3 search.
+   Fix: the feature is negated in `features.ts` so `w·f` rewards the mining leader while
+   `DEFAULT_WEIGHTS` stays byte-identical; the polarity test in `tests/ai/hard/eval.test.ts` is
+   flipped with the reason. Verified by driving `HardEngine.searchTurn` directly: both profiles now
+   capture (desktop +282, phone −1144 vs the alternatives). Lane 5's first hypothesis (a mate-scale
+   clock terminal reached along quiet lines) was disproved by instrumentation — zero terminal hits
+   in that search — but is a real hazard on deeper searches, so `terminalScore` now scores a
+   kill-clock verdict more than two hand-offs beyond the root as a flat ±200 cc
+   (`KILL_CLOCK_SOFT_CC`), with the root clock set by the engine when it packs the root and a
+   forced default for direct callers (`tests/ai/hard/kill-clock-terminal-score.test.ts`).
+7. `tests/ai/hard/calibrate-cold.test.ts` fails with `probe.work` 25132 vs the 12500 floor on this
+   machine under load and, per lane 2, identically at the seed commit; it is not touched here and
+   is judged by CI.
 
 ## Gates
 

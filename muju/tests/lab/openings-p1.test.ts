@@ -63,12 +63,15 @@ describe('P1 unsealed corpus', () => {
     // to ten plies, the SAME number `muju-phasing-1` had (verdict differs, but
     // this test only needs the limit and the warning, both of which coincide).
     // `RULES_VERSION` here is `HARNESS_RULES_VERSION`
-    // (`lab/harness/types.ts`), byte-pinned by `tests/lab/phasing-evidence.test.ts`
-    // for the p2-scripted-2026-09-19 reference campaign; it stays
-    // `muju-phasing-2` until that campaign is superseded, independent of which
-    // rules revision `src/game/inactivity.ts` itself now implements.
+    // (`lab/harness/types.ts`), which the coordinator advanced to
+    // `muju-phasing-3` on 2026-09-22 (the kill clock) — the p2-scripted-
+    // 2026-09-19 reference campaign that used to pin it at `muju-phasing-2`
+    // is now itself a `current: false` row in
+    // `tests/lab/phasing-evidence.test.ts`'s `PHASING3_HARNESS_EDITS` list, so
+    // asserting the live constant here is tracking identity, not re-pinning a
+    // frozen value that should have stayed put.
     const PHASING_1_LIMIT = 10, PHASING_1_WARNING = 7;
-    expect(RULES_VERSION).toBe('muju-phasing-2');
+    expect(RULES_VERSION).toBe('muju-phasing-3');
     expect(INACTIVITY_LIMIT).toBe(10);
     expect(INACTIVITY_WARNING).toBe(7);
 

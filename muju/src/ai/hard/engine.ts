@@ -136,7 +136,7 @@ import { PackError, Replica, allocState, newUndo } from './core/state';
 import { createReachMemo } from './core/movement';
 import { allocTables, buildTables, type NodeTables } from './tables/context';
 import { PhasingEconomyProofCutoff } from './tables/phasing-economy';
-import { Evaluator } from './eval/evaluate';
+import { Evaluator, setKillClockRootClock } from './eval/evaluate';
 import { withinTurnScore } from './eval/turnScore';
 import { DEFAULT_WEIGHTS } from './eval/weights';
 import { TurnPool, type Turn } from './gen/turn';
@@ -517,6 +517,7 @@ export class HardEngine {
       let packed: PackedState;
       try {
         packed = ctx.rep.pack(state, this.rootState);
+        setKillClockRootClock(packed.clock);
       } catch (err) {
         ctx.stats.elapsedMs = now() - enteredAt;
         return {
@@ -810,6 +811,7 @@ export class HardEngine {
     const ctx = this.ctx;
     const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const p = ctx.rep.pack(state, allocState());
+    setKillClockRootClock(p.clock);
     p.proverMode = 2;
     const meter = new WorkMeter(0x7fffffff);
     const startedAt = now();

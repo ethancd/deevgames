@@ -389,7 +389,18 @@ function extractStage1(p: PackedState, t: NodeTables, me: Side, them: Side, out:
   // magnitude is truncated before the sign is applied, so `f(side) = -f(other)`
   // still holds exactly.
   const pressure = ((clock * clock * DRAW_PRESSURE_FULL_SCALE) / DRAW_PRESSURE_DENOM) | 0;
-  out[F.DrawPressure] = (lead > 0 ? 1 : lead < 0 ? -1 : 0) * pressure;
+  // POLARITY (2026-09-22, kill-clock lane 5 + coordinator): `DEFAULT_WEIGHTS`
+  // is frozen and its `DrawPressure` weight is NEGATIVE, fitted under the draw
+  // clock where the running clock HURT the side that was ahead. Under the kill
+  // clock the side ahead on mined total is the side the clock is about to
+  // declare the winner, so the same magnitude must act with the opposite
+  // polarity. That is expressed here, in the feature, so the weight vector
+  // stays byte-identical: `w · f = (−|w|) · (−sign(lead) · pressure)` rewards
+  // the leader and presses the trailer to kill. With the other polarity the
+  // DESKTOP profile handed the turn back instead of taking a free capture on
+  // turn 1 (`e2e/ai-worker.spec.ts`), rewarded for letting the clock run while
+  // behind. Retuning the sign into the weight itself is the next campaign's job.
+  out[F.DrawPressure] = -(lead > 0 ? 1 : lead < 0 ? -1 : 0) * pressure;
 
   out[F.ActionsLeft] = p.phase === 1 ? (p.side === me ? p.actions : -p.actions) : 0;
   out[F.Corridor] = corridorUnits(p, me, cat) - corridorUnits(p, them, cat);
