@@ -19,6 +19,15 @@ jobs:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Full history, not the default depth-1 graft. `tests/lab/gate1.test.ts`
+          # reads the preregistration out of a pinned commit (`git show
+          # a0551c8c:...`) and `tests/lab/suites-phasing-contract.test.ts` asks
+          # `git log`/`git show --name-only` which files a floor-contract commit
+          # touched; on a shallow clone the single grafted commit "touches"
+          # every file in the tree. A numeric depth would work today and break
+          # on the next commit, because the pin is a fixed SHA.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
