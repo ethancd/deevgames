@@ -6,7 +6,8 @@ import { aiTurnBudgetMs, DEFAULT_AI_PACE, type AIPace } from '../ai/turnTime';
 import { applyAction } from '../ai/simulate';
 import { isLegalAction, phaseEndAction } from '../game/legality';
 import { isPhasing } from '../game/rules';
-import { fallbackKindFor, noteHardBudgetExhausted, noteHardPlanReplayed, noteHardRequest, noteHardTurn, readHardTurnBudgetMs, recordHardFallback, resolveHardAiRoute } from '../ai/hardOptIn';
+import { fallbackKindFor, noteHardBudgetExhausted, noteHardPlanReplayed, noteHardRequest, noteHardTurn, readHardTurnBudgetMs, recordHardFallback, resolveHardAiRoute, resolveHardDeviceProfile } from '../ai/hardOptIn';
+import { deviceProfilePatch, type DeviceProfileName } from '../ai/hard/config';
 import { fallbackDecisionsRemaining, turnSearchAllowance } from '../ai/turnFunding';
 
 interface UseAIOptions {
@@ -90,8 +91,12 @@ export function useAI(options: UseAIOptions = {}) {
    * which is the ordinary case and must not trigger a re-read (and a second
    * log line) every turn. */
   const hardBudgetMs = useRef<number | null | undefined>(undefined);
+  /** Which device profile this game's hard engine is built from, resolved once
+   * per game start next to the other two and cleared by the same `cancel`.
+   * `null` is "not read yet"; only a Hard seat ever asks. */
+  const hardDevice = useRef<DeviceProfileName | null>(null);
   const currentGetter = useRef(getCurrentState); currentGetter.current = getCurrentState;
-  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; hardOptIn.current = null; hardBudgetMs.current = undefined; client.current?.restart(); setIsThinking(false); setTurnClock(null); }, []);
+  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; hardOptIn.current = null; hardBudgetMs.current = undefined; hardDevice.current = null; client.current?.restart(); setIsThinking(false); setTurnClock(null); }, []);
   const clearLastTurnActions = useCallback(() => { setLastTurnActions([]); setLastDebug(null); }, []);
   useEffect(() => { cancel(); }, [difficulty, enabled, cancel]);
   useEffect(() => { setDifficulty(initialDifficulty); }, [initialDifficulty]);
@@ -111,6 +116,21 @@ export function useAI(options: UseAIOptions = {}) {
     // the v2 whole-turn path, no `HardEngine` module loaded in the worker.
     // Easy and medium are untouched either way.
     const useHard = hardOptIn.current && difficulty === 'hard';
+    // WHICH TABLES THE ENGINE IS BUILT FROM (A-F2). Read once per game, and
+    // only for a seat that will actually reach `HardEngine`: the hint picks
+    // `src/ai/hard/config.ts`'s PHONE shape on a handheld and sends NOTHING at
+    // all on a desktop, so the desktop request — and with it `hard@desktop`'s
+    // identity, which every ladder row is keyed on — is byte-for-byte what it
+    // was. The worker builds one engine per game from the first request's
+    // patch, so a mid-game change could not take effect anyway; resolving it
+    // here keeps that honest.
+    if (useHard && hardDevice.current === null) hardDevice.current = resolveHardDeviceProfile();
+    const devicePatch = useHard ? deviceProfilePatch(hardDevice.current ?? 'desktop') : undefined;
+    // `hard` is OMITTED, not set to undefined, on a desktop: the request object
+    // itself stays the one that shipped.
+    const hardRequest = useHard
+      ? { engine: 'hard' as const, ...(devicePatch === undefined ? {} : { hard: devicePatch }) }
+      : undefined;
     const token = ++generation.current;
     // `?hardMs` funds the HARD SEAT only; easy and medium keep the pace's
     // allowance whatever the URL says. The player's own choice is
@@ -246,7 +266,7 @@ export function useAI(options: UseAIOptions = {}) {
             // `Math.max(MIN_TURN_SEARCH_MS, remainingCPU)`.
             turn = await client.current.findBestTurn(currentState, difficulty,
               turnSearchAllowance(currentState, remainingCPU, turnBudgetMs, MIN_TURN_SEARCH_MS), turnActions.length,
-              useHard ? { engine: 'hard' as const } : undefined);
+              hardRequest);
           } catch (e) {
             if (e instanceof SearchCancelled) throw e;
             // (c) worker failure or watchdog timeout. A THROW REPORTS NO
