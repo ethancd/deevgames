@@ -40,8 +40,12 @@ out. Fill the slots below with what was measured, including failures.
   `master` with no test gate (that merge *is* the deploy); Cloudflare Pages
   publishes only when `deploy.yml` passes, and Pages publishing for Muju was
   paused before this release — record whether it was un-paused here.
-  PR: _(fill)_. Merge commit: _(fill)_. `standard-final` re-pointed to its first
-  parent: _(fill)_.
+  PR: _(fill)_. Merge commit: _(fill)_. Two tags, and `standard-final` does
+  **not** move: it stays at commit `71a2c511` (`2b0f2bc0` is the annotated tag
+  object, not a commit) and is pushed as-is, anchoring the Standard-era strength
+  records including `RELEASE-2026-09-18.md` — pushed: _(fill)_. A new tag
+  `dual-ruleset-final` is created at the merge commit's first parent, the last
+  commit supporting both rule sets, and pushed: _(fill)_. (J-022, A6.)
 
 ## Release ledger
 

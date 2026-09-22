@@ -433,14 +433,22 @@ User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan t
     `src/game/migrate.ts` is deleted with its importers. Migrating a Standard
     room into the current revision is the forbidden silent reinterpretation;
     production holds zero such rows in any case.
-- **Reproducibility anchor:** `standard-final` is re-pointed to the **first
-  parent of this cutover's merge commit on `master`** — the last commit that
-  supported both rule sets, as
-  `docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md` §Fixed definitions
-  requires. The local tag at `2b0f2bc0` (2026-09-18) predated that by more than
-  thirty commits and was never pushed. Every Standard-era strength record,
-  including `docs/hard-ai/RELEASE-2026-09-18.md`, is valid for that tag and is
-  history with respect to current play.
+- **Reproducibility anchors:** two tags, and `standard-final` does **not** move.
+  `standard-final` stays where it is, at commit `71a2c511` (2026-09-18), and is
+  pushed as it stands. It is an *annotated* tag, so `2b0f2bc0` is its tag-object
+  id, not a commit; the commit it names is `71a2c511`, the last one where the
+  Hard replica, the Standard pins and `docs/hard-ai/RELEASE-2026-09-18.md` are
+  valid for Standard rules — the replica itself became Phasing-only at
+  `142f0904` (2026-09-19). Re-pointing the tag past that commit would silently
+  invalidate the evidence it exists to anchor, so it is left alone. A **new**
+  tag `dual-ruleset-final` is created at the **first parent of this cutover's
+  merge commit on `master`** — the last commit that supported both rule sets,
+  i.e. the tree to check out to build and run Standard, which is what
+  `docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md` §Fixed definitions asks
+  for — and pushed. `standard-final` anchors the Standard-era strength records;
+  `dual-ruleset-final` anchors the last dual-ruleset tree. Every Standard-era
+  strength record, including `docs/hard-ai/RELEASE-2026-09-18.md`, is history
+  with respect to current play.
 - **Reversal cost:** low. Revert the cutover merge and Standard is offered again;
   saves parked under the retired key survive untouched and become resumable
   again, because they were never rewritten. The rules revision does not move in

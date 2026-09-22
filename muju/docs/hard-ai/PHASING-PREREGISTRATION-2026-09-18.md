@@ -356,12 +356,18 @@ deletes the Standard option; it changes **no rule**. The rules revision therefor
 voided by this amendment** — including the whole `repair-2026-09-20` bundle. v3.1 also discharges the
 "to be folded into `SPEC.md` v3.0" clause of Fixed definitions, one minor version later than intended.
 
-**Reproducibility anchor: `standard-final` is re-pointed.** Fixed definitions anchors Standard pins and
-`RELEASE-2026-09-18.md` to "the last commit supporting both rule sets", tagged `standard-final`. That
-tag existed only in one local checkout, at `2b0f2bc0` (2026-09-18), more than thirty commits before the
-commit it is supposed to name, and was never pushed. It is re-pointed to the **first parent of this
-cutover's merge commit on `master`** — the genuine last dual-ruleset commit — and pushed. Standard pins
-and `RELEASE-2026-09-18.md` remain valid evidence for that tag only.
+**Reproducibility anchors: `standard-final` stays put, and a new `dual-ruleset-final` is added.** Fixed
+definitions anchors Standard pins and `RELEASE-2026-09-18.md` to "the last commit supporting both rule
+sets", tagged `standard-final`. That tag exists only in one local checkout and has never been pushed.
+It is an **annotated** tag: `2b0f2bc0` (2026-09-18) is its tag-object id, not a commit; the commit it
+names is `71a2c511` (2026-09-18), the last one where the Hard replica, the Standard pins and
+`RELEASE-2026-09-18.md` are valid for Standard rules — the replica became Phasing-only at `142f0904`
+(2026-09-19). `standard-final` is therefore **not** re-pointed; it is pushed exactly as it stands, and
+the Standard pins and `RELEASE-2026-09-18.md` remain valid evidence for that tag only. Re-pointing it
+past `142f0904` would silently invalidate them. A **new** tag `dual-ruleset-final` is created at the
+**first parent of this cutover's merge commit on `master`** — the genuine last dual-ruleset commit, the
+tree to check out to build and run Standard — and pushed. Both tags are named in `JUDGMENT_LOG.md`
+J-022 and in `RELEASE-2026-09-21-phasing.md`.
 
 **Amendments A1–A5 stand as written.** Seeds are unchanged; the post-release measurement rows use the
 7101–7606 series and never the 2026095x/2026096x Gate seeds.
