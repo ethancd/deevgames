@@ -96,17 +96,17 @@ describe('measured clock pressure', () => {
     expect(waited).toMatchObject({ changed: false, clockPressure: after.clockPressure });
   });
 
-  it.each(['resign', 'timeout', 'draw'] as const)('excludes terminal turns (%s) while keeping earlier completed samples', terminal => {
+  it.each(['resign', 'timeout', 'kill-clock'] as const)('excludes terminal turns (%s) while keeping earlier completed samples', terminal => {
     const { store, id, play, endTurn } = setup();
     endTurn(1000);
     if (terminal === 'resign') play([{ type: 'RESIGN' }]);
     else if (terminal === 'timeout') vi.setSystemTime(store.get(id).clock!.deadlineAtMs!);
-    // The draw lands on the INACTIVITY_LIMIT-th quiet ply; that terminal turn is excluded.
+    // The kill clock lands on the INACTIVITY_LIMIT-th quiet ply; that terminal turn is excluded.
     else for (let turn = 2; turn <= INACTIVITY_LIMIT; turn++) endTurn(1000);
     const room = store.get(id), pressure = room.clockPressure!;
     expect(room.state.phase).toBe('victory');
-    expect(pressure.players.white.completedTurns).toBe(terminal === 'draw' ? INACTIVITY_LIMIT / 2 : 1);
-    expect(pressure.players.black.completedTurns).toBe(terminal === 'draw' ? INACTIVITY_LIMIT / 2 - 1 : 0);
+    expect(pressure.players.white.completedTurns).toBe(terminal === 'kill-clock' ? INACTIVITY_LIMIT / 2 : 1);
+    expect(pressure.players.black.completedTurns).toBe(terminal === 'kill-clock' ? INACTIVITY_LIMIT / 2 - 1 : 0);
     const saved = structuredClone(pressure);
     vi.setSystemTime(Date.now() + 100000);
     expect(store.get(id).clockPressure).toEqual(saved);

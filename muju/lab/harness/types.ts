@@ -15,7 +15,7 @@ import type { Rng } from './rng';
  *
  * A record with NO `rulesVersion` is Standard and predates Phasing entirely.
  */
-export type RulesVersion = 'muju-phasing-1' | 'muju-phasing-2';
+export type RulesVersion = 'muju-phasing-1' | 'muju-phasing-2' | 'muju-phasing-3';
 
 /**
  * The revision this tree PLAYS. It is the single source of the value: the
@@ -28,7 +28,7 @@ export type RulesVersion = 'muju-phasing-1' | 'muju-phasing-2';
  * Before A4 the same string was written out by hand in four places. It is one
  * constant now so a future revision cannot land in three of them.
  */
-export const HARNESS_RULES_VERSION = 'muju-phasing-2' as const satisfies RulesVersion;
+export const HARNESS_RULES_VERSION = 'muju-phasing-3' as const satisfies RulesVersion;
 
 /** The full, perfect-information game plus convenience fields for policies. */
 export interface BotView {
@@ -192,6 +192,7 @@ export const DEFAULT_MATCH_OPTIONS: MatchOptions = {
 
 export type WinType =
   | 'inactivity'
+  | 'kill-clock'
   | 'upkeep-elimination'
   | 'home-occupation'
   | 'home-checkmate' // canonical `homeCheckmate.ts` forced-mate verdict (DESIGN §7.7)

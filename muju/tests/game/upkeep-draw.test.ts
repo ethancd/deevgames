@@ -10,7 +10,7 @@ import {saveGameState,loadGameState} from '../../src/utils/persistence';
 import {AIEngineV2} from '../../src/ai/engine-v2';
 import {getAttackCount} from '../../src/game/combat';
 import {getUnitDefinition} from '../../src/game/units';
-import {INACTIVITY_LIMIT,INACTIVITY_WARNING,LEGACY_INACTIVITY_LIMIT,resolveInactivityDraw} from '../../src/game/inactivity';
+import {INACTIVITY_LIMIT,INACTIVITY_WARNING,LEGACY_INACTIVITY_LIMIT,resolveInactivityDraw,minedTotal} from '../../src/game/inactivity';
 /**
  * Phasing is the only ruleset since 2026-09-21, and it moves upkeep: a seat heals
  * and acts first, `END_ACTION_PHASE` ("Mine & prepare") mines and then charges
@@ -80,7 +80,7 @@ describe('upkeep boundary',()=>{
   const s=mineAndPrepare(arena(2));const a=await new AIEngineV2('medium').findBestAction(s),b=await new AIEngineV2('medium').findBestAction(s);expect(a.plan.actions).toEqual(b.plan.actions);expect(a.plan.actions[0].type).toBe('PAY_UPKEEP');expect(isLegalAction(s,a.plan.actions[0])).toBe(true);expect(applyAction(s,a.plan.actions[0]).lastUpkeep?.paid).toBeGreaterThan(0);
  });
 });
-describe('20 completed quiet turns',()=>{
+describe('10 completed kill-free turns (kill clock)',()=>{
  it('only a kill resets the clock through income settlement, save/resume and undo',()=>{
   const s=phasing();s.inactivityPlies=INACTIVITY_LIMIT-1;
   const attacker=createUnit('fire_1','white',{x:3,y:3});
@@ -94,22 +94,49 @@ describe('20 completed quiet turns',()=>{
   const next=applyAction(mined,{type:'END_PLACE_PHASE'});
   expect(next.inactivityPlies).toBe(0);
   expect(passTurn(next).inactivityPlies).toBe(1);
-  // Restoring the pre-attack state (undo) restores its clock as well.
-  const undone=passTurn(s);expect(undone.victoryReason).toBe('inactivity');
+  // Restoring the pre-attack state (undo) restores its clock as well. Only
+  // White has taken a turn, so White is ahead on mined totals.
+  const undone=passTurn(s);expect(undone.victoryReason).toBe('kill-clock');expect(undone.winner).toBe('white');
   expect(undone.lastIncome!.total).toBeGreaterThan(0);
  });
- it('draws exactly at 20 and evaluates the saved terminal result as zero both ways',()=>{
-  let s=phasing(Array(100).fill(0));for(let i=1;i<=INACTIVITY_LIMIT;i++){s=passTurn(s);expect(s.inactivityPlies).toBe(i);expect(s.phase).toBe(i===INACTIVITY_LIMIT?'victory':'playing');}expect(s.winner).toBeNull();expect(getGameResult(s)).toEqual({status:'draw',reason:'inactivity'});for(const p of ['white','black'] as const){expect(evaluatePosition(s,p)).toBe(0);expect(quickEvaluate(s,p)).toBe(0);}saveGameState(s);expect(loadGameState()?.victoryReason).toBe('inactivity');
+ // Spec §5(a): a kill on ply 9 resets the clock and play continues.
+ it('(a) a kill on the ninth kill-free ply resets the clock and play continues',()=>{
+  const s=phasing();s.inactivityPlies=INACTIVITY_LIMIT-2; // one quiet turn from the terminal
+  const attacker=createUnit('fire_1','white',{x:3,y:3});
+  s.board.units=[attacker,createUnit('plant_1','black',{x:4,y:3}),createUnit('plant_1','black',{x:8,y:8})];
+  const killed=applyAction(s,{type:'ATTACK',unitId:attacker.id,targetPosition:{x:4,y:3}});
+  expect(killed.progressThisTurn).toBe(true);
+  const next=applyAction(applyAction(killed,{type:'END_ACTION_PHASE'}),{type:'END_PLACE_PHASE'});
+  expect(next.phase).toBe('playing');expect(next.inactivityPlies).toBe(0);
  });
- it('draws before the next home win, healing or upkeep',()=>{
+ // Spec §5(b)/(c): the tenth kill-free ply ends the game on mined totals,
+ // including Black's handicap; an equal total is a draw.
+ it('(b) the tenth kill-free ply ends the game on mined totals, including Black\'s handicap',()=>{
+  let s=phasing(Array(100).fill(0));
+  s.players.white.resourcesGained=5;s.players.black.resourcesGained=2;s.blackCrystalHandicap=4;
+  // Black's mined total (2 + 4 handicap = 6) exceeds White's (5).
+  expect(minedTotal(s,'black')).toBe(6);expect(minedTotal(s,'white')).toBe(5);
+  for(let i=1;i<=INACTIVITY_LIMIT;i++){s=passTurn(s);expect(s.inactivityPlies).toBe(i);expect(s.phase).toBe(i===INACTIVITY_LIMIT?'victory':'playing');}
+  expect(s).toMatchObject({phase:'victory',winner:'black',victoryReason:'kill-clock'});
+  for(const p of ['white','black'] as const)expect(evaluatePosition(s,p)).toBe(p==='black'?100000:-100000);
+  saveGameState(s);expect(loadGameState()).toMatchObject({victoryReason:'kill-clock',winner:'black'});
+ });
+ it('(c) a tie on mined totals at the tenth kill-free ply is a draw',()=>{
+  let s=phasing(Array(100).fill(0));for(let i=1;i<=INACTIVITY_LIMIT;i++)s=passTurn(s);
+  expect(s.winner).toBeNull();expect(getGameResult(s)).toEqual({status:'draw',reason:'kill-clock'});
+  for(const p of ['white','black'] as const){expect(evaluatePosition(s,p)).toBe(0);expect(quickEvaluate(s,p)).toBe(0);}
+  saveGameState(s);expect(loadGameState()?.victoryReason).toBe('kill-clock');expect(loadGameState()?.winner).toBeNull();
+ });
+ it('ends before the next home win, healing or upkeep',()=>{
   const s=arena(0);s.inactivityPlies=INACTIVITY_LIMIT-1;s.turn.currentPlayer='black';s.board.units[0].position={x:9,y:9};
   s.board.units[0].damageTaken=1;s.players.black.resources=2;
-  // The mover's own mining and upkeep come first in Phasing; the draw is read at
-  // the handover, before the opponent's turn start would heal or award the home.
+  // The mover's own mining and upkeep come first in Phasing; the kill clock is
+  // read at the handover, before the opponent's turn start would heal, award the
+  // home occupation, or (spec §5(f)) let an occupier win by occupation.
   const prepared=applyAction(s,{type:'END_ACTION_PHASE'});expect(prepared.upkeepPending).toBe(false);
-  const draw=applyAction(prepared,{type:'END_PLACE_PHASE'});expect(draw.winner).toBeNull();expect(draw.victoryReason).toBe('inactivity');
-  expect(draw.turn).toEqual(prepared.turn);expect(draw.board).toEqual(prepared.board);expect(draw.players).toEqual(prepared.players);
-  expect(startTurn(draw,'white')).toBe(draw);
+  const ended=applyAction(prepared,{type:'END_PLACE_PHASE'});expect(ended.winner).toBeNull();expect(ended.victoryReason).toBe('kill-clock');
+  expect(ended.turn).toEqual(prepared.turn);expect(ended.board).toEqual(prepared.board);expect(ended.players).toEqual(prepared.players);
+  expect(startTurn(ended,'white')).toBe(ended);
   s.inactivityPlies=INACTIVITY_LIMIT-2;expect(passTurn(s).victoryReason).toBe('home-occupation');
  });
  it('an attack eliminating the last enemy still wins during the last allowed turn',()=>{
@@ -123,7 +150,7 @@ describe('20 completed quiet turns',()=>{
  });
  it('migrates expired unfinished saves without losing the board or changing completed wins',()=>{
   const s=arena(1);s.inactivityPlies=INACTIVITY_LIMIT+2;saveGameState(s);const loaded=loadGameState()!;
-  expect(loaded.victoryReason).toBe('inactivity');expect(loaded.board).toEqual(s.board);expect(loaded.players).toEqual(s.players);
+  expect(loaded.victoryReason).toBe('kill-clock');expect(loaded.board).toEqual(s.board);expect(loaded.players).toEqual(s.players);
   s.phase='victory';s.winner='white';s.victoryReason='home-occupation';saveGameState(s);expect(loadGameState()).toEqual(s);
  });
  it('chip damage does not reset; a lethal enemy attack does',()=>{
@@ -136,31 +163,38 @@ describe('20 completed quiet turns',()=>{
   s.turn.phase='place';const placed=applyAction(s,{type:'BUY_UNIT',definitionId:'plant_1',position:{x:2,y:4}});expect(placed).not.toBe(s);expect(placed.inactivityPlies).toBe(7);expect(placed.progressThisTurn).not.toBe(true);
  });
 });
-/** Rules revision muju-phasing-2 (2026-09-19). The owner moved the clock from ten
- * plies to twenty; the warning keeps its three-ply margin. What resets the clock is
- * deliberately unchanged, and stays pinned by the tests above. */
-describe('muju-phasing-2 quiet clock',()=>{
- it('is twenty plies, warns three plies before, and keeps the legacy limit for archives only',()=>{
-  expect(INACTIVITY_LIMIT).toBe(20);expect(INACTIVITY_WARNING).toBe(17);
+/** Rules revision muju-phasing-3 (2026-09-22). The owner replaced the twenty-ply
+ * draw with a ten-ply kill clock that decides on mined totals; the warning keeps
+ * its three-ply margin, now at 7. What resets the clock is deliberately
+ * unchanged, and stays pinned by the tests above. */
+describe('muju-phasing-3 kill clock',()=>{
+ it('is ten plies, warns three plies before, and keeps the muju-phasing-2 legacy limit for archives only',()=>{
+  expect(INACTIVITY_LIMIT).toBe(10);expect(INACTIVITY_WARNING).toBe(7);
   expect(INACTIVITY_LIMIT-INACTIVITY_WARNING).toBe(3);
-  expect(LEGACY_INACTIVITY_LIMIT).toBe(10);
+  expect(LEGACY_INACTIVITY_LIMIT).toBe(20);
  });
- it('no longer draws at the old ten-ply threshold, and plays on to twenty',()=>{
+ it('decides on mined totals at the new ten-ply limit rather than drawing at the old twenty',()=>{
   let s=phasing(Array(100).fill(0));
-  for(let i=1;i<=LEGACY_INACTIVITY_LIMIT;i++)s=passTurn(s);
-  expect(s.inactivityPlies).toBe(LEGACY_INACTIVITY_LIMIT);expect(s.phase).toBe('playing');expect(s.victoryReason).toBeUndefined();
-  for(let i=LEGACY_INACTIVITY_LIMIT+1;i<INACTIVITY_LIMIT;i++){s=passTurn(s);expect(s.inactivityPlies).toBe(i);expect(s.phase).toBe('playing');}
-  expect(passTurn(s)).toMatchObject({phase:'victory',winner:null,victoryReason:'inactivity',inactivityPlies:INACTIVITY_LIMIT});
+  s.players.white.resourcesGained=9;s.players.black.resourcesGained=1;
+  for(let i=1;i<INACTIVITY_LIMIT;i++){s=passTurn(s);expect(s.inactivityPlies).toBe(i);expect(s.phase).toBe('playing');}
+  expect(passTurn(s)).toMatchObject({phase:'victory',winner:'white',victoryReason:'kill-clock',inactivityPlies:INACTIVITY_LIMIT});
  });
- it('holds the draw open through the whole warning band',()=>{
+ it('holds the verdict open through the whole warning band',()=>{
   const s=phasing(Array(100).fill(0));
   for(const plies of [INACTIVITY_WARNING,INACTIVITY_WARNING+1,INACTIVITY_LIMIT-1])
    expect(resolveInactivityDraw({...s,inactivityPlies:plies}).phase,`${plies} plies`).toBe('playing');
-  expect(resolveInactivityDraw({...s,inactivityPlies:INACTIVITY_LIMIT}).victoryReason).toBe('inactivity');
+  expect(resolveInactivityDraw({...s,inactivityPlies:INACTIVITY_LIMIT}).victoryReason).toBe('kill-clock');
  });
- it('adjudicates an archived muju-phasing-1 position only when the legacy limit is pinned explicitly',()=>{
-  const archived={...phasing(Array(100).fill(0)),inactivityPlies:LEGACY_INACTIVITY_LIMIT};
-  expect(resolveInactivityDraw(archived).phase).toBe('playing');
-  expect(resolveInactivityDraw(archived,LEGACY_INACTIVITY_LIMIT).victoryReason).toBe('inactivity');
+ it('adjudicates an archived muju-phasing-2 position only when the legacy limit and draw verdict are pinned explicitly',()=>{
+  const s=phasing(Array(100).fill(0));
+  // Below the live ten-ply limit, the position is simply still playing.
+  expect(resolveInactivityDraw({...s,inactivityPlies:INACTIVITY_LIMIT-1}).phase).toBe('playing');
+  // At the archived muju-phasing-2 limit (20), the live default ALSO already
+  // ends the game, since 20 >= the live ten-ply limit — but only the pinned
+  // legacy call reproduces that archive's own draw verdict; the unpinned
+  // default uses the live mined-total verdict instead.
+  const archived={...s,inactivityPlies:LEGACY_INACTIVITY_LIMIT};
+  expect(resolveInactivityDraw(archived,LEGACY_INACTIVITY_LIMIT,'draw')).toMatchObject({victoryReason:'inactivity',winner:null});
+  expect(resolveInactivityDraw(archived).victoryReason).toBe('kill-clock');
  });
 });

@@ -5,6 +5,7 @@ import { applyAction } from '../../src/ai/simulate';
 import { gameReducer } from '../../src/hooks/useGameState';
 import { getAllSpawnPositions } from '../../src/game/spawning';
 import { loadGameState, saveGameState } from '../../src/utils/persistence';
+import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 import type { PlayerId, Unit } from '../../src/game/types';
 
 const unit = (definition: string, x: number, y: number, owner: PlayerId = 'black') => createUnit(definition, owner, { x, y });
@@ -141,6 +142,40 @@ it('resolves after killing the last rescuer, while preserving an earlier opposin
   const legacy = occupied('metal_3', [unit('plant_1', 3, 3)]);
   legacy.victoryRule = 'elimination';
   expect(resolveHomeCheckmate(legacy, applyAction)).toBe(legacy);
+});
+
+// Spec §5(d)/(e): the kill clock can pre-empt `#`. `c` is the count the
+// hand-off at the end of the invading turn is about to produce: `0` if that
+// turn contained a kill, otherwise `inactivityPlies + 1`.
+it('(d) awards # at c = 8 but withholds it at c = 9, for the same unanswerable arrival', () => {
+  for (const [inactivityPlies, c, awarded] of [[INACTIVITY_LIMIT - 3, 8, true], [INACTIVITY_LIMIT - 2, 9, false]] as const) {
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
+    state.inactivityPlies = inactivityPlies;
+    const invader = createUnit('plant_1', 'white', { x: 9, y: 8 });
+    state.board.units = [invader, createUnit('fire_1', 'black', { x: 4, y: 4 })];
+    const move = { type: 'MOVE' as const, unitId: invader.id, to: { x: 9, y: 9 } };
+    const arrived = applyAction(state, move);
+    expect(arrived.progressThisTurn, `c=${c}`).not.toBe(true); // no kill this turn: c = inactivityPlies + 1
+    expect(analyzeHomeDefense(arrived, 'white', applyAction)).toBe('mate'); // the position itself is a real mate
+    const result = applyAction(arrived, { type: 'END_ACTION_PHASE' });
+    if (awarded) expect(result, `c=${c}`).toMatchObject({ phase: 'victory', winner: 'white', victoryReason: 'home-checkmate' });
+    else expect(result.phase, `c=${c}`).toBe('playing');
+  }
+});
+// Spec §5(e): at c = 10 the kill clock ends the game at the very hand-off that
+// would otherwise complete the checkmate prediction, on mined totals, and this
+// can never be pre-empted by a mate award.
+it('(e) a c = 10 hand-off ends the game on mined totals instead of awarding #', () => {
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
+  state.inactivityPlies = INACTIVITY_LIMIT - 1;
+  state.players.white.resourcesGained = 10; state.players.black.resourcesGained = 3;
+  const invader = createUnit('plant_1', 'white', { x: 9, y: 8 });
+  state.board.units = [invader, createUnit('fire_1', 'black', { x: 4, y: 4 })];
+  const arrived = applyAction(state, { type: 'MOVE', unitId: invader.id, to: { x: 9, y: 9 } });
+  const afterAction = applyAction(arrived, { type: 'END_ACTION_PHASE' });
+  expect(afterAction.phase).toBe('playing'); // gated: no checkmate awarded here either
+  const final = applyAction(afterAction, { type: 'END_PLACE_PHASE' });
+  expect(final).toMatchObject({ phase: 'victory', winner: 'white', victoryReason: 'kill-clock' });
 });
 
 it('gives a Phasing defender only the army it already has', () => {

@@ -11,6 +11,20 @@ narration/ASR name lists recognize both old and new names, but the v7/v8 videos 
 old names until a future re-record. Full old→new table, ASCII respelling proposals and evidence
 are in `BIBLE.md`, `STATUS.md` and `../docs/changes/2026-09-22-rename-irumbu-laneB.md`.
 
+Kill clock override (2026-09-22, later the same day as the rename above): the
+quiet-turn draw is retired. Ten kill-free player turns, not twenty, now end the
+game immediately, decided by each side's mined total — every crystal its units
+have taken from the board, plus Black's starting handicap — with the higher
+total winning and equal totals drawing; it is no longer always a draw. The
+rules revision string moves `muju-phasing-2` → `muju-phasing-3`. This is a
+**notice, not a re-voice**, repeating the same pattern: the course-page notice
+in `build-release.py` gained a fourth paragraph (`id="kill-clock-notice"`),
+`export-rules.ts`'s draw assertion became a kill-clock/mined-total assertion
+and regenerated exactly one line of `rules-verification.json`, and R09 (the
+draw lesson) and R10 are named as still teaching the superseded twenty-ply
+always-a-draw rule; the v7/v8 videos still speak it until a future re-record.
+See `STATUS.md`, `BIBLE.md` and `../docs/changes/2026-09-22-kill-clock-lane3.md`.
+
 Course notice preparation, September 19: the release builder warns that R01,
 R04–R07, R09 and R10 teach the previous turn order. This is a course-page change
 only, prepared but not deployed. The recordings remain v7/v8; a re-narration is

@@ -9,7 +9,7 @@ import { blockingSet, mobility, spawnGeometry } from '../../server/analysis/geom
 import { analyzeHomeDefenseEvidence } from '../../src/game/homeCheckmate';
 import { applyAction, transitionWithoutCheckmate } from '../../src/ai/simulate';
 import { createInitialGameState } from '../../src/game/board';
-import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
+import { INACTIVITY_LIMIT, INACTIVITY_WARNING } from '../../src/game/inactivity';
 import { calculateDefense } from '../../src/game/combat';
 import { getUnitDefinition } from '../../src/game/units';
 import { generateAllActions } from '../../src/ai/moves';
@@ -47,18 +47,23 @@ describe('financial checkpoints', () => {
     s.upkeepPending = true; s.turn.phase = 'place';
     expect(economyForecast(s).failure?.afterOwnHarvests).toBe(0);
     const quiet = createInitialGameState(); quiet.inactivityPlies = INACTIVITY_LIMIT - 1;
-    expect(economyForecast(quiet).stop).toBe('terminal:inactivity');
+    expect(economyForecast(quiet).stop).toBe('terminal:kill-clock');
     // One own harvest short of the limit the projection must still stop at its
     // horizon: the boundary is the canonical constant, not a number copied here.
     const nearly = createInitialGameState(); nearly.inactivityPlies = INACTIVITY_LIMIT - 3;
     expect(economyForecast(nearly, 1).stop).toBe('horizon');
   });
-  it('reports the draw headline as [quietPlayerTurns, canonical limit]', () => {
-    expect(INACTIVITY_LIMIT).toBe(20);
+  it('reports the kill-clock headline as killClock and the deprecated [quietPlayerTurns, limit] draw alias', () => {
+    expect(INACTIVITY_LIMIT).toBe(10);
     const s = createInitialGameState(); s.inactivityPlies = INACTIVITY_LIMIT - 3;
+    s.players.white.resourcesGained = 5; s.players.black.resourcesGained = 2;
     const room = { ...snapshot(s), ready: true };
-    expect((new AnalysisService().headline(room).sections as { draw: [number, number] }).draw)
-      .toEqual([INACTIVITY_LIMIT - 3, INACTIVITY_LIMIT]);
+    const sections = new AnalysisService().headline(room).sections as {
+      draw: [number, number]; killClock: { plies: number; limit: number; warningAt: number; minedTotals: { white: number; black: number }; leader: 'white' | 'black' | null };
+    };
+    expect(sections.draw).toEqual([INACTIVITY_LIMIT - 3, INACTIVITY_LIMIT]);
+    expect(sections.killClock).toEqual({ plies: INACTIVITY_LIMIT - 3, limit: INACTIVITY_LIMIT, warningAt: INACTIVITY_WARNING,
+      minedTotals: { white: 5, black: 2 }, leader: 'white' });
   });
 });
 
@@ -263,6 +268,24 @@ describe('home proof evidence and replay fixtures', () => {
     expect(proof.categories).toContain('upkeep_choice');
     const pending = { ...s, upkeepPending: true, turn: { ...s.turn, currentPlayer: 'black' as const, phase: 'place' as const } };
     expect(simulateSequence(pending, proof.witness!).state.board.units.some(u => u.id === 'occupier')).toBe(false);
+  });
+  it('gates the checkmate topic at c >= 9 kill-free plies, matching canonical resolveHomeCheckmate', () => {
+    // An unrescuable home occupation (no black units at all): the prover would
+    // otherwise call this 'mate' immediately via the damage bound, at zero nodes.
+    const occupiedAt = (inactivityPlies: number) => {
+      const s = position([piece('invader', 'fire_1', 'white', 9, 9)]);
+      return { ...s, ruleset: 'phasing' as const, pendingSummons: [], inactivityRule: 'on' as const,
+        inactivityPlies, progressThisTurn: false, turn: { ...s.turn, phase: 'place' as const } };
+    };
+    const request = (s: ReturnType<typeof occupiedAt>) => ({ roomId: snapshot(s).id, expectedRevision: 1, player: 'white', topics: ['checkmate'] });
+    // c = inactivityPlies + 1 (progressThisTurn is false). c = 8 (plies = 7) still awards mate.
+    const allowed = occupiedAt(7);
+    expect(new AnalysisService().analyze(snapshot(allowed), request(allowed)).sections.checkmate).toMatchObject({ result: 'proven_possible' });
+    // c = 9 (plies = 8): the defender's reply would be the tenth ply, so no mate is proven here either.
+    const forbidden = occupiedAt(8);
+    const gated = new AnalysisService().analyze(snapshot(forbidden), request(forbidden)).sections.checkmate as { result: string; reason: string };
+    expect(gated.result).toBe('not_applicable');
+    expect(gated.reason).toMatch(/kill clock/i);
   });
   it('keys caches by complete state and parameters, returns honest diff baselines, and never changes rooms', () => {
     const service = new AnalysisService(), room = snapshot(createInitialGameState()), before = structuredClone(room);

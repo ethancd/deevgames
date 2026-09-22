@@ -39,9 +39,9 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
     <p>Tap an enemy you cannot attack to inspect it with reach already on. Hide reach toggles off its movement range and red attack frontier: up to {actionsPerTurn - 1} move actions plus 1 attack at its current speed. Blockers and board edges limit the frontier; dots show attack reach, not guaranteed kills. Key explains the board; Units opens the full catalogue.</p>
   </>},
   {title:'Win the game', content:<>
-    <p>Hold the enemy home corner until the start of your next turn, or eliminate every enemy piece. If no legal reply can remove the invader, checkmate wins immediately. Otherwise the defender gets one turn to clear it. An empty army loses even with crystals in the bank.</p>
+    <p>Hold the enemy home corner until the start of your next turn, or eliminate every enemy piece. If no legal reply can remove the invader, checkmate wins immediately — unless the kill clock below would end the game first, in which case no checkmate is called and the defender gets its reply. Otherwise the defender gets one turn to clear it. An empty army loses even with crystals in the bank.</p>
     <p>The {BOARD_SIZE}×{BOARD_SIZE} board starts with {INITIAL_MAP_RESOURCES} crystals. Each side begins with Hi, Sjór and Muju, and no crystals in the bank. White moves first.</p>
-    <p>After {INACTIVITY_LIMIT} consecutive completed player turns without an enemy kill by attack, the game is a draw. Only an attack kill resets the clock; income, movement, purchases, promotions and upkeep losses do not. The draw is checked at turn end, before the next home check.</p>
+    <p>After {INACTIVITY_LIMIT} consecutive completed player turns without an enemy kill by attack, the kill clock ends the game: whoever has mined more crystals in total wins (Black's starting handicap counts toward its total); an equal total is a draw. Only an attack kill resets the clock; income, movement, purchases, promotions and upkeep losses do not. The clock is checked at turn end, before the next home check.</p>
   </>},
   {title:'Commit a summon', content:<>
     <p>In Prepare, choose a tier-1 piece and an empty square in a legal spawn rectangle. Pay its full price now. You can commit several summons, but only one of yours per square. Choose from {UNIT_DEFINITIONS.filter(d=>d.tier===1).map(d=>`${d.name} (${d.cost})`).join(', ')}.</p>
@@ -79,7 +79,7 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
   {title:'Controls & undo',content:<>
     <p>Tap a piece and a reachable square to move. Tap a reachable enemy to preview an attack, then confirm. In Prepare, select a shop piece and its highlighted square to summon, or tap an existing piece to promote.</p>
     <p>Enter completes the current phase; Command/Ctrl+Z undoes within your turn. Mine &amp; prepare is reversible until handoff. Undo never reverses your opponent’s turn.</p>
-    <p>The {INACTIVITY_LIMIT}-turn quiet clock and the online time delay advance only at End turn, after preparation. Summoning, refunds and promotions do not reset the quiet clock.</p>
+    <p>The {INACTIVITY_LIMIT}-turn kill clock and the online time delay advance only at End turn, after preparation. Summoning, refunds and promotions do not reset the kill clock.</p>
   </>},
   {title:'Read the board', content:<VisualKey />},
   {title:'Keyboard controls', content:<>

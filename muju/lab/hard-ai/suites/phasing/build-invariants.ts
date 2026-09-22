@@ -188,13 +188,18 @@ export function buildInvariants(binding: SourceBinding, scoring?: InvariantScori
   {
     const units = [W('a', 'water_1', 2, 2), W('b', 'plant_1', 1, 3), W('c', 'plant_1', 1, 4), QUIET];
     // muju-phasing-2 (2026-09-19): the case means "one passive handoff from the
-    // draw", so the premise is derived from the limit rather than written out as
-    // the old 9. Only the number moved; the motif, the diagram, the correct
-    // member and every probe are unchanged.
+    // clock's end", so the premise is derived from the limit rather than written
+    // out as the old 9. Only the number moved; the motif, the diagram, the
+    // correct member and every probe are unchanged.
+    // muju-phasing-3 (2026-09-22, the KILL CLOCK): the terminal at the limit is
+    // no longer an automatic draw — it is the higher MINED TOTAL, a tie draws.
+    // Neither side in this fixture has mined anything (`state()` defaults both
+    // `whiteGained`/`blackGained` to 0), so the endpoint is still a tie — same
+    // winner (null), new reason (`kill-clock`, not `inactivity`).
     const lastQuietPly = INACTIVITY_LIMIT - 1;
-    add(16, 'clock-discipline', `The same White catalogue-material lead faces a kill-free counter${lastQuietPly} versus2. One passive Black handoff reaches inactivity${INACTIVITY_LIMIT}/draw versus3/playing. This documents timing and the declared draw-avoidance preference while ahead, not a proof of a forced win.`,
+    add(16, 'clock-discipline', `The same White catalogue-material lead faces a kill-free counter${lastQuietPly} versus2. One passive Black handoff reaches the clock's limit at${INACTIVITY_LIMIT}/tie versus3/playing. This documents timing and the declared preference for sitting on a lead while the clock runs, not a proof of a forced win.`,
       state(units, { clock: lastQuietPly }), state(units, { clock: 2 }), root({ kind: 'inactivity-plies', value: { eq: lastQuietPly } }), root({ kind: 'inactivity-plies', value: { eq: 2 } }),
-      [probe(PASS, end({ kind: 'terminal', winner: null, reason: 'inactivity' }))],
+      [probe(PASS, end({ kind: 'terminal', winner: null, reason: 'kill-clock' }))],
       [probe(PASS, end({ kind: 'inactivity-plies', value: { eq: 3 } }, { kind: 'game-phase', value: 'playing' }))]);
   }
   {

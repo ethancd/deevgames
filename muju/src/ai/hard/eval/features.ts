@@ -58,7 +58,7 @@ import { KILL_IMPOSSIBLE } from '../tables/kill';
 import { Approach } from '../tables/approach';
 import { ECON_HORIZON } from '../tables/economy';
 import type { Weights } from '../config';
-import { INVARIANT_COUNT, invariantBits, leadCc } from './invariants';
+import { INVARIANT_COUNT, invariantBits } from './invariants';
 import { newPendingDiagnostics, pendingDiagnostics } from './pending';
 
 export const FEATURE_COUNT = 62;
@@ -221,17 +221,19 @@ const ELEMENTS = 6;
 const TIER_SCRATCH = new Int8Array(ELEMENTS);
 
 /**
- * `DrawPressure`'s full scale: the value the feature takes when the inactivity
- * clock stands ON the draw. It is a fixed 100 because that is what `clock²`
+ * `DrawPressure`'s full scale: the value the feature takes when the kill clock
+ * stands ON its terminal ply. It is a fixed 100 because that is what `clock²`
  * reached at the TEN-ply limit the feature and its weight column were authored
- * against; `muju-phasing-2` (amendment A4) doubles the limit to 20, and leaving
- * the raw `clock²` in place would have quadrupled the feature's range against an
- * unchanged coefficient. NO coefficient changes here — `DEFAULT_WEIGHTS.w[F.DrawPressure]`
+ * against; `muju-phasing-2` (amendment A4) doubled the limit to 20 and this
+ * scale absorbed it, and `muju-phasing-3` (owner decision 2026-09-22, the KILL
+ * CLOCK) brings the limit back to 10 — the scale still absorbs it, unchanged
+ * code, because it is defined in terms of `INACTIVITY_LIMIT` rather than a
+ * literal. NO coefficient changes here — `DEFAULT_WEIGHTS.w[F.DrawPressure]`
  * is still 0 and every other weight is untouched; only the feature's own scale
  * is pinned to the limit.
  */
 const DRAW_PRESSURE_FULL_SCALE = 100;
-/** `INACTIVITY_LIMIT²`, so `clock²·FULL_SCALE/DENOM` is `FULL_SCALE` at the draw. */
+/** `INACTIVITY_LIMIT²`, so `clock²·FULL_SCALE/DENOM` is `FULL_SCALE` at the clock's end. */
 const DRAW_PRESSURE_DENOM = INACTIVITY_LIMIT * INACTIVITY_LIMIT;
 
 /** `Σ over elements (max tier − 1)`, counting only elements the side owns. */
@@ -373,11 +375,19 @@ function extractStage1(p: PackedState, t: NodeTables, me: Side, them: Side, out:
   out[F.Exposure] = div100(exposedPriorCc(p, me, t, cat) - exposedPriorCc(p, them, t, cat));
 
   const clock = p.drawRuleOn === 1 ? p.clock : 0;
-  const lead = leadCc(p, me);
+  // `muju-phasing-3` (owner decision 2026-09-22): the kill clock's verdict is
+  // the higher MINED TOTAL (`gained[]`, which already carries Black's
+  // handicap folded in — `pack` above), not a material/bank lead. Sign the
+  // feature by that quantity so it reads "am I the side the clock is about to
+  // declare the winner", which is the thing that is now actually true when it
+  // runs out — under `muju-phasing-1`/`-2` the clock only ever drew, so no
+  // lead of any kind was "correct" to sit on; here one specific lead is.
+  const lead = p.gained[me] - p.gained[them];
   // Quadratic in HOW FAR ALONG the clock is, not in its raw ply count, so the
   // feature keeps the 0..100 range its (zero) bootstrap weight was authored
-  // against when the limit moved from 10 to 20 (A4). The magnitude is truncated
-  // before the sign is applied, so `f(side) = -f(other)` still holds exactly.
+  // against as the limit moved 10 -> 20 (A4) -> 10 (this change). The
+  // magnitude is truncated before the sign is applied, so `f(side) = -f(other)`
+  // still holds exactly.
   const pressure = ((clock * clock * DRAW_PRESSURE_FULL_SCALE) / DRAW_PRESSURE_DENOM) | 0;
   out[F.DrawPressure] = (lead > 0 ? 1 : lead < 0 ? -1 : 0) * pressure;
 

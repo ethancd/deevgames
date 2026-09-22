@@ -23,24 +23,41 @@ function committed() {
 
 describe('Phasing measurement substrate', () => {
   /**
-   * The draw clock, measured through the harness end to end instead of read
+   * The kill clock, measured through the harness end to end instead of read
    * off the constant. Two bots that pass every phase never remove a unit, so
-   * nothing ever resets the clock and the game must end in an inactivity draw
-   * exactly `INACTIVITY_LIMIT` hand-offs in.
+   * nothing ever resets the clock and the game must end exactly
+   * `INACTIVITY_LIMIT` hand-offs in — a TIE here (both sides mine the
+   * symmetric starting board equally, `resourcesGained: 21` each measured on
+   * this seed), so `winner: null`, same as an old-rule draw would have looked.
    *
    * The counts are DERIVED from the limit rather than copied beside it. A
    * passed turn is two decisions (`END_ACTION_PHASE` then `END_PLACE_PHASE`)
    * and exactly one hand-off, so a quiet game is `limit` completed turns and
    * `2 * limit` recorded plies. Amendment A4 (2026-09-19) moved the limit from
-   * 10 to 20 and this test moves with it — while still failing if the harness
-   * stops counting hand-offs, starts counting a phase end as one, or ends the
-   * game anywhere other than the limit.
+   * 10 to 20; `muju-phasing-3` (owner decision 2026-09-22, the KILL CLOCK)
+   * moved it back to 10. This test moves with the LIVE limit either way —
+   * while still failing if the harness stops counting hand-offs, starts
+   * counting a phase end as one, or ends the game anywhere other than the
+   * limit.
+   *
+   * KNOWN HARNESS GAP, declared rather than silently worked around:
+   * `lab/harness/runner.ts` and `lab/harness/types.ts` are byte-pinned by
+   * `tests/lab/phasing-evidence.test.ts` for the `p2-scripted-2026-09-19`
+   * reference campaign and are out of this lane's authority to edit.
+   * `runner.ts:397`'s `inactivityDraw: state.victoryReason === 'inactivity'`
+   * can therefore never be true again in live play — the live reason is now
+   * `'kill-clock'` — so this test reads `record.winner`/`record.winType`
+   * instead (both computed by simply mirroring `victoryReason`/`winner`, so
+   * they are accurate at runtime even though `WinType`'s TYPE, also pinned,
+   * does not yet list `'kill-clock'` — `npm run hard:types` fails on exactly
+   * that gap and the lane report names it). Re-pinning `runner.ts`/`types.ts`
+   * themselves is the next measurement campaign's job.
    */
-  it('counts a complete turn only after Prepare; mines once and draws after INACTIVITY_LIMIT complete quiet turns', async () => {
-    // The rule this test is the harness half of (A4): twenty plies to the draw,
-    // warned three plies earlier. Pinned so a silent edit to either constant
-    // fails here as well as in the game's own tests.
-    expect(INACTIVITY_LIMIT).toBe(20);
+  it('counts a complete turn only after Prepare; mines symmetrically and ties after INACTIVITY_LIMIT complete quiet turns', async () => {
+    // The rule this test is the harness half of (A4 then the kill clock).
+    // Pinned so a silent edit to either constant fails here as well as in the
+    // game's own tests.
+    expect(INACTIVITY_LIMIT).toBe(10);
     expect(INACTIVITY_WARNING).toBe(INACTIVITY_LIMIT - 3);
     const controls: string[] = [];
     const { record, replay } = await playGame({ bots: { white: pass, black: pass }, seed: 1, runId: 'test', engineHash: 'test',
@@ -57,7 +74,9 @@ describe('Phasing measurement substrate', () => {
     expect(controls).toEqual(Array.from({ length: INACTIVITY_LIMIT }, () => ['END_ACTION_PHASE', 'END_PLACE_PHASE']).flat());
     expect(record.completedTurns).toBe(INACTIVITY_LIMIT);
     expect(record.plies).toBe(2 * INACTIVITY_LIMIT);
-    expect(record.inactivityDraw).toBe(true);
+    expect(record.winner).toBeNull();
+    expect(record.winType).toBe('kill-clock');
+    expect(record.players.white.resourcesGained).toBe(record.players.black.resourcesGained);
     expect(record.maxInactivityPlies).toBe(INACTIVITY_LIMIT);
     expect(record.incomeCurve).toHaveLength(INACTIVITY_LIMIT);
     expect(record.rulesVersion).toBe(HARNESS_RULES_VERSION);

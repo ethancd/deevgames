@@ -47,19 +47,27 @@ vi.setConfig({ testTimeout: 10_000 });
 
 const replica = new Replica();
 
-/** One ply short of the inactivity draw: the last quiet ply a game can stand on
+/** One ply short of the kill clock: the last quiet ply a game can stand on
  * before the next hand-off ends it. Expressed against the LIMIT, not written out
- * as 9, so these tests keep testing the boundary after amendment A4 moved it from
- * ten plies to twenty. */
+ * as 9, so these tests keep testing the boundary regardless of which revision's
+ * limit is live. */
 const LAST_QUIET_PLY = INACTIVITY_LIMIT - 1;
+/**
+ * The last clock value a home checkmate may still be awarded from:
+ * `killClockForbidsCheckmate` (`src/game/inactivity.ts`, owner decision
+ * 2026-09-22) withholds `#` once `c = clock + 1 >= LIMIT - 1`, so `clock`
+ * must be `<= LIMIT - 3` for the mate to land.
+ */
+const LAST_MATE_PLY = INACTIVITY_LIMIT - 3;
 
 /**
- * Black Hi one step from White's corner, quiet clock at `LAST_QUIET_PLY`.
- * Black's Hi is tier 1, so it owes no rent and its `END_ACTION` always settles;
- * White's defender has an empty bank, so its Phasing rescue set (act only) and
- * its Standard one (upkeep + promotion + act) are the same.
+ * Black Hi one step from White's corner, quiet clock at `clock` (default
+ * `LAST_QUIET_PLY`). Black's Hi is tier 1, so it owes no rent and its
+ * `END_ACTION` always settles; White's defender has an empty bank, so its
+ * Phasing rescue set (act only) and its Standard one (upkeep + promotion +
+ * act) are the same.
  */
-function atLastQuietPly(defenders: 'lone-muju' | 'rescuer') {
+function atLastQuietPly(defenders: 'lone-muju' | 'rescuer', clock: number = LAST_QUIET_PLY) {
   return buildState({
     units: [
       { def: 'fire_1', owner: 'black', x: 1, y: 0, id: 'b0' },
@@ -70,7 +78,7 @@ function atLastQuietPly(defenders: 'lone-muju' | 'rescuer') {
     current: 'black',
     phase: 'action',
     actions: 4,
-    inactivityPlies: LAST_QUIET_PLY,
+    inactivityPlies: clock,
     turnNumber: 12,
   });
 }
@@ -104,15 +112,19 @@ describe('terminal order under Phasing (SU §8.1)', () => {
   });
 
   it('...and IS adjudicated at END_ACTION, once the invader has paid its rent', () => {
-    const state = atLastQuietPly('lone-muju');
+    // At `LAST_MATE_PLY` rather than `LAST_QUIET_PLY`: the c >= 9 kill-clock
+    // gate (owner decision 2026-09-22) withholds `#` once the invader's next
+    // turn start is not guaranteed, which `LAST_QUIET_PLY` (one ply from the
+    // clock's END) now is.
+    const state = atLastQuietPly('lone-muju', LAST_MATE_PLY);
     const moved = applyAction(state, { type: 'MOVE', unitId: 'b0', to: { x: 0, y: 0 } });
     const canonical = applyAction(moved, { type: 'END_ACTION_PHASE' });
     expect(canonical.phase).toBe('victory');
     expect(canonical.winner).toBe('black');
     expect(canonical.victoryReason).toBe('home-checkmate');
-    // The mate beat the LAST quiet ply, which END_PLACE would have drawn: the
-    // clock never advanced, because END_ACTION does not touch it.
-    expect(canonical.inactivityPlies).toBe(LAST_QUIET_PLY);
+    // The mate beat the clock, which END_PLACE would eventually have decided:
+    // the clock never advanced, because END_ACTION does not touch it.
+    expect(canonical.inactivityPlies).toBe(LAST_MATE_PLY);
 
     const p = replica.pack(moved);
     const undo = newUndo();
@@ -121,7 +133,7 @@ describe('terminal order under Phasing (SU §8.1)', () => {
     expect(p.phase).toBe(0);
     expect(p.result).toBe(Result.BLACK_WIN);
     expect(p.reason).toBe(Reason.HOME_CHECKMATE);
-    expect(p.clock).toBe(LAST_QUIET_PLY);
+    expect(p.clock).toBe(LAST_MATE_PLY);
     expect(p.side).toBe(1); // END_ACTION never hands off
     expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonical, allocState())));
 
@@ -167,7 +179,7 @@ describe('terminal order under Phasing (SU §8.1)', () => {
     expect(p.upkeepPending).toBe(0);
   });
 
-  it('END_ACTION does not hand off, so the draw waits for END_PLACE', () => {
+  it('END_ACTION does not hand off, so the kill clock waits for END_PLACE', () => {
     const state = atLastQuietPly('rescuer');
     const move = { type: 'MOVE' as const, unitId: 'b0', to: { x: 0, y: 0 } };
 
@@ -192,18 +204,22 @@ describe('terminal order under Phasing (SU §8.1)', () => {
     expect(p.side).toBe(1);
     expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonicalPrepared, allocState())));
 
-    // END_PLACE advances onto the limit and draws.
+    // END_PLACE advances onto the limit and the kill clock decides. Black
+    // mined one crystal moving its invader onto A1 (the corner's own reserve),
+    // so Black is ahead on mined total and wins outright — not the neutral
+    // draw the old rule would have given at this same ply.
     const canonicalEnded = applyAction(canonicalPrepared, { type: 'END_PLACE_PHASE' });
     expect(canonicalEnded.phase).toBe('victory');
-    expect(canonicalEnded.winner).toBeNull();
-    expect(canonicalEnded.victoryReason).toBe('inactivity');
+    expect(canonicalEnded.winner).toBe('black');
+    expect(canonicalEnded.victoryReason).toBe('kill-clock');
     expect(canonicalEnded.inactivityPlies).toBe(INACTIVITY_LIMIT);
 
     replica.make(p, paMake(AKind.END_PLACE), undo);
-    expect(p.result).toBe(Result.DRAW);
-    expect(p.reason).toBe(Reason.INACTIVITY);
+    expect(p.gained[1]).toBeGreaterThan(p.gained[0]);
+    expect(p.result).toBe(Result.BLACK_WIN);
+    expect(p.reason).toBe(Reason.KILL_CLOCK);
     expect(p.clock).toBe(INACTIVITY_LIMIT);
-    // The draw resolves BEFORE the handover, so the side to move is unchanged.
+    // The clock resolves BEFORE the handover, so the side to move is unchanged.
     expect(p.side).toBe(1);
     expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonicalEnded, allocState())));
 
@@ -213,8 +229,10 @@ describe('terminal order under Phasing (SU §8.1)', () => {
     expect(p.sq[0]).toBe(1);
   });
 
-  it('the draw at END_PLACE beats an occupation that would win at the next startTurn', () => {
+  it('the kill clock at END_PLACE beats an occupation that would win at the next startTurn', () => {
     // White already sits on Black's corner; Black ends the last quiet ply.
+    // Neither side has mined anything this fixture (both default to 0 gained),
+    // so the kill clock ties — same `Result.DRAW` as the old rule, new reason.
     const state = buildState({
       units: [
         { def: 'plant_1', owner: 'black', x: 5, y: 5, id: 'b0' },
@@ -228,13 +246,13 @@ describe('terminal order under Phasing (SU §8.1)', () => {
       turnNumber: 8,
     });
     const canonical = applyAction(state, { type: 'END_PLACE_PHASE' });
-    expect(canonical.victoryReason).toBe('inactivity');
+    expect(canonical.victoryReason).toBe('kill-clock');
     expect(canonical.winner).toBeNull();
 
     const p = replica.pack(state);
     replica.make(p, paMake(AKind.END_PLACE), newUndo());
     expect(p.result).toBe(Result.DRAW);
-    expect(p.reason).toBe(Reason.INACTIVITY);
+    expect(p.reason).toBe(Reason.KILL_CLOCK);
     expect(replica.digest(p)).toBe(replica.digest(replica.pack(canonical, allocState())));
   });
 
@@ -500,7 +518,9 @@ describe('terminal order under Phasing (SU §8.1)', () => {
   });
 
   it('proverMode gates the checkmate call at END_ACTION: 2 proves, 1 under-claims, 0 asserts', () => {
-    const state = atLastQuietPly('lone-muju');
+    // `LAST_MATE_PLY`: the c >= 9 kill-clock gate would otherwise withhold the
+    // mate outright before either prover mode is even consulted.
+    const state = atLastQuietPly('lone-muju', LAST_MATE_PLY);
     const moved = applyAction(state, { type: 'MOVE', unitId: 'b0', to: { x: 0, y: 0 } });
 
     const full = replica.pack(moved);

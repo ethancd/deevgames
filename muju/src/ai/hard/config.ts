@@ -156,13 +156,15 @@ export interface TimeConfig {
 }
 
 /**
- * The RULES REVISION this build replicates. `muju-phasing-2` is preregistration
- * amendment A4's revision: the inactivity draw clock is 20 plies, not 10.
- * "Fixed definitions" makes evidence non-poolable across revisions, so this
- * string is part of every book's compatibility descriptor (`book/probe.ts`) and
- * a book built under `muju-phasing-1` can never be read by this build.
+ * The RULES REVISION this build replicates. `muju-phasing-3` (owner decision
+ * 2026-09-22) is the KILL CLOCK: ten kill-free plies end the game, and the
+ * higher mined total wins (Black's starting handicap counts, a tie draws) —
+ * replacing `muju-phasing-2`'s twenty-ply inactivity DRAW. "Fixed definitions"
+ * makes evidence non-poolable across revisions, so this string is part of every
+ * book's compatibility descriptor (`book/probe.ts`) and a book built under
+ * `muju-phasing-1` or `muju-phasing-2` can never be read by this build.
  */
-export const PHASING_RULES_REVISION = 'muju-phasing-2';
+export const PHASING_RULES_REVISION = 'muju-phasing-3';
 
 // --- eval/weights.ts ---
 /** Phasing meaning/units; indices 0–57 are preserved and 58–61 appended. */

@@ -146,7 +146,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     {!showJoinFirst && nameField}
     <section aria-label="Host a game"><h3>Host a game</h3>
       <label>Your side<select value={side} onChange={e => setSide(e.target.value as PlayerId)}><option value="white">White · first turn</option><option value="black">Black · second turn</option></select></label>
-      <p className="online-help">4 shared actions per turn · Draw after {INACTIVITY_LIMIT} consecutive turns without a kill.</p>
+      <p className="online-help">4 shared actions per turn · {INACTIVITY_LIMIT} kill-free turns end the game on the higher mined total.</p>
       <BlackCrystalHandicap value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />
       <label>Time control<select value={timeChoice} onChange={e => setTimeChoice(e.target.value as typeof timeChoice)}>
         <option value="untimed">Untimed</option>

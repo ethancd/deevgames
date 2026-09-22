@@ -95,7 +95,7 @@ for (const scenario of [
       await page.getByRole('button', { name: 'Mine & prepare →', exact: true }).click();
       await page.getByRole('button', { name: 'End turn →', exact: true }).click();
     }
-    await expect(page.getByRole('heading', { name: 'Draw by inactivity' })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: 'Draw by kill clock' })).toBeVisible({ timeout: 15000 });
     await expect(page.getByRole('link', { name: 'Analyze this game', exact: true })).toBeVisible();
     await page.screenshot({ path: info.outputPath('analyze-game-end.png') });
     const saved = await page.evaluate(() => localStorage.getItem('elemental-tactics-save'));

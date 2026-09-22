@@ -16,7 +16,7 @@ ordinary rooms retain all layers below. See the
 
 | Layer | Entry point | Content |
 | --- | --- | --- |
-| 0 | `analysis` in observe/create/join/play/changed wait | Both economies and depletion trends, deployment counts/blocking, draw clock as `[quietPlayerTurns, limit]` (the limit is twenty plies and comes from the engine constant, never a copy), a bounded set of urgent existing-unit witnesses |
+| 0 | `analysis` in observe/create/join/play/changed wait | Both economies and depletion trends, deployment counts/blocking, `killClock` (`plies`, `limit`, `warningAt`, `minedTotals`, `leader`; the limit is ten plies and comes from the engine constant, never a copy — the deprecated `draw` pair `[quietPlayerTurns, limit]` reads the same counter for one release), a bounded set of urgent existing-unit witnesses |
 | 1 | Observe/wait with `briefing:true`, `player`, optional `sinceRevision` | Per-miner ledger, board matchups, spawn zones, threats including affordable spending, captures and mobility warnings |
 | 2 | `muju_analyze` with batched topics/targets | Focused accounting, geometry, approaches, conditional defenders, exchange costs, and executable evidence |
 | 3 | `deep:true`, `reply`, or `checkmate` | Bounded combined-turn search or the authoritative home-defense prover |
@@ -63,7 +63,7 @@ never partially apply to a room. Room-only undo/preferences are rejected explici
 | Combined turns | Real transitions enforce shared AP, cash, occupancy, promotion eligibility, attack flags and victory | Exhaustion is unknown; upkeep sets above 12 paid units inherit the engine generator's fallback; sequences over 32 actions omitted |
 | Replies | Batched one-turn target/capture-value/home/deployment objective; exposure for each participating attacker | Best-found unless completed; no minimax; the attacking side ends on its final attack squares without withdrawing |
 | Survival | Catalogue cases run through the same threat engine; optimistic damage bounds give sufficient defense | Structural insertion is conditional; minima are exact only when bounds coincide; arbitrary custom stats are unsupported |
-| Checkmate | Same home prover as adjudication; actual rescue path and category | Full next defense starts before upkeep; source terminal/earlier-home priority is respected |
+| Checkmate | Same home prover as adjudication; actual rescue path and category | Full next defense starts before upkeep; source terminal/earlier-home priority is respected; gated by the kill clock — `not_applicable` when the defender's reply would be the ninth or tenth kill-free ply |
 
 A witness establishes `proven_possible`. An exhausted search returns `unknown`,
 even when no kill was found. `proven_impossible` is confined to the explicitly
@@ -76,11 +76,12 @@ nonlethal line. Best-found action/crystal costs are not called minima.
 The economy's `shortfallIn` counts completed own harvests before failure, not
 round numbers. Null means the simulation stopped without reaching that player's
 failure. Both ledgers stop at the first shortfall, including the other player's;
-the inactivity draw can also end a stay-in-place projection. A stay-in-place
-projection is by definition quiet, so it now reaches `terminal:inactivity` after
-twenty plies rather than ten: a forecast that used to stop early runs further
-before the draw ends it. Historical harvest is labeled separately and reports only
-the engine's recorded last harvest.
+the kill clock can also end a stay-in-place projection. A stay-in-place
+projection is by definition quiet, so it now reaches `terminal:kill-clock` after
+ten plies rather than twenty (rules revision `muju-phasing-3`, 2026-09-22): a
+forecast that used to run further now stops sooner, at the same higher mined total
+verdict the live engine reaches. Historical harvest is labeled separately and
+reports only the engine's recorded last harvest.
 
 The generic next-turn model keeps automatic upkeep payments. It does not secretly
 refund them to fund purchases/promotions. Pending upkeep choices are enumerated

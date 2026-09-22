@@ -8,7 +8,18 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v3.2 (2026-09-22) — renames the game title and ten piece
+**Spec version:** v3.3 (2026-09-22) — replaces the inactivity draw clock with
+the **kill clock**: ten kill-free plies end the game on **mined totals**
+(higher wins; a tie draws) instead of drawing outright at twenty. Black's
+starting handicap counts toward Black's mined total. A predicted home
+checkmate (`#`) is no longer awarded when the kill clock would end the game at
+or before the invader's own next turn start (`c ≥ 9`); the game plays on
+instead. Advances the rules revision from `muju-phasing-2` to
+`muju-phasing-3`; every strength, ladder and suite record measured under the
+old revision is void for the new one. See §9, `JUDGMENT_LOG.md` J-024 and
+`muju/docs/changes/2026-09-22-kill-clock-SPEC.md`.
+
+**Retained from v3.2** (2026-09-22) — renames the game title and ten piece
 display names, plus three element language labels: Poṉ, Veḷḷi and Irumbu
 (Metal); Sjór and Ægirinn (Water); Loş (Shadow); Mallki and Sach'akuna (Plant);
 Kimbunga (Lightning); Honō (Fire). Water's language label is now "Old Norse",
@@ -28,14 +39,6 @@ retired records (see "Stored artefacts by rules revision" at the end of §1).
 dated record of the variant era. See `JUDGMENT_LOG.md` J-022 and amendment A6 in
 `docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md`.
 
-**Retained from v3.0** (2026-09-19) — the inactivity draw clock is **20 quiet
-plies** (ten hand-offs per player), not ten, and the public counter turns amber at
-17. What resets the clock is unchanged: only an attack that removes a unit.
-v3.0 advanced the rules revision from `muju-phasing-1` to **`muju-phasing-2`**;
-strength, ladder and suite evidence measured under the old revision is not pooled
-with evidence measured under this one. `src/game/inactivity.ts` holds the single
-constant. See §9 and `JUDGMENT_LOG.md` J-021.
-
 **Retained from v2.9** (2026-09-18) — Metal is Poṉ → Veḷḷi → Irumbu, with
 ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Poṉ cannot move but may attack
 adjacent enemies, mine, anchor purchases and promote normally. Prices and IDs
@@ -45,7 +48,7 @@ boards and move labels are preserved. The v2.8 economy remains: new games use 8-
 in-progress games retain their stored maps and use the updated unit catalogue.
 See `docs/EXPANSION_ECONOMY-2026-09-13.md`.
 Every game uses 4 shared actions per
-turn. Only an enemy kill by attack resets the twenty-ply draw clock. Tier-1 purchases cost 3/4/5 by pair;
+turn. Only an enemy kill by attack resets the kill clock (§9). Tier-1 purchases cost 3/4/5 by pair;
 all promotions cost 4 to tier 2 and 8 to tier 3. Muju has DEF 3, Irumbu DEF 5,
 C4/C5/H6/H7 hold 4 crystals each, and F3/E8 hold 0. See
 `docs/BALANCE-2026-09-11.md` for rationale and compatibility.
@@ -84,6 +87,14 @@ Tanka→Irumbu — and the Water/Shadow/Plant/Metal language labels. No rule
 changes and no rules-revision advance: `muju-phasing-2` stands. Entries at or
 before v3.1 use the pre-rename display names and are history, not current
 naming.
+v3.3 (2026-09-22) replaces the inactivity draw with the kill clock: the limit
+returns to ten quiet plies (amber at 7) and the verdict changes from an
+outright draw to the higher **mined total** — Black's handicap included — with
+a tie still drawing; a predicted home checkmate is withheld when the kill
+clock would end the game at or before the invader's own next turn start
+(`c ≥ 9`). Advances the rules revision from `muju-phasing-2` to
+`muju-phasing-3`. Entries at or before v3.2 describe the twenty-ply draw clock
+as it then stood and are history, not current rules.
 
 ---
 
@@ -133,13 +144,13 @@ Muju plays exactly one rule set. Every stored artefact still names the revision
 it was recorded under, and nothing is reinterpreted under a revision it was not
 recorded with.
 
-- **Online rooms.** Playable rooms are `muju-phasing-2` — the one revision new
+- **Online rooms.** Playable rooms are `muju-phasing-3` — the one revision new
   rooms are created under and the only one the server opens. `muju-online-2`,
-  `muju-online-3`, `muju-online-4`, `muju-online-5`, `muju-online-6` (Standard)
-  and `muju-phasing-1` are retired identifiers: those rows stay in the archive
-  exactly as written, are listed as retired, and refuse to open or mutate. They
-  are never migrated in place.
-- **Local saves.** Save schema 9 resumes Phasing games only. A stored save whose
+  `muju-online-3`, `muju-online-4`, `muju-online-5`, `muju-online-6` (Standard),
+  `muju-phasing-1` and `muju-phasing-2` are retired identifiers: those rows stay
+  in the archive exactly as written, are listed as retired, and refuse to open
+  or mutate. They are never migrated in place.
+- **Local saves.** Save schema 10 resumes Phasing games only. A stored save whose
   ruleset is not Phasing is moved byte-for-byte to a retired slot, never resumed
   and never reinterpreted; it stays reviewable read-only.
 - **Replays and move history.** Recorded boards, move labels and analysis text
@@ -174,8 +185,8 @@ A turn runs Act → mine and upkeep → Prepare, in that order:
    crystals and **no actions**. Promotions apply immediately, but actions and
    mining are already finished for this turn.
 
-`END_PLACE_PHASE` ends the turn: it advances the inactivity counter once, checks
-the twenty-quiet-ply draw (§9) and hands play over. Preparation always ends
+`END_PLACE_PHASE` ends the turn: it advances the kill clock once, checks the
+ten-quiet-ply verdict (§9) and hands play over. Preparation always ends
 explicitly, even when nothing is affordable. Income cannot be undone across the
 handoff: undo is confined to the current turn. There is no queue phase.
 
@@ -494,37 +505,63 @@ observation, belief, particle-filter and re-determinization rules in
   home-checkmate can be adjudicated. The defender's rescue is judged on its
   actual army and four actions, with no pre-action promotions and no upkeep
   releases.
+  **The kill clock can pre-empt checkmate.** `#` is a prediction that the
+  invader will still stand on the enemy home at the start of its own next turn;
+  it may be awarded only when that turn start is guaranteed. Let `c` be the kill
+  clock count the hand-off at the end of the invading turn is about to produce:
+  `0` if that turn contained a kill, otherwise the current clock plus one. If
+  `c ≤ 8`, checkmate is awarded as above. If `c ≥ 9`, no checkmate is awarded and
+  the game plays on: at `c = 9` the defender's reply is the tenth kill-free ply
+  and the kill clock decides unless the defender kills; at `c = 10` the kill
+  clock ends the game at that very hand-off, on mined totals, and this can never
+  be pre-empted by a mate award. ("c = 9 and the invader ahead on mining" is
+  deliberately not a checkmate.)
   In simultaneous invasion races, the first player's qualifying turn start wins.
   Loading a current-schema mid-turn position does not retroactively resolve an occupation.
 
 - **Elimination:** a player with **zero units on the board** loses, regardless
   of bank. No units means no spawn anchor. There is no queue exception.
-- **Inactivity draw:** after 20 consecutive complete player turns without an
-  enemy kill by attack, end the game as a draw. A ply means one player's turn,
-  not one action or full round (twenty plies are ten rounds). An attack kill resets
-  the counter immediately and that turn ends at 0. Each completed turn without
-  a kill adds 1, even when it earns crystals. Chip attacks, movement, summoning,
-  arrival, refunds, promotion and upkeep removal do not reset it — what counts as
-  progress is deliberately unchanged by v3.0 and v3.1. The clock advances once per
-  turn, at `END_PLACE_PHASE`. The draw resolves
-  immediately at the end of the twentieth quiet turn. The next turn never begins:
-  no home-win check, upkeep or healing can override the draw.
-  Eliminating the last enemy during a turn still wins immediately. Saved draws
-  preserve reason `inactivity`. Schema-8 unfinished saves already at 20 or more
-  quiet turns load as a draw, preserving the board; completed results stay final.
-  A save written under an earlier schema counted its plies against the ten-ply
-  limit, so its stored clock no longer means the same thing. Such a save is
-  adjudicated once under the limit it was recorded with — a position at 10 or more
-  quiet plies loads as a draw, exactly as it would have under `muju-phasing-1` —
-  and a position that is still playing resumes with its clock restarted at 0
-  rather than carrying a count whose meaning changed. The revision is then stamped
-  in, so the restart happens at most once. This mirrors `migrateLegacyGame`'s
-  choice when the clock's reset rule changed, and never revives a finished game.
-  `LEGACY_INACTIVITY_LIMIT` (10) exists only for that adjudication and for
-  replaying an archived `muju-phasing-1` record; live play always uses
-  `INACTIVITY_LIMIT`.
-  The public counter turns amber at 17 quiet turns. Both players at zero units is also a
-  draw, though normal play cannot reach that position.
+- **Kill clock:** after 10 consecutive complete player turns without an enemy
+  kill by attack, the game ends immediately and the higher **mined total** wins;
+  an equal total is a draw. A ply means one player's turn, not one action or
+  full round (ten plies are five rounds). A *kill* is any attack that removes a
+  unit; releases, refunds, promotions, mining, chip damage and disrupted or
+  failed summons are not kills. An attack kill resets the counter immediately
+  and that turn ends at 0 — the killer's own turn is not counted. Each completed
+  turn without a kill adds 1, even when it earns crystals. Chip attacks,
+  movement, summoning, arrival, refunds, promotion and upkeep removal do not
+  reset it — what counts as progress is unchanged since v3.0. The clock advances
+  once per turn, at `END_PLACE_PHASE`. Because the killer's turn is always ply
+  zero, the tenth ply is always the last killer's turn: the most recent killer
+  takes the final move before the count is judged.
+  A player's **mined total** is the sum of every crystal their units have ever
+  taken from the board over the whole game — never reduced by spending, upkeep,
+  release or refund. **Black's starting handicap crystals count toward Black's
+  mined total.** The verdict resolves immediately at the end of the tenth
+  kill-free turn. The next turn never begins: no home-win check, upkeep or
+  healing can override it.
+  Eliminating the last enemy during a turn still wins immediately. Saved
+  kill-clock results preserve reason `kill-clock`, with `winner` set for a
+  decisive verdict or `null` on a tie. Archived draws from earlier revisions
+  keep reason `inactivity`.
+  Schema-9 unfinished saves (`muju-phasing-2`, twenty quiet plies, draw verdict)
+  and schema 5-7 unfinished saves (`muju-phasing-1`, ten quiet plies, draw
+  verdict) are each adjudicated once under the limit and verdict they were
+  RECORDED with — a game that had already drawn keeps that result — and a
+  position that is still playing resumes with its clock **restarted at 0**
+  rather than carrying a count whose meaning changed twice over. The revision is
+  then stamped in, so the restart happens at most once. This mirrors
+  `migrateLegacyGame`'s choice when the clock's reset rule changed, and never
+  revives a finished game. `LEGACY_INACTIVITY_LIMIT` (20, `muju-phasing-2`'s own
+  limit) and the persistence layer's own `PHASING_1_DRAW_LIMIT` (10,
+  `muju-phasing-1`'s limit, pinned separately because it numerically coincides
+  with the live kill clock's own limit) exist only for that adjudication and for
+  replaying an archived record; live play always uses `INACTIVITY_LIMIT` with
+  the `mined-total` verdict.
+  The public counter turns amber at 7 quiet turns. Both players at zero units is
+  also a draw, though normal play cannot reach that position.
+  The lab-only `inactivityRule: 'off'` control keeps disabling the clock, for
+  scripted-bot and analysis use.
 - **Resignation:** the current player may resign; opponent wins. The AI plays out current-rule games: material deficits alone do not establish
   defeat when home occupation can win. Historical elimination-only lab games retain
   the older material-based resignation heuristic.
@@ -546,7 +583,7 @@ observation, belief, particle-filter and re-determinization rules in
   See `docs/AI_IMPLEMENTATION_STATUS.md` for limits.
 - `lab/solver/` models passive finite-cell income, buy/promote financing and
   tactical frontiers. Historical map studies stay frozen under `lab/maps/`.
-- UI and tutorial use the catalogue/map constants; saves use schema 9
+- UI and tutorial use the catalogue/map constants; saves use schema 10
   (see §1, "Stored artefacts by rules revision").
 
 ## 11. Design intent and evidence

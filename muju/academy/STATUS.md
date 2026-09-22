@@ -1,3 +1,46 @@
+# Kill clock — the quiet-turn draw is retired (2026-09-22, `muju-phasing-3`) — notice prepared, not deployed
+
+Rules change, not an Academy release, and later the same day as the rename below: the
+inactivity draw clock is retired. Ten kill-free plies (not twenty) now end the game
+immediately, decided by each side's **mined total** — every crystal its units have taken
+from the board over the whole game, plus Black's starting handicap, never reduced by
+spending, upkeep, release or refund — with the higher total winning and equal totals
+drawing. It is no longer always a draw. The amber warning keeps its three-ply margin, now
+at seven rather than seventeen. What resets the clock is unchanged — only an attack that
+removes a piece. See `../docs/changes/2026-09-22-kill-clock-SPEC.md` and
+`../docs/changes/2026-09-22-kill-clock-lane3.md`.
+
+- **Changed here:** `export-rules.ts`'s draw assertion became a kill-clock/mined-total
+  assertion (a mined-total win, a tie, and Black's handicap counting toward its total) and
+  regenerated exactly one line of `rules-verification.json` (`catalog.json`, `map.json` and
+  `bonk-matrix.json` came back byte-identical). The course-page notice in `build-release.py`
+  gained a fourth paragraph (`id="kill-clock-notice"`, after the September 19 phasing-notice
+  and the September 22 rename-notice), with matching `verify-live.py` assertions; both files
+  compile. A local text-only preview built by substituting the extracted notice into the
+  still-live (pre-phasing-notice) checkout passed all 20 applicable page-content checks; no
+  Playwright render was taken for this preview (see the lane report for what that leaves
+  unverified).
+- **Prepared, not deployed.** The corrected notice reaches players only when the
+  `ethancd/ashkie-pages` checkout's `muju-academy/index.html` is patched, `verify_muju_videos.py`
+  is re-copied there, and the site is rebuilt and published.
+
+**Needs re-narration in a future v9 release, same lessons as the 2026-09-19 draw-clock change:**
+
+- **R09 "The Ten Quiet Turns"** — already known-stale for the twenty-ply number (below); now
+  additionally stale for the *verdict*: its narration says "the game is a draw" where the live
+  rule instead decides on mined totals except at an exact tie. The lesson's underlying teaching
+  (a quiet turn is one with no enemy killed by attack; collecting crystals does not itself reset
+  the clock) is still correct.
+- **R10 "One Turn at the Practice Table"** — verified unchanged, same as 2026-09-19: its
+  capstone never states a number or a verdict.
+
+Rules snapshots under `rules-snapshot/` and `production/R*/source-rules/` still carry the
+draw-clock's `INACTIVITY_LIMIT`. They are provenance for what each lesson was recorded
+against and are deliberately left alone; refreshed only by the `export-rules.ts` step of
+whichever release re-records R09.
+
+---
+
 # Current names override (2026-09-22) — notice prepared, not deployed
 
 Owner decision (Ethan, 2026-09-22): the game retitled **Muju Hono Tanka → Muju Hono Irumbu**

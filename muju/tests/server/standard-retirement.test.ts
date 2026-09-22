@@ -14,7 +14,9 @@
  * stopped working on 2026-09-13 — but that retiring the ruleset changes NOTHING
  * about them: the same refusal, the same listing, and the same bytes on disk,
  * with no in-place migration left that could rewrite one into the played
- * revision. The `muju-phasing-2` rooms that do open must keep opening.
+ * revision. The `muju-phasing-3` rooms that do open must keep opening
+ * (`muju-phasing-2`, the twenty-ply draw clock, retired in its turn at the
+ * kill-clock cutover and now takes this same refusal).
  */
 import { afterEach, expect, it, vi } from 'vitest';
 import { DatabaseSync } from 'node:sqlite';
@@ -34,7 +36,7 @@ afterEach(() => {
 });
 
 /** Every rules revision a stored row can carry that this host will not play. */
-const RETIRED_VERSIONS = ['muju-online-2', 'muju-online-3', 'muju-online-4', 'muju-online-5', RETIRED_STANDARD_VERSION, 'muju-phasing-1'];
+const RETIRED_VERSIONS = ['muju-online-2', 'muju-online-3', 'muju-online-4', 'muju-online-5', RETIRED_STANDARD_VERSION, 'muju-phasing-1', 'muju-phasing-2'];
 
 /**
  * Seed a database with the captured room at `version`. The row is written the
@@ -137,7 +139,7 @@ it('never rewrites a retired row, through every refusal and across two more stor
   }
 });
 
-it('creates only muju-phasing-2 rooms, and names the retirement when asked for Standard', () => {
+it('creates only muju-phasing-3 rooms, and names the retirement when asked for Standard', () => {
   const { store, path } = captured('muju-online-4');
   for (const input of [{ name: 'Omitted' }, { name: 'Explicit', ruleset: 'phasing' }]) {
     const created = store.create(input);
@@ -173,7 +175,7 @@ it('answers an HTTP create with ruleset "standard" with 400 INVALID_REQUEST', as
   }
 });
 
-it('keeps a muju-phasing-2 room openable and playable', () => {
+it('keeps a muju-phasing-3 room openable and playable', () => {
   const { store } = captured('muju-online-4');
   const host = store.create({ name: 'White' }), id = host.room.id;
   store.join(id, { name: 'Black', inviteCode: host.inviteCode });

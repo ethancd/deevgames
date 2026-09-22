@@ -215,15 +215,28 @@ Report the winner and stop. Clocks stop on any game result; undo never refunds t
   two attacks can land in a four-action reply. An invader must first
   survive its own outgoing mining/upkeep; defender rescue uses actual pieces in Act with
   no pre-action promotion or upkeep release. Occupied home prevents pending arrivals. An inconclusive proof preserves the
-  ordinary reply turn. Read the returned result: immediate checkmate cancels the
+  ordinary reply turn. No checkmate is awarded when the kill clock would end the
+  game at or before the defender's reply (the invading hand-off would produce the
+  ninth or tenth kill-free ply); the clock decides on mined totals instead, unless
+  the defender kills. Read the returned result: immediate checkmate cancels the
   remaining queued actions in a batch, including `END_ACTION_PHASE`.
 
 - Read the room's `actionsPerTurn` (always 4) and `turn.actionsRemaining`; use that
   budget for planning and enemy reach. Both seats use four actions.
-  Twenty consecutive completed player turns — 20 plies, ten hand-offs each — without
-  an enemy attack kill draw; income, movement, buying, promotion and upkeep losses do
-  not reset that clock. Only an attack that removes a unit resets it. Read the live
-  numbers from the observation: `quietTurns` against `drawAtQuietTurns`.
+  Ten consecutive kill-free player turns — 10 plies, five hand-offs each — end the
+  game immediately at the tenth `END_PLACE_PHASE`; income, movement, buying,
+  promotion and upkeep losses never reset that clock. A kill is any attack that
+  removes a unit; only a kill resets the clock, to zero, on the killer's own turn,
+  so the most recent killer takes the final move. The kill clock is decided on
+  mined totals: the higher of each side's mined total (every crystal that side's
+  units have taken from the board over the whole game, plus Black's starting
+  handicap, never reduced by spending, upkeep, release or refund) wins; equal
+  totals draw. A unit on the enemy home when the clock ends does not win by
+  occupation, and no home-checkmate is awarded when the defender's reply would be
+  the tenth ply. Read the live numbers from the observation's `killClock`: `plies`,
+  `limit`, `warningAt`, `minedTotals` and `leader` (who is currently ahead, or null
+  when tied). The deprecated `quietTurns`/`drawAtQuietTurns` pair reads the same
+  counter and limit for one release.
 - Read `nextStep`, `turn.currentPlayer`, `turn.phase`, `upkeepPending`, resources,
   unit IDs and `revision`. Plan only for the seat you control.
 - Query `muju_legal_actions({roomId, unitId?, type?, offset?, limit?})` for legal
@@ -300,10 +313,12 @@ Read the headline's economy as named checkpoints:
 - `shortfallIn`: completed own harvests before the first unpaid upkeep; zero
   means an immediate decision. Null means no shortfall was reached **before
   `forecastStop`**, not an indefinitely sustainable army. The projection stops
-  at the first player's insolvency, game termination (including the draw clock),
+  at the first player's insolvency, game termination (including the kill clock),
   or horizon. It never keeps an unaffordable army alive.
-- Deployment pairs are `[spawnableSquareCount, anyAnchorBlockedByEnemy]`.
-  Draw pairs are `[quietPlayerTurns, limit]`.
+- Deployment pairs are `[spawnableSquareCount, anyAnchorBlockedByEnemy]`. The
+  headline's `killClock` reports `plies`, `limit`, `warningAt`, `minedTotals` and
+  `leader`; the deprecated `draw` pair `[quietPlayerTurns, limit]` reads the same
+  counter and limit for one release.
 - Urgent `captureNow`/`threatNow` flags use the current turn; `captureNextTurn`/
   `threatNextTurn` assume the current player ends now with the engine.
 

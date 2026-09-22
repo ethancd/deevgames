@@ -103,7 +103,9 @@ it('labels older saves as partial and keeps the final position when score storag
   });
   act(() => result.current.endActionPhase());
   act(() => result.current.endPlacePhase());
-  expect(loadGameState()).toMatchObject({ phase: 'victory', victoryReason: 'inactivity' });
+  // White mined this turn and Black has not moved yet, so the kill clock
+  // decides on mined totals rather than drawing.
+  expect(loadGameState()).toMatchObject({ phase: 'victory', winner: 'white', victoryReason: 'kill-clock' });
   expect(loadGameHistory()!.frames).toHaveLength(1);
   expect(loadGameHistory()!.frames[0].state.phase).toBe('victory');
 });

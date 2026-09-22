@@ -51,10 +51,14 @@ describe('R13 constants agreement (canonical engine)', () => {
 
   // `muju-phasing-2`, preregistration amendment A4 (2026-09-19): the inactivity
   // draw limit moved from 10 plies to 20, and the in-game warning kept its
-  // three-ply margin, 7 -> 17. This is the pin the whole change hangs off.
-  it('INACTIVITY_LIMIT === 20, INACTIVITY_WARNING === 17', () => {
-    expect(INACTIVITY_LIMIT).toBe(20);
-    expect(INACTIVITY_WARNING).toBe(17);
+  // three-ply margin, 7 -> 17. `muju-phasing-3` (owner decision 2026-09-22, the
+  // KILL CLOCK) moved the limit back to 10 and the warning back to 7 — the
+  // SAME numbers `muju-phasing-1` had, though the VERDICT at the limit is now
+  // the higher mined total, not an automatic draw. This is the pin the whole
+  // change hangs off.
+  it('INACTIVITY_LIMIT === 10, INACTIVITY_WARNING === 7', () => {
+    expect(INACTIVITY_LIMIT).toBe(10);
+    expect(INACTIVITY_WARNING).toBe(7);
   });
 
   it('the warning keeps its three-ply margin below the draw', () => {

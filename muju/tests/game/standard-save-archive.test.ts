@@ -130,7 +130,7 @@ it('never lets a pace preference touch the retired save', () => {
   expect(localStorage.getItem(RETIRED_STORAGE_KEY)).toBe(raw);
 });
 
-it('resumes a Phasing schema-8 save and re-stamps it to 9', () => {
+it('resumes a Phasing schema-8 save and re-stamps it to the current schema, restarting the clock', () => {
   const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   state.players.white.resources = 7;
   state.inactivityPlies = 3;
@@ -139,8 +139,10 @@ it('resumes a Phasing schema-8 save and re-stamps it to 9', () => {
   const loaded = loadGameState()!;
   expect(loaded.ruleset).toBe('phasing');
   expect(loaded.players.white.resources).toBe(7);
-  // Schema 8 already recorded the twenty-ply clock, so the count keeps its meaning.
-  expect(loaded.inactivityPlies).toBe(3);
+  // Schema 8 recorded the twenty-ply `muju-phasing-2` draw clock, which is now
+  // a legacy limit: the position (well under 20) is still playing, so its
+  // count is restarted at 0 for the live ten-ply kill clock, same as schema 9.
+  expect(loaded.inactivityPlies).toBe(0);
   expect(JSON.parse(localStorage.getItem(KEY)!).schemaVersion).toBe(SCHEMA_VERSION);
   expect(localStorage.getItem(RETIRED_STORAGE_KEY)).toBeNull();
   expect(loadGameHistory()!.frames).toHaveLength(1);

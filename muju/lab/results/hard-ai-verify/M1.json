@@ -1,13 +1,48 @@
 {
+  "ruleset": "phasing",
   "perftActions_initial_4": 14959,
   "perftMidStates_initial": 1053,
   "perftTurns_initial": 797,
-  "fixturesChecked": 11,
+  "standardTriple": "checked",
+  "phasingActions_initial": 14959,
+  "phasingMidStates_initial": 1850,
+  "phasingTurns_initial": 797,
+  "phasingInitialLimits": {
+    "act": 4,
+    "prepare": 0
+  },
+  "fixturesChecked": 7,
   "fixturesMismatch": 0,
+  "digestMismatches": 0,
+  "replicaAgreed": true,
   "mismatches": [],
   "openings": 797,
   "engine": "canonical",
-  "git": "f865174994dd70b884ca802110f9d5783e2aa586",
+  "git": "62a5703f8ceb28cd9365aac95d2a2a22763281b4",
   "node": "v24.11.1",
-  "at": "2026-09-14T18:27:32.526Z"
+  "at": "2026-09-22T17:44:47.761Z",
+  "perft": {
+    "ruleset": "phasing",
+    "perftActions_initial_4": 14959,
+    "perftMidStates_initial": 1053,
+    "perftTurns_initial": 797,
+    "standardTriple": "checked",
+    "phasingActions_initial": 14959,
+    "phasingMidStates_initial": 1850,
+    "phasingTurns_initial": 797,
+    "phasingInitialLimits": {
+      "act": 4,
+      "prepare": 0
+    },
+    "fixturesChecked": 7,
+    "fixturesMismatch": 0,
+    "digestMismatches": 0,
+    "replicaAgreed": true,
+    "mismatches": [],
+    "openings": 797,
+    "engine": "canonical",
+    "git": "62a5703f8ceb28cd9365aac95d2a2a22763281b4",
+    "node": "v24.11.1",
+    "at": "2026-09-22T17:44:47.761Z"
+  }
 }

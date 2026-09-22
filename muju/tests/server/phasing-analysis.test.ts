@@ -59,7 +59,7 @@ describe('Phasing analysis models', () => {
     const prepare = applyAction(s, { type: 'END_ACTION_PHASE' });
     expect(economyForecast(prepare).checkpoints[0].player).toBe('black');
     s.inactivityRule = 'on'; s.inactivityPlies = INACTIVITY_LIMIT - 1;
-    expect(economyForecast(s).stop).toBe('terminal:inactivity');
+    expect(economyForecast(s).stop).toBe('terminal:kill-clock');
   });
   it('includes future arrivals and refunds in the financial forecast, without new purchases', () => {
     const s = phasing([piece('w', 'fire_1', 'white', 1, 1), piece('b', 'plant_1', 'black', 8, 8)]);

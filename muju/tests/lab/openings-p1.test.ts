@@ -56,13 +56,21 @@ describe('P1 unsealed corpus', () => {
    * the generator and the stop rule, and A4 rests on that rule rather than on
    * an inspection of sealed rows.
    */
-  it('hands every run a clock of 1, far below either revision limit, which is why the pinned bytes survive A4', () => {
-    // The superseded limit, written out because the claim is a comparison with
-    // BOTH revisions. `src/game/inactivity.ts` holds the live one.
+  it('hands every run a clock of 1, far below either revision limit, which is why the pinned bytes survive A4 and the kill clock', () => {
+    // The superseded (A4) limit, written out because the claim is a comparison
+    // across revisions. `src/game/inactivity.ts` holds the live one, which is
+    // now `muju-phasing-3` (owner decision 2026-09-22, the KILL CLOCK) — back
+    // to ten plies, the SAME number `muju-phasing-1` had (verdict differs, but
+    // this test only needs the limit and the warning, both of which coincide).
+    // `RULES_VERSION` here is `HARNESS_RULES_VERSION`
+    // (`lab/harness/types.ts`), byte-pinned by `tests/lab/phasing-evidence.test.ts`
+    // for the p2-scripted-2026-09-19 reference campaign; it stays
+    // `muju-phasing-2` until that campaign is superseded, independent of which
+    // rules revision `src/game/inactivity.ts` itself now implements.
     const PHASING_1_LIMIT = 10, PHASING_1_WARNING = 7;
     expect(RULES_VERSION).toBe('muju-phasing-2');
-    expect(INACTIVITY_LIMIT).toBe(20);
-    expect(INACTIVITY_WARNING).toBe(17);
+    expect(INACTIVITY_LIMIT).toBe(10);
+    expect(INACTIVITY_WARNING).toBe(7);
 
     const clocks: number[] = [];
     for (const file of files) for (const opening of file.openings) for (const blackCrystalHandicap of [0, 3]) {

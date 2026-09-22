@@ -12,7 +12,7 @@ import { defaultUpkeepAction, unitUpkeep, upkeepDue } from '../src/game/upkeep';
 import { projectedIncome } from '../src/game/mining';
 import { getAllSpawnPositions, isValidSpawnPosition } from '../src/game/spawning';
 import { getHomeOccupier } from '../src/game/victory';
-import { INACTIVITY_LIMIT } from '../src/game/inactivity';
+import { INACTIVITY_LIMIT, INACTIVITY_WARNING, minedTotal } from '../src/game/inactivity';
 import { TIME_CONTROL_PRESETS } from '../src/online/timeControl';
 import { square, describeAction } from './notation';
 import { assertMatchCapability } from './matchPolicy';
@@ -49,7 +49,17 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
       ...(bare ? {} : { projectedIncome: projectedIncome(s, player), upkeepDue: upkeepDue(s, player) }), reviewUpkeep: !!s.reviewUpkeep?.[player],
       occupyingEnemyHome: getHomeOccupier(s.board, player)?.id ?? null,
     }])),
+    // `killClock` is the current name (rules revision `muju-phasing-3`,
+    // 2026-09-22): ten kill-free plies end the game on the higher mined total,
+    // a tie draws. `quietTurns`/`drawAtQuietTurns` are kept for one release as
+    // deprecated aliases of the SAME counter and limit — `quietTurns` reads
+    // `killClock.plies` and `drawAtQuietTurns` reads `killClock.limit`
+    // unchanged; they no longer describe a draw. Read `killClock` going forward.
     quietTurns: s.inactivityPlies ?? 0, drawAtQuietTurns: INACTIVITY_LIMIT,
+    killClock: { plies: s.inactivityPlies ?? 0, limit: INACTIVITY_LIMIT, warningAt: INACTIVITY_WARNING,
+      minedTotals: { white: minedTotal(s, 'white'), black: minedTotal(s, 'black') },
+      leader: minedTotal(s, 'white') > minedTotal(s, 'black') ? 'white' as const
+        : minedTotal(s, 'black') > minedTotal(s, 'white') ? 'black' as const : null },
     // Separate matrices avoid repeating 100 coordinate objects in every tool response.
     coordinates: 'Columns A–J left to right; rows 1–10 top to bottom. White home A1; Black home J10. No perspective flipping.',
     board: s.board.cells.map(row => row.map(c => {
@@ -173,10 +183,10 @@ export const rules = {
     'Prepare (turn.phase=place): PROMOTE_UNIT once per actual piece, including arrivals this turn; BUY_UNIT pays now and commits type and empty legal square. END_PLACE_PHASE ends the full turn and hands over the clock.'],
   combat: 'Attack ≥ remaining defense eliminates. Otherwise damage lasts until the defender’s turn starts. A unit gets one attack; its own killing blow unlocks another, up to its tier. Moving can repeat while actions remain.',
   elements: 'Fire/Lightning beats Plant/Metal beats Water/Shadow beats Fire/Lightning. Advantage +1 attack; disadvantage −1, minimum 0.',
-  // The draw sentence is built from the canonical constant so a rules revision
-  // cannot leave the agent-facing text stating the previous limit.
-  victory: `Eliminate every actual enemy unit (pending summons do not postpone elimination), or hold the enemy home until next own turn. Existing victory checks precede summons. Immediate home-checkmate requires surviving outgoing upkeep. Earlier opposing occupation has priority. Home blocks all purchases. Three attacks on the same corner unit require at least five actions. ${INACTIVITY_LIMIT} full player turns (${INACTIVITY_LIMIT} plies, ${INACTIVITY_LIMIT / 2} hand-offs each) without an attack kill draw; the quiet clock advances only at END_PLACE_PHASE. Only an attack kill resets the clock; income, movement, purchases, promotions and upkeep losses do not. Resignation or timeout loses.`,
-  checkmate: 'An invader must survive its own mining/upkeep before immediate home-checkmate is adjudicated. Defender rescue starts in Act with the actual army after healing; no pre-action promotions or upkeep releases. Home occupation prevents all pending arrivals. A proven result cancels the queued batch tail. If checkmate ends a muju_play batch, remaining commands are skipped and events contain only executed actions. Preview reports the same result. Finished games cannot be undone.',
+  // The kill-clock sentence is built from the canonical constants so a rules
+  // revision cannot leave the agent-facing text stating a previous limit or verdict.
+  victory: `Eliminate every actual enemy unit (pending summons do not postpone elimination), or hold the enemy home until next own turn. Existing victory checks precede summons. Immediate home-checkmate requires surviving outgoing upkeep. Earlier opposing occupation has priority. Home blocks all purchases. Three attacks on the same corner unit require at least five actions. A kill is any attack that removes a unit; releases, refunds, promotions, mining, chip damage and disrupted or failed summons are not kills. ${INACTIVITY_LIMIT} consecutive kill-free player turns (${INACTIVITY_LIMIT} plies, ${INACTIVITY_LIMIT / 2} hand-offs each) end the game immediately at END_PLACE_PHASE of the ${INACTIVITY_LIMIT}th; the next turn never begins, so no turn-start home-occupation check, upkeep or healing can override it. Only a kill resets the clock to zero on the killer's own turn, so the most recent killer takes the final move before the count is judged; income, movement, purchases, promotions and upkeep losses never reset it. The kill clock is decided on mined totals: the higher of each side's mined total (every crystal that side's units have taken from the board over the whole game, plus Black's starting handicap, never reduced by spending, upkeep, release or refund) wins; equal totals draw. A unit occupying the enemy home when the clock ends does not win by occupation. No home-checkmate is awarded when the defender's reply would be the ${INACTIVITY_LIMIT}th ply (the clock decides instead unless the defender kills); the invading turn that would produce the ${INACTIVITY_LIMIT}th ply ends the game on mined totals and is never pre-empted by a mate award. Resignation or timeout loses.`,
+  checkmate: `An invader must survive its own mining/upkeep before immediate home-checkmate is adjudicated. Defender rescue starts in Act with the actual army after healing; no pre-action promotions or upkeep releases. Home occupation prevents all pending arrivals. No checkmate is awarded when the kill clock would end the game at or before the defender's reply — the invading turn's hand-off would produce ${INACTIVITY_LIMIT - 1} or ${INACTIVITY_LIMIT} kill-free plies; the game plays on and the clock or a kill decides instead. A proven result cancels the queued batch tail. If checkmate ends a muju_play batch, remaining commands are skipped and events contain only executed actions. Preview reports the same result. Finished games cannot be undone.`,
   workflow: 'Create a room and share only the invitation with the opponent, or join using their roomId and inviteCode. Keep your seat token private. Read the room and legal actions; preview a sequence; play with expectedRevision and a unique requestId. Reuse the exact requestId/body after an uncertain network outcome. Batches are atomic and cannot play the opponent’s turn. Call muju_wait_for_change with afterRevision set to the latest revision between turns. On changed=true, inspect events for who acted and what they did, then use room.activePlayer to determine who can play. A move or undo within the opponent’s turn does not hand over control. On changed=false, retain the board and wait again. Stop on phase=victory.',
   undo: 'Send UNDO alone via muju_play to reverse the latest command in this full turn (an atomic batch is one command). Repeat while canUndo is true. Mining and automatic upkeep belong to one reversible END_ACTION_PHASE command. There is no incoming automatic-upkeep undo. To choose upkeep, undo back before mining, enable SET_UPKEEP_REVIEW in its own command, end actions and submit PAY_UPKEEP. Undo never refunds time, crosses END_PLACE_PHASE, reverses the opponent’s completed turn or reopens a finished game.',
   upkeep: 'END_ACTION_PHASE mines once, then pays outgoing upkeep. If upkeepPending, PAY_UPKEEP must keep every tier 1 plus an affordable subset of higher tiers. Payment does not heal/reset or hand off. Promotion happens afterward; its new upkeep rate first applies after mining next own turn. Affordable upkeep is paid automatically unless SET_UPKEEP_REVIEW is enabled, which must be sent alone.',

@@ -128,10 +128,13 @@ describe('Phasing ruleset', () => {
     const prepared = { ...s, turn: { ...s.turn, phase: 'place' as const } };
     expect(resolveHomeCheckmate(prepared, transitionWithoutCheckmate).victoryReason).toBe('home-checkmate');
   });
-  it('resolves the quiet draw once, after preparation, and before next home/arrival checks', () => {
+  it('resolves the kill clock once, after preparation, and before next home/arrival checks', () => {
     const s = initial(); s.inactivityPlies = INACTIVITY_LIMIT - 1;
     const ready = actEnd(s); expect(ready.phase).toBe('playing');
+    // White mined this turn and Black has not moved yet, so the kill clock
+    // decides on mined totals rather than drawing.
+    expect(ready.players.white.resourcesGained).toBeGreaterThan(0);
     const after = handoff(buy(ready));
-    expect(after).toMatchObject({ phase: 'victory', victoryReason: 'inactivity', inactivityPlies: INACTIVITY_LIMIT });
+    expect(after).toMatchObject({ phase: 'victory', winner: 'white', victoryReason: 'kill-clock', inactivityPlies: INACTIVITY_LIMIT });
   });
 });

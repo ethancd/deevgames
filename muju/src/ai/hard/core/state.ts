@@ -71,6 +71,7 @@ import { getAttackCount } from '../../../game/combat';
 import {
   INACTIVITY_LIMIT as CANONICAL_INACTIVITY_LIMIT,
   INACTIVITY_WARNING as CANONICAL_INACTIVITY_WARNING,
+  minedTotal,
 } from '../../../game/inactivity';
 import { HomeVerdict, PROOF_NODES, damageBound, homeVerdict, needsProof } from '../tactics/prover';
 import { Scratch, bbCount, bbHas, bbNew, bbNext, bbZero } from './bits';
@@ -115,24 +116,27 @@ export { DEAD, F_CAN_ACT, F_LAST_KILLED, F_PLACED, F_PROMOTED, MAX_SLOTS, MAX_TU
 export type { PackedState } from '../types';
 
 /**
- * `resolveInactivityDraw` fires at this many quiet plies. NOT a second copy of
- * the rule: it IS the canonical `src/game/inactivity.ts` export, re-exported
- * under the replica's name so the packed engine cannot drift from the rules it
- * replicates. Under `muju-phasing-2` (preregistration amendment A4) it is 20.
+ * `resolveKillClock` (alias `resolveInactivityDraw`) fires at this many quiet
+ * plies. NOT a second copy of the rule: it IS the canonical
+ * `src/game/inactivity.ts` export, re-exported under the replica's name so the
+ * packed engine cannot drift from the rules it replicates. Under
+ * `muju-phasing-3` (owner decision 2026-09-22, the KILL CLOCK) it is 10 — back
+ * to `muju-phasing-1`'s limit, but the verdict is now the higher mined total
+ * (a tie draws), not an automatic draw as under `muju-phasing-2`'s 20.
  */
 export const INACTIVITY_LIMIT = CANONICAL_INACTIVITY_LIMIT;
 /**
  * `inactivityPlies` is clamped into the Zobrist `clock` plane's domain
- * (DESIGN §3.1). The domain is exactly `0..INACTIVITY_LIMIT`: the draw resolves
- * the moment the clock REACHES the limit, so no reachable position carries a
- * higher value and the clamp is unobservable.
+ * (DESIGN §3.1). The domain is exactly `0..INACTIVITY_LIMIT`: the kill clock
+ * resolves the moment the clock REACHES the limit, so no reachable position
+ * carries a higher value and the clamp is unobservable.
  */
 export const MAX_CLOCK = INACTIVITY_LIMIT;
 /**
  * The canonical in-game warning threshold (`INACTIVITY_WARNING`), three plies
- * short of the draw. `eval/invariants.ts` bit 16 — "sitting on a lead while the
- * draw clock runs" — reads it instead of the literal it used to carry, so the
- * invariant keeps its three-ply meaning at any limit.
+ * short of the clock's end. `eval/invariants.ts` bit 16 — "sitting on a lead
+ * while the clock runs" — reads it instead of the literal it used to carry, so
+ * the invariant keeps its three-ply meaning at any limit.
  */
 export const INACTIVITY_WARNING = CANONICAL_INACTIVITY_WARNING;
 /** `getActionsPerTurn` is frozen at 4 for every current-rule match (rules.ts:11-13). */
@@ -703,8 +707,15 @@ export class Replica {
 
     out.bank[0] = state.players.white.resources;
     out.bank[1] = state.players.black.resources;
-    out.gained[0] = state.players.white.resourcesGained;
-    out.gained[1] = state.players.black.resourcesGained;
+    // `gained[]` is the KILL CLOCK verdict quantity — `minedTotal` (canonical
+    // `src/game/inactivity.ts`), not the raw `resourcesGained` field: Black's
+    // starting handicap counts toward Black's mined total (owner decision
+    // 2026-09-22), so `gained[1]` already carries `p.handicap` folded in.
+    // `unpack` below subtracts it back out so `resourcesGained` round-trips
+    // exact; `p.handicap` is packed separately (unchanged) and is what
+    // `unpack` subtracts, so the two directions use the same number.
+    out.gained[0] = minedTotal(state, 'white');
+    out.gained[1] = minedTotal(state, 'black');
 
     out.side = state.turn.currentPlayer === 'white' ? 0 : 1;
     out.phase = state.turn.phase === 'place' ? 0 : 1;
@@ -817,8 +828,13 @@ export class Replica {
       phase: p.result === Result.ONGOING ? 'playing' : 'victory',
       board: { cells, units, initialResourceLayers },
       players: {
+        // `gained[0]` is White's mined total verbatim (White carries no
+        // handicap). `gained[1]` is Black's mined total, which `pack` folded
+        // `p.handicap` into; subtracting it back out here is what makes the
+        // round trip exact — `resourcesGained` never itself includes the
+        // handicap (`minedTotal` adds it only at read time).
         white: { id: 'white', resources: p.bank[0], startCorner: { x: 0, y: 0 }, resourcesGained: p.gained[0], resourcesUpkeep: 0 },
-        black: { id: 'black', resources: p.bank[1], startCorner: { x: 9, y: 9 }, resourcesGained: p.gained[1], resourcesUpkeep: 0 },
+        black: { id: 'black', resources: p.bank[1], startCorner: { x: 9, y: 9 }, resourcesGained: p.gained[1] - p.handicap, resourcesUpkeep: 0 },
       },
       turn: {
         currentPlayer: PLAYER_OF_SIDE[p.side],
@@ -1344,15 +1360,20 @@ export class Replica {
     const pendCountSlot = u.top++;
     u.w[pendCountSlot] = 0;
 
-    // 1. the quiet-turn clock, then `resolveInactivityDraw` (turn.ts:120-124).
+    // 1. the quiet-turn clock, then the KILL CLOCK resolves (`resolveKillClock`,
+    //    turn.ts:120-124). Under `muju-phasing-3` the tenth kill-free ply is a
+    //    DECIDED position, not an automatic draw: the higher mined total
+    //    (`gained[]`, which already carries Black's handicap folded in — see
+    //    `pack` above) wins; only a tie draws.
     const plies = p.progress === 1 ? 0 : p.clock + 1;
     setClock(p, plies);
     setProgress(p, 0);
     if (p.drawRuleOn === 1 && plies >= INACTIVITY_LIMIT) {
       u.w[u.top++] = 0;
       closeRecord(u, base);
-      p.result = Result.DRAW;
-      p.reason = Reason.INACTIVITY;
+      const white = p.gained[0], black = p.gained[1];
+      p.result = white > black ? Result.WHITE_WIN : black > white ? Result.BLACK_WIN : Result.DRAW;
+      p.reason = Reason.KILL_CLOCK;
       return;
     }
 
@@ -1711,6 +1732,18 @@ export class Replica {
     // immediate home-checkmate". `needsProof` already excludes `upkeepPending`.
     if (p.phase !== 0) return false;
     if (!needsProof(p)) return false;
+    // The `c >= 9` kill-clock gate (`killClockForbidsCheckmate`,
+    // `src/game/inactivity.ts`, owner decision 2026-09-22): `#` predicts the
+    // invader's NEXT turn start, so it may be awarded only when that start is
+    // guaranteed. `c` is the count this very hand-off is about to produce —
+    // zero if this turn already killed, otherwise one more than the clock now
+    // reads — and the prediction fails once the defender's reply (or the
+    // hand-off itself) can be the tenth ply. Same arithmetic as canonical,
+    // packed: no unpack.
+    if (p.drawRuleOn === 1) {
+      const c = p.progress === 1 ? 0 : p.clock + 1;
+      if (c >= INACTIVITY_LIMIT - 1) return false;
+    }
     // `proverMode = 1` runs only the admissible damage bound
     // (`enoughPossibleDamage`, homeCheckmate.ts:27-49): its FAILURE proves the
     // mate, and because the bound is optimistic this can only ever UNDER-claim
@@ -1968,8 +2001,13 @@ export class Replica {
       const slot = p.pieceAt[s];
       if (slot !== NO_SLOT && p.sq[slot] !== s) throw new Error(`check: pieceAt[${s}] = ${slot} but sq[${slot}] = ${p.sq[slot]}`);
     }
-    if (reserveTotal + p.gained[0] + p.gained[1] !== initialTotal) {
-      throw new Error(`check: conservation broken (${reserveTotal} + ${p.gained[0]} + ${p.gained[1]} !== ${initialTotal})`);
+    // `gained[1]` carries Black's starting handicap folded in (`minedTotal`,
+    // owner decision 2026-09-22): that crystal never came off the board, so it
+    // is subtracted back out here — the conservation law is over BOARD
+    // reserves only, not over the kill-clock's mined-total verdict quantity.
+    const minedFromBoard = p.gained[0] + (p.gained[1] - p.handicap);
+    if (reserveTotal + minedFromBoard !== initialTotal) {
+      throw new Error(`check: conservation broken (${reserveTotal} + ${minedFromBoard} !== ${initialTotal})`);
     }
     const occ = bbNew();
     for (let slot = 0; slot < MAX_SLOTS; slot++) {
@@ -2142,7 +2180,11 @@ const REASON_OF: Readonly<Record<string, Reason>> = {
   'upkeep-elimination': Reason.UPKEEP_ELIMINATION,
   'home-occupation': Reason.HOME_OCCUPATION,
   'home-checkmate': Reason.HOME_CHECKMATE,
+  // `inactivity` is kept for archived `muju-phasing-1`/`muju-phasing-2` records
+  // whose recorded verdict was the draw; a state packed with that reason is
+  // never produced by live `make`, only read back from history.
   inactivity: Reason.INACTIVITY,
+  'kill-clock': Reason.KILL_CLOCK,
   resignation: Reason.RESIGNATION,
   timeout: Reason.NONE,
 };
@@ -2155,6 +2197,7 @@ const REASON_NAME: readonly GameState['victoryReason'][] = [
   'home-checkmate',
   'inactivity',
   'resignation',
+  'kill-clock',
 ];
 
 /** `ADJ_LIST` slot indices in ascending-square order: up, left, right, down. */

@@ -177,7 +177,16 @@ describe('pack / unpack', () => {
     expect(p.pieceAt[32]).toBe(0);
     expect(p.pieceAt[87]).toBe(1);
     expect([...p.bank]).toEqual([11, 17]);
-    expect([...p.gained]).toEqual([40, 20]);
+    // `gained[]` is `minedTotal`, not raw `resourcesGained`: Black's handicap
+    // (3) is folded into `gained[1]` (owner decision 2026-09-22), so it reads
+    // 20 + 3 = 23, not the raw 20. White carries no handicap, so `gained[0]`
+    // is the raw 40 unchanged.
+    expect([...p.gained]).toEqual([40, 23]);
+    // The round trip is exact: `unpack` subtracts `p.handicap` back out, so
+    // `resourcesGained` is never itself contaminated by the handicap.
+    const roundTripped = replica.unpack(p);
+    expect(roundTripped.players.white.resourcesGained).toBe(40);
+    expect(roundTripped.players.black.resourcesGained).toBe(20);
     expect(p.side).toBe(1);
     expect(p.phase).toBe(0);
     expect(p.actions).toBe(2);
@@ -221,6 +230,7 @@ describe('pack / unpack', () => {
       ['home-checkmate', Reason.HOME_CHECKMATE],
       ['inactivity', Reason.INACTIVITY],
       ['resignation', Reason.RESIGNATION],
+      ['kill-clock', Reason.KILL_CLOCK],
     ] as const) {
       const won: GameState = {
         ...buildState({ units: [{ def: 'fire_1', owner: 'black', x: 0, y: 0 }] }),
