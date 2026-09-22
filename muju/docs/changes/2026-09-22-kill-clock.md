@@ -84,6 +84,27 @@ invader's next turn start is guaranteed: with the hand-off count c ≤ 8. Save s
    machine under load and, per lane 2, identically at the seed commit; it is not touched here and
    is judged by CI.
 
-## Gates
+## Gates (final run on the merged lane state plus coordinator fixes, worktree `~/src/deevgames-killclock`)
 
-Filled after the final run; see Release.
+- `npx tsc`, `npm run server:types`, `npm run hard:types`: clean.
+- `npm test`: 2950 passed, 17 skipped (16 Gate-1 deferrals, 1 suite-bundle load), 1 failed
+  (`calibrate-cold`, then re-banked; 10/10 after) — 213 files.
+- `e2e/ai-worker.spec.ts` 7/7 after the polarity fix; `npm run test:online:e2e` 84/84.
+- CI run 35770060650 on the branch: success. PR #29 merged as c7bc5c8e.
+
+## Release
+
+| # | Node | Disposition | Evidence |
+|---|---|---|---|
+| static-package | changed | `bash build-all.sh` on master c7bc5c8e from the main checkout (first attempt aborted on a local napkin edit; rerun clean) |
+| server-package | changed | Render rebuilt from the merge; live `muju_rules` describes the kill clock: "decided on mined totals … plus Black's starting handicap … equal totals draw" and the 9-or-10-ply no-checkmate clause |
+| academy-package | changed (notice) | ashkie-pages `e44609aa` on main: fourth notice paragraph `kill-clock-notice` naming R09/R10, verifier copy, patch note, manifest 7748 URLs |
+| static-deploy | changed | `wrangler pages deploy` → https://7050dd6f.deevgames.pages.dev; live bundle carries the mined-lead marker and kill-clock strings |
+| server-deploy | changed | health `Muju Hono Irumbu`; rules text as above |
+| academy-deploy | changed | GitHub Action for e44609aa succeeded; `verify_muju_videos.py https://ashkie.com` exit 0, `verify_offline.sh` exit 0, live page contains `kill-clock-notice` |
+| release-verification | changed | this table; HUD and site screenshots in `2026-09-22-kill-clock-evidence/` |
+
+Deferred by owner decision: Hard-AI weight retuning and strength measurement (ladder, Gate 0/1
+re-preregistration, suite re-authoring under phasing-3), Academy re-voice of R09/R10 (and the
+fifteen rename lessons). Rooms that were open under phasing-2 on the host are refused with
+RULES_CHANGED, as the 2026-09-19 precedent did.
