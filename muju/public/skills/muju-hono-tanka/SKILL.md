@@ -162,8 +162,9 @@ and time used. Custom limits: 0–600 seconds of delay, 1–14,400 seconds of ba
 
 Each player has a separate bank carried across their own turns. Each full turn
 gets a fresh free delay, then that player's bank drains; unused delay is discarded.
-Upkeep, placement and all actions share one delay. Partial plays, undo, previews,
-reads and retries never reset it. Running out loses with `victoryReason:"timeout"`.
+One delay covers all four actions, mining and upkeep, and preparation together.
+Partial plays, undo, previews, reads and retries never reset it. Running out loses
+with `victoryReason:"timeout"`.
 
 Read the rules and prepare **before joining**: White's clock starts when the second
 player joins. It keeps running through thinking, waiting, disconnects, replay and

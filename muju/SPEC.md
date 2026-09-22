@@ -127,7 +127,11 @@ recorded with.
 - **Replays and move history.** Recorded boards, move labels and analysis text
   are frozen as written under the revision that produced them.
 - **Opening corpora.** `p1-dev`, `p1-val` and `p1-sealed` are Phasing corpora
-  under `muju-phasing-2`.
+  frozen on 2026-09-18 under `muju-phasing-1` and used unchanged since;
+  `lab/hard-ai/ladder/openings/ALLOCATION-P1.md` pins each file's rows, bytes and
+  sha256. Only `p1-dev.jsonl` and `p1-val.jsonl` are in the repository:
+  `p1-sealed.jsonl` is held outside it at mode 0600, with only its hash published,
+  and is consumed once under the preregistered Gate 2 run.
 - **Strength records.** `docs/hard-ai/phasing/repair-2026-09-20/` was measured
   under `muju-phasing-2` and remains valid. `docs/hard-ai/RELEASE-2026-09-18.md`
   and every earlier Standard ladder, suite or balance study describe Standard and
