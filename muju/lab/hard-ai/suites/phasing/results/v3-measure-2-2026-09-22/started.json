@@ -1,0 +1,297 @@
+{
+  "schema": "muju-phasing-measurement-start-v1",
+  "startedAt": "2026-09-22T08:32:31.086Z",
+  "head": "7b96f634572c7dc56b885117cbc44c4241692f67",
+  "pid": 78933,
+  "args": {
+    "manifest": "/Users/ashkie/src/deevgames-phasing-cutover/muju/lab/hard-ai/suites/phasing/fixtures/v2/manifest.json",
+    "contract": "/Users/ashkie/src/deevgames-phasing-cutover/muju/lab/hard-ai/suites/phasing/fixtures/v3/floor-contract.json",
+    "out": "/Users/ashkie/src/deevgames-phasing-cutover/muju/lab/hard-ai/suites/phasing/results/v3-measure-2-2026-09-22"
+  },
+  "input": {
+    "bundle": {
+      "manifestSha256": "454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453",
+      "manifestFileSha256": "ce248197d975c356c19db95d71cdc13d7d113cffaf228008ac73b4267826b00e",
+      "files": [
+        {
+          "family": "economy",
+          "path": "economy.suite.json",
+          "sha256": "a496f2d7627a681d67076f6412d440f81175e93dfaa1093891e5e959c3494cc6"
+        },
+        {
+          "family": "home-fortify",
+          "path": "home-fortify.suite.json",
+          "sha256": "6200faf9fa1a488ce405635a640b641ba0f0b409411faad888cf1cbec1216a68"
+        },
+        {
+          "family": "home-mate",
+          "path": "home-mate.suite.json",
+          "sha256": "a3e4a3b5fb55138d2ec89079365ff199d31e9022a9206db7728dc7492e181c21"
+        },
+        {
+          "family": "invariants",
+          "path": "invariants.suite.json",
+          "sha256": "fa1563d794f5efed9f66f1b6188a249462d67c831b11b6baa4d7b257daa30061"
+        },
+        {
+          "family": "summon-disruption",
+          "path": "summon-disruption.suite.json",
+          "sha256": "85839ea546bee63a4304afed8fe087ef5c03b8e0ac7d02a17bf9aaf7ccd4c6fe"
+        },
+        {
+          "family": "tactics",
+          "path": "tactics.suite.json",
+          "sha256": "b202deb5e718d2f9423d4ae71a4532655cab8e03736e7bbd18814cd3f258d5f3"
+        }
+      ]
+    },
+    "contract": {
+      "manifestSha256": "454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453",
+      "declaredAt": "2026-09-22T06:40:08.000Z",
+      "seed": 1,
+      "profile": "desktop",
+      "rationale": "Re-declared engineering floors for the SAME v2 authored release (manifestSha256 454fe137...), against the phasing-only cutover build. Schema stays muju-phasing-suite-floor-v2 because no v3 contract schema exists (contract.ts:73-85), and the manifest hash is the v2 manifest's own, unchanged: this contract re-reads the v2 case set on a new engine build, it does not author a new one. The allowedMiss vector is the frozen V1_ALLOWED_MISS budget (tactics 6, invariants 1, home-mate 0, economy 0, summon-disruption 1, home-fortify 0) that contract.ts refuses to let move in either direction, so minimumEarned stays DERIVED from this manifest's own offered counts (tactics 63-6=57, invariants 15-1=14, home-mate 28-0=28, economy 20-0=20, summon-disruption 14-1=13, home-fortify 6-0=6) and no floor here can have been set from an observed outcome. engineSourceSha256 and weightsSha256 preregister the build these floors are declared against: they are hashJson(engineSourceHashes()) over 78 source files and weightIdentity(DEFAULT_WEIGHTS) read off worktree deevgames-pc-lane1 at branch claude/pc-lane1 (merge d68db689) without running a search, and the weights are the shipped phasing-hand-priors-v1 vector (version 2). assertContractBuild refuses any other build rather than crediting it. The v2 manifest has already been read once, so supersedes names ledger seq 1 and carries that line's chain value, which is the only way measure.ts unblocks a second reading of a manifest. This reading is INFORMATIONAL under preregistration amendment A6 of the 2026-09-21 phasing-only cutover: it is not a ship gate, and the invariants family is expected to land below its floor of 14. This file is committed by itself, with no result.json, cases.jsonl, started.json, failure.json, ledger line or any path under a results directory in the same commit, and the measurement is a separate, later run; resolveContractCommit refuses an untracked or working-tree-modified contract, which is what makes this a preregistration rather than a description. No engine outcome, corpus, opening or sealed set was read to write it.",
+      "coverage": "all",
+      "fallback": "veto",
+      "illegalOrDivergent": "veto",
+      "unresolvedProof": "veto",
+      "schema": "muju-phasing-suite-floor-v2",
+      "engineSourceSha256": "8ad95e28265e61ba3a224e096e8702b95e50c54b39fa758054436a99f3cf1f88",
+      "weightsSha256": "ec9816169afe7983e03ea220eb30b8d4c1d05cbdaefc5f07a9e8a4061e12cdf5",
+      "allowedMiss": {
+        "tactics": 6,
+        "invariants": 1,
+        "home-mate": 0,
+        "economy": 0,
+        "summon-disruption": 1,
+        "home-fortify": 0
+      },
+      "supersedes": {
+        "ledgerSeq": 1,
+        "chain": "d7774d6d6a7265383d4c69c8d32fa469fd2195c5ff2702d5493b14464a25d430"
+      }
+    },
+    "contractFileSha256": "4e40d0b5a067a09de85f4b2c690a1bd3b4b7b22778188dcac3eb1186a8b2fff6",
+    "contractCommit": {
+      "commit": "9c3da2879d6360353fe9b2ccd2f55554420372da",
+      "committedAt": "2026-09-21T23:40:45-07:00",
+      "path": "muju/lab/hard-ai/suites/phasing/fixtures/v3/floor-contract.json",
+      "blobSha1": "9a6eb1691b4d0d992a8a00af788ad4d6e3ca3a4c",
+      "ancestorOfHead": true,
+      "bytesMatchCommit": true,
+      "committedBeforeRun": true,
+      "touchesResultPaths": false,
+      "witnessTier": "remote-tracking",
+      "remoteRefs": [
+        "origin/claude/pc-lane1"
+      ],
+      "remoteWitnesses": [
+        {
+          "ref": "origin/claude/pc-lane1",
+          "remote": "origin",
+          "url": "git@github.com:ethancd/deevgames.git",
+          "localOnly": false
+        }
+      ],
+      "witnessUrls": [
+        "git@github.com:ethancd/deevgames.git"
+      ]
+    },
+    "weightsFileSha256": null,
+    "weightsSha256": "ec9816169afe7983e03ea220eb30b8d4c1d05cbdaefc5f07a9e8a4061e12cdf5",
+    "engineSourceSha256": "8ad95e28265e61ba3a224e096e8702b95e50c54b39fa758054436a99f3cf1f88"
+  },
+  "before": {
+    "artifacts": {
+      "lab/hard-ai/suites/phasing/author-inputs/new-candidates-v1.json": "86512dc5573b1283be2c4c28644ea28dadc0f6caaf83f5271cc31091e37b6b72",
+      "lab/hard-ai/suites/phasing/author-inputs/new-candidates-v2.json": "db1e217fb34f44557cfffbd6c597ae3cdf55a873904e528edc26e924ed48de45",
+      "lab/hard-ai/suites/phasing/author-inputs/tactics-home-classification-v1.json": "289bceb9e37e0d13b8cefc34854ce7522137bef50b4e4d291b8cde370819629e",
+      "lab/hard-ai/suites/phasing/author-inputs/tactics-home-corrections-v2.json": "c77766dcd830fff4bc96ea90b23853472a827b12db82d331990922f5f213828e",
+      "lab/hard-ai/suites/phasing/author-inputs/tactics-home-diagrams-v1.json": "81f25281c66ff12528d3c703b690580631d72d14a5ab415d5e55eee70029862e",
+      "lab/hard-ai/suites/phasing/build-economy.ts": "b52ed06d1faaf3fe35b33c55ed3ea0433615f66d9494adc1b9427c4f57b78583",
+      "lab/hard-ai/suites/phasing/build-home-mate.ts": "f12d8cb7a0bd6bfe1eab6686100722a1f4c6067fb27befc84d2d707f3c86ea48",
+      "lab/hard-ai/suites/phasing/build-invariants.ts": "6af548c57367273336d3fffea869d2eb19916fd5769fff7a3106620460b12c90",
+      "lab/hard-ai/suites/phasing/build-new-families.ts": "5b12fe416f2f9683966c47408d862641013ec94a61a230d3f550c254da970674",
+      "lab/hard-ai/suites/phasing/build-tactics.ts": "aa91190ca3a3d2224c4f5f102dc316c6d289423f6a3426a55769ed16234e77e5",
+      "lab/hard-ai/suites/phasing/build-v2.ts": "9052990fae83af1a3b4e445b154233eeed91ebd095a896c75ac31fedeb631bc4",
+      "lab/hard-ai/suites/phasing/canonical.ts": "b77d1a1dd403fe49a2c9dae9c2daf064c36b20201ceb32c52e9304984ec1de5c",
+      "lab/hard-ai/suites/phasing/contract.ts": "c51e6ac9795a8bd18ac0dbc605b733b479d01951dc495879cf1d859d71c5fed6",
+      "lab/hard-ai/suites/phasing/engine-adapter.ts": "48120b037b1dcae6c0d12015d37bc1817e14b23ec56f33ab90797689b42c106a",
+      "lab/hard-ai/suites/phasing/format.ts": "104cacad0da3b2945cf9804988261670251d2a6d1fcb08679dd05fe0cec71ec6",
+      "lab/hard-ai/suites/phasing/manifest.ts": "00276ee037c0e3207244e25b3a8280272e52a3557a856fc63e98b252313beec2",
+      "lab/hard-ai/suites/phasing/measure.ts": "9f29afb11c87897d7e3ac272ffacb10cfc3363a5f06f1aea78a8c15da27cc458",
+      "lab/hard-ai/suites/phasing/predicates.ts": "9f18f9512b2d04c8e352989bf0eb848c7e223a225f264ce21d9245e2f7798e6f",
+      "lab/hard-ai/suites/phasing/run.ts": "c1a57f4a2cb6c1be72c0daceda5f444c716938fa53ed6f356b6b2ed92ba636b6",
+      "lab/hard-ai/suites/phasing/score.ts": "65154de144fc4691aa502f9f444edd785a74e1a7bc8976018a0f9743fd64182e",
+      "lab/hard-ai/suites/phasing/tactics-home-author.ts": "87351e62ee31c67a8388dcbaf0b7dd1a86ea9e2e72fe6ea688f556f540620472",
+      "lab/hard-ai/suites/phasing/veto.ts": "2363a329275eb1490348627c87a181b3e59c68f9e9f644dd0d6db9f0b81309e0",
+      "package.json": "a36f0da6d68dba3e953f5c1b97eb28853e5dc80a5c5f2e7b68a10598babb3300"
+    },
+    "canonical": {
+      "src/ai/simulate.ts": "466b87836c63e6c3ff842bb8101a7558eb45fda24356d4c688838b90c4e2610f",
+      "src/game/analysis.ts": "9c79cb396423075234956270eea776d45d804c15f1aa96da64aef6decadfd9d8",
+      "src/game/board.ts": "b9f87306222cb989c0b1ff12582ba0367e25f25eb7087b40fe86d2cd7ab3ab76",
+      "src/game/building.ts": "1119562915a77f979ee190f361d01abba7bac29d9253eb6736910baec81bfa13",
+      "src/game/combat.ts": "86cafa7c2abdc6b17654f9365ef9b1caa6e94fbfcfa4ffedcb28e65e34c31b5f",
+      "src/game/elements.ts": "4f3cddd76c6a35c65aeef92133fbe86e451e18c053a562b5fda75b413f2da347",
+      "src/game/homeCheckmate.ts": "4ea0a6b2f3d261a50ae690d6fe2fc9d8cd4d853891d3e21a43c91a5a68826cac",
+      "src/game/inactivity.ts": "8fc9f29ff068d52dec8fb61654618d715a92b69e998024f7bf660e580c9cb57d",
+      "src/game/legality.ts": "7511cab8b9b6586325af8cb8a277866df5c951c39256d16dabeee0df4458b233",
+      "src/game/migrate.ts": "f698998941cc2043fe17b7068069728fba99251d2687068c305dbe7256fae143",
+      "src/game/mining.ts": "92c304580ac213cf97352b51db793fa06c664ba73f53f800e947ebcda3394e22",
+      "src/game/moveHistory.ts": "1afcfd971d7b17e8b7e8552b09e9bcef43c162bace09cc539a7eef50bf233223",
+      "src/game/movement.ts": "506ed6ced009bc56640c2afcaf58c7e239586ffe5bf4c3d6b3be6577cd0982f5",
+      "src/game/promotion.ts": "d00d0c4098d25560a163ad22c6abb2eb27b7b4ab335b92e006b2176ef4ff7e50",
+      "src/game/replay.ts": "b75c653e2e8fc66b1cb8c02a90915c4602d9e57a4590774c1acd8503de8fbd5f",
+      "src/game/resourceMap.ts": "d80bbf0d3d6e30edb56878c2f829e3840d48df669f7682342c1818a4bd9c6bc7",
+      "src/game/rules.ts": "8f385c8fc42ae908f7000882d6c949c20a6b0d13b1b89659a699019e5b4ac528",
+      "src/game/spawning.ts": "77668b3e1eb71ef7fcf4e13ec54ea0734ad51e40c152d9fd9a8e67a272966d5c",
+      "src/game/summoning.ts": "b38f3523a92f4fb264acc0c60aca91795a93a84187287e662d6e66de269b01ce",
+      "src/game/turn.ts": "49513b3f769a8295f002db6d2f9457b7e8eec6af0f4c0f24f1d295c08ff155ce",
+      "src/game/types.ts": "5f15380cc027e099897708f772c2eb99fe65b6ac2e66c358b91d85ac13cd1385",
+      "src/game/units.ts": "44bdcbf152b1f641b8b066bd0e1f6e7155f63ada9aa26226a364164127ba2603",
+      "src/game/upkeep.ts": "b5f7d8cdab734f42a4686b7ba72d88cc8df4e8757a17e1fd519c2656b7967e57",
+      "src/game/victory.ts": "b850130ec12bb7671cadbf2c1d552d856b9f277655f43ff175106a3223073e50"
+    }
+  },
+  "witnessTier": "remote-tracking",
+  "witness": "WITNESS: remote-tracking ref contains the contract commit",
+  "witnessUrls": [
+    "git@github.com:ethancd/deevgames.git"
+  ],
+  "remoteWitnesses": [
+    {
+      "ref": "origin/claude/pc-lane1",
+      "remote": "origin",
+      "url": "git@github.com:ethancd/deevgames.git",
+      "localOnly": false
+    }
+  ],
+  "priorMeasurementsOfThisManifest": [
+    {
+      "source": "ledger",
+      "seq": 1,
+      "chain": "d7774d6d6a7265383d4c69c8d32fa469fd2195c5ff2702d5493b14464a25d430",
+      "contractCommit": "1864090d0d13897f90c398a42b7681dbb7066bf4",
+      "contractFileSha256": "cb3be4a4dedad0107105b8d2f71a5196331afbfa27efc328801ce5a9128110a8",
+      "startedAt": "2026-09-19T19:44:01.118Z",
+      "resultSha256": "93ec5c59c2f42c9a695dc67e4b863dc5162026081277619391e1cad699fa0a1a"
+    }
+  ],
+  "ledgerHeadBefore": "d7774d6d6a7265383d4c69c8d32fa469fd2195c5ff2702d5493b14464a25d430",
+  "ledgerPath": "muju/lab/hard-ai/suites/phasing/measurement-ledger.jsonl",
+  "engineIdentity": "e00907f8d9193abf4d059ab4828d58619367670d5cce89cf5b0f9d7399c65d09",
+  "engine": {
+    "schema": "muju-phasing-engine-identity-v1",
+    "engine": "hard@desktop",
+    "rulesVersion": "muju-phasing-2",
+    "mode": "fixed-work",
+    "seed": 1,
+    "book": "EMPTY_BOOK",
+    "executionKind": "production",
+    "sourceSha256": "8ad95e28265e61ba3a224e096e8702b95e50c54b39fa758054436a99f3cf1f88",
+    "sources": {
+      "src/ai/simulate.ts": "466b87836c63e6c3ff842bb8101a7558eb45fda24356d4c688838b90c4e2610f",
+      "src/game/analysis.ts": "9c79cb396423075234956270eea776d45d804c15f1aa96da64aef6decadfd9d8",
+      "src/game/board.ts": "b9f87306222cb989c0b1ff12582ba0367e25f25eb7087b40fe86d2cd7ab3ab76",
+      "src/game/building.ts": "1119562915a77f979ee190f361d01abba7bac29d9253eb6736910baec81bfa13",
+      "src/game/combat.ts": "86cafa7c2abdc6b17654f9365ef9b1caa6e94fbfcfa4ffedcb28e65e34c31b5f",
+      "src/game/elements.ts": "4f3cddd76c6a35c65aeef92133fbe86e451e18c053a562b5fda75b413f2da347",
+      "src/game/homeCheckmate.ts": "4ea0a6b2f3d261a50ae690d6fe2fc9d8cd4d853891d3e21a43c91a5a68826cac",
+      "src/game/inactivity.ts": "8fc9f29ff068d52dec8fb61654618d715a92b69e998024f7bf660e580c9cb57d",
+      "src/game/legality.ts": "7511cab8b9b6586325af8cb8a277866df5c951c39256d16dabeee0df4458b233",
+      "src/game/migrate.ts": "f698998941cc2043fe17b7068069728fba99251d2687068c305dbe7256fae143",
+      "src/game/mining.ts": "92c304580ac213cf97352b51db793fa06c664ba73f53f800e947ebcda3394e22",
+      "src/game/moveHistory.ts": "1afcfd971d7b17e8b7e8552b09e9bcef43c162bace09cc539a7eef50bf233223",
+      "src/game/movement.ts": "506ed6ced009bc56640c2afcaf58c7e239586ffe5bf4c3d6b3be6577cd0982f5",
+      "src/game/promotion.ts": "d00d0c4098d25560a163ad22c6abb2eb27b7b4ab335b92e006b2176ef4ff7e50",
+      "src/game/replay.ts": "b75c653e2e8fc66b1cb8c02a90915c4602d9e57a4590774c1acd8503de8fbd5f",
+      "src/game/resourceMap.ts": "d80bbf0d3d6e30edb56878c2f829e3840d48df669f7682342c1818a4bd9c6bc7",
+      "src/game/rules.ts": "8f385c8fc42ae908f7000882d6c949c20a6b0d13b1b89659a699019e5b4ac528",
+      "src/game/spawning.ts": "77668b3e1eb71ef7fcf4e13ec54ea0734ad51e40c152d9fd9a8e67a272966d5c",
+      "src/game/summoning.ts": "b38f3523a92f4fb264acc0c60aca91795a93a84187287e662d6e66de269b01ce",
+      "src/game/turn.ts": "49513b3f769a8295f002db6d2f9457b7e8eec6af0f4c0f24f1d295c08ff155ce",
+      "src/game/types.ts": "5f15380cc027e099897708f772c2eb99fe65b6ac2e66c358b91d85ac13cd1385",
+      "src/game/units.ts": "44bdcbf152b1f641b8b066bd0e1f6e7155f63ada9aa26226a364164127ba2603",
+      "src/game/upkeep.ts": "b5f7d8cdab734f42a4686b7ba72d88cc8df4e8757a17e1fd519c2656b7967e57",
+      "src/game/victory.ts": "b850130ec12bb7671cadbf2c1d552d856b9f277655f43ff175106a3223073e50",
+      "lab/hard-ai/ablate/arms.ts": "644a8dd9f36a1a5aa344a2841d4019862c8728fc61989dea2f0a083e21f0547a",
+      "lab/hard-ai/audit/eval-groups.ts": "b5b18c83b9ca908080f3a76dae5977eaebbe501453972c0f1dd8c55306c4a5e9",
+      "lab/hard-ai/bots/hard.ts": "84d7862101b7906204548222523408b6d70c801869123afe893531f7495efed7",
+      "lab/hard-ai/ladder/identity.ts": "157f6576017c8ae044addb9386ce684ab4c08968afdf200a3b4387218e8abfa0",
+      "lab/hard-ai/ladder/ruleset.ts": "d08fbc80ab7b0b201d7d1656319d58af15db9243bf3989f27ab57a3d56ac7baa",
+      "lab/hard-ai/suites/phasing/canonical.ts": "b77d1a1dd403fe49a2c9dae9c2daf064c36b20201ceb32c52e9304984ec1de5c",
+      "lab/hard-ai/suites/phasing/engine-adapter.ts": "48120b037b1dcae6c0d12015d37bc1817e14b23ec56f33ab90797689b42c106a",
+      "src/ai/hard/book/format.ts": "dfdbb69656d94c439d6041f6b5e8fc839ccab050b677a50c3853c93374eb0ab2",
+      "src/ai/hard/book/probe.ts": "dddd7b2f95515934add17df37dd2203baae0358d747181e2d43e283d0c5c470b",
+      "src/ai/hard/config.ts": "7e223b68f5c3d73db7540be4566b05ee31339e638d43d554762e6196c215e39d",
+      "src/ai/hard/core/action.ts": "f4f7f89cf6e944d34ce62728adfbe7514c96d887b7b30049cc58414cd6843cb7",
+      "src/ai/hard/core/bits.ts": "4720fb5db1599c84fd65906bb79b63f70507bb7d0a2ae7c6ec761c456a7463e0",
+      "src/ai/hard/core/catalog.ts": "44650f1036aa8aae7ca16216e73518a4a3ff77204c9f9e4a4143decb81dce966",
+      "src/ai/hard/core/income.ts": "ab4052a230479281bb972ba32c39c9b6df22336743f958402710c0fe38194f3e",
+      "src/ai/hard/core/movement.ts": "316cccb89ece2419ca1b9059dc9541bcf234218a6f89da590f9aa4026497bd64",
+      "src/ai/hard/core/spawn.ts": "b36ee5c74c5a622b4283d24bbc55da7e87beb6be9f0ecd3393f33a4d45fb9075",
+      "src/ai/hard/core/state.ts": "8abaeced57c075946b7fa408dd9b366d82b216101edc2e570e9830c1497c4a16",
+      "src/ai/hard/core/tables.ts": "a53bda845fee889761e483d95f6da545c14890d3430ba9422c3c20b20fac308a",
+      "src/ai/hard/core/zobrist.ts": "d446d474a3c9517f47240d1698a6dadf436ec9b311c3aa4571266f7616baa615",
+      "src/ai/hard/engine.ts": "2bd949405bd234a6f6d175852301dc2189f86b4551c50dd9b8c3f88d4b823f05",
+      "src/ai/hard/eval/evaluate.ts": "1adc5ff0bd41de19a4c69be1af62487b7952736a0198af5d3007cedc10a0fb3a",
+      "src/ai/hard/eval/features.ts": "de3076a5f822f7e0049d4d7602511461e435b83b19a04366c1871cf0653a9526",
+      "src/ai/hard/eval/invariants.ts": "e85b18577ef021b47d5b29f8fc8530bd642ac3cef2cde2c1ef27b0929085c6cc",
+      "src/ai/hard/eval/pending.ts": "cb8ae8d8007e472b8dced1c26b30d59cfbe779ba0a62e6feae0333396b4d8242",
+      "src/ai/hard/eval/turnScore.ts": "952b6e8ec0590273cd043b6e53e2ce3d0929366952cb1a7a01a2ea72f8ace89e",
+      "src/ai/hard/eval/weights.generated.ts": "addbaef834214b9c4125c869feb66b3c5b980b23bc53f4db3333f6b868c1baee",
+      "src/ai/hard/eval/weights.ts": "d5af3bcb9392fff3ee1bd108f0cf87164df4453cb1222c5e1907b400bc53d758",
+      "src/ai/hard/gen/actionsearch.ts": "3cd5a24235993cbbc207421f986e123fb4f18bb61d5b1f1c184eab4710d3025f",
+      "src/ai/hard/gen/generate.ts": "9f23aae7753bd1d847e30bfe4ae3bf6e30884661e6777df1d0ca27a1a766c953",
+      "src/ai/hard/gen/promote.ts": "39b040e9479899079fcde076bf03ef60284d85a6e2211cb58fe37e1be1b27b44",
+      "src/ai/hard/gen/purchase.ts": "7fd714fa1d07d408316dbec395bf59d5817e09990d16352ea4bd935588411777",
+      "src/ai/hard/gen/trace.ts": "817ee52e5f28770c56df2b3db31fcb65991576fbd01c189a868f2c7a87b983d0",
+      "src/ai/hard/gen/turn.ts": "02e5531b400c9cdc573679c9b0fc1424a2e100d863be0f3529b9cecbaa809b69",
+      "src/ai/hard/gen/upkeep.ts": "961e7d02707ca64dc11938473c218aa801c006643c768b862d54061d6c85bc78",
+      "src/ai/hard/search/order.ts": "5872daeb97368c26e122de9684ffe942e0d1556c9078e12f5e10344ff94f5fe5",
+      "src/ai/hard/search/probe.ts": "c0e76db7fa2f98700be38fde95fa090e433e4a2b531317858d24cd361e3ccf9d",
+      "src/ai/hard/search/pvs.ts": "2d89601de223982b409c21ed437bdae62cc5fc28a43ebbe55fd2d65a16c57e47",
+      "src/ai/hard/search/quiesce.ts": "36a69f45a45e2568c9507c5350f8d8b68e1b00762a4f322436b8a01bb86f9e3c",
+      "src/ai/hard/search/root.ts": "167f7a191094d19ab218cf247531cc792c4f9c93ef7cdcd1e64e6a01eb28ab53",
+      "src/ai/hard/search/time.ts": "037a55a2d835f45d036c74ef942260f609fa826699a847a3b0766ab1814e8737",
+      "src/ai/hard/search/tt.ts": "dfeff41f52508aa0cb98231864e3b1a14be8b75eb00aee14e432519ded8da2e1",
+      "src/ai/hard/tables/approach.ts": "faa431288a6d3baefe5955f9d4c9bad226ac619ed7d67c7c19ac1dc9b5ac5be8",
+      "src/ai/hard/tables/context.ts": "e95ea7b0404b02ca0239a28d97ff3e28c55fd685059acf2999d6ad461189b4ec",
+      "src/ai/hard/tables/economy.ts": "c987afed9385d8959643ecfcf421d3efd23d760160b8e7742c91e7dc4daae0b7",
+      "src/ai/hard/tables/geometry.ts": "0d682dafaa7c0c09fd2578d66c5c42dbe5ce53eb1b01267d35f4f1d9241d32e7",
+      "src/ai/hard/tables/home.ts": "cbda59ca3cfeb17d61f7451842d9bb8376e46d6246c164de9468a9cc6d773d8e",
+      "src/ai/hard/tables/kill.ts": "7ead8995606575554969e0c6f02b8f9fc28658a65310e0e89ead5a023fcfad98",
+      "src/ai/hard/tables/phasing-economy.ts": "87668ffdc322f680ea6bbae3336f7f2c14a14527ddbb1ac81682b4df045d361f",
+      "src/ai/hard/tables/threat.ts": "223ca11c43a52e5bd105c19bc41e174b626bb98b8935469aac8e1220e9672b02",
+      "src/ai/hard/tactics/dfpn.ts": "61f06c3c975e5fd39ed540f4d8884a5786afd12372cb8c4472d79bf0295186c2",
+      "src/ai/hard/tactics/prover.ts": "a4115a129d2484b58bbcbcbc59b0cef42e7a53239dc730b90088fb80fdb9fb96",
+      "src/ai/hard/types.ts": "db97ed8226ec6abc557b02ee4a88851b5cfc25ef5398cf873aa8ada989425d6c",
+      "src/ai/hard/verify/perft.ts": "eec1869dae4bea3a173baffa558cb52539a186d9f3081d521889c3a05697989a",
+      "src/ai/hard/verify/replay.ts": "b310d047a0ebbed91767b4099f8d030badb21330406d3c6aed4956e661949117"
+    },
+    "configSha256": "4eb58c7cdfa38dec49cdd43a816ddea8670f982a05ef9c5a150e8332344cc052",
+    "weightsSha256": "ec9816169afe7983e03ea220eb30b8d4c1d05cbdaefc5f07a9e8a4061e12cdf5",
+    "weightsVersion": 2,
+    "weightsLabel": "phasing-hand-priors-v1",
+    "abi": {
+      "featureCount": 62,
+      "featureNamesSha256": "5ee43057475db89a4e696db560672edbf51db1139d375d10105e7ee92de0b5a4",
+      "weightsVersion": 2,
+      "maxSlots": 128,
+      "maxTurnActions": 24,
+      "pendingStride": 100,
+      "zobristSeed": 1297435221,
+      "sources": {
+        "src/ai/hard/types.ts": "db97ed8226ec6abc557b02ee4a88851b5cfc25ef5398cf873aa8ada989425d6c",
+        "src/ai/hard/core/state.ts": "8abaeced57c075946b7fa408dd9b366d82b216101edc2e570e9830c1497c4a16",
+        "src/ai/hard/core/action.ts": "f4f7f89cf6e944d34ce62728adfbe7514c96d887b7b30049cc58414cd6843cb7",
+        "src/ai/hard/core/zobrist.ts": "d446d474a3c9517f47240d1698a6dadf436ec9b311c3aa4571266f7616baa615",
+        "src/ai/hard/eval/features.ts": "de3076a5f822f7e0049d4d7602511461e435b83b19a04366c1871cf0653a9526",
+        "src/ai/hard/eval/weights.ts": "d5af3bcb9392fff3ee1bd108f0cf87164df4453cb1222c5e1907b400bc53d758"
+      }
+    }
+  },
+  "status": "started",
+  "acceptance": "not-established"
+}
