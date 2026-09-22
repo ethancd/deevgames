@@ -17,10 +17,10 @@ two hosts with absolute URLs. Cloudflare Pages publishing is paused (no deploy
 credentials), so the Pages copy of `/muju/` is frozen and is not a release target.
 The custom domain **deevgames.ashkie.com** is registered with Pages and awaits its
 DNS CNAME to `deevgames.pages.dev` before the home-page link can switch to it.
-The current release hosts Muju Hono Tanka, FORGE, and Oracle of Delve plus the
+The current release hosts Muju Hono Irumbu, FORGE, and Oracle of Delve plus the
 design portfolio. These are browser games; Oracle is a short combat prototype.
 
-Muju Hono Tanka also has a persistent multiplayer host and an MCP interface for
+Muju Hono Irumbu also has a persistent multiplayer host and an MCP interface for
 LLM players. Humans and agents can share rooms across computers. See
 [Muju multiplayer and MCP setup](muju/ONLINE.md) for local hosting, Docker,
 internet hosting, invitation links and agent configuration. The Node host runs

@@ -26,7 +26,7 @@ def run(job):
  h=hashlib.sha256(audio.read_bytes()).hexdigest();suffix='' if args.model=='small.en' else '-medium';out=d/'qa'/f"asr-v6-{job['id']}{suffix}.json"
  if out.exists() and json.loads(out.read_text()).get('audioSha256')==h:return
  start=time.monotonic()
- segments,info=model.transcribe(str(audio),language='en',beam_size=5,word_timestamps=True,condition_on_previous_text=False,temperature=0,initial_prompt='Muju Academy. Pip. Click. Hi. Hono. Kagari. Radi. Umeme. Kimubunga. Sjor. Straumr. Aegirinn. Göl. Gölge. Karanlık. Muju. Sachita. Sachakuna. Yan. Mazask. Tanka. Bonk matrix. Cleave. Coordinates A1 to J10.')
+ segments,info=model.transcribe(str(audio),language='en',beam_size=5,word_timestamps=True,condition_on_previous_text=False,temperature=0,initial_prompt='Muju Academy. Pip. Click. Hi. Hono. Honō. Kagari. Radi. Umeme. Kimubunga. Kimbunga. Sjor. Sjór. Straumr. Aegirinn. Ægirinn. Göl. Loş. Gölge. Karanlık. Muju. Sachita. Mallki. Sachakuna. Sach\'akuna. Yan. Poṉ. Mazask. Veḷḷi. Tanka. Irumbu. Bonk matrix. Cleave. Coordinates A1 to J10.')
  segments=list(segments);result={'text':' '.join(s.text.strip() for s in segments),'words':[{'word':w.word.strip(),'start':w.start,'end':w.end,'probability':w.probability} for s in segments for w in s.words],'audioSha256':h,'sourceText':job['text'],'model':f'faster-whisper {args.model} int8, local only','duration':info.duration}
  out.write_text(json.dumps(result,indent=2,ensure_ascii=False)+'\n')
  print(f"{job['episode']}/{job['id']}: {len(result['words'])} words · {time.monotonic()-start:.1f}s",flush=True)

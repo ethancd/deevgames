@@ -1,6 +1,6 @@
 # Static value solver: current
 
-Catalogue SHA-256: `99f8875d65df594307c562962da4b807d54175e4da0fa765776456e25f11b9eb`. Model SHA-256: `28463203896b0455240e900fa6bf1ffd4364394bab6a6b1d659e18dc15f509df`.
+Catalogue SHA-256: `b68494692da19506e14d6ffe2ea4f57c10bcd18fceb7607ffe8f30934b20978c`. Model SHA-256: `06dcc63535002fdf103c382eaf71a693f74b9bfeceafc9aa49e091c43f5614c9`.
 
 **This is a set of local optimization results, not a universal power score or a proof of game balance.**
 
@@ -11,23 +11,23 @@ Witness counts reflect this deliberately broad mission grid, not importance or e
 | Unit | ATK/DEF/SPD/MINE | Cost | Same-tier dominators | Cheapest / sole-cheapest tasks | Example witness |
 |---|---|---|---|---:|---|
 | Hi (fire_1) | 2/1/2/1 | 3 | none | 3450 / 2490 | strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive no hit |
-| Hono (fire_2) | 3/1/2/1 | 7 | none | 1560 / 1560 | strike water_1 at distance 2 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_2 hit |
+| Honō (fire_2) | 3/1/2/1 | 7 | none | 1560 / 1560 | strike water_1 at distance 2 within 2 actions; mine >=0 crystals at turn end on rich ground; survive plant_2 hit |
 | Kagari (fire_3) | 4/2/3/1 | 15 | none | 6555 / 6105 | strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive plant_3 hit |
 | Radi (lightning_1) | 1/1/3/0 | 3 | none | 1365 / 405 | strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit |
 | Umeme (lightning_2) | 2/1/4/0 | 7 | none | 870 / 870 | strike fire_1 at distance 5 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit |
-| Kimubunga (lightning_3) | 3/1/5/0 | 15 | none | 1365 / 915 | strike fire_1 at distance 6 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit |
-| Sjor (water_1) | 2/2/1/2 | 4 | none | 2874 / 2058 | strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive fire_1 hit |
+| Kimbunga (lightning_3) | 3/1/5/0 | 15 | none | 1365 / 915 | strike fire_1 at distance 6 within 2 actions; mine >=0 crystals at turn end on rich ground; survive no hit |
+| Sjór (water_1) | 2/2/1/2 | 4 | none | 2874 / 2058 | strike fire_1 at distance 1 within 1 actions; mine >=1 crystals at turn end on rich ground; survive fire_1 hit |
 | Straumr (water_2) | 2/3/1/2 | 8 | none | 3612 / 3612 | strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_2 hit |
-| Aegirinn (water_3) | 3/4/2/3 | 16 | none | 13986 / 13056 | strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_3 hit |
-| Göl (shadow_1) | 2/2/2/0 | 4 | none | 1404 / 588 | strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive fire_1 hit |
+| Ægirinn (water_3) | 3/4/2/3 | 16 | none | 13986 / 13056 | strike fire_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive fire_3 hit |
+| Loş (shadow_1) | 2/2/2/0 | 4 | none | 1404 / 588 | strike fire_1 at distance 3 within 2 actions; mine >=0 crystals at turn end on rich ground; survive fire_1 hit |
 | Gölge (shadow_2) | 3/2/2/1 | 8 | none | 810 / 810 | strike fire_1 at distance 3 within 2 actions; mine >=1 crystals at turn end on rich ground; survive fire_1 hit |
 | Karanlık (shadow_3) | 4/2/3/2 | 16 | none | 4569 / 3639 | strike fire_1 at distance 4 within 2 actions; mine >=0 crystals at turn end on rich ground; survive fire_1 hit |
 | Muju (plant_1) | 0/3/1/3 | 5 | none | 700 / 42 | occupy anchor at distance 1 within 1 moves; survive water_1 hit |
-| Sachita (plant_2) | 1/3/1/5 | 9 | none | 3957 / 1183 | strike water_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive no hit |
-| Sachakuna (plant_3) | 2/4/1/8 | 17 | none | 15097 / 10288 | strike fire_1 at distance 1 within 1 actions; mine >=6 crystals at turn end on rich ground; survive no hit |
-| Yan (metal_1) | 1/3/0/3 | 5 | none | 1690 / 1032 | strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_1 hit |
-| Mazask (metal_2) | 1/4/1/4 | 9 | none | 3680 / 906 | strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive shadow_3 hit |
-| Tanka (metal_3) | 2/5/2/5 | 17 | none | 11697 / 6888 | strike fire_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive fire_2 hit |
+| Mallki (plant_2) | 1/3/1/5 | 9 | none | 3957 / 1183 | strike water_1 at distance 1 within 1 actions; mine >=5 crystals at turn end on rich ground; survive no hit |
+| Sach'akuna (plant_3) | 2/4/1/8 | 17 | none | 15097 / 10288 | strike fire_1 at distance 1 within 1 actions; mine >=6 crystals at turn end on rich ground; survive no hit |
+| Poṉ (metal_1) | 1/3/0/3 | 5 | none | 1690 / 1032 | strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive water_1 hit |
+| Veḷḷi (metal_2) | 1/4/1/4 | 9 | none | 3680 / 906 | strike water_1 at distance 1 within 1 actions; mine >=0 crystals at turn end on rich ground; survive shadow_3 hit |
+| Irumbu (metal_3) | 2/5/2/5 | 17 | none | 11697 / 6888 | strike fire_1 at distance 1 within 1 actions; mine >=4 crystals at turn end on rich ground; survive fire_2 hit |
 
 ## Marginal stat values (one extra point, holding opponents fixed)
 

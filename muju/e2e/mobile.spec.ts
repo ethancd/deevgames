@@ -86,8 +86,8 @@ test('commit a summon, promote it on arrival; haste and save persistence',async(
  // promote during that same turn's Prepare.
  await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/white Hi, fire, tier 1/);
  await page.getByRole('button',{name:'Mine & prepare →'}).click();
- await page.getByTestId('cell-0-0').click();await expect(page.getByRole('button',{name:'Promote · ◆ 4 · rent 1',exact:true})).toBeEnabled();await page.getByRole('button',{name:'Promote · ◆ 4 · rent 1',exact:true}).click();await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/Hono/);
- await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/Hono/);
+ await page.getByTestId('cell-0-0').click();await expect(page.getByRole('button',{name:'Promote · ◆ 4 · rent 1',exact:true})).toBeEnabled();await page.getByRole('button',{name:'Promote · ◆ 4 · rent 1',exact:true}).click();await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/Honō/);
+ await page.reload();await page.getByRole('button',{name:'Pass & Play'}).click();await page.getByRole('button',{name:/Continue saved game/}).click();await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/Honō/);
 });
 test('tutorial explains the same reserves, phase order, summoning and promotion rules',async({page})=>{
  await start(page);await page.getByRole('button',{name:'How to play',exact:true}).click();const dialog=page.getByRole('dialog');
@@ -97,7 +97,7 @@ test('tutorial explains the same reserves, phase order, summoning and promotion 
  // The Phasing promotion rule, in the deck's own words, and the retired
  // Standard one nowhere in it.
  expect(text).toContain('A piece that arrived this turn is eligible.');expect(text).not.toContain('cannot promote this turn');
- expect(text).toContain('both banks are public');expect(text).toContain('Hi (3)');expect(text).toContain('Muju (5)');expect(text).toContain('Buy Hi for 3; on a later turn promote to Hono for 4; on another turn promote to Kagari for 8.');expect(text).not.toMatch(/rope|Queue phase|hidden production|build time/i);
+ expect(text).toContain('both banks are public');expect(text).toContain('Hi (3)');expect(text).toContain('Muju (5)');expect(text).toContain('Buy Hi for 3; on a later turn promote to Honō for 4; on another turn promote to Kagari for 8.');expect(text).not.toMatch(/rope|Queue phase|hidden production|build time/i);
 });
 test('attack previews and cancellation preserve combat and undo',async({page})=>{
  const s=phasing();s.board.units.push(createUnit('plant_1','black',{x:2,y:0}));await start(page,s);

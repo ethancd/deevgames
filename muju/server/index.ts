@@ -16,7 +16,7 @@ const app = createApp(store, { publicUrl, distPath: resolve(root, 'dist'),
   allowedOrigins: (process.env.MUJU_ALLOWED_ORIGINS ?? '').split(',').filter(Boolean) });
 const listener = app.listen(port, host, error => {
   if (error) { console.error(`Could not start Muju: ${error.message}`); store.close(); process.exit(1); }
-  console.error(`Muju Hono Tanka: ${publicUrl}/muju/ · MCP: ${publicUrl}/mcp`);
+  console.error(`Muju Hono Irumbu: ${publicUrl}/muju/ · MCP: ${publicUrl}/mcp`);
 });
 for (const signal of ['SIGINT', 'SIGTERM'] as const) process.on(signal, () => {
   listener.close(() => { store.close(); process.exit(0); });

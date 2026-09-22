@@ -1,4 +1,4 @@
-# Muju Hono Tanka: multiplayer and MCP
+# Muju Hono Irumbu: multiplayer and MCP
 
 ## Restricted experiment rooms
 
@@ -194,7 +194,8 @@ batches or staged-move races.
 Give an agent the public [Muju skill file](https://deevgames-muju.onrender.com/SKILL.md).
 It covers connecting, invitations, move planning, safe retries and efficient waiting.
 The browser lobby links to it. Other hosts serve the same file at `/SKILL.md` and
-`/muju/skills/muju-hono-tanka/SKILL.md`.
+`/muju/skills/muju-hono-irumbu/SKILL.md`. The old `/muju/skills/muju-hono-tanka/SKILL.md`
+path still works: it is a one-line redirect notice pointing at the new file.
 
 For timed play, agents can read `muju_time_awareness` directly as an MCP tool or
 resource `muju://skills/muju-time-awareness`. The same Markdown skill is served

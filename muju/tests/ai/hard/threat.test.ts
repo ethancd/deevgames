@@ -569,7 +569,7 @@ describe('tables/approach.ts classifyApproach', () => {
 
 describe('tables/approach.ts approachTable', () => {
   it('keeps only lethal attackers, and reports the cheapest one', () => {
-    // Black's Tanka (metal_3, defense 5) is adjacent to a white Muju and two
+    // Black's Irumbu (metal_3, defense 5) is adjacent to a white Muju and two
     // speed-3 actions from a white Kagari. Muju has ATK 0 and is elementally
     // neutral against metal, so it can never kill; Kagari has ATK 4 and fire
     // beats metal, so it kills in one. The table must ignore the free adjacent

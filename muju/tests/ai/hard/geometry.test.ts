@@ -144,9 +144,9 @@ describe('tables/geometry.ts spawnGeometry', () => {
   });
 
   it('SU §4.1: White Hi at F5 -> 30 squares, 27 empty; enemy on C3 -> 2, blocking 1', () => {
-    // The default White start layout (Hi@(1,0), Sjor@(1,1), Muju@(0,1)) with
+    // The default White start layout (Hi@(1,0), Sjór@(1,1), Muju@(0,1)) with
     // the Hi relocated to F5 = (5,4): rectangle (0..5, 0..4) is 30 squares,
-    // 3 of which (F5 itself, Sjor@(1,1), Muju@(0,1)) are occupied -> 27 empty.
+    // 3 of which (F5 itself, Sjór@(1,1), Muju@(0,1)) are occupied -> 27 empty.
     const state = buildState({
       units: [
         { def: 'fire_1', owner: 'white', x: 5, y: 4 },
@@ -201,7 +201,7 @@ describe('tables/geometry.ts spawnGeometry', () => {
     const p = replica.pack(root), t = level1(p), out = newSpawnGeometry();
     const intruderSquare = 43; // D5, inside White's sole supporting rectangle.
     expect(bbHas(t.strike[1], intruderSquare)).toBe(false);
-    expect(bbHas(t.strikeNext[1], intruderSquare)).toBe(false); // live Yan is immobile
+    expect(bbHas(t.strikeNext[1], intruderSquare)).toBe(false); // live Poṉ is immobile
     expect(bbHas(t.strikeIfBought[1], intruderSquare)).toBe(true);
     spawnGeometry(p, t, 0, sc, 0, out);
     expect(out.blocking).toBe(1);
@@ -277,7 +277,7 @@ describe('tables/geometry.ts spawnGeometry', () => {
     const state = buildState({
       units: [
         { def: 'plant_1', owner: 'white', x: sq(n0).x, y: sq(n0).y }, // Muju, speed 1
-        { def: 'water_1', owner: 'white', x: sq(n1).x, y: sq(n1).y }, // Sjor, speed 1
+        { def: 'water_1', owner: 'white', x: sq(n1).x, y: sq(n1).y }, // Sjór, speed 1
       ],
     });
     const p = replica.pack(state);

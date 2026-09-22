@@ -904,9 +904,9 @@
       ]
     }
   ],
-  "catalogueHash": "99f8875d65df594307c562962da4b807d54175e4da0fa765776456e25f11b9eb",
-  "modelHash": "28463203896b0455240e900fa6bf1ffd4364394bab6a6b1d659e18dc15f509df",
-  "elapsedSeconds": 0.157,
+  "catalogueHash": "b68494692da19506e14d6ffe2ea4f57c10bcd18fceb7607ffe8f30934b20978c",
+  "modelHash": "06dcc63535002fdf103c382eaf71a693f74b9bfeceafc9aa49e091c43f5614c9",
+  "elapsedSeconds": 0.136,
   "assumptions": [
     "Open shortest-path distances, no traffic or enemy moves.",
     "Strike grid: 18 targets, all 18 open-board distances, action budgets 1/2/3; cells are not matchup probabilities.",
@@ -1253,7 +1253,7 @@
     },
     {
       "id": "fire_2",
-      "name": "Hono",
+      "name": "Honō",
       "element": "fire",
       "tier": 2,
       "archetype": "rush",
@@ -2632,7 +2632,7 @@
     },
     {
       "id": "lightning_3",
-      "name": "Kimubunga",
+      "name": "Kimbunga",
       "element": "lightning",
       "tier": 3,
       "archetype": "rush",
@@ -3009,7 +3009,7 @@
     },
     {
       "id": "water_1",
-      "name": "Sjor",
+      "name": "Sjór",
       "element": "water",
       "tier": 1,
       "archetype": "balanced",
@@ -3731,7 +3731,7 @@
     },
     {
       "id": "water_3",
-      "name": "Aegirinn",
+      "name": "Ægirinn",
       "element": "water",
       "tier": 3,
       "archetype": "balanced",
@@ -4103,7 +4103,7 @@
     },
     {
       "id": "shadow_1",
-      "name": "Göl",
+      "name": "Loş",
       "element": "shadow",
       "tier": 1,
       "archetype": "balanced",
@@ -5546,7 +5546,7 @@
     },
     {
       "id": "plant_2",
-      "name": "Sachita",
+      "name": "Mallki",
       "element": "plant",
       "tier": 2,
       "archetype": "expand",
@@ -5911,7 +5911,7 @@
     },
     {
       "id": "plant_3",
-      "name": "Sachakuna",
+      "name": "Sach'akuna",
       "element": "plant",
       "tier": 3,
       "archetype": "expand",
@@ -6311,7 +6311,7 @@
     },
     {
       "id": "metal_1",
-      "name": "Yan",
+      "name": "Poṉ",
       "element": "metal",
       "tier": 1,
       "archetype": "expand",
@@ -6676,7 +6676,7 @@
     },
     {
       "id": "metal_2",
-      "name": "Mazask",
+      "name": "Veḷḷi",
       "element": "metal",
       "tier": 2,
       "archetype": "expand",
@@ -7076,7 +7076,7 @@
     },
     {
       "id": "metal_3",
-      "name": "Tanka",
+      "name": "Irumbu",
       "element": "metal",
       "tier": 3,
       "archetype": "expand",

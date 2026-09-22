@@ -174,26 +174,26 @@ export const ELEMENT_INFO: Record<
   },
   water: {
     name: 'Water',
-    language: 'Norse',
+    language: 'Old Norse',
     region: 'Europe',
     color: '#3B82F6',
   },
   shadow: {
     name: 'Shadow',
-    language: 'Turkish/Slavic',
+    language: 'Turkish',
     region: 'Eurasia',
     color: '#7C3AED',
   },
   plant: {
     name: 'Plant',
-    language: 'Quechua/Nahuatl',
+    language: 'Quechua',
     region: 'South America',
     color: '#22C55E',
   },
   metal: {
     name: 'Metal',
-    language: 'Lakota',
-    region: 'North America',
+    language: 'Tamil',
+    region: 'South Asia',
     color: '#6B7280',
   },
 };

@@ -21,7 +21,7 @@ ordinary rooms retain all layers below. See the
 | 2 | `muju_analyze` with batched topics/targets | Focused accounting, geometry, approaches, conditional defenders, exchange costs, and executable evidence |
 | 3 | `deep:true`, `reply`, or `checkmate` | Bounded combined-turn search or the authoritative home-defense prover |
 
-Read the [public player skill](../public/skills/muju-hono-tanka/SKILL.md) for the
+Read the [public player skill](../public/skills/muju-hono-irumbu/SKILL.md) for the
 workflow, compact notation and concrete parameter semantics. Analysis is available
 over both Streamable HTTP and the stdio bridge; all inventory is public, so no
 seat token is needed. `expectedRevision` is mandatory on focused requests.

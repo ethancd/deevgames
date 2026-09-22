@@ -23,7 +23,7 @@ it('uses the requested Metal ladder with unchanged IDs and prices', () => {
   expect([1,2,3].map(t => {
     const d = getUnitDefinition(`metal_${t}`);
     return [d.name, d.attack, d.defense, d.speed, d.mining, d.cost];
-  })).toEqual([['Yan',1,3,0,3,5],['Mazask',1,4,1,4,9],['Tanka',2,5,2,5,17]]);
+  })).toEqual([['Poṉ',1,3,0,3,5],['Veḷḷi',1,4,1,4,9],['Irumbu',2,5,2,5,17]]);
   expect([getPromotionCost('metal_1'), getPromotionCost('metal_2')]).toEqual([4,8]);
 });
 it('rejects stationary movement in the UI, engine and AI, but preserves adjacent attacks', () => {

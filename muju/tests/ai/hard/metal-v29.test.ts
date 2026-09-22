@@ -7,7 +7,7 @@ import { allocTables } from '../../../src/ai/hard/tables/context';
 import { Approach, classifyApproach } from '../../../src/ai/hard/tables/approach';
 import { nearestOwner, UNREACHABLE } from '../../../src/ai/hard/tables/threat';
 import { buildState } from './game-fixture';
-it.each([1, 2])('Hard AI handles stationary Yan at distance %s', distance => {
+it.each([1, 2])('Hard AI handles stationary Poṉ at distance %s', distance => {
   const state = buildState({ current: 'white', phase: 'action', actions: 4, units: [
     { def: 'metal_1', owner: 'white', x: 2, y: 2 },
     { def: 'water_1', owner: 'black', x: 2, y: 2 + distance },

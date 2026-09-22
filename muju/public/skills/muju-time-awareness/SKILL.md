@@ -1,6 +1,6 @@
 ---
 name: muju-time-awareness
-description: Manage thinking and move submission while playing Muju Hono Tanka with a turn delay and personal time bank. Use before joining a timed room and during timed play through the Muju MCP.
+description: Manage thinking and move submission while playing Muju Hono Irumbu with a turn delay and personal time bank. Use before joining a timed room and during timed play through the Muju MCP.
 ---
 
 # Play Muju with time awareness

@@ -46,7 +46,7 @@ const ALL_KINDS: readonly AKind[] = [
   AKind.PROMOTE, AKind.END_ACTION, AKind.PAY_UPKEEP, AKind.RESIGN,
 ];
 
-/** White: Hi@B1, Sjor@B2, Muju@A2 (slots 0-2, named). Black: Muju@I9 (slot 3, named).
+/** White: Hi@B1, Sjór@B2, Muju@A2 (slots 0-2, named). Black: Muju@I9 (slot 3, named).
  *  Slot 4 is a white unit bought during the search (no originId). */
 function fixture(): PackedState {
   const p = allocPacked();

@@ -19,10 +19,10 @@ for(const width of [390,834]) {
   const panel=page.getByRole('dialog',{name:'Choose upkeep'});
   await expect(panel).toBeVisible();await expect(panel).toContainText('Upkeep 3 / 1');await expect(panel.getByRole('button',{name:'Pay upkeep & continue'})).toBeDisabled();
   const free=panel.getByRole('checkbox',{name:/T1/});await expect(free).toBeChecked();await expect(free).toBeDisabled();
-  await panel.getByRole('checkbox',{name:/Aegirinn/}).uncheck();await expect(panel).toContainText('Upkeep 1 / 1');await page.screenshot({path:info.outputPath('upkeep-choice.png')});
+  await panel.getByRole('checkbox',{name:/Ægirinn/}).uncheck();await expect(panel).toContainText('Upkeep 1 / 1');await page.screenshot({path:info.outputPath('upkeep-choice.png')});
   await panel.getByRole('button',{name:'Pay upkeep & continue'}).click();await expect(panel).toHaveCount(0);
   await expect(page.locator('.progress-clock')).toContainText(`${INACTIVITY_WARNING}/${INACTIVITY_LIMIT} turns without a kill`);await expect(page.locator('.progress-clock')).toContainText('paid 1 · released 1');await expect(page.locator('.score-strip')).toContainText('Upkeep 1');
-  await expect(page.getByTestId('cell-1-1')).not.toHaveAttribute('aria-label',/Aegirinn/);
+  await expect(page.getByTestId('cell-1-1')).not.toHaveAttribute('aria-label',/Ægirinn/);
   await page.getByTestId('cell-1-0').click();await expect(page.locator('.unit-detail')).toContainText('Upkeep 1');
   await page.screenshot({path:info.outputPath('after-upkeep.png')});
  });

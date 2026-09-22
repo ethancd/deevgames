@@ -481,3 +481,60 @@ User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan t
   saves parked under the retired key survive untouched and become resumable
   again, because they were never rewritten. The rules revision does not move in
   either direction, so no measurement has to be redone on the way out.
+
+## J-023: Rename the game title, ten piece display names and three element language labels (SPEC v3.2, rules revision unchanged at `muju-phasing-2`, 2026-09-22)
+
+- **Date:** 2026-09-22. **Owner decision (Ethan), and that decision is the
+  authority for this entry:** rename the game to **Muju Hono Irumbu**, rename
+  ten piece display names, and correct three element language labels. Recorded
+  in `docs/changes/2026-09-22-rename-irumbu-BRIEF.md` and the generated DAG plan
+  at `docs/changes/2026-09-22-rename-irumbu-plan.md`.
+- **Decision — names:** fire_2 Hono→Honō; lightning_3 Kimubunga→Kimbunga;
+  water_1 Sjor→Sjór; water_3 Aegirinn→Ægirinn; shadow_1 Göl→Loş; plant_2
+  Sachita→Mallki; plant_3 Sachakuna→Sach'akuna; metal_1 Yan→Poṉ; metal_2
+  Mazask→Veḷḷi; metal_3 Tanka→Irumbu. Unchanged: Hi, Kagari, Radi, Umeme,
+  Straumr, Gölge, Karanlık, Muju. Non-ASCII names are accepted; the owner
+  explicitly chose to "live dangerously, as we already have been" — Göl and
+  Karanlık already shipped through every surface before this change.
+- **Decision — title:** the game title is **Muju Hono Irumbu**. The title keeps
+  the ASCII spelling `Hono`, without the macron, even though the tier-2 Fire
+  piece card itself now reads **Honō**. The agent skill slug becomes
+  `muju-hono-irumbu`; the old `muju-hono-tanka` slug is kept as a one-line
+  redirect copy so the old URL keeps resolving, and the Node host's `/SKILL.md`
+  route now serves the new directory.
+- **Decision — language labels:** Water is "Old Norse" (was "Norse"); Shadow is
+  "Turkish" (was "Turkish/Slavic"); Plant is "Quechua" (was "Quechua/Nahuatl");
+  Metal is "Tamil", region "South Asia" (was "Lakota", "North America"). The
+  canonical catalogue and these labels (`src/game/elements.ts`, `src/game/units.ts`)
+  were already edited in commit `6bafc862` and are verified unchanged by this
+  entry, not re-done.
+- **Decision — soundtrack and Academy are deliberately NOT re-voiced:** track
+  titles ("Hono / Banked Fire", "Tanka / Weight Without Hurry"), audio file
+  names under `public/music/`, `src/music/tracks.ts` titles and the soundtrack
+  evidence docs keep their pre-rename names; only the *game title* strings on
+  the music pages/captions change. A Tamil-instrument Metal track is noted as a
+  future possibility on `docs/ROADMAP.md`, not committed to this change. Academy
+  narration, captions, render sources and rendered v7/v8 videos are unchanged by
+  this entry — Academy gets a notice pointing at the new names, not a re-voice
+  of any lesson; that notice is lane B's node, not this one.
+- **Blast radius — deliberately NO rules revision advance.** The rules revision
+  remains **`muju-phasing-2`**. No stable ID, stat, price, promotion gap, map
+  layout or turn rule moved; only display strings, one prose sentence-per-piece
+  and two language-label fields changed. Every strength, ladder, suite, fixture
+  and baseline record measured under `muju-phasing-2` remains valid and is not
+  re-run for this entry. Historical fixtures (`tests/fixtures/*`, `lab/results/**`,
+  `lab/solver/baseline-*.json`) and dated reports keep their pre-rename spelling
+  byte-for-byte; a small set of dated guides still used as current advice
+  (`docs/STRATEGY_GUIDE-2026-09-12.md`, `docs/strategy-guide-codex-vs-claude.md`,
+  `docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md`) get a one-line
+  supersession note pointing at this entry instead of a rewrite.
+- **Rationale:** the owner judged the prior placeholder-feeling names (Yan,
+  Mazask, Tanka, Sachita, Sachakuna, Sjor, Aegirinn, Göl, Kimubunga) and mixed
+  language labels (Lakota/North America for a piece line themed on South Asian
+  metalwork, Turkish/Slavic and Quechua/Nahuatl double-labels) as worth fixing
+  now, before Academy narration and further soundtrack work make renaming more
+  expensive later.
+- **Reversal cost:** low. All ten old display names and the pre-rename language
+  labels are recorded in this entry and in the BRIEF; reverting is a display-name
+  and label edit with no stat, save, schema or rules-revision change on either
+  side of the reversal.

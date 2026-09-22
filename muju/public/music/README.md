@@ -1,7 +1,7 @@
 # Muju soundtrack
 
 These are the nine selected full listening mixes, generated with ElevenLabs for
-Muju Hono Tanka and published at the owner's request for personal/family listening.
+Muju Hono Irumbu and published at the owner's request for personal/family listening.
 Tanka includes the v3 low-medium middle-passage revision; Umeme is based on 19D.
 
 The MP3s are copies of the approved listening files, without additional encoding.

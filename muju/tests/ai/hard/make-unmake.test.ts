@@ -684,7 +684,7 @@ describe('make / unmake', () => {
       current: 'black',
       phase: 'action',
       actions: 4,
-      // Enough to settle the Hono's own rent at END_ACTION; otherwise the turn
+      // Enough to settle the Honō's own rent at END_ACTION; otherwise the turn
       // stalls on a keep-set choice and never reaches END_PLACE.
       black: 5,
       pendingSummons: [{ def: 'fire_1', owner: 'white', x: 0, y: 0, id: 'arrives' }],

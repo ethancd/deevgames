@@ -189,9 +189,9 @@ test('an upkeep position can be reviewed and varied while timeline navigation re
   await controls.getByRole('button', { name: 'Explore from here' }).click();
   const upkeep = page.getByRole('region', { name: 'Choose upkeep' });
   await expect(upkeep).toBeVisible();
-  await upkeep.getByRole('checkbox', { name: /Hono/ }).uncheck();
+  await upkeep.getByRole('checkbox', { name: /Honō/ }).uncheck();
   await upkeep.getByRole('button', { name: 'Pay upkeep & continue' }).click();
-  await expect(page.getByTestId('cell-1-0')).not.toHaveAttribute('aria-label', /Hono/);
+  await expect(page.getByTestId('cell-1-0')).not.toHaveAttribute('aria-label', /Honō/);
   await controls.getByRole('button', { name: 'Previous step' }).click();
   await expect(upkeep).toBeVisible();
   await controls.getByRole('button', { name: 'Next step' }).click();

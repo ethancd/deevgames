@@ -41,7 +41,7 @@ describe('Movement Module', () => {
       expect(getValidMoves(unit, board)).toEqual([]);
     });
 
-    describe('Speed 1 unit (Sjor - water_1)', () => {
+    describe('Speed 1 unit (Sjór - water_1)', () => {
       it('can move to 4 adjacent squares in open board', () => {
         let board = createEmptyBoard();
         const unit = createUnit('water_1', 'white', { x: 5, y: 5 });
@@ -79,7 +79,7 @@ describe('Movement Module', () => {
       });
     });
 
-    describe('Speed 2 unit (Hono - fire_2)', () => {
+    describe('Speed 2 unit (Honō - fire_2)', () => {
       it('can reach squares up to 2 distance away', () => {
         let board = createEmptyBoard();
         const unit = createUnit('fire_2', 'white', { x: 5, y: 5 });
@@ -148,7 +148,7 @@ describe('Movement Module', () => {
         expect(moves).toContainEqual({ x: 8, y: 5 });
       });
 
-      it('Kimubunga (speed 5) can move up to 5 squares', () => {
+      it('Kimbunga (speed 5) can move up to 5 squares', () => {
         let board = createEmptyBoard();
         const unit = createUnit('lightning_3', 'white', { x: 5, y: 5 });
         board = addUnit(board, unit);

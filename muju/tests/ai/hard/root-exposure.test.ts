@@ -246,7 +246,7 @@ describe('the ply-1 trace', () => {
 
   it('depth-controlled completed roots exercise quiesce and interior reply generators', async () => {
     // A paid Metal-I arrives on Black's upcoming Act. Its POWER 2 against
-    // Sjor makes that reply tactical without a new buy or a pre-Act promotion.
+    // Sjór makes that reply tactical without a new buy or a pre-Act promotion.
     const state = buildState({ phase: 'place', actions: 0, turnNumber: 5, units: [
       { def: 'water_1', owner: 'white', x: 4, y: 2, id: 'target' },
       { def: 'plant_1', owner: 'white', x: 0, y: 0, id: 'survivor' },

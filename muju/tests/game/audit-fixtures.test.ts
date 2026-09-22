@@ -46,7 +46,7 @@ describe('audit fixtures: mixed-element combined attacks', () => {
     const defender = placed('water_2', 'black', 5, 5);
     // fire_1 Hi: ATK 2, fire attacks water at DISadvantage -> 2 - 1 = 1
     const fireAtk = placed('fire_1', 'white', 5, 4);
-    // metal_2 Mazask: ATK 1, metal attacks water with ADvantage -> 1 + 1 = 2
+    // metal_2 Veḷḷi: ATK 1, metal attacks water with ADvantage -> 1 + 1 = 2
     const metalAtk = placed('metal_2', 'white', 5, 6);
 
     const board = boardWith(defender, fireAtk, metalAtk);

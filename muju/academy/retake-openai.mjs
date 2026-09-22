@@ -18,7 +18,7 @@ async function run(job){
  for(let i=0;i<sentences.length;i++){
   const out=path.join(folder,`sentence-${i+1}.wav`);parts.push(out);
   if(fs.existsSync(out))continue;
-  const body={model:'gpt-4o-mini-tts',voice:ep.voices[line.speaker],input:sentences[i],response_format:'wav',instructions:`${directions} Read the entire supplied sentence exactly as written. Speak at a clear, unhurried teaching pace. Every word must be audible, including the last word. No added words, sounds, singing, or laughter. Hyphenated names are pronunciation hints, not letters to spell. Hoh-noh is Hono. Hee is Hi. Read counts clearly.`};
+  const body={model:'gpt-4o-mini-tts',voice:ep.voices[line.speaker],input:sentences[i],response_format:'wav',instructions:`${directions} Read the entire supplied sentence exactly as written. Speak at a clear, unhurried teaching pace. Every word must be audible, including the last word. No added words, sounds, singing, or laughter. Hyphenated names are pronunciation hints, not letters to spell. Hoh-noh is Hono, also spelled Honō. Hee is Hi. Read counts clearly.`};
   const response=await fetch('https://api.openai.com/v1/audio/speech',{method:'POST',headers:{Authorization:`Bearer ${process.env.OPENAI_API_KEY}`,'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(120000)});
   if(!response.ok)throw Error(`Retake ${job.episode}/${job.id} sentence ${i+1}: HTTP ${response.status}`);
   fs.writeFileSync(out,Buffer.from(await response.arrayBuffer()));

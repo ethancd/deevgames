@@ -17,7 +17,9 @@ async function run(job){
  if(model==='whisper-1')form.append('timestamp_granularities[]','word');
  form.append('language','en');
  // Vocabulary, not the expected sentence, keeps this an independent speech check.
- form.append('prompt','Muju Academy, a board game. Pip, Click, Hi, Hono, Kagari, Radi, Umeme, Kimubunga, Sjor, Straumr, Aegirinn, Göl, Gölge, Karanlık, Muju, Sachita, Sachakuna, Inyan, Mazask, Tanka. Bonk matrix. Cleave. Board coordinates A1 through J10.');
+ // 2026-09-22 rename added new names alongside old ones so existing audio keeps recognizing;
+ // see docs/changes/2026-09-22-rename-irumbu-BRIEF.md.
+ form.append('prompt','Muju Academy, a board game. Pip, Click, Hi, Hono, Honō, Kagari, Radi, Umeme, Kimubunga, Kimbunga, Sjor, Sjór, Straumr, Aegirinn, Ægirinn, Göl, Loş, Gölge, Karanlık, Muju, Sachita, Mallki, Sachakuna, Sach\'akuna, Inyan, Yan, Poṉ, Mazask, Veḷḷi, Tanka, Irumbu. Bonk matrix. Cleave. Board coordinates A1 through J10.');
  const response=await fetch('https://api.openai.com/v1/audio/transcriptions',{method:'POST',headers:{Authorization:`Bearer ${process.env.OPENAI_API_KEY}`},body:form,signal:AbortSignal.timeout(180000)});
  if(!response.ok)throw Error(`Transcription ${job.episode}/${job.id} HTTP ${response.status}`);
  const result=await response.json();result.audioSha256=hash;result.sourceText=job.text;result.model=model;

@@ -181,7 +181,7 @@ for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent bro
     expect(new URL(invite).pathname).toMatch(/^\/join\/[a-z]{6}$/);
     await page.getByRole('button', { name: 'Close dialog' }).click();
     await guest.goto(invite);
-    await expect(guest.getByRole('link', { name: 'agent skill file' })).toHaveAttribute('href', '/muju/skills/muju-hono-tanka/SKILL.md');
+    await expect(guest.getByRole('link', { name: 'agent skill file' })).toHaveAttribute('href', '/muju/skills/muju-hono-irumbu/SKILL.md');
     await guest.getByLabel('Your name', { exact: true }).fill('Bob');
     await guest.getByRole('button', { name: 'Join room' }).click();
     await expect(guest.getByText('Online · You are black')).toBeVisible();
@@ -201,10 +201,10 @@ for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent bro
     await guest.getByTestId('cell-8-8').click();
     await guest.getByTestId('cell-6-8').click();
 
-    await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
+    await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjór/);
     await guest.reload();
     await expect(guest.getByText('Online · You are black')).toBeVisible();
-    await expect(guest.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
+    await expect(guest.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjór/);
     await expect(guest.getByRole('button', { name: 'Undo' })).toBeEnabled();
     await expect(guest.locator('.action-budget strong')).toHaveText(`${actionsPerTurn-2} actions`);
     expect(await guest.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
@@ -215,7 +215,7 @@ for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent bro
     await expect(page.locator('.turn-strip')).toContainText('Alice');
     await page.reload();
     await expect(page.getByText('Online · You are white')).toBeVisible();
-    await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjor/);
+    await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjór/);
     expect(await page.evaluate(() => localStorage.getItem('elemental-tactics-save'))).toBe('local-match-marker');
   } finally { await other.close(); }
 });

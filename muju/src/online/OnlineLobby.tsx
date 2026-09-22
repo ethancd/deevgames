@@ -131,7 +131,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   </section>;
   return <main className="online-lobby">
     <div className="music-lobby-nav"><button onClick={onBack}>← Game modes</button><MusicButton /></div>
-    <h1>Muju Hono Tanka</h1><h2>Play or watch together</h2>
+    <h1>Muju Hono Irumbu</h1><h2>Play or watch together</h2>
     {showJoinFirst && joinSection}
     <section aria-label="Active games">
       <ActiveGames key={server} server={server} busy={busy} onWatch={id => void submit('browse', id)} />
@@ -175,7 +175,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
       <button disabled={busy || !watchLink.trim()} onClick={() => void submit('watch')}>Watch game</button>
       {feedback('watch')}
     </section>
-    <p className="online-help">Playing with an LLM? Share the <a href="/muju/skills/muju-hono-tanka/SKILL.md" target="_blank" rel="noopener noreferrer">agent skill file</a> for connection and play instructions. A room can pair any two humans or agents.</p>
+    <p className="online-help">Playing with an LLM? Share the <a href="/muju/skills/muju-hono-irumbu/SKILL.md" target="_blank" rel="noopener noreferrer">agent skill file</a> for connection and play instructions. A room can pair any two humans or agents.</p>
   </main>;
 }
 

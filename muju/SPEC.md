@@ -1,6 +1,6 @@
-# Muju Hono Tanka — Game Specification (Current Rules)
+# Muju Hono Irumbu — Game Specification (Current Rules)
 
-This is the canonical rules specification for Muju Hono Tanka as implemented.
+This is the canonical rules specification for Muju Hono Irumbu as implemented.
 It supersedes the original v1.0 implementation spec (this file's previous
 content) and incorporates all v1.1 changes (`docs/v1.1-spec.md`). Where this
 document and the code disagree, that is a bug in one of them: see
@@ -8,10 +8,20 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v3.1 (2026-09-21) — retires the Standard ruleset. Phasing is
+**Spec version:** v3.2 (2026-09-22) — renames the game title and ten piece
+display names, plus three element language labels: Poṉ, Veḷḷi and Irumbu
+(Metal); Sjór and Ægirinn (Water); Loş (Shadow); Mallki and Sach'akuna (Plant);
+Kimbunga (Lightning); Honō (Fire). Water's language label is now "Old Norse",
+Shadow's is "Turkish", Plant's is "Quechua", and Metal's is "Tamil" / "South
+Asia". **Display names and labels only: every stable ID, stat, price and
+promotion gap is unchanged, and no rule moved, so the rules revision remains
+`muju-phasing-2` and no measurement is voided.** See `JUDGMENT_LOG.md` J-023
+and `docs/changes/2026-09-22-rename-irumbu-plan.md`.
+
+**Retained from v3.1** (2026-09-21) — retires the Standard ruleset. Phasing is
 the sole ruleset, and §2, §5 and §9 below now state it normatively rather than
-describing it as a variant. **No rule changes; the rules revision remains
-`muju-phasing-2`, and no measurement is voided.** Standard can no longer be
+describing it as a variant. No rule changes; the rules revision remains
+`muju-phasing-2`, and no measurement is voided. Standard can no longer be
 created, chosen or resumed anywhere; stored Standard rooms and saves become
 retired records (see "Stored artefacts by rules revision" at the end of §1).
 `docs/PHASING-2026-09-16.md` is superseded by this document and retained as the
@@ -26,8 +36,8 @@ strength, ladder and suite evidence measured under the old revision is not poole
 with evidence measured under this one. `src/game/inactivity.ts` holds the single
 constant. See §9 and `JUDGMENT_LOG.md` J-021.
 
-**Retained from v2.9** (2026-09-18) — Metal is Yan → Mazask → Tanka, with
-ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot move but may attack
+**Retained from v2.9** (2026-09-18) — Metal is Poṉ → Veḷḷi → Irumbu, with
+ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Poṉ cannot move but may attack
 adjacent enemies, mine, anchor purchases and promote normally. Prices and IDs
 are unchanged. Existing saves and rooms use this catalogue; recorded historical
 boards and move labels are preserved. The v2.8 economy remains: new games use 8-crystal home squares and
@@ -36,7 +46,7 @@ in-progress games retain their stored maps and use the updated unit catalogue.
 See `docs/EXPANSION_ECONOMY-2026-09-13.md`.
 Every game uses 4 shared actions per
 turn. Only an enemy kill by attack resets the twenty-ply draw clock. Tier-1 purchases cost 3/4/5 by pair;
-all promotions cost 4 to tier 2 and 8 to tier 3. Muju has DEF 3, Tanka DEF 5,
+all promotions cost 4 to tier 2 and 8 to tier 3. Muju has DEF 3, Irumbu DEF 5,
 C4/C5/H6/H7 hold 4 crystals each, and F3/E8 hold 0. See
 `docs/BALANCE-2026-09-11.md` for rationale and compatibility.
 
@@ -66,12 +76,20 @@ and is stated normatively here. No rule changes and no rules-revision advance:
 describe the Standard turn order — a Place phase before actions, purchases that
 appear and act at once, upkeep at turn start — as it then stood; those
 turn-order descriptions are history, not current rules.
+v3.2 (2026-09-22) renames the game title to Muju Hono Irumbu and ten piece
+display names — fire_2 Hono→Honō, lightning_3 Kimubunga→Kimbunga, water_1
+Sjor→Sjór, water_3 Aegirinn→Ægirinn, shadow_1 Göl→Loş, plant_2 Sachita→Mallki,
+plant_3 Sachakuna→Sach'akuna, metal_1 Yan→Poṉ, metal_2 Mazask→Veḷḷi, metal_3
+Tanka→Irumbu — and the Water/Shadow/Plant/Metal language labels. No rule
+changes and no rules-revision advance: `muju-phasing-2` stands. Entries at or
+before v3.1 use the pre-rename display names and are history, not current
+naming.
 
 ---
 
 ## 1. Overview
 
-Muju Hono Tanka is a two-player perfect-information strategy
+Muju Hono Irumbu is a two-player perfect-information strategy
 board game combining territorial control (Go), tactical combat (Chess), and
 economic buildup (StarCraft). Players are **White** and **Black**; either seat
 may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
@@ -80,8 +98,8 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
 - **Board:** 10×10 square grid.
 - **Start:** White's corner is (0,0); Black's corner is (9,9). Each player
   starts with 3 units adjacent to their corner and 0 resources.
-  - White: Hi (fire_1) at (1,0), Sjor (water_1) at (1,1), Muju (plant_1) at (0,1).
-  - Black: Hi at (8,9), Sjor at (8,8), Muju at (9,8).
+  - White: Hi (fire_1) at (1,0), Sjór (water_1) at (1,1), Muju (plant_1) at (0,1).
+  - Black: Hi at (8,9), Sjór at (8,8), Muju at (9,8).
 - **Resources:** **Unequal routes (central-reserve revision)**: the fixed
   180°-rotational layout. Cells hold 0/4/8/16 crystals, with **504 total** in new games.
   Eighteen blank squares form D1–F3 and E8–G10; they remain walkable and spawn-eligible. Ordinary ground
@@ -371,10 +389,10 @@ Fire & Lightning  →  Plant & Metal  →  Water & Shadow  →  Fire & Lightning
 |---|---|---|---|---|---|
 | Fire | Fire-Lightning | Plant, Metal | Water, Shadow | Rush | Japanese / Asia |
 | Lightning | Fire-Lightning | Plant, Metal | Water, Shadow | Rush | Swahili / Africa |
-| Plant | Plant-Metal | Water, Shadow | Fire, Lightning | Expand | Quechua-Nahuatl / S. America |
-| Metal | Plant-Metal | Water, Shadow | Fire, Lightning | Expand | Lakota / N. America |
-| Water | Water-Shadow | Fire, Lightning | Plant, Metal | Balanced | Norse / Europe |
-| Shadow | Water-Shadow | Fire, Lightning | Plant, Metal | Balanced | Turkish-Slavic / Eurasia |
+| Plant | Plant-Metal | Water, Shadow | Fire, Lightning | Expand | Quechua / S. America |
+| Metal | Plant-Metal | Water, Shadow | Fire, Lightning | Expand | Tamil / South Asia |
+| Water | Water-Shadow | Fire, Lightning | Plant, Metal | Balanced | Old Norse / Europe |
+| Shadow | Water-Shadow | Fire, Lightning | Plant, Metal | Balanced | Turkish / Eurasia |
 
 **Design intent (Ethan ruling, 2026-06-09):** Rush beating Expand elementally
 is intended — mass Fire_1 is the zerg rush, and Expand must answer it with
@@ -383,7 +401,7 @@ play, not a type-chart veto. The archetype triangle of v1.1 §2.3
 Triangle above is the incumbent.
 
 Note the **"Wind" element of v1.0 no longer exists** — it was renamed and
-rethemed to **Shadow** (Turkish names: Göl, Gölge, Karanlık) with
+rethemed to **Shadow** (Turkish names: Loş, Gölge, Karanlık) with
 new stats.
 
 ## 7. Unit catalog (canonical: `src/game/units.ts`)
@@ -391,16 +409,16 @@ new stats.
 Eighteen units, three per element. Stat columns: ATK / DEF / SPD / MINE / Cost.
 
 The catalogue has no build times. Tier-1 costs are 3/4/5 by pair, with
-universal 4/8 promotion steps; Muju has DEF 3 and Tanka DEF 5. Tier 3 is terminal.
+universal 4/8 promotion steps; Muju has DEF 3 and Irumbu DEF 5. Tier 3 is terminal.
 The historical tier-4 cut and its measured tradeoffs are recorded in
 `docs/TIER3_CAP-2026-09-08.md`; those well-economy measurements are not current
-balance evidence. Tanka has Speed 2, Mining 5 and DEF 5.
+balance evidence. Irumbu has Speed 2, Mining 5 and DEF 5.
 
 ### Fire (Rush — ATK specialist) — Japanese
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
 | 1 | Hi | 2 | 1 | 2 | 1 | 3 |
-| 2 | Hono | 3 | 1 | 2 | 1 | 7 |
+| 2 | Honō | 3 | 1 | 2 | 1 | 7 |
 | 3 | Kagari | 4 | 2 | 3 | 1 | 15 |
 
 ### Lightning (Rush — SPD specialist) — Swahili
@@ -408,38 +426,39 @@ balance evidence. Tanka has Speed 2, Mining 5 and DEF 5.
 |---|---|---|---|---|---|---|
 | 1 | Radi | 1 | 1 | 3 | 0 | 3 |
 | 2 | Umeme | 2 | 1 | 4 | 0 | 7 |
-| 3 | Kimubunga | 3 | 1 | 5 | 0 | 15 |
+| 3 | Kimbunga | 3 | 1 | 5 | 0 | 15 |
 
-### Water (Balanced — DEF-leaning) — Norse
+### Water (Balanced — DEF-leaning) — Old Norse
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Sjor | 2 | 2 | 1 | 2 | 4 |
+| 1 | Sjór | 2 | 2 | 1 | 2 | 4 |
 | 2 | Straumr | 2 | 3 | 1 | 2 | 8 |
-| 3 | Aegirinn | 3 | 4 | 2 | 3 | 16 |
+| 3 | Ægirinn | 3 | 4 | 2 | 3 | 16 |
 
-### Shadow (Balanced — ATK/SPD-leaning) — Turkish/Slavic
+### Shadow (Balanced — ATK/SPD-leaning) — Turkish
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Göl | 2 | 2 | 2 | 0 | 4 |
+| 1 | Loş | 2 | 2 | 2 | 0 | 4 |
 | 2 | Gölge | 3 | 2 | 2 | 1 | 8 |
 | 3 | Karanlık | 4 | 2 | 3 | 2 | 16 |
 
-### Plant (Expand — MINE specialist) — Quechua/Nahuatl
+### Plant (Expand — MINE specialist) — Quechua
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
 | 1 | Muju | 0 | 3 | 1 | 3 | 5 |
-| 2 | Sachita | 1 | 3 | 1 | 5 | 9 |
-| 3 | Sachakuna | 2 | 4 | 1 | 8 | 17 |
+| 2 | Mallki | 1 | 3 | 1 | 5 | 9 |
+| 3 | Sach'akuna | 2 | 4 | 1 | 8 | 17 |
 
-### Metal (Expand — DEF specialist) — Lakota
+### Metal (Expand — DEF specialist) — Tamil
 | Tier | Name | ATK | DEF | SPD | MINE | Cost |
 |---|---|---|---|---|---|---|
-| 1 | Yan | 1 | 3 | 0 | 3 | 5 |
-| 2 | Mazask | 1 | 4 | 1 | 4 | 9 |
-| 3 | Tanka | 2 | 5 | 2 | 5 | 17 |
+| 1 | Poṉ | 1 | 3 | 0 | 3 | 5 |
+| 2 | Veḷḷi | 1 | 4 | 1 | 4 | 9 |
+| 3 | Irumbu | 2 | 5 | 2 | 5 | 17 |
 
-The Metal ladder is **Yan → Mazask → Tanka**. The title names a tier-1, tier-2,
-and tier-3 unit: Muju / Hono / Tanka.
+The Metal ladder is **Poṉ → Veḷḷi → Irumbu**. The title names a tier-1, tier-2,
+and tier-3 unit: Muju / Hono / Irumbu — ASCII `Hono`, no macron in the title,
+even though the tier-2 piece itself is Honō.
 
 Starting units for both players: `fire_1`, `water_1`, `plant_1`.
 

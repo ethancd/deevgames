@@ -2,7 +2,7 @@
 
 Current Metal v2.9 verification (2026-09-18): Speed 0 is supported by canonical
 movement, JS/WASM tactics and the Hard AI packed engine, threat/approach tables,
-kill/home bounds and promotion missions. Yan can attack adjacent enemies and
+kill/home bounds and promotion missions. Poṉ can attack adjacent enemies and
 promote for movement. Frozen Hard AI evaluations and replay witnesses retain
 explicit historical-catalogue tests; current differential tests use v2.9.
 This release makes no new playing-strength claim.

@@ -56,7 +56,7 @@ test('a surviving target closes even a Tier III chain',async({page})=>{
   await start(page,s);await attack(page,5,4);
   await page.getByTestId('cell-5-5').click();
   await expect(page.locator('.cleave-status')).toHaveText('Attacks 1/3 · Attacks finished');
-  await expect(page.getByTestId('cell-5-4')).toHaveAttribute('aria-label',/black Aegirinn/);
+  await expect(page.getByTestId('cell-5-4')).toHaveAttribute('aria-label',/black Ægirinn/);
   await page.getByTestId('cell-6-5').click();
   await expect(page.getByRole('button',{name:'Confirm attack'})).toHaveCount(0);
 });

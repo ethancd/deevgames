@@ -32,14 +32,14 @@ test('Phasing upkeep choice stays open, can be undone past, and the keyboard dri
   const guide = page.getByRole('dialog', { name: 'Unit guide' }), detail = guide.locator('.shop-piece-name');
   const tier = guide.getByRole('group', { name: 'Unit tier' }).getByRole('button', { pressed: true });
   await expect(detail).toHaveText('Hi');
-  await page.keyboard.press('2'); await expect(detail).toHaveText('Hono');
+  await page.keyboard.press('2'); await expect(detail).toHaveText('Honō');
   await page.keyboard.press('d'); await expect(detail).toHaveText('Straumr');
-  await page.keyboard.press('3'); await expect(detail).toHaveText('Aegirinn');
+  await page.keyboard.press('3'); await expect(detail).toHaveText('Ægirinn');
   await page.keyboard.press('a'); await page.keyboard.press('1'); await expect(detail).toHaveText('Hi');
   await page.keyboard.press('Tab'); await expect(detail).toHaveText('Radi'); await expect(tier).toHaveText('Tier 1');
   for (let i = 0; i < 5; i++) await page.keyboard.press('Tab');
-  await expect(detail).toHaveText('Hono');
-  await page.keyboard.press('Shift+Tab'); await expect(tier).toHaveText('Tier 1'); await expect(detail).not.toHaveText('Hono');
+  await expect(detail).toHaveText('Honō');
+  await page.keyboard.press('Shift+Tab'); await expect(tier).toHaveText('Tier 1'); await expect(detail).not.toHaveText('Honō');
   await page.keyboard.press('u'); await expect(guide).toHaveCount(0);
 
   // Enter completes the phase even with focus left on a clicked button or square.
@@ -63,8 +63,8 @@ test('Phasing upkeep choice stays open, can be undone past, and the keyboard dri
 
   // Release a piece, change your mind, and undo past the release to the action phase.
   await page.getByRole('button', { name: 'Mine & prepare' }).click();
-  await dialog.getByRole('checkbox', { name: /Aegirinn/ }).uncheck();
-  await dialog.getByRole('checkbox', { name: /Sachakuna/ }).uncheck();
+  await dialog.getByRole('checkbox', { name: /Ægirinn/ }).uncheck();
+  await dialog.getByRole('checkbox', { name: /Sach'akuna/ }).uncheck();
   await page.keyboard.press('Enter');
   await expect(dialog).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'End turn' })).toBeVisible();
@@ -74,9 +74,9 @@ test('Phasing upkeep choice stays open, can be undone past, and the keyboard dri
   await page.keyboard.press('Escape'); await expect(page.getByRole('button', { name: /Summon Radi/ })).toHaveAttribute('aria-pressed', 'false');
   await page.getByRole('button', { name: /Undo/ }).click();
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('checkbox', { name: /Aegirinn/ })).toBeChecked();
+  await expect(dialog.getByRole('checkbox', { name: /Ægirinn/ })).toBeChecked();
   await page.keyboard.press('ControlOrMeta+z');
   await expect(dialog).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Mine & prepare' })).toBeEnabled();
-  await expect(cellOf(state.board.units[1])).toHaveAttribute('aria-label', /Aegirinn/);
+  await expect(cellOf(state.board.units[1])).toHaveAttribute('aria-label', /Ægirinn/);
 });

@@ -1,5 +1,16 @@
 # Muju Academy · Metal revision
 
+Current names override (2026-09-22): the game retitled **Muju Hono Tanka → Muju Hono Irumbu**
+(ASCII `Hono` in the title; the piece card reads `Honō`), and ten pieces plus three element
+language labels (Water "Old Norse", Shadow "Turkish", Plant "Quechua", Metal "Tamil"/"South
+Asia") got new display names. Stable IDs, stats, prices and every rule are unchanged; the rules
+revision string stays `muju-phasing-2`. This is a **notice, not a re-voice**, repeating the
+September 19 phasing-notice pattern below: the course-page notice in `build-release.py` gained a
+paragraph about the rename, `catalog.json`/`rules-verification.json` use the new names, and the
+narration/ASR name lists recognize both old and new names, but the v7/v8 videos still speak the
+old names until a future re-record. Full old→new table, ASCII respelling proposals and evidence
+are in `BIBLE.md`, `STATUS.md` and `../docs/changes/2026-09-22-rename-irumbu-laneB.md`.
+
 Course notice preparation, September 19: the release builder warns that R01,
 R04–R07, R09 and R10 teach the previous turn order. This is a course-page change
 only, prepared but not deployed. The recordings remain v7/v8; a re-narration is
