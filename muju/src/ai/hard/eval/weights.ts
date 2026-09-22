@@ -11,7 +11,20 @@ import { F, FEATURE_COUNT, FEATURE_NAMES } from './features';
 
 export type { Weights } from '../config';
 
-/** Bumped whenever `DEFAULT_WEIGHTS`' numbers change (book/probe compatibility). */
+/**
+ * Bumped when the vector's SCHEMA changes (book/probe compatibility): the
+ * feature count, their meaning, or the file shape `loadWeights` accepts.
+ *
+ * The NUMBERS changed on 2026-09-20 without a bump — `phasing-hand-priors-v1`
+ * replaced the five-nonzero M6 bootstrap (see
+ * `docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md`). That was deliberate and
+ * is the standing rule as of 2026-09-21: a bump invalidates every stored vector
+ * (`loadWeights` rejects a version mismatch), including the 33 reviewed JSONs
+ * under `repair-2026-09-20/weights/` and the book key, and the schema those
+ * files are written against did not move. Read the vector's `label` and
+ * `weightsHash` to tell two number sets apart; the version says only whether a
+ * file can be loaded at all.
+ */
 export const WEIGHTS_VERSION = 2;
 export const WEIGHTS_FILE_SCHEMA = 'muju-weights-phasing-v1';
 export { PHASING_EVAL_SCHEMA } from '../config';

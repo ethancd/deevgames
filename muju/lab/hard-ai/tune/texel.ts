@@ -78,8 +78,19 @@ const DEFAULT_OUT = ''; // require an explicit fresh output path
 /** `material` index that DESIGN §5.12 pins at 300. */
 export const FIRE_1 = 0;
 export const FIRE_1_PIN = 300;
-/** Catalogue principal/liquidity accounting cannot be rescaled by this fit. */
-export const ACCOUNTING_PINS: Readonly<Record<number, number>> = Object.freeze({ 2: 100, 3: 100, 58: 1 });
+/**
+ * Catalogue principal/liquidity accounting cannot be rescaled by this fit.
+ *
+ * `w[3]` (BankExcess) left this set on 2026-09-21. It was pinned at 100 with
+ * `w[2]` because the M6 bootstrap treated all cash alike; the 2026-09-20 repair
+ * set it to 25 EMPIRICALLY — the bank discount is the master switch that turned
+ * hoarding into spending (1-0-31 -> 12-0-20 vs Rush, spend 24% -> 93%;
+ * `docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md`). It is a tunable
+ * preference, not an accounting identity, and leaving it pinned at 100 made
+ * `assertAccountingPins(DEFAULT_WEIGHTS)` throw, so every future Texel fit
+ * started from the shipped vector died before it began.
+ */
+export const ACCOUNTING_PINS: Readonly<Record<number, number>> = Object.freeze({ 2: 100, 58: 1 });
 export function assertAccountingPins(weights: WeightVector): void {
   if (FEATURE_COUNT !== 62 || weights.w.length !== FEATURE_COUNT || weights.material.length !== NDEF ||
     !weights.w.every(Number.isSafeInteger) || !weights.material.every(Number.isSafeInteger)) throw new Error('texel: current integer 62/18 vector required');
@@ -253,7 +264,7 @@ export interface FitResult {
   freeParams: number[];
 }
 
-/** Keep index0, cash2/3, pending58 and fire_1 principal fixed. */
+/** Keep index0, liquid cash2, pending58 and fire_1 principal fixed. */
 export function freeParams(): number[] {
   const free: number[] = [];
   for (let i = 1; i < FEATURE_COUNT; i++) if (!(i in ACCOUNTING_PINS)) free.push(i);
