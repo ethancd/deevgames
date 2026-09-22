@@ -87,18 +87,19 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   Eighteen blank squares form D1–F3 and E8–G10; they remain walkable and spawn-eligible. Ordinary ground
   holds 4; F4/D5/E5/F5/E6/F6/G6/E7 hold 8. Six home cells per side hold 8 (48 per home cluster);
   four cells in each distant rich patch hold 16 (64 per expansion). Exact layout:
-  `src/game/resourceMap.ts`. Save schema 6 discards pre-schema-5 unfinished games
-  through the version-mismatch path; they start fresh. Schema-5 games upgrade
-  while retaining their stored map reserves and capacities. The map revision
-  does not bump the save schema or online rules version: all existing supported
-  saves and rooms retain their exact board, depletion and original capacities.
+  `src/game/resourceMap.ts`. The map revision did not bump the save schema or the
+  online rules version, so a game this build can still resume keeps its exact
+  board, depletion and original capacities. The schema-5 and schema-6 upgrade
+  paths are history: nothing recorded under an earlier ruleset is upgraded or
+  resumed today — see §1 "Stored artefacts by rules revision" below.
 - **Actions per turn:** **4 shared actions** in every game, for either player.
   Local saves, online rooms, AI planning and rematches use the same rules.
-  **Start Game** starts fresh; **Continue saved game** resumes the saved board.
-  Schema-5 saves and version-2/3 rooms upgrade in place: subtract actions already
-  spent from the four-action allowance (minimum zero); Place receives all four.
-  Start the new kill-only clock at zero. Completed results remain final, and
-  online undo/replay history from the old rules is cleared at the upgrade.
+  **Start Game** starts fresh; **Continue saved game** resumes the saved board
+  when the save was recorded under these rules. Schema-5 saves and version-2/3
+  rooms are retired records, not upgrade candidates: the in-place upgrade that
+  once subtracted spent actions and restarted the clock is history, and no
+  stored artefact is reinterpreted under a ruleset it was not recorded with.
+  Completed results remain final. See §1 "Stored artefacts by rules revision".
 - **Optional Black crystal handicap:** New games may grant Black any whole
   number from 1 to 20 starting crystals (off/0 by default). White still starts
   with 0. The handicap never changes the opening phase: both players begin their
@@ -116,8 +117,8 @@ recorded with.
 
 - **Online rooms.** Playable rooms are `muju-phasing-2` — the one revision new
   rooms are created under and the only one the server opens. `muju-online-2`,
-  `muju-online-3`, `muju-online-4`, `muju-online-6` (Standard) and
-  `muju-phasing-1` are retired identifiers: those rows stay in the archive
+  `muju-online-3`, `muju-online-4`, `muju-online-5`, `muju-online-6` (Standard)
+  and `muju-phasing-1` are retired identifiers: those rows stay in the archive
   exactly as written, are listed as retired, and refuse to open or mutate. They
   are never migrated in place.
 - **Local saves.** Save schema 9 resumes Phasing games only. A stored save whose
