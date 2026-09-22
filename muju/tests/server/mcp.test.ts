@@ -410,10 +410,18 @@ it.each([false, true])('plays, previews, analyzes and stages a complete Phasing 
   const now = 1800000000000, clock = vi.spyOn(Date, 'now').mockReturnValue(now);
   cleanups.push(() => clock.mockRestore());
   const { store, url } = await setup(), client = await clientFor(url, stdio);
+  // ONE RULESET (2026-09-21). `ruleset` is accepted and ignored for one release
+  // because the published SKILL.md told agents to pass it, so both spellings
+  // return the same payload — and it is the PHASING payload either way.
   const rules = await call(client, 'muju_rules', { ruleset: 'phasing' });
-  expect(rules).toMatchObject({ ruleset: 'phasing', endTurnAction: 'END_PLACE_PHASE' });
+  expect(rules).toMatchObject({ ruleset: { name: 'phasing', revision: 'muju-phasing-2', immutable: true, retired: ['standard'] },
+    endTurnAction: 'END_PLACE_PHASE' });
   expect(rules.upkeep).toContain('outgoing');
-  expect((await call(client, 'muju_rules')).endTurnAction).toBe('END_ACTION_PHASE');
+  expect(rules.rulesets).toBeUndefined();
+  expect(await call(client, 'muju_rules')).toEqual(rules);
+  // An agent that still asks for the retired rule set gets a named error.
+  const retired = await client.callTool({ name: 'muju_rules', arguments: { ruleset: 'standard' } });
+  expect(retired.isError).toBe(true);
   const hosted = await call(client, 'muju_create_room', { name: 'Phasing White', ruleset: 'phasing', timeControl: 'rapid', blackCrystalHandicap: 0 });
   const { roomId, token } = hosted.credentials;
   const guest = await call(client, 'muju_join_room', { roomId, name: 'Phasing Black', inviteCode: hosted.invitation.inviteCode });

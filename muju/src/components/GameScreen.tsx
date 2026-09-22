@@ -21,7 +21,6 @@ import { AIRecap } from './AIRecap';
 import { AIConsole } from './AIConsole';
 import { AIThinkingTimer, AI_TIMER_MIN_BUDGET_MS } from './AIThinkingTimer';
 import { formatTurnSeconds, DEFAULT_AI_PACE } from '../ai/turnTime';
-import { readPhasingAiPreview } from '../ai/phasingPreview';
 import { resolveHardAiRoute } from '../ai/hardOptIn';
 import { copyToClipboard, formatPositionReport, type PositionReportInput } from '../utils/positionReport';
 import { formatCompactReport } from '../utils/compactReport';
@@ -87,20 +86,11 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   } = game;
   const actionsPerTurn = getActionsPerTurn(state);
   const phasing = isPhasing(state);
-  /**
-   * THE PHASING AI PREVIEW, read once when this screen mounts (a game start).
-   * Two guards in this file hang off it, and both are CLOSED without it:
-   * the `useAI` seats below stay disabled under Phasing, and the turn triggers
-   * never fire. With it on, a Phasing game drives the AI seats through exactly
-   * the same reducer, dispatch animation and fallback path as a Standard one.
-   * See `src/ai/phasingPreview.ts`.
-   */
-  const [previewOptIn] = useState(readPhasingAiPreview);
-  /** Only a Phasing game is a preview game; Standard is untouched by the flag. */
-  const phasingPreview = phasing && previewOptIn;
-  /** AI seats run under Phasing only in preview mode; otherwise, as before, not
-   * at all. Local games only — an online/observer game leaves both hooks off. */
-  const aiSeatsAllowed = !phasing || phasingPreview;
+  /** AI seats run in LOCAL games only: an online, observer or analysis board
+   * leaves both `useAI` hooks and both turn triggers off. The ruleset is no
+   * longer a term — Phasing is the only ruleset and the engine that plays it
+   * shipped on 2026-09-21 (the `?phasingAi=1` preview is retired with it). */
+  const aiSeatsAllowed = !online && !analysis;
   const { playback: savedPlayback, mode: replayMode, setReplayMode, startReplay, closeReplay, toggleReplay, stepReplay } = useReplayPlayback(`${state.phase}:${state.turn.currentPlayer}:${state.turn.turnNumber}`);
   const playback = online?.playingIncoming ? null : savedPlayback;
   useEffect(() => { if (online?.playingIncoming) closeReplay(); }, [online?.playingIncoming, closeReplay]);
@@ -282,12 +272,14 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
   const [showAIRecap, setShowAIRecap] = useState(false);
   /**
-   * "REPORT THIS POSITION" — PREVIEW ONLY. The whole point of letting the owner
-   * play an unreleased engine is that he can flag the moments where its play
-   * looks wrong, and a report is only useful if the position replays exactly.
-   * The button exists nowhere else: without the opt-in `phasingPreview` is
-   * false, and neither the button, this handler's result nor the status line is
-   * ever rendered (`src/utils/positionReport.ts`).
+   * "REPORT THIS POSITION". The one channel that turns "the AI played badly"
+   * into a position that replays exactly (`src/utils/positionReport.ts`), and
+   * the channel that produced the three reports the 2026-09-20 engine repair
+   * was aimed at. It was preview-only while the Phasing AI was an opt-in; with
+   * the preview retired it belongs to every LOCAL game — vs AI, Watch AI and
+   * Pass & Play. Pass & Play has no engine in a seat: `side` resolves to null
+   * below and the report simply carries no AI turn, which is still a replayable
+   * position. Online and analysis boards stay out (the gate at the menu).
    */
   const [reportStatus, setReportStatus] = useState<string | null>(null);
   const handleReportPosition = useCallback(async (fullJson = false) => {
@@ -312,7 +304,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     // two orders of magnitude more and says nothing extra. Shift-click keeps the JSON.
     const report = fullJson ? formatPositionReport(input) : formatCompactReport(input, online ? null : loadGameHistory());
     const copied = await copyToClipboard(report);
-    if (!copied) console.warn('[phasing-preview] clipboard refused; position report follows\n', report);
+    if (!copied) console.warn('[muju] clipboard refused; position report follows\n', report);
     setReportStatus(copied ? 'Position report copied to the clipboard.' : 'Clipboard refused — the report was logged to the console.');
   }, [state, online, config.controls, config.aiDifficulty, config.aiPace, whiteAI, blackAI]);
 
@@ -988,9 +980,8 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         <p>{analysis ? 'Analysis runs locally. You control both sides, and can go backward or forward through the timeline.' : observing ? 'You are observing this match. Reopen the watch link to follow it on any device.' : online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
         <p>{phasing ? 'After actions, mining and affordable upkeep settle together. Undo Mine & prepare to revisit the action phase. Enable upkeep review to choose releases.' : 'Affordable upkeep is paid automatically. Undo back through your actions to refund it and choose which units to keep.'}</p>
         {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Always ask before paying upkeep (optional)</label>}
-        {phasingPreview && <p className="preview-note">Phasing AI preview · unreleased engine, no strength guarantee. Turn it off with <code>?phasingAi=0</code>.</p>}
-        {phasingPreview && <button title="Copies a compact text report. Shift-click for the full JSON." onClick={e => handleReportPosition(e.shiftKey)}>Report this position</button>}
-        {phasingPreview && reportStatus && <p role="status">{reportStatus}</p>}
+        {!online && !analysis && <button title="Copies a compact text report. Shift-click for the full JSON." onClick={e => handleReportPosition(e.shiftKey)}>Report this position</button>}
+        {!online && !analysis && reportStatus && <p role="status">{reportStatus}</p>}
         <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
         {analysis && <button onClick={() => { resetGame(); setShowMenu(false); }}>Reset analysis</button>}
         {!online && !analysis && <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>}

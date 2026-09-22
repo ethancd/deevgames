@@ -149,7 +149,17 @@ export function noteHardTurn(engineUsed: 'v2' | 'hard' | undefined): void {
   if (engineUsed === 'hard') hardDiag().hardTurns++;
 }
 export function noteHardPlanReplayed(): void { hardDiag().plansReplayed++; }
-export function noteHardBudgetExhausted(): void { hardDiag().budgetExhausted++; }
+/**
+ * The turn's allowance is gone and a per-action search is being floored at
+ * `MIN_TURN_SEARCH_MS` to keep it legal. Counted AND logged: an overrun turn
+ * used to be the one fallback kind that left no trace in the console at all, so
+ * "the AI played instantly and badly" could not be settled from a bug report
+ * (`ai-production-wiring.md` §6g).
+ */
+export function noteHardBudgetExhausted(): void {
+  hardDiag().budgetExhausted++;
+  console.warn(`${HARD_AI_LOG_PREFIX} turn budget exhausted — this turn overran its allowance; the remaining decisions run on the minimum search floor`);
+}
 
 /**
  * Counts one fallback and logs it once. The caller drops the rest of the plan

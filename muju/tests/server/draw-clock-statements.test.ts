@@ -26,15 +26,14 @@ describe('the draw clock is stated as twenty plies everywhere an agent can read 
     expect(INACTIVITY_LIMIT - INACTIVITY_WARNING).toBe(3);
   });
 
-  it('states the limit in both rulesets of the muju_rules payload', () => {
-    for (const ruleset of ['standard', 'phasing'] as const) {
-      const payload = rulesFor(ruleset);
-      expect(payload.victory).toContain(`${INACTIVITY_LIMIT}`);
-      for (const pattern of retired) expect(payload.victory).not.toMatch(pattern);
-    }
-    // Standard and Phasing share the one constant; neither states a number of its own.
-    expect(rules.victory).toContain(`${INACTIVITY_LIMIT} consecutive player turns`);
-    expect(rulesFor('phasing').victory).toContain(`${INACTIVITY_LIMIT} full player turns`);
+  it('states the limit in the muju_rules payload, which now has one ruleset', () => {
+    // Since 2026-09-21 `rulesFor()` takes no argument: the base object IS the
+    // played rules, so there is one victory sentence to check, not two.
+    const payload = rulesFor();
+    expect(payload.ruleset).toMatchObject({ name: 'phasing', retired: ['standard'] });
+    expect(payload.victory).toContain(`${INACTIVITY_LIMIT} full player turns`);
+    expect(payload.victory).toBe(rules.victory);
+    for (const pattern of retired) expect(payload.victory).not.toMatch(pattern);
     expect(JSON.stringify(rules)).not.toMatch(/10 consecutive|Ten full|Ten consecutive/);
   });
 

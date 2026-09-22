@@ -4,8 +4,8 @@ import { readFileSync } from 'node:fs';
 import { getUnitDefinition } from '../../src/game/units';
 import { createInitialGameState } from '../../src/game/board';
 import { AIWorkerClient, SearchCancelled, type WorkerLike } from '../../src/ai/worker/client';
-import { createSearchHandler } from '../../src/ai/worker/handler';
-import type { SearchRequest, SearchResponse } from '../../src/ai/worker/protocol';
+import { createSearchHandler, type HardEngineFactory } from '../../src/ai/worker/handler';
+import { AI_PROTOCOL, type SearchRequest, type SearchResponse, type TurnResult } from '../../src/ai/worker/protocol';
 import { instantiateTactics, type TacticalSolver } from '../../src/ai/wasm/kernel';
 import { AIEngineV2 } from '../../src/ai/engine-v2';
 import { SearchBudget, seededRandom } from '../../src/ai/runtime';
@@ -56,4 +56,30 @@ it('worker errors and watchdog timeouts reject instead of passing',async()=>{
  const pending=c.findBestAction(createInitialGameState(),'hard',10,0);const rejected=expect(pending).rejects.toThrow('timed out');
  await vi.advanceTimersByTimeAsync(2100);await rejected;expect(w.terminated).toBe(true);
  }finally{vi.useRealTimers();}
+});
+/**
+ * THE PHASING GUARD IS GONE (2026-09-21). The worker used to refuse a
+ * `ruleset: 'phasing'` state unless the request carried a `phasingPreview`
+ * marker. Standard is retired, so every request is a Phasing request and no
+ * marker exists: the handler must search one on all three routes (per-action,
+ * whole-turn v2, whole-turn hard) exactly as it does any other state.
+ */
+const PHASING_TURN: TurnResult = {
+ actions:[{type:'END_ACTION_PHASE'}],scoreCc:3,depth:2,work:1000,
+ stats:{nodes:0,qnodes:0,turnNodes:0,evals:0,ttHits:0,ttProbes:0,depth:2,seldepth:2,
+  byClass:new Int32Array(9),proverCalls:0,dfpnCalls:0,catalogRebuilds:0,replicaDivergences:0,
+  work:1000,elapsedMs:4,stopReason:'complete'},
+ source:'search',endKey:'phasing-stub',
+};
+const hardStub: HardEngineFactory = () => ({ async searchTurn(){return PHASING_TURN;}, setSeed(){} });
+it('searches a Phasing state with no marker, on every route',async()=>{
+ const handler=createSearchHandler(solver,undefined,hardStub);
+ const phasing=():SearchRequest=>({...request(),version:AI_PROTOCOL,state:createInitialGameState(undefined,4,0,'phasing')});
+ const action=await handler(phasing());expect(action.type).toBe('result');
+ const turn=await handler({...phasing(),requestId:2,mode:'turn'});
+ expect(turn.type).toBe('result');if(turn.type!=='result')return;
+ expect(turn.result.turnActions?.length).toBeGreaterThan(0);
+ const hard=await handler({...phasing(),requestId:3,mode:'turn',engine:'hard'});
+ expect(hard.type).toBe('turn');if(hard.type!=='turn')return;
+ expect(hard.engineUsed).toBe('hard');expect(hard.result.actions).toEqual(PHASING_TURN.actions);
 });
