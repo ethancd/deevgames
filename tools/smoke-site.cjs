@@ -30,7 +30,7 @@ const screenshots = process.env.QA_SCREENSHOTS;
       await page.goto(base + '/');
       assert.equal(await page.locator('a.game-card').count(), 3);
       await fits(); await picture('hub');
-      assert.equal(await page.getByRole('link', {name: /Muju Hono Tanka/}).getAttribute('href'),
+      assert.equal(await page.getByRole('link', {name: /Muju Hono Irumbu/}).getAttribute('href'),
         'https://deevgames-muju.onrender.com/muju/');
       // Exercise this release's bundled game independently of the external host.
       await page.goto(base + '/muju/');
