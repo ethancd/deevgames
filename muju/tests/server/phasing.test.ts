@@ -50,19 +50,23 @@ it('preserves full-turn clock, undo, public pending commitments, arrival history
   expect(history.entries.some(e => e.kind === 'summoning')).toBe(true);
   expect(host.room.state.ruleset).toBe('phasing');
 });
-it('persists commitments across server restart while Standard rooms retain their rules', () => {
+it('persists commitments across server restart, and every restarted room is Phasing', () => {
   const dir = mkdtempSync(join(tmpdir(), 'muju-phasing-')); dirs.push(dir);
   const path = join(dir, 'rooms.sqlite'); const store = open(path);
   const { id, play } = setup(store);
   const saved = play('white', [{ type: 'END_ACTION_PHASE' }, { type: 'BUY_UNIT', definitionId: 'fire_1', position: { x: 0, y: 0 } }, { type: 'END_PLACE_PHASE' }]);
-  const standard = store.create({ name: 'Standard' });
+  const plain = store.create({ name: 'Plain' });
   const reloaded = open(path);
   expect(reloaded.get(id).state).toEqual(saved.state);
-  expect(reloaded.get(standard.room.id).state.ruleset).toBe('standard');
+  // Standard was retired on 2026-09-21: a room created without naming a ruleset
+  // is Phasing, and no room created since can be anything else.
+  expect(reloaded.get(plain.room.id).state.ruleset).toBe('phasing');
 });
 it('rejects invalid rulesets and atomic batches that try to act after preparation or summon twice on one square', () => {
   const { store, host, play, id } = setup();
   expect(() => store.create({ name: 'Invalid', ruleset: 'mystery' })).toThrow();
+  // Standard is not merely unknown: it is named and refused.
+  expect(() => store.create({ name: 'Retired', ruleset: 'standard' })).toThrow();
   const before = store.get(id);
   expect(() => play('white', [{ type: 'END_ACTION_PHASE' }, { type: 'BUY_UNIT', definitionId: 'fire_1', position: { x: 0, y: 0 } },
     { type: 'BUY_UNIT', definitionId: 'fire_1', position: { x: 0, y: 0 } }])).toThrow();

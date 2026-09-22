@@ -22,6 +22,7 @@ it('saves both players, individual movement steps and the result, excluding undo
   act(() => hook.result.current.undo());
   expect(loadGameHistory()).toEqual(played);
   act(() => hook.result.current.endActionPhase());
+  act(() => hook.result.current.endPlacePhase());
   hook.unmount();
   hook = renderHook(() => useGameState());
   act(() => hook.result.current.applyAIAction({ type: 'MOVE', unitId: black.id, to: { x: 6, y: 9 } }));
@@ -42,7 +43,7 @@ it('saves both players, individual movement steps and the result, excluding undo
 });
 
 it('keeps the move and capture separate, and undoes the whole move-and-attack command', () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   state.board.units = [createUnit('fire_1', 'white', { x: 0, y: 0 }),
     createUnit('plant_1', 'black', { x: 4, y: 0 }), createUnit('water_1', 'black', { x: 9, y: 9 })];
   saveGameState(state);
@@ -57,27 +58,41 @@ it('keeps the move and capture separate, and undoes the whole move-and-attack co
   expect(loadGameHistory()!.frames[0].state.board).toEqual(state.board);
 });
 
-it('rewinds automatic upkeep without erasing the outgoing turn or mining', () => {
-  const state = createInitialGameState();
+it('rewinds the mover’s mine-and-upkeep step without erasing the move it paid for', () => {
+  // Standard charged the INCOMING seat at its turn start. Phasing charges the
+  // mover at END_ACTION_PHASE, so the score has to hold the same shape one step
+  // earlier: the mining is its own frame, the undo reverses the whole transition,
+  // and the move made earlier in that turn stays in the score.
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   state.turn.currentPlayer = 'black';
-  state.players.white.resources = 5;
-  state.board.units = [createUnit('water_2', 'white', { x: 3, y: 2 }), createUnit('fire_1', 'black', { x: 8, y: 9 })];
+  state.players.black.resources = 5;
+  // Only a tier-2 unit for Black: tier-1 units may never be released, so this is
+  // the shape in which releasing everything really does end the game.
+  state.board.units = [createUnit('water_2', 'black', { x: 8, y: 9 }), createUnit('fire_1', 'white', { x: 0, y: 0 })];
   saveGameState(state);
   const { result } = renderHook(() => useGameState());
-  act(() => result.current.applyAIAction({ type: 'MOVE', unitId: state.board.units[1].id, to: { x: 6, y: 9 } }));
-  act(() => result.current.applyAIAction({ type: 'END_ACTION_PHASE' }));
-  expect(loadGameHistory()!.frames.at(-1)!.label).toContain('Upkeep');
+  act(() => result.current.moveUnit(state.board.units[0].id, { x: 6, y: 9 }));
+  act(() => result.current.endActionPhase());
+  const mined = loadGameHistory()!;
+  expect(mined.frames.map(f => f.label).join(' ')).toContain('Mining');
+  expect(mined.frames.at(-1)!.label).toContain('Upkeep');
+  expect(mined.frames.at(-1)!.state).toMatchObject({ upkeepPending: false, turn: { currentPlayer: 'black', phase: 'place', turnNumber: 1 } });
   act(() => result.current.undo());
   const history = loadGameHistory()!;
-  expect(history.frames.at(-1)!.label).toContain('Mining');
-  expect(history.frames.at(-1)!.state).toMatchObject({ upkeepPending: true, turn: { currentPlayer: 'white', turnNumber: 2 } });
+  expect(history.frames.at(-1)!.state.upkeepPending).toBeFalsy();
+  expect(history.frames.at(-1)!.state.turn).toMatchObject({ currentPlayer: 'black', phase: 'action' });
   expect(history.frames.map(f => f.label).join(' ')).toContain('I10→G10');
+  expect(history.frames.map(f => f.label).join(' ')).not.toContain('Mining');
+  // Reviewing the keep-set stops the same transition so the seat can release.
+  act(() => result.current.setUpkeepReview('black', true));
+  act(() => result.current.endActionPhase());
+  expect(loadGameHistory()!.frames.at(-1)!.state).toMatchObject({ upkeepPending: true });
   act(() => result.current.payUpkeep([]));
   expect(loadGameHistory()!.frames.at(-1)!.state).toMatchObject({ phase: 'victory', victoryReason: 'upkeep-elimination' });
 });
 
 it('labels older saves as partial and keeps the final position when score storage is full', () => {
-  const state = createInitialGameState(); state.inactivityPlies = INACTIVITY_LIMIT - 1;
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing'); state.inactivityPlies = INACTIVITY_LIMIT - 1;
   saveGameState(state);
   const { result } = renderHook(() => useGameState());
   expect(loadGameHistory()).toMatchObject({ complete: false, frames: [{ label: 'First recorded position' }] });
@@ -87,6 +102,7 @@ it('labels older saves as partial and keeps the final position when score storag
     setItem.call(this, key, value);
   });
   act(() => result.current.endActionPhase());
+  act(() => result.current.endPlacePhase());
   expect(loadGameState()).toMatchObject({ phase: 'victory', victoryReason: 'inactivity' });
   expect(loadGameHistory()!.frames).toHaveLength(1);
   expect(loadGameHistory()!.frames[0].state.phase).toBe('victory');

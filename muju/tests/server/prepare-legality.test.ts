@@ -14,12 +14,14 @@ import { actionKeys, exhaustivePrepare, mixedPrepare } from '../fixtures/prepare
 
 const cleanups: (() => Promise<void> | void)[] = [];
 afterEach(async () => { for (const close of cleanups.splice(0).reverse()) await close(); });
-it.each(['standard', 'phasing'] as const)('serves the complete %s Prepare oracle over MCP with exact paginated totals', async ruleset => {
+// Standard was retired on 2026-09-21; Phasing is the only Prepare oracle there is.
+it('serves the complete Prepare oracle over MCP with exact paginated totals', async () => {
+  const ruleset = 'phasing' as const;
   const directory = mkdtempSync(join(tmpdir(), 'muju-prepare-oracle-'));
   cleanups.push(() => rmSync(directory, { recursive: true, force: true }));
   const path = join(directory, 'rooms.sqlite'), store = new RoomStore(path);
   cleanups.push(() => store.close());
-  const host = store.create({ name: 'White', ruleset }), roomId = host.room.id;
+  const host = store.create({ name: 'White' }), roomId = host.room.id;
   store.join(roomId, { name: 'Black', inviteCode: host.inviteCode });
   const state = mixedPrepare(ruleset), db = new DatabaseSync(path);
   const saved = JSON.parse(db.prepare('SELECT data FROM rooms WHERE id = ?').get(roomId)!.data as string);

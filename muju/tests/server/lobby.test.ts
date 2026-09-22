@@ -42,20 +42,23 @@ it('public HTTP lobby lists lightweight unfinished rooms, sorts activity, and ke
   const { rooms } = await (await fetch(url)).json();
   expect(rooms.map((room: { id: string }) => room.id)).toEqual([second.room.id, first.room.id, waiting.room.id]);
   expect(rooms[0]).toEqual({ id: second.room.id, ready: true, seats: { white: 'Second', black: 'Second opponent' },
-    ruleset: 'standard', turnNumber: 1, currentPlayer: 'white', updatedAt: '2026-09-12T12:01:00.000Z' });
+    ruleset: 'phasing', turnNumber: 1, currentPlayer: 'white', updatedAt: '2026-09-12T12:01:00.000Z' });
   expect(JSON.stringify(rooms[0]).length).toBeLessThan(300);
   expect(rooms[2].ready).toBe(false);
   expect((await fetch(`${url}/${first.room.id}/actions`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ expectedRevision: 1, requestId: 'lobby-no-seat', actions: [{ type: 'RESIGN' }] }) })).status).toBe(401);
   expect((await fetch(`${url}/${first.room.id}/join`, { method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name: 'Observer', inviteCode: 'a'.repeat(64) }) })).status).toBe(403);
-  store.act(first.room.id, first.credentials.token, { expectedRevision: 1, requestId: 'lobby-end-turn', actions: [{ type: 'END_ACTION_PHASE' }] });
+  store.act(first.room.id, first.credentials.token, { expectedRevision: 1, requestId: 'lobby-end-turn', actions: [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }] });
   const updated = await (await fetch(url)).json();
   expect(updated.rooms[0]).toMatchObject({ id: first.room.id, currentPlayer: 'black' });
   expect((await fetch(`${url}/${first.room.id}`)).status).toBe(200);
 });
 
-it('discovers persisted and compatible legacy games while skipping incompatible rooms', () => {
+// Standard was retired on 2026-09-21, and with it the in-place upgrade of
+// pre-four-action rooms: a room stamped with any version but the played one is
+// skipped by the lobby and 409s on open, whatever its budget says.
+it('discovers persisted current games while skipping every retired or incompatible room', () => {
   const dir = mkdtempSync(join(tmpdir(), 'muju-lobby-')); cleanups.push(() => rmSync(dir, { recursive: true, force: true }));
   const path = join(dir, 'rooms.sqlite'), store = setup(path);
   const current = game(store, 'Current'), legacy = game(store, 'Legacy'), old = game(store, 'Old'), invalid = game(store, 'Invalid');
@@ -65,8 +68,13 @@ it('discovers persisted and compatible legacy games while skipping incompatible 
   db.prepare("UPDATE rooms SET data = json_set(data, '$.state.actionsPerTurn', 6) WHERE id = ?").run(invalid.room.id);
   db.close();
   const reopened = setup(path);
-  expect(reopened.listActive().map(room => room.id).sort()).toEqual([current.room.id, legacy.room.id].sort());
-  expect(reopened.get(legacy.room.id).state.actionsPerTurn).toBe(4);
+  expect(reopened.listActive().map(room => room.id)).toEqual([current.room.id]);
+  for (const id of [legacy.room.id, old.room.id, invalid.room.id]) {
+    expect(() => reopened.get(id)).toThrow('older rules');
+  }
+  const stored = new DatabaseSync(path);
+  expect(JSON.parse(stored.prepare('SELECT data FROM rooms WHERE id = ?').get(legacy.room.id)!.data as string).rulesVersion).toBe('muju-online-3');
+  stored.close();
 });
 
 it('removes games whose clocks expired even before the background timer runs', () => {

@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { PHASING_RULES_VERSION, RULES_VERSION, RoomStore } from '../../server/rooms';
+import { PHASING_RULES_VERSION, RETIRED_STANDARD_VERSION, RoomStore } from '../../server/rooms';
 import { legalActions, observe } from '../../server/observation';
 import { INACTIVITY_LIMIT } from '../../src/game/inactivity';
 import { phaseEndAction } from '../../src/game/legality';
@@ -33,7 +33,10 @@ it('previews, commits, notifies and persists immediate checkmate without playing
   saved.state.board.units = [invader, createUnit('fire_1', 'black', { x: 4, y: 4 })];
   db.prepare('UPDATE rooms SET data = ? WHERE id = ?').run(JSON.stringify(saved), id); db.close();
   const move: RoomAction = { type: 'MOVE', unitId: invader.id, to: { x: 9, y: 9 } };
-  const command = request(1, [move, { type: 'END_ACTION_PHASE' }], 'mate-and-queued-end');
+  // The occupation resolves at the turn transition, so the mining that pays for
+  // the move happens first and END_PLACE_PHASE is the command left unplayed.
+  const played: RoomAction[] = [move, { type: 'END_ACTION_PHASE' }];
+  const command = request(1, [...played, { type: 'END_PLACE_PHASE' }], 'mate-and-queued-end');
   const before = store.get(id), preview = store.act(id, host.credentials.token, command, true);
   expect(preview.state).toMatchObject({ phase: 'victory', winner: 'white', victoryReason: 'home-checkmate' });
   expect(store.get(id)).toEqual(before);
@@ -41,10 +44,10 @@ it('previews, commits, notifies and persists immediate checkmate without playing
   const won = store.act(id, host.credentials.token, command);
   expect(won.state).toEqual(preview.state);
   expect(won.state.turn.currentPlayer).toBe('white');
-  expect(won.state.lastIncome).toBeUndefined();
+  expect(won.state.lastIncome).toMatchObject({ player: 'white', turnNumber: 1 });
   expect(won.canUndo).toBe(false);
-  expect(won.history.at(-1)?.actions).toEqual([move]);
-  expect(won.lastTurnReplay?.frames.map(frame => frame.action)).toEqual([move]);
+  expect(won.history.at(-1)?.actions).toEqual(played);
+  expect(won.lastTurnReplay?.frames.map(frame => frame.action)).toEqual(played);
   expect(legalActions(won).total).toBe(0);
   expect(await waiting).toMatchObject({ changed: true, phase: 'victory', room: { state: { victoryReason: 'home-checkmate' } } });
   expect(store.act(id, host.credentials.token, command)).toEqual(won);
@@ -57,10 +60,13 @@ describe('authoritative shared rooms', () => {
   it('draws after twenty ordinary income-earning turns without kills', () => {
     expect(INACTIVITY_LIMIT).toBe(20);
     const {store,id,host,guest}=setup();let room=store.get(id);
+    // A quiet Phasing turn is Act, then END_ACTION_PHASE to mine and pay upkeep,
+    // then END_PLACE_PHASE to hand over — and only the handoff advances the clock.
     for(let ply=1;ply<=INACTIVITY_LIMIT;ply++) {
       const token=room.state.turn.currentPlayer==='white'?host.credentials.token:guest.credentials.token;
-      if(room.state.turn.phase==='place') room=store.act(id,token,request(room.revision,[{type:'END_PLACE_PHASE'}],`place-${ply}-clock`));
-      room=store.act(id,token,request(room.revision,[{type:'END_ACTION_PHASE'}],`end-${ply}-clock`));
+      room=store.act(id,token,request(room.revision,[{type:'END_ACTION_PHASE'}],`mine-${ply}-clock`));
+      expect(room.state.inactivityPlies).toBe(ply-1);
+      room=store.act(id,token,request(room.revision,[{type:'END_PLACE_PHASE'}],`end-${ply}-clock`));
       expect(room.state.inactivityPlies).toBe(ply);
       expect(room.state.phase).toBe(ply===INACTIVITY_LIMIT?'victory':'playing');
     }
@@ -84,46 +90,41 @@ describe('authoritative shared rooms', () => {
     expect(reopened.get(id).state.actionsPerTurn).toBe(4);
     const undone=reopened.act(id,host.credentials.token,request(2,[{type:'UNDO'}],'undo-four'));
     expect(undone.state.turn.actionsRemaining).toBe(4);
-    const next=store.act(id,host.credentials.token,request(3,[{type:'END_ACTION_PHASE'}],'handoff-four'));
+    const mined=store.act(id,host.credentials.token,request(3,[{type:'END_ACTION_PHASE'}],'mine-four'));
+    expect(mined.state.turn).toMatchObject({currentPlayer:'white',phase:'place'});
+    const next=store.act(id,host.credentials.token,request(mined.revision,[{type:'END_PLACE_PHASE'}],'handoff-four'));
     expect(next.state.turn).toMatchObject({currentPlayer:'black',actionsRemaining:4});
     expect(next.state.actionsPerTurn).toBe(4);
-    expect(store.create({name:'Standard'}).room.state.actionsPerTurn).toBe(4);
+    expect(store.create({name:'Default'}).room.state.actionsPerTurn).toBe(4);
     for(const actionsPerTurn of [0,5,6,7,'4',null]) expect(()=>store.create({name:'Invalid',actionsPerTurn})).toThrow();
   });
-  it.each(['muju-online-2','muju-online-3'])('upgrades %s rooms while preserving board and credentials', version => {
-    const dir=mkdtempSync(join(tmpdir(),'muju-legacy-'));directories.push(dir);
-    const path=join(dir,'rooms.sqlite'),{store,id,host}=setup(path);
-    const before=store.get(id),db=new DatabaseSync(path);
-    db.prepare("UPDATE rooms SET data = json_set(data, '$.rulesVersion', ?, '$.state.actionsPerTurn', 6, '$.state.turn.actionsRemaining', 5, '$.state.inactivityPlies', 8) WHERE id = ?").run(version,id);db.close();
-    const migrated=store.get(id,host.credentials.token);
-    expect(migrated.state.board).toEqual(before.state.board);
-    expect(migrated.state).toMatchObject({actionsPerTurn:4,inactivityPlies:0,turn:{actionsRemaining:3}});
-    expect(migrated.revision).toBe(before.revision+1);expect(migrated.canUndo).toBe(false);
-    const next=store.act(id,host.credentials.token,request(migrated.revision,[{type:'END_ACTION_PHASE'}]));
-    expect(next.state.turn.actionsRemaining).toBe(4);expect(next.state.inactivityPlies).toBe(1);
-    expect(store.get(id).state.inactivityPlies).toBe(1);
-  });
-  it('stamps the twenty-ply rules revisions on new rooms', () => {
+  // In-place migration of `muju-online-2`/`-3` rooms is gone with Standard: it
+  // would have rewritten a Standard game as a room stamped with the played
+  // revision. `tests/server/standard-retirement.test.ts` pins the refusal.
+  it('stamps the one played rules revision on every new room', () => {
     const dir=mkdtempSync(join(tmpdir(),'muju-revision-'));directories.push(dir);
     const path=join(dir,'rooms.sqlite'),store=new RoomStore(path);stores.push(store);
-    const standard=store.create({name:'Standard',side:'white'});
-    const phasing=store.create({name:'Phasing',side:'white',ruleset:'phasing'});
+    const omitted=store.create({name:'Omitted',side:'white'});
+    const explicit=store.create({name:'Explicit',side:'white',ruleset:'phasing'});
     const db=new DatabaseSync(path);
     const version=(id:string)=>db.prepare("SELECT json_extract(data, '$.rulesVersion') AS v FROM rooms WHERE id = ?").get(id)!.v;
-    expect(version(standard.room.id)).toBe(RULES_VERSION);
-    expect(version(phasing.room.id)).toBe(PHASING_RULES_VERSION);
+    expect(version(omitted.room.id)).toBe(PHASING_RULES_VERSION);
+    expect(version(explicit.room.id)).toBe(PHASING_RULES_VERSION);
+    expect(omitted.room.state.ruleset).toBe('phasing');
     // `muju-online-5` belongs to the unmerged codex/phasing-only-canonical branch.
-    expect(RULES_VERSION).toBe('muju-online-6');
     expect(PHASING_RULES_VERSION).toBe('muju-phasing-2');
+    // Named, never written: no room has carried it since 2026-09-21.
+    expect(RETIRED_STANDARD_VERSION).toBe('muju-online-6');
+    expect(db.prepare("SELECT COUNT(*) AS n FROM rooms WHERE json_extract(data, '$.rulesVersion') = ?").get(RETIRED_STANDARD_VERSION)!.n).toBe(0);
     db.close();
   });
   // A stored room was agreed under the ten-ply clock. It is never replayed under the
   // twenty-ply one: the row survives untouched and every call takes the existing
   // changed-rules path, exactly as an unmigratable version always has.
-  it.each([['muju-online-4','standard'],['muju-phasing-1','phasing']] as const)('refuses to play %s rooms under the new clock without losing them', (version,ruleset) => {
+  it.each(['muju-online-4','muju-phasing-1'])('refuses to play %s rooms under the new clock without losing them', version => {
     const dir=mkdtempSync(join(tmpdir(),'muju-retired-'));directories.push(dir);
     const path=join(dir,'rooms.sqlite'),store=new RoomStore(path);stores.push(store);
-    const host=store.create({name:'Human',side:'white',...(ruleset==='phasing'?{ruleset}:{})});
+    const host=store.create({name:'Human',side:'white'});
     const guest=store.join(host.room.id,{name:'Agent',inviteCode:host.inviteCode});
     const id=host.room.id,before=store.get(id);
     const db=new DatabaseSync(path);
@@ -196,7 +197,8 @@ describe('authoritative shared rooms', () => {
     const { store, host, id } = setup();
     const input = request(1, [{ type: 'END_ACTION_PHASE' }]);
     const preview = store.act(id, host.credentials.token, input, true);
-    expect(preview.state.turn.currentPlayer).toBe('black');
+    // Mining and upkeep belong to the mover, so the seat does not change here.
+    expect(preview.state.turn).toMatchObject({ currentPlayer: 'white', phase: 'place' });
     expect(store.get(id).revision).toBe(1);
     const committed = store.act(id, host.credentials.token, input);
     expect(store.act(id, host.credentials.token, input)).toEqual(committed);
@@ -206,8 +208,9 @@ describe('authoritative shared rooms', () => {
     const dir = mkdtempSync(join(tmpdir(), 'muju-')); directories.push(dir);
     const path = join(dir, 'rooms.sqlite');
     const { store, host, guest, id } = setup(path);
-    const input = request(1, [{ type: 'END_ACTION_PHASE' }]);
+    const input = request(1, [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]);
     const result = store.act(id, host.credentials.token, input);
+    expect(result.state.turn.currentPlayer).toBe('black');
     store.close(); stores.splice(stores.indexOf(store), 1);
     const reopened = new RoomStore(path); stores.push(reopened);
     const second = new RoomStore(path); stores.push(second);
@@ -234,13 +237,17 @@ describe('authoritative shared rooms', () => {
   });
   it('settles upkeep and resignation through the same engine', () => {
     const { store, host, guest, id } = setup();
-    store.act(id, guest.credentials.token, request(1, [{ type: 'SET_UPKEEP_REVIEW', enabled: true }]));
-    const result = store.act(id, host.credentials.token, request(2, [{ type: 'END_ACTION_PHASE' }], 'white-end'));
+    // Upkeep is the mover's own business now: END_ACTION_PHASE mines and then
+    // charges, and a seat reviewing its keep-set stops there rather than paying.
+    store.act(id, host.credentials.token, request(1, [{ type: 'SET_UPKEEP_REVIEW', enabled: true }]));
+    const result = store.act(id, host.credentials.token, request(2, [{ type: 'END_ACTION_PHASE' }], 'white-mine'));
     expect(result.state.upkeepPending).toBe(true);
     expect(() => store.act(id, guest.credentials.token, request(3, [{ type: 'PAY_UPKEEP', keepUnitIds: [] }], 'bad-upkeep'))).toThrow('illegal');
-    const paid = store.act(id, guest.credentials.token, request(3, [phaseEndAction(result.state)], 'paid-upkeep'));
+    const paid = store.act(id, host.credentials.token, request(3, [phaseEndAction(result.state)], 'paid-upkeep'));
     expect(paid.state.upkeepPending).toBe(false);
-    const victory = store.act(id, guest.credentials.token, request(4, [{ type: 'RESIGN' }], 'resignation'));
+    const handed = store.act(id, host.credentials.token, request(paid.revision, [{ type: 'END_PLACE_PHASE' }], 'white-end'));
+    expect(handed.state.turn.currentPlayer).toBe('black');
+    const victory = store.act(id, guest.credentials.token, request(handed.revision, [{ type: 'RESIGN' }], 'resignation'));
     expect(victory.state.winner).toBe('white');
     expect(legalActions(victory).total).toBe(0);
   });
@@ -275,35 +282,43 @@ it('undo restores placement, promotion and phase changes, survives reconnects an
     room = store.act(id, token, request(room.revision, actions, `undo-step-${serial++}`));
     return room;
   };
-  play([{ type: 'END_ACTION_PHASE' }]);
-  play([{ type: 'END_ACTION_PHASE' }], guest.credentials.token);
+  // A Phasing turn is Act, then END_ACTION_PHASE (mine and pay upkeep, which is
+  // the mover's own ordinary step), then Prepare, then END_PLACE_PHASE to hand
+  // over. Undo reaches everything up to the handoff and never past it.
+  play([{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }]);
+  play([{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }], guest.credentials.token);
   const fixture = new DatabaseSync(path);
   fixture.prepare("UPDATE rooms SET data = json_set(data, '$.state.players.white.resources', 20) WHERE id = ?").run(id);
   fixture.close();
   room = store.get(id);
   const before = room.state;
-  const unit = before.board.units.find(u => u.owner === 'white' && u.definitionId === 'fire_1')!;
+  expect(before.turn).toMatchObject({ currentPlayer: 'white', phase: 'action', turnNumber: 2 });
+  play([{ type: 'END_ACTION_PHASE' }]);
+  const mined = room.state;
+  expect(mined.turn.phase).toBe('place');
+  const unit = mined.board.units.find(u => u.owner === 'white' && u.definitionId === 'fire_1')!;
   play([{ type: 'PROMOTE_UNIT', unitId: unit.id }]);
   expect(room.canUndo).toBe(true);
   const promoted = room.state;
-  play([{ type: 'END_PLACE_PHASE' }]);
   expect(() => play([{ type: 'UNDO' }], guest.credentials.token)).toThrow('current player');
   const reconnect = new RoomStore(path); stores.push(reconnect);
   expect(reconnect.get(id).canUndo).toBe(true);
+  expect(reconnect.get(id).state).toEqual(promoted);
   const undo = request(room.revision, [{ type: 'UNDO' }], 'reconnect-undo');
-  expect(reconnect.act(id, host.credentials.token, undo, true).state).toEqual(promoted);
+  expect(reconnect.act(id, host.credentials.token, undo, true).state).toEqual(mined);
   expect(reconnect.get(id, host.credentials.token)).toEqual(room);
   room = reconnect.act(id, host.credentials.token, undo);
-  expect(room.state).toEqual(promoted);
+  expect(room.state).toEqual(mined);
   expect(reconnect.act(id, host.credentials.token, undo)).toEqual(room);
+  // One more step reverses the mine-and-upkeep transition itself.
   play([{ type: 'UNDO' }]);
   expect(room.state).toEqual(before);
   expect(room.canUndo).toBe(false);
+  play([{ type: 'END_ACTION_PHASE' }]);
   play([{ type: 'BUY_UNIT', definitionId: 'fire_1', position: { x: 0, y: 0 } }]);
   play([{ type: 'UNDO' }]);
-  expect(room.state).toEqual(before);
+  expect(room.state).toEqual(mined);
   play([{ type: 'END_PLACE_PHASE' }]);
-  play([{ type: 'END_ACTION_PHASE' }]);
   expect(room.canUndo).toBe(false);
   expect(() => play([{ type: 'UNDO' }], guest.credentials.token)).toThrow('undo history');
 });
@@ -333,70 +348,79 @@ it('persists per-action replays across reconnects, removes undone batches, and i
   const batch:RoomAction[]=[{type:'MOVE',unitId:unit.id,to:{x:6,y:0}},{type:'MOVE',unitId:unit.id,to:{x:7,y:0}}];
   store.act(id,host.credentials.token,request(1,batch,'replay-batch'));
   store.act(id,host.credentials.token,request(2,[{type:'UNDO'}],'undo-replay'));
-  store.act(id,host.credentials.token,request(3,[...batch,{type:'END_ACTION_PHASE'}],'preview-turn'),true);
+  const turn:RoomAction[]=[...batch,{type:'END_ACTION_PHASE'},{type:'END_PLACE_PHASE'}];
+  store.act(id,host.credentials.token,request(3,turn,'preview-turn'),true);
   expect(store.get(id).lastTurnReplay).toBeNull();
-  const ended=store.act(id,host.credentials.token,request(3,[...batch,{type:'END_ACTION_PHASE'}],'commit-turn'));
-  expect(ended.lastTurnReplay?.frames.map(f=>f.action.type)).toEqual(['MOVE','MOVE','MOVE','MOVE']);
+  const ended=store.act(id,host.credentials.token,request(3,turn,'commit-turn'));
+  // The mining that closes the action phase is a frame of the turn it paid for.
+  expect(ended.lastTurnReplay?.frames.map(f=>f.action.type)).toEqual(['MOVE','MOVE','MOVE','MOVE','END_ACTION_PHASE']);
   expect(ended.lastTurnReplay?.initialBoard).toEqual(before.state.board);
   expect(ended.lastTurnReplay?.frames.map(f=>f.board.units.find(u=>u.id===unit.id)?.position)).toEqual([
-    {x:3,y:0},{x:5,y:0},{x:6,y:0},{x:7,y:0},
+    {x:3,y:0},{x:5,y:0},{x:6,y:0},{x:7,y:0},{x:7,y:0},
   ]);
   const reopened=new RoomStore(path);stores.push(reopened);
   expect(reopened.get(id).lastTurnReplay).toEqual(ended.lastTurnReplay);
-  const next=reopened.act(id,guest.credentials.token,request(4,[{type:'END_ACTION_PHASE'}],'black-pass'));
-  expect(next.lastTurnReplay).toMatchObject({player:'black',frames:[]});
+  const next=reopened.act(id,guest.credentials.token,request(4,[{type:'END_ACTION_PHASE'},{type:'END_PLACE_PHASE'}],'black-pass'));
+  expect(next.lastTurnReplay).toMatchObject({player:'black',frames:[{action:{type:'END_ACTION_PHASE'}}]});
 });
 
-it('persists automatic upkeep as the incoming seat’s first undo step, without undoing the opponent’s batch', () => {
+it('records the mover’s own mine-and-upkeep as an undo step, without undoing the opponent’s batch', () => {
   const dir=mkdtempSync(join(tmpdir(),'muju-upkeep-'));directories.push(dir);
   const path=join(dir,'rooms.sqlite');const {store,host,guest,id}=setup(path);
   let room=store.get(id),serial=0;
   const play=(actions:RoomAction[],token=host.credentials.token)=>{
     room=store.act(id,token,request(room.revision,actions,`upkeep-step-${serial++}`));return room;
   };
-  play([{type:'END_ACTION_PHASE'}]);
-  play([{type:'END_ACTION_PHASE'}],guest.credentials.token);
+  // Standard charged the INCOMING seat at its turn start, so upkeep was that
+  // seat's first undo step. Phasing charges the mover at END_ACTION_PHASE, so the
+  // same guarantee has to hold one step earlier: the transition is the mover's
+  // own ordinary undo step, and reversing it must not disturb the turn the
+  // opponent already completed.
+  play([{type:'END_ACTION_PHASE'},{type:'END_PLACE_PHASE'}]);
+  play([{type:'END_ACTION_PHASE'},{type:'END_PLACE_PHASE'}],guest.credentials.token);
   const whiteId=room.state.board.units.find(u=>u.owner==='white'&&u.definitionId==='fire_1')!.id;
-  play([{type:'PROMOTE_UNIT',unitId:whiteId},{type:'END_ACTION_PHASE'}]);
-  const beforeBlack=room.state;
-  const blackId=beforeBlack.board.units.find(u=>u.owner==='black'&&u.definitionId==='fire_1')!.id;
-  play([{type:'END_PLACE_PHASE'},{type:'MOVE',unitId:blackId,to:{x:5,y:9}},{type:'END_ACTION_PHASE'}],guest.credentials.token);
+  play([{type:'END_ACTION_PHASE'},{type:'PROMOTE_UNIT',unitId:whiteId},{type:'END_PLACE_PHASE'}]);
+  const blackId=room.state.board.units.find(u=>u.owner==='black'&&u.definitionId==='fire_1')!.id;
+  play([{type:'MOVE',unitId:blackId,to:{x:5,y:9}},{type:'END_ACTION_PHASE'},{type:'END_PLACE_PHASE'}],guest.credentials.token);
+  const beforeUpkeep=room.state;
+  expect(beforeUpkeep.turn).toMatchObject({currentPlayer:'white',phase:'action'});
+
+  play([{type:'END_ACTION_PHASE'}]);
   const paid=room.state;
-  expect(paid.lastUpkeep).toMatchObject({player:'white',paid:1});
+  expect(paid.lastUpkeep).toMatchObject({player:'white'});
+  expect(paid.lastUpkeep!.paid).toBeGreaterThan(0);
   expect(paid.upkeepPending).toBe(false);expect(room.canUndo).toBe(true);
   expect(legalActions(room,{type:'UNDO'}).total).toBe(1);
   expect(()=>store.act(id,guest.credentials.token,request(room.revision,[{type:'UNDO'}],'wrong-seat-upkeep'))).toThrow('current player');
-  play([{type:'BUY_UNIT',definitionId:'fire_1',position:{x:0,y:0}}]);
-  play([{type:'END_PLACE_PHASE'}]);
-  play([{type:'MOVE',unitId:whiteId,to:{x:2,y:0}}]);
-  play([{type:'UNDO'}]);play([{type:'UNDO'}]);play([{type:'UNDO'}]);
-  expect(room.state).toEqual(paid);
+
   const reopened=new RoomStore(path);stores.push(reopened);
   expect(reopened.get(id).canUndo).toBe(true);
   const undoRequest=request(room.revision,[{type:'UNDO'}],'refund-upkeep');
   const preview=reopened.act(id,host.credentials.token,undoRequest,true);
-  expect(preview.state.upkeepPending).toBe(true);
+  expect(preview.state).toEqual(beforeUpkeep);
   expect(store.get(id).state).toEqual(paid);
   room=reopened.act(id,host.credentials.token,undoRequest);
   expect(reopened.act(id,host.credentials.token,undoRequest)).toEqual(room);
-  const pending=room.state;
-  expect(pending.players.white).toEqual(beforeBlack.players.white);
-  expect(pending.players.black).toEqual(paid.players.black);
-  expect(pending.lastIncome).toEqual(paid.lastIncome);
-  expect(pending.board.cells).toEqual(paid.board.cells);
-  expect(pending.board.units.find(u=>u.id===blackId)?.position).toEqual({x:5,y:9});
-  expect(pending.turn).toMatchObject({currentPlayer:'white',turnNumber:3,phase:'place'});
+  expect(room.state).toEqual(beforeUpkeep);
+  // Black's finished turn is exactly where Black left it.
+  expect(room.state.board.units.find(u=>u.id===blackId)?.position).toEqual({x:5,y:9});
+  expect(room.state.players.black).toEqual(beforeUpkeep.players.black);
   expect(room.canUndo).toBe(false);
+
+  // Reviewing the keep-set stops the same transition before it charges.
+  play([{type:'SET_UPKEEP_REVIEW',enabled:true}]);
+  play([{type:'END_ACTION_PHASE'}]);
+  const pending=room.state;
+  expect(pending.upkeepPending).toBe(true);
   expect(()=>play([{type:'END_PLACE_PHASE'}])).toThrow('illegal');
-  expect(()=>play([{type:'PAY_UPKEEP',keepUnitIds:[]}])).toThrow('illegal');
   const kept=pending.board.units.filter(u=>u.owner==='white'&&u.id!==whiteId).map(u=>u.id);
   play([{type:'PAY_UPKEEP',keepUnitIds:kept}]);
-  expect(room.state.players.white.resources).toBe(pending.players.white.resources);
   expect(room.state.board.units.some(u=>u.id===whiteId)).toBe(false);
+  expect(room.state.players.white.resources).toBe(pending.players.white.resources);
   play([{type:'UNDO'}]);expect(room.state).toEqual(pending);
   play([{type:'PAY_UPKEEP',keepUnitIds:pending.board.units.filter(u=>u.owner==='white').map(u=>u.id)}]);
   expect(room.state.players.white).toEqual(paid.players.white);
-  play([{type:'END_PLACE_PHASE'},{type:'END_ACTION_PHASE'}]);
+  play([{type:'END_PLACE_PHASE'}]);
   expect(room.canUndo).toBe(false);
-  expect(room.lastTurnReplay?.frames.map(f=>f.action.type)).toEqual(['PAY_UPKEEP']);
+  expect(room.lastTurnReplay?.frames.map(f=>f.action.type)).toEqual(['END_ACTION_PHASE','PAY_UPKEEP']);
 });
