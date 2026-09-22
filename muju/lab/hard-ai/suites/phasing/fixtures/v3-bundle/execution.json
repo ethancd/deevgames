@@ -1,0 +1,155 @@
+{
+  "schema": "muju-phasing-author-execution-v1",
+  "args": {
+    "mode": "author-v2",
+    "out": "/Users/ashkie/src/deevgames-p3-laneS/muju/lab/hard-ai/suites/phasing/fixtures/v3-bundle"
+  },
+  "startedAt": "2026-09-22T22:02:42.672Z",
+  "finishedAt": "2026-09-22T22:04:37.993Z",
+  "head": "ef6cdccf7f34e28b5f5f4de42c61b4bf33ed4e62",
+  "pid": 56000,
+  "before": {
+    "artifacts": {
+      "lab/hard-ai/suites/phasing/author-inputs/new-candidates-v1.json": "86512dc5573b1283be2c4c28644ea28dadc0f6caaf83f5271cc31091e37b6b72",
+      "lab/hard-ai/suites/phasing/author-inputs/new-candidates-v2.json": "db1e217fb34f44557cfffbd6c597ae3cdf55a873904e528edc26e924ed48de45",
+      "lab/hard-ai/suites/phasing/author-inputs/tactics-home-classification-v1.json": "289bceb9e37e0d13b8cefc34854ce7522137bef50b4e4d291b8cde370819629e",
+      "lab/hard-ai/suites/phasing/author-inputs/tactics-home-corrections-v2.json": "c77766dcd830fff4bc96ea90b23853472a827b12db82d331990922f5f213828e",
+      "lab/hard-ai/suites/phasing/author-inputs/tactics-home-diagrams-v1.json": "81f25281c66ff12528d3c703b690580631d72d14a5ab415d5e55eee70029862e",
+      "lab/hard-ai/suites/phasing/build-economy.ts": "b52ed06d1faaf3fe35b33c55ed3ea0433615f66d9494adc1b9427c4f57b78583",
+      "lab/hard-ai/suites/phasing/build-home-mate.ts": "f12d8cb7a0bd6bfe1eab6686100722a1f4c6067fb27befc84d2d707f3c86ea48",
+      "lab/hard-ai/suites/phasing/build-invariants.ts": "7cbdec2c592f918ccca902583e5ee566f3862f58867ba19e39449ccd4b50bfa0",
+      "lab/hard-ai/suites/phasing/build-new-families.ts": "5b12fe416f2f9683966c47408d862641013ec94a61a230d3f550c254da970674",
+      "lab/hard-ai/suites/phasing/build-tactics.ts": "aa91190ca3a3d2224c4f5f102dc316c6d289423f6a3426a55769ed16234e77e5",
+      "lab/hard-ai/suites/phasing/build-v2.ts": "9052990fae83af1a3b4e445b154233eeed91ebd095a896c75ac31fedeb631bc4",
+      "lab/hard-ai/suites/phasing/canonical.ts": "2f0e34aa78829f0f40681b7b94f4865a3b8083afc825c44d97df7086e1927289",
+      "lab/hard-ai/suites/phasing/contract.ts": "c51e6ac9795a8bd18ac0dbc605b733b479d01951dc495879cf1d859d71c5fed6",
+      "lab/hard-ai/suites/phasing/engine-adapter.ts": "48120b037b1dcae6c0d12015d37bc1817e14b23ec56f33ab90797689b42c106a",
+      "lab/hard-ai/suites/phasing/format.ts": "7049643ce30f10417f95295b53d072ffd718a96e79aa2207fd23891ab0425cd9",
+      "lab/hard-ai/suites/phasing/manifest.ts": "00276ee037c0e3207244e25b3a8280272e52a3557a856fc63e98b252313beec2",
+      "lab/hard-ai/suites/phasing/measure.ts": "9f29afb11c87897d7e3ac272ffacb10cfc3363a5f06f1aea78a8c15da27cc458",
+      "lab/hard-ai/suites/phasing/predicates.ts": "9f18f9512b2d04c8e352989bf0eb848c7e223a225f264ce21d9245e2f7798e6f",
+      "lab/hard-ai/suites/phasing/run.ts": "c1a57f4a2cb6c1be72c0daceda5f444c716938fa53ed6f356b6b2ed92ba636b6",
+      "lab/hard-ai/suites/phasing/score.ts": "65154de144fc4691aa502f9f444edd785a74e1a7bc8976018a0f9743fd64182e",
+      "lab/hard-ai/suites/phasing/tactics-home-author.ts": "87351e62ee31c67a8388dcbaf0b7dd1a86ea9e2e72fe6ea688f556f540620472",
+      "lab/hard-ai/suites/phasing/veto.ts": "2363a329275eb1490348627c87a181b3e59c68f9e9f644dd0d6db9f0b81309e0",
+      "package.json": "a36f0da6d68dba3e953f5c1b97eb28853e5dc80a5c5f2e7b68a10598babb3300"
+    },
+    "canonical": {
+      "src/ai/simulate.ts": "466b87836c63e6c3ff842bb8101a7558eb45fda24356d4c688838b90c4e2610f",
+      "src/game/analysis.ts": "9c79cb396423075234956270eea776d45d804c15f1aa96da64aef6decadfd9d8",
+      "src/game/board.ts": "7f8f3d1ff11465b7a5daf129fb78a8559f718fd4bd587eb4328cf3f8a47cdc23",
+      "src/game/building.ts": "1119562915a77f979ee190f361d01abba7bac29d9253eb6736910baec81bfa13",
+      "src/game/combat.ts": "86cafa7c2abdc6b17654f9365ef9b1caa6e94fbfcfa4ffedcb28e65e34c31b5f",
+      "src/game/elements.ts": "84441b43bfe3a0ad07f094760e111f373cdb32953ba81ff95561ca525379ad92",
+      "src/game/homeCheckmate.ts": "e58a5155449e993f9470a002d817a23549c83e15651f8c4b996f89a4e013042d",
+      "src/game/inactivity.ts": "720ed5840abcd4856deff0757e34f3b89b8b85f6d947f926a53b09f484f8cb51",
+      "src/game/legality.ts": "7511cab8b9b6586325af8cb8a277866df5c951c39256d16dabeee0df4458b233",
+      "src/game/migrate.ts": "f698998941cc2043fe17b7068069728fba99251d2687068c305dbe7256fae143",
+      "src/game/mining.ts": "92c304580ac213cf97352b51db793fa06c664ba73f53f800e947ebcda3394e22",
+      "src/game/moveHistory.ts": "1afcfd971d7b17e8b7e8552b09e9bcef43c162bace09cc539a7eef50bf233223",
+      "src/game/movement.ts": "506ed6ced009bc56640c2afcaf58c7e239586ffe5bf4c3d6b3be6577cd0982f5",
+      "src/game/promotion.ts": "d00d0c4098d25560a163ad22c6abb2eb27b7b4ab335b92e006b2176ef4ff7e50",
+      "src/game/replay.ts": "0eb506329ae8e39084580ed84344d90e70e8392ca92e22920f3db7434ffcd73f",
+      "src/game/resourceMap.ts": "d80bbf0d3d6e30edb56878c2f829e3840d48df669f7682342c1818a4bd9c6bc7",
+      "src/game/rules.ts": "8f385c8fc42ae908f7000882d6c949c20a6b0d13b1b89659a699019e5b4ac528",
+      "src/game/spawning.ts": "77668b3e1eb71ef7fcf4e13ec54ea0734ad51e40c152d9fd9a8e67a272966d5c",
+      "src/game/summoning.ts": "b38f3523a92f4fb264acc0c60aca91795a93a84187287e662d6e66de269b01ce",
+      "src/game/turn.ts": "49513b3f769a8295f002db6d2f9457b7e8eec6af0f4c0f24f1d295c08ff155ce",
+      "src/game/types.ts": "bd73a10365bf89c9f1842132ce540bfa0452169dc62cacd77c6f733093e778a9",
+      "src/game/units.ts": "5a899e4fc8c3b93b0ddfea9a59e04b2031e821accf3482be565815a259955e58",
+      "src/game/upkeep.ts": "b5f7d8cdab734f42a4686b7ba72d88cc8df4e8757a17e1fd519c2656b7967e57",
+      "src/game/victory.ts": "87e94904f9cfec9b3722b77fa0f3434dcad8bb9d666059e9ec9855243598f468"
+    }
+  },
+  "after": {
+    "artifacts": {
+      "lab/hard-ai/suites/phasing/author-inputs/new-candidates-v1.json": "86512dc5573b1283be2c4c28644ea28dadc0f6caaf83f5271cc31091e37b6b72",
+      "lab/hard-ai/suites/phasing/author-inputs/new-candidates-v2.json": "db1e217fb34f44557cfffbd6c597ae3cdf55a873904e528edc26e924ed48de45",
+      "lab/hard-ai/suites/phasing/author-inputs/tactics-home-classification-v1.json": "289bceb9e37e0d13b8cefc34854ce7522137bef50b4e4d291b8cde370819629e",
+      "lab/hard-ai/suites/phasing/author-inputs/tactics-home-corrections-v2.json": "c77766dcd830fff4bc96ea90b23853472a827b12db82d331990922f5f213828e",
+      "lab/hard-ai/suites/phasing/author-inputs/tactics-home-diagrams-v1.json": "81f25281c66ff12528d3c703b690580631d72d14a5ab415d5e55eee70029862e",
+      "lab/hard-ai/suites/phasing/build-economy.ts": "b52ed06d1faaf3fe35b33c55ed3ea0433615f66d9494adc1b9427c4f57b78583",
+      "lab/hard-ai/suites/phasing/build-home-mate.ts": "f12d8cb7a0bd6bfe1eab6686100722a1f4c6067fb27befc84d2d707f3c86ea48",
+      "lab/hard-ai/suites/phasing/build-invariants.ts": "7cbdec2c592f918ccca902583e5ee566f3862f58867ba19e39449ccd4b50bfa0",
+      "lab/hard-ai/suites/phasing/build-new-families.ts": "5b12fe416f2f9683966c47408d862641013ec94a61a230d3f550c254da970674",
+      "lab/hard-ai/suites/phasing/build-tactics.ts": "aa91190ca3a3d2224c4f5f102dc316c6d289423f6a3426a55769ed16234e77e5",
+      "lab/hard-ai/suites/phasing/build-v2.ts": "9052990fae83af1a3b4e445b154233eeed91ebd095a896c75ac31fedeb631bc4",
+      "lab/hard-ai/suites/phasing/canonical.ts": "2f0e34aa78829f0f40681b7b94f4865a3b8083afc825c44d97df7086e1927289",
+      "lab/hard-ai/suites/phasing/contract.ts": "c51e6ac9795a8bd18ac0dbc605b733b479d01951dc495879cf1d859d71c5fed6",
+      "lab/hard-ai/suites/phasing/engine-adapter.ts": "48120b037b1dcae6c0d12015d37bc1817e14b23ec56f33ab90797689b42c106a",
+      "lab/hard-ai/suites/phasing/format.ts": "7049643ce30f10417f95295b53d072ffd718a96e79aa2207fd23891ab0425cd9",
+      "lab/hard-ai/suites/phasing/manifest.ts": "00276ee037c0e3207244e25b3a8280272e52a3557a856fc63e98b252313beec2",
+      "lab/hard-ai/suites/phasing/measure.ts": "9f29afb11c87897d7e3ac272ffacb10cfc3363a5f06f1aea78a8c15da27cc458",
+      "lab/hard-ai/suites/phasing/predicates.ts": "9f18f9512b2d04c8e352989bf0eb848c7e223a225f264ce21d9245e2f7798e6f",
+      "lab/hard-ai/suites/phasing/run.ts": "c1a57f4a2cb6c1be72c0daceda5f444c716938fa53ed6f356b6b2ed92ba636b6",
+      "lab/hard-ai/suites/phasing/score.ts": "65154de144fc4691aa502f9f444edd785a74e1a7bc8976018a0f9743fd64182e",
+      "lab/hard-ai/suites/phasing/tactics-home-author.ts": "87351e62ee31c67a8388dcbaf0b7dd1a86ea9e2e72fe6ea688f556f540620472",
+      "lab/hard-ai/suites/phasing/veto.ts": "2363a329275eb1490348627c87a181b3e59c68f9e9f644dd0d6db9f0b81309e0",
+      "package.json": "a36f0da6d68dba3e953f5c1b97eb28853e5dc80a5c5f2e7b68a10598babb3300"
+    },
+    "canonical": {
+      "src/ai/simulate.ts": "466b87836c63e6c3ff842bb8101a7558eb45fda24356d4c688838b90c4e2610f",
+      "src/game/analysis.ts": "9c79cb396423075234956270eea776d45d804c15f1aa96da64aef6decadfd9d8",
+      "src/game/board.ts": "7f8f3d1ff11465b7a5daf129fb78a8559f718fd4bd587eb4328cf3f8a47cdc23",
+      "src/game/building.ts": "1119562915a77f979ee190f361d01abba7bac29d9253eb6736910baec81bfa13",
+      "src/game/combat.ts": "86cafa7c2abdc6b17654f9365ef9b1caa6e94fbfcfa4ffedcb28e65e34c31b5f",
+      "src/game/elements.ts": "84441b43bfe3a0ad07f094760e111f373cdb32953ba81ff95561ca525379ad92",
+      "src/game/homeCheckmate.ts": "e58a5155449e993f9470a002d817a23549c83e15651f8c4b996f89a4e013042d",
+      "src/game/inactivity.ts": "720ed5840abcd4856deff0757e34f3b89b8b85f6d947f926a53b09f484f8cb51",
+      "src/game/legality.ts": "7511cab8b9b6586325af8cb8a277866df5c951c39256d16dabeee0df4458b233",
+      "src/game/migrate.ts": "f698998941cc2043fe17b7068069728fba99251d2687068c305dbe7256fae143",
+      "src/game/mining.ts": "92c304580ac213cf97352b51db793fa06c664ba73f53f800e947ebcda3394e22",
+      "src/game/moveHistory.ts": "1afcfd971d7b17e8b7e8552b09e9bcef43c162bace09cc539a7eef50bf233223",
+      "src/game/movement.ts": "506ed6ced009bc56640c2afcaf58c7e239586ffe5bf4c3d6b3be6577cd0982f5",
+      "src/game/promotion.ts": "d00d0c4098d25560a163ad22c6abb2eb27b7b4ab335b92e006b2176ef4ff7e50",
+      "src/game/replay.ts": "0eb506329ae8e39084580ed84344d90e70e8392ca92e22920f3db7434ffcd73f",
+      "src/game/resourceMap.ts": "d80bbf0d3d6e30edb56878c2f829e3840d48df669f7682342c1818a4bd9c6bc7",
+      "src/game/rules.ts": "8f385c8fc42ae908f7000882d6c949c20a6b0d13b1b89659a699019e5b4ac528",
+      "src/game/spawning.ts": "77668b3e1eb71ef7fcf4e13ec54ea0734ad51e40c152d9fd9a8e67a272966d5c",
+      "src/game/summoning.ts": "b38f3523a92f4fb264acc0c60aca91795a93a84187287e662d6e66de269b01ce",
+      "src/game/turn.ts": "49513b3f769a8295f002db6d2f9457b7e8eec6af0f4c0f24f1d295c08ff155ce",
+      "src/game/types.ts": "bd73a10365bf89c9f1842132ce540bfa0452169dc62cacd77c6f733093e778a9",
+      "src/game/units.ts": "5a899e4fc8c3b93b0ddfea9a59e04b2031e821accf3482be565815a259955e58",
+      "src/game/upkeep.ts": "b5f7d8cdab734f42a4686b7ba72d88cc8df4e8757a17e1fd519c2656b7967e57",
+      "src/game/victory.ts": "87e94904f9cfec9b3722b77fa0f3434dcad8bb9d666059e9ec9855243598f468"
+    }
+  },
+  "bundle": {
+    "manifestSha256": "da3589338557f74329c72fc8a231967a2f3a89656b1405f573a66a0dfbaac6e9",
+    "manifestFileSha256": "e2d8134351c531effa2779cfe7688f9c25865ab78d8530f97ff7538a9c01eb05",
+    "files": [
+      {
+        "family": "economy",
+        "path": "economy.suite.json",
+        "sha256": "264445e35d3558055130c52c12df31b668b99e989765f2b8bce3f898dd5c0190"
+      },
+      {
+        "family": "home-fortify",
+        "path": "home-fortify.suite.json",
+        "sha256": "cfb9791a9ad6294ed54c79b1c33b2942471cdb8380398d847faa3414ac9fc1f0"
+      },
+      {
+        "family": "home-mate",
+        "path": "home-mate.suite.json",
+        "sha256": "8863eafd0a3603a021af455fb1eb778b8f5bb2507809c28043e741b8efc439cf"
+      },
+      {
+        "family": "invariants",
+        "path": "invariants.suite.json",
+        "sha256": "1baddfbe5f3c4372cc623b8a7a680a08c1bec0e9973fecd597074c320c84c640"
+      },
+      {
+        "family": "summon-disruption",
+        "path": "summon-disruption.suite.json",
+        "sha256": "53831a63483cd15a6fcf8f285da2561427efbeeee110a9408268d58d768b7d92"
+      },
+      {
+        "family": "tactics",
+        "path": "tactics.suite.json",
+        "sha256": "9fb98a6bba04b98deaa85b010ce52c77b5bae1874ed0a3ebeed10b6d9b6bc735"
+      }
+    ]
+  },
+  "sourceDrift": false,
+  "valid": true
+}
