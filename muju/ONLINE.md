@@ -265,7 +265,8 @@ Suggested agent instructions:
 > the board, query legal actions for the unit you want to use, and preview useful
 > sequences. Play using the observed revision. Wait for changes between turns.
 
-Example `muju_play` arguments (replace IDs and revision with returned values):
+Example `muju_play` arguments for one complete turn (replace IDs and revision with
+returned values):
 
 ```json
 {
@@ -275,10 +276,16 @@ Example `muju_play` arguments (replace IDs and revision with returned values):
   "requestId": "white-opening-001",
   "actions": [
     { "type": "MOVE", "unitId": "UNIT_ID_FROM_OBSERVE", "to": "C1" },
-    { "type": "END_ACTION_PHASE" }
+    { "type": "END_ACTION_PHASE" },
+    { "type": "BUY_UNIT", "definitionId": "fire_1", "position": "B1" },
+    { "type": "END_PLACE_PHASE" }
   ]
 }
 ```
+
+The batch is not a turn without `END_PLACE_PHASE`. `END_ACTION_PHASE` only mines and
+settles upkeep and leaves you in preparation on your own clock; `END_PLACE_PHASE` is
+what hands over.
 
 Coordinates are A1–J10, with A1 at top left. MCP accepts square names or `{x,y}`
 objects (zero indexed); the HTTP API uses `{x,y}`. Unit IDs come from observations;
@@ -337,13 +344,15 @@ loss is `deadlineAtMs - serverNowMs`; subtract elapsed time locally and allow fo
 network latency. `muju_clock({roomId})` reads just clocks, revision, turn owner and
 result without downloading the board. Untimed rooms return `clock:null`.
 
-Do not wait on your own turn. Finish with `END_ACTION_PHASE` before the deadline;
-spending the last AP alone does not stop the clock. Limit speculative tool calls
-when time is short and prefer a legal atomic turn batch. Preview returns its real
-clock separately as `liveClock`; the returned board is hypothetical. Late play or
-preview calls return `isError:true`, `code:"TIME_EXPIRED"` and the actual terminal
-`room` (HTTP uses status 409). No requested actions run. Identical retries of a
-previously successful command still return the current room without applying twice.
+Do not wait on your own turn. Complete the whole turn before the deadline: actions,
+`END_ACTION_PHASE` (mining and upkeep), preparation, then `END_PLACE_PHASE`. Spending
+the last AP alone does not stop the clock, and `END_ACTION_PHASE` alone does not hand
+over. Limit speculative tool calls when time is short and prefer a legal atomic turn
+batch. Preview returns its real clock separately as `liveClock`; the returned board
+is hypothetical. Late play or preview calls return `isError:true`,
+`code:"TIME_EXPIRED"` and the actual terminal `room` (HTTP uses status 409). No
+requested actions run. Identical retries of a previously successful command still
+return the current room without applying twice.
 
 Ticks do not change revision or generate network updates. A timeout advances the
 revision once, wakes `muju_wait_for_change`, records a persistent result/position,
@@ -375,9 +384,10 @@ SQLite transactions settle expiry, then due stages, then incoming operations.
 The first legal whole batch in your order executes through normal engine,
 history, replay and undo handling. Invalid candidates have no partial effects;
 all-illegal consumes the stage with a private failure and leaves the clock running.
-The server never repairs moves or appends `END_ACTION_PHASE`. A partial batch can
-still flag. Live handoff or any result clears pending stages. Stale replacement or
-cancellation cannot undo executed moves.
+The server never repairs moves or appends a missing `END_ACTION_PHASE` or the
+turn-ending `END_PLACE_PHASE`. A partial batch can still flag. Live handoff or any
+result clears pending stages. Stale replacement or cancellation cannot undo
+executed moves.
 
 An indexed 250 ms sweep runs independently of MCP connections, also settling due
 work on restart and room operations. This is not a real-time guarantee. Expiry wins
@@ -470,7 +480,8 @@ Their connections contain no token, and the UI and dispatch layer prohibit moves
   victory, or against an old `expectedRevision`. Refresh and plan again after a
   `STALE_REVISION` error.
 - Batches of up to 32 actions are all-or-nothing and may not play the opponent's
-  turn. Placement can automatically advance to the action phase under existing rules.
+  turn. Preparation never advances by itself: a batch must include `END_PLACE_PHASE`
+  to hand over.
 - Retry the **identical body and requestId** after an uncertain response. A repeated
   command returns the current room without applying it twice. The last 256 command
   receipts per room survive restarts. Changed bodies must use new request IDs.
@@ -673,7 +684,7 @@ The public positions endpoint rejects undone events and out-of-range steps.
 ### Instant replay
 
 During your turn, **Instant replay** plays the previous
-turn's placements, promotions, moves and attacks on the existing battlefield. Each
+turn's purchases, promotions, moves and attacks on the existing battlefield. Each
 action spent moving gets its own frame, following a legal route in hops up to the
 unit's speed. The selector on the replay button remembers **Fast** (0.3 seconds),
 **Slow** (1 second, the default), or **Step through** (manual back/forward controls,
