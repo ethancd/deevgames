@@ -2,8 +2,8 @@
  * The bounded preference signal for E2.1 step 4.
  *
  * THIS IS NOT STRENGTH. Everything here is the engine's own STATIC evaluation —
- * `eval/evaluate.ts Evaluator.stage0 + stage1` at ply 0, the same closure
- * `analyze/engine.ts` and `recall/run.ts` build for the within-turn score — read
+ * `eval/turnScore.ts withinTurnScore` at ply 0, the one closure `engine.ts`,
+ * `analyze/engine.ts` and `recall/run.ts` share for the within-turn score — read
  * off a position with no search, no reply, no quiescence. It answers one
  * question: at the moment a place phase ends (or a whole turn ends), does the
  * evaluator prefer a position reached with two or more promotions to the best
@@ -25,8 +25,9 @@ import { applyAction } from '../../../src/ai/simulate';
 import { generateAllActions } from '../../../src/ai/moves';
 import { Replica, allocState } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
-import { Evaluator, terminalScore } from '../../../src/ai/hard/eval/evaluate';
-import { MATE_PLY_CC, Result, WIN_CC, type Centi, type Side } from '../../../src/ai/hard/types';
+import { Evaluator } from '../../../src/ai/hard/eval/evaluate';
+import { withinTurnScore } from '../../../src/ai/hard/eval/turnScore';
+import { MATE_PLY_CC, WIN_CC, type Centi, type Side } from '../../../src/ai/hard/types';
 import type { HardConfig } from '../../../src/ai/hard/config';
 
 export class StaticScorer {
@@ -55,8 +56,7 @@ export class StaticScorer {
     } catch {
       return null;
     }
-    if (p.result !== Result.ONGOING) return terminalScore(p, mover, 1);
-    return this.evaluator.stage0(p, mover) + this.evaluator.stage1(p, mover, this.sc, 1);
+    return withinTurnScore(this.evaluator, p, mover, this.sc, 1);
   }
 }
 

@@ -36,6 +36,7 @@ import { buildTables, type NodeTables } from '../tables/context';
 import { minTurnsToCorner } from '../tables/home';
 import { terminalScore } from '../eval/evaluate';
 import type { Evaluator } from '../eval/evaluate';
+import { pendingCreditCc } from '../eval/turnScore';
 import { TurnFlag, type Turn, type TurnPool } from '../gen/turn';
 import { UNLIMITED_WORK, type WorkSink } from '../gen/actionsearch';
 import type { GenStats, TurnGenerator } from '../gen/generate';
@@ -691,7 +692,10 @@ export function pvs(
 
     if (s.cfg.useFutility && depth === 1 && (turn.flags & NO_PRUNE_FLAGS) === 0 && searched > 0) {
       if (!stage1Valid) {
-        stage1Cache = s.eval.stage0(p, mover) + s.eval.stage1(p, mover, s.sc, ply);
+        // Same sum `ctx.score` uses, pending-summon credit included
+        // (`eval/turnScore.ts`), so the day `useFutility` flips this prunes
+        // against the score the search is actually comparing to `alpha`.
+        stage1Cache = s.eval.stage0(p, mover) + s.eval.stage1(p, mover, s.sc, ply) + pendingCreditCc(p, mover);
         stage1Valid = true;
       }
       if (stage1Cache + maxPlausibleGain(p, t) + s.cfg.futilityMarginCc < alpha) continue;

@@ -21,7 +21,8 @@ import { Replica, allocState } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { newKeepSetTable, type KeepSetTable } from '../../../src/ai/hard/core/action';
 import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/tables/context';
-import { Evaluator, terminalScore } from '../../../src/ai/hard/eval/evaluate';
+import { Evaluator } from '../../../src/ai/hard/eval/evaluate';
+import { withinTurnScore } from '../../../src/ai/hard/eval/turnScore';
 import { TurnPool, decodeTurn, type Turn } from '../../../src/ai/hard/gen/turn';
 import { UNLIMITED_WORK } from '../../../src/ai/hard/gen/actionsearch';
 import { TurnGenerator, newGenStats, outCapacityFor, type GenStats } from '../../../src/ai/hard/gen/generate';
@@ -68,12 +69,8 @@ export class GenFamilyLister {
     this.out = new Array<Turn>(outCapacityFor(cfg));
   }
 
-  private readonly score = (p: PackedState, sc: Scratch, ply: number): Centi => {
-    const mover = this.scoreMover;
-    const terminal = terminalScore(p, mover, ply);
-    if (terminal !== null) return terminal;
-    return this.evaluator.stage0(p, mover) + this.evaluator.stage1(p, mover, sc, ply);
-  };
+  private readonly score = (p: PackedState, sc: Scratch, ply: number): Centi =>
+    withinTurnScore(this.evaluator, p, this.scoreMover, sc, ply);
 
   /** `null` when the replica refuses the position or the game is over there. */
   list(state: GameState, ply: number): GenFamilyList | null {

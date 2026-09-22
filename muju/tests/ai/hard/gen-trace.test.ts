@@ -20,7 +20,8 @@ import { Replica, allocState } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { newKeepSetTable, type KeepSetTable } from '../../../src/ai/hard/core/action';
 import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/tables/context';
-import { Evaluator, terminalScore } from '../../../src/ai/hard/eval/evaluate';
+import { Evaluator } from '../../../src/ai/hard/eval/evaluate';
+import { withinTurnScore } from '../../../src/ai/hard/eval/turnScore';
 import { TurnPool, type Turn } from '../../../src/ai/hard/gen/turn';
 import { UNLIMITED_WORK } from '../../../src/ai/hard/gen/actionsearch';
 import { TurnGenerator, newGenStats, outCapacityFor, type GenStats } from '../../../src/ai/hard/gen/generate';
@@ -46,10 +47,10 @@ const stats: GenStats = newGenStats();
 const trace = newGenTrace();
 
 let scoreMover: Side = 0;
+/** The shipped within-turn score (`eval/turnScore.ts`), pending-summon credit
+ * included, so every trace pinned below describes the generator that plays. */
 function score(p: PackedState, s: Scratch, ply: number): Centi {
-  const terminal = terminalScore(p, scoreMover, ply);
-  if (terminal !== null) return terminal;
-  return evaluator.stage0(p, scoreMover) + evaluator.stage1(p, scoreMover, s, ply);
+  return withinTurnScore(evaluator, p, scoreMover, s, ply);
 }
 
 interface Snapshot {

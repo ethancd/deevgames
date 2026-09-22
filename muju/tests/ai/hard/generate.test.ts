@@ -17,7 +17,8 @@ import { Scratch } from '../../../src/ai/hard/core/bits';
 import { AKind, newKeepSetTable, paA, paB, paKind, type KeepSetTable } from '../../../src/ai/hard/core/action';
 import { CORNER } from '../../../src/ai/hard/core/tables';
 import { allocTables, buildTables, type NodeTables } from '../../../src/ai/hard/tables/context';
-import { Evaluator, terminalScore } from '../../../src/ai/hard/eval/evaluate';
+import { Evaluator } from '../../../src/ai/hard/eval/evaluate';
+import { withinTurnScore } from '../../../src/ai/hard/eval/turnScore';
 import { TurnFlag, TurnPool, keepForTurn, type Turn } from '../../../src/ai/hard/gen/turn';
 import { UNLIMITED_WORK } from '../../../src/ai/hard/gen/actionsearch';
 import {
@@ -44,12 +45,13 @@ const pool = new TurnPool(8192);
 const keep: KeepSetTable = newKeepSetTable();
 
 let scoreMover: Side = 0;
-/** DESIGN §5.4's within-turn score, with terminals handled (`p.side` has not
- * flipped on a mid-turn terminal, so the mover cannot be read off the state). */
+/** DESIGN §5.4's within-turn score, from the one helper `engine.ts` uses
+ * (`eval/turnScore.ts`): terminals handled (`p.side` has not flipped on a
+ * mid-turn terminal, so the mover cannot be read off the state), and the
+ * pending-summon credit the shipped generator is ranked by. Every candidate
+ * list pinned below therefore describes the generator that plays. */
 function score(p: PackedState, s: Scratch, ply: number): Centi {
-  const terminal = terminalScore(p, scoreMover, ply);
-  if (terminal !== null) return terminal;
-  return evaluator.stage0(p, scoreMover) + evaluator.stage1(p, scoreMover, s, ply);
+  return withinTurnScore(evaluator, p, scoreMover, s, ply);
 }
 
 function cfgWithK(k: number): GenConfig {
