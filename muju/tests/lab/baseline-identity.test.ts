@@ -308,7 +308,7 @@ describe('aiv2 ladder adapter lifecycle (E0.1 clause 2: it matches the released 
 
   it('constructs ONE engine and seeds it ONCE per game, across turns and decisions', async () => {
     const bot = createAiv2Bot('hard', false, { mode: 'wall', ms: 1000 });
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     bot.onGameStart('white', 42);
     await bot.nextAction(state, 'white');
     await bot.nextAction(state, 'white');
@@ -320,7 +320,7 @@ describe('aiv2 ladder adapter lifecycle (E0.1 clause 2: it matches the released 
 
   it('calls setDifficulty once per decision, exactly as the worker does per request', async () => {
     const bot = createAiv2Bot('medium', false, { mode: 'wall', ms: 1000 });
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     bot.onGameStart('black', 7);
     await bot.nextAction(state, 'black');
     await bot.nextAction(state, 'black');
@@ -330,7 +330,7 @@ describe('aiv2 ladder adapter lifecycle (E0.1 clause 2: it matches the released 
 
   it('splits a wall-clock turn budget across the turn s remaining decisions, as useAI.ts does', async () => {
     const bot = createAiv2Bot('hard', false, { mode: 'wall', ms: 1000 });
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     bot.onGameStart('white', 42);
     await bot.nextAction(state, 'white');
 
@@ -341,7 +341,7 @@ describe('aiv2 ladder adapter lifecycle (E0.1 clause 2: it matches the released 
 
   it('starts a fresh engine and a fresh seed for the next game', async () => {
     const bot = createAiv2Bot('hard', false, { mode: 'wall', ms: 1000 });
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     bot.onGameStart('white', 42);
     await bot.nextAction(state, 'white');
     bot.onGameStart('white', 43);
@@ -354,7 +354,7 @@ describe('aiv2 ladder adapter lifecycle (E0.1 clause 2: it matches the released 
   it('does not resign by default: the shipped game never consults shouldResign', async () => {
     resignSpy.verdict = true;
     const bot = createAiv2Bot('hard', false, { mode: 'wall', ms: 1000 });
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     bot.onGameStart('white', 42);
 
     expect(await bot.nextAction(state, 'white')).toEqual({ type: 'END_PLACE_PHASE' });
@@ -364,7 +364,7 @@ describe('aiv2 ladder adapter lifecycle (E0.1 clause 2: it matches the released 
   it('resigns only when the adapter flag is set explicitly', async () => {
     resignSpy.verdict = true;
     const bot = createAiv2Bot('hard', false, { mode: 'wall', ms: 1000 }, { resign: true });
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     bot.onGameStart('white', 42);
 
     expect(await bot.nextAction(state, 'white')).toEqual({ type: 'RESIGN' });
@@ -373,7 +373,7 @@ describe('aiv2 ladder adapter lifecycle (E0.1 clause 2: it matches the released 
 
   it('seeds the changed-turn arm once per game too, so it differs from the shipped arm only in turn shape', async () => {
     const bot = createAiv2TurnBot('hard', { mode: 'wall', ms: 1000 });
-    const state = createInitialGameState();
+    const state = createInitialGameState(undefined, 4, 0, 'phasing');
     bot.onGameStart('white', 42);
     await bot.nextAction(state, 'white');
     await bot.nextAction(nextTurn(state, 2), 'white');

@@ -8,7 +8,7 @@ import { gameReducer } from '../../src/hooks/useGameState';
 import { canActInPlacePhase } from '../../src/game/turn';
 import type { AIAction } from '../../src/ai/types';
 function fixture() {
-  const s = createInitialGameState();
+  const s = createInitialGameState(undefined, 4, 0, 'phasing');
   s.board.units = [createUnitFromDefinition('fire_1','white',{x:2,y:2},'w'),createUnitFromDefinition('water_1','white',{x:1,y:1},'anchor'),createUnitFromDefinition('metal_3','black',{x:2,y:3},'b')].map(u=>({...u,placedThisTurn:false}));
   s.players.white = {...s.players.white,resources:20,resourcesGained:20}; return s;
 }
@@ -45,8 +45,13 @@ describe('authoritative rule enforcement',()=>{
   it('keeps shadow and reducer IDs identical and ends broke turns',()=>{
     const s=fixture();s.turn.phase='place';const a:AIAction={type:'BUY_UNIT',definitionId:'fire_1',position:{x:0,y:1}};
     expect(applyAction(s,a)).toEqual(gameReducer(s,a));
-    s.turn.phase='action';s.players.white.resources=0;expect(applyAction(s,{type:'END_ACTION_PHASE'}).turn.currentPlayer).toBe('black');
-    s.turn.phase='place';expect(applyAction(s,{type:'END_PLACE_PHASE'}).turn.phase).toBe('action');
+    // A Phasing turn ends with END_PLACE_PHASE; END_ACTION_PHASE only mines and
+    // settles upkeep, under the same mover.
+    s.turn.phase='action';s.players.white.resources=0;
+    const mined=applyAction(s,{type:'END_ACTION_PHASE'});
+    expect(mined.turn).toMatchObject({currentPlayer:'white',phase:'place'});
+    expect(applyAction(mined,{type:'END_PLACE_PHASE'}).turn.currentPlayer).toBe('black');
+    s.turn.phase='place';expect(applyAction(s,{type:'END_PLACE_PHASE'}).turn).toMatchObject({currentPlayer:'black',phase:'action'});
   });
   it('truncates stale plans and forbids crossing the turn boundary',()=>{
     const s=fixture();expect(applyActions(s,[{type:'ATTACK',unitId:'w',targetPosition:{x:9,y:9}},{type:'MOVE',unitId:'w',to:{x:3,y:2}}])).toBe(s);

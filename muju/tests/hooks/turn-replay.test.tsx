@@ -7,8 +7,10 @@ import { createInitialGameState, createUnit } from '../../src/game/board';
 import { loadGameState, saveGameState } from '../../src/utils/persistence';
 
 afterEach(() => { cleanup(); localStorage.clear(); vi.useRealTimers(); vi.restoreAllMocks(); });
+/** Phasing is the only ruleset since 2026-09-21: a save that is not one is
+ * archived by `loadGameState`, and a turn ends with Mine & prepare then End turn. */
 function fixture() {
-  const state = createInitialGameState(undefined, 4);
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   state.board.units = [createUnit('fire_1', 'white', {x:0,y:0}), createUnit('plant_1', 'black', {x:4,y:0}), createUnit('water_1', 'black', {x:9,y:9})];
   return state;
 }
@@ -20,7 +22,9 @@ it('records individual AI actions and excludes commands undone before handoff', 
   act(() => result.current.undo());
   act(() => result.current.applyAIAction({type:'MOVE',unitId:id,to:{x:2,y:0}}));
   act(() => result.current.applyAIAction({type:'END_ACTION_PHASE'}));
-  expect(result.current.lastTurnReplay?.frames.map(f=>f.action.type)).toEqual(['MOVE']);
+  act(() => result.current.applyAIAction({type:'END_PLACE_PHASE'}));
+  // Mine & prepare moves crystals, so it is a step of its own; the handover is not.
+  expect(result.current.lastTurnReplay?.frames.map(f=>f.action.type)).toEqual(['MOVE','END_ACTION_PHASE']);
   expect(result.current.lastTurnReplay?.initialBoard).toEqual(state.board);
   expect(result.current.lastTurnReplay?.frames[0].board.units).toHaveLength(3);
 });
@@ -30,6 +34,7 @@ it('replays on the same board once per second and restores the live board withou
   fireEvent.click(screen.getByTestId('cell-0-0'));
   fireEvent.click(screen.getByTestId('cell-4-0'));
   fireEvent.click(screen.getByRole('button',{name:'Confirm attack'}));
+  fireEvent.click(screen.getByRole('button',{name:/Mine & prepare/}));
   fireEvent.click(screen.getByRole('button',{name:/End turn/}));
   fireEvent.click(screen.getByText('Tap anywhere to continue'));
   const saved=loadGameState(), board=container.querySelector('.battle-board');
@@ -45,14 +50,16 @@ it('replays on the same board once per second and restores the live board withou
   fireEvent.click(screen.getByTestId('cell-9-9'));
   fireEvent.click(screen.getByTestId('cell-8-9'));
   fireEvent.keyDown(window,{key:'Enter'});
-  expect(screen.getByRole('button',{name:/End turn/})).toBeDisabled();
+  expect(screen.getByRole('button',{name:/Mine & prepare/})).toBeDisabled();
   act(()=>vi.advanceTimersByTime(1000)); expect(screen.getByTestId('cell-3-0')).toHaveAccessibleName(/white Hi/);
   expect(screen.getByTestId('cell-4-0')).toHaveAccessibleName(/black Muju/);
   act(()=>vi.advanceTimersByTime(1000)); expect(screen.getByTestId('cell-4-0')).not.toHaveAccessibleName(/black Muju/);
+  // Mine & prepare moves crystals, so the replay has a frame for it too.
+  act(()=>vi.advanceTimersByTime(1000)); expect(screen.getByText(/Mined \d+ crystals/)).toBeInTheDocument();
   act(()=>vi.advanceTimersByTime(1000)); expect(screen.queryByRole('button',{name:/Stop replay/})).toBeNull();
   expect(container.querySelector('.battle-board')).toBe(board);
   expect(screen.getByTestId('cell-3-0')).toHaveAccessibleName(/white Hi/);
-  expect(screen.getByRole('button',{name:/End turn/})).toBeEnabled();
+  expect(screen.getByRole('button',{name:/Mine & prepare/})).toBeEnabled();
   expect(loadGameState()).toEqual(saved);
 });
 it('opens from your turn, blocks gameplay shortcuts, stops early and can replay again', () => {
@@ -60,6 +67,7 @@ it('opens from your turn, blocks gameplay shortcuts, stops early and can replay 
   render(<GameScreen config={{mode:'pass-play',controls:{white:'human',black:'human'},aiDifficulty:{white:'medium',black:'medium'}}} onBackToMenu={()=>{}} />);
   fireEvent.click(screen.getByTestId('cell-0-0'));
   fireEvent.click(screen.getByTestId('cell-2-0'));
+  fireEvent.click(screen.getByRole('button',{name:/Mine & prepare/}));
   fireEvent.click(screen.getByRole('button',{name:/End turn/}));
   fireEvent.click(screen.getByText('Tap anywhere to continue'));
   const before=loadGameState();
@@ -76,17 +84,20 @@ it('opens from your turn, blocks gameplay shortcuts, stops early and can replay 
 });
 
 it('records placement and promotion results, omitting phase transitions', () => {
-  const state=createInitialGameState(); state.turn.phase='place'; state.players.white.resources=20; saveGameState(state);
+  const state=createInitialGameState(undefined,4,0,'phasing'); state.turn.phase='place'; state.players.white.resources=20; saveGameState(state);
   const id=state.board.units.find(u=>u.definitionId==='fire_1'&&u.owner==='white')!.id;
   const {result}=renderHook(()=>useGameState());
   act(()=>result.current.buyUnit('fire_1',{x:0,y:0}));
-  const purchased=result.current.state.board.units.at(-1)!;
+  // A purchase is a commitment, so the summon it records is a pending one.
+  const committed=result.current.state.pendingSummons!.at(-1)!;
   act(()=>result.current.promoteUnit(id));
   act(()=>result.current.endPlacePhase());
-  act(()=>result.current.endActionPhase());
   const replay=result.current.lastTurnReplay!;
   expect(replay.frames.map(f=>f.action.type)).toEqual(['BUY_UNIT','PROMOTE_UNIT']);
-  expect(replay.frames[0].unitId).toBe(purchased.id);
+  expect(replay.frames[0].position).toEqual({x:0,y:0});
+  expect(replay.frames[0].label).toContain('Started phasing');
+  expect(replay.frames[0].pendingSummons?.map(p=>p.id)).toContain(committed.id);
+  expect(replay.frames[0].board.units).toHaveLength(state.board.units.length);
   expect(replay.frames[0].board.units.find(u=>u.id===id)?.definitionId).toBe('fire_1');
   expect(replay.frames[1].board.units.find(u=>u.id===id)?.definitionId).toBe('fire_2');
 });
@@ -120,6 +131,7 @@ it('keeps the replay launcher mounted across turns and restores keyboard focus o
   render(<GameScreen config={{mode:'pass-play',controls:{white:'human',black:'human'},aiDifficulty:{white:'medium',black:'medium'}}} onBackToMenu={()=>{}} />);
   const launcher=screen.getByRole('button',{name:/Instant replay/});expect(launcher).toBeDisabled();
   fireEvent.click(screen.getByTestId('cell-0-0'));fireEvent.click(screen.getByTestId('cell-2-0'));
+  fireEvent.click(screen.getByRole('button',{name:/Mine & prepare/}));
   fireEvent.click(screen.getByRole('button',{name:/End turn/}));
   expect(screen.getByRole('button',{name:/Instant replay/})).toBe(launcher);
   fireEvent.click(screen.getByText('Tap anywhere to continue'));

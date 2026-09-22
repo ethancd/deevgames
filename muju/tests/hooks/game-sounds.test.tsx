@@ -54,12 +54,14 @@ it('distinguishes phasing commitment, actual arrival and promotion; disruption s
   expect(transitionSounds(blocked,disrupted)).toEqual([]);
 });
 
-it('sounds an ordinary purchase and does not treat upkeep release or its undo as a capture/landing', () => {
-  const state = createInitialGameState();
+it('sounds a committed summon and does not treat upkeep release or its undo as a capture/landing', () => {
+  const state = createInitialGameState(undefined, 4, 0, 'phasing');
   state.turn.phase = 'place'; state.players.white.resources = 10;
-  const placed = applyAction(state,{type:'BUY_UNIT',definitionId:'fire_1',position:{x:0,y:0}});
-  expect(transitionSounds(state,placed)).toEqual(['arrive']);
-  expect(transitionSounds(placed,state)).toEqual([]);
+  const committed = applyAction(state,{type:'BUY_UNIT',definitionId:'fire_1',position:{x:0,y:0}});
+  // A purchase is a commitment, not a landing: the landing sound belongs to the
+  // arrival next turn, which the case above already pins.
+  expect(transitionSounds(state,committed)).toEqual(['phase']);
+  expect(transitionSounds(committed,state)).toEqual([]);
   state.upkeepPending = true;
   state.board.units[0].definitionId = 'fire_2';
   const released = applyAction(state,{type:'PAY_UPKEEP',keepUnitIds:state.board.units.slice(1).filter(u=>u.owner==='white').map(u=>u.id)});

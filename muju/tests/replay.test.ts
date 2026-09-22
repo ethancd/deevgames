@@ -9,7 +9,7 @@ it.each([
   ['fire_1', [2, 3]],
   ['lightning_1', [3]],
 ] as const)('splits %s movement by actions spent, respecting its speed', (definitionId, columns) => {
-  const before = createInitialGameState();
+  const before = createInitialGameState(undefined, 4, 0, 'phasing');
   const unit = createUnit(definitionId, 'white', { x: 0, y: 0 });
   before.board.units = [unit, createUnit('water_1', 'black', { x: 9, y: 9 })];
   const original = structuredClone(before);
@@ -23,7 +23,7 @@ it.each([
 });
 
 it('uses legal paths around blockers and expands old replays without changing their snapshots', () => {
-  const before = createInitialGameState();
+  const before = createInitialGameState(undefined, 4, 0, 'phasing');
   const unit = createUnit('fire_1', 'white', { x: 0, y: 0 });
   before.board.units = [unit, createUnit('water_1', 'white', { x: 2, y: 0 }), createUnit('water_1', 'black', { x: 9, y: 9 })];
   const action = { type: 'MOVE' as const, unitId: unit.id, to: { x: 4, y: 0 } };

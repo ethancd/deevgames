@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { UNIT_DEFINITIONS, getNextTierDefinition, getUnitDefinition } from '../../src/game/units';
 import { createInitialGameState, createUnit } from '../../src/game/board';
 import { canPromote, getPromotedDefinitionId } from '../../src/game/promotion';
@@ -8,6 +8,10 @@ import { isLegalAction } from '../../src/game/legality';
 import { loadGameState, saveGameState, SCHEMA_VERSION } from '../../src/utils/persistence';
 import { canAttack } from '../../src/game/combat';
 import baseline from '../../lab/solver/baseline-v1.3.json';
+
+/** Phasing is the only ruleset since 2026-09-21. */
+const phasing=()=>createInitialGameState(undefined,4,0,'phasing');
+afterEach(()=>localStorage.clear());
 
 describe('current catalogue boundary', () => {
   it('preserves the 18-unit ladder with approved stats and 3/4/5 purchases plus 4/8 promotions', () => {
@@ -25,7 +29,7 @@ describe('current catalogue boundary', () => {
   });
   for(const element of ['fire','lightning','water','shadow','plant','metal']) {
     it(`${element}: rejects removed purchases and stops promotion at tier 3`, () => {
-      const s=createInitialGameState();s.turn.phase='place';s.players.white.resources=100;
+      const s=phasing();s.turn.phase='place';s.players.white.resources=100;
       const u=createUnit(`${element}_3`,'white',{x:1,y:0});s.board.units=[u,...s.board.units.filter(u=>u.owner==='black')];
       const funds={crystals:100,queue:[]};
       expect(getNextTierDefinition(u.definitionId)).toBeNull();
@@ -41,13 +45,13 @@ describe('current catalogue boundary', () => {
     });
   }
   for(const location of ['board','queue']) it(`discards v2 saves with tier 4 in the ${location}`,()=>{
-    const s=createInitialGameState();
+    const s=phasing();
     if(location==='board')s.board.units[0].definitionId='fire_4';
     else s.players.white.buildQueue=[{id:'old',owner:'white',definitionId:'metal_4',turnsRemaining:0}];
     localStorage.setItem('elemental-tactics-save',JSON.stringify({schemaVersion:2,timestamp:0,state:s}));
     expect(loadGameState()).toBeNull();expect(localStorage.getItem('elemental-tactics-save')).toBeNull();
   });
   it('round-trips the current schema',()=>{
-    expect(SCHEMA_VERSION).toBe(8);const s=createInitialGameState();saveGameState(s);expect(loadGameState()).toEqual(s);
+    expect(SCHEMA_VERSION).toBe(9);const s=phasing();saveGameState(s);expect(loadGameState()).toEqual(s);
   });
 });

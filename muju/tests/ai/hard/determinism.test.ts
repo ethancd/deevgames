@@ -76,8 +76,8 @@ describe('a fixed work rung is deterministic', () => {
   it('does not depend on what the engine searched before', async () => {
     const clean = await run(new HardEngine(), 60_000);
     const dirty = new HardEngine();
-    await run(dirty, 80_000, createInitialGameState());
-    await run(dirty, 50_000, createInitialGameState());
+    await run(dirty, 80_000, createInitialGameState(undefined, 4, 0, 'phasing'));
+    await run(dirty, 50_000, createInitialGameState(undefined, 4, 0, 'phasing'));
     expect(await run(dirty, 60_000)).toEqual(clean);
   }, 60_000); // explicit per-test budget; see the E0.5 timeout note at the top of this file
 
