@@ -771,6 +771,15 @@ Evidence:
   scripts, whose targets never existed), `tools/smoke-site.cjs` (6 — the smoke
   now mines, prepares and ends a Phasing turn). Commits `5611d77d`, `4bb4a7dc`,
   `2045d938`.
+- **Amended 2026-09-22:** that `muju/package.json` −2 was **reverted**. The file
+  is back at its `eda73b26` bytes
+  (`a36f0da6d68dba3e953f5c1b97eb28853e5dc80a5c5f2e7b68a10598babb3300`) and the
+  two dead script entries are **retained as dead entries**, because the committed
+  v2 release-suite manifest pins `muju/package.json`'s bytes in its artifact map
+  and their removal made the Gate-0 suite refuse to load. Net effect on this node:
+  3 files, 19 insertions / 6 deletions; `package.json` is unchanged from
+  `origin/master`. Deleting the two lines for real belongs to the next
+  release-bundle re-authoring.
 - `bash build-all.sh` (repo root) → exit 0, `Site verified: three games,
   portfolio, local links and asset sizes.` (VALIDATION 9a,
   `<w4>/logs/9a-build-all.log`).
@@ -793,8 +802,10 @@ Evidence:
   `npm ci` in any worktree that runs `build-all.sh`, and `tools/smoke-site.cjs`
   loads Playwright from `oracle/node_modules`. Silent failure otherwise.
 - **Cross-reference:** removing the two `package.json` script lines is exactly
-  what blocks the Gate-0 suite bundle (node 11, item 1). The two facts belong
-  together in any decision about re-authoring versus restoring.
+  what blocked the Gate-0 suite bundle (node 11, item 1). The two facts belong
+  together in any decision about re-authoring versus restoring. **Resolved
+  2026-09-22:** the restore was chosen, the bundle loads, and the two entries stay
+  as dead entries until the next bundle re-authoring.
 
 ## 22. [verified unchanged] server-package — Node host release with persistent room storage
 

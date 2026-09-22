@@ -164,18 +164,36 @@ is `make-variants.ts`. The phrase "33 reviewed JSONs" is inherited verbatim from
 it in the docstring when someone is next in that file.) Stated in the docstring
 at `src/ai/hard/eval/weights.ts:14` and in `../../JUDGMENT_LOG.md` J-022.
 
-**Documented-future commands that name deleted scripts.** `hard:spsa` and
-`hard:book` were removed from `package.json` on 2026-09-21; neither target ever
-existed (`lab/hard-ai/tune/spsa.ts` and `lab/hard-ai/book/` are absent, and
+**Documented-future commands that name dead scripts.** `hard:spsa` and
+`hard:book` are **dead entries retained in `package.json`**: neither target has
+ever existed (`lab/hard-ai/tune/spsa.ts` and `lab/hard-ai/book/` are absent, and
 `docs/hard-ai/e3/E3.3-TUNING-INSTRUMENT.md:35-37` records `hard:spsa` failing
-with module-not-found in 2026-09-17). One reference survives in code and is
-deliberately left alone:
+with module-not-found in 2026-09-17), so running either still fails with
+module-not-found.
+
+**Amended 2026-09-22 — the two lines were deleted, then restored and retained.**
+They were removed on 2026-09-21. The committed v2 release-suite manifest
+(`lab/hard-ai/suites/phasing/fixtures/v2/manifest.json`) pins `muju/package.json`'s
+bytes in its artifact map (`lab/hard-ai/suites/phasing/run.ts:34-42`), so that
+two-line removal moved the pin from `a36f0da6…` to `b9482bd9…` and made
+`loadBundle` refuse the whole Gate-0 bundle before any case could run. On
+2026-09-22 `muju/package.json` was restored to its `eda73b26` bytes
+(`a36f0da6d68dba3e953f5c1b97eb28853e5dc80a5c5f2e7b68a10598babb3300`) and the two
+entries are **kept as dead entries on purpose**: a release manifest is a
+historical byte record and must not be repinned to chase an editorial cleanup.
+Removing them for real belongs to the next bundle re-authoring
+(`npm run hard:suite:phasing -- author-v2 --out <new dir>` plus a fresh floor
+contract), and `tests/lab/suites-phasing-manifest.test.ts` now loads the
+committed manifest against the live tree so the next `package.json` edit fails
+loudly instead of silently voiding the release suite.
+
+One reference survives in code and is deliberately left alone:
 
 | Surface | What it is | Disposition |
 | --- | --- | --- |
 | `lab/hard-ai/verify/gates.ts:621` | `npm run hard:book …` inside the **M18 `notImplemented` gate row** | Kept. A `notImplemented` row is a documented future command that the verify runner never executes — it fails with `not-implemented` by construction. Anyone implementing M18 writes the script first. |
-| `docs/hard-ai/DESIGN.md:229-230,260-261,1507`, `MILESTONES.md:348,377`, `e3/E3.3-TUNING-INSTRUMENT.md:35-37,312-313` | historical plan text naming both scripts | Kept as written, each file stamped with a dated one-line note at the top rather than rewritten. **`MILESTONES.md` precisely:** `:348` (M18) names `hard:book` (beside `hard:corpus` and `hard:texel`) and never `hard:spsa`; only `:377` (M20) names both. |
-| `docs/hard-ai/e0/E0.6-RELEASE-CONTRACT.md:47-48`, `docs/hard-ai/design/knowledge-first.md:1206-1207,1386`, `docs/hard-ai/e3/amendments/lane8.md:68-75`, `docs/changes/m6-evaluation-2026-09-19/m6-dev-continuation.md:142` | four more dated records naming the deleted scripts, found after the first four were stamped | Kept as written and **not** stamped. They are dated records of what was true when they were written, and re-editing history to track a script removal is the failure mode this table exists to avoid. Listed here so the disposition is complete rather than implied. |
+| `docs/hard-ai/DESIGN.md:229-230,260-261,1507`, `MILESTONES.md:348,377`, `e3/E3.3-TUNING-INSTRUMENT.md:35-37,312-313` | historical plan text naming both scripts | Kept as written, each file stamped with a dated note at the top rather than rewritten; each note was amended on 2026-09-22 to say the scripts are retained as dead entries and why. **`MILESTONES.md` precisely:** `:348` (M18) names `hard:book` (beside `hard:corpus` and `hard:texel`) and never `hard:spsa`; only `:377` (M20) names both. |
+| `docs/hard-ai/e0/E0.6-RELEASE-CONTRACT.md:47-48`, `docs/hard-ai/design/knowledge-first.md:1206-1207,1386`, `docs/hard-ai/e3/amendments/lane8.md:68-75`, `docs/changes/m6-evaluation-2026-09-19/m6-dev-continuation.md:142` | four more dated records naming the two dead scripts, found after the first four were stamped | Kept as written and **not** stamped. They are dated records of what was true when they were written, and re-editing history to track a script removal is the failure mode this table exists to avoid. Listed here so the disposition is complete rather than implied. |
 | `docs/hard-ai/phasing/repair-2026-09-20/**` (`HANDOFF.md`, `reports/understand/{critic.json,gap-tuner.md,hard-engine-code.md,process-lessons.md}`) | the repair record, which the plan forbids editing | Kept as written, unstamped. |
 
 The table above is complete as measured:
