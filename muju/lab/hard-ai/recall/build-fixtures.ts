@@ -19,8 +19,12 @@
  *     costs crystals either way and the C1 purchase — the buy that fills the
  *     last spawn square — is the cheapest of them.
  *
- * `authored.jsonl` is NOT extended: its eleven positions are frozen by M1's gate
- * (`fixturesChecked === 11`). See DEVIATIONS under M13.
+ * `authored.jsonl` is NOT extended: its eleven positions are treated as frozen.
+ * (Corrected 2026-09-22: M1's gate does NOT count them. `fixturesChecked` is
+ * `hard:perft --check`'s count of the PERFT fixture set — seven under Phasing,
+ * `perft/phasing-fixtures.ts` — and the `=== 11` this note pointed at was the
+ * old Standard perft set, not this corpus. The freeze stands on its own; it is
+ * just not machine-enforced by M1.) See DEVIATIONS under M13.
  */
 import path from 'node:path';
 import type { Cell, GameState, Unit } from '../../../src/game/types';
