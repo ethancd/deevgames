@@ -410,8 +410,16 @@ User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan t
   deleted, `ModeSelect` starts `'phasing'` explicitly, and the worker's Phasing
   refusal is gone. Server — `server/rooms.ts` creates and opens only
   `muju-phasing-2`; `RULES_VERSION` becomes the exported, never-creatable
-  `RETIRED_STANDARD_VERSION`; `server/schema.ts` and `muju_rules` take
-  `ruleset: z.literal('phasing')` and an explicit `'standard'` is a 400.
+  `RETIRED_STANDARD_VERSION`; `server/schema.ts`'s create-room schema takes
+  `ruleset: z.literal('phasing').default('phasing')` and `muju_rules` takes
+  `ruleset: z.literal('phasing').optional()` (`server/mcp.ts:71` — accepted and
+  ignored for one release, because the live `SKILL.md` told agents to pass it).
+  An explicit `'standard'` is refused on both surfaces, but they refuse
+  differently, and a test or a TAP must expect the right one: over **HTTP**,
+  `POST /api/muju/rooms {"ruleset":"standard"}` is a **400 `INVALID_REQUEST`**
+  with a Zod issue naming `ruleset` and `expected: "phasing"`; over **MCP**,
+  `muju_create_room` answers with an **SDK invalid-params tool error naming
+  `ruleset`** — not a `RoomError` and not a 400.
   Docs — SPEC v3.1 plus banners on the dated records. `createInitialGameState`'s
   own default stays `'standard'` this pass and every entry point passes
   `'phasing'` explicitly; flipping the 243 defaulted call sites is filed as a
@@ -422,8 +430,11 @@ User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan t
   change. The numbers did change on 2026-09-20 without a bump, when
   `phasing-hand-priors-v1` replaced the five-nonzero M6 bootstrap; that was
   deliberate, because a bump makes `loadWeights` reject every stored vector,
-  including the 33 reviewed JSONs under
-  `docs/hard-ai/phasing/repair-2026-09-20/weights/` and the book key. Stated at
+  including the **32 reviewed weight JSONs** under
+  `docs/hard-ai/phasing/repair-2026-09-20/weights/` and the book key. (That
+  directory holds 33 files, 32 of them `.json`; the 33rd is `make-variants.ts`.
+  The "33 JSONs" phrasing is inherited from
+  `src/ai/hard/eval/weights.ts:19-23`.) Stated at
   `src/ai/hard/eval/weights.ts:14` and in
   `docs/hard-ai/RELEASE-2026-09-21-phasing.md`.
 - **Compatibility:** stated as three decisions, none of which rewrites a stored

@@ -1,6 +1,6 @@
 # Muju Hard AI — MILESTONE PLAN (binding; companion to DESIGN.md)
 
-**Note, 2026-09-21:** the M18 and M20 gate commands below (`:348`, `:377`) name `hard:spsa` and `hard:book`, which were removed from `package.json` on 2026-09-21; their targets never existed. Both milestones are `notImplemented` rows in `lab/hard-ai/verify/gates.ts` (`:617`, `:635`), so neither command is ever executed; `hard:book` survives inside the M18 row at `gates.ts:621` as a documented future command. The plan text is left as written. See `RELEASE-2026-09-21-phasing.md`.
+**Note, 2026-09-21:** the M18 and M20 gate commands below name scripts that were removed from `package.json` on 2026-09-21 and whose targets never existed — precisely, `:348` (M18) names `hard:book` (beside `hard:corpus` and `hard:texel`) and never `hard:spsa`, while `:377` (M20) names both. Both milestones are `notImplemented` rows in `lab/hard-ai/verify/gates.ts` (`:617`, `:635`), so neither command is ever executed; `hard:book` survives inside the M18 row at `gates.ts:621` as a documented future command. The plan text is left as written. See `RELEASE-2026-09-21-phasing.md`.
 
 All paths relative to `muju/`. Every gate is **one shell command run from `muju/`** through the verify
 runner: `npm run hard:verify -- --gate M<n>` executes the row of `lab/hard-ai/verify/gates.ts` named
