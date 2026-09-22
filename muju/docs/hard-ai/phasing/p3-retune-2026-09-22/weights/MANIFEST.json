@@ -1,0 +1,664 @@
+{
+  "schema": "p3-retune-2026-09-22-weights-manifest-v1",
+  "seed": 20260970,
+  "generatedAt": "2026-09-22T22:05:57.476Z",
+  "base": "phasing-priors-v1 (repair-2026-09-20/weights/phasing-priors-v1.json, hash fd5a13e5)",
+  "geometryBlockNote": "GEOMETRY_BLOCK excludes PstMine/DrawPressure/Inv16ClockDiscipline (independent knobs 9-11); see file header",
+  "arms": [
+    {
+      "name": "control",
+      "hash": "14d06ba8",
+      "changes": "(exact DEFAULT_WEIGHTS / phasing-hand-priors-v1)"
+    },
+    {
+      "name": "p3-s01",
+      "hash": "830fa97a",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=14, BankLiquid=92, TierClimb=0, RentShortfall=-1, Inv7PromoteNoRunway=-600, DrawPressure=-8, Inv16ClockDiscipline=0, PstMine=5, HomeInvaded=-6180, HomeThreat=-824, HomeCountdown=-371, HomePlug=412, HomeRescuers=185, Inv10HomeReachable=-824, Inv11HomeBare=-309, Hanging=-62, HangingBuy=-62, KillAvailable=52, CleaveExposure=-62, Exposure=-21, Inv8NoPreAdjacency=-208, Inv9ChipAcrossTurn=-208, SpawnArea=5, SpawnZero=-213, AnchorDepth=8, AnchorFragility=-32, BlockingDeficit=-43, CornerInfiltration=160, Inv13Turtle=-53"
+    },
+    {
+      "name": "p3-s02",
+      "hash": "be100268",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=13, BankLiquid=68, TierClimb=755, RentShortfall=-308, Inv7PromoteNoRunway=-600, DrawPressure=-1, Inv16ClockDiscipline=0, PstMine=54, Hanging=-32, HangingBuy=-32, KillAvailable=27, CleaveExposure=-32, Exposure=-11, Inv8NoPreAdjacency=-108, Inv9ChipAcrossTurn=-108"
+    },
+    {
+      "name": "p3-s03",
+      "hash": "0db9c84f",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=55, BankLiquid=97, TierClimb=540, RentShortfall=-40, Inv7PromoteNoRunway=-600, DrawPressure=-21, Inv16ClockDiscipline=-51, PstMine=0, HomeInvaded=-3816, HomeThreat=-509, HomeCountdown=-229, HomePlug=254, HomeRescuers=114, Inv10HomeReachable=-509, Inv11HomeBare=-191, Hanging=-55, HangingBuy=-55, KillAvailable=46, CleaveExposure=-55, Exposure=-18, Inv8NoPreAdjacency=-183, Inv9ChipAcrossTurn=-183"
+    },
+    {
+      "name": "p3-s04",
+      "hash": "fbf0c428",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=15, BankLiquid=77, TierClimb=0, RentShortfall=-362, Inv7PromoteNoRunway=-600, DrawPressure=-32, Inv16ClockDiscipline=-196, PstMine=0, HomeInvaded=-4989, HomeThreat=-665, HomeCountdown=-299, HomePlug=333, HomeRescuers=150, Inv10HomeReachable=-665, Inv11HomeBare=-249, Hanging=-48, HangingBuy=-48, KillAvailable=40, CleaveExposure=-48, Exposure=-16, Inv8NoPreAdjacency=-161, Inv9ChipAcrossTurn=-161, SpawnArea=15, SpawnZero=-613, AnchorDepth=23, AnchorFragility=-92, BlockingDeficit=-123, CornerInfiltration=460, Inv13Turtle=-153"
+    },
+    {
+      "name": "p3-s05",
+      "hash": "8f288d21",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=12, BankLiquid=72, TierClimb=316, RentShortfall=-233, Inv7PromoteNoRunway=-600, DrawPressure=-18, Inv16ClockDiscipline=-19, PstMine=0, Hanging=-23, HangingBuy=-23, KillAvailable=19, CleaveExposure=-23, Exposure=-8, Inv8NoPreAdjacency=-76, Inv9ChipAcrossTurn=-76, SpawnArea=21, SpawnZero=-843, AnchorDepth=32, AnchorFragility=-126, BlockingDeficit=-169, CornerInfiltration=632, Inv13Turtle=-211"
+    },
+    {
+      "name": "p3-s06",
+      "hash": "2cc2198f",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=15, BankLiquid=97, TierClimb=0, RentShortfall=-272, Inv7PromoteNoRunway=-600, DrawPressure=-8, Inv16ClockDiscipline=-137, PstMine=0, HomeInvaded=-3353, HomeThreat=-447, HomeCountdown=-201, HomePlug=224, HomeRescuers=101, Inv10HomeReachable=-447, Inv11HomeBare=-168, SpawnArea=7, SpawnZero=-274, AnchorDepth=10, AnchorFragility=-41, BlockingDeficit=-55, CornerInfiltration=206, Inv13Turtle=-69"
+    },
+    {
+      "name": "p3-s07",
+      "hash": "ba2a32d3",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=2, BankLiquid=86, TierClimb=0, RentShortfall=-111, Inv7PromoteNoRunway=-600, DrawPressure=-40, Inv16ClockDiscipline=-227, PstMine=0, HomeInvaded=-2645, HomeThreat=-353, HomeCountdown=-159, HomePlug=176, HomeRescuers=79, Inv10HomeReachable=-353, Inv11HomeBare=-132, Hanging=-48, HangingBuy=-48, KillAvailable=40, CleaveExposure=-48, Exposure=-16, Inv8NoPreAdjacency=-160, Inv9ChipAcrossTurn=-160"
+    },
+    {
+      "name": "p3-s08",
+      "hash": "2eab6af2",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=30, BankLiquid=86, TierClimb=0, RentShortfall=-370, Inv7PromoteNoRunway=-600, DrawPressure=-52, Inv16ClockDiscipline=0, PstMine=10, HomeInvaded=-4805, HomeThreat=-641, HomeCountdown=-288, HomePlug=320, HomeRescuers=144, Inv10HomeReachable=-641, Inv11HomeBare=-240, Hanging=-65, HangingBuy=-65, KillAvailable=54, CleaveExposure=-65, Exposure=-22, Inv8NoPreAdjacency=-217, Inv9ChipAcrossTurn=-217"
+    },
+    {
+      "name": "p3-s09",
+      "hash": "ad675fa2",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=8, BankLiquid=98, TierClimb=463, RentShortfall=-577, Inv7PromoteNoRunway=-600, DrawPressure=-1, Inv16ClockDiscipline=0, PstMine=0, HomeInvaded=-5638, HomeThreat=-752, HomeCountdown=-338, HomePlug=376, HomeRescuers=169, Inv10HomeReachable=-752, Inv11HomeBare=-282, Hanging=-45, HangingBuy=-45, KillAvailable=38, CleaveExposure=-45, Exposure=-15, Inv8NoPreAdjacency=-151, Inv9ChipAcrossTurn=-151, SpawnArea=12, SpawnZero=-467, AnchorDepth=18, AnchorFragility=-70, BlockingDeficit=-93, CornerInfiltration=350, Inv13Turtle=-117"
+    },
+    {
+      "name": "p3-s10",
+      "hash": "9d66366d",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=2, BankLiquid=91, TierClimb=0, RentShortfall=-104, Inv7PromoteNoRunway=-600, DrawPressure=-55, Inv16ClockDiscipline=0, PstMine=59, HomeInvaded=-7187, HomeThreat=-958, HomeCountdown=-431, HomePlug=479, HomeRescuers=216, Inv10HomeReachable=-958, Inv11HomeBare=-359, Hanging=-59, HangingBuy=-59, KillAvailable=49, CleaveExposure=-59, Exposure=-20, Inv8NoPreAdjacency=-197, Inv9ChipAcrossTurn=-197, SpawnArea=7, SpawnZero=-291, AnchorDepth=11, AnchorFragility=-44, BlockingDeficit=-58, CornerInfiltration=219, Inv13Turtle=-73"
+    },
+    {
+      "name": "p3-s11",
+      "hash": "6e4a2109",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=51, BankLiquid=83, TierClimb=202, RentShortfall=-242, Inv7PromoteNoRunway=-600, DrawPressure=-7, Inv16ClockDiscipline=-262, PstMine=0, Hanging=-50, HangingBuy=-50, KillAvailable=42, CleaveExposure=-50, Exposure=-17, Inv8NoPreAdjacency=-167, Inv9ChipAcrossTurn=-167, SpawnArea=20, SpawnZero=-788, AnchorDepth=30, AnchorFragility=-118, BlockingDeficit=-158, CornerInfiltration=591, Inv13Turtle=-197"
+    },
+    {
+      "name": "p3-s12",
+      "hash": "1b30638f",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=13, BankLiquid=78, TierClimb=662, RentShortfall=-480, Inv7PromoteNoRunway=-600, DrawPressure=-22, Inv16ClockDiscipline=-275, PstMine=18, HomeInvaded=-1526, HomeThreat=-203, HomeCountdown=-92, HomePlug=102, HomeRescuers=46, Inv10HomeReachable=-203, Inv11HomeBare=-76, Hanging=-45, HangingBuy=-45, KillAvailable=38, CleaveExposure=-45, Exposure=-15, Inv8NoPreAdjacency=-150, Inv9ChipAcrossTurn=-150, SpawnArea=15, SpawnZero=-609, AnchorDepth=23, AnchorFragility=-91, BlockingDeficit=-122, CornerInfiltration=457, Inv13Turtle=-152"
+    },
+    {
+      "name": "p3-s13",
+      "hash": "e0558626",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=13, BankLiquid=91, TierClimb=0, RentShortfall=-29, Inv7PromoteNoRunway=-600, DrawPressure=-11, Inv16ClockDiscipline=-286, PstMine=36, HomeInvaded=-4727, HomeThreat=-630, HomeCountdown=-284, HomePlug=315, HomeRescuers=142, Inv10HomeReachable=-630, Inv11HomeBare=-236, Hanging=-72, HangingBuy=-72, KillAvailable=60, CleaveExposure=-72, Exposure=-24, Inv8NoPreAdjacency=-239, Inv9ChipAcrossTurn=-239, SpawnArea=13, SpawnZero=-536, AnchorDepth=20, AnchorFragility=-80, BlockingDeficit=-107, CornerInfiltration=402, Inv13Turtle=-134"
+    },
+    {
+      "name": "p3-s14",
+      "hash": "436db1a6",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=4, BankLiquid=62, TierClimb=559, RentShortfall=-535, Inv7PromoteNoRunway=-600, DrawPressure=-8, Inv16ClockDiscipline=0, PstMine=60, HomeInvaded=-4422, HomeThreat=-590, HomeCountdown=-265, HomePlug=295, HomeRescuers=133, Inv10HomeReachable=-590, Inv11HomeBare=-221, SpawnArea=22, SpawnZero=-895, AnchorDepth=34, AnchorFragility=-134, BlockingDeficit=-179, CornerInfiltration=671, Inv13Turtle=-224"
+    },
+    {
+      "name": "p3-s15",
+      "hash": "6a09130e",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=18, BankLiquid=84, TierClimb=0, RentShortfall=-598, Inv7PromoteNoRunway=-600, DrawPressure=-63, Inv16ClockDiscipline=0, PstMine=0, HomeInvaded=-2591, HomeThreat=-345, HomeCountdown=-155, HomePlug=173, HomeRescuers=78, Inv10HomeReachable=-345, Inv11HomeBare=-130, Hanging=-63, HangingBuy=-63, KillAvailable=53, CleaveExposure=-63, Exposure=-21, Inv8NoPreAdjacency=-211, Inv9ChipAcrossTurn=-211, SpawnArea=23, SpawnZero=-902, AnchorDepth=34, AnchorFragility=-135, BlockingDeficit=-180, CornerInfiltration=676, Inv13Turtle=-225"
+    },
+    {
+      "name": "p3-s16",
+      "hash": "dcfcc6ae",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=52, BankLiquid=75, TierClimb=525, RentShortfall=-109, Inv7PromoteNoRunway=-600, DrawPressure=-27, Inv16ClockDiscipline=-248, PstMine=0, HomeInvaded=-2251, HomeThreat=-300, HomeCountdown=-135, HomePlug=150, HomeRescuers=68, Inv10HomeReachable=-300, Inv11HomeBare=-113, Hanging=-30, HangingBuy=-30, KillAvailable=25, CleaveExposure=-30, Exposure=-10, Inv8NoPreAdjacency=-98, Inv9ChipAcrossTurn=-98, SpawnArea=20, SpawnZero=-783, AnchorDepth=29, AnchorFragility=-117, BlockingDeficit=-157, CornerInfiltration=587, Inv13Turtle=-196"
+    },
+    {
+      "name": "p3-s17",
+      "hash": "83a180e6",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=40, BankLiquid=94, TierClimb=0, RentShortfall=-196, Inv7PromoteNoRunway=-600, DrawPressure=-2, Inv16ClockDiscipline=-71, PstMine=0, HomeInvaded=-5207, HomeThreat=-694, HomeCountdown=-312, HomePlug=347, HomeRescuers=156, Inv10HomeReachable=-694, Inv11HomeBare=-260, Hanging=-46, HangingBuy=-46, KillAvailable=38, CleaveExposure=-46, Exposure=-15, Inv8NoPreAdjacency=-153, Inv9ChipAcrossTurn=-153, SpawnArea=18, SpawnZero=-719, AnchorDepth=27, AnchorFragility=-108, BlockingDeficit=-144, CornerInfiltration=539, Inv13Turtle=-180"
+    },
+    {
+      "name": "p3-s18",
+      "hash": "c8c0abcb",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=54, BankLiquid=71, TierClimb=0, RentShortfall=-221, Inv7PromoteNoRunway=-600, DrawPressure=-7, Inv16ClockDiscipline=-226, PstMine=39, HomeInvaded=-5061, HomeThreat=-675, HomeCountdown=-304, HomePlug=337, HomeRescuers=152, Inv10HomeReachable=-675, Inv11HomeBare=-253, Hanging=-28, HangingBuy=-28, KillAvailable=23, CleaveExposure=-28, Exposure=-9, Inv8NoPreAdjacency=-93, Inv9ChipAcrossTurn=-93, SpawnArea=22, SpawnZero=-879, AnchorDepth=33, AnchorFragility=-132, BlockingDeficit=-176, CornerInfiltration=660, Inv13Turtle=-220"
+    },
+    {
+      "name": "p3-s19",
+      "hash": "fda0ac4e",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=46, BankLiquid=97, TierClimb=344, RentShortfall=-158, Inv7PromoteNoRunway=-600, DrawPressure=-20, Inv16ClockDiscipline=-281, PstMine=47, HomeInvaded=-6419, HomeThreat=-856, HomeCountdown=-385, HomePlug=428, HomeRescuers=193, Inv10HomeReachable=-856, Inv11HomeBare=-321, Hanging=-71, HangingBuy=-71, KillAvailable=59, CleaveExposure=-71, Exposure=-24, Inv8NoPreAdjacency=-238, Inv9ChipAcrossTurn=-238, SpawnArea=21, SpawnZero=-843, AnchorDepth=32, AnchorFragility=-127, BlockingDeficit=-169, CornerInfiltration=633, Inv13Turtle=-211"
+    },
+    {
+      "name": "p3-s20",
+      "hash": "a1666135",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=26, BankLiquid=70, TierClimb=469, RentShortfall=-442, Inv7PromoteNoRunway=-600, DrawPressure=-76, Inv16ClockDiscipline=-111, PstMine=0, HomeInvaded=-5676, HomeThreat=-757, HomeCountdown=-341, HomePlug=378, HomeRescuers=170, Inv10HomeReachable=-757, Inv11HomeBare=-284, Hanging=-68, HangingBuy=-68, KillAvailable=57, CleaveExposure=-68, Exposure=-23, Inv8NoPreAdjacency=-228, Inv9ChipAcrossTurn=-228, SpawnArea=5, SpawnZero=-199, AnchorDepth=7, AnchorFragility=-30, BlockingDeficit=-40, CornerInfiltration=150, Inv13Turtle=-50"
+    },
+    {
+      "name": "p3-s21",
+      "hash": "6c91f6a0",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=9, BankLiquid=71, TierClimb=772, RentShortfall=-483, Inv7PromoteNoRunway=-600, DrawPressure=-18, Inv16ClockDiscipline=-296, PstMine=0, Hanging=-14, HangingBuy=-14, KillAvailable=12, CleaveExposure=-14, Exposure=-5, Inv8NoPreAdjacency=-46, Inv9ChipAcrossTurn=-46, SpawnArea=16, SpawnZero=-654, AnchorDepth=25, AnchorFragility=-98, BlockingDeficit=-131, CornerInfiltration=491, Inv13Turtle=-164"
+    },
+    {
+      "name": "p3-s22",
+      "hash": "48b8caa8",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=26, BankLiquid=73, TierClimb=0, RentShortfall=-549, Inv7PromoteNoRunway=-600, DrawPressure=-76, Inv16ClockDiscipline=0, PstMine=3, HomeInvaded=-5977, HomeThreat=-797, HomeCountdown=-359, HomePlug=398, HomeRescuers=179, Inv10HomeReachable=-797, Inv11HomeBare=-299, Hanging=-47, HangingBuy=-47, KillAvailable=39, CleaveExposure=-47, Exposure=-16, Inv8NoPreAdjacency=-157, Inv9ChipAcrossTurn=-157"
+    },
+    {
+      "name": "p3-s23",
+      "hash": "be3dac16",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=11, BankLiquid=84, TierClimb=0, RentShortfall=-232, Inv7PromoteNoRunway=-600, DrawPressure=-10, Inv16ClockDiscipline=-43, PstMine=47, Hanging=-45, HangingBuy=-45, KillAvailable=37, CleaveExposure=-45, Exposure=-15, Inv8NoPreAdjacency=-149, Inv9ChipAcrossTurn=-149, SpawnArea=15, SpawnZero=-615, AnchorDepth=23, AnchorFragility=-92, BlockingDeficit=-123, CornerInfiltration=462, Inv13Turtle=-154"
+    },
+    {
+      "name": "p3-s24",
+      "hash": "d9a77d6a",
+      "changes": "Material=100, PendingValue=1, EconDelta=100, BankExcess=17, BankLiquid=99, TierClimb=661, RentShortfall=-223, Inv7PromoteNoRunway=-600, DrawPressure=-10, Inv16ClockDiscipline=-18, PstMine=50, HomeInvaded=-1969, HomeThreat=-262, HomeCountdown=-118, HomePlug=131, HomeRescuers=59, Inv10HomeReachable=-262, Inv11HomeBare=-98, Hanging=-14, HangingBuy=-14, KillAvailable=12, CleaveExposure=-14, Exposure=-5, Inv8NoPreAdjacency=-46, Inv9ChipAcrossTurn=-46, SpawnArea=19, SpawnZero=-777, AnchorDepth=29, AnchorFragility=-116, BlockingDeficit=-155, CornerInfiltration=582, Inv13Turtle=-194"
+    },
+    {
+      "name": "hv-clock",
+      "hash": "becbcac2",
+      "changes": "Material=100, BankLiquid=85, BankExcess=40, HomeInvaded=-3000, PstMine=30, SpawnArea=10, SpawnZero=-400, AnchorDepth=15, HomeThreat=-400, HomeCountdown=-180, HomePlug=200, HomeRescuers=90, Exposure=-10, DrawPressure=-40, EconDelta=100, Hanging=-30, HangingBuy=-30, KillAvailable=25, CleaveExposure=-30, AnchorFragility=-60, BlockingDeficit=-80, CornerInfiltration=300, Inv8NoPreAdjacency=-100, Inv9ChipAcrossTurn=-100, Inv10HomeReachable=-400, Inv11HomeBare=-150, Inv13Turtle=-100, Inv16ClockDiscipline=0, PendingValue=1, RentShortfall=-150"
+    },
+    {
+      "name": "hv-mine",
+      "hash": "284621fd",
+      "changes": "Material=100, BankLiquid=85, BankExcess=20, HomeInvaded=-3000, PstMine=45, SpawnArea=10, SpawnZero=-400, AnchorDepth=15, HomeThreat=-400, HomeCountdown=-180, HomePlug=200, HomeRescuers=90, Exposure=-10, DrawPressure=-5, EconDelta=100, Hanging=-30, HangingBuy=-30, KillAvailable=25, CleaveExposure=-30, AnchorFragility=-60, BlockingDeficit=-80, CornerInfiltration=300, Inv8NoPreAdjacency=-100, Inv9ChipAcrossTurn=-100, Inv10HomeReachable=-400, Inv11HomeBare=-150, Inv13Turtle=-100, Inv16ClockDiscipline=-200, PendingValue=1, RentShortfall=-150"
+    },
+    {
+      "name": "hv-tier",
+      "hash": "bac6ccee",
+      "changes": "Material=100, BankLiquid=85, BankExcess=40, HomeInvaded=-3000, PstMine=25, SpawnArea=10, SpawnZero=-400, AnchorDepth=15, HomeThreat=-400, HomeCountdown=-180, HomePlug=200, HomeRescuers=90, Exposure=-10, DrawPressure=-5, EconDelta=100, Hanging=-30, HangingBuy=-30, KillAvailable=25, CleaveExposure=-30, AnchorFragility=-60, BlockingDeficit=-80, CornerInfiltration=300, Inv8NoPreAdjacency=-100, Inv9ChipAcrossTurn=-100, Inv10HomeReachable=-400, Inv11HomeBare=-150, Inv13Turtle=-100, Inv16ClockDiscipline=-200, PendingValue=1, RentShortfall=-150, TierClimb=300"
+    },
+    {
+      "name": "hv-blocks",
+      "hash": "a421cd9c",
+      "changes": "Material=100, BankLiquid=85, BankExcess=40, HomeInvaded=-4500, PstMine=25, SpawnArea=10, SpawnZero=-400, AnchorDepth=15, HomeThreat=-600, HomeCountdown=-270, HomePlug=300, HomeRescuers=135, Exposure=-15, DrawPressure=-5, EconDelta=100, Hanging=-45, HangingBuy=-45, KillAvailable=38, CleaveExposure=-45, AnchorFragility=-60, BlockingDeficit=-80, CornerInfiltration=300, Inv8NoPreAdjacency=-150, Inv9ChipAcrossTurn=-150, Inv10HomeReachable=-600, Inv11HomeBare=-225, Inv13Turtle=-100, Inv16ClockDiscipline=-200, PendingValue=1, RentShortfall=-150"
+    }
+  ],
+  "draws": [
+    {
+      "arm": "p3-s01",
+      "knob": "BankExcess=14 BankLiquid=92 m=2.250 TierClimb=0 h=2.060 t=2.077 g=0.532 RentShortfall=-1 DrawPressure=-8 Inv16=0 PstMine=5",
+      "draws": [
+        0.23423284012824297,
+        0.7952220640145242,
+        0.8385848940815777,
+        0.16330884862691164,
+        0.3472608265001327,
+        0.7904724515974522,
+        0.8592453291639686,
+        0.7983422055840492,
+        0.22750542941503227,
+        0.06300377286970615,
+        0.9989897578489035,
+        0.9020565375685692,
+        0.17622341052629054,
+        0.581677867565304,
+        0.07526806415989995
+      ]
+    },
+    {
+      "arm": "p3-s02",
+      "knob": "BankExcess=13 BankLiquid=68 m=1.718 TierClimb=755 h=0.000 t=1.077 g=0.000 RentShortfall=-308 DrawPressure=-1 Inv16=0 PstMine=54",
+      "draws": [
+        0.2103856906760484,
+        0.19957720441743731,
+        0.4262955472804606,
+        0.6095686489716172,
+        0.9353345723357052,
+        0.027004564879462123,
+        0.8957049171440303,
+        0.3223272142931819,
+        0.01913192612119019,
+        0.48656467837281525,
+        0.9875348571222275,
+        0.28853702498599887,
+        0.5803151461295784,
+        0.8983310642652214
+      ]
+    },
+    {
+      "arm": "p3-s03",
+      "knob": "BankExcess=55 BankLiquid=97 m=1.854 TierClimb=540 h=1.272 t=1.828 g=0.000 RentShortfall=-40 DrawPressure=-21 Inv16=-51 PstMine=0",
+      "draws": [
+        0.919780250871554,
+        0.9265865697525442,
+        0.5430148674640805,
+        0.9935884133446962,
+        0.6292155249975622,
+        0.8485856242477894,
+        0.4151927614584565,
+        0.7854061592370272,
+        0.6800690360832959,
+        0.16193050425499678,
+        0.9336414709687233,
+        0.7318283128552139,
+        0.5398733748588711,
+        0.8288852290716022,
+        0.28139108303003013
+      ]
+    },
+    {
+      "arm": "p3-s04",
+      "knob": "BankExcess=15 BankLiquid=77 m=2.380 TierClimb=0 h=1.663 t=1.612 g=1.533 RentShortfall=-362 DrawPressure=-32 Inv16=-196 PstMine=0",
+      "draws": [
+        0.2522127036936581,
+        0.43576823524199426,
+        0.9244832186959684,
+        0.3298423218075186,
+        0.5275237332098186,
+        0.6014089668169618,
+        0.5411151838488877,
+        0.5771846596617252,
+        0.43450689991004765,
+        0.5397424406837672,
+        0.3961848486214876,
+        0.5961125467438251,
+        0.9816050187218934,
+        0.3456557837780565,
+        0.22688345867209136
+      ]
+    },
+    {
+      "arm": "p3-s05",
+      "knob": "BankExcess=12 BankLiquid=72 m=2.148 TierClimb=316 h=0.000 t=0.762 g=2.107 RentShortfall=-233 DrawPressure=-18 Inv16=-19 PstMine=0",
+      "draws": [
+        0.1933992183767259,
+        0.30409675859846175,
+        0.7675923360511661,
+        0.9092517725657672,
+        0.30854039010591805,
+        0.15971894818358123,
+        0.6805539194028825,
+        0.17251772317104042,
+        0.7748764220159501,
+        0.8127046539448202,
+        0.6121925010811538,
+        0.7723597332369536,
+        0.6500943638384342,
+        0.9363864159677178,
+        0.43551078881137073
+      ]
+    },
+    {
+      "arm": "p3-s06",
+      "knob": "BankExcess=15 BankLiquid=97 m=2.046 TierClimb=0 h=1.118 t=0.000 g=0.686 RentShortfall=-272 DrawPressure=-8 Inv16=-137 PstMine=0",
+      "draws": [
+        0.2500072733964771,
+        0.9317114013247192,
+        0.6937516662292182,
+        0.47382956137880683,
+        0.9503108423668891,
+        0.3418221422471106,
+        0.16144883842207491,
+        0.4683743715286255,
+        0.1359963051509112,
+        0.5462772040627897,
+        0.905844863737002,
+        0.8065165735315531,
+        0.5419665644876659,
+        0.3013585179578513
+      ]
+    },
+    {
+      "arm": "p3-s07",
+      "knob": "BankExcess=2 BankLiquid=86 m=1.817 TierClimb=0 h=0.882 t=1.599 g=0.000 RentShortfall=-111 DrawPressure=-40 Inv16=-227 PstMine=0",
+      "draws": [
+        0.029487842228263617,
+        0.6565136667340994,
+        0.5121937349904329,
+        0.03704449022188783,
+        0.6833198224194348,
+        0.2293197817634791,
+        0.2309449459426105,
+        0.5711056638974696,
+        0.014646244700998068,
+        0.8155256067402661,
+        0.5022242504637688,
+        0.9912725281901658,
+        0.2437086293939501,
+        0.43665005499497056
+      ]
+    },
+    {
+      "arm": "p3-s08",
+      "knob": "BankExcess=30 BankLiquid=86 m=2.241 TierClimb=0 h=1.602 t=2.167 g=0.000 RentShortfall=-370 DrawPressure=-52 Inv16=0 PstMine=10",
+      "draws": [
+        0.4961973500903696,
+        0.656062210444361,
+        0.8324400435667485,
+        0.3569758874364197,
+        0.5931457867845893,
+        0.572243757545948,
+        0.6519142780452967,
+        0.8416628632694483,
+        0.1742389656137675,
+        0.3830185551196337,
+        0.34781293966807425,
+        0.4449307485483587,
+        0.7873424619901925,
+        0.16394284274429083
+      ]
+    },
+    {
+      "arm": "p3-s09",
+      "knob": "BankExcess=8 BankLiquid=98 m=1.594 TierClimb=463 h=1.879 t=1.509 g=1.168 RentShortfall=-577 DrawPressure=-1 Inv16=0 PstMine=0",
+      "draws": [
+        0.12767805205658078,
+        0.9578831545077264,
+        0.31167050707153976,
+        0.8448325132485479,
+        0.5184902311302722,
+        0.6997144627384841,
+        0.7043915551621467,
+        0.7608718492556363,
+        0.5281128699425608,
+        0.7448935490101576,
+        0.3657122307922691,
+        0.03822002559900284,
+        0.9824376865290105,
+        0.3291202324908227,
+        0.3660686977673322
+      ]
+    },
+    {
+      "arm": "p3-s10",
+      "knob": "BankExcess=2 BankLiquid=91 m=1.405 TierClimb=0 h=2.396 t=1.965 g=0.729 RentShortfall=-104 DrawPressure=-55 Inv16=0 PstMine=59",
+      "draws": [
+        0.02603933564387262,
+        0.765822860179469,
+        0.11906303791329265,
+        0.4784309060778469,
+        0.7405859171412885,
+        0.950345546938479,
+        0.9702280983328819,
+        0.7452832751441747,
+        0.25850852369330823,
+        0.15653702802956104,
+        0.8263685861602426,
+        0.31481645721942186,
+        0.4565279525704682,
+        0.5597069556824863,
+        0.9759400156326592
+      ]
+    },
+    {
+      "arm": "p3-s11",
+      "knob": "BankExcess=51 BankLiquid=83 m=2.082 TierClimb=202 h=0.000 t=1.672 g=1.970 RentShortfall=-242 DrawPressure=-7 Inv16=-262 PstMine=0",
+      "draws": [
+        0.8438867426011711,
+        0.567516244482249,
+        0.720536554697901,
+        0.8318842055741698,
+        0.1462064292281866,
+        0.17729041236452758,
+        0.23512138682417572,
+        0.605504831764847,
+        0.4329055503476411,
+        0.7477650055661798,
+        0.5970746350940317,
+        0.9085381592158228,
+        0.9487682848703116,
+        0.12685079756192863,
+        0.09940926893614233
+      ]
+    },
+    {
+      "arm": "p3-s12",
+      "knob": "BankExcess=13 BankLiquid=78 m=2.470 TierClimb=662 h=0.509 t=1.501 g=1.523 RentShortfall=-480 DrawPressure=-22 Inv16=-275 PstMine=18",
+      "draws": [
+        0.21169771044515073,
+        0.4597961639519781,
+        0.9817187928128988,
+        0.6237219360191375,
+        0.8028033205773681,
+        0.6376142185181379,
+        0.05166677199304104,
+        0.5685956170782447,
+        0.5242435368709266,
+        0.9906798324082047,
+        0.5348078387323767,
+        0.1999504512641579,
+        0.7300200129393488,
+        0.5017404588870704,
+        0.08201117510907352,
+        0.7671361400280148,
+        0.29666286101564765
+      ]
+    },
+    {
+      "arm": "p3-s13",
+      "knob": "BankExcess=13 BankLiquid=91 m=1.704 TierClimb=0 h=1.576 t=2.391 g=1.340 RentShortfall=-29 DrawPressure=-11 Inv16=-286 PstMine=36",
+      "draws": [
+        0.209987799404189,
+        0.7693705253768712,
+        0.4139216444455087,
+        0.11055466276593506,
+        0.5050418889150023,
+        0.5598081746138632,
+        0.25574674690142274,
+        0.9482223347295076,
+        0.39382660295814276,
+        0.4475476418156177,
+        0.9517482277005911,
+        0.8647061933297664,
+        0.8596117827109993,
+        0.04565966269001365,
+        0.9243232614826411,
+        0.6046097311191261
+      ]
+    },
+    {
+      "arm": "p3-s14",
+      "knob": "BankExcess=4 BankLiquid=62 m=1.659 TierClimb=559 h=1.474 t=0.000 g=2.238 RentShortfall=-535 DrawPressure=-8 Inv16=0 PstMine=60",
+      "draws": [
+        0.06995236105285585,
+        0.04828656418249011,
+        0.3724443402606994,
+        0.5846869226079434,
+        0.656150555703789,
+        0.38262630719691515,
+        0.5113631414715201,
+        0.06748324236832559,
+        0.6058395733125508,
+        0.8752816747874022,
+        0.10916632227599621,
+        0.8980198153294623,
+        0.1231493956875056,
+        0.857598118018359,
+        0.9917789569590241
+      ]
+    },
+    {
+      "arm": "p3-s15",
+      "knob": "BankExcess=18 BankLiquid=84 m=2.021 TierClimb=0 h=0.864 t=2.106 g=2.254 RentShortfall=-598 DrawPressure=-63 Inv16=0 PstMine=0",
+      "draws": [
+        0.3022166979499161,
+        0.6007508262991905,
+        0.6751140661071986,
+        0.32551338407211006,
+        0.625348683912307,
+        0.22080919798463583,
+        0.6992031296249479,
+        0.8125093318521976,
+        0.2764059123583138,
+        0.8829010941553861,
+        0.0031263718847185373,
+        0.2115660198032856,
+        0.3646544062066823,
+        0.2798923635855317
+      ]
+    },
+    {
+      "arm": "p3-s16",
+      "knob": "BankExcess=52 BankLiquid=75 m=1.778 TierClimb=525 h=0.750 t=0.984 g=1.957 RentShortfall=-109 DrawPressure=-27 Inv16=-248 PstMine=0",
+      "draws": [
+        0.8595353800337762,
+        0.3674088092520833,
+        0.47875652299262583,
+        0.7697315979748964,
+        0.607064297189936,
+        0.8829438693355769,
+        0.16683272551745176,
+        0.32223233906552196,
+        0.27831423422321677,
+        0.7136655249632895,
+        0.7412369581870735,
+        0.8190375647973269,
+        0.666122812544927,
+        0.5094239183235914,
+        0.17366898711770773,
+        0.21359188738279045
+      ]
+    },
+    {
+      "arm": "p3-s17",
+      "knob": "BankExcess=40 BankLiquid=94 m=2.393 TierClimb=0 h=1.736 t=1.525 g=1.798 RentShortfall=-196 DrawPressure=-2 Inv16=-71 PstMine=0",
+      "draws": [
+        0.6730114654637873,
+        0.8616439041215926,
+        0.9329156868625432,
+        0.1688708800356835,
+        0.767678763717413,
+        0.6359601863659918,
+        0.20151420403271914,
+        0.5358740193769336,
+        0.8181037751492113,
+        0.6655644439160824,
+        0.6739207610953599,
+        0.9782171566039324,
+        0.7731256452389061,
+        0.7625566457863897,
+        0.18069230555556715
+      ]
+    },
+    {
+      "arm": "p3-s18",
+      "knob": "BankExcess=54 BankLiquid=71 m=1.633 TierClimb=0 h=1.687 t=0.934 g=2.198 RentShortfall=-221 DrawPressure=-7 Inv16=-226 PstMine=39",
+      "draws": [
+        0.8938841610215604,
+        0.2871692255139351,
+        0.34845132660120726,
+        0.289077173685655,
+        0.652220131829381,
+        0.6127968425862491,
+        0.8778315433301032,
+        0.2544733854010701,
+        0.9583111733663827,
+        0.856373867020011,
+        0.6320286821573973,
+        0.9125556342769414,
+        0.9568288116715848,
+        0.24734092317521572,
+        0.6656481819227338,
+        0.6428512164857239
+      ]
+    },
+    {
+      "arm": "p3-s19",
+      "knob": "BankExcess=46 BankLiquid=97 m=1.894 TierClimb=344 h=2.140 t=2.379 g=2.108 RentShortfall=-158 DrawPressure=-20 Inv16=-281 PstMine=47",
+      "draws": [
+        0.7734834784641862,
+        0.9360854418482631,
+        0.5755687092896551,
+        0.5379550743382424,
+        0.3484021141193807,
+        0.6890020731370896,
+        0.8284918002318591,
+        0.2594802181702107,
+        0.9423428238369524,
+        0.9061656473204494,
+        0.8135423397179693,
+        0.7365072998218238,
+        0.755179195664823,
+        0.946349456673488,
+        0.06169586209580302,
+        0.7732880413532257,
+        0.7758381012827158
+      ]
+    },
+    {
+      "arm": "p3-s20",
+      "knob": "BankExcess=26 BankLiquid=70 m=2.258 TierClimb=469 h=1.892 t=2.277 g=0.498 RentShortfall=-442 DrawPressure=-76 Inv16=-111 PstMine=0",
+      "draws": [
+        0.4287429749965668,
+        0.24630963103845716,
+        0.8440442660357803,
+        0.6320543983019888,
+        0.5278300908394158,
+        0.9136102788615972,
+        0.7105180907528847,
+        0.7041620744857937,
+        0.8937880508601665,
+        0.4590021800249815,
+        0.04682788928039372,
+        0.26332988659851253,
+        0.05139803094789386,
+        0.8455435070209205,
+        0.6302568323444575,
+        0.1776271527633071
+      ]
+    },
+    {
+      "arm": "p3-s21",
+      "knob": "BankExcess=9 BankLiquid=71 m=1.435 TierClimb=772 h=0.000 t=0.461 g=1.636 RentShortfall=-483 DrawPressure=-18 Inv16=-296 PstMine=0",
+      "draws": [
+        0.14378585293889046,
+        0.26672343513928354,
+        0.15084061049856246,
+        0.7562717385590076,
+        0.9606694178655744,
+        0.15594701119698584,
+        0.8242927165701985,
+        0.029081030748784542,
+        0.267744283657521,
+        0.588510749861598,
+        0.19416843028739095,
+        0.7794846314936876,
+        0.7190130553208292,
+        0.013658127980306745,
+        0.07943339366465807
+      ]
+    },
+    {
+      "arm": "p3-s22",
+      "knob": "BankExcess=26 BankLiquid=73 m=1.533 TierClimb=0 h=1.992 t=1.568 g=0.000 RentShortfall=-549 DrawPressure=-76 Inv16=0 PstMine=3",
+      "draws": [
+        0.4292177688330412,
+        0.33158700610511005,
+        0.2524133406113833,
+        0.2340994339901954,
+        0.8558502993546426,
+        0.758265906246379,
+        0.4627585574053228,
+        0.5560097456909716,
+        0.12912727007642388,
+        0.08508351445198059,
+        0.0502349401358515,
+        0.3842057608999312,
+        0.8323283637873828,
+        0.05470560025423765
+      ]
+    },
+    {
+      "arm": "p3-s23",
+      "knob": "BankExcess=11 BankLiquid=84 m=1.546 TierClimb=0 h=0.000 t=1.486 g=1.538 RentShortfall=-232 DrawPressure=-10 Inv16=-43 PstMine=47",
+      "draws": [
+        0.18828898901119828,
+        0.595476133748889,
+        0.26479091704823077,
+        0.128574441652745,
+        0.17678823205642402,
+        0.39268067036755383,
+        0.5171061793807894,
+        0.6766440216451883,
+        0.542137592099607,
+        0.6129738639574498,
+        0.8759821134153754,
+        0.8105551458429545,
+        0.8553506094031036,
+        0.5329664258752018,
+        0.7771092478651553
+      ]
+    },
+    {
+      "arm": "p3-s24",
+      "knob": "BankExcess=17 BankLiquid=99 m=2.170 TierClimb=661 h=0.656 t=0.462 g=1.941 RentShortfall=-223 DrawPressure=-10 Inv16=-18 PstMine=50",
+      "draws": [
+        0.2854517549276352,
+        0.9855614711996168,
+        0.7834744020365179,
+        0.8622375535778701,
+        0.8017898092512041,
+        0.22830003057606518,
+        0.12200934952124953,
+        0.8414754562545568,
+        0.029524902813136578,
+        0.732079891487956,
+        0.734009400010109,
+        0.6275637296494097,
+        0.8809207361191511,
+        0.8454681055154651,
+        0.9391839758027345,
+        0.5615268221590668,
+        0.8289898645598441
+      ]
+    }
+  ]
+}
