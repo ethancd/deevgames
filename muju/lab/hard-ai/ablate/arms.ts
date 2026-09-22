@@ -1022,6 +1022,89 @@ SPECS.push({
   rootDiagnostic: true,
 });
 
+// --- L6 STRENGTH KNOBS (2026-09-21) ------------------------------------------
+// APPEND-ONLY BLOCK. Everything above this line is owned by the CI/repair lane
+// of the 2026-09-21 cutover; these seven arms are added after it so the two
+// edits never meet. They price the four ranked generator/evaluation changes of
+// `ai-strength-lab.md` §2 — R1b, R2, R3, R4 — each of which ships in
+// `src/ai/hard/**` behind a knob that is ABSENT on every profile, so
+// `hard@desktop` is byte-identical and its pinned hash does not move.
+//
+// FACTOR `evalFix`, NOT A NEW ONE. All four knobs live in one optional block,
+// `EvalFix.strength` (`src/ai/hard/config.ts StrengthKnobs`), because
+// `HardEngine`'s constructor stamps `config.evalFix` — and nothing else — onto
+// every `NodeTables` and onto its `Evaluator`, and `NodeTables` is the only
+// configuration `gen/promote.ts` and `eval/pending.ts` receive. `factorsOf`
+// serialises the whole block through `evalFixKey` (extended below) and
+// `maskFactor`'s `evalFix` case restores the whole block, so the one-factor
+// invariant covers these arms exactly as it covers `eval-correct-v1`, which
+// also sets several keys of one block.
+//
+// SCREEN THEM IN FIXED WORK. Every knob here is a GENERATOR or EVALUATION
+// change, visible under `--work fixed:50000` (unlike `work-fit`/`calib`), so
+// the screening rows need no idle box: `--a hard@ablate:<arm> --b Rush --work
+// fixed:50000 --handicaps 0 --pairs 16 --seed 7101 --openings p1-dev.jsonl`.
+// Read behaviour before result (spend, upkeep-eliminations, illegal actions,
+// divergences, fallbacks); adoption is a separate commit that flips a default
+// in `config.ts`, never an edit here.
+SPECS.push({
+  name: 'gen-purchase-score',
+  factor: 'evalFix',
+  change:
+    'R1b: strength.purchaseScoreBeforeTruncate — planPurchases writes every enumerated multiset × assignment, scores all of them and truncates to maxPlans AFTER sortPlans, instead of stopping the write loop at 12 plans in cheapest-definition-first enumeration order (at bank >= 12 the shipped menu is fire_1 x1..4 and nothing else)',
+  patch: { evalFix: { strength: { purchaseScoreBeforeTruncate: true } } },
+});
+SPECS.push({
+  name: 'gen-promote-strength',
+  factor: 'evalFix',
+  change:
+    'R2: strength.promoteStrengthMission — bestMission offers a fallback STRENGTH promotion worth (dAtk + dDef) x ACTION_VALUE_CC when no FORTIFY/SURVIVE/ANCHOR/INCOME/REACH mission applies, instead of returning -1 and never proposing the candidate (504 of 5,525 legal promotions offered in the knobs probe; fire_1->2 once in 2,940 opportunities)',
+  patch: { evalFix: { strength: { promoteStrengthMission: true } } },
+});
+SPECS.push({
+  name: 'gen-promote-rent211',
+  factor: 'evalFix',
+  change:
+    'R3: strength.promoteOrderingRentPv 422 -> 211 — half rent in the promotion ORDERING expression only (the upkeep keep-set and the EconDelta leaf forecast keep RENT_PV), so promotion combos stop ranking below bare purchase plans in buildCombos; 32 of 40 proposals score <= 0 today',
+  patch: { evalFix: { strength: { promoteOrderingRentPv: 211 } } },
+});
+SPECS.push({
+  name: 'gen-promote-rent0',
+  factor: 'evalFix',
+  change:
+    'R3 endpoint: strength.promoteOrderingRentPv 422 -> 0 — the promotion ordering charges no rent at all; the leaf still charges the real one, so this is the upper bound on what the ordering change can buy',
+  patch: { evalFix: { strength: { promoteOrderingRentPv: 0 } } },
+});
+SPECS.push({
+  name: 'eval-atrisk-8',
+  factor: 'evalFix',
+  change:
+    'R4: strength.pendingAtRiskShare16 0 -> 8 — an at-risk pending summon keeps half its service present value instead of none, so a purchase against an aggressive opponent (which flags every commitment) stops losing every tie to the first-ordered plain turn. The summon-disruption suite family is the canary',
+  patch: { evalFix: { strength: { pendingAtRiskShare16: 8 } } },
+});
+SPECS.push({
+  name: 'eval-atrisk-4',
+  factor: 'evalFix',
+  change: 'R4 at a quarter: strength.pendingAtRiskShare16 0 -> 4, the milder half of the at-risk credit pair',
+  patch: { evalFix: { strength: { pendingAtRiskShare16: 4 } } },
+});
+SPECS.push({
+  name: 'stack-r1234',
+  factor: 'evalFix',
+  change:
+    'R1b + R2 + R3(211) + R4(8) together: the whole 2026-09-21 strength stack in one block. ONE factor for the reason eval-correct-v1 is one — factorsOf serialises the block and maskFactor restores it — but four knobs, so it is read as a ceiling for the four single-knob arms above and never as evidence about any one of them',
+  patch: {
+    evalFix: {
+      strength: {
+        purchaseScoreBeforeTruncate: true,
+        promoteStrengthMission: true,
+        promoteOrderingRentPv: 211,
+        pendingAtRiskShare16: 8,
+      },
+    },
+  },
+});
+
 export const ARMS: readonly AblationArm[] = Object.freeze(SPECS.map(registerArm));
 
 const BY_NAME = new Map<string, AblationArm>(ARMS.map(a => [a.name, a]));
@@ -1073,6 +1156,29 @@ export function armHardConfig(name: string): HardConfig {
 
 // --- E3.2 lane 12: the correctness flags (B1-B5) ------------------------------
 
+/**
+ * The 2026-09-21 strength knobs in a fixed key order (`config.ts
+ * StrengthKnobs`), for `evalFixKey`. Referenced off `EvalFix` rather than
+ * imported by name so the import list above — which the CI/repair lane of the
+ * cutover owns this pass — is left alone.
+ *
+ * A key added by a later lane MUST be added here, for the reason `searchFixKey`
+ * states: `factorsOf` is what the one-factor invariant reads, and a knob it
+ * cannot see is a knob an arm could move without declaring it.
+ */
+export function strengthKey(s: NonNullable<EvalFix['strength']> | undefined): string {
+  if (s === undefined) return '';
+  const on = [
+    s.purchaseScoreBeforeTruncate === true ? 'purchaseScore' : '',
+    s.promoteStrengthMission === true ? 'promoteStrength' : '',
+    s.promoteOrderingRentPv === undefined ? '' : `promoteRentPv=${s.promoteOrderingRentPv}`,
+    s.pendingAtRiskShare16 === undefined ? '' : `atRisk16=${s.pendingAtRiskShare16}`,
+  ].filter(x => x !== '');
+  // An empty block is still a PRESENT block, and `canonicalJson` serialises it,
+  // so it reads as moved rather than as the champion.
+  return `strength=${on.length === 0 ? 'none' : on.join(',')}`;
+}
+
 export function evalFixKey(fix: EvalFix | undefined): string {
   if (fix === undefined) return 'absent';
   const on = [
@@ -1082,6 +1188,7 @@ export function evalFixKey(fix: EvalFix | undefined): string {
     fix.inv3RetreatConjunct === true ? 'b4' : '',
     fix.rentOnce === true ? 'b5' : '',
     fix.approachTieOrder === true ? 'b6' : '',
+    strengthKey(fix.strength),
   ].filter(x => x !== '');
   return on.length === 0 ? 'none' : on.join('+');
 }
