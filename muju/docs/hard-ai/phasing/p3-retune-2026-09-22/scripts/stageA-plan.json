@@ -10,7 +10,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/control-Rush"
   },
   {
@@ -24,7 +24,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s01-Rush"
   },
   {
@@ -38,7 +38,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s02-Rush"
   },
   {
@@ -52,7 +52,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s03-Rush"
   },
   {
@@ -66,7 +66,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s04-Rush"
   },
   {
@@ -80,7 +80,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s05-Rush"
   },
   {
@@ -94,7 +94,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s06-Rush"
   },
   {
@@ -108,7 +108,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s07-Rush"
   },
   {
@@ -122,7 +122,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s08-Rush"
   },
   {
@@ -136,7 +136,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s09-Rush"
   },
   {
@@ -150,7 +150,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s10-Rush"
   },
   {
@@ -164,7 +164,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s11-Rush"
   },
   {
@@ -178,7 +178,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s12-Rush"
   },
   {
@@ -192,7 +192,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s13-Rush"
   },
   {
@@ -206,7 +206,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s14-Rush"
   },
   {
@@ -220,7 +220,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s15-Rush"
   },
   {
@@ -234,7 +234,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s16-Rush"
   },
   {
@@ -248,7 +248,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s17-Rush"
   },
   {
@@ -262,7 +262,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s18-Rush"
   },
   {
@@ -276,7 +276,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s19-Rush"
   },
   {
@@ -290,7 +290,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s20-Rush"
   },
   {
@@ -304,7 +304,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s21-Rush"
   },
   {
@@ -318,7 +318,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s22-Rush"
   },
   {
@@ -332,7 +332,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s23-Rush"
   },
   {
@@ -346,7 +346,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s24-Rush"
   },
   {
@@ -360,7 +360,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/hv-clock-Rush"
   },
   {
@@ -374,7 +374,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/hv-mine-Rush"
   },
   {
@@ -388,7 +388,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/hv-tier-Rush"
   },
   {
@@ -402,7 +402,7 @@
     "pairs": 8,
     "seed": 20260970,
     "openings": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
-    "shards": 4,
+    "shards": 2,
     "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/hv-blocks-Rush"
   }
 ]

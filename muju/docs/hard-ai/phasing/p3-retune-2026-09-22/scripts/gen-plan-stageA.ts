@@ -20,6 +20,9 @@ for (const arm of arms) {
   readFileSync(f); // throws if missing
 }
 
+// shards=2 per coordinator directive 2026-09-22 16:12 (PROGRESS.md "Concurrency reduced"; was 4
+// under MUJU_HEAVY_SLOTS=8 / two rows at a time -- now one row at a time under MUJU_HEAVY_SLOTS=2).
+const SHARDS = 2;
 const plan = arms.map(arm => ({
   id: `A-${arm}-Rush`,
   stage: 'A',
@@ -31,7 +34,7 @@ const plan = arms.map(arm => ({
   pairs: 8,
   seed: SEED,
   openings: OPENINGS,
-  shards: 4,
+  shards: SHARDS,
   outDir: `docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/${arm}-Rush`,
 }));
 
