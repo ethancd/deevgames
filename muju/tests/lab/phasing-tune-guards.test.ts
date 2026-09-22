@@ -143,12 +143,17 @@ describe('M6 current tuning shape, fixed coefficients and immutable outputs', ()
   });
   it('fixes cash/escrow coefficients and fire_1 throughout the coordinate parameter set', () => {
     expect(WEIGHTS_VERSION).toBe(2); expect(WEIGHTS_FILE_SCHEMA).toBe('muju-weights-phasing-v1');
-    expect(ACCOUNTING_PINS).toEqual({ 2: 100, 3: 100, 58: 1 });
+    // BankExcess (3) became a free parameter on 2026-09-21: the 2026-09-20
+    // repair chose 25 empirically, so it is a tunable preference rather than an
+    // accounting identity, and pinning it at 100 made this very assertion throw
+    // on the shipped vector.
+    expect(ACCOUNTING_PINS).toEqual({ 2: 100, 58: 1 });
     const vector = { w: Array.from(DEFAULT_WEIGHTS.w), material: Array.from(DEFAULT_WEIGHTS.material) };
     expect(() => assertAccountingPins(vector)).not.toThrow();
-    for (const index of [0, 2, 3, 58, 62 + FIRE_1]) expect(freeParams()).not.toContain(index);
-    expect(freeParams()).toHaveLength(PARAM_COUNT - 5);
-    for (const index of [2, 3, 58]) { const bad = { w: [...vector.w], material: vector.material }; bad.w[index]++; expect(() => assertAccountingPins(bad)).toThrow(/pinned/); }
+    for (const index of [0, 2, 58, 62 + FIRE_1]) expect(freeParams()).not.toContain(index);
+    expect(freeParams()).toContain(3);
+    expect(freeParams()).toHaveLength(PARAM_COUNT - 4);
+    for (const index of [2, 58]) { const bad = { w: [...vector.w], material: vector.material }; bad.w[index]++; expect(() => assertAccountingPins(bad)).toThrow(/pinned/); }
     expect(() => assertAccountingPins({ w: vector.w, material: vector.material.map((v, i) => i === FIRE_1 ? 301 : v) })).toThrow(/fire_1/);
   });
   it('CLI calls require fresh outputs and explicit metadata authority', () => {

@@ -61,8 +61,6 @@
     "hard:bench": "node --import tsx lab/hard-ai/bench/run.ts",
     "hard:corpus": "node --import tsx lab/hard-ai/tune/corpus.ts",
     "hard:texel": "node --import tsx lab/hard-ai/tune/texel.ts",
-    "hard:spsa": "node --import tsx lab/hard-ai/tune/spsa.ts",
-    "hard:book": "node --import tsx lab/hard-ai/book/build.ts",
     "hard:suite:phasing": "node --import tsx lab/hard-ai/suites/phasing/run.ts",
     "hard:suite:phasing:measure": "node --import tsx lab/hard-ai/suites/phasing/measure.ts"
   },

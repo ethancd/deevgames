@@ -950,38 +950,77 @@ SPECS.push({
 });
 
 
-// --- SCRATCH (gap-fill reader, 2026-09-20): hand-prior repair arms -------------
-// default-v1 (git 43b87b6) adapted to the 62-feature Phasing schema. NOT in the repo.
-function handPriorsPatch(label: string, opts: { bankExcess: number; priors: boolean }): Partial<HardConfig> {
+/**
+ * The hand-prior repair, as ablations OF THE DEFAULT rather than towards it.
+ *
+ * HISTORY. The four arms that stood here from 2026-09-20 to 2026-09-21 —
+ * `hand-priors`, `hand-priors-pc`, `bootstrap-pc`, `bank25-pc` — were written
+ * while `DEFAULT_WEIGHTS` was still the five-nonzero M6 bootstrap and the
+ * within-turn pending credit was label-gated on a `+pc` suffix. They built the
+ * candidate vector by ADDING the priors to a clone of the default, and named
+ * the scorer credit in their `change` lines. Both premises died at `71b41a39`,
+ * which made the credit unconditional and the priors the default; from that
+ * commit `hand-priors` ≡ `hand-priors-pc` ≡ `bank25-pc` ≡ `hard@desktop`
+ * (silent A/A rows), and `bootstrap-pc` was not the bootstrap at all — it was
+ * the default with BankExcess back at 100. The arms lied about what they
+ * measured, which is the one thing an ablation may never do.
+ *
+ * WHAT REPLACES THEM. Three arms that subtract from the shipped vector, which
+ * is what the sweep in `docs/hard-ai/phasing/repair-2026-09-20/results/` was
+ * actually comparing: the whole repair off (`weights-bootstrap-m6`), the bank
+ * discount off (`weights-bank100`), the tactical priors off with the discount
+ * kept (`weights-no-priors`). No arm needs to say anything about the scorer any
+ * more, because every arm shares it.
+ */
+
+/**
+ * The retired M6 accounting bootstrap: the only five entries it priced.
+ * `tests/ai/hard/fixtures/hand-priors-nonzero.ts` holds the same list for the
+ * eval tests, and `tests/lab/ablate.test.ts` asserts the two agree.
+ */
+const BOOTSTRAP_M6_NONZERO: readonly (readonly [number, number])[] = [
+  [F.Material, 100], [F.BankLiquid, 100], [F.BankExcess, 100], [F.EconDelta, 100], [F.PendingValue, 1],
+];
+/** The accounting core both vectors share — everything but the bank discount. */
+const ACCOUNTING_CORE = BOOTSTRAP_M6_NONZERO.filter(([i]) => i !== F.BankExcess);
+
+/** A vector holding exactly `nonzero`; catalogue material and schema carried over. */
+function sparseArmWeights(nonzero: readonly (readonly [number, number])[], label: string): Partial<HardConfig> {
+  const base = cloneWeights(DEFAULT_WEIGHTS);
+  const w = new Int32Array(base.w.length);
+  for (const [index, value] of nonzero) w[index] = value;
+  return { weights: finishArmWeights(base, w, armWeightsLabel(label)) };
+}
+
+/** The default with one feature overwritten. */
+function weightOverride(index: number, value: number, label: string): Partial<HardConfig> {
   const base = cloneWeights(DEFAULT_WEIGHTS);
   const w = Int32Array.from(base.w);
-  const s = (i: number, v: number): void => { w[i] = v; };
-  // accounting pins kept from the bootstrap: BankLiquid 100, EconDelta 100, PendingValue 1
-  s(F.BankExcess, opts.bankExcess);
-  if (opts.priors) {
-    s(F.HomeInvaded, -4000);
-    s(F.SpawnArea, 30); s(F.SpawnReserve, 8); s(F.SpawnZero, -800); s(F.AnchorDepth, 25);
-    s(F.Infiltration, 90); s(F.CornerSeal, -60);
-    s(F.HomeThreat, -400); s(F.HomeCountdown, -180); s(F.HomePlug, 220); s(F.HomeRescuers, 90);
-    s(F.Exposure, -20); s(F.DrawPressure, -8); s(F.ActionsLeft, 40);
-    // zero by contract: Rent, PstMine (single forecast), BankConvertible, ElementCoverage (stale cash option)
-    // stage 2: economy overlap terms (24-27) stay 0; HangingBuy(29) stays 0 (slot redefined)
-    s(F.Hanging, -50); s(F.ApproachRetreat, -25); s(F.ApproachStrand, -10); s(F.StrandPunish, 20);
-    s(F.KillAvailable, 35); s(F.CleaveExposure, -40); s(F.AnchorFragility, -120);
-    s(F.BlockingDeficit, -150); s(F.CornerInfiltration, 300);
-    s(F.Inv1SpawnZero, -800); s(F.Inv2CornerSeal, -300); s(F.Inv3RetreatSquare, -250);
-    s(F.Inv4StrandUnpunished, -100); s(F.Inv6FragileAnchor, -120); s(F.Inv7PromoteNoRunway, -600);
-    s(F.Inv8NoPreAdjacency, -150); s(F.Inv9ChipAcrossTurn, -150); s(F.Inv10HomeReachable, -400);
-    s(F.Inv12CleaveLine, -40); s(F.Inv13Turtle, -200); s(F.Inv14LiquidityFloor, -200);
-    s(F.Inv16ClockDiscipline, -200); s(F.Inv19SoftMinerExposed, -150); s(F.Inv20StrandNoRetreat, -250);
-    // Inv5/15/17/18 structural zero; Inv11 (homeBare, bank>=3 story) zero by continuation-map C
-  }
-  return { weights: finishArmWeights(base, w, label) };
+  w[index] = value;
+  return { weights: finishArmWeights(base, w, armWeightsLabel(label)) };
 }
-SPECS.push({ name: 'hand-priors', factor: 'weights', change: 'SCRATCH: default-v1 priors adapted to 62 features + BankExcess 25; scorer unchanged', patch: handPriorsPatch('scratch-hand-priors-v1', { bankExcess: 25, priors: true }), rootDiagnostic: true });
-SPECS.push({ name: 'hand-priors-pc', factor: 'weights', change: 'SCRATCH: hand-priors + within-turn scorer credits pending principal (label suffix +pc)', patch: handPriorsPatch('scratch-hand-priors-v1+pc', { bankExcess: 25, priors: true }), rootDiagnostic: true });
-SPECS.push({ name: 'bootstrap-pc', factor: 'weights', change: 'SCRATCH: bootstrap vector unchanged + within-turn scorer credits pending principal', patch: handPriorsPatch('scratch-bootstrap+pc', { bankExcess: 100, priors: false }), rootDiagnostic: true });
-SPECS.push({ name: 'bank25-pc', factor: 'weights', change: 'SCRATCH: bootstrap + BankExcess 25 + pending-principal scorer credit, no tactical priors', patch: handPriorsPatch('scratch-bank25+pc', { bankExcess: 25, priors: false }), rootDiagnostic: true });
+
+SPECS.push({
+  name: 'weights-bootstrap-m6',
+  factor: 'weights',
+  change: 'the whole 2026-09-20 repair off: the retired M6 accounting bootstrap (Material 100, BankLiquid 100, BankExcess 100, EconDelta 100, PendingValue 1; every other feature 0), built from that list and not from the default',
+  patch: sparseArmWeights(BOOTSTRAP_M6_NONZERO, 'bootstrap-m6'),
+  rootDiagnostic: true,
+});
+SPECS.push({
+  name: 'weights-bank100',
+  factor: 'weights',
+  change: 'the bank discount off: the default with BankExcess back at 100, so cash above the free eight is worth as much as liquid cash again; the tactical priors stay. The discount is the repair\'s master switch (spend 24% -> 93% vs Rush)',
+  patch: weightOverride(F.BankExcess, 100, 'bank100'),
+  rootDiagnostic: true,
+});
+SPECS.push({
+  name: 'weights-no-priors',
+  factor: 'weights',
+  change: 'the tactical priors off, the bank discount kept: the M6 accounting core with BankExcess 25 and every home/safety/space/invariant weight 0. Isolates the discount from the 38 default-v1 coefficients it shipped beside',
+  patch: sparseArmWeights([...ACCOUNTING_CORE, [F.BankExcess, 25]], 'no-priors'),
+  rootDiagnostic: true,
+});
 
 export const ARMS: readonly AblationArm[] = Object.freeze(SPECS.map(registerArm));
 

@@ -12,6 +12,7 @@ import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
+import { listSourceFiles } from './source-files';
 import { LADDER_RULES_VERSION } from '../hard-ai/ladder/ruleset';
 import { AIEngineV2, TURN_BUDGET_MS } from '../../src/ai/engine-v2';
 import { instantiateTactics, type TacticalSolver } from '../../src/ai/wasm/kernel';
@@ -83,7 +84,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   if (!Number.isInteger(games) || games < 1) throw new Error('Invalid game count');
   mkdirSync(out); // Refuse to overwrite previous evidence.
   const bytes = readFileSync('src/ai/wasm/tactics.wasm'), solver = await instantiateTactics(bytes);
-  const files = execFileSync('rg', ['--files', 'src/ai', 'src/game', 'assembly', 'lab/ai', '-g', '*.ts'], { encoding: 'utf8' }).trim().split('\n').sort();
+  const files = listSourceFiles(['src/ai', 'src/game', 'assembly', 'lab/ai'], '.ts');
   const hashes = Object.fromEntries(files.map(file => [file, sha(readFileSync(file))]));
   writeFileSync(`${out}/identity.json`, JSON.stringify({ rules: LADDER_RULES_VERSION, abi: 7,
     base: execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),

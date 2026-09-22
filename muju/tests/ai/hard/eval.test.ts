@@ -3,12 +3,15 @@
  * `eval/features.ts`, `eval/weights.ts` and `eval/evaluate.ts` (DESIGN §4.15,
  * §5.12).
  *
- * M6 preserves the original feature indices while replacing the weight ledger
- * with the approved Phasing accounting bootstrap. These tests pin its hand-
- * derived arithmetic and keep independent canonical feature checks. Existing
- * diagnostic terms are not implicitly assigned their historical coefficients.
- * The named upkeep policy is not rotation-equivariant; no corpus or historical
- * strength result is asserted by this file.
+ * M6 preserved the original feature indices while replacing the weight ledger
+ * with the Phasing accounting bootstrap; on 2026-09-20 the repair replaced that
+ * bootstrap's five nonzero entries with `phasing-hand-priors-v1`, which prices
+ * 43 of 62 features and is what ships (`docs/hard-ai/phasing/repair-2026-09-20/
+ * HANDOFF.md`). These tests pin THAT vector's arithmetic — through the one
+ * constant in `fixtures/hand-priors-nonzero.ts` — and keep independent
+ * canonical feature checks. The named upkeep policy is not
+ * rotation-equivariant; no corpus or historical strength result is asserted by
+ * this file.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { getAllSpawnPositions } from '../../../src/game/spawning';
@@ -40,6 +43,7 @@ import {
 import { TUNED_WEIGHTS } from '../../../src/ai/hard/eval/weights.generated';
 import { Evaluator, terminalScore } from '../../../src/ai/hard/eval/evaluate';
 import { INVARIANT_COUNT } from '../../../src/ai/hard/eval/invariants';
+import { HAND_PRIORS_NONZERO } from './fixtures/hand-priors-nonzero';
 import { allocPacked } from './packed-fixture';
 import { buildState, randomState, type StateSpec } from './game-fixture';
 
@@ -126,10 +130,13 @@ describe('eval: stage 0 is exact centi-crystals', () => {
     expect(f[F.HomeInvaded]).toBe(0);
 
     // The score uses the 18 `material` params, not `w[Material] · f[Material]`.
+    // Cash is not uniform: the first eight crystals are liquid at 100 cc each,
+    // everything above them is BankExcess at the 25 cc hand-prior discount that
+    // makes spending beat hoarding (repair-2026-09-20).
     const ev = new Evaluator(replica);
     const material = 300 + 800 - 500;
-    expect(ev.stage0(p, WHITE)).toBe(material + 100 * (5 + 2));
-    expect(ev.stage0(p, BLACK)).toBe(-(material + 100 * (5 + 2)));
+    expect(ev.stage0(p, WHITE)).toBe(material + 100 * 5 + 25 * 2);
+    expect(ev.stage0(p, BLACK)).toBe(-(material + 100 * 5 + 25 * 2));
   });
 
   it('agrees with the canonical upkeep schedule on Rent', () => {
@@ -139,7 +146,7 @@ describe('eval: stage 0 is exact centi-crystals', () => {
     expect(f[F.Rent]).toBe(canonicalUpkeepDue(state, 'white') - canonicalUpkeepDue(state, 'black'));
   });
 
-  it('records HomeInvaded symmetrically while leaving terminal authority to the rules', () => {
+  it('records HomeInvaded symmetrically and prices it as a near-terminal penalty', () => {
     const p = pack({
       units: [
         { def: 'fire_1', owner: 'white', x: 2, y: 2 },
@@ -148,12 +155,17 @@ describe('eval: stage 0 is exact centi-crystals', () => {
       current: 'white',
       phase: 'place',
     });
-    // Keep the threat diagnostic; the bootstrap does not substitute an old
-    // heuristic penalty for terminal/prover handling.
+    // The diagnostic is symmetric, and the hand priors DO price it: -4000 cc,
+    // an order above any ordinary material swing, so a position with the
+    // opponent standing in home is only ever chosen when nothing else is left.
+    // Terminal/prover handling still belongs to the rules; this is the
+    // heuristic that keeps search away from the cliff. HomeInvaded is a stage-0
+    // feature, so the penalty lands in `stage0`.
     expect(features(p, WHITE)[F.HomeInvaded]).toBe(1);
     expect(features(p, BLACK)[F.HomeInvaded]).toBe(-1);
-    expect(DEFAULT_WEIGHTS.w[F.HomeInvaded]).toBe(0);
-    expect(new Evaluator(replica).stage0(p, WHITE)).toBe(300 - 500);
+    expect(DEFAULT_WEIGHTS.w[F.HomeInvaded]).toBe(-4000);
+    expect(STAGE_OF[F.HomeInvaded]).toBe(0);
+    expect(new Evaluator(replica).stage0(p, WHITE)).toBe(300 - 500 - 4000);
   });
 });
 
@@ -201,7 +213,7 @@ describe('eval: stage 1 against the canonical rules', () => {
     expect(features(mid, BLACK)[F.ActionsLeft]).toBe(-2);
   });
 
-  it('retains clock pressure as an unpriced bootstrap diagnostic', () => {
+  it('retains clock pressure, priced at -8 cc per unit of pressure', () => {
     // A4 re-expressed the feature against the LIMIT: `clock² × 100 / LIMIT²`
     // rather than raw `clock²`, so doubling the limit did not quadruple the
     // feature's range behind an unchanged coefficient. The shape — quadratic,
@@ -214,7 +226,11 @@ describe('eval: stage 1 against the canonical rules', () => {
     const f = features(leading, WHITE);
     // White is ahead on material + bank, so the clock counts against white.
     expect(f[F.DrawPressure]).toBe(expected);
-    expect(DEFAULT_WEIGHTS.w[F.DrawPressure]).toBe(0);
+    // A full-scale clock costs the leader 800 cc — about two and a half fire_1s,
+    // enough to prefer a real move to shuffling, nowhere near enough to trade
+    // material for tempo. It is a stage-1 feature.
+    expect(DEFAULT_WEIGHTS.w[F.DrawPressure]).toBe(-8);
+    expect(STAGE_OF[F.DrawPressure]).toBe(1);
     expect(features(leading, BLACK)[F.DrawPressure]).toBe(-expected);
 
     // Full scale is 100 AT the draw, and 0 at a fresh clock, at any limit.
@@ -293,15 +309,28 @@ describe('eval: stage 1 against the canonical rules', () => {
 });
 
 describe('eval/weights.ts', () => {
-  it('holds the hand-derived sparse accounting vector with no inherited tactical penalties', () => {
+  it('holds the shipped phasing-hand-priors-v1 vector', () => {
     const w = DEFAULT_WEIGHTS.w;
-    expect([...w].flatMap((value, index) => value ? [[index, value]] : [])).toEqual([
-      [F.Material, 100], [F.BankLiquid, 100], [F.BankExcess, 100],
-      [F.EconDelta, 100], [F.PendingValue, 1],
-    ]);
+    // 43 of 62 nonzero, `weightsHash` 14d06ba8. The accounting core of the M6
+    // bootstrap (Material / BankLiquid / EconDelta / PendingValue) survives; the
+    // bank discount replaces uniform cash; and the Standard-era `default-v1`
+    // values return for every feature whose meaning survives Phasing.
+    // `fixtures/hand-priors-nonzero.ts` is the single copy of the list, shared
+    // with `phasing-bootstrap.test.ts` so the two can never drift.
+    expect([...w].flatMap((value, index) => value ? [[index, value]] : []))
+      .toEqual(HAND_PRIORS_NONZERO.map(pair => [...pair]));
+    expect(DEFAULT_WEIGHTS.label).toBe('phasing-hand-priors-v1');
+    expect(weightsHash(DEFAULT_WEIGHTS)).toBe('14d06ba8');
+
+    // Fifteen of the twenty invariants are priced; the other five (5, 11, 15,
+    // 17, 18) stay 0 deliberately — they are the ones whose Standard-era
+    // coefficient does not survive the Phasing turn.
+    const invariants = [...w.slice(INV_BASE, INV_BASE + INVARIANT_COUNT)];
+    expect(invariants.flatMap((value, slot) => value ? [slot + 1] : []))
+      .toEqual([1, 2, 3, 4, 6, 7, 8, 9, 10, 12, 13, 14, 16, 19, 20]);
+    expect(invariants.filter(value => value !== 0)).toHaveLength(15);
     // Released principal and actual rent already belong to the forecast;
-    // diagnostic shortfall, arrival pressure and invariants add no second bill.
-    expect([...w.slice(INV_BASE, INV_BASE + INVARIANT_COUNT)]).toEqual(new Array(20).fill(0));
+    // diagnostic shortfall and arrival pressure add no second bill.
     expect([w[F.ArrivalThreat], w[F.DisruptPressure], w[F.RentShortfall]]).toEqual([0, 0, 0]);
   });
 
@@ -341,8 +370,11 @@ describe('eval/weights.ts', () => {
   it('TUNED_WEIGHTS starts life equal to DEFAULT_WEIGHTS but independent of it', () => {
     expect(Array.from(TUNED_WEIGHTS.w)).toEqual(Array.from(DEFAULT_WEIGHTS.w));
     expect(TUNED_WEIGHTS.w).not.toBe(DEFAULT_WEIGHTS.w);
+    // The claim is ALIASING, not the coefficient: read the default's entry
+    // first and compare against that, so this never needs re-pinning again.
+    const before = DEFAULT_WEIGHTS.w[F.SpawnArea];
     TUNED_WEIGHTS.w[F.SpawnArea] += 1;
-    expect(DEFAULT_WEIGHTS.w[F.SpawnArea]).toBe(0);
+    expect(DEFAULT_WEIGHTS.w[F.SpawnArea]).toBe(before);
     TUNED_WEIGHTS.w[F.SpawnArea] -= 1;
   });
 });

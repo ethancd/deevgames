@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { applyAction } from '../../../src/ai/simulate';
 import { isLegalAction } from '../../../src/game/legality';
 import { isValidSpawnPosition } from '../../../src/game/spawning';
-import { CONFIG_FEATURE_COUNT, PHASING_EVAL_SCHEMA } from '../../../src/ai/hard/config';
+import { CONFIG_FEATURE_COUNT, PHASING_EVAL_SCHEMA, type Weights } from '../../../src/ai/hard/config';
 import { Replica } from '../../../src/ai/hard/core/state';
 import { Scratch } from '../../../src/ai/hard/core/bits';
 import { GAMMA_Q16 } from '../../../src/ai/hard/core/income';
@@ -17,6 +17,7 @@ import { DEFAULT_WEIGHTS, cloneWeights, loadWeights, serializeWeights, WEIGHTS_V
 import { Evaluator, WORK_CLASS_EVAL1, WORK_CLASS_EVAL2, WORK_CLASS_PROVER } from '../../../src/ai/hard/eval/evaluate';
 import { newPendingDiagnostics, pendingDiagnostics } from '../../../src/ai/hard/eval/pending';
 import { EVAL_GROUPS, GROUP_OF, INVARIANT_FEATURES } from '../../../lab/hard-ai/audit/eval-groups';
+import { BOOTSTRAP_M6_NONZERO, HAND_PRIORS_NONZERO, sparseWeights } from './fixtures/hand-priors-nonzero';
 import { buildState, type StateSpec } from './game-fixture';
 import { prepare } from './search-fixture';
 import { evaluateLeaf, generateAt, pvs } from '../../../src/ai/hard/search/pvs';
@@ -37,8 +38,22 @@ function inspect(spec: StateSpec) {
   const state = buildState(spec), p = rep.pack(state), t = buildTables(p, sc, 0, 2, allocTables());
   return { state, p, t, d: pendingDiagnostics(p, t, sc, 0, newPendingDiagnostics()) };
 }
-function vector(spec: StateSpec, side: Side = 0) {
-  const p = rep.pack(buildState(spec)), ev = new Evaluator(rep), f = new Int32Array(FEATURE_COUNT);
+/**
+ * The retired M6 accounting bootstrap as an explicit vector.
+ *
+ * The escrow identities below are WHOLE-SCORE equalities, and a whole score is
+ * an accounting statement only under a vector that prices nothing but the
+ * accounting. Under the shipped `phasing-hand-priors-v1` an arriving unit also
+ * moves SpawnArea, AnchorDepth, Exposure and fifteen invariants, so the two
+ * sides of the boundary legitimately differ — the accounting is still exact,
+ * the total is simply no longer the whole of the score. Each identity is
+ * therefore asserted twice: as an equality against this vector, and as a
+ * feature-level statement against the shipped one.
+ */
+const ACCOUNTING_ONLY = sparseWeights(BOOTSTRAP_M6_NONZERO, 'm6-accounting-bootstrap');
+
+function vector(spec: StateSpec, side: Side = 0, weights: Weights | undefined = undefined) {
+  const p = rep.pack(buildState(spec)), ev = new Evaluator(rep, weights), f = new Int32Array(FEATURE_COUNT);
   return { p, ev, f, score: ev.full(p, side, sc, 0, f) };
 }
 
@@ -54,8 +69,12 @@ describe('frozen Phasing accounting schema and sparse weights', () => {
     expect(GROUP_OF).toHaveLength(62);
     expect(EVAL_GROUPS.economy).toContain(58); expect(EVAL_GROUPS.economy).toContain(61);
     expect(EVAL_GROUPS.safety).toContain(59); expect(EVAL_GROUPS.safety).toContain(60);
+    // The shipped vector is `phasing-hand-priors-v1` (43 of 62 nonzero), not the
+    // five-entry M6 bootstrap; `fixtures/hand-priors-nonzero.ts` holds the one
+    // copy of both lists, shared with `eval.test.ts`.
     const nonzero = [...DEFAULT_WEIGHTS.w].flatMap((w, i) => w ? [[i, w]] : []);
-    expect(nonzero).toEqual([[0, 100], [2, 100], [3, 100], [23, 100], [58, 1]]);
+    expect(nonzero).toEqual(HAND_PRIORS_NONZERO.map(pair => [...pair]));
+    expect(weightsHash(sparseWeights(BOOTSTRAP_M6_NONZERO, 'm6'))).not.toBe(weightsHash(DEFAULT_WEIGHTS));
   });
   it('requires explicit schema/version and rejects historical shape, wrapped integers and runtime stale vectors', () => {
     const saved = JSON.parse(serializeWeights(DEFAULT_WEIGHTS));
@@ -70,38 +89,74 @@ describe('frozen Phasing accounting schema and sparse weights', () => {
     expect(() => new Evaluator(rep, stale)).toThrow(/schema/);
     const ev = new Evaluator(rep); expect(() => ev.setWeights(stale)).toThrow(/schema/);
   });
-  it('has no cash cliff at eight and preserves exact catalogue principal', () => {
+  it('has no cash cliff at eight, at the hand-prior discount, and preserves exact catalogue principal', () => {
     const a = vector(base({ pendingSummons: [], white: 8 })), b = vector(base({ pendingSummons: [], white: 9 }));
-    expect(b.score - a.score).toBe(100);
+    // The contract is that the ninth crystal is still worth something — there is
+    // no cliff at the free-upkeep boundary. Its price is the BankExcess discount
+    // (25 cc), not the liquid 100 cc: that discount is what makes spending beat
+    // hoarding, and it is the repair's master switch (repair-2026-09-20).
+    expect(b.score - a.score).toBe(25);
+    expect(b.score - a.score).toBeGreaterThan(0);
+    const m6 = { a: vector(base({ pendingSummons: [], white: 8 }), 0, ACCOUNTING_ONLY),
+                 b: vector(base({ pendingSummons: [], white: 9 }), 0, ACCOUNTING_ONLY) };
+    expect(m6.b.score - m6.a.score).toBe(100);
+    // Eight crystals are all liquid, so principal is exact under either vector.
     expect(a.ev.stage0(a.p, 0)).toBe(500 - 300 + 800);
+    expect(m6.a.ev.stage0(m6.a.p, 0)).toBe(500 - 300 + 800);
   });
 });
 
 describe('escrow and delayed service have one accounting owner', () => {
   it('prices paid pending principal, canonical arrival and canonical refund once each', () => {
     const { state } = inspect(base());
-    const before = vector(base());
+    const before = vector(base(), 0, ACCOUNTING_ONLY);
+    const shippedBefore = vector(base());
     expect(before.f[F.PendingValue]).toBe(300);
+    expect(shippedBefore.f[F.PendingValue]).toBe(300);
     const arrived = applyAction(state, { type: 'END_PLACE_PHASE' });
     expect(arrived.board.units.some(u => u.id === 'paid')).toBe(true);
-    const ev = new Evaluator(rep), f = new Int32Array(FEATURE_COUNT);
+    // Under an accounting-only vector the whole score is unchanged across the
+    // arrival boundary: the 300 cc of paid principal moves from PendingValue
+    // into material, and is billed exactly once.
+    const ev = new Evaluator(rep, ACCOUNTING_ONLY), f = new Int32Array(FEATURE_COUNT);
     expect(ev.full(rep.pack(arrived), 0, sc, 0, f)).toBe(before.score);
     expect(f[F.PendingValue]).toBe(0);
+    // The same statement under the shipped vector, where the arriving unit also
+    // moves positional features: PendingValue empties and stage 0 gains the
+    // principal, to the crystal.
+    const shippedEv = new Evaluator(rep), shippedF = new Int32Array(FEATURE_COUNT);
+    const arrivedPacked = rep.pack(arrived);
+    shippedEv.full(arrivedPacked, 0, sc, 0, shippedF);
+    expect(shippedF[F.PendingValue]).toBe(0);
+    expect(shippedEv.stage0(arrivedPacked, 0) - shippedBefore.ev.stage0(shippedBefore.p, 0)).toBe(300);
+
     const disruptedSpec = base({ units: [...base().units, { id: 'block', def: 'plant_1', owner: 'black', x: 0, y: 1 }] });
-    const disrupted = vector(disruptedSpec), root = buildState(disruptedSpec);
+    const disrupted = vector(disruptedSpec, 0, ACCOUNTING_ONLY), root = buildState(disruptedSpec);
+    const shippedDisrupted = vector(disruptedSpec);
     const refund = applyAction(root, { type: 'END_PLACE_PHASE' });
     expect(refund.lastSummoning?.disrupted.map(u => u.id)).toEqual(['paid']);
     expect(refund.players.white.resources).toBe(3);
     expect(ev.full(rep.pack(refund), 0, sc, 0, f)).toBe(disrupted.score);
     expect(disrupted.f[F.PendingValue]).toBe(300);
+    // Refunded principal returns as cash, once: the three crystals are worth
+    // exactly the 300 cc that left PendingValue.
+    const refundPacked = rep.pack(refund);
+    const refundF = new Int32Array(FEATURE_COUNT);
+    shippedEv.full(refundPacked, 0, sc, 0, refundF);
+    expect(refundF[F.PendingValue]).toBe(0);
+    expect(shippedEv.stage0(refundPacked, 0) - shippedDisrupted.ev.stage0(shippedDisrupted.p, 0)).toBe(300);
   });
   it('attributes two finite harvests only to pending service and never mines during Prepare', () => {
     const reserves = empty(); reserves[11] = 2;
     const spec = base({ reserves }), out = vector(spec);
     const service = Math.trunc((GAMMA_Q16[1] + GAMMA_Q16[2]) * 100 / 65536);
+    // The features are the claim: the two finite harvests are attributed to
+    // pending service and to nothing else, and the live-origin forecast is
+    // untouched. They hold under any vector.
     expect(out.f[F.PendingValue]).toBe(300 + service);
     expect(out.f[F.EconDelta]).toBe(0);
-    expect(out.score).toBe(200 + 300 + service);
+    // The whole-score form of the same claim, under the accounting-only vector.
+    expect(vector(spec, 0, ACCOUNTING_ONLY).score).toBe(200 + 300 + service);
     let state = buildState(spec);
     for (const type of ['END_PLACE_PHASE', 'END_ACTION_PHASE', 'END_PLACE_PHASE', 'END_ACTION_PHASE', 'END_PLACE_PHASE', 'END_ACTION_PHASE'] as const) {
       const action = { type }; expect(isLegalAction(state, action)).toBe(true); state = applyAction(state, action);

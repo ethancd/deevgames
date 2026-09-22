@@ -168,11 +168,16 @@ describe('texel fit on a planted corpus', () => {
     expect(moves[0].index).toBe(PLANTED_FEATURE);
   });
 
-  it('leaves 75 of 80 parameters free: material, cash and escrow scale pins remain fixed', () => {
+  it('leaves 76 of 80 parameters free: material, liquid cash and escrow scale pins remain fixed', () => {
     const free = freeParams();
     expect(PARAM_COUNT).toBe(FEATURE_COUNT + NDEF);
-    expect(free).toHaveLength(PARAM_COUNT - 5);
-    for (const index of [2, 3, 58]) expect(free).not.toContain(index);
+    // BankExcess (3) became free on 2026-09-21: the repair set it to 25
+    // empirically, so it is a tunable preference rather than an accounting
+    // identity, and pinning it at 100 made `assertAccountingPins` throw on the
+    // shipped vector. See `lab/hard-ai/tune/texel.ts ACCOUNTING_PINS`.
+    expect(free).toHaveLength(PARAM_COUNT - 4);
+    for (const index of [2, 58]) expect(free).not.toContain(index);
+    expect(free).toContain(3);
     expect(free).not.toContain(F.Material);
     expect(free).not.toContain(FEATURE_COUNT + FIRE_1);
   });
