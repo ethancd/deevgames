@@ -1,16 +1,5 @@
 # Muju Hono Tanka — Game Specification (Current Rules)
 
-## Optional Phasing ruleset (September 16, 2026)
-
-**Standard remains the default and the baseline specified below.** New human
-matches may instead choose **Phasing**: actions → mining → upkeep → promotions
-and public committed tier-1 summons. At next own turn start, legal commitments
-materialize; disrupted commitments refund their full original cost. Arrivals act
-immediately and may promote at that turn's end. The complete variant, including
-victory, undo and compatibility details, is specified in
-[Phasing](docs/PHASING-2026-09-16.md). Built-in AI remains Standard-only.
-
-
 This is the canonical rules specification for Muju Hono Tanka as implemented.
 It supersedes the original v1.0 implementation spec (this file's previous
 content) and incorporates all v1.1 changes (`docs/v1.1-spec.md`). Where this
@@ -19,14 +8,23 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v3.0 (2026-09-19) — the inactivity draw clock is **20 quiet
+**Spec version:** v3.1 (2026-09-21) — retires the Standard ruleset. Phasing is
+the sole ruleset, and §2, §5 and §9 below now state it normatively rather than
+describing it as a variant. **No rule changes; the rules revision remains
+`muju-phasing-2`, and no measurement is voided.** Standard can no longer be
+created, chosen or resumed anywhere; stored Standard rooms and saves become
+retired records (see "Stored artefacts by rules revision" at the end of §1).
+`docs/PHASING-2026-09-16.md` is superseded by this document and retained as the
+dated record of the variant era. See `JUDGMENT_LOG.md` J-022 and amendment A6 in
+`docs/hard-ai/PHASING-PREREGISTRATION-2026-09-18.md`.
+
+**Retained from v3.0** (2026-09-19) — the inactivity draw clock is **20 quiet
 plies** (ten hand-offs per player), not ten, and the public counter turns amber at
 17. What resets the clock is unchanged: only an attack that removes a unit.
-Nothing else in the rules changes. This advances the rules revision from
-`muju-phasing-1` to **`muju-phasing-2`**; strength, ladder and suite evidence
-measured under the old revision is not pooled with evidence measured under this
-one. Standard and Phasing share the single constant in `src/game/inactivity.ts`.
-See §9 and `JUDGMENT_LOG.md` J-021.
+v3.0 advanced the rules revision from `muju-phasing-1` to **`muju-phasing-2`**;
+strength, ladder and suite evidence measured under the old revision is not pooled
+with evidence measured under this one. `src/game/inactivity.ts` holds the single
+constant. See §9 and `JUDGMENT_LOG.md` J-021.
 
 **Retained from v2.9** (2026-09-18) — Metal is Yan → Mazask → Tanka, with
 ATK/DEF/SPD/MINE 1/3/0/3, 1/4/1/4, 2/5/2/5. Yan cannot move but may attack
@@ -62,6 +60,12 @@ and moves the amber warning from 7 to 17, advancing the rules revision to
 `muju-phasing-2`. Nothing else changes; in particular, what counts as progress is
 untouched. Entries at or before v2.9 describe the ten-ply clock as it then stood
 and are history, not current rules.
+v3.1 (2026-09-21) retires the Standard ruleset; Phasing becomes the sole ruleset
+and is stated normatively here. No rule changes and no rules-revision advance:
+`muju-phasing-2` stands and no measurement is voided. Entries at or before v3.0
+describe the Standard turn order — a Place phase before actions, purchases that
+appear and act at once, upkeep at turn start — as it then stood; those
+turn-order descriptions are history, not current rules.
 
 ---
 
@@ -97,31 +101,63 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   online undo/replay history from the old rules is cleared at the upgrade.
 - **Optional Black crystal handicap:** New games may grant Black any whole
   number from 1 to 20 starting crystals (off/0 by default). White still starts
-  with 0. Black skips Place & Promote on turn 1 with 1–2 crystals; with 3–20,
-  Black enters that phase and pays normal purchase/promotion costs. The grant
-  is separate from mined income, is awarded only at game creation, and persists
-  in saves, online rooms and rematches. Both sides retain four actions.
-- **White moves first.** The first turn begins directly in the Action phase
-  (White has no starting crystals to place or promote).
+  with 0. The handicap never changes the opening phase: both players begin their
+  first turn in Act, Black included. The grant is separate from mined income,
+  is awarded only at game creation, and persists in saves, online rooms and
+  rematches. Both sides retain four actions.
+- **White moves first.** Every first turn begins in Act (§2); crystals are only
+  ever spent in Prepare, at the end of a turn.
+
+### Stored artefacts by rules revision
+
+Muju plays exactly one rule set. Every stored artefact still names the revision
+it was recorded under, and nothing is reinterpreted under a revision it was not
+recorded with.
+
+- **Online rooms.** Playable rooms are `muju-phasing-2` — the one revision new
+  rooms are created under and the only one the server opens. `muju-online-2`,
+  `muju-online-3`, `muju-online-4`, `muju-online-6` (Standard) and
+  `muju-phasing-1` are retired identifiers: those rows stay in the archive
+  exactly as written, are listed as retired, and refuse to open or mutate. They
+  are never migrated in place.
+- **Local saves.** Save schema 9 resumes Phasing games only. A stored save whose
+  ruleset is not Phasing is moved byte-for-byte to a retired slot, never resumed
+  and never reinterpreted; it stays reviewable read-only.
+- **Replays and move history.** Recorded boards, move labels and analysis text
+  are frozen as written under the revision that produced them.
+- **Opening corpora.** `p1-dev`, `p1-val` and `p1-sealed` are Phasing corpora
+  under `muju-phasing-2`.
+- **Strength records.** `docs/hard-ai/phasing/repair-2026-09-20/` was measured
+  under `muju-phasing-2` and remains valid. `docs/hard-ai/RELEASE-2026-09-18.md`
+  and every earlier Standard ladder, suite or balance study describe Standard and
+  are valid only for the `standard-final` tag; they are history, not evidence
+  about current play.
 
 ## 2. Turn structure
 
-A turn has two phases:
+A turn runs Act → mine and upkeep → Prepare, in that order:
 
-1. **Place phase** — in any order, buy any number of affordable **tier-1**
-   units on legal empty spawn squares, and promote units that were on the
-   board at the start of this phase. Each unit can promote at most once this
-   turn, never on its purchase/placement turn. Both verbs cost crystals and
-   **no actions**. Placed and promoted units act immediately. This phase is
-   skipped automatically when no legal purchase or promotion exists.
-2. **Action phase** — spend up to **4 shared actions**
-   (`getActionsPerTurn(state)`), on moves and attacks. Movement can repeat; attacks
-   obey Cleave (§4.2). The player may end early.
+1. **Act** — spend up to **4 shared actions** (`getActionsPerTurn(state)`) on
+   moves and attacks. Movement can repeat; attacks obey Cleave (§4.2). Units
+   that arrived at this turn's start (§5.3) act immediately. The player may end
+   Act early; spending every action does not end the turn.
+2. **`END_ACTION_PHASE` — mine, then pay upkeep.** Resolve passive mining once
+   for the mover (§5.1), then settle upkeep (§5.5) out of the stockpile that
+   mining has just refilled. Affordable upkeep is automatic unless review is
+   enabled; otherwise a mandatory affordable keep-set choice pauses here. This
+   command does not hand over.
+3. **Prepare** — in any order, promote actual pieces (§5.4) and pay for public
+   tier-1 summons by choosing their type and square (§5.2). Both verbs cost
+   crystals and **no actions**. Promotions apply immediately, but actions and
+   mining are already finished for this turn.
 
-At the end of the Action phase, resolve passive mining for the mover (§5.1),
-then update the inactivity counter and check the twenty-quiet-ply draw (§9).
-Income cannot be undone: undo is confined to the current turn. There is no
-queue phase, including when all actions have been spent.
+`END_PLACE_PHASE` ends the turn: it advances the inactivity counter once, checks
+the twenty-quiet-ply draw (§9) and hands play over. Preparation always ends
+explicitly, even when nothing is affordable. Income cannot be undone across the
+handoff: undo is confined to the current turn. There is no queue phase.
+
+One online time allowance covers the whole turn; a phase change never resets it.
+The server retains `turn.phase='place'` for Prepare.
 
 Tapping an empty reachable square moves immediately and keeps the piece selected.
 Undo restores the move and its action cost within the current turn, including online.
@@ -156,11 +192,16 @@ attacks. It previews a fresh enemy turn, independently of spent turn flags.
 If the game continues, start the next player's turn in this order:
 
 - Check their home occupation and existing board elimination (§9).
-- Pay upkeep (§5.5). A required keep-set choice pauses here; removing the last
-  unit loses by elimination.
-- Heal all their units and reset their move, attack, Cleave, placement and
+- Resolve all of their pending summons (§5.2) against that same board: a summon
+  becomes an actual tier-1 piece when its square is empty and inside a current
+  unblocked spawn rectangle (§5.3); otherwise it disappears and refunds its exact
+  original cost. Incoming pieces cannot support one another.
+- Heal all their units and reset their move, attack, Cleave, summon and
   promotion flags.
-- Enter Place, or skip to Action when Place has no legal decisions.
+- Enter Act with four shared actions.
+
+Upkeep is **not** paid at turn start. It is paid during the player's own turn, at
+`END_ACTION_PHASE`, after that turn's mining (§5.5).
 
 `turnNumber` increments when the turn passes back to White (a full round).
 
@@ -192,7 +233,7 @@ If the game continues, start the next player's turn in this order:
   is allowed at the normal cost; it neither restores nor consumes attack eligibility.
 - If a target survives, the attack chain ends for that unit this turn, including
   a zero-damage hit. A later kill by another unit does not reopen that chain.
-- A newly placed Tier I can attack immediately but cannot attack twice.
+- A newly arrived Tier I can attack immediately but cannot attack twice.
 - Combined attacks resolve individually; only the actual killing blow unlocks Cleave.
 - History includes eliminated targets (`attackedThisTurn`); `lastAttackKilled`
   records the result of this unit's last attack. Both reset on its owner's turn.
@@ -217,52 +258,74 @@ If the game continues, start the next player's turn in this order:
 
 ### 5.1 Mining
 
-At the end of your turn, every one of your units takes crystals from the square it stands on: up to its Mining stat, up to what the square holds.
+At `END_ACTION_PHASE`, after your actions and before Prepare, every one of your units takes crystals from the square it stands on: up to its Mining stat, up to what the square holds.
 The take is `min(Mining, reserve)`, reduces that square's reserve by the same amount, and enters your public bank and cumulative income.
-This applies unconditionally to moved, attacked, placed and promoted units; Mining 0 takes nothing, reserves never replenish, and there is no mine action or depth.
+This applies unconditionally to moved, attacked and newly arrived units; Mining 0 takes nothing, reserves never replenish, and there is no mine action or depth. Pending summons are not units and never mine.
 
 ### 5.2 Buying
 
-- During Place, pay a tier-1 unit's catalogue cost and immediately place it
-  on an empty square in an unblocked spawn rectangle (§5.3).
-- Buy any number, limited only by crystals and legal empty squares. Buying
-  costs no actions. Higher tiers cannot be bought.
+- During Prepare, pay a tier-1 unit's catalogue cost to commit a **public pending
+  summon**: its owner, unit type, square, paid cost and a unique ID, all visible
+  to both players. The piece does not appear yet.
+- A pending summon becomes an actual piece at your **next** turn start, if its
+  square is then empty and supported by a current unblocked spawn rectangle
+  (§5.3). Otherwise it disappears and refunds its exact original cost; there is
+  no relocation and no automatic replacement purchase. Only the arrival-time
+  position matters, so a temporary intrusion that has left again is harmless.
+- A pending summon is not a unit: it cannot occupy a square, block movement,
+  attack, be attacked, mine, promote, anchor or block a rectangle, occupy home,
+  incur upkeep, or postpone elimination. One own commitment per square; real
+  units may move through or stop on that square.
+- Commit any number, limited only by crystals and legal squares. Committing
+  costs no actions. Higher tiers cannot be bought. Ordinary within-turn undo can
+  revise a commitment before handoff.
 - There is no build queue, build time, readiness or separate tech requirement.
   Every tier-2 unit was a tier-1 on the board, and every tier-3 was a tier-2:
   this is structural, enforced by the promotion path, not another prerequisite.
 - The bank holds unspent purchasing power when spawns are blocked.
 
-### 5.3 Placement (spawning)
-- Newly bought tier-1 units are placed during Place at **no action cost**.
+### 5.3 Spawning (arrival)
+- A pending summon arrives at its owner's next turn start at **no action cost**.
 - **Spawn rectangle:** choose any friendly unit as an *anchor*; the rectangle
   spans from the player's start corner to the anchor (inclusive, both
   corners). If **no enemy unit is inside the rectangle**, the new unit may be
   placed on any **empty** square within it. Any enemy inside the rectangle
   blocks that anchor entirely (infiltration denies spawn zones).
-- Placed units can act immediately — there is **no summoning sickness**.
+- The rectangle test runs on the **arrival-turn** board, not on the board as it
+  stood when the summon was paid for. The opponent therefore has one full turn to
+  occupy the square or break its support.
+- **Arrivals act immediately** on the turn they arrive — a full turn after
+  payment. There is no summoning sickness, and there is no summon-and-strike: a
+  piece can never act on the turn it was paid for.
 
 ### 5.4 Promotion
-- During the place phase, pay `cost(next tier) − cost(current tier)` to
-  upgrade a unit to the next tier of its element, in place. This is always
-  4 crystals for T1 → T2 and 8 crystals for T2 → T3.
+- During Prepare — after Act and after this turn's mining — pay
+  `cost(next tier) − cost(current tier)` to upgrade a unit to the next tier of
+  its element, in place. This is always 4 crystals for T1 → T2 and 8 crystals
+  for T2 → T3. This turn's income can fund it.
 - Restrictions: cannot skip tiers; T3 cannot promote; a unit may be promoted
-  **at most once per turn**, and **not on a turn it was placed**.
-  It must have been on the board at the start of Place. A purchased tier-1
-  can first become tier-2 on its next own turn and tier-3 one own turn later,
-  giving the opponent two turns to contest that climb.
-- Promoted units can act immediately. Promotion is public information.
+  **at most once per turn**. A piece that **arrived this turn is eligible** to
+  promote at that turn's Prepare. Pending summons are not on the board and
+  cannot be promoted.
+- A committed tier-1 therefore arrives one own turn after payment and can first
+  become tier-2 at the end of that arrival turn, tier-3 one own turn later,
+  giving the opponent turns to contest both the arrival and the climb.
+- Promotion is public information. A promotion's new upkeep rate first applies
+  after mining on the next own turn (§5.5). A promoted piece does not act again
+  this turn: Act is already over.
 
 ### 5.5 Upkeep
 
-Each turn, before placement, pay 1 crystal for each of your tier-2 units and 2
-for each tier-3. Any unit you do not pay for is lost.
+Each turn, at `END_ACTION_PHASE` and immediately **after** that turn's mining,
+pay 1 crystal for each of your tier-2 units and 2 for each tier-3. Any unit you
+do not pay for is lost.
 Tier1 units are free and must always be kept during upkeep. Payment uses the existing stockpile and no actions.
-A promotion pays its new tier's rent beginning next own turn, not retroactively.
-Passive income arrives at the end of this turn and can fund rent at the start
-of the next own turn.
+A promotion pays its new tier's rent beginning after mining next own turn, not retroactively.
+Because mining settles first, this turn's income funds this turn's rent.
 
 When the stockpile covers the army, all units are kept and payment is automatic.
-Otherwise the place phase opens with a mandatory affordable keep-set choice.
+Otherwise `END_ACTION_PHASE` pauses with a mandatory affordable keep-set choice,
+before Prepare opens.
 The optional **Review upkeep each turn** menu setting allows voluntary release
 of tier2 and tier3 units even when all rent is affordable. Tier1 units cannot
 be released. Every legal keep-set must include all owned tier1 units and be
@@ -376,19 +439,27 @@ subtotal (`resourcesUpkeep`) is telemetry, not an additional charge.
 There is no hidden production or hidden spending ledger. For each game,
 `board reserves + White gained + Black gained = initial map total`
 (504 for new games; the stored original total for existing games); spending changes banks
-but never cumulative income. The AI receives the real state and searches it
-with ordinary MCTS. The former observation, belief, particle-filter and
-re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.
+but never cumulative income. The built-in AI receives the real state and searches
+it: easy and medium run `AIEngineV2` (MCTS with a beam and a tactical sharpener),
+and hard runs the `src/ai/hard` search engine (`?hardAi=0` opts a seat back to
+`AIEngineV2`'s hard preset). Both search the rules in this document. The former
+observation, belief, particle-filter and re-determinization rules in
+`AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.
 
 ## 9. Victory
 
-- **Home occupation:** at the start of your turn, before upkeep, healing,
-  placement or promotion, if your unit occupies the opponent's home corner, you win.
+- **Home occupation:** at the start of your turn, before pending summons resolve
+  and before healing, if your unit occupies the opponent's home corner, you win.
   White targets (9,9); Black targets (0,0). Entering the corner does not immediately
   win: the opponent has one full turn to remove the invader. Any element or tier
   qualifies; no additional action, countdown or occupation marker is required.
   An enemy on the home corner blocks every reinforcement rectangle under the
-  existing spawning rules. Existing units can still move, attack and promote.
+  existing spawning rules, including every pending arrival. Existing units can
+  still move, attack and promote.
+  An invader must survive its **own end-of-action upkeep** before immediate
+  home-checkmate can be adjudicated. The defender's rescue is judged on its
+  actual army and four actions, with no pre-action promotions and no upkeep
+  releases.
   In simultaneous invasion races, the first player's qualifying turn start wins.
   Loading a current-schema mid-turn position does not retroactively resolve an occupation.
 
@@ -398,9 +469,10 @@ re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.
   enemy kill by attack, end the game as a draw. A ply means one player's turn,
   not one action or full round (twenty plies are ten rounds). An attack kill resets
   the counter immediately and that turn ends at 0. Each completed turn without
-  a kill adds 1, even when it earns crystals. Chip attacks, movement, buying,
-  placement, promotion and upkeep removal do not reset it — what counts as progress
-  is deliberately unchanged by v3.0. The draw resolves
+  a kill adds 1, even when it earns crystals. Chip attacks, movement, summoning,
+  arrival, refunds, promotion and upkeep removal do not reset it — what counts as
+  progress is deliberately unchanged by v3.0 and v3.1. The clock advances once per
+  turn, at `END_PLACE_PHASE`. The draw resolves
   immediately at the end of the twentieth quiet turn. The next turn never begins:
   no home-win check, upkeep or healing can override the draw.
   Eliminating the last enemy during a turn still wins immediately. Saved draws
@@ -434,13 +506,14 @@ re-determinization rules in `AI_ENGINE_QUESTIONS.md` Q1–Q3 are superseded.
   `src/ai/simulate.ts` applies it. Invalid legacy mine/queue actions are rejected.
 - `src/ai/` contains public-state MCTS, beam and placement-template planning,
   evaluation and a tactical sharpener. Worker protocol 2 receives the real
-  state. WASM ABI 4 covers bounded tactical movement/attacks and constrained
+  state. WASM ABI 7 covers bounded tactical movement/attacks and constrained
   promotions; general purchasing/placement is outside its proof scope and
   returns unknown. JS independently validates successful tactical witnesses.
   See `docs/AI_IMPLEMENTATION_STATUS.md` for limits.
 - `lab/solver/` models passive finite-cell income, buy/promote financing and
   tactical frontiers. Historical map studies stay frozen under `lab/maps/`.
-- UI and tutorial use the catalogue/map constants; saves use schema 6.
+- UI and tutorial use the catalogue/map constants; saves use schema 9
+  (see §1, "Stored artefacts by rules revision").
 
 ## 11. Design intent and evidence
 
