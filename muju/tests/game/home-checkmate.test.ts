@@ -8,25 +8,39 @@ import { loadGameState, saveGameState } from '../../src/utils/persistence';
 import type { PlayerId, Unit } from '../../src/game/types';
 
 const unit = (definition: string, x: number, y: number, owner: PlayerId = 'black') => createUnit(definition, owner, { x, y });
+/**
+ * `searchHomeDefense` still has two branches: under Phasing the defender's
+ * standing army is the whole rescue set, and under the retired rules it first
+ * runs `prepare` (upkeep choice, then promotions) — `src/game/homeCheckmate.ts:160`,
+ * a file this cutover deliberately leaves untouched. The prover cases below pin
+ * that `prepare` branch and therefore say `'standard'` out loud; they go when the
+ * branch does (see the Phasing rescue-set case at the foot of this file).
+ */
 function occupied(definition: string, defenders: Unit[], cash = 0) {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, 4, 0, 'standard');
   state.board.units = [unit(definition, 9, 9, 'white'), ...defenders];
   state.players.black.resources = cash;
   return state;
 }
 const defense = (state: ReturnType<typeof occupied>) => analyzeHomeDefense(state, 'white', applyAction);
 
-it.each(['white', 'black'] as const)('wins immediately on arrival for %s when no defender can reach home', player => {
-  const state = createInitialGameState(), corner = player === 'white' ? 9 : 0, other = player === 'white' ? 'black' : 'white';
+// Phasing makes the invader survive its own end-of-action upkeep before it can
+// force a reply (`homeCheckmate.ts:179`), so arrival is not the moment of mate:
+// Mine & prepare is. The win is still the mover's, in the mover's own turn.
+it.each(['white', 'black'] as const)('adjudicates an unanswerable arrival at Mine & prepare for %s', player => {
+  const state = createInitialGameState(undefined, 4, 0, 'phasing'), corner = player === 'white' ? 9 : 0, other = player === 'white' ? 'black' : 'white';
   const invader = createUnit('plant_1', player, { x: corner, y: corner === 9 ? 8 : 1 });
   state.turn.currentPlayer = player;
   state.board.units = [invader, createUnit('fire_1', other, { x: 4, y: 4 })];
   const move = { type: 'MOVE' as const, unitId: invader.id, to: { x: corner, y: corner } };
-  const result = applyAction(state, move);
-  expect(result).toMatchObject({ phase: 'victory', winner: player, victoryReason: 'home-checkmate', turn: { currentPlayer: player, actionsRemaining: 3 } });
+  const arrived = applyAction(state, move);
+  expect(arrived).toMatchObject({ phase: 'playing', turn: { currentPlayer: player, phase: 'action', actionsRemaining: 3 } });
+  const result = applyAction(arrived, { type: 'END_ACTION_PHASE' });
+  expect(result).toMatchObject({ phase: 'victory', winner: player, victoryReason: 'home-checkmate', turn: { currentPlayer: player } });
   expect(getAllSpawnPositions(other, result.board)).toEqual([]);
-  expect(gameReducer(state, move)).toEqual(result);
-  expect(gameReducer(state, { type: 'MOVE_AND_ATTACK', unitId: invader.id, to: move.to, targetPosition: { x: 4, y: 4 } })).toEqual(result);
+  // The reducer keeps the mover selected now that arrival is not yet terminal.
+  expect(gameReducer(state, move)).toMatchObject({ phase: 'playing', board: arrived.board, turn: arrived.turn });
+  expect(gameReducer(arrived, { type: 'END_ACTION_PHASE' })).toEqual(result);
   expect(applyAction(result, { type: 'END_ACTION_PHASE' })).toBe(result);
   saveGameState(result); expect(loadGameState()).toEqual(result);
 });
@@ -104,4 +118,17 @@ it('resolves after killing the last rescuer, while preserving an earlier opposin
   const legacy = occupied('metal_3', [unit('plant_1', 3, 3)]);
   legacy.victoryRule = 'elimination';
   expect(resolveHomeCheckmate(legacy, applyAction)).toBe(legacy);
+});
+
+it('gives a Phasing defender only the army it already has', () => {
+  // The same position the retired prover rescues with a speed promotion: under
+  // Phasing the defender acts before upkeep and promotion, so it is mate.
+  const promotable = createInitialGameState(undefined, 4, 0, 'phasing');
+  promotable.board.units = [unit('fire_1', 9, 9, 'white'), unit('lightning_1', 0, 7)];
+  promotable.players.black.resources = 4;
+  expect(analyzeHomeDefense(promotable, 'white', applyAction)).toBe('mate');
+  // A rescue its standing army can actually carry out is still a rescue.
+  const standing = createInitialGameState(undefined, 4, 0, 'phasing');
+  standing.board.units = [unit('metal_3', 9, 9, 'white'), unit('fire_1', 9, 7), unit('fire_1', 8, 9)];
+  expect(analyzeHomeDefense(standing, 'white', applyAction)).toBe('rescue');
 });
