@@ -37,7 +37,7 @@ describe('the kill clock is stated as ten plies, decided on mined totals, everyw
     // Since 2026-09-21 `rulesFor()` takes no argument: the base object IS the
     // played rules, so there is one victory sentence to check, not two.
     const payload = rulesFor();
-    expect(payload.ruleset).toMatchObject({ name: 'phasing', revision: 'muju-phasing-3', retired: ['standard'] });
+    expect(payload.ruleset).toMatchObject({ name: 'phasing', revision: 'muju-phasing-4', retired: ['standard'] });
     expect(payload.victory).toContain(`${INACTIVITY_LIMIT} consecutive kill-free player turns`);
     expect(payload.victory).toMatch(/higher.*mined total/i);
     expect(payload.victory).toMatch(/kill is any attack that removes a unit/i);

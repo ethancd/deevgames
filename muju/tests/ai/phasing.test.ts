@@ -177,11 +177,12 @@ it('fixed-work Phasing self-play is reproducible, purchases and terminates legal
   expect(a.illegalActions).toBe(0);
   expect(a.turns).toBeLessThan(400);
   // The screening row must label itself with the revision it was actually played
-  // under, keyed on the clock's limit AND its verdict (10 plies + mined-total ->
-  // `muju-phasing-3`), never guessed from the limit alone — a limit of 10 also
-  // matched `muju-phasing-1`'s draw verdict, so a numeric-only check would have
+  // under, keyed on the clock's limit, its verdict AND the Cleave chain (10 plies
+  // + mined-total + unbounded -> `muju-phasing-4`), never guessed from the limit
+  // alone — a limit of 10 also matched `muju-phasing-1`'s draw verdict and
+  // `muju-phasing-3`'s tier-capped chain, so a numeric-only check would have
   // silently mislabeled a screening row.
   expect(a.rules).toBe(LADDER_RULES_VERSION);
-  expect(a.rules).toBe('muju-phasing-3');
+  expect(a.rules).toBe('muju-phasing-4');
   expect(rulesetForRevision(a.rules, 'phasing self-play smoke')).toBe('phasing');
 }, 30000);

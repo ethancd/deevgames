@@ -24,7 +24,15 @@ import { DEFAULT_AI_PACE, isAIPace, type AIPace } from '../ai/turnTime';
 // once under the clock it was RECORDED with, then — if it is still playing —
 // restarted at 0 for the live kill clock, exactly as v8 did the last time this
 // clock's meaning changed. See `loadGameState`.
-export const SCHEMA_VERSION = 10;
+// v11 (rules revision `muju-phasing-4`, 2026-09-23): Cleave has no tier cap.
+// Owner decision: an unfinished v10 save resumes under the new rule as it
+// stands — kill clock included, since the clock did not change — and is
+// restamped v11. Its stored unit fields mean the same thing under both
+// revisions, so nothing is adjudicated or rewritten.
+export const SCHEMA_VERSION = 11;
+
+/** The schema that first recorded the kill clock (`muju-phasing-3`). */
+const KILL_CLOCK_SCHEMA = 10;
 
 /** The schema that first recorded the twenty-ply draw clock (`muju-phasing-2`); schema 5-7 (`muju-phasing-1`) counted ten plies to a draw instead. */
 const TWENTY_PLY_CLOCK_SCHEMA = 8;
@@ -36,7 +44,7 @@ const TWENTY_PLY_CLOCK_SCHEMA = 8;
 export const PHASING_1_DRAW_LIMIT = 10;
 
 /** Every save schema this build still reads. Anything else starts a fresh game. */
-const READABLE_SCHEMA_VERSIONS: readonly number[] = [5, 6, 7, TWENTY_PLY_CLOCK_SCHEMA, 9, SCHEMA_VERSION];
+const READABLE_SCHEMA_VERSIONS: readonly number[] = [5, 6, 7, TWENTY_PLY_CLOCK_SCHEMA, 9, KILL_CLOCK_SCHEMA, SCHEMA_VERSION];
 
 const STORAGE_KEY = 'elemental-tactics-save';
 /**
@@ -147,10 +155,11 @@ export function loadGameState(): GameState | null {
     // limit and verdict it was RECORDED with — a game that had already drawn keeps
     // that result — and a position that is still playing restarts its clock at 0 for
     // the live kill clock, instead of carrying a count whose meaning changed twice
-    // over. It never revives a finished game. A v10 save uses the live kill clock
-    // directly (`legacyClock` is null).
+    // over. It never revives a finished game. A v10 or v11 save uses the live kill
+    // clock directly (`legacyClock` is null); a v10 save only picks up the
+    // uncapped Cleave chain (`muju-phasing-4`) from its next attack.
     const legacyClock = persisted.schemaVersion < TWENTY_PLY_CLOCK_SCHEMA ? { limit: PHASING_1_DRAW_LIMIT, verdict: 'draw' as const }
-      : persisted.schemaVersion < SCHEMA_VERSION ? { limit: LEGACY_INACTIVITY_LIMIT, verdict: 'draw' as const }
+      : persisted.schemaVersion < KILL_CLOCK_SCHEMA ? { limit: LEGACY_INACTIVITY_LIMIT, verdict: 'draw' as const }
       : null;
     const adjudicated = resolveInactivityDraw({ ...persisted.state, actionsPerTurn: getActionsPerTurn(persisted.state) },
       legacyClock?.limit, legacyClock?.verdict);

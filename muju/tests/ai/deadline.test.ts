@@ -41,9 +41,11 @@ for (const unavailable of ['no actions', 'spent attack', 'cannot act', 'not leth
     const { state, attacker, target } = adjacentCapture('black');
     if (unavailable === 'no actions') state.turn.actionsRemaining = 0;
     if (unavailable === 'spent attack') {
+      // A closed chain: its last attack did not kill. (A killing blow would keep the
+      // chain live at any tier since muju-phasing-4.)
       attacker.hasAttacked = true;
-      attacker.attackedThisTurn = ['previously-captured-unit'];
-      attacker.lastAttackKilled = true;
+      attacker.attackedThisTurn = ['surviving-unit'];
+      attacker.lastAttackKilled = false;
     }
     if (unavailable === 'cannot act') attacker.canActThisTurn = false;
     if (unavailable === 'not lethal') target.definitionId = 'water_3';

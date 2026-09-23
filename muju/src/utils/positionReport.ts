@@ -54,7 +54,7 @@ export interface PositionReport {
   kind: 'muju-phasing-preview-report';
   version: number;
   capturedAt: string;
-  /** `muju-phasing-3` for a Phasing game; the Standard set has no revision id. */
+  /** `muju-phasing-4` for a Phasing game; the Standard set has no revision id. */
   rulesRevision: string | null;
   ruleset: GameState['ruleset'];
   difficulty: AIDifficulty;

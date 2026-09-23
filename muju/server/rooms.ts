@@ -20,30 +20,41 @@ import { assertMatchCapability, allowsMatchCapability } from './matchPolicy';
 import { completeClockTurn, newClockHistory, projectClockPressure, type ClockHistory } from './clockPressure';
 
 /**
- * The ONE rules revision this host plays. Kill clock (2026-09-22, rules revision
- * `muju-phasing-3`) replaced the twenty-ply inactivity draw: ten kill-free plies
- * end the game on the higher mined total, tie draws. `muju-phasing-3` is now the
- * only version a room can be created under, listed as active under, or opened
- * under.
+ * The ONE rules revision this host plays. `muju-phasing-4` (2026-09-23) removed
+ * Cleave's tier cap: each kill unlocks another attack, bounded only by the four
+ * shared actions. It keeps `muju-phasing-3`'s kill clock (2026-09-22: ten
+ * kill-free plies end the game on the higher mined total, tie draws).
+ * `muju-phasing-4` is the only version a room can be created under, listed as
+ * active under, or opened under.
  *
  * Every other version a row can carry — `muju-online-2`, `muju-online-3`,
  * `muju-online-4`, `muju-online-5` (reserved by the unmerged T5 branch
  * `codex/phasing-only-canonical` and never written here), `muju-online-6`,
- * `muju-phasing-1` and `muju-phasing-2` — is RETIRED. A retired row keeps its
+ * `muju-phasing-1`, `muju-phasing-2` and a finished or archived
+ * `muju-phasing-3` room — is RETIRED. A retired row keeps its
  * bytes untouched and takes the changed-rules path in `read()`: RULES_CHANGED,
  * never a silent reinterpretation, never an in-place migration and never a
  * delete. That is already what production returns for every such row, now
  * joined by every room still open under the twenty-ply draw clock at cutover.
  *
+ * THE ONE EXCEPTION (owner decision 2026-09-23): a `muju-phasing-3` room that is
+ * unfinished and not archived is restamped `muju-phasing-4` once, by
+ * `upgradeUncappedCleaveRooms` when the host starts. The change only lifts a
+ * cap, and every stored unit field (`attackedThisTurn`, `lastAttackKilled`)
+ * means the same thing under both revisions, so continuing the game is not a
+ * reinterpretation of anything already played; the kill clock carries over.
+ *
  * `PHASING_RULES_VERSION` moves only for an incompatible rules change; this is
- * one (the terminal's verdict changed from draw to mined-total). `read()` is a
- * hard allow-list, so a new string 409s the rooms open before this bump — the
- * precedent this repeats (muju-phasing-1 -> muju-phasing-2, 2026-09-19). It is a
+ * one (Cleave lost its tier cap; `muju-phasing-3` before it changed the kill
+ * clock's verdict). `read()` is a hard allow-list, so a new string 409s every
+ * room open before the bump except those `upgradeUncappedCleaveRooms` restamps. It is a
  * separate string from the lab identity key (`src/ai/hard/config.ts`
  * `PHASING_RULES_REVISION`); they are kept equal by convention, not by import,
  * and the hard-ai lane bumps its own copy.
  */
-export const PHASING_RULES_VERSION = 'muju-phasing-3';
+export const PHASING_RULES_VERSION = 'muju-phasing-4';
+/** The one revision whose live rooms upgrade in place to `PHASING_RULES_VERSION`. */
+export const UPGRADABLE_RULES_VERSION = 'muju-phasing-3';
 /**
  * The last Standard revision this host ever wrote. Exported so tests and tools
  * can name it; never creatable, never accepted by `read()`.
@@ -116,6 +127,7 @@ export class RoomStore {
       }
       this.db.exec('CREATE INDEX IF NOT EXISTS rooms_idle ON rooms(idle_at) WHERE idle_at IS NOT NULL');
       this.db.exec('CREATE INDEX IF NOT EXISTS rooms_archive ON rooms(archived_at DESC, id DESC) WHERE archived_at IS NOT NULL');
+      this.upgradeUncappedCleaveRooms();
       // Older servers tracked only updatedAt. Use that last known activity once;
       // subsequent joins, reads and preference edits cannot extend this deadline.
       for (const row of this.db.prepare('SELECT data FROM rooms WHERE idle_at IS NULL AND archived_at IS NULL').all()) {
@@ -129,6 +141,22 @@ export class RoomStore {
     this.clockTimer.unref();
   }
   close() { clearInterval(this.clockTimer); this.shutdown.abort(); this.db.close(); }
+  /**
+   * Owner decision 2026-09-23: a `muju-phasing-3` room that is unfinished and not
+   * archived continues under `muju-phasing-4` (Cleave without a tier cap).
+   * Only the stamp changes — the board, clocks, history and every unit field
+   * stay byte-for-byte as stored, since they mean the same under both
+   * revisions. Finished and archived rooms keep their stamp and stay retired.
+   * Idempotent: an upgraded row no longer matches.
+   */
+  private upgradeUncappedCleaveRooms() {
+    const upgraded = this.db.prepare(`UPDATE rooms SET data = json_set(data, '$.rulesVersion', ?)
+      WHERE archived_at IS NULL AND json_extract(data, '$.rulesVersion') = ?
+      AND json_extract(data, '$.state.phase') <> 'victory'`).run(PHASING_RULES_VERSION, UPGRADABLE_RULES_VERSION);
+    if (Number(upgraded.changes) > 0) {
+      console.log(`Muju rooms: ${upgraded.changes} ${UPGRADABLE_RULES_VERSION} room(s) continue under ${PHASING_RULES_VERSION}.`);
+    }
+  }
   /** Indexed sweep also adjudicates rooms with no connected clients, including after restart. */
   private settleDue() {
     try {
