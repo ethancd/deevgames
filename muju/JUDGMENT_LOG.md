@@ -630,3 +630,60 @@ User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan t
   already designed to be pinned), high in evidence — reverting would void every
   `muju-phasing-3` measurement the same way this change voids `muju-phasing-2`
   ones.
+
+## J-025: Cleave has no tier cap (SPEC v3.4, rules revision `muju-phasing-3` -> `muju-phasing-4`, 2026-09-23)
+
+- **Date:** 2026-09-23. Owner decision (Ethan), recorded in
+  `muju/docs/changes/2026-09-23-unlimited-cleave-SPEC.md`. **Supersedes the
+  clause of J-011 that kept Cleave "capped by tier (1/2/3)"**; the rest of
+  J-011 stands.
+- **Decision — the rule:** every unit begins its turn with one attack, and each
+  of its own killing blows unlocks one further attack, with no maximum. The
+  former cap of tier attacks per turn (I: 1, II: 2, III: 3) is removed, so a
+  Tier I chains exactly as a Tier III does. The owner's example: a Hi (Fire I,
+  ATK 2, +1 against Plant) surrounded by four Muju (DEF 3) at the start of its
+  turn kills all four, one after another, in a single turn.
+- **Deliberately NOT changed:** each attack costs one of the four shared
+  actions, which is now the only bound (at most four attacks per unit per
+  turn); a surviving target, including a zero-damage hit, ends that unit's
+  chain; a later kill by another unit does not reopen it; a unit cannot attack
+  the same target twice; moving between attacks is allowed; combined attacks
+  resolve individually and only the actual killing blow unlocks the next
+  attack; what counts as a kill for the kill clock. Newly arrived units could
+  already attack immediately — the old "cannot attack twice" clause for a new
+  Tier I was only the tier cap restated.
+- **Rationale:** simplification. The chain condition becomes one test ("no
+  attack yet, or your last attack killed") instead of two, and the rule no
+  longer needs a per-tier table. The shared action pool already bounds the
+  chain. What the cap used to do — stop a cheap Tier I from converting a
+  crowded position into several kills — is now left to the action pool and to
+  matchups; its effect on balance and strategy is **unmeasured** and no
+  balance claim is made here.
+- **Implementation:** `canAttack` (`src/game/combat.ts`) drops the
+  `count < tier` term; `CLEAVE_CHAIN = 'unbounded'` names the rule so lab
+  revision mapping can key on it. Every duplicate of the rule was changed with
+  it: the WASM tactics kernel (ABI 7 -> 8), and the hard engine's replica,
+  kill/threat/approach tables, prover and evaluation features, whose
+  attack-count Zobrist plane gained an appended value for a fourth attack.
+- **Blast radius:** rules revision `muju-phasing-3` -> `muju-phasing-4`. Every
+  identity hash carried by a ladder row, suite measurement or Gate 1 row
+  changes. Void until redone: every `muju-phasing-3` strength, ladder and suite
+  measurement, including `docs/hard-ai/RELEASE-2026-09-23-phasing-3-retune.md`.
+  The hard engine is made rules-correct only; its weights are not retuned
+  (see `docs/hard-ai/PHASING-4-UNLIMITED-CLEAVE-2026-09-23.md`). The static
+  balance model has no Cleave term and is unaffected. Academy lesson R03 ("The
+  Bonk Lab") states the per-tier maximum and demonstrates a Honō that "cannot
+  attack a third time"; both are now wrong and await re-narration.
+- **Compatibility (owner decision):** unlike the previous two revision bumps,
+  unfinished games are upgraded in place, because the change only lifts a cap
+  and every stored unit field (`attackedThisTurn`, `lastAttackKilled`) means
+  the same thing under both revisions. Local save schema 10 -> **11**: a
+  schema-10 save resumes under the new rule and keeps its kill clock. Online
+  rooms: a `muju-phasing-3` room still playing and not archived is restamped
+  `muju-phasing-4` once when the host starts; finished and archived
+  `muju-phasing-3` rooms keep their stamp and are retired. Finished results
+  and recorded move history are never re-simulated.
+- **Reversal cost:** low in code (one term in `canAttack` and its mirrors),
+  high in evidence — reverting would void every `muju-phasing-4` measurement
+  the same way this change voids `muju-phasing-3` ones, and upgraded rooms
+  could not be restored to their old stamp.

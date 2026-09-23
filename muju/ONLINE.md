@@ -570,18 +570,23 @@ matchmaking service. No paid infrastructure is provisioned
 by these files.
 
 Saved rooms have a rules version. One constant survives:
-`PHASING_RULES_VERSION` in `server/rooms.ts`, currently `muju-phasing-3` — bump it
+`PHASING_RULES_VERSION` in `server/rooms.ts`, currently `muju-phasing-4` — bump it
 when changing incompatible game rules. The Standard constant is retired: it is
 exported as `RETIRED_STANDARD_VERSION` so stored rows can still be recognised,
 and no room is ever created under it.
 Older rooms fail with an explicit error instead of silently continuing under
 different rules.
 
-New rooms are **`muju-phasing-3`** (the kill clock: ten kill-free plies decided
-on the higher mined total, 2026-09-22), and that is the only revision the server
-opens. `muju-online-2`, `muju-online-3`, `muju-online-4`, `muju-online-5`,
-`muju-online-6`, `muju-phasing-1` and `muju-phasing-2` (the twenty-ply inactivity
-draw, 2026-09-19) are retired identifiers on the `RULES_CHANGED` path. A stored
+New rooms are **`muju-phasing-4`** (Cleave without a tier cap, 2026-09-23, on
+top of `muju-phasing-3`'s kill clock: ten kill-free plies decided on the higher
+mined total), and that is the only revision the server opens. `muju-online-2`,
+`muju-online-3`, `muju-online-4`, `muju-online-5`, `muju-online-6`,
+`muju-phasing-1`, `muju-phasing-2` (the twenty-ply inactivity draw, 2026-09-19)
+and finished or archived `muju-phasing-3` rooms are retired identifiers on the
+`RULES_CHANGED` path. The one exception (owner decision 2026-09-23): an
+unfinished, unarchived `muju-phasing-3` room is restamped `muju-phasing-4` once
+when the host starts and plays on under the uncapped chain, because that change
+only lifts a cap and every stored field means the same thing under both. A stored
 room under any of them is never replayed under current rules and is never
 migrated in place: its row stays in the database untouched, the active-games
 lobby omits it, the archived list still shows its result and labels it retired,
@@ -589,7 +594,8 @@ and any read or command returns `RULES_CHANGED` ("This room uses older rules.
 Create a new room."). The in-place upgrade that version-2/3 rooms once received
 is gone with the Standard retirement — reinterpreting a stored room under a
 different rule set is exactly what this path exists to prevent.
-See `SPEC.md` §1 "Stored artefacts by rules revision" and `JUDGMENT_LOG.md` J-022.
+See `SPEC.md` §1 "Stored artefacts by rules revision", `JUDGMENT_LOG.md` J-022
+and J-025.
 
 ## HTTP API and verification
 

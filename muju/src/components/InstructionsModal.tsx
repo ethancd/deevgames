@@ -59,7 +59,7 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
   </>},
   {title:'Combat & Cleave',content:<>
     <p>Attack an orthogonally adjacent enemy for one action. Damage accumulates until that enemy’s next turn; reaching zero defense eliminates it. There is no retaliation. Pending summons cannot be attacked.</p>
-    <p>A killing blow unlocks another attack, up to the attacker’s tier: 1 / 2 / 3 attacks. A surviving target ends the chain. A piece cannot attack the same target twice in one turn.</p>
+    <p>A killing blow unlocks another attack by the same piece, at any tier, as long as shared actions remain. A surviving target ends the chain. A piece cannot attack the same target twice in one turn.</p>
     <p>Move between attacks if actions remain. Units arriving at turn start can act immediately. End-of-turn promotions cannot attack until their next turn.</p>
   </>},
   {title:'Elements', content:<>
