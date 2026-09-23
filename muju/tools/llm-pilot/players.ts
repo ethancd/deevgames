@@ -39,6 +39,15 @@ function clockVars(gameDir: string): { delaySeconds: string; bankSeconds: string
   try { clock = JSON.parse(readFileSync(path.join(gameDir, 'manifest.json'), 'utf8')).timeControl ?? clock; } catch { /* not yet written */ }
   return { delaySeconds: String(clock.delaySeconds), bankSeconds: String(clock.bankSeconds) };
 }
+/** Identity fields the reflection template asks for, from manifest.json (no secrets). */
+function identityVars(gameDir: string): { engineIdentity: string; snapshotVersion: string } {
+  try {
+    const manifest = JSON.parse(readFileSync(path.join(gameDir, 'manifest.json'), 'utf8'));
+    const engine = manifest.engine ?? {};
+    return { snapshotVersion: `v${manifest.snapshotVersion ?? '?'}`,
+      engineIdentity: `${engine.name ?? 'Hard'} ${engine.profile ?? ''} ${engine.targetMs ?? '?'}ms target / ${engine.deadlineMs ?? '?'}ms deadline, rules ${engine.rulesId ?? '?'}, source ${String(engine.sourceSha256 ?? '?').slice(0, 12)}` };
+  } catch { return { engineIdentity: 'unknown', snapshotVersion: 'unknown' }; }
+}
 
 export interface RunPlayerArgs {
   gameDir: string;
@@ -362,7 +371,7 @@ export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
   const { roomId } = JSON.parse(readFileSync(path.join(args.gameDir, 'secrets', 'seat.json'), 'utf8')) as { roomId: string };
   const vars = { gameId: args.gameId, roomId, placeholderToken: PLACEHOLDER_TOKEN, seat: args.seat, seatColor: args.seat === 'white' ? 'White' : 'Black',
     handicap: String(handicap), tier: args.tier, model: cliModel, effort: args.effort, brief: args.brief,
-    ...clockVars(args.gameDir) };
+    ...clockVars(args.gameDir), ...identityVars(args.gameDir) };
   const templatePath = args.reflectionTemplatePath ?? DEFAULT_REFLECTION_TEMPLATE;
   await writeFile(path.join(workspace, 'reflection-template.md'), await readFile(templatePath, 'utf8'), 'utf8');
   const playPrompt = renderTemplate(await readFile(path.join(HERE, 'prompts', 'player.md'), 'utf8'), vars);

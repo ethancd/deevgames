@@ -10,7 +10,9 @@ that will be checked mechanically before this record is trusted:
   factual claim in "Critical evidence" and "Updates to shared knowledge".
   A claim with no reference will be dropped by the publisher, not corrected.
 - Use exactly the identity fields given at the start of this game (game ID,
-  seat, handicap, tier, model/effort) — do not paraphrase them.
+  seat, handicap, tier, model/effort) — do not paraphrase them. For the
+  remaining identity fields use: engine build/budget `{{engineIdentity}}`;
+  starting memory version `{{snapshotVersion}}`; room `{{roomId}}`.
 - Distinguish, explicitly, what you observed from what you are hypothesizing
   from what you verified as a legal alternative (checked with `muju_preview`
   or `muju_analyze`, if your tier allowed it) versus merely imagined. Winning
