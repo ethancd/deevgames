@@ -2,7 +2,6 @@ import { createHash } from 'node:crypto';
 import { appendFileSync, chmodSync, closeSync, existsSync, mkdirSync, openSync, readFileSync, readdirSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { withHeavySlot } from '../../lab/hard-ai/ladder/heavy';
 import { ENGINE_ALLOWANCE_MS, runSeat, type SeatJournal } from './runner';
 import { assertSeatConfiguration, initializeSeat, seatConfigSchema, seatJournalSchema } from './config';
 
@@ -24,7 +23,14 @@ async function main() {
   if (process.argv.length !== 3) throw new Error('Usage: node --import tsx tools/engine-seat/main.ts /private/path/config.json');
   if (process.env.MUJU_HEAVY_BYPASS === '1') throw new Error('Engine seat must use the shared heavy-work queue.');
   const config = seatConfigSchema.parse(JSON.parse(readFileSync(resolve(process.argv[2]), 'utf8')));
-  await withHeavySlot('engine-seat-deep', async () => {
+  const source = sourceIdentity();
+  // A research readiness claim is only truthful if it names THIS checkout's
+  // actual source hash; a stale or hand-typed hash is caught here, before any
+  // room admission or search, rather than trusted from the config file.
+  const claimedHash = config.researchReadiness?.engineSourceSha256;
+  if (claimedHash !== undefined && claimedHash !== source.sha256) {
+    throw new Error(`Research readiness claims engineSourceSha256 ${claimedHash}, but this checkout is ${source.sha256}.`);
+  }
   const stateFile = resolve(config.stateFile), lock = `${stateFile}.lock`;
   mkdirSync(dirname(stateFile), { recursive: true, mode: 0o700 });
   mkdirSync(lock, { mode: 0o700 });
@@ -49,11 +55,13 @@ async function main() {
     const log = (event: Record<string, unknown>) => appendFileSync(`${stateFile}.jsonl`, `${JSON.stringify({ at: new Date().toISOString(), ...event })}\n`, { mode: 0o600 });
     log({ event: 'start', roomId: config.roomId, player: journal.connection.player, seed: journal.seed,
       contract: journal.contract, admission: journal.admission,
-      profile: 'desktop', allowanceMs: ENGINE_ALLOWANCE_MS, source: sourceIdentity(), resumed });
+      profile: 'desktop', allowanceMs: ENGINE_ALLOWANCE_MS, source, resumed });
     const controller = new AbortController();
     process.once('SIGINT', () => controller.abort()); process.once('SIGTERM', () => controller.abort());
+    // The heavy slot is now acquired PER SEARCH, inside runSeat's turn loop —
+    // not held for the whole game — so nothing is held here across the
+    // opponent's turns or network waits.
     await runSeat({ journal, save, log, signal: controller.signal });
   } finally { rmSync(lock, { recursive: true }); }
-  });
 }
 main().catch(error => { console.error(error instanceof Error ? error.message : 'Engine seat failed.'); process.exitCode = 1; });

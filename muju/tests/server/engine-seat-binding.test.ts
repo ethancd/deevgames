@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest';
 import type { Server } from 'node:http';
 import { RoomStore } from '../../server/rooms';
 import { createApp } from '../../server/http';
@@ -12,6 +12,12 @@ import { PHASING_HARD_READINESS } from '../../tools/engine-seat/contract';
 
 /** The seat is Phasing-only and default-closed; see `tests/lab/engine-seat.test.ts`. */
 const READINESS = { phasingHardReadiness: PHASING_HARD_READINESS } as const;
+
+// `runSeat` acquires a real heavy-work slot per search (Component A); bypass
+// it here so this identity-binding test never touches the shared queue.
+const previousBypass = process.env.MUJU_HEAVY_BYPASS;
+beforeAll(() => { process.env.MUJU_HEAVY_BYPASS = '1'; });
+afterAll(() => { if (previousBypass === undefined) delete process.env.MUJU_HEAVY_BYPASS; else process.env.MUJU_HEAVY_BYPASS = previousBypass; });
 
 const cleanups: (() => Promise<void>)[] = [];
 afterEach(async () => { for (const close of cleanups.splice(0).reverse()) await close(); });

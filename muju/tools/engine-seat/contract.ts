@@ -15,14 +15,38 @@ export const PHASING_HARD_READINESS = 'M7-passed';
 
 const readiness = z.literal(PHASING_HARD_READINESS).optional();
 
+/**
+ * A truthful, version-pinned ALTERNATIVE to `phasingHardReadiness: "M7-passed"`
+ * for a specific research campaign. It is additive, never a replacement: a
+ * contract carrying this field MUST NOT also set `phasingHardReadiness` to the
+ * M7 literal, because that would be claiming a release gate this run never
+ * passed. `rulesId` pins the deployed ruleset revision the room was created
+ * under; `engineSourceSha256` pins the exact checkout this seat runs (checked
+ * against `sourceIdentity()` in `main.ts` before any admission or search);
+ * `readinessEvidence` is a short human-written summary of the verified-seat
+ * check that grounded the claim (e.g. a smoke-match result with its room id).
+ * Old (pre-research) journals carry no such field and still parse: it is
+ * `.optional()`, like `phasingHardReadiness` beside it.
+ */
+export const researchReadinessSchema = z.object({
+  kind: z.literal('research'),
+  campaign: z.string().min(1).max(200),
+  rulesId: z.string().min(1).max(200),
+  engineSourceSha256: z.string().regex(/^[a-f0-9]{64}$/),
+  readinessEvidence: z.string().min(1).max(2000),
+}).strict();
+export type ResearchReadiness = z.infer<typeof researchReadinessSchema>;
+const researchReadiness = researchReadinessSchema.optional();
+
 export const seatContractSchema = z.discriminatedUnion('mode', [
-  z.object({ mode: z.literal('phasing-smoke'), phasingHardReadiness: readiness }).strict(),
+  z.object({ mode: z.literal('phasing-smoke'), phasingHardReadiness: readiness, researchReadiness }).strict(),
   z.object({ mode: z.literal('pinned'),
     expectedMatchPolicy: z.object({ version: z.literal(1), toolTier: z.enum(['bare', 'harnessed', 'centaur', 'tool-builder']),
       protocolId: z.string().min(1).max(100).regex(/^[a-zA-Z0-9._-]+$/) }).strict(),
     expectedTimeControl: z.object({ delaySeconds: z.number().int().min(0).max(600), bankSeconds: z.number().int().min(1).max(14400) }).strict(),
     expectedHandicap: z.number().int().min(0).max(MAX_BLACK_CRYSTAL_HANDICAP),
     phasingHardReadiness: readiness,
+    researchReadiness,
   }).strict(),
 ]);
 export type SeatContract = z.infer<typeof seatContractSchema>;
@@ -49,18 +73,22 @@ export function assertAuthenticatedSeat(room: RoomSnapshot, player: PlayerId): v
  *    checkpoint that misses two pre-registered floors
  *    (`docs/hard-ai/phasing/M6-STATUS.md`) — and the production AI guards
  *    (`src/ai/worker/handler.ts` refusing Phasing, and the UI gates) stay shut.
- *    So the seat refuses unless the contract carries
- *    `phasingHardReadiness: "M7-passed"` VERBATIM. An absent field, a call with
- *    no expected contract at all, and (by the schema) any other value are all
- *    refusals; only the literal opens it. The only place it is set in this tree
- *    is a test-only configuration.
+ *    So the seat refuses unless the contract carries EITHER
+ *    `phasingHardReadiness: "M7-passed"` VERBATIM, OR a `researchReadiness`
+ *    object (see above) — a truthful, version-pinned claim for one specific
+ *    research campaign, never a claim that M7 passed. An absent field, a call
+ *    with no expected contract at all, and (by the schema) any other value are
+ *    all refusals. `phasingHardReadiness: "M7-passed"` is only ever set in a
+ *    test-only configuration in this tree.
  */
 export function assertSeatRoom(room: RoomSnapshot, expected?: { roomId: string; contract: SeatContract }): void {
   const contract = expected ? seatContractSchema.parse(expected.contract) : undefined;
   const ruleset = room.state.ruleset ?? 'standard';
   if (ruleset !== 'phasing') throw new Error(`Hard seat plays Phasing only; this room is "${ruleset}" and the Hard replica cannot pack it.`);
-  if (contract?.phasingHardReadiness !== PHASING_HARD_READINESS) {
-    throw new Error(`Phasing Hard seat is closed: the seat contract must declare phasingHardReadiness: "${PHASING_HARD_READINESS}" once the Hard engine has passed its Phasing release gates.`);
+  const opened = contract !== undefined &&
+    (contract.phasingHardReadiness === PHASING_HARD_READINESS || contract.researchReadiness?.kind === 'research');
+  if (!opened) {
+    throw new Error(`Phasing Hard seat is closed: the seat contract must declare phasingHardReadiness: "${PHASING_HARD_READINESS}" or a version-pinned researchReadiness, once the Hard engine has passed its Phasing release gates or a research campaign's readiness evidence is recorded.`);
   }
   if (room.archivedAt) throw new Error('Archived rooms are read-only.');
   if (!expected) return;

@@ -1,0 +1,446 @@
+/**
+ * Player adapters (SPEC.md Component C). Runs ONE CLI session per game that plays Muju to completion
+ * against the frozen Hard engine through the room-scoped gateway (Component B), then — same session,
+ * same effort — writes a reflection. See prompts/player.md and prompts/reflection.md.
+ *
+ * Durable and re-attachable: every CLI phase is spawned DETACHED with stdout/stderr written straight
+ * to files under `<gameDir>/player/`, and the phase list (pid, transcript, session id, workspace) is
+ * persisted to `player/state.json` before and after each phase. A dispatcher that dies or is killed
+ * does not take the player with it; `runPlayer` called again for the same game (dispatch --resume)
+ * waits for a still-running phase by pid, or — if the phase died — resumes the SAME CLI session
+ * (`claude --resume` / `codex exec resume`) with a continuation prompt. It never re-joins a seat and
+ * never replays a move itself: the gateway's deterministic requestIds make a retried play idempotent.
+ *
+ * A session that stops while the room is still `playing` (the model ended its turn early, a timeout,
+ * a kill) gets up to `maxContinuations` resumed "keep playing" phases before the game is reported
+ * failed. The reflection runs only once the authoritative room reports a terminal phase.
+ */
+import { spawn } from 'node:child_process';
+import { closeSync, existsSync, openSync, readFileSync, statSync } from 'node:fs';
+import { mkdir, readFile, writeFile, appendFile, rm } from 'node:fs/promises';
+import path from 'node:path';
+import os from 'node:os';
+import { randomUUID } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+import { CODEX_BIN, readCodexRollout, stripApiKeys } from './auth';
+import {
+  MODEL_CLI_ID, pairById, parseGameId, readJson, writeJson,
+  type Effort, type GameId, type ModelId, type Seat, type ToolTier,
+} from './pilot';
+
+export type PlayerKind = 'claude' | 'codex';
+export type Phase = 'play' | 'continue' | 'reflect';
+
+export interface RunPlayerArgs {
+  gameDir: string;
+  gameId: GameId;
+  model: ModelId;
+  effort: Effort;
+  tier: ToolTier;
+  seat: Seat;
+  /** Frozen memory snapshot directory for this pair (logged for cross-checking; the gateway's
+   * `pilot_memory` resolves the snapshot from manifest.json's `snapshotVersion`). */
+  snapshotDir: string;
+  brief: string;
+  /** Overrides the pair table's handicap in the prompt (smoke runs only). */
+  handicap?: number;
+  gatewayPath?: string;
+  workspaceRoot?: string;
+  reflectionTemplatePath?: string;
+  /** Ceiling per play/continue phase (ms). Default 3h. */
+  playTimeoutMs?: number;
+  reflectTimeoutMs?: number;
+  /** Resumed "keep playing" phases allowed after the first play phase. Default 6. */
+  maxContinuations?: number;
+  /** Authoritative terminal check. Defaults to reading the room with `secrets/seat.json`. */
+  isGameOver?: () => Promise<boolean>;
+  /** Called with each spawned phase's pid (process-group leader) so the dispatcher can --kill it. */
+  onSpawn?: (pid: number) => void;
+}
+
+export interface PlayerResult {
+  outcome: 'completed' | 'failed';
+  turns: number;
+  citedRevisions: number[];
+  reflectionText: string;
+  detail?: string;
+}
+
+const REPO_SRC_ROOT = '/Users/ashkie/src';
+/** What the model passes as `token` (the schema needs 32–128 chars); the gateway replaces it. */
+export const PLACEHOLDER_TOKEN = 'gateway-supplies-the-real-seat-token-0000';
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const DEFAULT_GATEWAY_PATH = path.join(HERE, 'gateway.ts');
+const DEFAULT_REFLECTION_TEMPLATE = path.resolve(HERE, '../../../outputs/muju-llm-opponent-campaign-2026-09-23/reflection-template.md');
+/** Absolute ESM loader URL: the gateway is launched from the player's workspace (outside the repo),
+ * where a bare `--import tsx` would not resolve. */
+const TSX_LOADER = import.meta.resolve('tsx');
+
+export function playerKindForModel(model: ModelId): PlayerKind {
+  if (model === 'sonnet') return 'claude';
+  if (model === 'luna') return 'codex';
+  throw new Error(`Unknown model id "${model}": cannot pick a CLI for it. Never substitute a different model silently.`);
+}
+function billingRouteFor(kind: PlayerKind) { return kind === 'claude' ? 'claude.ai subscription' : 'ChatGPT subscription'; }
+
+/** Built-in tools per tier (claude). The gateway itself enforces the Muju tool tier. */
+export function claudeToolsFor(tier: ToolTier): string[] {
+  const base = ['Read', 'Write'];
+  return tier === 'tool-builder' ? [...base, 'Bash'] : base;
+}
+export function codexSandboxFor(tier: ToolTier): 'read-only' | 'workspace-write' {
+  return tier === 'tool-builder' ? 'workspace-write' : 'read-only';
+}
+/** The exact command a player CLI uses to launch this game's gateway. */
+export function gatewayCommand(gameDir: string, gatewayPath = DEFAULT_GATEWAY_PATH): { command: string; args: string[] } {
+  return { command: process.execPath, args: ['--import', TSX_LOADER, gatewayPath, '--game-dir', gameDir] };
+}
+
+/** `claude -p` arguments. (`--safe-mode` is NOT used: it also drops `--mcp-config` servers, verified
+ * live.) `--strict-mcp-config` keeps only the gateway; `--tools` leaves only Read/Write(/Bash), so no
+ * Skill/Agent/Web tools; `--restricted` ignores user/project settings and confines file tools to the workspace; `dontAsk` +
+ * `--permission-prompts none` denies anything not in `--allowedTools`. A fresh play phase pins its
+ * own `--session-id` so the id is durable before the CLI prints anything. Never `--bare` (it skips
+ * the subscription credentials). */
+export function claudeArgs(opts: { prompt: string; model: string; effort: string; cwd: string; mcpConfigPath: string; tier: ToolTier; resumeSessionId?: string; sessionId?: string }): string[] {
+  const tools = claudeToolsFor(opts.tier);
+  return [
+    '-p', opts.prompt, '--model', opts.model, '--effort', opts.effort,
+    '--output-format', 'stream-json', '--verbose',
+    '--mcp-config', opts.mcpConfigPath, '--strict-mcp-config',
+    '--restricted', '--tools', tools.join(','), '--add-dir', opts.cwd,
+    '--allowedTools', ['mcp__muju', ...tools].join(','),
+    '--permission-mode', 'dontAsk', '--permission-prompts', 'none',
+    ...(opts.resumeSessionId ? ['--resume', opts.resumeSessionId] : opts.sessionId ? ['--session-id', opts.sessionId] : []),
+  ];
+}
+function toml(value: string | string[]): string {
+  return Array.isArray(value) ? `[${value.map(v => JSON.stringify(v)).join(',')}]` : JSON.stringify(value);
+}
+/** `codex exec` arguments. ChatGPT login forced; the operator's ~/.codex/config.toml (its own MCP
+ * servers, plugins, node_repl, computer-use) and exec-policy rules are ignored so the player sees
+ * only the gateway; gateway tools are auto-approved since exec mode has nobody to answer a prompt. */
+/** Codex feature names (verified live via `codex features list`) that, if left on, give a player
+ * shell/command execution independent of the MCP gateway's tool-tier scoping — a `bare` seat could
+ * `cat` the repo's Hard-engine source, the campaign's secrets/seat.json (same-user file
+ * permissions do not block this), or run local analysis the tier is supposed to lack. Disabled for
+ * every tier except `tool-builder`, which is the one tier whose whole point is self-written local
+ * code — SPEC.md Component C's "known gaps" note that its isolation there is soft, not this flag. */
+const CODEX_SHELL_FEATURES = ['shell_tool', 'unified_exec', 'unified_exec_tty', 'multi_agent', 'multi_agent_v2'];
+export function codexArgs(opts: { prompt: string; model: string; effort: string; cwd: string; gameDir: string; gatewayPath?: string; tier: ToolTier; resumeSessionId?: string }): string[] {
+  const gateway = gatewayCommand(opts.gameDir, opts.gatewayPath);
+  const common = [
+    '-m', opts.model,
+    '-c', `model_reasoning_effort=${toml(opts.effort)}`,
+    '-c', `forced_login_method=${toml('chatgpt')}`,
+    '-c', `mcp_servers.muju.command=${toml(gateway.command)}`,
+    '-c', `mcp_servers.muju.args=${toml(gateway.args)}`,
+    '-c', 'mcp_servers.muju.startup_timeout_sec=150',
+    '-c', 'mcp_servers.muju.tool_timeout_sec=900',
+    '-c', `mcp_servers.muju.default_tools_approval_mode=${toml('approve')}`,
+    '-c', `sandbox_mode=${toml(codexSandboxFor(opts.tier))}`,
+    '--ignore-user-config', '--ignore-rules', '--json', '--skip-git-repo-check',
+    ...(opts.tier === 'tool-builder' ? [] : CODEX_SHELL_FEATURES.flatMap(feature => ['--disable', feature])),
+  ];
+  return opts.resumeSessionId
+    ? ['exec', 'resume', ...common, opts.resumeSessionId, opts.prompt]
+    : ['exec', ...common, '-C', opts.cwd, '--sandbox', codexSandboxFor(opts.tier), opts.prompt];
+}
+
+function renderTemplate(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => {
+    if (!(key in vars)) throw new Error(`Prompt template references unknown var "${key}"`);
+    return vars[key];
+  });
+}
+export async function ensureOutsideRepo(dir: string): Promise<void> {
+  const resolved = path.resolve(dir);
+  if (resolved === REPO_SRC_ROOT || resolved.startsWith(`${REPO_SRC_ROOT}${path.sep}`)) {
+    throw new Error(`Player workspace "${resolved}" resolves under ${REPO_SRC_ROOT}; isolation requires a workspace outside the repo tree.`);
+  }
+}
+
+/** Revisions cited in reflection prose ("revision 12", "revision #42", "revisions 12, 14 and 19", "rev 7"). */
+export function extractCitedRevisions(text: string): number[] {
+  const found = new Set<number>();
+  for (const match of text.matchAll(/\brevisions?\b[^\d]{0,12}(\d+(?:\s*(?:,|and|to|-|–)\s*\d+)*)/gi)) {
+    for (const n of match[1].matchAll(/\d+/g)) found.add(Number(n[0]));
+  }
+  for (const match of text.matchAll(/\brev\.?\s*#?(\d+)/gi)) found.add(Number(match[1]));
+  return [...found].sort((a, b) => a - b);
+}
+
+// ---------------------------------------------------------------------------
+// Transcript parsing (after a phase exits, or on re-attach)
+// ---------------------------------------------------------------------------
+interface UsageTotals {
+  inputTokens: number; outputTokens: number; cacheReadInputTokens: number;
+  cacheCreationInputTokens: number; reasoningOutputTokens: number;
+  /** Claude Code's list-price figure; NOT a bill under subscription auth (apiKeySource "none"). */
+  notionalCostUsd: number | null;
+}
+export interface TranscriptSummary {
+  sessionId: string | null; reportedModels: string[]; apiKeySource: string | null; finalText: string;
+  totals: UsageTotals; rateLimitInfo?: unknown; auditFlags: string[]; toolCalls: number; isError: boolean;
+}
+export function parseTranscript(kind: PlayerKind, raw: string): TranscriptSummary {
+  const summary: TranscriptSummary = {
+    sessionId: null, reportedModels: [], apiKeySource: null, finalText: '', toolCalls: 0, isError: false, auditFlags: [],
+    totals: { inputTokens: 0, outputTokens: 0, cacheReadInputTokens: 0, cacheCreationInputTokens: 0, reasoningOutputTokens: 0, notionalCostUsd: null },
+  };
+  const models = new Set<string>();
+  for (const line of raw.split('\n')) {
+    if (!line.trim()) continue;
+    if (line.includes(REPO_SRC_ROOT)) summary.auditFlags.push(line.length > 400 ? `${line.slice(0, 400)}…` : line);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let event: Record<string, any>;
+    try { event = JSON.parse(line); } catch { continue; }
+    if (kind === 'claude') {
+      if (event.type === 'system' && event.subtype === 'init') {
+        if (typeof event.session_id === 'string') summary.sessionId = event.session_id;
+        if (typeof event.apiKeySource === 'string') summary.apiKeySource = event.apiKeySource;
+      }
+      if (event.type === 'rate_limit_event') summary.rateLimitInfo = event.rate_limit_info ?? event;
+      if (event.type === 'assistant') {
+        for (const block of event.message?.content ?? []) if (block?.type === 'tool_use') summary.toolCalls += 1;
+      }
+      if (event.type === 'result') {
+        const usage = event.usage ?? {};
+        summary.totals.inputTokens += usage.input_tokens ?? 0;
+        summary.totals.outputTokens += usage.output_tokens ?? 0;
+        summary.totals.cacheReadInputTokens += usage.cache_read_input_tokens ?? 0;
+        summary.totals.cacheCreationInputTokens += usage.cache_creation_input_tokens ?? 0;
+        if (typeof event.total_cost_usd === 'number') summary.totals.notionalCostUsd = (summary.totals.notionalCostUsd ?? 0) + event.total_cost_usd;
+        for (const model of Object.keys(event.modelUsage ?? {})) models.add(model);
+        if (typeof event.result === 'string') summary.finalText = event.result;
+        summary.isError = Boolean(event.is_error);
+      }
+    } else {
+      if (event.type === 'thread.started' && typeof event.thread_id === 'string') summary.sessionId = event.thread_id;
+      if (event.type === 'item.completed' && event.item?.type === 'agent_message' && typeof event.item.text === 'string') summary.finalText = event.item.text;
+      if (event.type === 'item.started' && event.item?.type === 'mcp_tool_call') summary.toolCalls += 1;
+      if (event.type === 'turn.completed') {
+        const usage = event.usage ?? {};
+        summary.totals.inputTokens += usage.input_tokens ?? 0;
+        summary.totals.outputTokens += usage.output_tokens ?? 0;
+        summary.totals.cacheReadInputTokens += usage.cached_input_tokens ?? 0;
+        summary.totals.cacheCreationInputTokens += usage.cache_write_input_tokens ?? 0;
+        summary.totals.reasoningOutputTokens += usage.reasoning_output_tokens ?? 0;
+      }
+      if (event.type === 'turn.failed' || event.type === 'error') summary.isError = true;
+    }
+  }
+  summary.reportedModels = [...models];
+  return summary;
+}
+
+// ---------------------------------------------------------------------------
+// Durable phase bookkeeping
+// ---------------------------------------------------------------------------
+interface PhaseRecord {
+  phase: Phase; transcript: string; pid: number; startedAt: string;
+  endedAt?: string; exitCode?: number | null; lost?: boolean; sessionId?: string | null;
+  reportedModels?: string[]; apiKeySource?: string | null; totals?: UsageTotals; rateLimitInfo?: unknown;
+  toolCalls?: number; elapsedMs?: number; billingRoute: string;
+}
+interface PlayerState { gameId: GameId; kind: PlayerKind; cliModel: string; workspace: string; sessionId: string | null; phases: PhaseRecord[] }
+
+export function pidAlive(pid: number): boolean {
+  if (!(pid > 0)) return false;
+  try { process.kill(pid, 0); return true; } catch (error) { return (error as NodeJS.ErrnoException).code === 'EPERM'; }
+}
+async function waitForPid(pid: number, pollMs = 2000): Promise<void> {
+  while (pidAlive(pid)) await new Promise(resolve => setTimeout(resolve, pollMs));
+}
+
+/** Spawns a detached CLI phase with stdout -> transcript file; resolves with its exit code. */
+function spawnPhase(command: string, args: string[], cwd: string, transcript: string, timeoutMs: number, onPid: (pid: number) => void): Promise<number | null> {
+  const { env } = stripApiKeys();
+  const out = openSync(transcript, 'a'), err = openSync(`${transcript}.stderr`, 'a');
+  return new Promise((resolve, reject) => {
+    const child = spawn(command, args, { cwd, env, detached: true, stdio: ['ignore', out, err] });
+    closeSync(out); closeSync(err);
+    if (child.pid) onPid(child.pid);
+    const timer = setTimeout(() => { try { process.kill(-child.pid!, 'SIGTERM'); } catch { /* already gone */ } }, timeoutMs);
+    child.on('error', error => { clearTimeout(timer); reject(error); });
+    child.on('exit', code => { clearTimeout(timer); resolve(code); });
+  });
+}
+
+async function defaultIsGameOver(gameDir: string): Promise<boolean> {
+  const seat = JSON.parse(readFileSync(path.join(gameDir, 'secrets', 'seat.json'), 'utf8')) as { serverUrl: string; roomId: string; seatToken: string };
+  for (let attempt = 0; ; attempt++) {
+    try {
+      const response = await fetch(`${seat.serverUrl}/api/muju/rooms/${seat.roomId}`, { headers: { Authorization: `Bearer ${seat.seatToken}` }, signal: AbortSignal.timeout(15000) });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const room = await response.json() as { state: { phase: string } };
+      return room.state.phase !== 'playing';
+    } catch (error) {
+      if (attempt >= 4) throw error;
+      await new Promise(resolve => setTimeout(resolve, 2000 * (attempt + 1)));
+    }
+  }
+}
+
+async function countTurnsFromActionsLog(logPath: string): Promise<number> {
+  let raw: string;
+  try { raw = await readFile(logPath, 'utf8'); } catch { return 0; }
+  let turns = 0;
+  for (const line of raw.split('\n')) {
+    if (!line.trim()) continue;
+    try {
+      const entry = JSON.parse(line) as { actions?: Array<{ type?: string }> };
+      if (entry.actions?.some(action => action.type === 'END_PLACE_PHASE' || action.type === 'RESIGN')) turns += 1;
+    } catch { /* skip malformed line */ }
+  }
+  return turns;
+}
+
+const CONTINUE_PROMPT = `The Muju game in this session is NOT over yet: the authoritative room is still playing.
+Re-orient with muju_observe (and muju_clock), then keep playing exactly as instructed at the start of this
+session — use muju_wait_for_change while the engine is on move, and continue until muju_play or
+muju_wait_for_change reports a terminal result. Any muju_play you already sent was recorded; if you are
+unsure whether a play landed, observe first — a retried identical play is idempotent. Do not write the
+reflection yet.`;
+
+/** Plays (or re-attaches to) one whole game, then writes the reflection. See the file header. */
+export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
+  const kind = playerKindForModel(args.model);
+  const cliModel = MODEL_CLI_ID[args.model];
+  const artifactDir = path.join(args.gameDir, 'player');
+  await mkdir(artifactDir, { recursive: true });
+  const statePath = path.join(artifactDir, 'state.json');
+  const existing = readJson<PlayerState>(statePath);
+  if (existing && (existing.kind !== kind || existing.cliModel !== cliModel)) throw new Error(`player/state.json is for ${existing.cliModel}, not ${cliModel}; refusing to mix sessions.`);
+  const state: PlayerState = existing ?? {
+    gameId: args.gameId, kind, cliModel, sessionId: null, phases: [],
+    workspace: path.join(args.workspaceRoot ?? path.join(os.tmpdir(), 'muju-llm-pilot'), `${args.gameId}-player-${randomUUID().slice(0, 8)}`),
+  };
+  const save = () => writeJson(statePath, state);
+  const workspace = state.workspace;
+  await ensureOutsideRepo(workspace);
+  await mkdir(workspace, { recursive: true });
+  save();
+
+  const handicap = args.handicap ?? pairById(parseGameId(args.gameId).pairId).blackCrystalHandicap;
+  const { roomId } = JSON.parse(readFileSync(path.join(args.gameDir, 'secrets', 'seat.json'), 'utf8')) as { roomId: string };
+  const vars = { gameId: args.gameId, roomId, placeholderToken: PLACEHOLDER_TOKEN, seat: args.seat, seatColor: args.seat === 'white' ? 'White' : 'Black',
+    handicap: String(handicap), tier: args.tier, model: cliModel, effort: args.effort, brief: args.brief };
+  const templatePath = args.reflectionTemplatePath ?? DEFAULT_REFLECTION_TEMPLATE;
+  await writeFile(path.join(workspace, 'reflection-template.md'), await readFile(templatePath, 'utf8'), 'utf8');
+  const playPrompt = renderTemplate(await readFile(path.join(HERE, 'prompts', 'player.md'), 'utf8'), vars);
+  const reflectPrompt = renderTemplate(await readFile(path.join(HERE, 'prompts', 'reflection.md'), 'utf8'), vars);
+  const gateway = gatewayCommand(args.gameDir, args.gatewayPath);
+  const mcpConfigPath = path.join(workspace, 'mcp-config.json');
+  await writeFile(mcpConfigPath, JSON.stringify({ mcpServers: { muju: { command: gateway.command, args: gateway.args } } }, null, 2), 'utf8');
+  const isGameOver = args.isGameOver ?? (() => defaultIsGameOver(args.gameDir));
+  const maxContinuations = args.maxContinuations ?? 6;
+
+  const finishPhase = async (record: PhaseRecord, exitCode: number | null, lost = false) => {
+    const summary = parseTranscript(kind, existsSync(record.transcript) ? await readFile(record.transcript, 'utf8') : '');
+    let reportedModels = summary.reportedModels, rateLimitInfo = summary.rateLimitInfo;
+    if (kind === 'codex' && summary.sessionId) {
+      const rollout = await readCodexRollout(summary.sessionId);
+      if (rollout) { reportedModels = rollout.models; rateLimitInfo = rollout.rateLimits ?? rateLimitInfo; }
+    }
+    const endedAt = new Date().toISOString();
+    Object.assign(record, { endedAt, exitCode, lost, sessionId: summary.sessionId, reportedModels,
+      apiKeySource: summary.apiKeySource, totals: summary.totals, rateLimitInfo, toolCalls: summary.toolCalls,
+      elapsedMs: Date.parse(endedAt) - Date.parse(record.startedAt) });
+    state.sessionId ??= summary.sessionId;
+    if (summary.auditFlags.length > 0) {
+      await appendFile(path.join(artifactDir, 'audit.log'), summary.auditFlags.map(line => `${endedAt} [${record.phase}] ${line}\n`).join(''), 'utf8');
+    }
+    save();
+  };
+  const runPhase = async (phase: Phase, prompt: string, timeoutMs: number) => {
+    const index = state.phases.filter(p => p.phase === phase).length;
+    const transcript = path.join(artifactDir, `transcript.${phase}${index ? `-${index + 1}` : ''}.jsonl`);
+    const record: PhaseRecord = { phase, transcript, pid: -1, startedAt: new Date().toISOString(), billingRoute: billingRouteFor(kind) };
+    state.phases.push(record);
+    save();
+    const resumeSessionId = phase === 'play' ? undefined : state.sessionId ?? undefined;
+    if (phase === 'play' && kind === 'claude') { state.sessionId = randomUUID(); save(); }
+    const [command, cliArgs] = kind === 'claude'
+      ? ['claude', claudeArgs({ prompt, model: cliModel, effort: args.effort, cwd: workspace, mcpConfigPath, tier: args.tier, resumeSessionId, sessionId: state.sessionId ?? undefined })]
+      : [CODEX_BIN, codexArgs({ prompt, model: cliModel, effort: args.effort, cwd: workspace, gameDir: args.gameDir, gatewayPath: args.gatewayPath, tier: args.tier, resumeSessionId })];
+    const exitCode = await spawnPhase(command, cliArgs, workspace, transcript, timeoutMs, pid => { record.pid = pid; save(); args.onSpawn?.(pid); });
+    await finishPhase(record, exitCode);
+    return record;
+  };
+
+  // Re-attach: a phase recorded as started but never finished belongs to a previous dispatcher.
+  const open = state.phases.find(p => !p.endedAt);
+  if (open) {
+    if (pidAlive(open.pid)) { args.onSpawn?.(open.pid); await waitForPid(open.pid); }
+    await finishPhase(open, null, true);
+  }
+
+  let detail: string | undefined;
+  const note = (text: string) => { detail = detail ? `${detail} ${text}` : text; };
+  let consecutiveReadFailures = 0;
+  for (;;) {
+    if (state.phases.some(p => p.phase === 'reflect' && p.endedAt)) break;
+    let over: boolean;
+    try { over = await isGameOver(); consecutiveReadFailures = 0; }
+    catch (error) {
+      // An unreadable room is an UNKNOWN state, not "the game is over" or "give up on this game" —
+      // `isGameOver` (dispatch.ts's `readSeatRoom`) already retries internally; a failure reaching
+      // here means that whole bounded retry was exhausted. Still worth a few more spaced attempts
+      // before this game is reported failed, so one bad network minute cannot lose a real result
+      // or its reflection (review finding).
+      consecutiveReadFailures += 1;
+      note(`Could not read the room (attempt ${consecutiveReadFailures}): ${(error as Error).message}.`);
+      if (consecutiveReadFailures >= 5) {
+        return { outcome: 'failed', turns: await countTurnsFromActionsLog(path.join(args.gameDir, "actions.jsonl")), citedRevisions: [], reflectionText: '', detail };
+      }
+      await new Promise(resolve => setTimeout(resolve, Math.min(5000 * 2 ** (consecutiveReadFailures - 1), 60_000)));
+      continue;
+    }
+    if (over) {
+      if (!state.sessionId) { note('Game ended but no CLI session id was captured; cannot reflect in the same session.'); break; }
+      await runPhase('reflect', reflectPrompt, args.reflectTimeoutMs ?? 15 * 60 * 1000);
+      break;
+    }
+    if (!state.phases.some(p => p.phase === 'play')) { await runPhase('play', playPrompt, args.playTimeoutMs ?? 3 * 60 * 60 * 1000); continue; }
+    if (!state.sessionId) { note('Play phase produced no session id; cannot resume it.'); break; }
+    const continuations = state.phases.filter(p => p.phase === 'continue').length;
+    if (continuations >= maxContinuations) { note(`Room still playing after ${continuations} resumed phases; giving up (game left to its clock).`); break; }
+    await runPhase('continue', CONTINUE_PROMPT, args.playTimeoutMs ?? 3 * 60 * 60 * 1000);
+  }
+
+  // Reflection text: the workspace file if the CLI could write one, else the final message.
+  let reflectionText = '';
+  const reflectPhase = state.phases.filter(p => p.phase === 'reflect').at(-1);
+  const reflectionFile = path.join(workspace, 'reflection.md');
+  if (reflectPhase && existsSync(reflectionFile) && statSync(reflectionFile).mtimeMs >= Date.parse(reflectPhase.startedAt) - 1000) {
+    reflectionText = await readFile(reflectionFile, 'utf8');
+  } else if (reflectPhase) {
+    reflectionText = parseTranscript(kind, existsSync(reflectPhase.transcript) ? await readFile(reflectPhase.transcript, 'utf8') : '').finalText.trim();
+  }
+  if (reflectPhase && !reflectionText) note('Reflection turn produced no text.');
+
+  const billingViolations = state.phases.filter(p => p.apiKeySource && p.apiKeySource !== 'none').map(p => `${p.phase}:${p.apiKeySource}`);
+  if (billingViolations.length) note(`BILLING ROUTE VIOLATION: claude reported apiKeySource ${billingViolations.join(', ')}.`);
+  const wrongModel = [...new Set(state.phases.flatMap(p => p.reportedModels ?? []).filter(m => m !== cliModel))];
+  if (wrongModel.length) note(`MODEL MISMATCH: served by ${wrongModel.join(', ')}, requested ${cliModel}.`);
+  const auditPath = path.join(artifactDir, 'audit.log');
+  const auditFlagCount = existsSync(auditPath) ? (await readFile(auditPath, 'utf8')).split('\n').filter(Boolean).length : 0;
+  if (auditFlagCount) note(`${auditFlagCount} repo-path reference(s) in the player's stream; see player/audit.log.`);
+
+  await writeFile(path.join(artifactDir, 'usage.json'), JSON.stringify({
+    gameId: args.gameId, model: cliModel, kind, tier: args.tier, seat: args.seat, workspace, snapshotDir: args.snapshotDir,
+    sessionId: state.sessionId, phases: state.phases, auditFlagCount, billingViolations, wrongModel,
+  }, null, 2), 'utf8');
+
+  const turns = await countTurnsFromActionsLog(path.join(args.gameDir, "actions.jsonl"));
+  const outcome: PlayerResult['outcome'] = reflectionText.length > 0 && !billingViolations.length && !wrongModel.length ? 'completed' : 'failed';
+  if (outcome === 'failed' && !detail) detail = 'No reflection was produced.';
+  return { outcome, turns, citedRevisions: extractCitedRevisions(reflectionText), reflectionText, detail };
+}
+
+/** Best-effort cleanup of an ephemeral workspace once its artifacts are in gameDir. */
+export async function cleanupWorkspace(workspace: string): Promise<void> {
+  await ensureOutsideRepo(workspace);
+  await rm(workspace, { recursive: true, force: true });
+}

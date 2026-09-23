@@ -1,0 +1,236 @@
+// Room+seat-scoped stdio MCP gateway for one LLM pilot player (SPEC.md, Component B).
+//
+// Spawned by the player adapter as that model's MCP server:
+//   node --import tsx tools/llm-pilot/gateway.ts --game-dir <dir>
+// Reads `<gameDir>/secrets/seat.json` ({serverUrl, roomId, seatToken, tier}) and never prints
+// its contents. Builds a MatchScope from the LIVE room (roomId + its immutable matchPolicy,
+// server/matchScope.ts) and wraps an HTTP RoomBackend with `scopeBackend`/`createMcpServer`
+// (server/mcp.ts) so only the configured tier's tools are ever registered — bare has no
+// rules-oracle or analysis, harnessed adds rules-oracle, centaur adds hosted analysis,
+// tool-builder keeps rules-oracle but never analysis (server/matchPolicy.ts already encodes
+// exactly this per-capability split; nothing here re-derives it). create/join are refused by
+// `scopeBackend` itself, so this gateway never registers those tools for any tier.
+//
+// Token injection: the seat token from secrets/seat.json is injected into every outgoing
+// request regardless of what the model passed as `token` — the model never needs to see or
+// remember the real seat token.
+//
+// Idempotent play: `muju_play`'s requestId is replaced with a deterministic hash of
+// (roomId, expectedRevision, actions) before it reaches the server, so a model that retries an
+// identical play after an uncertain network outcome can never double-submit even if it forgot
+// to reuse its own requestId text. Every ACCEPTED muju_play is appended to
+// `<gameDir>/actions.jsonl` with its resulting revision, the (deterministic) requestId and a
+// hash of the resulting state.
+//
+// `pilot_memory` is a passive, read-only tool returning the pair's frozen memory snapshot
+// (playbook + recent experiences) — never live advice.
+//
+// Throttle: outgoing HTTP calls are rate-limited to ~2 req/s and every call (latency, status)
+// is logged to `<gameDir>/http.jsonl`; 429/5xx responses are retried with backoff and still
+// logged on every attempt.
+import { createHash } from 'node:crypto';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from 'node:fs';
+import { basename, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { setTimeout as delay } from 'node:timers/promises';
+import { z } from 'zod';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { createMcpServer, type RoomBackend } from '../../server/mcp';
+import { RoomError, roomIdSchema, tokenSchema } from '../../server/schema';
+import { matchScopeFor, type MatchScope } from '../../server/matchScope';
+import type { RoomChange, RoomSnapshot } from '../../src/online/types';
+import type { RoomMoveHistory } from '../../src/game/moveHistory';
+import type { StagingResult, StagingStatus } from '../../src/online/staging';
+
+export const seatConfigSchema = z.object({
+  serverUrl: z.string().url().transform(value => value.replace(/\/$/, '')),
+  roomId: roomIdSchema,
+  seatToken: tokenSchema,
+  tier: z.enum(['bare', 'harnessed', 'centaur', 'tool-builder']),
+}).strict();
+export type SeatConfig = z.infer<typeof seatConfigSchema>;
+export type GatewayLog = (event: Record<string, unknown>) => void;
+
+// ---------------------------------------------------------------------------
+// Throttled, logged HTTP client (~2 req/s; retries 429/5xx with backoff).
+// ---------------------------------------------------------------------------
+export function createHttpClient(serverUrl: string, logHttp: GatewayLog, minIntervalMs = 500) {
+  let nextAt = 0;
+  async function request<T>(path: string, body?: unknown, token?: string, signal?: AbortSignal, timeoutMs = 10000, attempt = 0): Promise<T> {
+    const wait = nextAt - Date.now();
+    if (wait > 0) await delay(wait);
+    nextAt = Date.now() + minIntervalMs;
+    const method = body === undefined ? 'GET' : 'POST';
+    const startedAt = Date.now();
+    let response: Response;
+    try {
+      response = await fetch(`${serverUrl}/api/muju/rooms${path}`, { method,
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: body === undefined ? undefined : JSON.stringify(body),
+        signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)]) : AbortSignal.timeout(timeoutMs) });
+    } catch (error) {
+      logHttp({ at: new Date().toISOString(), method, path, attempt, latencyMs: Date.now() - startedAt,
+        error: error instanceof Error ? error.message : 'Request failed.' });
+      throw error;
+    }
+    const latencyMs = Date.now() - startedAt;
+    logHttp({ at: new Date().toISOString(), method, path, attempt, status: response.status, latencyMs });
+    if ((response.status === 429 || response.status >= 500) && attempt < 4) {
+      await delay(Math.min(8000, 500 * 2 ** attempt) + Math.floor(Math.random() * 250));
+      return request<T>(path, body, token, signal, timeoutMs, attempt + 1);
+    }
+    const data = await response.json();
+    if (!response.ok) throw new RoomError(response.status, data.code ?? String(response.status), data.error ?? 'Request failed', data.room);
+    return data as T;
+  }
+  return request;
+}
+
+// Same wire contract as server/stdio.ts's local `backend`, just built on the throttled client.
+export function createHttpBackend(request: ReturnType<typeof createHttpClient>): RoomBackend {
+  return {
+    create: () => { throw new Error('This gateway is scoped to one room; it never creates rooms.'); },
+    join: () => { throw new Error('This gateway is scoped to one room; it never joins rooms.'); },
+    get: (id, token) => request<RoomSnapshot>(`/${id}`, undefined, token),
+    moveHistory: (id, query = {}) => request<RoomMoveHistory>(`/${id}/history?${new URLSearchParams(
+      Object.entries(query).filter((entry): entry is [string, string | number | boolean] => entry[1] !== undefined)
+        .map(([key, value]) => [key, String(value)]))}`),
+    wait: (id, afterRevision, timeoutMs, signal) => request<RoomChange>(`/${id}/changes?afterRevision=${afterRevision}&timeoutMs=${timeoutMs}`, undefined, undefined, signal, 30000),
+    act: (id, token, input, preview) => request<RoomSnapshot>(`/${id}/${preview ? 'preview' : 'actions'}`, input, token),
+    stage: (id, token, input) => request<StagingResult>(`/${id}/stage`, input, token),
+    cancelStage: (id, token, input) => request<StagingResult>(`/${id}/stage/cancel`, input, token),
+    staged: (id, token, stageId) => request<StagingStatus>(`/${id}/stage${stageId ? `?stageId=${encodeURIComponent(stageId)}` : ''}`, undefined, token),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Token injection + deterministic-idempotent play + actions.jsonl recording.
+// ---------------------------------------------------------------------------
+const hashOf = (value: unknown) => createHash('sha256').update(JSON.stringify(value)).digest('hex');
+const playRequestShape = z.object({ expectedRevision: z.number().int().nonnegative(), requestId: z.string(), actions: z.array(z.unknown()).min(1) });
+
+/** The requestId a retried play with the same (roomId, expectedRevision, actions) always gets,
+ * regardless of what the model sent — a forgotten/garbled retry id cannot double-submit. */
+export function deterministicPlayRequestId(roomId: string, expectedRevision: number, actions: unknown[]): string {
+  return hashOf({ kind: 'muju_play', roomId, expectedRevision, actions });
+}
+
+/** Wraps a RoomBackend so every call uses the configured seat's real token (never the model's),
+ * `act` play requests get a deterministic requestId, and accepted plays are journaled. */
+export function withGatewayGuarantees(inner: RoomBackend, config: SeatConfig, logActions: GatewayLog): RoomBackend {
+  return {
+    ...inner,
+    get: (id, _token) => inner.get(id, config.seatToken),
+    moveHistory: (id, query) => inner.moveHistory(id, query),
+    act: async (id, _token, input, preview) => {
+      const parsed = playRequestShape.parse(input);
+      const requestId = preview ? parsed.requestId : deterministicPlayRequestId(id, parsed.expectedRevision, parsed.actions);
+      const room = await inner.act(id, config.seatToken, { ...parsed, requestId }, preview);
+      if (!preview) logActions({ at: new Date().toISOString(), revision: room.revision, requestId,
+        actions: parsed.actions, stateHash: hashOf(room.state) });
+      return room;
+    },
+    stage: (id, _token, input) => inner.stage(id, config.seatToken, input),
+    cancelStage: (id, _token, input) => inner.cancelStage(id, config.seatToken, input),
+    staged: (id, _token, stageId) => inner.staged(id, config.seatToken, stageId),
+  };
+}
+
+// ---------------------------------------------------------------------------
+// MatchScope, pinned from the live room rather than trusted from config alone.
+// ---------------------------------------------------------------------------
+/** Polls the live room until it is an admitted, active, v1-policy match, then pins the scope
+ * from it. Player and engine seats can be prepared before both are admitted, so this tolerates
+ * `room.ready === false` up to `timeoutMs` rather than failing immediately. */
+export async function resolveMatchScope(config: SeatConfig, backend: RoomBackend,
+  options: { pollIntervalMs?: number; timeoutMs?: number } = {}): Promise<MatchScope> {
+  const pollIntervalMs = options.pollIntervalMs ?? 1000, deadline = Date.now() + (options.timeoutMs ?? 120000);
+  for (;;) {
+    const room = await backend.get(config.roomId, config.seatToken);
+    if (room.ready && !room.archivedAt && room.state.phase === 'playing' && room.matchPolicy?.version === 1) {
+      const scope = matchScopeFor(room);
+      if (scope.matchPolicy.toolTier !== config.tier) {
+        throw new Error(`Room's live match tier "${scope.matchPolicy.toolTier}" does not match configured tier "${config.tier}".`);
+      }
+      return scope;
+    }
+    if (Date.now() >= deadline) throw new Error('Timed out waiting for the room to become an active, policy-scoped match.');
+    await delay(pollIntervalMs);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// pilot_memory: passive read-only access to the pair's frozen memory snapshot.
+// ---------------------------------------------------------------------------
+// Only the snapshot's version name is returned, never its absolute path (the campaign dir sits under the repo tree).
+interface PilotMemory { available: boolean; snapshot?: string; playbook?: string; experiences?: unknown[] }
+function findSnapshotDir(gameDir: string): string | undefined {
+  const pilotDir = process.env.MUJU_PILOT_DIR ?? resolve(gameDir, '..', '..');
+  let version: number | undefined;
+  try {
+    const manifest = JSON.parse(readFileSync(join(gameDir, 'manifest.json'), 'utf8'));
+    if (typeof manifest.snapshotVersion === 'number') version = manifest.snapshotVersion;
+  } catch { /* no manifest yet, or no snapshotVersion recorded */ }
+  const snapshotsDir = join(pilotDir, 'memory', 'snapshots');
+  if (version === undefined) {
+    if (!existsSync(snapshotsDir)) return undefined;
+    const versions = readdirSync(snapshotsDir)
+      .map(name => /^v(\d+)$/.exec(name)?.[1]).filter((value): value is string => value !== undefined).map(Number);
+    if (versions.length === 0) return undefined;
+    version = Math.max(...versions);
+  }
+  const dir = join(snapshotsDir, `v${version}`);
+  return existsSync(dir) ? dir : undefined;
+}
+export function readPilotMemory(gameDir: string): PilotMemory {
+  const snapshotDir = findSnapshotDir(gameDir);
+  if (!snapshotDir) return { available: false };
+  const playbookPath = join(snapshotDir, 'playbook.md');
+  const playbook = existsSync(playbookPath) ? readFileSync(playbookPath, 'utf8') : undefined;
+  const experiencesPath = join(snapshotDir, 'experiences.jsonl');
+  const experiences = existsSync(experiencesPath)
+    ? readFileSync(experiencesPath, 'utf8').split('\n').filter(Boolean).map(line => { try { return JSON.parse(line); } catch { return null; } }).filter(entry => entry !== null)
+    : [];
+  return { available: true, snapshot: basename(snapshotDir), playbook, experiences };
+}
+export function attachPilotMemoryTool(server: McpServer, gameDir: string): void {
+  server.registerTool('pilot_memory', { description: 'Read-only: this pair’s shared strategy playbook and recent evidence-linked reflections, frozen before this game started. Read once before playing. No live advice, and this tool never changes as the game progresses.',
+    annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false } },
+    async () => {
+      const memory = readPilotMemory(gameDir);
+      return { content: [{ type: 'text' as const, text: JSON.stringify(memory) }], structuredContent: { ...memory } };
+    });
+}
+
+// ---------------------------------------------------------------------------
+// Assembly + CLI entrypoint.
+// ---------------------------------------------------------------------------
+export async function createGatewayServer(config: SeatConfig, options: { gameDir: string; scope?: MatchScope; minIntervalMs?: number }): Promise<McpServer> {
+  mkdirSync(options.gameDir, { recursive: true, mode: 0o700 });
+  const appendLog = (path: string): GatewayLog => event => appendFileSync(path, `${JSON.stringify(event)}\n`);
+  const logHttp = appendLog(join(options.gameDir, 'http.jsonl'));
+  const logActions = appendLog(join(options.gameDir, 'actions.jsonl'));
+  const rawBackend = createHttpBackend(createHttpClient(config.serverUrl, logHttp, options.minIntervalMs));
+  const scope = options.scope ?? await resolveMatchScope(config, rawBackend);
+  const backend = withGatewayGuarantees(rawBackend, config, logActions);
+  const server = createMcpServer(backend, config.serverUrl, scope);
+  attachPilotMemoryTool(server, options.gameDir);
+  return server;
+}
+
+function readGameDirArg(argv: string[]): string {
+  const index = argv.indexOf('--game-dir');
+  if (index === -1 || !argv[index + 1]) throw new Error('Usage: node --import tsx tools/llm-pilot/gateway.ts --game-dir <dir>');
+  return resolve(argv[index + 1]);
+}
+async function main() {
+  const gameDir = readGameDirArg(process.argv.slice(2));
+  const seatPath = join(gameDir, 'secrets', 'seat.json');
+  if (!existsSync(seatPath)) throw new Error(`No seat file at ${seatPath}.`);
+  const config = seatConfigSchema.parse(JSON.parse(readFileSync(seatPath, 'utf8')));
+  const server = await createGatewayServer(config, { gameDir });
+  await server.connect(new StdioServerTransport());
+}
+const isMain = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (isMain) main().catch(error => { console.error(error instanceof Error ? error.message : 'Gateway failed.'); process.exitCode = 1; });

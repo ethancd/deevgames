@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { performance } from 'node:perf_hooks';
 import { HardEngine } from '../../src/ai/hard/engine';
 import { hardEnginePatch } from '../../lab/hard-ai/bots/hard';
+import { acquireHeavySlot } from '../../lab/hard-ai/ladder/heavy';
 import type { RootResult } from '../../src/ai/hard/search/root';
 import type { GameState } from '../../src/game/types';
 import type { ActionRequest, RoomChange, RoomConnection, RoomSnapshot } from '../../src/online/types';
@@ -29,9 +30,20 @@ export const ENGINE_ALLOWANCE_MS = 60_000;
 export const ENGINE_TARGET_MARGIN_MS = 5_000;
 export const ENGINE_TARGET_MS = ENGINE_ALLOWANCE_MS - ENGINE_TARGET_MARGIN_MS;
 
-/** Bounded backoff for the two READ-ONLY legs (authenticated read, long-poll wait). */
-export const TRANSPORT_ATTEMPTS = 3;
+/** Bounded backoff for the two READ-ONLY legs (authenticated read, long-poll wait). Covers a
+ * transient site blip (a deploy restart, a 429/5xx burst) without falling through to a process
+ * exit + dispatcher respawn, which is much slower and burns a restart from the budget in
+ * dispatch.ts#superviseEngine. 7 attempts capped at 8s each (250ms, 500ms, 1s, 2s, 4s, 8s, 8s) is
+ * ~24s of in-process retry before this leg gives up and lets the caller decide. */
+export const TRANSPORT_ATTEMPTS = 7;
 export const TRANSPORT_BACKOFF_MS = 250;
+export const TRANSPORT_BACKOFF_CAP_MS = 8_000;
+/** A 429/5xx from the site is exactly the kind of transient failure the read-only legs should
+ * retry, same as a plain transport (fetch) error — only a semantic OnlineError (stale revision,
+ * forbidden, gone, ...) is terminal and rethrown at once. */
+function isRetryableOnlineError(error: unknown): boolean {
+  return error instanceof OnlineError && (error.status === 429 || error.status >= 500);
+}
 
 export interface SeatJournal {
   version: 3;
@@ -83,9 +95,11 @@ export async function runSeat(options: SeatOptions): Promise<void> {
     for (let attempt = 1; ; attempt++) {
       try { return await call(); }
       catch (error) {
-        if (error instanceof OnlineError || attempt >= TRANSPORT_ATTEMPTS || signal?.aborted) throw error;
-        const delayMs = TRANSPORT_BACKOFF_MS * 2 ** (attempt - 1);
-        log({ event: 'transport-retry', leg, attempt, delayMs, reason: error instanceof Error ? error.message : 'unknown' });
+        const retryable = !(error instanceof OnlineError) || isRetryableOnlineError(error);
+        if (!retryable || attempt >= TRANSPORT_ATTEMPTS || signal?.aborted) throw error;
+        const delayMs = Math.min(TRANSPORT_BACKOFF_MS * 2 ** (attempt - 1), TRANSPORT_BACKOFF_CAP_MS);
+        log({ event: 'transport-retry', leg, attempt, delayMs, reason: error instanceof Error ? error.message : 'unknown',
+          status: error instanceof OnlineError ? error.status : undefined });
         await sleep(delayMs);
         if (signal?.aborted) throw error;
       }
@@ -123,27 +137,46 @@ export async function runSeat(options: SeatOptions): Promise<void> {
       }
       continue;
     }
-    if (room.clock?.deadlineAtMs !== null && room.clock?.deadlineAtMs !== undefined &&
-        room.clock.deadlineAtMs - room.clock.serverNowMs < ENGINE_ALLOWANCE_MS + 1_000) {
-      throw new Error('Insufficient room clock for the fixed 60-second engine allowance plus transport margin.');
-    }
-    const started = performance.now();
-    engine ??= makeEngine(journal.seed); // One engine/profile per game; startup counts in elapsed.
-    let result: RootResult;
-    try { result = await engine.searchTurn(room.state, { targetMs: ENGINE_TARGET_MS, deadlineMs: ENGINE_ALLOWANCE_MS }); }
-    catch (error) {
-      log({ event: 'search-failed', revision: room.revision, elapsedMs: performance.now() - started, fallback: 'engine-exception', verified: false });
-      throw error;
-    }
-    let verified = false;
-    try { verifySeatTurn(room.state, result); verified = true; }
-    finally {
-      const elapsedMs = performance.now() - started;
-      log({ event: 'search', revision: room.revision, turn: room.state.turn.turnNumber, player: journal.connection.player,
-        allowanceMs: ENGINE_ALLOWANCE_MS, targetMs: ENGINE_TARGET_MS, elapsedMs, overrunMs: Math.max(0, elapsedMs - ENGINE_ALLOWANCE_MS),
-        depth: result.depth, rung: result.stats.rung, work: result.work, source: result.source,
-        stopReason: result.stats.stopReason, fallback: classifyFallback(result), verified });
-    }
+    /**
+     * Per-search heavy-slot acquisition (not held for the game, and not held
+     * while waiting on the opponent or the network above). The queue wait can
+     * be long, so the room is re-verified — identity, contract, clock — the
+     * instant the slot is granted, against a FRESH read, before any of it is
+     * trusted for the timed search budget.
+     */
+    const queueStart = performance.now();
+    const release = await acquireHeavySlot(`engine-seat:${expected.roomId}:${journal.connection.player}`);
+    const queueDelayMs = performance.now() - queueStart;
+    let result: RootResult | undefined;
+    let started = performance.now(); // reassigned once the search actually starts; used by the 'submitted' log below
+    try {
+      room = await readAuthenticatedRoom(); // re-verifies state/seat/contract via assertSeatRoom + assertAuthenticatedSeat
+      if (room.state.phase !== 'playing' || room.state.turn.currentPlayer !== journal.connection.player) {
+        log({ event: 'slot-turn-lost', revision: room.revision, queueDelayMs });
+      } else {
+        if (room.clock?.deadlineAtMs !== null && room.clock?.deadlineAtMs !== undefined &&
+            room.clock.deadlineAtMs - room.clock.serverNowMs < ENGINE_ALLOWANCE_MS + 1_000) {
+          throw new Error('Insufficient room clock for the fixed 60-second engine allowance plus transport margin.');
+        }
+        started = performance.now();
+        engine ??= makeEngine(journal.seed); // One engine/profile per game; startup counts in elapsed.
+        try { result = await engine.searchTurn(room.state, { targetMs: ENGINE_TARGET_MS, deadlineMs: ENGINE_ALLOWANCE_MS }); }
+        catch (error) {
+          log({ event: 'search-failed', revision: room.revision, elapsedMs: performance.now() - started, queueDelayMs, fallback: 'engine-exception', verified: false });
+          throw error;
+        }
+        let verified = false;
+        try { verifySeatTurn(room.state, result); verified = true; }
+        finally {
+          const elapsedMs = performance.now() - started;
+          log({ event: 'search', revision: room.revision, turn: room.state.turn.turnNumber, player: journal.connection.player,
+            allowanceMs: ENGINE_ALLOWANCE_MS, targetMs: ENGINE_TARGET_MS, elapsedMs, overrunMs: Math.max(0, elapsedMs - ENGINE_ALLOWANCE_MS),
+            queueDelayMs, depth: result.depth, rung: result.stats.rung, work: result.work, source: result.source,
+            stopReason: result.stats.stopReason, fallback: classifyFallback(result), verified });
+        }
+      }
+    } finally { release(); }
+    if (!result) continue; // lost the turn or the room while queued for a slot; loop re-evaluates from the top
     if (signal?.aborted) return;
     journal.pending = { expectedRevision: room.revision, requestId: randomUUID(), actions: result.actions };
     save(journal); // Before any network side effect; restart cannot generate a different turn.

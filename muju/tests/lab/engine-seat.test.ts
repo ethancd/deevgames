@@ -1,5 +1,8 @@
 // @vitest-environment node
-import { describe, expect, it, vi } from 'vitest';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { createInitialGameState } from '../../src/game/board';
 import { applyAction } from '../../src/ai/simulate';
 import type { AIAction } from '../../src/ai/types';
@@ -45,6 +48,19 @@ import { assertSeatConfiguration, contractFor, initializeSeat, seatConfigSchema,
  * claim is made, and it is a TEST-ONLY configuration.
  */
 const READINESS = { phasingHardReadiness: PHASING_HARD_READINESS } as const;
+
+/**
+ * `runSeat` now acquires a real heavy-work slot per search (Component A).
+ * These tests exercise the turn loop, not the queue itself (that's
+ * `tests/lab/heavy-queue.test.ts`), so they bypass it — otherwise every
+ * `runSeat` call here would briefly touch `~/.local/state/muju-heavy`, racing
+ * whatever real engine seats or other test files are using it at the same
+ * time. The one test that DOES exercise the queue sets its own MUJU_HEAVY_DIR
+ * and unsets this bypass for its duration.
+ */
+const previousBypass = process.env.MUJU_HEAVY_BYPASS;
+beforeAll(() => { process.env.MUJU_HEAVY_BYPASS = '1'; });
+afterAll(() => { if (previousBypass === undefined) delete process.env.MUJU_HEAVY_BYPASS; else process.env.MUJU_HEAVY_BYPASS = previousBypass; });
 
 /** A complete Phasing macro turn: no action, no purchase, both phases ended. */
 const MACRO_TURN: AIAction[] = [{ type: 'END_ACTION_PHASE' }, { type: 'END_PLACE_PHASE' }];
@@ -109,6 +125,23 @@ describe('canonical whole-turn verification', () => {
     expect(() => assertSeatRoom(room, { roomId: room.id, contract: { mode: 'phasing-smoke' } })).toThrow(/phasingHardReadiness/);
     expect(() => assertSeatRoom(room, opened)).not.toThrow();
   });
+  it('opens the gate on a version-pinned research claim without ever claiming M7 passed, and keeps old journals parsing', () => {
+    const { room } = fixture();
+    const research = { kind: 'research' as const, campaign: 'muju-llm-pilot-2026-09-23', rulesId: 'phasing-4',
+      engineSourceSha256: 'a'.repeat(64), readinessEvidence: 'smoke match P00 completed and verified' };
+    const opened = { roomId: room.id, contract: { mode: 'phasing-smoke', researchReadiness: research } as SeatContract };
+    expect(() => assertSeatRoom(room, opened)).not.toThrow();
+    expect((opened.contract as { phasingHardReadiness?: string }).phasingHardReadiness).toBeUndefined();
+    // A research claim must never ride alongside an M7-passed claim.
+    expect(() => seatConfigSchema.parse({ mode: 'phasing-smoke', serverUrl: 'http://localhost', roomId: room.id, seed: 1,
+      stateFile: '/private/x.json', name: 'Engine', inviteCode: 'a'.repeat(64),
+      phasingHardReadiness: PHASING_HARD_READINESS, researchReadiness: research })).toThrow(/both/);
+    // A pre-research journal (only phasingHardReadiness, no researchReadiness field at all) still parses.
+    const legacyJournal = { version: 3 as const, admission: 'join' as const,
+      contract: { mode: 'phasing-smoke' as const, ...READINESS },
+      seed: 42, connection: { serverUrl: 'http://localhost', roomId: room.id, player: 'white' as const, token: 'secret'.repeat(8) } };
+    expect(() => seatJournalSchema.parse(legacyJournal)).not.toThrow();
+  });
   it('refuses to run a whole seat without the readiness claim, before any engine or network write', async () => {
     const { room, journal } = fixture(), createEngine = vi.fn();
     delete (journal.contract as { phasingHardReadiness?: string }).phasingHardReadiness;
@@ -135,7 +168,7 @@ it('long-polls, searches under the deadline, durably saves before submission, an
     wait: vi.fn().mockResolvedValue({ changed: true, room: { ...room, authenticatedPlayer: undefined } }), play };
   await runSeat({ journal, transport, createEngine, save: s => stored.push(structuredClone(s)), log: e => logs.push(e) });
   expect(transport.wait).toHaveBeenCalledWith(journal.connection, 1, undefined);
-  expect(transport.read).toHaveBeenCalledTimes(4); // Initial, public-wait refresh, pre-submit, uncertain retry.
+  expect(transport.read).toHaveBeenCalledTimes(5); // Initial, public-wait refresh, post-acquire, pre-submit, uncertain retry.
   expect(createEngine).toHaveBeenCalledTimes(1); expect(createEngine).toHaveBeenCalledWith(42);
   // The rung is sized BELOW the watchdog: an over-estimate finishes instead of
   // being killed at the deadline it was sized for.
@@ -145,6 +178,7 @@ it('long-polls, searches under the deadline, durably saves before submission, an
   expect(play.mock.calls[0][1].actions).toEqual(MACRO_TURN);
   expect(stored.at(-1)?.pending).toBeUndefined();
   expect(logs.find(e => e.event === 'search')).toMatchObject({ verified: true, allowanceMs: 60000, targetMs: ENGINE_TARGET_MS, overrunMs: 0, fallback: null });
+  expect(typeof logs.find(e => e.event === 'search')?.queueDelayMs).toBe('number');
   expect(logs.find(e => e.event === 'room-contract-verified')).toMatchObject({ mode: 'phasing-smoke', ruleset: 'phasing' });
   expect(JSON.stringify(logs)).not.toContain(journal.connection.token);
 });
@@ -256,7 +290,7 @@ describe('pinned room contract', () => {
     const transport = { read: vi.fn().mockResolvedValue(room), wait: vi.fn(), play: vi.fn().mockResolvedValue(finish) };
     await runSeat({ journal, transport, createEngine: () => ({ searchTurn }), save: vi.fn(), log: e => logs.push(e) });
     expect(searchTurn).toHaveBeenCalledWith(state, { targetMs: 55000, deadlineMs: 60000 });
-    expect(transport.read).toHaveBeenCalledTimes(2);
+    expect(transport.read).toHaveBeenCalledTimes(3); // Initial, post-acquire, pre-submit.
     expect(logs.find(e => e.event === 'room-contract-verified')).toMatchObject({ mode: 'pinned', roomId: room.id, ruleset: 'phasing',
       matchPolicy: config.expectedMatchPolicy, timeControl: config.expectedTimeControl, handicap: 0 });
     journal.pending = { expectedRevision: 1, requestId: 'persisted-batch', actions: MACRO_TURN };
@@ -268,7 +302,8 @@ describe('pinned room contract', () => {
   });
   it.each(mismatchedRooms)('re-reads and rejects %s after search before sending the durable batch', async (_label, change) => {
     const { room, journal, state } = pinnedFixture(), save = vi.fn();
-    const transport = { read: vi.fn().mockResolvedValueOnce(room).mockResolvedValueOnce(change(room)), wait: vi.fn(), play: vi.fn() };
+    // Initial, post-acquire (still good), then the pre-submit re-read that catches the mismatch.
+    const transport = { read: vi.fn().mockResolvedValueOnce(room).mockResolvedValueOnce(room).mockResolvedValueOnce(change(room)), wait: vi.fn(), play: vi.fn() };
     await expect(runSeat({ journal, transport, createEngine: () => ({ searchTurn: async () => resultFor(state) }), save, log: vi.fn() })).rejects.toThrow();
     expect(transport.play).not.toHaveBeenCalled(); expect(journal.pending?.expectedRevision).toBe(1); expect(save).toHaveBeenCalledTimes(1);
   });
@@ -281,7 +316,8 @@ describe('pinned room contract', () => {
   });
   it('rechecks the contract before an uncertain retry and preserves the original pending batch', async () => {
     const { room, journal, state } = pinnedFixture();
-    const transport = { read: vi.fn().mockResolvedValueOnce(room).mockResolvedValueOnce(room).mockResolvedValueOnce({ ...room, matchPolicy: undefined }),
+    // Initial, post-acquire, pre-submit (all good), then the uncertain-retry recheck that catches the mismatch.
+    const transport = { read: vi.fn().mockResolvedValueOnce(room).mockResolvedValueOnce(room).mockResolvedValueOnce(room).mockResolvedValueOnce({ ...room, matchPolicy: undefined }),
       wait: vi.fn(), play: vi.fn().mockRejectedValue(new TypeError('lost acknowledgement')) };
     await expect(runSeat({ journal, transport, createEngine: () => ({ searchTurn: async () => resultFor(state) }), save: vi.fn(), log: vi.fn() })).rejects.toThrow(/policy/);
     expect(transport.play).toHaveBeenCalledTimes(1); expect(journal.pending).toEqual(transport.play.mock.calls[0][1]);
@@ -294,7 +330,7 @@ describe('pinned room contract', () => {
   });
   it('rejects a stale revision found before submission without discarding the pending batch', async () => {
     const { room, journal, state } = pinnedFixture();
-    const transport = { read: vi.fn().mockResolvedValueOnce(room).mockResolvedValueOnce({ ...room, revision: 2 }), wait: vi.fn(), play: vi.fn() };
+    const transport = { read: vi.fn().mockResolvedValueOnce(room).mockResolvedValueOnce(room).mockResolvedValueOnce({ ...room, revision: 2 }), wait: vi.fn(), play: vi.fn() };
     await expect(runSeat({ journal, transport, createEngine: () => ({ searchTurn: async () => resultFor(state) }), save: vi.fn(), log: vi.fn() })).rejects.toMatchObject({ code: 'STALE_REVISION' });
     expect(transport.play).not.toHaveBeenCalled(); expect(journal.pending?.expectedRevision).toBe(1);
   });
@@ -320,7 +356,7 @@ describe('pinned room contract', () => {
   });
   it('retains the durable batch if authenticated identity changes before submission', async () => {
     const { room, journal, state } = pinnedFixture(), save = vi.fn();
-    const transport = { read: vi.fn().mockResolvedValueOnce(room).mockResolvedValueOnce({ ...room, authenticatedPlayer: 'black' }), wait: vi.fn(), play: vi.fn() };
+    const transport = { read: vi.fn().mockResolvedValueOnce(room).mockResolvedValueOnce(room).mockResolvedValueOnce({ ...room, authenticatedPlayer: 'black' }), wait: vi.fn(), play: vi.fn() };
     await expect(runSeat({ journal, transport, createEngine: () => ({ searchTurn: async () => resultFor(state) }), save, log: vi.fn() })).rejects.toThrow(/authenticated seat/);
     expect(transport.play).not.toHaveBeenCalled(); expect(journal.pending).toBeDefined(); expect(save).toHaveBeenCalledTimes(1);
   });
@@ -412,4 +448,59 @@ it('re-verifies an actual bounded Phasing HardEngine search', async () => {
   expect(result.actions.map(a => a.type)).toContain('END_ACTION_PHASE');
   expect(result.actions.at(-1)?.type).toBe('END_PLACE_PHASE');
   expect(verifySeatTurn(state, result).turn.currentPlayer).toBe('black');
+});
+
+describe('per-search heavy-slot acquisition (Component A)', () => {
+  /**
+   * This block exercises the REAL heavy-work queue (`acquireHeavySlot` in
+   * `lab/hard-ai/ladder/heavy.ts`), so it opts out of the file-wide bypass and
+   * points MUJU_HEAVY_DIR at a throwaway directory instead of
+   * `~/.local/state/muju-heavy`, exactly like `tests/lab/heavy-queue.test.ts`.
+   */
+  let dir = '';
+  const envBackup: Record<string, string | undefined> = {};
+  function setEnv(key: string, value: string | undefined) {
+    if (!(key in envBackup)) envBackup[key] = process.env[key];
+    if (value === undefined) delete process.env[key]; else process.env[key] = value;
+  }
+  beforeAll(() => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'muju-engine-seat-heavy-test-'));
+    setEnv('MUJU_HEAVY_DIR', dir); setEnv('MUJU_HEAVY_SLOTS', '2'); setEnv('MUJU_HEAVY_BYPASS', undefined);
+  });
+  afterAll(() => {
+    for (const [key, value] of Object.entries(envBackup)) { if (value === undefined) delete process.env[key]; else process.env[key] = value; }
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('never lets 4 concurrent seats hold more than MUJU_HEAVY_SLOTS (2) slots at once', async () => {
+    const { readSlots } = await import('../../lab/hard-ai/ladder/heavy');
+    // Four independent games, each with its own room, journal, and a stubbed
+    // search slow enough (60ms) to force real overlap across 4 concurrent
+    // seats contending for 2 slots.
+    const seats = Array.from({ length: 4 }, (_, i) => {
+      const { room, journal, state, finish } = fixture();
+      const roomed = { ...room, id: room.id.slice(0, -1) + i.toString(16) };
+      journal.connection = { ...journal.connection, roomId: roomed.id };
+      const finished = { ...finish, id: roomed.id };
+      const searchTurn = vi.fn(() => new Promise(resolve => setTimeout(() => resolve(resultFor(state)), 60)));
+      const transport: SeatTransport = {
+        read: vi.fn().mockResolvedValueOnce({ ...roomed, ready: false }).mockResolvedValue(roomed),
+        wait: vi.fn().mockResolvedValue({ changed: true, room: { ...roomed, authenticatedPlayer: undefined } }),
+        play: vi.fn().mockResolvedValue(finished),
+      };
+      return { journal, transport, createEngine: vi.fn().mockReturnValue({ searchTurn }) };
+    });
+    let maxConcurrentSlots = 0;
+    const polling = setInterval(() => {
+      const held = readSlots().filter(s => s.record !== null && !s.stale).length;
+      if (held > maxConcurrentSlots) maxConcurrentSlots = held;
+    }, 5);
+    try {
+      await Promise.all(seats.map(seat => runSeat({ journal: seat.journal, transport: seat.transport, createEngine: seat.createEngine, save: vi.fn(), log: vi.fn() })));
+    } finally { clearInterval(polling); }
+    for (const seat of seats) expect(seat.createEngine).toHaveBeenCalledTimes(1);
+    expect(maxConcurrentSlots).toBeGreaterThan(0); // real contention happened
+    expect(maxConcurrentSlots).toBeLessThanOrEqual(2);
+    expect(readSlots().filter(s => s.record !== null && !s.stale)).toHaveLength(0); // all released
+  }, 10_000);
 });

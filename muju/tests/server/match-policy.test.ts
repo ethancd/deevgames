@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterEach, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, expect, it, vi } from 'vitest';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
@@ -13,6 +13,11 @@ import { AnalysisService } from '../../server/analysis';
 import type { MatchPolicy, RoomAdmission } from '../../src/online/types';
 const cleanups: (() => unknown | Promise<unknown>)[] = [];
 afterEach(async () => { for (const close of cleanups.splice(0).reverse()) await close(); });
+// runSeat acquires a real heavy-work slot per search (Component A); bypass it
+// here so this file's real-engine turn test never touches the shared queue.
+const previousBypass = process.env.MUJU_HEAVY_BYPASS;
+beforeAll(() => { process.env.MUJU_HEAVY_BYPASS = '1'; });
+afterAll(() => { if (previousBypass === undefined) delete process.env.MUJU_HEAVY_BYPASS; else process.env.MUJU_HEAVY_BYPASS = previousBypass; });
 async function setup(stdio = false) {
   const store = new RoomStore();
   const listener: Server = await new Promise(resolve => { const s = createApp(store, { publicUrl: 'http://localhost' }).listen(0, '127.0.0.1', () => resolve(s)); });

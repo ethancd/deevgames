@@ -2,14 +2,16 @@ import { z } from 'zod';
 import { actionRequestSchema, joinSchema, roomIdSchema, tokenSchema } from '../../server/schema';
 import { joinRoom, normalizeServer, readRoom, roomRequest } from '../../src/online/client';
 import type { RoomAdmission, RoomConnection, RoomSnapshot } from '../../src/online/types';
-import { PHASING_HARD_READINESS, assertAuthenticatedSeat, assertSeatRoom, seatContractSchema, type SeatContract } from './contract';
+import { PHASING_HARD_READINESS, assertAuthenticatedSeat, assertSeatRoom, researchReadinessSchema, seatContractSchema, type SeatContract } from './contract';
 import type { SeatJournal } from './runner';
 
 const credentialsSchema = z.object({ roomId: roomIdSchema, player: z.enum(['white', 'black']), token: tokenSchema }).strict();
 const common = { serverUrl: z.string().transform(normalizeServer), roomId: roomIdSchema,
   seed: z.number().int().min(0).max(0xffffffff), stateFile: z.string().min(1),
   // Default closed: absent here means `assertSeatRoom` refuses the room.
-  phasingHardReadiness: z.literal(PHASING_HARD_READINESS).optional() };
+  // Either readiness field may be given, never both (see contract.ts).
+  phasingHardReadiness: z.literal(PHASING_HARD_READINESS).optional(),
+  researchReadiness: researchReadinessSchema.optional() };
 export const seatConfigSchema = z.discriminatedUnion('mode', [
   z.object({ ...common, ...seatContractSchema.options[0].shape,
     name: joinSchema.shape.name.optional(), inviteCode: joinSchema.shape.inviteCode.optional(), credentials: credentialsSchema.optional() }).strict(),
@@ -18,6 +20,12 @@ export const seatConfigSchema = z.discriminatedUnion('mode', [
   if (config.credentials && config.credentials.roomId !== config.roomId) context.addIssue({ code: 'custom', message: 'Issued credentials belong to a different room.' });
   if (config.mode === 'phasing-smoke' && (config.credentials ? config.name !== undefined || config.inviteCode !== undefined : !config.name || !config.inviteCode)) {
     context.addIssue({ code: 'custom', message: 'Smoke mode requires either issued credentials or both name and inviteCode, never both admission methods.' });
+  }
+  // A research readiness claim is a substitute for the M7 claim, never on top
+  // of it — carrying both would let a config accidentally claim the release
+  // gate passed while ALSO declaring the truthful research-only basis.
+  if (config.phasingHardReadiness !== undefined && config.researchReadiness !== undefined) {
+    context.addIssue({ code: 'custom', message: 'A seat cannot declare both phasingHardReadiness and researchReadiness; the research claim must never ride alongside an M7-passed claim.' });
   }
 });
 export type SeatConfig = z.infer<typeof seatConfigSchema>;
@@ -43,7 +51,8 @@ export const seatJournalSchema = z.object({ version: z.literal(3), seed: z.numbe
  * editing the config of a run that was started closed.
  */
 export function contractFor(config: SeatConfig): SeatContract {
-  const readiness = config.phasingHardReadiness === undefined ? {} : { phasingHardReadiness: config.phasingHardReadiness };
+  const readiness = { ...(config.phasingHardReadiness === undefined ? {} : { phasingHardReadiness: config.phasingHardReadiness }),
+    ...(config.researchReadiness === undefined ? {} : { researchReadiness: config.researchReadiness }) };
   return config.mode === 'phasing-smoke' ? { mode: config.mode, ...readiness } : { mode: config.mode,
     expectedMatchPolicy: { ...config.expectedMatchPolicy }, expectedTimeControl: { ...config.expectedTimeControl }, expectedHandicap: config.expectedHandicap, ...readiness };
 }
