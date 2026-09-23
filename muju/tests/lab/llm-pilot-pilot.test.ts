@@ -77,3 +77,11 @@ describe('buildSchedule', () => {
     for (const g of schedule.games) expect(g.llmSeat).not.toBe(g.engineSeat);
   });
 });
+
+describe('perModelCap ramp', () => {
+  it('stays at two without a ramp, and grows one per finished game up to four', async () => {
+    const { perModelCap } = await import('../../tools/llm-pilot/pilot');
+    expect(perModelCap(5, undefined)).toBe(2);
+    expect([0, 1, 2, 3].map(n => perModelCap(n, '2026-09-23T21:00:00Z'))).toEqual([2, 3, 4, 4]);
+  });
+});

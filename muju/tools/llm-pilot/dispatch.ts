@@ -33,7 +33,7 @@ import { readSlots, slotCount } from '../../lab/hard-ai/ladder/heavy';
 import { researchReadinessSchema } from '../engine-seat/contract';
 import { runAuthPreflight, readCodexRollout, type CodexRateLimits } from './auth';
 import {
-  ALL_GAME_IDS, CAMPAIGN_DIR, ENGINE_DISPLAY_NAME, MAX_PLAYER_TURNS, MODEL_CLI_ID, PER_MODEL_CONCURRENCY,
+  ALL_GAME_IDS, CAMPAIGN_DIR, ENGINE_DISPLAY_NAME, MAX_PLAYER_TURNS, MODEL_CLI_ID, perModelCap,
   PILOT_TIME_CONTROL, PROTOCOL_ID, activeCountFor, admissionTrace, buildSchedule, ensureCampaignDirs,
   ensureGameDirs, engineConfigPath, engineDir, engineStatePath, gameDir, llmDisplayName, loadOrInitSchedule,
   nextAdmissible, pairById, parseGameId, pidsJsonPath, playerDir, progressMdPath, readJson, readStatus,
@@ -594,7 +594,8 @@ async function tick(schedule: Schedule): Promise<void> {
       const quota = await gptQuotaOk();
       if (!quota.ok) { appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} Luna held: ${quota.detail}\n`); continue; }
     }
-    while (activeCountFor(model, snapshot) < PER_MODEL_CONCURRENCY) {
+    const cap = perModelCap(finishedSinceRamp(model, schedule));
+    while (activeCountFor(model, snapshot) < cap) {
       const id = nextAdmissible(model, snapshot);
       if (!id) break;
       const game = schedule.games.find(g => g.gameId === id)!;
@@ -727,4 +728,14 @@ async function main(): Promise<void> {
   return runLoop(); // plain run and --resume both re-attach in-flight games first
 }
 const invokedDirectly = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (invokedDirectly) main().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });
+if (invokedDirectly) main().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });/** Games of this model whose status turned terminal after MUJU_PILOT_RAMP_FROM (see perModelCap). */
+function finishedSinceRamp(model: string, schedule: Schedule): number {
+  const from = process.env.MUJU_PILOT_RAMP_FROM;
+  if (!from) return 0;
+  const since = Date.parse(from);
+  return schedule.games.filter(g => g.model === model).filter(g => {
+    const status = readStatus(g.gameId) as { state: string; updatedAt?: string };
+    return ['finished', 'failed', 'interrupted'].includes(status.state) && Date.parse(status.updatedAt ?? '') > since;
+  }).length;
+}
+

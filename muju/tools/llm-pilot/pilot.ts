@@ -84,8 +84,16 @@ export const PROTOCOL_ID = 'muju-llm-pilot-2026-09-23';
 export const PILOT_TIME_CONTROL = { delaySeconds: 600, bankSeconds: 3600 } as const;
 /** Safety ceiling: report truncation rather than let a stuck game run forever. */
 export const MAX_PLAYER_TURNS = 200;
-/** Two active games per model, four total. */
+/** Two active games per model, four total, unless the operator ramps up (MUJU_PILOT_RAMP_FROM). */
 export const PER_MODEL_CONCURRENCY = 2;
+/** Ramp ceiling per model (8 total), owner-approved 2026-09-23 alongside MUJU_HEAVY_SLOTS=4. */
+export const PER_MODEL_RAMP_MAX = Number(process.env.MUJU_PILOT_PER_MODEL_MAX ?? 4);
+/** Each game of a model that finishes after the ramp start frees its slot and adds one more:
+ * the model's cap grows 2 -> 3 -> 4 as its original games end, so every finish admits two games. */
+export function perModelCap(finishedSinceRamp: number, rampFrom = process.env.MUJU_PILOT_RAMP_FROM): number {
+  if (!rampFrom) return PER_MODEL_CONCURRENCY;
+  return Math.min(PER_MODEL_RAMP_MAX, PER_MODEL_CONCURRENCY + finishedSinceRamp);
+}
 
 export type GameLifecycle = 'pending' | 'preparing' | 'live' | 'finished' | 'failed' | 'interrupted';
 export interface StatusRecord { state: GameLifecycle; detail?: string; updatedAt: string }
