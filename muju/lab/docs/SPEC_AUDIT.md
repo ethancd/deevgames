@@ -17,7 +17,7 @@ planning choice: exact movement is legal even when a planner emits short steps.
 | §2 income → clock/draw → home/elimination → upkeep → heal/reset → Place | `turn.ts`, `inactivity.ts`, `upkeep.ts` | turn/upkeep-clock/home-victory tests |
 | §3 orthogonal path and ceil(distance/speed) cost | `movement.ts` | movement/combat properties and move previews |
 | §4 ±1 ATK, chip DEF, own-start healing | `elements.ts`, `combat.ts`, `board.ts` | combat/element/audit fixtures |
-| §4.2 kill-gated tier-capped Cleave, paid moves between hits | `combat.ts`, `assembly/tactics.ts` | JS/WASM differential, Cleave browser fixtures |
+| §4.2 kill-gated Cleave, no tier cap since v3.4 (`muju-phasing-4`), paid moves between hits | `combat.ts`, `assembly/tactics.ts` | JS/WASM differential, Cleave browser fixtures |
 | §5.1 unconditional min(Mining,reserve), including Mining 0 and every flag | `mining.ts:unitEndOfTurnTake,endOfTurnIncome` | mining matrix, immutable/conservation tests |
 | §5.1 final position only, public income, no Mine action | `mining.ts`, `legality.ts`, `ai/moves.ts` | mining/turn/AI generation; projection/recap browser |
 | §5.2 any number of affordable T1 purchases, no actions | `building.ts`, `legality.ts`, `simulate.ts` | all-18 catalogue legality, mass purchases/IDs |

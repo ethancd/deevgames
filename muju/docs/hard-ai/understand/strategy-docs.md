@@ -67,7 +67,7 @@ replay of the JSON:
 | Combat | `max(0, ATK + elem) >= DEF - damageTaken` ⇒ kill; otherwise damage accrues | `src/game/combat.ts:80-128` |
 | Element modifier | ±1, floor 0; Fire/Lightning → Plant/Metal → Water/Shadow → Fire/Lightning; same pair = neutral | `src/game/elements.ts:25-29,76-114` |
 | Healing | all damage resets at the **owner's** turn start; a 5-action combo cannot span two turns | `src/game/board.ts:277,287` |
-| Cleave | 1 attack, +1 more per *killing* blow, capped at the unit's tier; each attack costs 1 action | `src/game/combat.ts:12-17` |
+| Cleave | 1 attack, +1 more per *killing* blow, capped at the unit's tier (cap removed 2026-09-23, `muju-phasing-4`); each attack costs 1 action | `src/game/combat.ts:12-17` |
 | Haste | purchased and promoted units act **immediately** (`canActThisTurn: true`) | `src/game/building.ts:11-14` |
 | Promotion | pay the cost difference; **not** on the purchase turn; once per unit per turn; tier 3 terminal | `src/game/promotion.ts:44-58`; `src/game/units.ts:262-283` |
 | Income | end of **your** turn, every owned unit takes `min(Mining, reserve)` from its own square | `src/game/mining.ts:5-34` |

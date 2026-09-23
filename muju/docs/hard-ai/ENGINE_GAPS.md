@@ -379,7 +379,8 @@ units fall in a kill-unlocked chain (SD X4) **[code, by absence]**.
 **Evidence.** Archived turn 14: Hono at C9 killed B9 then C8 from one square **[game]**; the four-actions probe:
 three adjacent Mujus fall in 3 actions to a Kagari, spaced ones only 2 (LH §4.1) **[sim]**.
 
-**Technique.** Extend G3's kill-combo table with chain continuation (kill unlocks one more attack up to tier,
+**Technique.** Extend G3's kill-combo table with chain continuation (kill unlocks one more attack up to tier —
+no tier cap since `muju-phasing-4`, 2026-09-23 —
 each 1 action; a non-lethal hit closes the chain — `combat.ts:13-17`); ET §4.8 Cleave-chain half-ply extension;
 ordering bonus for chain turns (§4.4).
 

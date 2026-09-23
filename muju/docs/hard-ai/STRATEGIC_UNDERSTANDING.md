@@ -256,6 +256,8 @@ entry), so **at most two attacks land on a corner occupier in a four-action repl
 NK:13: "I was one AP short of killing the enemy Aeg four turns running" **[game]**.
 
 Cleave (`combat.ts:13-17`) **[code]**: max attacks = tier (1/2/3), each further attack only after a kill.
+(Superseded 2026-09-23, `muju-phasing-4`: no tier cap — each kill unlocks another attack at any tier, bounded
+only by the four shared actions.)
 FOUR_ACTIONS probe (LH §4.1) **[sim, exact]**: one Kagari vs three adjacent Mujus kills all three in 3 actions;
 spaced at C1/E1/G1 it kills only 2 in 4 actions. Codex's Hono at C9 killed B9 then C8 from one square (GR §2.3)
 **[game]**. **Do not line soft miners up beside a square a tier-2+ unit can reach.**

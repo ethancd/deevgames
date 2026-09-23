@@ -330,6 +330,10 @@ Post-attack bookkeeping in `applyAttack` (`simulate.ts:98-116`):
 - 1 action is charged regardless of damage (`simulate.ts:101`; `cleave.test.ts:66` pins the 0-damage case) **[test]**
 - `checkVictory(newBoard)` → immediate `'elimination'` victory if the defender ran out of units (`simulate.ts:104-113`)
 
+> **Superseded 2026-09-23 (SPEC v3.4, `muju-phasing-4`):** Cleave has no tier cap. Every unit starts with one
+> attack and each of its own kills unlocks another, at any tier; the four shared actions are the only bound
+> (at most four attacks). The table and cap test below describe the rule as it stood when this was written.
+
 **Cleave chain rules by tier** (`SPEC.md:157-171`, verified against `combat.ts:13-17`):
 
 | Tier | Max attacks/turn | Unlock condition |
