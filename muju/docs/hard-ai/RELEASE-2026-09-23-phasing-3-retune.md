@@ -398,20 +398,20 @@ nothing outside `muju/lab`, `muju/docs` and `muju/tests`.
 
 ## Post-deploy verification
 
-**PLACEHOLDER — the coordinator fills this section after the merge.** Nothing in this release
+**Filled by the coordinator at 2026-09-23T14:28:24Z, after the merge (`8395d285`).** Nothing in this release
 changes a deployed byte, so these checks confirm that nothing moved, rather than that something
 did. Fill each row with what came back, and with the commands that produced it.
 
 | Check | Expected | Result |
 | --- | --- | --- |
-| CI on the merge commit (`gh workflow run deploy.yml`) | green | _(fill)_ |
+| CI on the merge commit (`gh workflow run deploy.yml`) | green | **green**: run 35871874531 on `master` at `8395d285`, `completed success` (triggered by the push to master; a manual dispatch on the branch was refused by the agent's permission classifier, so local validation was the pre-merge gate) |
 | `npm test` at the final commit | 0 failing | **213 files / 2972 tests passed, 0 failed** at `6ed2b187` (352 s; `results/validation/npm-test.log`); `npm run hard:types` and `npx tsc --noEmit` clean; e2e `ai-worker.spec.ts` 7/7 incl. the free-capture case (`results/validation/e2e-ai-worker.log`). `eae48fba` changes only the fuzz guard in `lab/hard-ai/fuzz/run.ts`, outside every test's imports |
 | Gate 0 re-run at the final commit (perft ×2, fuzz, determinism) | 4 × exit 0, `clockFixtureOk true` | **Done** at `eae48fba`, 14:04:20–14:04:35Z, load 1.79: 4 × exit 0, `clockFixtureOk true`, 69 kill-clock terminals (block above) |
-| `/api/muju/health` | ok, same revision as before the merge | _(fill)_ |
-| `muju_rules` over MCP | `ruleset.name === 'phasing'`, `muju-phasing-3` kill-clock text unchanged | _(fill)_ |
-| `/muju/` bundle | byte-identical to the pre-merge bundle | _(fill)_ |
-| Cloudflare Pages | unchanged (nothing to publish; no wrangler run) | _(fill)_ |
-| Academy | untouched by this campaign (SPEC "NOT in scope") | _(fill)_ |
+| `/api/muju/health` | ok, same revision as before the merge | `{"ok":true,"game":"Muju Hono Irumbu","protocol":1}` — identical before and after the merge |
+| `muju_rules` over MCP | `ruleset.name === 'phasing'`, `muju-phasing-3` kill-clock text unchanged | `{"ruleset":{"name":"phasing","revision":"muju-phasing-3","immutable":true,"retired":["standard"]}, …}`, kill-clock "mined total" text present, 37,251 chars, same before and after the merge |
+| `/muju/` bundle | byte-identical to the pre-merge bundle | No build input changed (`git diff --stat 0fcd5852..8395d285 -- muju/src/ muju/index.html muju/vite.config.ts muju/package.json` empty), so the artifact is master's; no Pages publish was made |
+| Cloudflare Pages | unchanged (nothing to publish; no wrangler run) | unchanged; no wrangler run |
+| Academy | untouched by this campaign (SPEC "NOT in scope") | untouched; no Academy push |
 
 ## Not in this release
 
