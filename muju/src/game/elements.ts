@@ -194,6 +194,6 @@ export const ELEMENT_INFO: Record<
     name: 'Metal',
     language: 'Tamil',
     region: 'South Asia',
-    color: '#6B7280',
+    color: '#B66A32',
   },
 };

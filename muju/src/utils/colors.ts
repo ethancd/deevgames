@@ -27,9 +27,9 @@ export const ELEMENT_COLORS: Record<Element, { primary: string; secondary: strin
     text: 'text-green-500',
   },
   metal: {
-    primary: 'bg-gray-500',
-    secondary: 'bg-gray-300',
-    text: 'text-gray-500',
+    primary: 'bg-amber-700',
+    secondary: 'bg-amber-300',
+    text: 'text-amber-700',
   },
 };
 
@@ -40,7 +40,7 @@ export const ELEMENT_HEX: Record<Element, string> = {
   water: '#3B82F6',
   shadow: '#7C3AED',
   plant: '#22C55E',
-  metal: '#6B7280',
+  metal: '#B66A32',
 };
 
 // White player: lighter, pastel colors
@@ -50,7 +50,7 @@ export const ELEMENT_HEX_WHITE: Record<Element, string> = {
   water: '#93C5FD',     // lighter blue
   shadow: '#C4B5FD',    // lighter purple/lavender
   plant: '#86EFAC',     // lighter green/mint
-  metal: '#D1D5DB',     // lighter gray
+  metal: '#E5AB6D',     // polished brass on White pieces
 };
 
 // Black player: darker, more saturated colors
@@ -60,7 +60,7 @@ export const ELEMENT_HEX_BLACK: Record<Element, string> = {
   water: '#1D4ED8',     // deeper blue
   shadow: '#5B21B6',    // deeper purple
   plant: '#15803D',     // deeper green
-  metal: '#374151',     // deeper gray
+  metal: '#8A451E',     // burnished bronze on Black pieces
 };
 
 export function getElementColor(element: Element): string {

@@ -216,9 +216,9 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .army-white { --vein: #f6ebcd; --glyph-outline: #132a3e44; }
 .army-black { --vein: #172334; --glyph-outline: #f4ffff44; }
 .element-fire { --glyph: #bd4029; } .element-lightning { --glyph: #946000; } .element-water { --glyph: #1763a9; }
-.element-shadow { --glyph: #7947aa; } .element-plant { --glyph: #2b713a; } .element-metal { --glyph: #445665; }
+.element-shadow { --glyph: #7947aa; } .element-plant { --glyph: #2b713a; } .element-metal { --glyph: #99501f; }
 .army-black.element-fire { --glyph: #ff9b75; } .army-black.element-lightning { --glyph: #ffe174; } .army-black.element-water { --glyph: #7bbfff; }
-.army-black.element-shadow { --glyph: #cfabff; } .army-black.element-plant { --glyph: #9ddd8a; } .army-black.element-metal { --glyph: #d0e5ef; }
+.army-black.element-shadow { --glyph: #cfabff; } .army-black.element-plant { --glyph: #9ddd8a; } .army-black.element-metal { --glyph: #f4bb78; }
 .rank-pips { fill: #63502d; } .army-black .rank-pips { fill: #e2eafa; }
 .elite-crest { stroke: #b4822e; } .army-black .elite-crest { stroke: #f2d9a0; }
 .piece-selected { filter: drop-shadow(0 0 2px #ffe6a7); }
@@ -226,7 +226,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .piece-damage { position: absolute; right: -1px; top: -2px; font: 800 9px/12px system-ui; padding: 0 2px; color: #fff; background: #a72440; border: 1px solid #ffbdc3; border-radius: 4px; }
 .element-icon { display: inline-block; width: 24px; height: 24px; fill: var(--glyph); --glyph-vein: #1b2939; vertical-align: middle; }
 .element-icon.element-fire { --glyph: #ff9b75; } .element-icon.element-lightning { --glyph: #ffe174; } .element-icon.element-water { --glyph: #7bbfff; }
-.element-icon.element-shadow { --glyph: #cfabff; } .element-icon.element-plant { --glyph: #9ddd8a; } .element-icon.element-metal { --glyph: #d0e5ef; }
+.element-icon.element-shadow { --glyph: #cfabff; } .element-icon.element-plant { --glyph: #9ddd8a; } .element-icon.element-metal { --glyph: #f4bb78; }
 .element-picker .element-icon { display: block; margin: auto; height: 22px; }
 .unit-heading strong { display: flex; align-items: center; gap: 3px; min-width: 0; }
 .unit-heading .unit-art { width: 25px; height: 27px; flex: none; }
