@@ -85,3 +85,13 @@ describe('perModelCap ramp', () => {
     expect([0, 1, 2, 3].map(n => perModelCap(n, '2026-09-23T21:00:00Z'))).toEqual([2, 3, 4, 4]);
   });
 });
+
+describe('parseClock', () => {
+  it('reads "delay/bank" within server limits and rejects anything else', async () => {
+    const { parseClock } = await import('../../tools/llm-pilot/pilot');
+    expect(parseClock(undefined)).toBeUndefined();
+    expect(parseClock('60/1800')).toEqual({ delaySeconds: 60, bankSeconds: 1800 });
+    expect(() => parseClock('60m/30m')).toThrow();
+    expect(() => parseClock('900/1800')).toThrow();
+  });
+});

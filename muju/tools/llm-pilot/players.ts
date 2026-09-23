@@ -25,12 +25,20 @@ import { fileURLToPath } from 'node:url';
 import { CODEX_BIN, readCodexRollout, stripApiKeys } from './auth';
 import { sumHelperCpuSeconds } from './sandbox';
 import {
+  PILOT_TIME_CONTROL,
   MODEL_CLI_ID, pairById, parseGameId, readJson, writeJson,
   type Effort, type GameId, type ModelId, type Seat, type ToolTier,
 } from './pilot';
 
 export type PlayerKind = 'claude' | 'codex';
 export type Phase = 'play' | 'continue' | 'reflect';
+
+/** The room clock this game was admitted with (manifest.json), for the prompt. */
+function clockVars(gameDir: string): { delaySeconds: string; bankSeconds: string } {
+  let clock = PILOT_TIME_CONTROL;
+  try { clock = JSON.parse(readFileSync(path.join(gameDir, 'manifest.json'), 'utf8')).timeControl ?? clock; } catch { /* not yet written */ }
+  return { delaySeconds: String(clock.delaySeconds), bankSeconds: String(clock.bankSeconds) };
+}
 
 export interface RunPlayerArgs {
   gameDir: string;
@@ -353,7 +361,8 @@ export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
   const handicap = args.handicap ?? pairById(parseGameId(args.gameId).pairId).blackCrystalHandicap;
   const { roomId } = JSON.parse(readFileSync(path.join(args.gameDir, 'secrets', 'seat.json'), 'utf8')) as { roomId: string };
   const vars = { gameId: args.gameId, roomId, placeholderToken: PLACEHOLDER_TOKEN, seat: args.seat, seatColor: args.seat === 'white' ? 'White' : 'Black',
-    handicap: String(handicap), tier: args.tier, model: cliModel, effort: args.effort, brief: args.brief };
+    handicap: String(handicap), tier: args.tier, model: cliModel, effort: args.effort, brief: args.brief,
+    ...clockVars(args.gameDir) };
   const templatePath = args.reflectionTemplatePath ?? DEFAULT_REFLECTION_TEMPLATE;
   await writeFile(path.join(workspace, 'reflection-template.md'), await readFile(templatePath, 'utf8'), 'utf8');
   const playPrompt = renderTemplate(await readFile(path.join(HERE, 'prompts', 'player.md'), 'utf8'), vars);

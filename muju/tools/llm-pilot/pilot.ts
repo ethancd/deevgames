@@ -81,7 +81,18 @@ export const ENGINE_DISPLAY_NAME = 'Hard';
 export const PROTOCOL_ID = 'muju-llm-pilot-2026-09-23';
 /** Immutable room clocks for every pilot game (SPEC.md Component D). Within the
  * server's custom timeControl bounds (delaySeconds <= 600, bankSeconds <= 14400). */
-export const PILOT_TIME_CONTROL = { delaySeconds: 600, bankSeconds: 3600 } as const;
+/** Room clock for newly admitted games. The 16-game pilot ran at 600s delay / 3600s bank; the owner
+ * set 60s / 1800s for later waves (2026-09-23), selected with MUJU_PILOT_CLOCK="60/1800". Each game
+ * records its own clock in manifest.json, so resumed games keep theirs. */
+export const PILOT_TIME_CONTROL = parseClock(process.env.MUJU_PILOT_CLOCK) ?? { delaySeconds: 600, bankSeconds: 3600 };
+export function parseClock(value?: string): { delaySeconds: number; bankSeconds: number } | undefined {
+  if (!value) return undefined;
+  const match = /^(\d+)\/(\d+)$/.exec(value.trim());
+  if (!match) throw new Error(`MUJU_PILOT_CLOCK must be "<delaySeconds>/<bankSeconds>", got "${value}".`);
+  const [delaySeconds, bankSeconds] = [Number(match[1]), Number(match[2])];
+  if (delaySeconds > 600 || bankSeconds < 1 || bankSeconds > 14400) throw new Error('MUJU_PILOT_CLOCK is outside the server limits (delay 0-600, bank 1-14400).');
+  return { delaySeconds, bankSeconds };
+}
 /** Safety ceiling: report truncation rather than let a stuck game run forever. */
 export const MAX_PLAYER_TURNS = 200;
 /** Two active games per model, four total, unless the operator ramps up (MUJU_PILOT_RAMP_FROM). */

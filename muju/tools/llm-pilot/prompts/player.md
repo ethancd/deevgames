@@ -25,7 +25,7 @@ the same information another way.
    room is pre-created and your seat is already admitted. Room id:
    `{{roomId}}`. The gateway supplies your real seat credential: wherever a
    tool asks for `token`, pass exactly `{{placeholderToken}}`.
-3. Note the clock: 600 seconds of free delay per turn, then a 3600-second
+3. Note the clock: {{delaySeconds}} seconds of free delay per turn, then a {{bankSeconds}}-second
    bank shared across the whole game. Spend it like a resource, not
    infinitely — five seconds left can burn almost the entire bank on one
    decision.
