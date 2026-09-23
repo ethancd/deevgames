@@ -3,6 +3,7 @@ import { UnitArtwork } from './UnitArtwork';
 import type { MovementRangePosition } from '../game/movement';
 import { BOARD_SIZE, getUnitAt } from '../game/board';
 import { getUnitDefinition } from '../game/units';
+import { isPendingSummonDoomed } from '../utils/pendingSummon';
 import { Cell } from './Cell';
 import { Unit } from './Unit';
 
@@ -18,6 +19,8 @@ interface BoardProps {
   pendingMovePath?: Position[]; // For showing partial movement path
   movementRange?: MovementRangePosition[]; // For showing movement range preview with actions remaining
   attackFrontier?: Position[];
+  koTargets?: Position[]; // Enemies the selected unit could eliminate with its next attack
+  koThreats?: Position[]; // My units the inspected enemy could eliminate on its coming turn
   previewPosition?: Position;
   previewUnitPosition?: Position;
   showResources?: boolean;
@@ -40,6 +43,8 @@ export function Board({
   pendingMovePath = [],
   movementRange = [],
   attackFrontier = [],
+  koTargets = [],
+  koThreats = [],
   onCellClick,
   onUnitClick, onSummonClick, selectedSummon,
   previewPosition, previewUnitPosition, showResources = false, actionsRemaining = 4,
@@ -61,6 +66,12 @@ export function Board({
 
   const isPendingMove = (pos: Position) =>
     pendingMovePath.some((p) => p.x === pos.x && p.y === pos.y);
+
+  const isKoTarget = (pos: Position) =>
+    koTargets.some((p) => p.x === pos.x && p.y === pos.y);
+
+  const isKoThreat = (pos: Position) =>
+    koThreats.some((p) => p.x === pos.x && p.y === pos.y);
 
   const getMovementRangeActions = (pos: Position): number | undefined => {
     const rangePos = movementRange.find(
@@ -86,7 +97,10 @@ export function Board({
             const isSelected = unit?.id === selectedUnit;
             const pos = { x, y };
             const pending = pendingSummons.filter(s => s.position.x === x && s.position.y === y);
-            const pendingLabel = pending.map(s => `${s.owner} ${getUnitDefinition(s.definitionId).name} phasing in, not an occupant`).join('; ');
+            const pendingLabel = pending.map(s => {
+              const doomed = isPendingSummonDoomed(s, board);
+              return `${s.owner} ${getUnitDefinition(s.definitionId).name} phasing in, not an occupant${doomed ? ', currently disrupted, will refund if still blocked at arrival' : ''}`;
+            }).join('; ');
 
             return (
               <div key={`${x}-${y}`} className="board-square">
@@ -100,6 +114,8 @@ export function Board({
                   isPendingMove={isPendingMove(pos)}
                   movementRangeActions={getMovementRangeActions(pos)}
                   isAttackFrontier={attackFrontier.some(p => p.x === x && p.y === y)}
+                  isKoTarget={isKoTarget(pos)}
+                  isKoThreat={isKoThreat(pos)}
                   isPreview={(previewPosition?.x === x && previewPosition?.y === y) || (previewUnitPosition?.x === x && previewUnitPosition?.y === y)}
                   showResources={showResources}
                   moveCost={getMovementRangeActions(pos) !== undefined ? actionsRemaining - getMovementRangeActions(pos)! : undefined}
@@ -108,11 +124,15 @@ export function Board({
                   pendingLabel={pendingLabel}
                   onClick={unit ? () => onUnitClick(unit.id) : pending.length && onSummonClick && !isValidMove(pos) && !isValidSpawn(pos) && (inspectOnly || !board.units.some(u => u.id === selectedUnit)) ? () => onSummonClick(pending.find(s => s.id !== selectedSummon)?.id ?? pending[0].id) : onCellClick}
                 />
-                {pending.map(s => <div key={s.id} className={`summon-ghost ${s.owner}${unit ? ' occupied' : ''}`} data-testid={`summon-${x}-${y}`}>
-                  <UnitArtwork element={getUnitDefinition(s.definitionId).element} owner={s.owner} tier={1} />
-                  <span>◌</span>
-                  {unit && onSummonClick && <button className="summon-inspect" aria-label={`Inspect ${s.owner} ${getUnitDefinition(s.definitionId).name} phasing in at ${String.fromCharCode(65+x)}${y+1}`} onClick={() => onSummonClick(s.id)}>◌</button>}
-                </div>)}
+                {pending.map(s => {
+                  const doomed = isPendingSummonDoomed(s, board);
+                  return <div key={s.id} className={`summon-ghost ${s.owner}${unit ? ' occupied' : ''}${doomed ? ' doomed' : ''}`} data-testid={`summon-${x}-${y}`}>
+                    <UnitArtwork element={getUnitDefinition(s.definitionId).element} owner={s.owner} tier={1} />
+                    <span>◌</span>
+                    {doomed && <span className="vh-label">Will refund — currently disrupted</span>}
+                    {unit && onSummonClick && <button className="summon-inspect" aria-label={`Inspect ${s.owner} ${getUnitDefinition(s.definitionId).name} phasing in at ${String.fromCharCode(65+x)}${y+1}`} onClick={() => onSummonClick(s.id)}>◌</button>}
+                  </div>;
+                })}
                 {unit && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className={`unit-wrap${isSelected && previewUnit ? ' preview-origin' : ''}`}>

@@ -36,7 +36,7 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
     <p>Tap one of your pieces, then an empty reachable square to move immediately. Undo can reverse moves within your turn in local games. Shared online moves are final.</p>
     <p>Tap a reachable enemy to preview the shortest route to an adjacent square and the attack together. Confirm attack commits both; Cancel spends nothing. To choose your landing square, tap it to move there; the attack stays selected if it is still legal.</p>
     <p>In Prepare, tap a tier-1 unit in the shop, then a highlighted empty square to commit a summon. Tap a piece already on the board to promote it.</p>
-    <p>Tap an enemy you cannot attack to inspect it with reach already on. Hide reach toggles off its movement range and red attack frontier: up to {actionsPerTurn - 1} move actions plus 1 attack at its current speed. Blockers and board edges limit the frontier; dots show attack reach, not guaranteed kills. Key explains the board; Units opens the full catalogue.</p>
+    <p>Tap an enemy you cannot attack to inspect it with reach already on. Hide reach toggles off its movement range and red attack frontier: up to {actionsPerTurn - 1} move actions plus 1 attack at its current speed. Blockers and board edges limit the frontier; the dots themselves just show attack reach. A separate KO badge marks an actual single-attack elimination: ☠ on an enemy your selected unit could eliminate with its next attack, ⚠ on one of your own units the inspected enemy could eliminate on its next turn. Key explains the board; Units opens the full catalogue.</p>
   </>},
   {title:'Win the game', content:<>
     <p>Hold the enemy home corner until the start of your next turn, or eliminate every enemy piece. If no legal reply can remove the invader, checkmate wins immediately — unless the kill clock below would end the game first, in which case no checkmate is called and the defender gets its reply. Otherwise the defender gets one turn to clear it. An empty army loses even with crystals in the bank.</p>
@@ -83,7 +83,7 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
   </>},
   {title:'Read the board', content:<VisualKey />},
   {title:'Keyboard controls', content:<>
-    <p>Tab cycles every piece: yours first, then your opponent’s, each in A–J then 1–10 order; Shift+Tab goes back. N cycles only your pieces. Arrow keys prepare movement; a full Speed of steps commits automatically. Escape cancels pending movement, then clears the selection. Enter completes the phase and Command/Ctrl+Z undoes within the current turn, wherever focus rests; in the upkeep choice, Enter pays for the checked pieces.</p>
+    <p>Tab cycles every piece: yours first, then your opponent’s, each in 1–10 then A–J order; Shift+Tab goes back. N cycles only your pieces. Arrow keys prepare movement; a full Speed of steps commits automatically. Escape cancels pending movement, then clears the selection. Enter completes the phase and Command/Ctrl+Z undoes within the current turn, wherever focus rests; in the upkeep choice, Enter pays for the checked pieces.</p>
     <p>During Prepare, 1–6 or A S D F G H select a tier-1 summon by element (Fire, Lightning, Water, Shadow, Plant, Metal); click an empty highlighted square to commit it. P promotes the selected eligible piece. Space operates a focused button.</p>
     <p>U opens and closes the unit guide. Inside it, 1–3 choose the tier, A S D F G H choose the element, and Tab steps through every piece from tier 1 upward.</p>
   </>},

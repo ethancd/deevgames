@@ -21,7 +21,8 @@ afterEach(()=>{cleanup();vi.restoreAllMocks();vi.unstubAllGlobals();localStorage
 
 it.each(EFFECTS)('%s is short, bounded, finite and fades fully to silence',effect=>{
   const samples=effectSamples(effect,48000);
-  expect(samples.length/48000).toBeLessThanOrEqual(.15);
+  // yourTurn is a deliberately longer two-note chime (~200-300ms); everything else stays under 150ms.
+  expect(samples.length/48000).toBeLessThanOrEqual(.3);
   expect(Math.abs(samples[0])).toBe(0);expect(Math.abs(samples.at(-1)!)).toBe(0);
   let peak=0,energy=0;
   for(const sample of samples){expect(Number.isFinite(sample)).toBe(true);peak=Math.max(peak,Math.abs(sample));energy+=sample*sample;}
@@ -43,14 +44,18 @@ it('waits for a gesture, caches buffers, limits layering, and cancels scheduled 
   engine.dispose();expect(context.close).toHaveBeenCalledTimes(1);
 });
 
-it('stops when hidden, resumes only a previously unlocked context and never queues blocked sound',()=>{
+it('stops audible sources when hidden but keeps the context running for a background-safe cue, and resumes only a previously unlocked context',()=>{
   const hidden=vi.spyOn(document,'hidden','get').mockReturnValue(false);
   const engine=new SoundEngine();engine.visibilityChanged();expect(FakeAudio.instances).toHaveLength(0);
   engine.unlock();const context=FakeAudio.instances[0];engine.play(['move']);
   hidden.mockReturnValue(true);engine.visibilityChanged();engine.play(['capture']);
   expect(context.sources[0].stop).toHaveBeenCalled();expect(context.sources).toHaveLength(1);
-  hidden.mockReturnValue(false);engine.visibilityChanged();expect(context.resume).toHaveBeenCalledTimes(2);
-  context.state='suspended';engine.play(['move']);expect(context.sources).toHaveLength(1);
+  expect(context.state).toBe('running'); // going hidden stops sources but never suspends the context
+  engine.play(['yourTurn']);
+  expect(context.sources).toHaveLength(2); // the background-safe cue still reaches a hidden tab
+  hidden.mockReturnValue(false);engine.visibilityChanged();expect(context.resume).toHaveBeenCalledTimes(1);
+  context.state='suspended';engine.play(['move']);engine.play(['yourTurn']);
+  expect(context.sources).toHaveLength(2); // truly suspended, both ordinary and background-safe cues skip silently
   engine.dispose();
 });
 

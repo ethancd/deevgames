@@ -4,8 +4,9 @@ import type { AIAction } from '../ai/types';
 import { getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
 import { getValidAttacks } from '../game/combat';
-import { useIncomingPlayback } from './incomingPlayback';
+import { turnCue, useIncomingPlayback } from './incomingPlayback';
 import { OnlineError, playRoom, readRoom, waitRoom } from './client';
+import { useSoundEffects } from '../sound/SoundProvider';
 import type { ActionRequest, OnlineConnection, RoomAction, RoomSnapshot } from './types';
 
 export function useOnlineGame(initialConnection: OnlineConnection, initial: RoomSnapshot, onLeave: () => void) {
@@ -25,19 +26,29 @@ export function useOnlineGame(initialConnection: OnlineConnection, initial: Room
   const loseSeat = useCallback(() => {
     setSeatLost(true); setSelected(null); setUncertain(null); setError(null); setConnectionError(null);
   }, []);
+  const playEffect = useSoundEffects();
   const accept = useCallback((next: RoomSnapshot) => {
     if (next.revision <= roomRef.current.revision) return;
-    incoming.present(roomRef.current, next, connection.player);
+    const before = roomRef.current;
+    incoming.present(before, next, connection.player);
+    // The visible-tab turnStart/piece cues already cover this; a hidden tab gets none of
+    // those, so give it a background-safe substitute instead of doubling up when shown.
+    if (document.hidden) {
+      const cue = turnCue(before, next, connection.player);
+      if (cue) playEffect([cue]);
+    }
     roomRef.current = next; setRoom(next);
     setSelected(id => id && next.state.turn.phase === 'action' && next.state.phase === 'playing'
       && getUnitById(next.state.board, id)?.owner === next.state.turn.currentPlayer ? id : null);
-  }, [incoming.present, connection.player]);
+  }, [incoming.present, connection.player, playEffect]);
   useEffect(() => {
     let controller = new AbortController();
     let timer: ReturnType<typeof setTimeout>;
     let failures = 0;
     async function poll(signal: AbortSignal) {
-      if (signal.aborted || document.visibilityState === 'hidden' || roomRef.current.state.phase === 'victory') return;
+      // Long-poll continues on a hidden tab so the clock and incoming moves stay current;
+      // only an abort or a finished game stop it.
+      if (signal.aborted || roomRef.current.state.phase === 'victory') return;
       try {
         const change = await waitRoom(connection, roomRef.current.revision, signal);
         if (signal.aborted) return;
@@ -58,6 +69,10 @@ export function useOnlineGame(initialConnection: OnlineConnection, initial: Room
       if (!signal.aborted) timer = setTimeout(() => void poll(signal), failures ? Math.min(60000, 1000 * 2 ** Math.min(failures, 6)) : 0);
     }
     function resume() {
+      // Returning to the tab forces an immediate re-sync instead of waiting out any
+      // outage backoff; going hidden leaves the in-flight long-poll running untouched.
+      if (document.hidden) return;
+      failures = 0;
       controller.abort(); clearTimeout(timer);
       controller = new AbortController();
       void poll(controller.signal);

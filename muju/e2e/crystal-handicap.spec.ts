@@ -13,7 +13,8 @@ for (const amount of [1, 2, 3, 20]) test(`local ${amount}-crystal handicap start
   await page.getByRole('button', { name: /Mine & prepare/ }).click();
   await page.getByRole('button', { name: /End turn/ }).click();
   await page.getByText('Tap anywhere to continue').click();
-  const black = page.locator('.score-strip > div').first();
+  // Player cards are always ordered White first, Black second.
+  const black = page.locator('.score-strip > div').last();
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
   await expect(black).toContainText(`Player 2 ◆ ${amount}`);
   await page.reload();

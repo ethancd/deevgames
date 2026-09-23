@@ -182,8 +182,11 @@ have a short cue. Hits that leave a defender alive have a lighter tap.
 Effects last 75–140 ms and follow the visible board, including each incoming
 online or instant-replay movement hop. Inspecting pieces, undoing, loading a
 saved position, and rewinding a replay stay silent. Sounds require an initial
-tap/key press and stop while the tab is hidden. The effects are synthesized
-locally and require no audio downloads.
+tap/key press and stop while the tab is hidden — except in an online room,
+where your own seat still gets a short chime the moment the opponent hands
+back the turn, and a soft tick for each partial action they take while it
+stays their turn; every other effect keeps following the visible board only.
+The effects are synthesized locally and require no audio downloads.
 
 ## Connect an LLM
 

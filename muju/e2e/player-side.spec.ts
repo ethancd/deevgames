@@ -59,8 +59,11 @@ test('Black lets the real White AI open at the chosen difficulty and shows its f
   expect(saved.turn.turnNumber).toBe(1);
   expect(saved.lastIncome.player).toBe('white');
   await expect(page.locator('.income-recap summary')).toContainText('AI collected');
-  await expect(page.locator('.score-strip > div').first()).toContainText('You');
-  await expect(page.locator('.score-strip > div').first().locator('.player-dot')).toHaveClass('player-dot black');
+  // Cards are always ordered White first, Black second, regardless of which side is "you".
+  await expect(page.locator('.score-strip > div').first()).toContainText('AI');
+  await expect(page.locator('.score-strip > div').first().locator('.player-dot')).toHaveClass('player-dot white');
+  await expect(page.locator('.score-strip > div').last()).toContainText('You');
+  await expect(page.locator('.score-strip > div').last().locator('.player-dot')).toHaveClass('player-dot black');
 
   await page.getByRole('button', { name: 'Element advantages and match stats', exact: true }).click();
   const stats = page.getByRole('dialog', { name: 'Elements & match stats', exact: true });
@@ -97,9 +100,10 @@ test('Black preference survives the mode menu and reload while resuming the save
   await page.screenshot({ path: test.info().outputPath('black-selected-mobile.png'), fullPage: true });
   await page.getByRole('button', { name: /Continue saved game/ }).click();
   await expect(page.locator('.turn-strip')).toContainText('You · Turn 4');
+  // Cards are always ordered White first, Black second; the human is playing Black here.
   const resources = page.locator('.score-strip > div');
-  await expect(resources.first()).toContainText('You ◆ 11');
-  await expect(resources.last()).toContainText('AI ◆ 4');
+  await expect(resources.first()).toContainText('AI ◆ 4');
+  await expect(resources.last()).toContainText('You ◆ 11');
 
   await page.getByRole('button', { name: 'Game menu', exact: true }).click();
   await page.getByRole('button', { name: 'Choose game mode', exact: true }).click();
@@ -118,7 +122,7 @@ test('Black preference survives the mode menu and reload while resuming the save
   await expect(page.locator('.turn-strip')).toContainText('You · Turn 4');
   await expect(page.getByTestId('cell-6-8')).toHaveAttribute('aria-label', /black Sjór/);
   await expect(page.getByRole('button', { name: '↶ Undo', exact: true })).toBeDisabled();
-  await expect(resources.first()).toContainText('You ◆ 11');
+  await expect(resources.last()).toContainText('You ◆ 11');
   expect(workers).toEqual([]);
 });
 

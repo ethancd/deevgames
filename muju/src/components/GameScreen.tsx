@@ -37,6 +37,7 @@ import { SummoningStatus } from './SummoningStatus';
 import { getSpawnInvalidReason } from '../game/spawning';
 import { findAttackApproach, getMovementRange, getAttackFrontier, type MovementRangePosition } from '../game/movement';
 import { calculateAttackPower, calculateDefense } from '../game/combat';
+import { ownKoTargets, enemyKoThreats } from '../utils/koIndicators';
 import { PlayDialog } from './PlayDialog';
 import type { Position, GameConfig, PlayerId, Element, Unit } from '../game/types';
 import type { ReactNode } from 'react';
@@ -248,6 +249,22 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       ? getAttackFrontier(unit, state.board, actionsPerTurn - 1)
       : [];
   }, [summonPreview, selectedUnitData, viewedEnemyUnitData, selectedPlaceUnitData, showEnemyRange, inspectOnly, state.turn.currentPlayer, state.board, actionsPerTurn]);
+
+  // Forward KO: with an own unit selected, every enemy it could eliminate with
+  // its next attack this turn (move-then-attack included), using the actions
+  // it actually has left right now.
+  const koTargets = useMemo(() => {
+    if (inspectOnly || state.turn.phase !== 'action' || !selectedUnitData || selectedUnitData.owner !== state.turn.currentPlayer) return [];
+    return ownKoTargets(selectedUnitData, state.board, state.turn.actionsRemaining);
+  }, [inspectOnly, state.turn.phase, state.turn.currentPlayer, state.turn.actionsRemaining, selectedUnitData, state.board]);
+
+  // Reverse KO: with an enemy inspected, every one of the opposing side's
+  // units it could eliminate on its own coming turn (a fresh turn projection;
+  // see koIndicators.ts).
+  const koThreats = useMemo(() => {
+    if (!viewedEnemyUnitData) return [];
+    return enemyKoThreats(viewedEnemyUnitData, state.board, actionsPerTurn);
+  }, [viewedEnemyUnitData, state.board, actionsPerTurn]);
 
   const latestState = useRef(state); latestState.current = state;
   const getCurrentState = useCallback(() => latestState.current, []);
@@ -623,14 +640,14 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       return;
     }
 
-    // === Tab: Cycle all pieces, own first, each side in A–J then 1–10 order ===
+    // === Tab: Cycle all pieces, own first, each side in 1–10 then A–J order ===
     if (key === 'tab') {
       e.preventDefault();
       if (pendingMovePath.length > 0 && state.selectedUnit) {
         moveUnit(state.selectedUnit, pendingMovePath[pendingMovePath.length - 1]);
         setPendingMovePath([]);
       }
-      const byCoordinate = (a: Unit, b: Unit) => a.position.x - b.position.x || a.position.y - b.position.y;
+      const byCoordinate = (a: Unit, b: Unit) => a.position.y - b.position.y || a.position.x - b.position.x;
       const order = [...[...playerOwnUnits].sort(byCoordinate),
         ...state.board.units.filter(u => u.owner !== currentPlayer).sort(byCoordinate)];
       if (order.length === 0) return;
@@ -829,9 +846,6 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   // Get the current player's state for public bank display
   const currentPlayerState = state.players[state.turn.currentPlayer];
   const viewerPlayer: PlayerId = humanPlayer ?? (observing ? 'white' : state.turn.currentPlayer);
-  const viewerState = state.players[viewerPlayer];
-  const opponentPlayer: PlayerId = viewerPlayer === 'white' ? 'black' : 'white';
-  const opponentState = state.players[opponentPlayer];
   // Kill-clock lead: whoever's mined total (resourcesGained, plus Black's
   // handicap) is higher gets a subtle marker beside the crystal count. Nothing
   // on a tie. Both players see the same comparison, from their own row.
@@ -903,10 +917,17 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
           )}</div>
         </section>
         <section className="score-strip" aria-label="Player resources">
-          <div><strong><i className={`player-dot ${viewerPlayer}`} />{playerNames[viewerPlayer]} <b>◆ {viewerState.resources}</b>{minedLeader === viewerPlayer && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
-            <small>Gained {viewerState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[viewerPlayer]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, viewerPlayer)}</small><small className={upkeepDue(state,viewerPlayer)>viewerState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,viewerPlayer)} / turn</small></div>
-          <div><strong><i className={`player-dot ${opponentPlayer}`} />{playerNames[opponentPlayer]} <b>◆ {opponentState.resources}</b>{minedLeader === opponentPlayer && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
-            <small>Gained {opponentState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[opponentPlayer]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, opponentPlayer)}</small><small>Upkeep {upkeepDue(state,opponentPlayer)} / turn</small></div>
+          {(['white', 'black'] as const).map(side => {
+            const sideState = state.players[side];
+            const isViewerSide = side === viewerPlayer;
+            const isActive = state.turn.currentPlayer === side;
+            return (
+              <div key={side} className={`player-card player-card-${side}${isActive ? ' player-card-active' : ''}`} aria-current={isActive ? 'true' : undefined}>
+                <strong><span className="vh-label">{side === 'white' ? 'White' : 'Black'}{isActive ? ' · active turn' : ''}: </span><i className={`player-dot ${side}`} aria-hidden="true" />{playerNames[side]} <b>◆ {sideState.resources}</b>{minedLeader === side && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
+                <small>Gained {sideState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[side]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, side)}</small><small className={isViewerSide && upkeepDue(state,side)>sideState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,side)} / turn</small>
+              </div>
+            );
+          })}
         </section>
         <div className="progress-clock"><span>{actionsPerTurn} actions / turn</span><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} turns without a kill</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
       </aside>
@@ -920,12 +941,13 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
             validSpawns={showReplay ? [] : validSpawns}
             invalidSpawnPosition={showReplay ? null : spawnFeedback?.position ?? null}
             pendingMovePath={showReplay ? [] : previewPath} movementRange={showReplay ? [] : movementRange} attackFrontier={showReplay ? [] : attackFrontier}
+            koTargets={showReplay ? [] : koTargets} koThreats={showReplay ? [] : koThreats}
             previewPosition={showReplay ? replayFrame?.position : online?.playingIncoming ? online.incomingFrame?.position : preview?.position} previewUnitPosition={showReplay ? undefined : previewLanding}
             showResources={showResources} actionsRemaining={showingReach ? actionsPerTurn : state.turn.actionsRemaining}
             selectedSummon={viewedSummon?.id} onSummonClick={handleSummonClick} onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
-          <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || (showingReach && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack')}</span>
+          <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || (showingReach && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack · ☠ eliminates · ⚠ danger')}</span>
           <button disabled={showReplay} className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
           <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>

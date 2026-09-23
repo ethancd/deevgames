@@ -46,6 +46,20 @@ export function incomingFrames(before: RoomSnapshot, next: RoomSnapshot, viewer?
   return frames;
 }
 
+export type TurnCue = 'yourTurn' | 'opponentAction';
+/** Decide whether an accepted change should sound a background-safe cue for this seat:
+ * a handoff into the viewer's own turn, or the opponent committing a partial action while
+ * their turn continues. Never fires for observers (no seat) or for the viewer's own actions,
+ * and stays quiet once the game has ended. */
+export function turnCue(before: RoomSnapshot, next: RoomSnapshot, viewer?: PlayerId | null): TurnCue | null {
+  if (!viewer || next.state.phase !== 'playing') return null;
+  const changes = next.history.filter(entry => entry.revision > before.revision);
+  if (!changes.length || changes.every(entry => entry.player === viewer)) return null;
+  if (before.state.turn.currentPlayer !== viewer && next.state.turn.currentPlayer === viewer) return 'yourTurn';
+  if (next.state.turn.currentPlayer !== viewer) return 'opponentAction';
+  return null;
+}
+
 interface Presentation { frames: IncomingFrame[]; step: number }
 export function useIncomingPlayback() {
   const [presentation, setPresentation] = useState<Presentation | null>(null);
