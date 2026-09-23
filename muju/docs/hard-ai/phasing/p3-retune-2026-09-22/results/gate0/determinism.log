@@ -1,0 +1,6 @@
+
+> elemental-tactics@0.1.0 hard:determinism
+> node --import tsx lab/hard-ai/verify/determinism.ts --engine hard@desktop --work 50000 --positions 4
+
+hard:determinism: wrote /Users/ashkie/src/deevgames-p3tune/muju/lab/results/hard-ai-verify/determinism.json
+{"identical":true,"decisions":4,"mismatches":0}

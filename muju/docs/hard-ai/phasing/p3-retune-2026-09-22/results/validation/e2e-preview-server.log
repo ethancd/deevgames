@@ -1,0 +1,7 @@
+
+> elemental-tactics@0.1.0 preview
+> vite preview --port 8927
+
+  ➜  Local:   http://localhost:8927/muju/
+  ➜  Network: http://100.68.30.60:8927/muju/
+  ➜  Network: http://10.45.219.65:8927/muju/

@@ -1,0 +1,34 @@
+{
+  "engine": "hard@desktop",
+  "workUnits": [
+    50000
+  ],
+  "positions": 4,
+  "seeds": [
+    1
+  ],
+  "shards": 12,
+  "decisions": 4,
+  "runs": 4,
+  "wasmAbsent": true,
+  "identical": true,
+  "mismatches": [],
+  "at": "2026-09-23T14:04:35.937Z",
+  "determinism": {
+    "engine": "hard@desktop",
+    "workUnits": [
+      50000
+    ],
+    "positions": 4,
+    "seeds": [
+      1
+    ],
+    "shards": 12,
+    "decisions": 4,
+    "runs": 4,
+    "wasmAbsent": true,
+    "identical": true,
+    "mismatches": [],
+    "at": "2026-09-23T14:04:35.937Z"
+  }
+}

@@ -136,3 +136,33 @@ Cloudflare step needs a secret the repo does not have).
 - `p1-val` has now been used twice for selection (2026-09-20) and will be used a third time by
   Stage C, then again by Gate 2. The sealed set is the only truly unseen data; the spec keeps it
   sealed. Confirm that stays the rule.
+
+## Resolution (2026-09-23)
+
+This handoff is closed. Everything it queued — Stage B, Stage C, adoption, Gate 0, the floor
+contract and suite measure, Gate 2 — was run on 2026-09-23. The text above is left as written; the
+outcome is recorded elsewhere and supersedes the open questions.
+
+**Read the release record: [`docs/hard-ai/RELEASE-2026-09-23-phasing-3-retune.md`](../hard-ai/RELEASE-2026-09-23-phasing-3-retune.md).**
+The per-row ledger continues in
+[`docs/hard-ai/phasing/p3-retune-2026-09-22/PROGRESS.md`](../hard-ai/phasing/p3-retune-2026-09-22/PROGRESS.md),
+"Stage D".
+
+In one paragraph: the overnight chain ran Stage B and Stage C as preregistered
+(`results/stageBC-decision.json`). On the held-out `p1-val` table that the spec makes the sole
+tuning result, **`p3-s08` tied `control`'s summed score exactly (1.234375) and no arm beat it**, so
+the preregistered rule ships `control` — **no weight change**. `src/` is therefore byte-identical
+to `origin/master` and `DEFAULT_WEIGHTS` stays `phasing-hand-priors-v1`; the adoption step of
+"How to resume" §4 became a no-op. Gate 0 ran; its fuzz row failed on a **stale clock fixture**
+(repaired at `cdcee23e`) which had been red on shipped master since the kill clock merged — every
+engine-vs-replica counter was 0. Floor contract v4 was committed alone and the suite measured at
+ledger **seq 3**: earned 126/146, `floorPass false`, invariants 10/14 and economy 7/20 below floor,
+informational under A6 and explained in the release record. Gate 2 rows G2-1..G2-4 were played
+exactly as A7 wrote them: **G2-1 meets its bar at Elo +293 [+193, +463], LOS 100.0 %**, and no row
+recorded an illegal action, a divergence or a fallback. **Gate 1 was not run** — A7 keeps A5's
+per-search calibration in force and A5 is still text only, so no valid row is possible until the
+owner rules on it.
+
+The three "Open questions for the owner" above are answered by events: Stage B/C ran overnight as
+preregistered with no trimming; no second-round sweep was added, so Stage C ran on the
+preregistered top 3; and the sealed set stayed sealed throughout.

@@ -1,0 +1,13 @@
+
+Running 7 tests using 2 workers
+
+  ✓  1 e2e/ai-worker.spec.ts:19:1 › built worker loads hashed WASM and performs a coordinated home rescue (2.1s)
+  ✓  2 e2e/ai-worker.spec.ts:34:1 › menu responds during Hard search; mode switch terminates the old worker (3.0s)
+  ✓  4 e2e/ai-worker.spec.ts:59:1 › WASM fetch failure stays in the worker and exposes a usable JS fallback (485ms)
+  ✓  3 e2e/ai-worker.spec.ts:49:1 › restart during search cannot dispatch an old result into the new game (3.2s)
+  ✓  5 e2e/ai-worker.spec.ts:66:1 › pause terminates native computation and resume starts a fresh worker (2.5s)
+  ✓  6 e2e/ai-worker.spec.ts:73:1 › Hard worker executes kill, paid move, Cleave to clear home (2.3s)
+  ✓  7 e2e/ai-worker.spec.ts:89:1 › Hard worker spends its fourth action on a capture before handing the turn back (7.3s)
+
+  7 passed (21.6s)
+exit=0 wall=22s

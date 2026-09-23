@@ -189,3 +189,54 @@ Regression guard (Balanced >= control 0.938 AND Expand >= control 1.000): droppe
 | p3-s18 | 44-0-20 / 0.688 | 29-0-35 / 0.453 | 1.141 | 88/66 | elimination 14, home-checkmate 48, upkeep-elimination 2 |
 
 Summed scores: control 1.234, p3-s08 1.234, hv-mine 1.188, p3-s18 1.141. **No candidate beats control on the sum (best p3-s08 1.234 vs control 1.234): ship control, no weight change.**
+
+## Stage D (2026-09-23): Gate 0, suite measure, Gate 2. Gate 1 not run.
+
+The sweep is over; the campaign ships `control` (no weight change), so `src/` is byte-identical to
+`origin/master` (`git diff --stat origin/master..HEAD -- muju/src/` empty) and `hard@desktop` in
+every row below is the shipped engine. Full record:
+`docs/hard-ai/RELEASE-2026-09-23-phasing-3-retune.md`.
+
+**Gate 0** — `scripts/gate0.sh`, log `results/gate0/gate0.log`, HEAD `c489560c`, load 4.56.
+
+| Check | Exit | Reading | Out |
+|---|---|---|---|
+| `hard:perft --check` (canonical) | 0 | `14959/1053/797`, `standardTriple checked`, `fixturesChecked 7`, `mismatches 0`, `replicaAgreed true` | `results/gate0/perft-canonical.log` |
+| `hard:perft --check --engine replica` | 0 | Phasing `14959/1850/797`, `mismatches 0` | `results/gate0/perft-replica.log` |
+| `hard:fuzz --actions 20000 --seed 7101` | **1** | `clockFixtureOk false` — a STALE FIXTURE, not an engine defect: every mismatch/divergence counter is 0. The fuzz code was byte-identical to `origin/master`, so master's fuzz gate had been red since the kill clock merged. Repaired at `cdcee23e` (mate case moved to `INACTIVITY_LIMIT - 3`; occupation case asserts `kill-clock` instead of `inactivity`; decided branch added). | `results/gate0/fuzz.log` |
+| `hard:determinism --engine hard@desktop --work 50000 --positions 4` | 0 | `{"identical":true,"decisions":4,"mismatches":0}` | `results/gate0/determinism.log` |
+
+Gate 0 is being re-run at the final commit by the validation lane; the release record carries the
+placeholder for that output.
+
+**Suite measure** — contract v4 committed alone (`97b62831`), measured at `cdcee23e`.
+`valid true`, **`floorPass false`**, earned **126/146**, coverage 79/79, `failures []`, witness
+tier `local-only`, ledger **seq 3** (chain `09ad77cf…`).
+Per family (earned/floor/offered): tactics 62/57/63 PASS, invariants **10/14/15 BELOW**,
+home-mate 28/28/28 PASS, economy **7/20/20 BELOW**, summon-disruption 13/13/14 PASS,
+home-fortify 6/6/6 PASS. Out:
+`lab/hard-ai/suites/phasing/results/v4-measure-3-2026-09-23/`. Informational under A6; the misses
+are named and characterised in the release record.
+
+**Gate 2** — `scripts/gate2.sh`, log `results/gate2/gate2.log`, 12:47:29Z → 13:52:21Z, all four
+rows exit 0. `p1-val` all 32 openings (sha `cbd427dfd2ee…`), handicap 0, 32 pairs / 64 games,
+`--shards 4`, `MUJU_HEAVY_SLOTS=4`. 0 illegal / 0 divergence / 0 fallback in every row; none VOID.
+
+| Row | A vs B | work | seed | W-D-L | score | Elo [95%] | LOS | load | out |
+|---|---|---|---|---|---|---|---|---|---|
+| G2-1 | `hard@desktop` vs `aiv2-hard-turn` | wall:6000 | 20260975 | 54-0-10 | 0.844 | +293 [+193, +463] | 100.0% | 7.54 | `results/gate2/G2-1-aiv2-hard-turn` |
+| G2-2 | `hard@desktop` vs `Rush` | wall:1500 | 20260976 | 27-0-37 | 0.422 | −55 [−142, +26] | 9.2% | 7.14 | `results/gate2/G2-2-Rush` |
+| G2-3 | `hard@desktop` vs `hard@env` (= `weights/control.json`) | fixed:60000 | 20260977 | 32-0-32 | 0.500 | 0.0 [−23, +23] (degenerate) | 50.0% | 5.07 | `results/gate2/G2-3-hard-env-control` |
+| G2-4 | `hard@desktop` vs `aiv2-hard` | wall:1500 | 20260978 | 50-0-14 | 0.781 | +221 [+121, +373] | 100.0% | 5.05 | `results/gate2/G2-4-aiv2-hard` |
+
+G2-1 meets its A7 bar (Elo lower bound +193 > 0). G2-3 is an identity row — the campaign ships
+control, so both arms carry the same vector — and its "retune effect" bar is zero by construction,
+not a failed bar. G2-4 was expected VOID on opponent overrun and was not: `aiv2-hard` came in at
+`overrunRate 1.42%`, under the 5% threshold.
+
+**Gate 1: NOT RUN.** A7 keeps A5's per-search calibration in force, and A5 is text only —
+`gate1-calibrate.ts` implements A3 §3's per-turn median, `workPerSearch` has zero code hits in
+`lab src tests server`. An eligible calibration has also never been run and is a ~12 h idle-box
+measurement plus a 7–15 h row. The owner must rule on A5 first. Filed as F-G1 in the release
+record.
+- 14:04Z coordinator: a second stale phasing-2 remnant in the fuzz gate (the A4 clock-coverage guard wanted an `inactivity:*` terminal) fixed at `eae48fba`; Gate 0 re-run at that commit: perft ×2, fuzz, determinism all exit 0 (`results/gate0/gate0.log`). Validation lane at `6ed2b187`: `npm test` 2972/2972, e2e ai-worker 7/7, `hard:types` + `tsc` clean (`results/validation/`).

@@ -1,0 +1,5 @@
+
+> elemental-tactics@0.1.0 hard:types
+> tsc -p lab/hard-ai/tsconfig.json --noEmit
+
+exit=0 wall=4s
