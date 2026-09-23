@@ -52,8 +52,21 @@ demonstrations.push('R06: all six elements use promotion costs 4 and 8, with no 
 const hono=unit('fire_2','white',1),left={...unit('plant_1','black',0),id:'left'},right={...unit('plant_1','black',2),id:'right'};
 let b=resolveCombat({...board,units:[hono,left,right]},'white',left.position).board;
 assert.equal(b.units.length,2);assert.equal(canAttack(b.units.find(u=>u.id==='white')!),true);
-b=resolveCombat(b,'white',right.position).board;assert.equal(b.units.length,1);assert.equal(canAttack(b.units[0]),false);
-demonstrations.push('R03: Honō kills two DEF-3 Muju, then has no third attack.');
+b=resolveCombat(b,'white',right.position).board;assert.equal(b.units.length,1);assert.equal(canAttack(b.units[0]),true);
+// Rules revision muju-phasing-4 (2026-09-23): Cleave has no tier cap. R03 still
+// narrates "T1: at most 1 attack … T3: at most 3" and a Honō that "cannot attack a
+// third time"; that is stale until a re-record — see academy/STATUS.md.
+demonstrations.push('R03: Honō kills two DEF-3 Muju and may attack a third time — no tier cap since muju-phasing-4 (R03 narration still states the 1/2/3 cap).');
+const at=(id:string,defId:string,owner:'white'|'black',x:number,y:number):Unit=>({...unit(defId,owner,x),id,position:{x,y}});
+let sweep={...board,units:[at('white','fire_1','white',4,4),at('n','plant_1','black',4,3),at('s','plant_1','black',4,5),at('w','plant_1','black',3,4),at('e','plant_1','black',5,4)]};
+for(const id of ['n','e','s','w']){
+ const target=sweep.units.find(u=>u.id===id)!;const r=resolveCombat(sweep,'white',target.position);
+ assert.equal(r.eliminated,true);sweep=r.board;
+}
+assert.equal(sweep.units.length,1);assert.equal(canAttack(sweep.units[0]),true);
+let chip={...board,units:[at('white','fire_1','white',4,4),at('x','water_1','black',4,3)]};
+chip=resolveCombat(chip,'white',{x:4,y:3}).board;assert.equal(chip.units.length,2);assert.equal(canAttack(chip.units.find(u=>u.id==='white')!),false);
+demonstrations.push('R03: a Tier I Hi beside four Muju kills all four, one per action; a surviving target still ends its chain.');
 const initial=createInitialGameState();assert.equal(initial.turn.actionsRemaining,4);
 // Rules revision muju-phasing-3 (2026-09-22): the kill clock. The tenth
 // kill-free ply ends the game immediately, decided on mined totals (never a
@@ -81,4 +94,4 @@ fs.writeFileSync(new URL('catalog.json',root),JSON.stringify(units,null,2));
 fs.writeFileSync(new URL('bonk-matrix.json',root),JSON.stringify(bonks,null,2));
 fs.writeFileSync(new URL('map.json',root),JSON.stringify(UNEQUAL_ROUTES_MAP));
 fs.writeFileSync(new URL('rules-verification.json',root),JSON.stringify({rules:'v2.9',fullHealth:true,adjacent:true,matchupChecks:324,demonstrations,passed:true,mapTotal:UNEQUAL_ROUTES_MAP.reduce((a,b)=>a+b,0)},null,2));
-console.log('324 ordered matchups and revised movement, Cleave, promotion and kill-clock demonstrations passed.');
+console.log('324 ordered matchups and revised movement, uncapped Cleave, promotion and kill-clock demonstrations passed.');

@@ -1,3 +1,37 @@
+# Cleave without a tier cap (2026-09-23, `muju-phasing-4`) — notice prepared, not deployed
+
+Rules change, not an Academy release. Cleave keeps its trigger — a killing blow unlocks
+another attack by the same piece — but loses its per-tier maximum (formerly Tier 1: one
+attack, Tier 2: two, Tier 3: three). Every kill now unlocks another, at any tier, bounded
+only by the four shared actions. A surviving target still ends the chain; a teammate's kill
+still does not reopen it. See `../docs/changes/2026-09-23-unlimited-cleave-SPEC.md` and
+`../JUDGMENT_LOG.md` J-025.
+
+- **Changed here:** `export-rules.ts`'s R03 assertion ("Honō … then has no third attack")
+  now asserts the opposite, plus a Tier 1 Hi sweeping four adjacent Muju and a surviving
+  target closing the chain. It regenerated only `rules-verification.json`; `catalog.json`,
+  `map.json` and `bonk-matrix.json` came back byte-identical. `build-release.py` gained a
+  fifth notice paragraph (`id="cleave-notice"`) with matching `verify-live.py` assertions.
+- **Prepared, not deployed.** As with the three notices before it, the notice reaches
+  players only when the `ethancd/ashkie-pages` checkout is patched, rebuilt and published.
+
+**Needs re-narration in a future release (speech needs owner authorization):**
+
+- **R03 "The Bonk Lab"** — the `cleave-rule` segment narrates and shows the card "T1: at
+  most 1 attack / T2: at most 2 attacks / T3: at most 3 attacks"; `cleave-finish` says the
+  Honō "cannot attack a third time this turn"; the shared `supplement.tsx` Cleave card
+  (used only by R03) is titled "Cleave: Hono gets at most 2 attacks". `cleave-demo` and
+  `cleave-limits` (moving between attacks, a survivor closes the chain, a teammate cannot
+  reopen it) remain correct.
+- Every other active lesson (R01–R02, R04–R16) states no Cleave maximum: verified by search
+  of `production/R??/episode.json` and `ALL-SCRIPTS.md`. R11's course-page "Cleave" tag
+  names the mechanic only.
+
+Rules snapshots under `rules-snapshot/` and `production/R*/source-rules/` keep the capped
+`canAttack`; they are provenance and are left alone until R03 is re-recorded.
+
+---
+
 # Kill clock — the quiet-turn draw is retired (2026-09-22, `muju-phasing-3`) — notice prepared, not deployed
 
 Rules change, not an Academy release, and later the same day as the rename below: the
