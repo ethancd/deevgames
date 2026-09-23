@@ -43,6 +43,10 @@ export const HELPER_CPU_LIMIT_SECONDS = 60;
 /** Ceiling on captured stdout/stderr so a runaway helper can't blow up the transcript/log. */
 const OUTPUT_CAP_BYTES = 64 * 1024;
 
+const HOME = '/Users/ashkie';
+export const CREDENTIAL_PATHS = ['.codex', '.claude', '.claude.json', '.ssh', '.config', '.aws', '.netrc', '.npmrc', '.gitconfig', '.git-credentials', '.zsh_history', '.bash_history', 'Library/Keychains', 'Library/Application Support']
+  .map(path => `${HOME}/${path}`);
+
 export function buildSandboxProfile(denySubpath: string = REPO_SRC_ROOT): string {
   return [
     '(version 1)',
@@ -50,6 +54,8 @@ export function buildSandboxProfile(denySubpath: string = REPO_SRC_ROOT): string
     '(deny network*)',
     `(deny file-read* (subpath "${denySubpath}"))`,
     `(deny file-write* (subpath "${denySubpath}"))`,
+    // Operator credentials and config outside the repo: CLI logins, keys, keychains.
+    ...CREDENTIAL_PATHS.map(path => `(deny file-read* (subpath "${path}"))`),
   ].join('\n');
 }
 
