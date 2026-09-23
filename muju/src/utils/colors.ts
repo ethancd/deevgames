@@ -2,14 +2,14 @@ import type { Element, PlayerId } from '../game/types';
 
 export const ELEMENT_COLORS: Record<Element, { primary: string; secondary: string; text: string }> = {
   fire: {
-    primary: 'bg-red-500',
-    secondary: 'bg-red-300',
-    text: 'text-red-500',
+    primary: 'bg-rose-500',
+    secondary: 'bg-rose-300',
+    text: 'text-rose-500',
   },
   lightning: {
-    primary: 'bg-yellow-500',
-    secondary: 'bg-yellow-300',
-    text: 'text-yellow-500',
+    primary: 'bg-yellow-400',
+    secondary: 'bg-yellow-200',
+    text: 'text-yellow-400',
   },
   water: {
     primary: 'bg-blue-500',
@@ -27,40 +27,40 @@ export const ELEMENT_COLORS: Record<Element, { primary: string; secondary: strin
     text: 'text-green-500',
   },
   metal: {
-    primary: 'bg-amber-700',
-    secondary: 'bg-amber-300',
-    text: 'text-amber-700',
+    primary: 'bg-orange-600',
+    secondary: 'bg-orange-300',
+    text: 'text-orange-500',
   },
 };
 
 // Base colors (used in unit shop)
 export const ELEMENT_HEX: Record<Element, string> = {
-  fire: '#EF4444',
-  lightning: '#EAB308',
+  fire: '#FF6C79',
+  lightning: '#F5EF55',
   water: '#3B82F6',
   shadow: '#7C3AED',
   plant: '#22C55E',
-  metal: '#B66A32',
+  metal: '#F2A54C',
 };
 
 // White player: lighter, pastel colors
 export const ELEMENT_HEX_WHITE: Record<Element, string> = {
-  fire: '#FCA5A5',      // lighter red/coral
-  lightning: '#FDE047', // lighter yellow
+  fire: '#FF8B98',      // lighter ruby red
+  lightning: '#FFF176', // lighter lemon yellow
   water: '#93C5FD',     // lighter blue
   shadow: '#C4B5FD',    // lighter purple/lavender
   plant: '#86EFAC',     // lighter green/mint
-  metal: '#E5AB6D',     // polished brass on White pieces
+  metal: '#EAA361',     // polished copper on White pieces
 };
 
 // Black player: darker, more saturated colors
 export const ELEMENT_HEX_BLACK: Record<Element, string> = {
-  fire: '#B91C1C',      // deeper red
-  lightning: '#A16207', // deeper amber/gold
+  fire: '#B42343',      // deeper crimson red
+  lightning: '#827600', // deeper yellow
   water: '#1D4ED8',     // deeper blue
   shadow: '#5B21B6',    // deeper purple
   plant: '#15803D',     // deeper green
-  metal: '#8A451E',     // burnished bronze on Black pieces
+  metal: '#934A18',     // burnished copper on Black pieces
 };
 
 export function getElementColor(element: Element): string {

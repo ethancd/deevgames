@@ -9,9 +9,9 @@ export function ElementLegend() {
       {/* Double-thick triangle: F&L → P&M → W&S → F&L */}
       <div className="space-y-1">
         <div className="flex items-center gap-1 flex-wrap">
-          <span style={{ color: ELEMENT_INFO.fire.color }}>Fire</span>
+          <span style={{ color: ELEMENT_HEX.fire }}>Fire</span>
           <span className="text-gray-600">&</span>
-          <span style={{ color: ELEMENT_INFO.lightning.color }}>Lightning</span>
+          <span style={{ color: ELEMENT_HEX.lightning }}>Lightning</span>
           <span className="text-gray-500 mx-1">→</span>
           <span style={{ color: ELEMENT_INFO.plant.color }}>Plant</span>
           <span className="text-gray-600">&</span>
@@ -31,9 +31,9 @@ export function ElementLegend() {
           <span className="text-gray-600">&</span>
           <span style={{ color: ELEMENT_INFO.shadow.color }}>Shadow</span>
           <span className="text-gray-500 mx-1">→</span>
-          <span style={{ color: ELEMENT_INFO.fire.color }}>Fire</span>
+          <span style={{ color: ELEMENT_HEX.fire }}>Fire</span>
           <span className="text-gray-600">&</span>
-          <span style={{ color: ELEMENT_INFO.lightning.color }}>Lightning</span>
+          <span style={{ color: ELEMENT_HEX.lightning }}>Lightning</span>
         </div>
       </div>
     </div>
