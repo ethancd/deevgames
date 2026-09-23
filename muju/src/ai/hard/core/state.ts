@@ -660,7 +660,10 @@ export class Replica {
       out.defId[i] = def;
       out.owner[i] = u.owner === 'white' ? 0 : 1;
       out.damage[i] = u.damageTaken;
-      out.atkCount[i] = getAttackCount(u);
+      const attacks = getAttackCount(u);
+      // One attack per shared action; the Zobrist plane has exactly that range.
+      if (attacks > ACTIONS_PER_TURN) throw new PackError(`pack: unit ${u.id} has ${attacks} attacks, more than ${ACTIONS_PER_TURN} actions allow`);
+      out.atkCount[i] = attacks;
       out.uflags[i] =
         (u.canActThisTurn ? F_CAN_ACT : 0) |
         (u.lastAttackKilled ? F_LAST_KILLED : 0) |
@@ -909,12 +912,11 @@ export class Replica {
     }
   }
 
-  /** `canAttack` (combat.ts:13-17) on the packed unit. */
+  /** `canAttack` (combat.ts) on the packed unit. `muju-phasing-4`: no tier
+   * cap — each kill unlocks another attack; the action pool is the only bound. */
   private canAttack(p: PackedState, slot: Slot): boolean {
     if ((p.uflags[slot] & F_CAN_ACT) === 0) return false;
-    const count = p.atkCount[slot];
-    if (count >= this.cat.tier[p.defId[slot]]) return false;
-    return count === 0 || (p.uflags[slot] & F_LAST_KILLED) !== 0;
+    return p.atkCount[slot] === 0 || (p.uflags[slot] & F_LAST_KILLED) !== 0;
   }
 
   /** `canPromote` (promotion.ts:44-58) on the packed unit. */
@@ -2017,7 +2019,7 @@ export class Replica {
       if (p.pieceAt[s] !== slot) throw new Error(`check: sq[${slot}] = ${s} but pieceAt[${s}] = ${p.pieceAt[s]}`);
       const def = p.defId[slot];
       if (p.damage[slot] >= this.cat.def[def]) throw new Error(`check: slot ${slot} damage ${p.damage[slot]} >= def ${this.cat.def[def]}`);
-      if (p.atkCount[slot] > this.cat.tier[def]) throw new Error(`check: slot ${slot} atkCount ${p.atkCount[slot]} > tier ${this.cat.tier[def]}`);
+      if (p.atkCount[slot] > ACTIONS_PER_TURN) throw new Error(`check: slot ${slot} atkCount ${p.atkCount[slot]} > ${ACTIONS_PER_TURN} actions`);
       occ[s >>> 5] |= 1 << (s & 31);
     }
     for (let w = 0; w < 4; w++) {

@@ -35,8 +35,18 @@ export const ZOBRIST_SEED = 0x4d554a55;
 const RESERVE_VALUES = 17;
 /** damage 0..4 (max DEF 5 = metal_3; RE §1.7b). */
 const DAMAGE_VALUES = 5;
-/** atkCount 0..3 (combat.ts:8-17). */
-const ATKCOUNT_VALUES = 4;
+/**
+ * atkCount 0..4 (combat.ts `canAttack`). Under `muju-phasing-4` (2026-09-23,
+ * Cleave has no tier cap) a unit can make four attacks in a turn — one per
+ * shared action — where the tier cap stopped it at three. Split, like the
+ * clock plane, into a FROZEN per-square prefix (`atkCount` 0..3, drawn at the
+ * plane's original position) and an APPENDED tail (`atkCount` 4, one key per
+ * square, drawn last of all), so every key of a position whose counts are all
+ * <= 3 is bit-identical to the one it had under `muju-phasing-3`.
+ */
+const ATKCOUNT_VALUES = 5;
+/** The frozen prefix: 4 values per square, a HISTORICAL constant. */
+const ATKCOUNT_LEGACY_VALUES = 4;
 /** uflags is a 4-bit mask. */
 const UFLAGS_VALUES = UFLAGS_MASK + 1;
 /** actionsRemaining 0..4. */
@@ -78,7 +88,12 @@ export interface ZobristTables {
   reserve: Uint32Array;
   /** [100 * 5 * 2] keyed BY SQUARE; damage 0 hashes to nothing. */
   damage: Uint32Array;
-  /** [100 * 4 * 2]. */
+  /**
+   * [100 * 5 * 2], indexed by (square, count). INTERLEAVED, not drawn in one
+   * run: per square, counts 0..3 are the words the plane drew at its original
+   * position and count 4 is the appended word drawn after the clock
+   * extension. See `buildZobrist` and `interleaveAtkCount`.
+   */
   atkCount: Uint32Array;
   /** [100 * 16 * 2]. */
   uflags: Uint32Array;
@@ -147,6 +162,16 @@ function fill(rng: () => number, keys: number): Uint32Array {
   return out;
 }
 
+/** Per square, the 4 frozen words then the 1 appended word. */
+function interleaveAtkCount(legacy: Uint32Array, extra: Uint32Array): Uint32Array {
+  const out = new Uint32Array(BOARD * ATKCOUNT_VALUES * 2);
+  for (let s = 0; s < BOARD; s++) {
+    out.set(legacy.subarray(s * ATKCOUNT_LEGACY_VALUES * 2, (s + 1) * ATKCOUNT_LEGACY_VALUES * 2), s * ATKCOUNT_VALUES * 2);
+    out.set(extra.subarray(s * 2, s * 2 + 2), (s * ATKCOUNT_VALUES + ATKCOUNT_LEGACY_VALUES) * 2);
+  }
+  return out;
+}
+
 /** `[head, tail]` as one plane. Draw order is the caller's; this only lays out. */
 function concatPlane(head: Uint32Array, tail: Uint32Array): Uint32Array {
   if (tail.length === 0) return head;
@@ -177,14 +202,16 @@ function concatPlane(head: Uint32Array, tail: Uint32Array): Uint32Array {
  * exists for — every key, and so every `Kpos`/`Kturn`, of a position whose
  * clock is <= 10 is BIT-IDENTICAL under `muju-phasing-1`, `muju-phasing-2` and
  * `muju-phasing-3` alike. `tests/ai/hard/zobrist.test.ts` redraws the stream
- * and proves it.
+ * and proves it. `muju-phasing-4` (2026-09-23) appends one more plane the same
+ * way: the fourth-attack key per square, drawn after the clock extension and
+ * interleaved into `atkCount` (see `ATKCOUNT_VALUES`).
  */
 export function buildZobrist(seed: number = ZOBRIST_SEED): ZobristTables {
   const rng = seededRandom(seed);
   const piece = fill(rng, 2 * NDEF * BOARD);
   const reserve = fill(rng, BOARD * RESERVE_VALUES);
   const damage = fill(rng, BOARD * DAMAGE_VALUES);
-  const atkCount = fill(rng, BOARD * ATKCOUNT_VALUES);
+  const atkCountLegacy = fill(rng, BOARD * ATKCOUNT_LEGACY_VALUES);
   const uflags = fill(rng, BOARD * UFLAGS_VALUES);
   const side = fill(rng, 1);
   const phase = fill(rng, 1);
@@ -202,11 +229,14 @@ export function buildZobrist(seed: number = ZOBRIST_SEED): ZobristTables {
   const pend = fill(rng, 2 * NDEF * BOARD);
   const progress = fill(rng, 1);
   const clockExtra = fill(rng, CLOCK_EXTRA_VALUES);
+  // `muju-phasing-4` (2026-09-23): the fourth-attack key per square, appended
+  // after everything above so no earlier word moves.
+  const atkCountExtra = fill(rng, BOARD * (ATKCOUNT_VALUES - ATKCOUNT_LEGACY_VALUES));
   return {
     piece,
     reserve,
     damage,
-    atkCount,
+    atkCount: interleaveAtkCount(atkCountLegacy, atkCountExtra),
     uflags,
     side,
     phase,

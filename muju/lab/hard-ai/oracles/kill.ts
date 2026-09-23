@@ -49,14 +49,17 @@
  * ## 3. `cleaveProbeOk` — the LH §4.1 Cleave probe
  *
  * One Kagari against three stationary Muju: clustered, 3 kills in 3 actions;
- * spaced on C1/E1/G1, 2 kills in 4 actions.
+ * spaced on C1/E1/G1, 2 kills in 4 actions. Since `muju-phasing-4` (2026-09-23,
+ * Cleave has no tier cap) two Tier I probes join them, because a Kagari alone
+ * cannot tell a tier cap from none: one Hi clustered with three Muju (3 kills
+ * in 3 actions), and the owner's example, one Hi among four (4 kills in 4).
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync, spawn } from 'node:child_process';
 import type { GameState, PlayerId, Unit } from '../../../src/game/types';
 import { createUnit } from '../../../src/game/board';
-import { manhattanDistance, resetUnitActions } from '../../../src/game/board';
+import { createInitialGameState, manhattanDistance, resetUnitActions } from '../../../src/game/board';
 import { calculateAttackPower, calculateDefense, canAttack as canonicalCanAttack } from '../../../src/game/combat';
 import { getNextTierDefinition, getUnitDefinition } from '../../../src/game/units';
 import { getActionsPerTurn } from '../../../src/game/rules';
@@ -738,20 +741,26 @@ function checkCorner(): CornerResult {
 interface CleaveProbe {
   name: string;
   victims: ReadonlyArray<readonly [number, number]>;
+  /** The attacker's square; historically always a Kagari, hence the name. */
   kagari: readonly [number, number];
+  /** The attacker's definition; `fire_3` (Kagari) unless a probe says otherwise. */
+  attacker?: string;
   kills: number;
   actions: number;
 }
 
-/** LH §4.1: one Kagari (`fire_3`) against three stationary Muju (`plant_1`). */
+/** LH §4.1: one Kagari (`fire_3`) against three stationary Muju (`plant_1`),
+ * plus the `muju-phasing-4` Tier I probes (one Hi, `fire_1`). */
 const CLEAVE_PROBES: readonly CleaveProbe[] = [
   { name: 'clustered', kagari: [4, 4], victims: [[5, 4], [4, 5], [3, 4]], kills: 3, actions: 3 },
   { name: 'spaced C1/E1/G1', kagari: [0, 0], victims: [[2, 0], [4, 0], [6, 0]], kills: 2, actions: 4 },
+  { name: 'tier-1 clustered', kagari: [4, 4], attacker: 'fire_1', victims: [[5, 4], [4, 5], [3, 4]], kills: 3, actions: 3 },
+  { name: 'tier-1 among four', kagari: [4, 4], attacker: 'fire_1', victims: [[5, 4], [4, 5], [3, 4], [4, 3]], kills: 4, actions: 4 },
 ];
 
 function cleaveProbeState(probe: CleaveProbe, base: GameState): GameState {
   const units: Unit[] = [
-    createUnit('fire_3', 'white', { x: probe.kagari[0], y: probe.kagari[1] }),
+    createUnit(probe.attacker ?? 'fire_3', 'white', { x: probe.kagari[0], y: probe.kagari[1] }),
     ...probe.victims.map(([x, y]) => createUnit('plant_1', 'black', { x, y })),
   ];
   units.forEach((u, i) => {
@@ -886,7 +895,10 @@ async function main(): Promise<void> {
       : checkSubOptimality(sampled, args.maxOwnUnits);
 
   const corner = checkCorner();
-  const cleave = checkCleaveProbes(corpus[0].state);
+  // A fresh Phasing board, not `corpus[0].state`: that corpus row predates the
+  // 2026-09-21 Standard retirement and the Phasing-only replica refuses to pack
+  // it. The probes only borrow players/turn scaffolding from the base.
+  const cleave = checkCleaveProbes(createInitialGameState(undefined, 4, 0, 'phasing'));
 
   const mismatches: Mismatch[] = [];
   for (const m of [...sub.mismatches, ...corner.mismatches, ...cleave.mismatches]) {

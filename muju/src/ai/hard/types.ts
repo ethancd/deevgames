@@ -124,7 +124,8 @@ export interface PackedState {
   owner: Uint8Array;
   /** [MAX_SLOTS] 0..4 (max DEF 5 = metal_3; RE §1.7b). */
   damage: Uint8Array;
-  /** [MAX_SLOTS] 0..3 (combat.ts:8-17). */
+  /** [MAX_SLOTS] 0..4 (combat.ts; one attack per shared action — no tier cap
+   * since `muju-phasing-4`). */
   atkCount: Uint8Array;
   /** [MAX_SLOTS] `F_CAN_ACT | F_LAST_KILLED | F_PLACED | F_PROMOTED`. */
   uflags: Uint8Array;

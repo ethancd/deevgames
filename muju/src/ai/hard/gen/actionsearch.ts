@@ -275,7 +275,9 @@ export function actionPriority(
     const victimValueCc = cat.cost[victimDef] * CC;
     score += ((1_000 * victimValueCc) / CC) | 0;
     const count = p.atkCount[slot];
-    if (count > 0 && count < cat.tier[attackerDef]) score += 600;
+    // A legal ATTACK with count > 0 is a Cleave continuation (no tier cap since
+    // `muju-phasing-4`, so legality already implies the last attack killed).
+    if (count > 0) score += 600;
     score -= 80;
   } else if (kind === AKind.MOVE) {
     const slot = paA(a);

@@ -58,13 +58,18 @@ vi.setConfig({ testTimeout: 60_000 });
 // 2026-09-22: 12/10 gives depth 1 = 10,621, probe = 12,389; every other bank
 // tried (10/8 .. 18/16) started depth 2. If this moves again, re-sweep the
 // bank rather than loosening the floor.
+// (2026-09-23, `muju-phasing-4`): with no Cleave tier cap every Tier I now gets
+// a chain table, depth 1 got dearer, and at 12/10 the probe again spent the
+// whole rung (25,175). Re-swept: 5/3 gives probe = 11,911 (`stopReason:
+// 'work'`, depth 1); 4/2 = 12,091, 5/2 = 11,991 and 4/0 = 12,309 also clear the
+// floor, while 12/10, 10/8 .. 20/18, 6/2, 4/4, 3/2, 2/2 and 0/0 do not.
 const MIDGAME: GameState = buildState({
   current: 'white',
   phase: 'action',
   actions: 4,
   turnNumber: 6,
-  white: 12,
-  black: 10,
+  white: 5,
+  black: 3,
   units: [
     { def: 'fire_1', owner: 'white', x: 2, y: 2 },
     { def: 'water_1', owner: 'white', x: 4, y: 3 },

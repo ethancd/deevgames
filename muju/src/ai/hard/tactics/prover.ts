@@ -106,8 +106,9 @@ export const PROOF_NODES = 20000;
 /** `getActionsPerTurn` is frozen at 4 (rules.ts:11-13); `ready` always uses it. */
 const READY_ACTIONS = 4;
 
-/** `atkCount` is bounded by the unit's tier (combat.ts:13-17), so by 3. */
-const MAX_ATTACKS = 3;
+/** `atkCount` is bounded by the actions, one per attack (combat.ts `canAttack`
+ * has had no tier cap since `muju-phasing-4`), so by 4. */
+const MAX_ATTACKS = READY_ACTIONS;
 
 /** `act` starts with 4 actions and every action costs at least one. */
 const MAX_ACT_DEPTH = 5;
@@ -270,7 +271,7 @@ const FAILED = new FailedSet();
 const PROVER_SEED = 0x50524f56; // "PROV"
 /** `damage` is a byte in `PackedState`; give the table its whole domain. */
 const DAMAGE_VALUES = 256;
-/** `atkCount` is 0..3; 8 leaves room for a malformed fixture. */
+/** `atkCount` is 0..4; 8 leaves room for a malformed fixture. */
 const ATK_VALUES = 8;
 
 function randomTable(rng: () => number, entries: number): Uint32Array {
@@ -359,11 +360,10 @@ function stableSort(cand: Int32Array, key: Int32Array, base: number, n: number):
   }
 }
 
-/** `canAttack` (combat.ts:13-17) on the working position. Defenders always can act. */
+/** `canAttack` (combat.ts) on the working position: no tier cap since
+ * `muju-phasing-4`. Defenders always can act. */
 function canAttack(slot: Slot): boolean {
-  const count = P_ATK[slot];
-  if (count >= cat.tier[P_DEF[slot]]) return false;
-  return count === 0 || P_LK[slot] !== 0;
+  return P_ATK[slot] === 0 || P_LK[slot] !== 0;
 }
 
 /** `true` when `slot` has already attacked `victim` this turn (getValidAttacks). */

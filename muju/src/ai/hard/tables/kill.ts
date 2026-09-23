@@ -21,12 +21,13 @@
  * than a real line needs, which is what makes it safe as a search bound and is
  * what `lab/hard-ai/oracles/kill.ts` measures (`suboptimal === 0`).
  *
- * Combat facts the DP encodes (`combat.ts:13-17`, RE §1.7a):
+ * Combat facts the DP encodes (`combat.ts` `canAttack`, RE §1.7a):
  *   - one attack per attacker: a hit that does not kill ends that unit's
  *     Cleave chain, so every candidate contributes AT MOST ONE hit to a single
  *     target;
- *   - `canAttack` is `canActThisTurn && atkCount < tier && (atkCount === 0 ||
- *     lastAttackKilled)`; `attackedThisTurn` needs no separate check, because a
+ *   - `canAttack` is `canActThisTurn && (atkCount === 0 || lastAttackKilled)`
+ *     — no tier cap since `muju-phasing-4`; `attackedThisTurn` needs no
+ *     separate check, because a
  *     unit that already hit this target either killed it (no target left) or
  *     closed its own chain;
  *   - `need = max(0, defense − damageTaken)` is `calculateDefense`;
@@ -247,13 +248,11 @@ function collectLanes(p: PackedState, attacker: Side, targetSq: Square): number 
   return n;
 }
 
-/** `canAttack` (`combat.ts:13-17`) on a packed slot. */
-function canAttack(p: PackedState, cat: Catalog, slot: Slot): boolean {
+/** `canAttack` (`combat.ts`) on a packed slot: no tier cap (`muju-phasing-4`). */
+function canAttack(p: PackedState, slot: Slot): boolean {
   const flags = p.uflags[slot];
   if ((flags & F_CAN_ACT) === 0) return false;
-  const count = p.atkCount[slot];
-  if (count >= cat.tier[p.defId[slot]]) return false;
-  return count === 0 || (flags & F_LAST_KILLED) !== 0;
+  return p.atkCount[slot] === 0 || (flags & F_LAST_KILLED) !== 0;
 }
 
 /** `ceil(distance / speed) + 1` — the approach plus the hit; 0 steps still
@@ -300,7 +299,7 @@ function buildCandidates(
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
     if (p.sq[slot] === DEAD || p.owner[slot] !== attacker) continue;
     if (o.excludedAttackerSlots?.[slot]) continue;
-    if (!future && !canAttack(p, cat, slot)) continue;
+    if (!future && !canAttack(p, slot)) continue;
     const def = p.defId[slot];
     const power = cat.power[powerIndex(attacker, def, targetDef)];
     if (power <= 0) continue;
@@ -573,9 +572,10 @@ const CHAIN_SCRATCH = newCleavePlan();
  * What the unit in `enemySlot` can harvest in one turn by walking to a square
  * and chaining one-shot kills off it (DESIGN §5.7): for every square `q` the
  * unit can reach (its own square included), count the victims orthogonally
- * adjacent to `q` that it kills in a single hit, and take the `tier` most
- * valuable of them, capped by the actions left after the approach. The answer is
- * the best such square.
+ * adjacent to `q` that it kills in a single hit, and take the most valuable of
+ * them, capped only by the actions left after the approach — Cleave has no
+ * tier cap under `muju-phasing-4`, so a Tier I chains like a Tier III. The
+ * answer is the best such square.
  *
  * "Victims" are the units of the side `enemySlot` does NOT own — from the table
  * owner's seat, our own units. Cleave only chains off KILLS
@@ -606,7 +606,6 @@ export function cleavePlan(
   const victimSide = 1 - side;
   const def = p.defId[enemySlot];
   const speed = cat.spd[def];
-  const tier = cat.tier[def];
   const origin = p.sq[enemySlot];
 
   // Copied out of the cache: the loop below never calls `get` again, but the
@@ -624,8 +623,7 @@ export function cleavePlan(
     }
     const left = ACTIONS_PER_TURN - approach;
     if (left <= 0) continue;
-    let maxKills = tier < left ? tier : left;
-    if (maxKills > KILL_MAX_LANES) maxKills = KILL_MAX_LANES;
+    const maxKills = left < KILL_MAX_LANES ? left : KILL_MAX_LANES;
     if (maxKills <= 0) continue;
 
     let found = 0;

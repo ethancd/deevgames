@@ -49,8 +49,8 @@ export function strikeArea(
     if (s === DEAD || p.owner[slot] !== side) continue;
     if (horizon === 'current') {
       const flags = p.uflags[slot];
-      if ((flags & F_CAN_ACT) === 0 || p.atkCount[slot] >= cat.tier[p.defId[slot]] ||
-          (p.atkCount[slot] > 0 && (flags & F_LAST_KILLED) === 0)) continue;
+      // `canAttack` (combat.ts): no tier cap since `muju-phasing-4`.
+      if ((flags & F_CAN_ACT) === 0 || (p.atkCount[slot] > 0 && (flags & F_LAST_KILLED) === 0)) continue;
     }
     if (horizon === 'nextAct') bfsFrom(SC_OCC, s, SC_DIST);
     const dist = horizon === 'nextAct' ? SC_DIST : t.dist.get(p, s);

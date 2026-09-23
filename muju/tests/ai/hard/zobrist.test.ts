@@ -18,6 +18,7 @@ import {
   recomputeKpos,
   recomputeKturn,
   recomputeOccHash,
+  zAtkCount,
   zPend,
   zPiece,
   type ZobristTables,
@@ -35,7 +36,7 @@ const TABLE_KEYS: readonly (readonly [keyof ZobristTables, number])[] = [
   ['piece', 2 * NDEF * 100],
   ['reserve', 100 * 17],
   ['damage', 100 * 5],
-  ['atkCount', 100 * 4],
+  ['atkCount', 100 * 5],
   ['uflags', 100 * 16],
   ['side', 1],
   ['phase', 1],
@@ -55,6 +56,33 @@ const TABLE_KEYS: readonly (readonly [keyof ZobristTables, number])[] = [
 const CLOCK_LEGACY_VALUES = 11;
 const CLOCK_EXTRA_VALUES = Math.max(0, INACTIVITY_LIMIT + 1 - CLOCK_LEGACY_VALUES);
 
+/** `atkCount` values per square: 0..3 frozen, 4 appended by `muju-phasing-4`. */
+const ATKCOUNT_VALUES = 5;
+const ATKCOUNT_LEGACY_VALUES = 4;
+/** A pseudo-plane naming the appended fourth-attack words inside `atkCount`. */
+type FillPlane = keyof ZobristTables | 'atkCountExtra';
+
+/**
+ * `atkCount` is INTERLEAVED, not contiguous: per square, the four words drawn at
+ * the plane's original position, then the one word `muju-phasing-4` appended at
+ * the end of the stream. Split it back into the two draws.
+ */
+function atkCountDraw(extra: boolean): number[] {
+  const out: number[] = [];
+  for (let s = 0; s < 100; s++) {
+    const base = s * ATKCOUNT_VALUES * 2;
+    if (extra) out.push(Z.atkCount[base + ATKCOUNT_LEGACY_VALUES * 2], Z.atkCount[base + ATKCOUNT_LEGACY_VALUES * 2 + 1]);
+    else for (let i = 0; i < ATKCOUNT_LEGACY_VALUES * 2; i++) out.push(Z.atkCount[base + i]);
+  }
+  return out;
+}
+
+function drawnWords(name: FillPlane, keys: number, offset: number): number[] {
+  if (name === 'atkCount') return atkCountDraw(false);
+  if (name === 'atkCountExtra') return atkCountDraw(true);
+  return [...Z[name].subarray(offset * 2, (offset + keys) * 2)];
+}
+
 /**
  * The FILL ORDER: `[plane, keys, offsetWithinPlane]` SEGMENTS, in the order
  * `buildZobrist` draws them from one `seededRandom` stream.
@@ -65,12 +93,14 @@ const CLOCK_EXTRA_VALUES = Math.max(0, INACTIVITY_LIMIT + 1 - CLOCK_LEGACY_VALUE
  * both: `clock` 0..10 keeps the words it drew at its original position, and only
  * `clock` 11..20 — values that were unreachable under the ten-ply limit — draw
  * from the end of the stream. That is what makes every pre-A4 key survive.
+ * `muju-phasing-4` appends one more draw the same way: the fourth-attack word
+ * per square (`atkCountExtra`), interleaved into `atkCount` after drawing.
  */
-const FILL_ORDER: readonly (readonly [keyof ZobristTables, number, number])[] = [
+const FILL_ORDER: readonly (readonly [FillPlane, number, number])[] = [
   ['piece', 2 * NDEF * 100, 0],
   ['reserve', 100 * 17, 0],
   ['damage', 100 * 5, 0],
-  ['atkCount', 100 * 4, 0],
+  ['atkCount', 100 * ATKCOUNT_LEGACY_VALUES, 0],
   ['uflags', 100 * 16, 0],
   ['side', 1, 0],
   ['phase', 1, 0],
@@ -84,6 +114,7 @@ const FILL_ORDER: readonly (readonly [keyof ZobristTables, number, number])[] = 
   ['pend', 2 * NDEF * 100, 0],
   ['progress', 1, 0],
   ['clock', CLOCK_EXTRA_VALUES, CLOCK_LEGACY_VALUES],
+  ['atkCountExtra', 100 * (ATKCOUNT_VALUES - ATKCOUNT_LEGACY_VALUES), 0],
 ];
 
 function sample(): PackedState {
@@ -139,17 +170,19 @@ describe('core/zobrist: table construction', () => {
       const segment = new Uint32Array(keys * 2);
       for (let i = 0; i < segment.length; i++) segment[i] = (rng() * 0x100000000) >>> 0;
       const label = `${name}[${offset}..${offset + keys - 1}]`;
-      expect([...Z[name].subarray(offset * 2, (offset + keys) * 2)], label).toEqual([...segment]);
+      expect(drawnWords(name, keys, offset), label).toEqual([...segment]);
     }
     // The stream is exhausted here as far as `buildZobrist` is concerned: every
     // segment above matched, and they sum to every word in every plane.
     const drawnKeys = FILL_ORDER.reduce((n, [, keys]) => n + keys, 0);
     const tableKeys = TABLE_KEYS.reduce((n, [, keys]) => n + keys, 0);
     expect(drawnKeys).toBe(tableKeys);
-    // ...and the A4 clock extension really is LAST, after both M2/M3 appendages.
-    expect(FILL_ORDER[FILL_ORDER.length - 3][0]).toBe('pend');
-    expect(FILL_ORDER[FILL_ORDER.length - 2][0]).toBe('progress');
-    expect(FILL_ORDER[FILL_ORDER.length - 1]).toEqual(['clock', CLOCK_EXTRA_VALUES, CLOCK_LEGACY_VALUES]);
+    // ...and the A4 clock extension comes after both M2/M3 appendages, with the
+    // `muju-phasing-4` fourth-attack words LAST of all.
+    expect(FILL_ORDER[FILL_ORDER.length - 4][0]).toBe('pend');
+    expect(FILL_ORDER[FILL_ORDER.length - 3][0]).toBe('progress');
+    expect(FILL_ORDER[FILL_ORDER.length - 2]).toEqual(['clock', CLOCK_EXTRA_VALUES, CLOCK_LEGACY_VALUES]);
+    expect(FILL_ORDER[FILL_ORDER.length - 1][0]).toBe('atkCountExtra');
   });
 
   /**
@@ -192,8 +225,10 @@ describe('core/zobrist: table construction', () => {
     // The clock prefix, and — as the control that makes the claim mean anything
     // — every OTHER plane too, since a plane that moved would break far more.
     expect([...Z.clock.subarray(0, CLOCK_LEGACY_VALUES * 2)]).toEqual(legacy.clock);
+    // `atkCount` counts 0..3 likewise keep their words (muju-phasing-4 interleaves a fifth).
+    expect(atkCountDraw(false)).toEqual(legacy.atkCount);
     for (const [name] of LEGACY_ORDER) {
-      if (name === 'clock') continue;
+      if (name === 'clock' || name === 'atkCount') continue;
       expect([...Z[name]], name).toEqual(legacy[name]);
     }
   });
@@ -256,6 +291,22 @@ describe('core/zobrist: table construction', () => {
   });
 });
 
+describe('core/zobrist: the fourth-attack key (muju-phasing-4)', () => {
+  it('gives every square a distinct, nonzero key for atkCount 4, unlike any count-0..3 key', () => {
+    const seen = new Set<string>();
+    for (let s = 0; s < 100; s++) {
+      for (let v = 0; v < ATKCOUNT_VALUES; v++) {
+        const i = zAtkCount(s, v);
+        expect(i + 1, `square ${s} count ${v}`).toBeLessThan(Z.atkCount.length);
+        const key = `${Z.atkCount[i]}:${Z.atkCount[i + 1]}`;
+        expect(seen.has(key), `square ${s} count ${v}`).toBe(false);
+        seen.add(key);
+        expect(Z.atkCount[i] | Z.atkCount[i + 1]).not.toBe(0);
+      }
+    }
+  });
+});
+
 describe('core/zobrist: Kpos membership', () => {
   const mutations: readonly (readonly [string, (p: PackedState) => void])[] = [
     ['a unit moving square', p => { p.pieceAt[p.sq[0]] = 255; p.sq[0] = 55; p.pieceAt[55] = 0; }],
@@ -291,6 +342,8 @@ describe('core/zobrist: Kpos membership', () => {
     ['the phase', p => { p.phase = 0; }],
     ['actions remaining', p => { p.actions = 1; }],
     ['an attack count', p => { p.atkCount[0] = 2; }],
+    // muju-phasing-4: no tier cap, so a unit can reach its fourth attack.
+    ['a fourth attack', p => { p.atkCount[0] = 4; }],
     ['unit flags', p => { p.uflags[0] = UFLAGS_MASK; }],
     // `progressThisTurn`. Not implied by any other Kturn extra under Phasing: the
     // capture that sets it leaves `atkCount`/`uflags` evidence on the killer, and

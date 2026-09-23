@@ -173,7 +173,7 @@ export function classifyApproachInto(
 
   const cat = activeCatalog();
   const def = defId >= 0 ? defId : standing !== NO_SLOT ? p.defId[standing] : -1;
-  if (horizon === 'current' && standing !== NO_SLOT && !attackerReady(p, standing, def, cat)) return out;
+  if (horizon === 'current' && standing !== NO_SLOT && !attackerReady(p, standing)) return out;
 
   const future = horizon === 'nextAct';
   if (future) {
@@ -222,7 +222,7 @@ export function approachTable(
       if (from === DEAD || p.owner[a] !== attacker) continue;
       const def = p.defId[a];
       if (cat.power[powerIndex(attacker, def, targetDef)] < effDef) continue;
-      if (!future && !attackerReady(p, a, def, cat)) continue;
+      if (!future && !attackerReady(p, a)) continue;
       const speed = cat.spd[def];
       if (MANHATTAN[from * 100 + targetSq] > speed * maxMoves + 1) continue;
       if (future) bfsFrom(occ, from, PROJECTED_DIST);
@@ -425,12 +425,10 @@ function countRetreats(from: Square, speed: number, occAfter: BB, strikeDefender
   return bbCount(acc);
 }
 
-/** `canAttack` (combat.ts:14-17) on the packed state, for the definition `def`. */
-function attackerReady(p: PackedState, slot: Slot, def: DefId, cat: Catalog): boolean {
+/** `canAttack` (combat.ts) on the packed state: no tier cap since `muju-phasing-4`. */
+function attackerReady(p: PackedState, slot: Slot): boolean {
   if ((p.uflags[slot] & F_CAN_ACT) === 0) return false;
-  const count = p.atkCount[slot];
-  if (def >= 0 && count >= cat.tier[def]) return false;
-  return count === 0 || (p.uflags[slot] & F_LAST_KILLED) !== 0;
+  return p.atkCount[slot] === 0 || (p.uflags[slot] & F_LAST_KILLED) !== 0;
 }
 
 function livingCount(p: PackedState, side: Side): number {
