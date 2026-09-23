@@ -173,3 +173,11 @@ describe('parseTranscript', () => {
     expect(parseTranscript('codex', raw)).toMatchObject({ sessionId: 't1', finalText: 'done', totals: { inputTokens: 10, reasoningOutputTokens: 5 } });
   });
 });
+
+describe('codexArgs gateway env', () => {
+  it('passes the game and workspace dirs to the MCP gateway, which Codex does not inherit', async () => {
+    const { codexArgs } = await import('../../tools/llm-pilot/players');
+    const args = codexArgs({ prompt: 'p', model: 'gpt-6-luna', effort: 'low', cwd: '/tmp/ws', gameDir: '/g/P05-W', tier: 'centaur' });
+    expect(args).toContain('mcp_servers.muju.env={MUJU_PILOT_GAME_DIR="/g/P05-W",MUJU_PILOT_WORKSPACE_DIR="/tmp/ws"}');
+  });
+});

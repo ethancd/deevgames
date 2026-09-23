@@ -145,14 +145,19 @@ function toml(value: string | string[]): string {
  * anything readable by the operator's account). tool-builder's own local code runs only through
  * the gateway's sandboxed `muju_run_helper`/`muju_write_file` MCP tools (sandbox.ts), never this. */
 const CODEX_SHELL_FEATURES = ['shell_tool', 'unified_exec', 'unified_exec_tty', 'multi_agent', 'multi_agent_v2'];
-export function codexArgs(opts: { prompt: string; model: string; effort: string; cwd: string; gameDir: string; gatewayPath?: string; tier: ToolTier; resumeSessionId?: string }): string[] {
+export function codexArgs(opts: { prompt: string; model: string; effort: string; cwd: string; gameDir: string; gatewayPath?: string; tier: ToolTier; resumeSessionId?: string; gatewayEnv?: Record<string, string> }): string[] {
   const gateway = gatewayCommand(opts.gameDir, opts.gatewayPath, { includeGameDirArg: false });
+  // Codex does not pass its own env through to MCP servers, so hand the gateway its dirs
+  // explicitly (process argv only; never written into the player's workspace).
+  const gatewayEnv = opts.gatewayEnv ?? { MUJU_PILOT_GAME_DIR: opts.gameDir, MUJU_PILOT_WORKSPACE_DIR: opts.cwd };
+  const envTable = `{${Object.entries(gatewayEnv).map(([key, value]) => `${key}=${JSON.stringify(value)}`).join(',')}}`;
   const common = [
     '-m', opts.model,
     '-c', `model_reasoning_effort=${toml(opts.effort)}`,
     '-c', `forced_login_method=${toml('chatgpt')}`,
     '-c', `mcp_servers.muju.command=${toml(gateway.command)}`,
     '-c', `mcp_servers.muju.args=${toml(gateway.args)}`,
+    '-c', `mcp_servers.muju.env=${envTable}`,
     '-c', 'mcp_servers.muju.startup_timeout_sec=150',
     '-c', 'mcp_servers.muju.tool_timeout_sec=900',
     '-c', `mcp_servers.muju.default_tools_approval_mode=${toml('approve')}`,
@@ -393,7 +398,7 @@ export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
     if (phase === 'play' && kind === 'claude') { state.sessionId = randomUUID(); save(); }
     const [command, cliArgs] = kind === 'claude'
       ? ['claude', claudeArgs({ prompt, model: cliModel, effort: args.effort, cwd: workspace, mcpConfigPath, tier: args.tier, resumeSessionId, sessionId: state.sessionId ?? undefined })]
-      : [CODEX_BIN, codexArgs({ prompt, model: cliModel, effort: args.effort, cwd: workspace, gameDir: args.gameDir, gatewayPath: args.gatewayPath, tier: args.tier, resumeSessionId })];
+      : [CODEX_BIN, codexArgs({ prompt, model: cliModel, effort: args.effort, cwd: workspace, gameDir: args.gameDir, gatewayPath: args.gatewayPath, tier: args.tier, resumeSessionId, gatewayEnv })];
     const exitCode = await spawnPhase(command, cliArgs, workspace, transcript, timeoutMs, pid => { record.pid = pid; save(); args.onSpawn?.(pid); }, gatewayEnv);
     await finishPhase(record, exitCode);
     return record;
