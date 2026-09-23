@@ -1,0 +1,58 @@
+[
+  {
+    "id": "C-control-aiv2-hard-turn",
+    "stage": "C",
+    "arm": "control",
+    "weightsFile": "docs/hard-ai/phasing/p3-retune-2026-09-22/weights/control.json",
+    "engineA": "hard@env",
+    "engineB": "aiv2-hard-turn",
+    "work": "wall:6000",
+    "pairs": 32,
+    "seed": 20260972,
+    "openings": "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "shards": 4,
+    "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/control-aiv2-hard-turn"
+  },
+  {
+    "id": "C-p3-s08-aiv2-hard-turn",
+    "stage": "C",
+    "arm": "p3-s08",
+    "weightsFile": "docs/hard-ai/phasing/p3-retune-2026-09-22/weights/p3-s08.json",
+    "engineA": "hard@env",
+    "engineB": "aiv2-hard-turn",
+    "work": "wall:6000",
+    "pairs": 32,
+    "seed": 20260972,
+    "openings": "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "shards": 4,
+    "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/p3-s08-aiv2-hard-turn"
+  },
+  {
+    "id": "C-hv-mine-aiv2-hard-turn",
+    "stage": "C",
+    "arm": "hv-mine",
+    "weightsFile": "docs/hard-ai/phasing/p3-retune-2026-09-22/weights/hv-mine.json",
+    "engineA": "hard@env",
+    "engineB": "aiv2-hard-turn",
+    "work": "wall:6000",
+    "pairs": 32,
+    "seed": 20260972,
+    "openings": "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "shards": 4,
+    "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/hv-mine-aiv2-hard-turn"
+  },
+  {
+    "id": "C-p3-s18-aiv2-hard-turn",
+    "stage": "C",
+    "arm": "p3-s18",
+    "weightsFile": "docs/hard-ai/phasing/p3-retune-2026-09-22/weights/p3-s18.json",
+    "engineA": "hard@env",
+    "engineB": "aiv2-hard-turn",
+    "work": "wall:6000",
+    "pairs": 32,
+    "seed": 20260972,
+    "openings": "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "shards": 4,
+    "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/p3-s18-aiv2-hard-turn"
+  }
+]

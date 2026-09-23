@@ -1,0 +1,31 @@
+9 of 9 rows to run, concurrency 1
+batch 1: B-control-aiv2-hard-turn
+done: B-control-aiv2-hard-turn
+batch 2: B-hv-mine-aiv2-hard-turn
+done: B-hv-mine-aiv2-hard-turn
+batch 3: B-p3-s18-aiv2-hard-turn
+done: B-p3-s18-aiv2-hard-turn
+batch 4: B-hv-blocks-aiv2-hard-turn
+done: B-hv-blocks-aiv2-hard-turn
+batch 5: B-hv-clock-aiv2-hard-turn
+done: B-hv-clock-aiv2-hard-turn
+batch 6: B-p3-s19-aiv2-hard-turn
+done: B-p3-s19-aiv2-hard-turn
+batch 7: B-p3-s08-aiv2-hard-turn
+done: B-p3-s08-aiv2-hard-turn
+batch 8: B-p3-s21-aiv2-hard-turn
+done: B-p3-s21-aiv2-hard-turn
+batch 9: B-p3-s10-aiv2-hard-turn
+done: B-p3-s10-aiv2-hard-turn
+sweep: all rows in this plan attempted
+skip (already complete): B-control-aiv2-hard-turn
+skip (already complete): B-hv-mine-aiv2-hard-turn
+skip (already complete): B-p3-s18-aiv2-hard-turn
+skip (already complete): B-hv-blocks-aiv2-hard-turn
+skip (already complete): B-hv-clock-aiv2-hard-turn
+skip (already complete): B-p3-s19-aiv2-hard-turn
+skip (already complete): B-p3-s08-aiv2-hard-turn
+skip (already complete): B-p3-s21-aiv2-hard-turn
+skip (already complete): B-p3-s10-aiv2-hard-turn
+0 of 9 rows to run, concurrency 1
+sweep: all rows in this plan attempted

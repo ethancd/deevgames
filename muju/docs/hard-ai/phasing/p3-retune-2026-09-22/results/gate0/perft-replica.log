@@ -1,0 +1,6 @@
+
+> elemental-tactics@0.1.0 hard:perft
+> node --import tsx lab/hard-ai/perft/run.ts --check --engine replica
+
+hard:perft --check: wrote /Users/ashkie/src/deevgames-p3tune/muju/lab/results/hard-ai-verify/perft.json
+{"ruleset":"phasing","perftActions_initial_4":null,"perftMidStates_initial":null,"perftTurns_initial":null,"standardTriple":"skipped-phasing-replica","phasingActions_initial":14959,"phasingMidStates_initial":1850,"phasingTurns_initial":797,"phasingInitialLimits":{"act":4,"prepare":0},"fixturesChecked":7,"fixturesMismatch":0,"digestMismatches":0,"replicaAgreed":true,"mismatches":0,"openings":797,"engine":"replica","git":"eae48fba9ee259d0d66ba92b98a66b7e3fbd151c","node":"v24.11.1","at":"2026-09-23T14:04:24.862Z"}

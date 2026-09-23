@@ -1,6 +1,6 @@
 // @vitest-environment node
 /**
- * The COMMITTED v2 release bundle must still load against THIS tree.
+ * The COMMITTED v3 release bundle must still load against THIS tree.
  *
  * Added 2026-09-22 after the Gate-0 measurement of the phasing-only cutover was
  * refused before a single case ran. `artifactPins()` (`suites/phasing/run.ts`)
@@ -23,11 +23,23 @@
  * document's byte pin, each document's shape and family, and the manifest's own
  * case/member accounting (`validateReleaseManifest`) — which is the whole of what
  * a `package.json` or suite edit can break. `validateBundle()`, which additionally
- * replays all 225 author-evidence checks and the free-win veto, measured 109 s on
- * an M2 Max on 2026-09-22; the measurement path runs it before any engine work,
+ * replays all 225 author-evidence checks and the free-win veto, measured ~110 s on
+ * this box on 2026-09-22; the measurement path runs it before any engine work,
  * and the runner test runs it on a freshly authored bundle, so paying it again in
  * every `npm test` would nearly double the suite's wall time for no extra
  * coverage of this failure mode. No engine, search or evaluation runs here.
+ *
+ * 2026-09-22 (p3 retune, `docs/changes/2026-09-22-p3-retune-SPEC.md` §6, lane S):
+ * `fixtures/v2` (`muju-phasing-2`, the pre-rename catalogue) is superseded —
+ * it can no longer bind against this tree (renamed catalogue bytes AND the
+ * `muju-phasing-3` kill-clock rules revision). `fixtures/v3-bundle` is the
+ * re-authored replacement: same 225 cases / 245 members / declarative delta
+ * (`author-inputs/new-candidates-v2.json`), freshly derived under the current
+ * catalogue and `muju-phasing-3`. Distinct from the pre-existing, unrelated
+ * `fixtures/v3/floor-contract.json` (a 2026-09-21 phasing-only-cutover
+ * re-declaration of the OLD v2 manifest's floors against a new engine build —
+ * it names the v2 manifest hash, not this one, and this lane does not touch
+ * it). Do not confuse the two "v3"s.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -36,33 +48,37 @@ import { artifactPins, loadBundle, MUJU_ROOT } from '../../lab/hard-ai/suites/ph
 import { hashJson, sha256 } from '../../lab/hard-ai/suites/phasing/canonical';
 import { FAMILIES } from '../../lab/hard-ai/suites/phasing/format';
 
-// Measured 1.6 s on an M2 Max (225 cases, 23 artifact pins, 6 document pins);
+// Measured under 2 s on this box (225 cases, 23 artifact pins, 6 document pins);
 // the repo-wide floor is 10 s, which has no headroom under a loaded box.
 vi.setConfig({ testTimeout: 60_000 });
 
-const MANIFEST = join(MUJU_ROOT, 'lab/hard-ai/suites/phasing/fixtures/v2/manifest.json');
-/** The bundle the release record and `fixtures/v3/floor-contract.json` name. */
-const V2_MANIFEST_SHA256 = '454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453';
+const MANIFEST = join(MUJU_ROOT, 'lab/hard-ai/suites/phasing/fixtures/v3-bundle/manifest.json');
+/** `hashJson(manifest)` for `fixtures/v3-bundle/manifest.json`, authored
+ * 2026-09-22 by `run.ts author-v2 --out fixtures/v3-bundle` under
+ * `muju-phasing-3` and the renamed catalogue. Distinct from the v2 manifest
+ * hash (`454fe137…`) that `fixtures/v3/floor-contract.json` and the
+ * measurement ledger still name historically. */
+const V3_MANIFEST_SHA256 = 'da3589338557f74329c72fc8a231967a2f3a89656b1405f573a66a0dfbaac6e9';
 
 /**
  * The `lab/hard-ai/suites/phasing/**` files the 2026-09-22 kill-clock change
- * (`muju-phasing-3`, `docs/changes/2026-09-22-kill-clock-SPEC.md` §3) forced,
- * and why each one had to move — same declared-set pattern as
- * `tests/lab/phasing-evidence.test.ts`'s `A4_HARNESS_EDITS`: the pin below
- * stays strict on everything NOT named here, so an undeclared suite-source
- * edit still fails loudly.
+ * (`muju-phasing-3`, `docs/changes/2026-09-22-kill-clock-SPEC.md` §3) forced —
+ * same declared-set pattern as `tests/lab/phasing-evidence.test.ts`'s
+ * `A4_HARNESS_EDITS`: the pin below stays strict on everything NOT named here,
+ * so an undeclared suite-source edit still fails loudly.
+ *
+ * Empty for `fixtures/v3-bundle`: unlike the frozen `fixtures/v2` bundle (whose
+ * manifest predates the kill-clock and rename source edits and therefore had
+ * to declare them as expected drift), `v3-bundle` was authored FROM the
+ * current tree, after both changes landed — its artifact pins already match
+ * source exactly, so there is nothing to declare. Kept as a named allow-list,
+ * not deleted, so the next suite-source edit after this bundle is committed
+ * still has to be declared here rather than silently passing.
  */
-const KILL_CLOCK_ARTIFACT_EDITS: Record<string, string> = {
-  'lab/hard-ai/suites/phasing/canonical.ts':
-    "currentRulesVersion now keys on (limit, verdict) instead of limit alone, and gained 'muju-phasing-3'/RULES_VERSIONS a third entry — the ten-ply limit is no longer unique to muju-phasing-1's draw verdict",
-  'lab/hard-ai/suites/phasing/format.ts':
-    "the state-fact 'reason' zod enum gained 'kill-clock' — an authored case whose endpoint reason is the new terminal (case 16, clock-discipline) fails validation without it",
-  'lab/hard-ai/suites/phasing/build-invariants.ts':
-    "case 16 (clock-discipline)'s endpoint assertion moved from reason 'inactivity' to 'kill-clock' — the fixture's own tie (both sides mine nothing) still draws, only the reason string the rule now produces changed",
-};
+const KILL_CLOCK_ARTIFACT_EDITS: Record<string, string> = {};
 
-describe('committed Phasing v2 release bundle', () => {
-  it('keeps every artifact pin of the committed v2 bundle intact, except the kill-clock edits it declares', () => {
+describe('committed Phasing v3 release bundle', () => {
+  it('keeps every artifact pin of the committed v3 bundle intact, except any declared edits', () => {
     // Name the offending pin BEFORE loadBundle throws its bundle-wide message,
     // so a failure here says which file's bytes moved rather than "artifact
     // bytes differ". package.json is called out by name because it is the pin
@@ -82,24 +98,14 @@ describe('committed Phasing v2 release bundle', () => {
     expect(current['package.json']).toBe(manifest.artifacts['package.json']);
   });
 
-  // 2026-09-22 (docs/changes/2026-09-22-rename-irumbu.md): the piece rename
-  // changed the bytes of `src/game/units.ts` (display names only; IDs, stats
-  // and prices are unchanged), and every v2 suite document binds
-  // `catalogueSha256` to those exact bytes, so `loadBundle` now refuses the
-  // committed bundle with "canonical source binding mismatch". Re-binding is a
-  // preregistration act (a new measurement-ledger entry and floor contract)
-  // that the owner deferred to the next AI measurement campaign, which will
-  // re-author the suite under the kill-clock rules revision anyway. THAT SAME
-  // DAY (2026-09-22) also brought the kill clock itself (`muju-phasing-3`):
-  // the v2 bundle's `sourceBinding.rulesVersion` is `muju-phasing-2`
-  // (twenty-ply draw), which `currentRulesVersion()` no longer names as the
-  // live revision, so the bundle is now doubly superseded — catalogue bytes
-  // AND rules revision. The pin guard above stays live so no OTHER artifact
-  // drifts silently meanwhile.
-  it.skip('still loads against the live tree through the measurement path loader (superseded by the 2026-09-22 rename AND by the 2026-09-22 kill-clock rules revision muju-phasing-3; re-bind with the next measurement)', () => {
+  // Un-skipped 2026-09-22 (p3 retune, lane S): `fixtures/v3-bundle` was
+  // authored against this tree's current `muju-phasing-3` rules and renamed
+  // catalogue, so `loadBundle` succeeds without the source-binding mismatch
+  // that superseded `fixtures/v2`.
+  it('still loads against the live tree through the measurement path loader', () => {
     const { manifest: loaded, documents, identity } = loadBundle(MANIFEST);
-    expect(identity.manifestSha256).toBe(V2_MANIFEST_SHA256);
-    expect(hashJson(loaded)).toBe(V2_MANIFEST_SHA256);
+    expect(identity.manifestSha256).toBe(V3_MANIFEST_SHA256);
+    expect(hashJson(loaded)).toBe(V3_MANIFEST_SHA256);
     expect(identity.manifestFileSha256).toBe(sha256(readFileSync(MANIFEST)));
     expect(documents).toHaveLength(FAMILIES.length);
     expect(documents.map(doc => doc.family).sort()).toEqual([...FAMILIES].sort());

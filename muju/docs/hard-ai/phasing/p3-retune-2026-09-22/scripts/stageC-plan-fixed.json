@@ -1,0 +1,58 @@
+[
+  {
+    "id": "C-control-Rush",
+    "stage": "C",
+    "arm": "control",
+    "weightsFile": "docs/hard-ai/phasing/p3-retune-2026-09-22/weights/control.json",
+    "engineA": "hard@env",
+    "engineB": "Rush",
+    "work": "fixed:60000",
+    "pairs": 32,
+    "seed": 20260972,
+    "openings": "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "shards": 4,
+    "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/control-Rush"
+  },
+  {
+    "id": "C-p3-s08-Rush",
+    "stage": "C",
+    "arm": "p3-s08",
+    "weightsFile": "docs/hard-ai/phasing/p3-retune-2026-09-22/weights/p3-s08.json",
+    "engineA": "hard@env",
+    "engineB": "Rush",
+    "work": "fixed:60000",
+    "pairs": 32,
+    "seed": 20260972,
+    "openings": "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "shards": 4,
+    "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/p3-s08-Rush"
+  },
+  {
+    "id": "C-hv-mine-Rush",
+    "stage": "C",
+    "arm": "hv-mine",
+    "weightsFile": "docs/hard-ai/phasing/p3-retune-2026-09-22/weights/hv-mine.json",
+    "engineA": "hard@env",
+    "engineB": "Rush",
+    "work": "fixed:60000",
+    "pairs": 32,
+    "seed": 20260972,
+    "openings": "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "shards": 4,
+    "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/hv-mine-Rush"
+  },
+  {
+    "id": "C-p3-s18-Rush",
+    "stage": "C",
+    "arm": "p3-s18",
+    "weightsFile": "docs/hard-ai/phasing/p3-retune-2026-09-22/weights/p3-s18.json",
+    "engineA": "hard@env",
+    "engineB": "Rush",
+    "work": "fixed:60000",
+    "pairs": 32,
+    "seed": 20260972,
+    "openings": "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "shards": 4,
+    "outDir": "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/p3-s18-Rush"
+  }
+]

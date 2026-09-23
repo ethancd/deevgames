@@ -1,0 +1,44 @@
+{
+  "head": "c301b3d82684fcedc23698cb3cde287b96d9b959",
+  "startedAt": "2026-09-23T08:16:25Z",
+  "stageB": {
+    "sums": {
+      "control": 1.03125,
+      "hv-mine": 1.3125,
+      "p3-s18": 1.28125,
+      "hv-blocks": 1.15625,
+      "hv-clock": 1.125,
+      "p3-s19": 1.0625,
+      "p3-s08": 1.34375,
+      "p3-s21": 1.28125,
+      "p3-s10": 1.125
+    },
+    "guardDropped": [],
+    "survivors": [
+      "p3-s08",
+      "hv-mine",
+      "p3-s18",
+      "p3-s21",
+      "hv-blocks",
+      "hv-clock",
+      "p3-s10",
+      "p3-s19"
+    ],
+    "top3": [
+      "p3-s08",
+      "hv-mine",
+      "p3-s18"
+    ]
+  },
+  "stageC": {
+    "sums": {
+      "control": 1.234375,
+      "p3-s08": 1.234375,
+      "hv-mine": 1.1875,
+      "p3-s18": 1.140625
+    },
+    "best": "p3-s08"
+  },
+  "winner": "control",
+  "finishedAt": "2026-09-23T12:36:48Z"
+}

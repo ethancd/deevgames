@@ -1,0 +1,10 @@
+gate0 start 2026-09-23T14:04:20Z HEAD eae48fba9ee259d0d66ba92b98a66b7e3fbd151c load 1.79 2.83 4.31
+== perft-canonical: npm run hard:perft -- --check (2026-09-23T14:04:20Z)
+== perft-canonical exit 0 (2026-09-23T14:04:24Z)
+== perft-replica: npm run hard:perft -- --check --engine replica (2026-09-23T14:04:24Z)
+== perft-replica exit 0 (2026-09-23T14:04:24Z)
+== fuzz: npm run hard:fuzz -- --actions 20000 --seed 7101 (2026-09-23T14:04:24Z)
+== fuzz exit 0 (2026-09-23T14:04:35Z)
+== determinism: npm run hard:determinism -- --engine hard@desktop --work 50000 --positions 4 (2026-09-23T14:04:35Z)
+== determinism exit 0 (2026-09-23T14:04:35Z)
+gate0 done 2026-09-23T14:04:35Z

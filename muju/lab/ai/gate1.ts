@@ -129,8 +129,8 @@ export function adoptedProtocol() {
 export function loadBands(references: { bands?: { path?: string; sha256?: string }; bandsSha256?: string },
   fileHashes: Record<string, string>): Bands {
   if (BANDS_PATH === SUPERSEDED_BANDS_PATH) {
-    throw new Error(`Gate 1 is pointed at the superseded bands ${SUPERSEDED_BANDS_PATH}, frozen under the 10-ply ` +
-      'inactivity clock A4 replaced. Point BANDS_PATH at the re-frozen reference.');
+    throw new Error(`Gate 1 is pointed at the superseded bands ${SUPERSEDED_BANDS_PATH}, frozen under the ` +
+      'inactivity/kill-clock revision A7 replaced. Point BANDS_PATH at the re-frozen reference.');
   }
   const pinned = references.bands;
   if (pinned?.path !== BANDS_PATH) {

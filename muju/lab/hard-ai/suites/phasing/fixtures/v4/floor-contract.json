@@ -1,0 +1,22 @@
+{
+  "schema": "muju-phasing-suite-floor-v2",
+  "manifestSha256": "da3589338557f74329c72fc8a231967a2f3a89656b1405f573a66a0dfbaac6e9",
+  "declaredAt": "2026-09-23T12:41:47.000Z",
+  "seed": 1,
+  "profile": "desktop",
+  "engineSourceSha256": "f2d205156877cb48cc310ad1c1f6491971e5ee8b69789e64ea51b959c658f078",
+  "weightsSha256": "ec9816169afe7983e03ea220eb30b8d4c1d05cbdaefc5f07a9e8a4061e12cdf5",
+  "allowedMiss": {
+    "tactics": 6,
+    "invariants": 1,
+    "home-mate": 0,
+    "economy": 0,
+    "summon-disruption": 1,
+    "home-fortify": 0
+  },
+  "coverage": "all",
+  "fallback": "veto",
+  "illegalOrDivergent": "veto",
+  "unresolvedProof": "veto",
+  "rationale": "Floor contract v4 for the p3 retune campaign's decision to ship control: docs/changes/2026-09-22-p3-retune-SPEC.md Section 5 step 4, measured against lane S's suite bundle v3 (manifestSha256 da358933..., lab/hard-ai/suites/phasing/fixtures/v3-bundle/manifest.json, docs/changes/2026-09-22-p3-retune-laneS.md), which lane S deliberately left this contract and measurement to a later step because it needed the retuned build's identity. The campaign's Stage A/B/C retune search did not beat the shipped phasing-hand-priors-v1 vector by enough to adopt a new one, so the coordinator's decision under Section 5 step 1 was ship control: src/ai/hard/eval/weights.ts DEFAULT_WEIGHTS stays label phasing-hand-priors-v1, version 2, unchanged. This contract is therefore bound to the CURRENTLY SHIPPED build rather than a new retuned vector. allowedMiss reuses V1_ALLOWED_MISS verbatim (tactics 6, invariants 1, home-mate 0, economy 0, summon-disruption 1, home-fortify 0), per docs/hard-ai/phasing/M5-FLOOR-PREREGISTRATION-v2.md's rule that v2-schema floors carry the frozen v1 allowed-miss budget forward unchanged and apply it to this manifest's own offered counts (contract.ts's validateFloorContract refuses any other value in either direction); minimumEarned is DERIVED, never asserted (tactics 63-6=57, invariants 15-1=14, home-mate 28-0=28, economy 20-0=20, summon-disruption 14-1=13, home-fortify 6-0=6 — offered counts per docs/changes/2026-09-22-p3-retune-laneS.md's table, unchanged from the v2 bundle's offered counts because lane S's v3-bundle is the same composition re-authored against the current tree). engineSourceSha256 is hashJson(engineSourceHashes()) and weightsSha256 is weightIdentity(DEFAULT_WEIGHTS), both read off this worktree (deevgames-p3tune, branch claude/muju-hard-p3-retune) via the repository's own lab/hard-ai/suites/phasing/engine-adapter.ts helpers, without running a search or reading any outcome; assertContractBuild refuses any other build rather than crediting it. weightsSha256 is identical to the value recorded in measurement-ledger.jsonl seq 2 and to fixtures/v3/floor-contract.json's weightsSha256, because DEFAULT_WEIGHTS has not moved since that reading; engineSourceSha256 differs from both (8ad95e28...) because this worktree's src/ai/hard and lab dependency sources differ from the pc-lane1 build measured there. No supersedes is declared: the v3-bundle manifest hash da3589338557f74329c72fc8a231967a2f3a89656b1405f573a66a0dfbaac6e9 has never been measured before (verified by grepping lab/hard-ai/suites/phasing/measurement-ledger.jsonl and every results/**/result.json.gz and result.digest.json for this exact hash, and by calling assertFirstMeasurementOfManifest in lab/hard-ai/suites/phasing/measure.ts against the live ledger, which returns an empty priors list and only refuses if supersedes is supplied with nothing to supersede). The two existing ledger entries (seq 1, seq 2) and fixtures/v3/floor-contract.json all key on manifestSha256 454fe137aa5bf97f4703a209985e4743eb995719c09cb6bcf8ea6d130bc39453, the OLDER v2-authored manifest from a different campaign (pc-lane1's phasing-only cutover); that is a different manifest from this one and this contract does not supersede it. This file is committed by itself, with no result.json, cases.jsonl, started.json, failure.json, ledger line or any path under a results directory in the same commit; resolveContractCommit refuses an untracked or working-tree-modified contract, which is what makes this a preregistration rather than a description. No engine outcome, corpus, opening or sealed set was read to write it."
+}

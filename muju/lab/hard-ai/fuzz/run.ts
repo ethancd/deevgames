@@ -440,12 +440,16 @@ function main(): void {
     // happen: the clock must REACH the limit, and a draw must actually FIRE
     // there — the second is what would catch an off-by-one in the
     // `>= INACTIVITY_LIMIT` test, or a clamp left behind at 10.
+    // Under `muju-phasing-3` (docs/changes/2026-09-22-kill-clock.md) the terminal that
+    // fires at the limit is the KILL CLOCK (`kill-clock:<winner|draw>`), decided on mined
+    // totals; `inactivity:*` only ever appears when replaying archived phasing-1/2 saves.
+    // Count both so the guard tests the live terminal and still accepts an archive replay.
     const drewByInactivity = Object.entries(walk.terminals)
-      .filter(([name]) => name.startsWith('inactivity:'))
+      .filter(([name]) => name.startsWith('inactivity:') || name.startsWith('kill-clock:'))
       .reduce((n, [, count]) => n + count, 0);
     console.log(
       `hard:fuzz: clock coverage — maxClockSeen ${walk.maxClockSeen}/${INACTIVITY_LIMIT}, ` +
-        `quietGames ${walk.quietGames}/${walk.games}, inactivity draws ${drewByInactivity}`,
+        `quietGames ${walk.quietGames}/${walk.games}, clock terminals (kill-clock + inactivity) ${drewByInactivity}`,
     );
     if (args.actions >= CLOCK_COVERAGE_EXPECTED_ACTIONS) {
       if (walk.maxClockSeen < INACTIVITY_LIMIT) {
@@ -458,8 +462,8 @@ function main(): void {
       }
       if (drewByInactivity === 0) {
         console.error(
-          `hard:fuzz: ${walk.actions} actions produced no inactivity draw at all; the terminal this rule ` +
-            `change is about is untested (terminals: ${JSON.stringify(walk.terminals)})`,
+          `hard:fuzz: ${walk.actions} actions produced no clock terminal at all (kill-clock or inactivity); ` +
+            `the terminal the clock rule is about is untested (terminals: ${JSON.stringify(walk.terminals)})`,
         );
         failed = true;
       }

@@ -1,0 +1,15 @@
+[2026-09-23T08:16:25Z] chain-BC start at c301b3d82684fcedc23698cb3cde287b96d9b959
+[2026-09-23T08:16:25Z] Stage B: launching aiv2 sweep (4 slots, conc 1) and fixed sweep (8 slots, conc 2) in parallel
+[2026-09-23T10:32:08Z] Stage B: sweeps exited [0, 0]
+[2026-09-23T10:32:08Z] Stage B: aiv2 catch-up pass (alone, 4 slots)
+[2026-09-23T10:32:08Z] Stage B: all rows complete and valid
+[2026-09-23T10:32:08Z] Stage B done. dropped=[] survivors=['p3-s08', 'hv-mine', 'p3-s18', 'p3-s21', 'hv-blocks', 'hv-clock', 'p3-s10', 'p3-s19'] top3=['p3-s08', 'hv-mine', 'p3-s18']
+wrote 4 aiv2 rows + 4 fixed rows for arms: control, p3-s08, hv-mine, p3-s18
+[2026-09-23T10:32:08Z] Stage C plans generated
+[2026-09-23T10:32:08Z] Stage C: launching aiv2 sweep (4 slots, conc 1) and fixed sweep (8 slots, conc 2) in parallel
+[2026-09-23T12:36:48Z] Stage C: sweeps exited [0, 0]
+[2026-09-23T12:36:48Z] Stage C: aiv2 catch-up pass (alone, 4 slots)
+[2026-09-23T12:36:48Z] Stage C: all rows complete and valid
+[2026-09-23T12:36:48Z] Stage C done. sums={'control': 1.234375, 'p3-s08': 1.234375, 'hv-mine': 1.1875, 'p3-s18': 1.140625} winner=control
+[2026-09-23T12:36:50Z] commit rc=0  
+[2026-09-23T12:36:50Z] chain-BC finished

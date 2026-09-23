@@ -1,0 +1,86 @@
+{
+  "rulesVersion": "muju-phasing-3",
+  "strata": [
+    {
+      "bot": "Rush",
+      "handicap": 0,
+      "games": 56,
+      "purchasesPerGame": 86.60714285714286,
+      "inactivityDraws": 0,
+      "inactivityWilson": {
+        "p": 0,
+        "lo": 0,
+        "hi": 0.06419614448811528
+      }
+    },
+    {
+      "bot": "Rush",
+      "handicap": 3,
+      "games": 56,
+      "purchasesPerGame": 93.46428571428571,
+      "inactivityDraws": 0,
+      "inactivityWilson": {
+        "p": 0,
+        "lo": 0,
+        "hi": 0.06419614448811528
+      }
+    },
+    {
+      "bot": "Expand",
+      "handicap": 0,
+      "games": 56,
+      "purchasesPerGame": 2.767857142857143,
+      "inactivityDraws": 0,
+      "inactivityWilson": {
+        "p": 0,
+        "lo": 0,
+        "hi": 0.06419614448811528
+      }
+    },
+    {
+      "bot": "Expand",
+      "handicap": 3,
+      "games": 56,
+      "purchasesPerGame": 3.1964285714285716,
+      "inactivityDraws": 0,
+      "inactivityWilson": {
+        "p": 0,
+        "lo": 0,
+        "hi": 0.06419614448811528
+      }
+    },
+    {
+      "bot": "Balanced",
+      "handicap": 0,
+      "games": 56,
+      "purchasesPerGame": 3.142857142857143,
+      "inactivityDraws": 0,
+      "inactivityWilson": {
+        "p": 0,
+        "lo": 0,
+        "hi": 0.06419614448811528
+      }
+    },
+    {
+      "bot": "Balanced",
+      "handicap": 3,
+      "games": 56,
+      "purchasesPerGame": 2.8035714285714284,
+      "inactivityDraws": 0,
+      "inactivityWilson": {
+        "p": 0,
+        "lo": 0,
+        "hi": 0.06419614448811528
+      }
+    }
+  ],
+  "purchaseRatePerSeat": [
+    1.3839285714285714,
+    186.92857142857142
+  ],
+  "inactivityDrawRate": [
+    0,
+    0.11419614448811528
+  ],
+  "application": "Apply separately to each aiv2-hard vs Rush/Expand/Balanced row, each h0/h3 stratum; count only aiv2-hard purchases. This is only the purchase/draw part of Gate 1."
+}

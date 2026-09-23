@@ -1,0 +1,26 @@
+{
+  "n": 8,
+  "games": 16,
+  "counts": [
+    2,
+    0,
+    4,
+    0,
+    2
+  ],
+  "degenerate": false,
+  "regularized": false,
+  "mu": 0.5,
+  "muRaw": 0.5,
+  "muLo": 0.255004501875,
+  "muHi": 0.744995498125,
+  "variancePairs": 0.5,
+  "variance": 0.25,
+  "sePair": 0.25,
+  "se": 0.125,
+  "elo": 0,
+  "eloLo": -186.24232032487765,
+  "eloHi": 186.2423203248777,
+  "elo95": 186.24232032487768,
+  "los": 0.5000000005
+}

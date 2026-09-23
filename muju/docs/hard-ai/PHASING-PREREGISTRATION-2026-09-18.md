@@ -371,3 +371,134 @@ J-022 and in `RELEASE-2026-09-21-phasing.md`.
 
 **Amendments A1–A5 stand as written.** Seeds are unchanged; the post-release measurement rows use the
 7101–7606 series and never the 2026095x/2026096x Gate seeds.
+
+
+### A7 — 2026-09-22: rules revision `muju-phasing-3` — the kill clock
+
+**Owner decision (Ethan, 2026-09-22).** The twenty-ply inactivity draw clock is replaced by a
+ten-ply **kill clock** decided on mined totals: ten kill-free player turns end the game at once,
+and the higher **mined total** (every crystal a side's units took from the board across the whole
+game, Black's starting handicap folded in, never reduced by spending) wins; equal totals draw.
+`#` (home-checkmate) is withheld once the invader's next turn start is no longer guaranteed for
+that hand-off (`c >= limit - 1`, i.e. `c >= 9`). What resets the clock is unchanged: only an
+attack that removes a unit. Full rule text: `docs/changes/2026-09-22-kill-clock.md` and SPEC v3.3
+§9. Recorded, in parallel, as `docs/changes/2026-09-22-p3-retune-SPEC.md`, the campaign this
+amendment belongs to.
+
+**Why this needs an amendment.** "Fixed definitions" says any rules edit after sign-off voids
+rows measured before it. The rules revision therefore advances from `muju-phasing-2` to
+**`muju-phasing-3`**, and every identity hash carried by a ladder row, a suite measurement or a
+Gate 1 row changes with it, exactly as A4 advanced `muju-phasing-1` to `muju-phasing-2`. The
+inactivity-draw rate that Gate 1's bands were frozen from is not merely re-scaled by this change,
+the way the 10-to-20-ply widening re-scaled it: under the kill clock an actual inactivity draw
+(`GameRecord.inactivityDraw`, meaning `victoryReason === 'inactivity'`) is structurally
+impossible — the tenth kill-free ply is now a decided `winType: 'kill-clock'` position in the vast
+majority of games, with a real winner, and only an exact mined-total tie draws. A band computed
+from a quantity that can no longer be nonzero is not describing the same behaviour it described
+under either prior revision, so it must be re-frozen, by name, under `muju-phasing-3`, even though
+the band *formula* is untouched (A4's own condition on itself, preserved here).
+
+**What is void and must be redone under `muju-phasing-3` before it is relied on.**
+- **Every `muju-phasing-2` Gate 1/Gate 2 row.** `lab/ai/gate1-references.json` records no adopted
+  row at any revision but `muju-phasing-2` (A3's row seed 20260960 never produced an eligible
+  game before A6 waived the staged unlock, and no Gate 2 row has ever been run under any
+  revision). Nothing of strength-claim weight is voided by this amendment beyond what A6 already
+  said was still owed; what is void here is the *readiness to adopt*, not a passed row.
+- **The `lab/harness/results/p2-scripted-2026-09-19` scripted reference and the bands frozen from
+  it** (`sanity-bands.json`, `rulesVersion: "muju-phasing-2"`). The kill clock changes both the
+  ply count the clock fires at and what the clock means, so a new reference is required — not
+  merely re-measured inputs on the same meaning, the way A4's 10-to-20 widening was. A new
+  reference, `lab/harness/results/p3-scripted-2026-09-22`, has been run with the same bots, seed,
+  seed derivation, mirroring, handicaps and match options (`docs/changes/2026-09-22-p3-retune-
+  SPEC.md` Lane P step 1; `REPORT.md` in that directory). New purchase/kill-clock bands are frozen
+  from it before this amendment is committed; see "Gate 1 bands" below.
+- **The v2 suite-authoring ledger's seq 2 reading** (`lab/hard-ai/suites/phasing/results/v3-
+  measure-2-2026-09-22`, contract `fixtures/v3/floor-contract.json`, `supersedes: {ledgerSeq: 1,
+  chain: "d7774d6d…"}`), and the v3 floor contract it read against: that reading measured
+  `phasing-hand-priors-v1` on the phasing-only cutover build, before the kill clock existed, and
+  its `engineSourceSha256` covers `src/ai/hard/eval/features.ts`'s `DrawPressure` term, which the
+  kill-clock campaign changed (kill-clock lane 2, `docs/changes/2026-09-22-kill-clock-lane2.md`).
+  A ledger reading against a source hash the tree no longer has is not evidence about the tree.
+  The next reading is ledger seq 3, against a v4 floor contract, once suite bundle v3 is authored
+  at `muju-phasing-3` (`docs/changes/2026-09-22-p3-retune-SPEC.md` §1 deliverable 5, Lane S).
+- **Hard-engine replica parity evidence measured under `muju-phasing-2`** (perft fixtures,
+  differential fuzz, prover comparisons against the 20-ply clock): re-run in full under
+  `muju-phasing-3` as part of Gate 0 (§5 of the campaign spec), since kill-clock lane 2 already
+  re-froze the one perft fixture whose predicate is clock-relative and re-verified canonical/
+  replica agreement for the rules change itself; this amendment governs the *measurement*
+  evidence (Gate 0/1/2 rows), not the rules-correctness evidence the kill-clock campaign already
+  produced and which stands as written.
+
+**What remains valid.**
+- **The opening books `p1-dev`, `p1-val` and the sealed book.** By their recorded stop rule every
+  opening ends at Black's first Act root after a single hand-off, so no opening position carries a
+  clock value the 10-ply, 20-ply and kill-clock revisions treat differently (`tests/lab/openings-
+  p1.test.ts` replays all 48 dev and 32 val rows at both handicaps and gets a clock of exactly 1
+  every time, under every revision this test has run against). The pinned hashes are unchanged;
+  the sealed book is not opened to check this, exactly as A4 left it — it follows from the
+  generator's recorded stop rule.
+- **A3's budgets and sharding mechanics.** The calibrated-per-search budget design (median work
+  per search by kind, funded per search, capped at the calibration's 95th-percentile total work
+  per own turn) and the deterministic shard/merge scheme (`gate1.ts --shard i/n`, `--merge`) are
+  properties of the *measurement apparatus*, not of the rules revision; nothing about the kill
+  clock changes how a turn's work should be funded or how a row may be split.
+- **A5's per-search calibration requirement**, in full: the calibration manifest schema, its
+  refusal of a stale, foreign-machine, high-load or wrong-source-identity manifest, and its
+  reporting of work-per-search-kind and searches-per-own-turn alongside the row. A new
+  calibration is still required (a stale calibration measures an engine that no longer exists per
+  A5's own rule, unrelated to which rules revision is live), but the *rule for calibrating* is
+  unchanged.
+- **A6's informational-Gate-0 waiver and its `hardEnabled = true` deployment state.** The Hard
+  engine continues to ship rules-correct with no staged unlock; A6's condition that no release
+  note, changelog or player-facing copy may claim a strength result ahead of a real Gate 2 row
+  stands, unchanged, under `muju-phasing-3` as it did under `muju-phasing-2`.
+- **Amendment `AMENDMENT` (the constant in `lab/ai/gate1-report.ts`) stays `'A3'`.** A3 is the
+  *protocol* — the allocation, distinctness and budget-calibration design; A7, like A4 before it,
+  changes the *rules revision the protocol is measured under*, not the protocol itself. A row's
+  `rulesAmendment` field is what names the revision-specific amendment (`A4` for
+  `muju-phasing-2`, `A7` for `muju-phasing-3`).
+
+**Gate 1 bands, re-frozen.** From `lab/harness/results/p3-scripted-2026-09-22/sanity-bands.json`
+(`rulesVersion: "muju-phasing-3"`), by the same unchanged formula:
+- Purchases per seat per game: **[1.3839285714285714, 186.92857142857142]** (identical to the p1,
+  10-ply band; Rush/Expand/Balanced's purchase means at either handicap did not move enough
+  between the two 10-ply references to change the envelope — contrast p2's widened
+  `[1.6696428571…, 188.2857142857…]`, now superseded alongside p2's row eligibility).
+  `BANDS_PATH` moves to this file; the p2 bands move to `SUPERSEDED_BANDS_PATH`, refused by name
+  as well as by hash, exactly as the p1 bands were refused after A4.
+- Inactivity draws: **[0, 0.11419614448811528]**. Every stratum's `inactivityDraws` count is 0,
+  because `GameRecord.inactivityDraw` is now structurally always false (see "Why this needs an
+  amendment"). This is not silently repurposed as an "inactivity behaviour is fine" signal: Gate
+  1's behavioural check still reads this band by name and it is satisfied trivially, at `0`, by
+  every engine under every revision from here on — it no longer discriminates. Kill-clock endings
+  and exact-tie rates are reported separately (`lab/harness/results/p3-scripted-2026-09-22/
+  REPORT.md`, "Kill-clock endings and ties": 417/840 reach the clock, 408 decided, 9 exact ties)
+  and are informational for Gate 1, not gated, because no band for them was frozen before this
+  amendment and inventing one now would be choosing a threshold after seeing every result it
+  would apply to.
+
+**Gate 2 claim protocol (preregistered here, before any Gate 2 row is played).** Retuned build =
+a master-descended commit with the retuned `DEFAULT_WEIGHTS` adopted in source (campaign spec §5).
+Rows, all `muju-phasing-3`, handicap 0, seat-mirrored, `p1-val.jsonl` all 32 openings, ≤4
+concurrent shards, load recorded, timing must be valid:
+
+| Row | A | B | Work | Seed | Bar |
+|---|---|---|---|---|---|
+| G2-1 | `hard@desktop` (retuned) | `aiv2-hard-turn` | wall:6000 | 20260975 | Elo lower bound > 0 at 95% (LOS ≥ 97.5%); report point estimate |
+| G2-2 | `hard@desktop` (retuned) | `Rush` | wall:1500 | 20260976 | informational: report score; note vs the 2026-09-20 best 13–0–19 (phasing-2, historical) |
+| G2-3 | `hard@desktop` (retuned) | `hard@env` = `phasing-hand-priors-v1` JSON | fixed:N | 20260977 | score > 50% with LOS ≥ 95%; this is the retune effect |
+| G2-4 | `hard@desktop` (retuned) | `aiv2-hard` (per action) | wall:1500 | 20260978 | informational; expected VOID on opponent overrun |
+
+Seeds 20260970–20260978 are fresh (A3 used 20260960–62; the p3 scripted reference used 20260955,
+same as p1/p2). `p1-val` is the held-out set, previously seen twice (2026-09-20, per the campaign
+spec); the sealed set stays sealed and is not opened by this amendment or by any row above. Rows
+with any illegal action, divergence or fallback are void. Do not pool rows across identity hashes.
+`fixed:N` in G2-3 takes its budget from the same probe (Lane T, campaign spec §3) that sets every
+other `fixed:N` row in this campaign; N is recorded in the row's manifest, not re-chosen per row.
+
+**Amendments A1–A6 stand as written.** Nothing in this amendment revises a prior amendment's text;
+A4's voided rows, A6's waiver and A6's "still owed" conditions are unchanged except as this
+amendment's "What is void" section states explicitly. The `2026095x`/`2026096x` Gate 1 seed series
+and the `7101`–`7606` post-release series are both unchanged; this amendment adds the `2026097x`
+Gate 2 series above and reuses `20260955` for the p3 scripted reference, matching p1's and p2's own
+reuse of that seed for their scripted references.

@@ -1,0 +1,17 @@
+{
+  "games": 840,
+  "illegalActions": 0,
+  "invariantFailures": 0,
+  "inactivityDraws": 0,
+  "adjudications": 0,
+  "meanCompletedTurns": 29.983333333333334,
+  "meanMaxInactivityPlies": 7.522619047619048,
+  "purchasesPerGame": 38.36071428571429,
+  "changedDuringRun": [],
+  "endLoad": [
+    15.67822265625,
+    11.998046875,
+    8.6494140625
+  ],
+  "completedAt": "2026-09-22T22:03:07.927Z"
+}
