@@ -215,7 +215,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .piece-glyph { fill: var(--glyph); --glyph-vein: var(--vein); stroke: var(--glyph-outline); stroke-width: .7px; stroke-linejoin: round; }
 .army-white { --vein: #f6ebcd; --glyph-outline: #132a3e44; }
 .army-black { --vein: #172334; --glyph-outline: #f4ffff44; }
-.element-fire { --glyph: #a9233f; } .element-lightning { --glyph: #747700; } .element-water { --glyph: #1763a9; }
+.element-fire { --glyph: #a9233f; } .element-lightning { --glyph: #9c8400; } .element-water { --glyph: #1763a9; }
 .element-shadow { --glyph: #7947aa; } .element-plant { --glyph: #2b713a; } .element-metal { --glyph: #ae5718; }
 .army-black.element-fire { --glyph: #ff6c79; } .army-black.element-lightning { --glyph: #f5ef55; } .army-black.element-water { --glyph: #7bbfff; }
 .army-black.element-shadow { --glyph: #cfabff; } .army-black.element-plant { --glyph: #9ddd8a; } .army-black.element-metal { --glyph: #f2a54c; }
