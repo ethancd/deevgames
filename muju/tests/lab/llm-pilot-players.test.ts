@@ -124,11 +124,13 @@ describe('CLI argument builders (verified live against claude 2.1.280 / codex 0.
     }
   });
   it('codex: the gateway command never includes --game-dir (the absolute secrets/ path must not reach '
-    + 'a player-readable surface); the gateway instead relies on MUJU_PILOT_GAME_DIR inherited env', async () => {
+    + 'a player-readable surface); the dir reaches the gateway only as its process env, via codex argv', async () => {
     const { codexArgs } = await import('../../tools/llm-pilot/players');
     const args = codexArgs({ prompt: 'p', model: 'gpt-6-luna', effort: 'low', cwd: '/tmp/w', gameDir: '/tmp/g/secret-path', tier: 'tool-builder' });
-    expect(args.join(' ')).not.toContain('/tmp/g/secret-path');
+    const gatewayArgs = args[args.findIndex(arg => arg.startsWith('mcp_servers.muju.args='))];
+    expect(gatewayArgs).not.toContain('/tmp/g/secret-path');
     expect(args.join(' ')).not.toContain('--game-dir');
+    expect(args.filter(arg => arg.includes('/tmp/g/secret-path'))).toEqual([expect.stringMatching(/^mcp_servers\.muju\.env=/)]);
   });
 });
 

@@ -797,3 +797,29 @@
 - Vitest's default reporter writes nothing to a redirected log until files complete; a 4-minute silent log with one worker at 100% CPU is normal for `tests/ai/hard`, not a hang.
 - Re-detaching a run worktree at a commit that now TRACKS artifacts the worktree holds untracked is refused by git; copy the artifacts into the branch, commit, delete the worktree's untracked copies, THEN checkout. A launcher should assert `git rev-parse HEAD` equals the preregistered commit before starting (row #5 did not, 2026-09-17 23:23Z).
 - `pkill -f 'hard-ai/ladder/run.ts'` does not reach the shard processes; kill the parent AND the pids in `~/.local/state/muju-heavy/slot-*.json`, then delete slot files whose pid is dead (stale slots block the queue).
+
+## LLM-vs-Hard pilot: launch gate + review fixes (2026-09-23)
+- Worktree `claude/muju-llm-pilot` had 0 local commits ahead of origin/master (only uncommitted
+  working-tree changes) — rebasing onto the merged phasing-4 Cleave PR (#31) was just
+  `git stash push -u` + `git merge --ff-only origin/master` + `git stash pop`, no real rebase
+  needed. Production was ALREADY on `muju-phasing-4` before this session (verified live via
+  `muju_rules`/mcp) — the launch gate's only blocker was this checkout's own stale
+  `PHASING_RULES_VERSION` import, fixed purely by the fast-forward.
+- `codex features list` is the ground truth for real `--disable <FEATURE>` names (`shell_tool`,
+  `unified_exec`, `unified_exec_tty`, `multi_agent`, `multi_agent_v2` all confirmed live via the
+  bundled ChatGPT.app codex binary) — do not guess flag names for Codex isolation claims, run
+  `codex features list` and grep.
+- Same-user file permissions (`0700` secrets dirs) do NOT isolate a player CLI with shell access
+  from the operator's own campaign secrets — the OS user is identical. Real isolation needs either
+  disabling the shell tool entirely (Codex bare/harnessed/centaur: verified fix) or a real sandbox
+  (tool-builder tiers: not implemented this session — gated off admission instead, via
+  `MUJU_PILOT_ALLOW_TOOL_BUILDER` env override, rather than half-building sandboxing under a small
+  pilot-script budget).
+- `roomRequest`'s `/history` endpoint (`after`/`limit` pagination, `entries[].{revision,player,
+  turnNumber,sequence}`) is the one authoritative source for turns actually taken — a fired
+  `muju_stage` batch goes through the same server-side write path as ordinary `muju_play` but never
+  through the gateway's own `actions.jsonl` (`withGatewayGuarantees.act` only), so anything counting
+  turns/actions from `actions.jsonl` alone undercounts for harnessed/centaur/tool-builder tiers.
+- `policy-check.ts <outDir> <tiers...>` (no `--cli-probe`) is a genuinely cheap live check — one
+  throwaway room per tier, ends itself via RESIGN, no CLI spawned — good for verifying gateway/tier
+  wiring against a live deploy without spending any pilot-game budget.
