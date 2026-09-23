@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { appendFileSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -10,6 +10,7 @@ import { createMcpServer, type RoomBackend } from '../../../server/mcp';
 import { matchScopeFor } from '../../../server/matchScope';
 import type { MatchPolicy, RoomAdmission, RoomChange, RoomSnapshot } from '../../../src/online/types';
 import {
+  attachHelperTools,
   attachPilotMemoryTool,
   createGatewayServer,
   deterministicPlayRequestId,
@@ -17,6 +18,7 @@ import {
   seatConfigSchema,
   withGatewayGuarantees,
 } from '../../../tools/llm-pilot/gateway';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const dirs: string[] = [];
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); });
@@ -176,4 +178,80 @@ describe('pilot_memory', () => {
     const gameDir = tmpGameDir();
     expect(readPilotMemory(gameDir)).toEqual({ available: false });
   });
+});
+
+describe('tool-builder helper tools (muju_run_helper / muju_write_file)', () => {
+  // Isolates this test's heavy-slot queue from the machine-wide one (heavy.ts's own documented
+  // test pattern) — this repo may share the machine with an unrelated live campaign holding both
+  // real slots, and this suite must never wait on (or bypass) that queue.
+  const previousHeavyDir = process.env.MUJU_HEAVY_DIR;
+  beforeAll(() => { process.env.MUJU_HEAVY_DIR = mkdtempSync(join(tmpdir(), 'muju-gateway-heavy-')); });
+  afterAll(() => { if (previousHeavyDir === undefined) delete process.env.MUJU_HEAVY_DIR; else process.env.MUJU_HEAVY_DIR = previousHeavyDir; });
+  function helperServer(gameDir: string, workspaceDir: string) {
+    const server = new McpServer({ name: 'test-gateway', version: '1' });
+    attachHelperTools(server, gameDir, workspaceDir, 'P07-W');
+    return server;
+  }
+
+  it('createGatewayServer only attaches helper tools for tool-builder, and requires a workspaceDir for it', async () => {
+    const { store, room, admission } = matchFor('centaur');
+    const gameDir = tmpGameDir();
+    const cfgCentaur = config(room.id, 'centaur', admission.credentials.token);
+    const centaurServer = await createGatewayServer(cfgCentaur, { gameDir, scope: matchScopeFor(room) });
+    const centaurTools = (await clientOver(centaurServer).then(c => c.listTools())).tools.map(t => t.name);
+    expect(centaurTools).not.toContain('muju_run_helper');
+    expect(centaurTools).not.toContain('muju_write_file');
+    store.close();
+
+    const { store: store2, room: room2, admission: admission2 } = matchFor('tool-builder');
+    const cfgBuilder = config(room2.id, 'tool-builder', admission2.credentials.token);
+    await expect(createGatewayServer(cfgBuilder, { gameDir: tmpGameDir(), scope: matchScopeFor(room2) }))
+      .rejects.toThrow(/workspaceDir/);
+    const workspaceDir = mkdtempSync(join(tmpdir(), 'muju-gateway-ws-'));
+    dirs.push(workspaceDir);
+    const builderServer = await createGatewayServer(cfgBuilder, { gameDir: tmpGameDir(), scope: matchScopeFor(room2), workspaceDir });
+    const builderTools = (await clientOver(builderServer).then(c => c.listTools())).tools.map(t => t.name);
+    expect(builderTools).toContain('muju_run_helper');
+    expect(builderTools).toContain('muju_write_file');
+    store2.close();
+  });
+
+  it('muju_write_file writes only inside the workspace, and rejects an escape attempt', async () => {
+    const gameDir = tmpGameDir();
+    const workspaceDir = mkdtempSync(join(tmpdir(), 'muju-gateway-ws-'));
+    dirs.push(workspaceDir);
+    const server = helperServer(gameDir, workspaceDir);
+    const client = await clientOver(server);
+
+    const ok = await client.callTool({ name: 'muju_write_file', arguments: { path: 'helper.py', content: 'print(1)\n' } });
+    expect(ok.isError).not.toBe(true);
+    expect(readFileSync(join(workspaceDir, 'helper.py'), 'utf8')).toBe('print(1)\n');
+
+    const escape = await client.callTool({ name: 'muju_write_file', arguments: { path: '../outside.txt', content: 'x' } });
+    expect(escape.isError).toBe(true);
+
+    await client.close();
+  });
+
+  it('muju_run_helper runs sandboxed: a legitimate script succeeds; reading the repo and reaching the network both fail', async () => {
+    const gameDir = tmpGameDir();
+    const workspaceDir = mkdtempSync(join(tmpdir(), 'muju-gateway-ws-'));
+    dirs.push(workspaceDir);
+    const server = helperServer(gameDir, workspaceDir);
+    const client = await clientOver(server);
+
+    const legit = await client.callTool({ name: 'muju_run_helper', arguments: { command: '/bin/echo', args: ['ok-from-sandbox'] } });
+    expect(legit.isError).not.toBe(true);
+    expect(JSON.stringify(legit.structuredContent)).toContain('ok-from-sandbox');
+
+    const readRepo = await client.callTool({ name: 'muju_run_helper',
+      arguments: { command: '/bin/cat', args: [join(__dirname, '../../../tools/llm-pilot/players.ts')] } });
+    expect((readRepo.structuredContent as { exitCode: number }).exitCode).not.toBe(0);
+
+    const network = await client.callTool({ name: 'muju_run_helper',
+      arguments: { command: '/usr/bin/curl', args: ['-sS', '--max-time', '5', 'https://example.com'] } });
+    expect((network.structuredContent as { exitCode: number }).exitCode).not.toBe(0);
+
+    await client.close();
+  }, 30_000);
 });

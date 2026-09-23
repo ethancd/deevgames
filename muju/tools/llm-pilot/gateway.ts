@@ -29,8 +29,8 @@
 // is logged to `<gameDir>/http.jsonl`; 429/5xx responses are retried with backoff and still
 // logged on every attempt.
 import { createHash } from 'node:crypto';
-import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync } from 'node:fs';
-import { basename, join, resolve } from 'node:path';
+import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { setTimeout as delay } from 'node:timers/promises';
 import { z } from 'zod';
@@ -42,6 +42,7 @@ import { matchScopeFor, type MatchScope } from '../../server/matchScope';
 import type { RoomChange, RoomSnapshot } from '../../src/online/types';
 import type { RoomMoveHistory } from '../../src/game/moveHistory';
 import type { StagingResult, StagingStatus } from '../../src/online/staging';
+import { runSandboxedHelper } from './sandbox';
 
 export const seatConfigSchema = z.object({
   serverUrl: z.string().url().transform(value => value.replace(/\/$/, '')),
@@ -204,9 +205,51 @@ export function attachPilotMemoryTool(server: McpServer, gameDir: string): void 
 }
 
 // ---------------------------------------------------------------------------
+// tool-builder only: sandboxed helper execution + a workspace-confined file write, in place of
+// any native shell/exec tool (see sandbox.ts's header for why). Both tools take only paths
+// relative to `workspaceDir` (resolved and re-checked to stay inside it — no `..`/absolute
+// escape) — the sandbox profile is the OS-enforced backstop, this is defense in depth against a
+// helper simply being pointed at an absolute path.
+// ---------------------------------------------------------------------------
+function resolveInWorkspace(workspaceDir: string, relPath: string): string {
+  const resolved = resolve(workspaceDir, relPath);
+  const root = resolve(workspaceDir);
+  if (resolved !== root && !resolved.startsWith(`${root}/`)) {
+    throw new Error(`Path "${relPath}" resolves outside the workspace; only workspace-relative paths are allowed.`);
+  }
+  return resolved;
+}
+export function attachHelperTools(server: McpServer, gameDir: string, workspaceDir: string, gameId = basename(gameDir)): void {
+  server.registerTool('muju_run_helper', {
+    description: 'tool-builder only: runs a helper command (e.g. `node helper.js`, `python3 helper.py`) you wrote in '
+      + 'your workspace, inside a macOS sandbox with NO network access and NO read/write access to anything outside '
+      + 'your workspace (in particular, no access to this engine\'s source or any game\'s secrets). Capped at 60 CPU '
+      + 'seconds per run and gated on the shared 2-slot heavy-compute queue used by the engine itself, so a run may '
+      + 'wait if both slots are busy. `command` and `args` are passed straight to the sandboxed process; `cwd` is '
+      + 'always your workspace. Returns stdout/stderr (truncated if huge), the exit code, and CPU seconds used.',
+    inputSchema: { command: z.string().min(1), args: z.array(z.string()).default([]) },
+    annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
+  }, async ({ command, args }) => {
+    const result = await runSandboxedHelper(command, args, { cwd: workspaceDir, gameDir, label: `tool-builder-helper:${gameId}` });
+    return { content: [{ type: 'text' as const, text: JSON.stringify(result) }], structuredContent: { ...result } };
+  });
+  server.registerTool('muju_write_file', {
+    description: 'tool-builder only: writes UTF-8 text to a file at a path relative to your workspace (creating '
+      + 'parent directories as needed). Use this to author helper scripts before running them with `muju_run_helper`.',
+    inputSchema: { path: z.string().min(1), content: z.string() },
+    annotations: { readOnlyHint: false, destructiveHint: true, openWorldHint: false },
+  }, async ({ path: relPath, content }) => {
+    const target = resolveInWorkspace(workspaceDir, relPath);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, content, 'utf8');
+    return { content: [{ type: 'text' as const, text: JSON.stringify({ wrote: relPath, bytes: Buffer.byteLength(content) }) }] };
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Assembly + CLI entrypoint.
 // ---------------------------------------------------------------------------
-export async function createGatewayServer(config: SeatConfig, options: { gameDir: string; scope?: MatchScope; minIntervalMs?: number }): Promise<McpServer> {
+export async function createGatewayServer(config: SeatConfig, options: { gameDir: string; scope?: MatchScope; minIntervalMs?: number; workspaceDir?: string }): Promise<McpServer> {
   mkdirSync(options.gameDir, { recursive: true, mode: 0o700 });
   const appendLog = (path: string): GatewayLog => event => appendFileSync(path, `${JSON.stringify(event)}\n`);
   const logHttp = appendLog(join(options.gameDir, 'http.jsonl'));
@@ -216,12 +259,23 @@ export async function createGatewayServer(config: SeatConfig, options: { gameDir
   const backend = withGatewayGuarantees(rawBackend, config, logActions);
   const server = createMcpServer(backend, config.serverUrl, scope);
   attachPilotMemoryTool(server, options.gameDir);
+  if (config.tier === 'tool-builder') {
+    const workspaceDir = options.workspaceDir ?? process.env.MUJU_PILOT_WORKSPACE_DIR;
+    if (!workspaceDir) throw new Error('tool-builder gateway requires a workspaceDir (MUJU_PILOT_WORKSPACE_DIR env or options.workspaceDir) to sandbox helper execution.');
+    attachHelperTools(server, options.gameDir, resolve(workspaceDir), basename(options.gameDir));
+  }
   return server;
 }
 
+/** Prefers `MUJU_PILOT_GAME_DIR` (set on this process's own env by the player adapter, inherited
+ * from the parent CLI — see players.ts) over `--game-dir` argv, so a real pilot game's gameDir
+ * (and therefore its secrets/ path) never has to be written into a player-readable file. `--game-dir`
+ * stays supported for policy-check.ts and manual/test invocations that spawn this gateway directly. */
 function readGameDirArg(argv: string[]): string {
+  const fromEnv = process.env.MUJU_PILOT_GAME_DIR;
+  if (fromEnv) return resolve(fromEnv);
   const index = argv.indexOf('--game-dir');
-  if (index === -1 || !argv[index + 1]) throw new Error('Usage: node --import tsx tools/llm-pilot/gateway.ts --game-dir <dir>');
+  if (index === -1 || !argv[index + 1]) throw new Error('Usage: node --import tsx tools/llm-pilot/gateway.ts --game-dir <dir> (or MUJU_PILOT_GAME_DIR env)');
   return resolve(argv[index + 1]);
 }
 async function main() {

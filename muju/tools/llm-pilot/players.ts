@@ -23,6 +23,7 @@ import os from 'node:os';
 import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { CODEX_BIN, readCodexRollout, stripApiKeys } from './auth';
+import { sumHelperCpuSeconds } from './sandbox';
 import {
   MODEL_CLI_ID, pairById, parseGameId, readJson, writeJson,
   type Effort, type GameId, type ModelId, type Seat, type ToolTier,
@@ -83,17 +84,32 @@ export function playerKindForModel(model: ModelId): PlayerKind {
 }
 function billingRouteFor(kind: PlayerKind) { return kind === 'claude' ? 'claude.ai subscription' : 'ChatGPT subscription'; }
 
-/** Built-in tools per tier (claude). The gateway itself enforces the Muju tool tier. */
-export function claudeToolsFor(tier: ToolTier): string[] {
-  const base = ['Read', 'Write'];
-  return tier === 'tool-builder' ? [...base, 'Bash'] : base;
+/** Built-in tools per tier (claude). The gateway itself enforces the Muju tool tier.
+ * `tool-builder` gets NO native shell: a bare `Bash` tool has no read restriction at all (it
+ * would see anything the operator's own account can, including /Users/ashkie/src and every
+ * game's secrets/), so tool-builder's "write and run your own helper code" instead goes through
+ * the gateway's `muju_run_helper`/`muju_write_file` MCP tools (sandbox.ts), never a real shell. */
+export function claudeToolsFor(_tier: ToolTier): string[] {
+  return ['Read', 'Write'];
 }
-export function codexSandboxFor(tier: ToolTier): 'read-only' | 'workspace-write' {
-  return tier === 'tool-builder' ? 'workspace-write' : 'read-only';
+/** Codex sandbox mode: `read-only` for every tier. `workspace-write` restricts WRITES to the
+ * workspace but leaves READS unrestricted (verified live), so it is never used even for
+ * tool-builder — that tier has no exec/shell tool at all (see `CODEX_SHELL_FEATURES` below) and
+ * writes its own files through the gateway's `muju_write_file` MCP tool instead. */
+export function codexSandboxFor(_tier: ToolTier): 'read-only' | 'workspace-write' {
+  return 'read-only';
 }
-/** The exact command a player CLI uses to launch this game's gateway. */
-export function gatewayCommand(gameDir: string, gatewayPath = DEFAULT_GATEWAY_PATH): { command: string; args: string[] } {
-  return { command: process.execPath, args: ['--import', TSX_LOADER, gatewayPath, '--game-dir', gameDir] };
+/** The exact command a player CLI uses to launch this game's gateway.
+ * `includeGameDirArg: false` omits `--game-dir` from argv (the gateway then requires
+ * `MUJU_PILOT_GAME_DIR` in its own process env instead) — used for real pilot games so the
+ * absolute path to the game's `secrets/` never appears in a player-readable file (Claude writes
+ * `--mcp-config`'s JSON straight into the workspace, where the tier's own `Read` tool can open
+ * it). Defaults to true (unchanged) for policy-check.ts/tests, which spawn the gateway directly
+ * and are not a player-readable surface. */
+export function gatewayCommand(gameDir: string, gatewayPath = DEFAULT_GATEWAY_PATH, opts: { includeGameDirArg?: boolean } = {}): { command: string; args: string[] } {
+  const args = ['--import', TSX_LOADER, gatewayPath];
+  if (opts.includeGameDirArg ?? true) args.push('--game-dir', gameDir);
+  return { command: process.execPath, args };
 }
 
 /** `claude -p` arguments. (`--safe-mode` is NOT used: it also drops `--mcp-config` servers, verified
@@ -124,11 +140,13 @@ function toml(value: string | string[]): string {
  * shell/command execution independent of the MCP gateway's tool-tier scoping — a `bare` seat could
  * `cat` the repo's Hard-engine source, the campaign's secrets/seat.json (same-user file
  * permissions do not block this), or run local analysis the tier is supposed to lack. Disabled for
- * every tier except `tool-builder`, which is the one tier whose whole point is self-written local
- * code — SPEC.md Component C's "known gaps" note that its isolation there is soft, not this flag. */
+ * EVERY tier including `tool-builder` (review fix: `workspace-write` sandbox restricts writes to
+ * the workspace but leaves reads unrestricted, so a native shell under it could still `cat`
+ * anything readable by the operator's account). tool-builder's own local code runs only through
+ * the gateway's sandboxed `muju_run_helper`/`muju_write_file` MCP tools (sandbox.ts), never this. */
 const CODEX_SHELL_FEATURES = ['shell_tool', 'unified_exec', 'unified_exec_tty', 'multi_agent', 'multi_agent_v2'];
 export function codexArgs(opts: { prompt: string; model: string; effort: string; cwd: string; gameDir: string; gatewayPath?: string; tier: ToolTier; resumeSessionId?: string }): string[] {
-  const gateway = gatewayCommand(opts.gameDir, opts.gatewayPath);
+  const gateway = gatewayCommand(opts.gameDir, opts.gatewayPath, { includeGameDirArg: false });
   const common = [
     '-m', opts.model,
     '-c', `model_reasoning_effort=${toml(opts.effort)}`,
@@ -140,7 +158,7 @@ export function codexArgs(opts: { prompt: string; model: string; effort: string;
     '-c', `mcp_servers.muju.default_tools_approval_mode=${toml('approve')}`,
     '-c', `sandbox_mode=${toml(codexSandboxFor(opts.tier))}`,
     '--ignore-user-config', '--ignore-rules', '--json', '--skip-git-repo-check',
-    ...(opts.tier === 'tool-builder' ? [] : CODEX_SHELL_FEATURES.flatMap(feature => ['--disable', feature])),
+    ...CODEX_SHELL_FEATURES.flatMap(feature => ['--disable', feature]),
   ];
   return opts.resumeSessionId
     ? ['exec', 'resume', ...common, opts.resumeSessionId, opts.prompt]
@@ -253,9 +271,14 @@ async function waitForPid(pid: number, pollMs = 2000): Promise<void> {
   while (pidAlive(pid)) await new Promise(resolve => setTimeout(resolve, pollMs));
 }
 
-/** Spawns a detached CLI phase with stdout -> transcript file; resolves with its exit code. */
-function spawnPhase(command: string, args: string[], cwd: string, transcript: string, timeoutMs: number, onPid: (pid: number) => void): Promise<number | null> {
+/** Spawns a detached CLI phase with stdout -> transcript file; resolves with its exit code.
+ * `extraEnv` is merged in AFTER `stripApiKeys()` (never the reverse — it must never reintroduce a
+ * forbidden var) — used to hand the gateway subprocess `MUJU_PILOT_GAME_DIR`/`MUJU_PILOT_WORKSPACE_DIR`
+ * via inherited process env, so those absolute paths never have to appear in a player-readable
+ * file (`gatewayCommand`'s `includeGameDirArg: false`). */
+function spawnPhase(command: string, args: string[], cwd: string, transcript: string, timeoutMs: number, onPid: (pid: number) => void, extraEnv: Record<string, string> = {}): Promise<number | null> {
   const { env } = stripApiKeys();
+  Object.assign(env, extraEnv);
   const out = openSync(transcript, 'a'), err = openSync(`${transcript}.stderr`, 'a');
   return new Promise((resolve, reject) => {
     const child = spawn(command, args, { cwd, env, detached: true, stdio: ['ignore', out, err] });
@@ -330,9 +353,16 @@ export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
   await writeFile(path.join(workspace, 'reflection-template.md'), await readFile(templatePath, 'utf8'), 'utf8');
   const playPrompt = renderTemplate(await readFile(path.join(HERE, 'prompts', 'player.md'), 'utf8'), vars);
   const reflectPrompt = renderTemplate(await readFile(path.join(HERE, 'prompts', 'reflection.md'), 'utf8'), vars);
-  const gateway = gatewayCommand(args.gameDir, args.gatewayPath);
+  // `includeGameDirArg: false`: the gateway learns gameDir/workspace from this CLI phase's own
+  // process env (set below on every spawnPhase call, inherited by the gateway subprocess), never
+  // from an argv baked into mcp-config.json — that file sits in the workspace where even a
+  // `tool-builder` seat's (unrestricted-outside-workspace) `Read` tool can open it, and the
+  // absolute path to `secrets/` (seat tokens, the engine's own token) must never be discoverable
+  // there (review finding).
+  const gateway = gatewayCommand(args.gameDir, args.gatewayPath, { includeGameDirArg: false });
   const mcpConfigPath = path.join(workspace, 'mcp-config.json');
   await writeFile(mcpConfigPath, JSON.stringify({ mcpServers: { muju: { command: gateway.command, args: gateway.args } } }, null, 2), 'utf8');
+  const gatewayEnv = { MUJU_PILOT_GAME_DIR: args.gameDir, MUJU_PILOT_WORKSPACE_DIR: workspace };
   const isGameOver = args.isGameOver ?? (() => defaultIsGameOver(args.gameDir));
   const maxContinuations = args.maxContinuations ?? 6;
 
@@ -364,7 +394,7 @@ export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
     const [command, cliArgs] = kind === 'claude'
       ? ['claude', claudeArgs({ prompt, model: cliModel, effort: args.effort, cwd: workspace, mcpConfigPath, tier: args.tier, resumeSessionId, sessionId: state.sessionId ?? undefined })]
       : [CODEX_BIN, codexArgs({ prompt, model: cliModel, effort: args.effort, cwd: workspace, gameDir: args.gameDir, gatewayPath: args.gatewayPath, tier: args.tier, resumeSessionId })];
-    const exitCode = await spawnPhase(command, cliArgs, workspace, transcript, timeoutMs, pid => { record.pid = pid; save(); args.onSpawn?.(pid); });
+    const exitCode = await spawnPhase(command, cliArgs, workspace, transcript, timeoutMs, pid => { record.pid = pid; save(); args.onSpawn?.(pid); }, gatewayEnv);
     await finishPhase(record, exitCode);
     return record;
   };
@@ -428,9 +458,13 @@ export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
   const auditFlagCount = existsSync(auditPath) ? (await readFile(auditPath, 'utf8')).split('\n').filter(Boolean).length : 0;
   if (auditFlagCount) note(`${auditFlagCount} repo-path reference(s) in the player's stream; see player/audit.log.`);
 
+  // tool-builder only: every sandboxed helper run's CPU seconds, recorded independently by the
+  // gateway's `muju_run_helper` tool (sandbox.ts) to `player/helper-usage.jsonl`, folded into the
+  // game's usage record here.
+  const helperUsage = args.tier === 'tool-builder' ? sumHelperCpuSeconds(args.gameDir) : undefined;
   await writeFile(path.join(artifactDir, 'usage.json'), JSON.stringify({
     gameId: args.gameId, model: cliModel, kind, tier: args.tier, seat: args.seat, workspace, snapshotDir: args.snapshotDir,
-    sessionId: state.sessionId, phases: state.phases, auditFlagCount, billingViolations, wrongModel,
+    sessionId: state.sessionId, phases: state.phases, auditFlagCount, billingViolations, wrongModel, helperUsage,
   }, null, 2), 'utf8');
 
   const turns = await countTurnsFromActionsLog(path.join(args.gameDir, "actions.jsonl"));

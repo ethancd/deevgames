@@ -17,13 +17,14 @@ describe('playerKindForModel', () => {
 });
 
 describe('tool-tier -> CLI capability mapping', () => {
-  it('every tier gets Read/Write; only tool-builder also gets Bash', () => {
-    for (const tier of ['bare', 'harnessed', 'centaur'] as const) {
+  it('every tier — including tool-builder — gets Read/Write only, never a native shell (review fix: '
+    + 'a bare Bash/workspace-write exec tool has no read restriction, so same-user file access made '
+    + 'tool-builder non-isolated; helper execution instead goes through the gateway\'s sandboxed '
+    + 'muju_run_helper/muju_write_file MCP tools)', () => {
+    for (const tier of ['bare', 'harnessed', 'centaur', 'tool-builder'] as const) {
       expect(claudeToolsFor(tier)).toEqual(['Read', 'Write']);
       expect(codexSandboxFor(tier)).toBe('read-only');
     }
-    expect(claudeToolsFor('tool-builder')).toEqual(['Read', 'Write', 'Bash']);
-    expect(codexSandboxFor('tool-builder')).toBe('workspace-write');
   });
 });
 
@@ -103,23 +104,45 @@ describe('CLI argument builders (verified live against claude 2.1.280 / codex 0.
     expect(resumed).toContain('--resume');
     expect(resumed).not.toContain('--session-id');
   });
-  it('codex: ChatGPT login forced, operator config ignored, sandbox pinned on resume too', async () => {
+  it('codex: ChatGPT login forced, operator config ignored, read-only sandbox for every tier (review fix: '
+    + 'workspace-write left reads unrestricted, so tool-builder no longer uses it)', async () => {
     const { codexArgs } = await import('../../tools/llm-pilot/players');
     const fresh = codexArgs({ prompt: 'p', model: 'gpt-6-luna', effort: 'high', cwd: '/tmp/w', gameDir: '/tmp/g', tier: 'centaur' });
     expect(fresh).toEqual(expect.arrayContaining(['--ignore-user-config', 'forced_login_method="chatgpt"', 'model_reasoning_effort="high"', 'sandbox_mode="read-only"', '--sandbox', 'read-only']));
     const resumed = codexArgs({ prompt: 'p', model: 'gpt-6-luna', effort: 'high', cwd: '/tmp/w', gameDir: '/tmp/g', tier: 'tool-builder', resumeSessionId: 'tid' });
     expect(resumed.slice(0, 2)).toEqual(['exec', 'resume']);
     expect(resumed.slice(-2)).toEqual(['tid', 'p']);
-    expect(resumed).toContain('sandbox_mode="workspace-write"');
+    expect(resumed).toContain('sandbox_mode="read-only"');
   });
-  it('codex: disables shell_tool/unified_exec/multi_agent for every tier except tool-builder (review fix: same-user file access made these tiers non-isolated)', async () => {
+  it('codex: disables shell_tool/unified_exec/multi_agent for EVERY tier including tool-builder (review fix: '
+    + 'a native shell under workspace-write could still read anything readable by the operator\'s own account; '
+    + 'tool-builder\'s own code now runs only through the gateway\'s sandboxed muju_run_helper/muju_write_file)', async () => {
     const { codexArgs } = await import('../../tools/llm-pilot/players');
-    for (const tier of ['bare', 'harnessed', 'centaur'] as const) {
+    for (const tier of ['bare', 'harnessed', 'centaur', 'tool-builder'] as const) {
       const args = codexArgs({ prompt: 'p', model: 'gpt-6-luna', effort: 'low', cwd: '/tmp/w', gameDir: '/tmp/g', tier });
       expect(args).toEqual(expect.arrayContaining(['--disable', 'shell_tool', '--disable', 'unified_exec', '--disable', 'multi_agent']));
     }
-    const toolBuilder = codexArgs({ prompt: 'p', model: 'gpt-6-luna', effort: 'high', cwd: '/tmp/w', gameDir: '/tmp/g', tier: 'tool-builder' });
-    expect(toolBuilder).not.toContain('--disable');
+  });
+  it('codex: the gateway command never includes --game-dir (the absolute secrets/ path must not reach '
+    + 'a player-readable surface); the gateway instead relies on MUJU_PILOT_GAME_DIR inherited env', async () => {
+    const { codexArgs } = await import('../../tools/llm-pilot/players');
+    const args = codexArgs({ prompt: 'p', model: 'gpt-6-luna', effort: 'low', cwd: '/tmp/w', gameDir: '/tmp/g/secret-path', tier: 'tool-builder' });
+    expect(args.join(' ')).not.toContain('/tmp/g/secret-path');
+    expect(args.join(' ')).not.toContain('--game-dir');
+  });
+});
+
+describe('gatewayCommand', () => {
+  it('includes --game-dir by default (policy-check.ts, tests: not a player-readable surface)', async () => {
+    const { gatewayCommand } = await import('../../tools/llm-pilot/players');
+    const { args } = gatewayCommand('/tmp/g');
+    expect(args).toEqual(expect.arrayContaining(['--game-dir', '/tmp/g']));
+  });
+  it('omits --game-dir when includeGameDirArg is false (real pilot games)', async () => {
+    const { gatewayCommand } = await import('../../tools/llm-pilot/players');
+    const { args } = gatewayCommand('/tmp/g', undefined, { includeGameDirArg: false });
+    expect(args).not.toContain('--game-dir');
+    expect(args.join(' ')).not.toContain('/tmp/g');
   });
 });
 

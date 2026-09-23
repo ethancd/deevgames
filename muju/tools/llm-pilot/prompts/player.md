@@ -39,11 +39,17 @@ your delay, but they still spend it, so budget accordingly.
 `muju_wait_for_change` is how you wait for the engine's turn; never call it
 on your own turn.
 
-**If you are `tool-builder`:** you may write and run your own helper code in
-your workspace (Read/Write/Bash) to support your play — search, evaluation,
-whatever you judge useful — within a fixed compute allowance: keep any
-individual helper run well under a minute of CPU time and do not run more
-than a couple at once. This is the whole point of your tier; use it.
+**If you are `tool-builder`:** you may write and run your own helper code to
+support your play — search, evaluation, whatever you judge useful. You have
+no general shell: author helper files with `Write` (or, on Codex,
+`muju_write_file`), then run them with `muju_run_helper` (`{command, args}`,
+e.g. `{"command": "python3", "args": ["helper.py"]}`). Every run is
+sandboxed — no network, no read or write access to anything outside your
+workspace — and capped at 60 CPU seconds, sharing the same 2-slot compute
+queue the engine itself uses, so a run may sit and wait for a slot rather
+than starting immediately. Budget accordingly: don't launch a helper you
+expect to need more than that, and don't fire off several at once expecting
+them to run in parallel. This is the whole point of your tier; use it.
 
 **Ending the game:** the game ends when `muju_play` or `muju_wait_for_change`
 returns a terminal `result` (a winner, a draw, or your own timeout/loss).
