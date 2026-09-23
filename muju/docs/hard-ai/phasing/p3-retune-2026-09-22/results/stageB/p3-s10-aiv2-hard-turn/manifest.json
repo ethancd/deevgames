@@ -1,0 +1,531 @@
+{
+  "schema": "muju-ladder-manifest-v1",
+  "status": "complete",
+  "a": "hard@env",
+  "b": "aiv2-hard-turn",
+  "aConfigHash": "hard:env:wall:6000#92e00e1ff5061a7883c27f84cd9de9f671e63af26f01a9e6889f4e4992a3cde6",
+  "bConfigHash": "aiv2-turn:hard:wall:6000#30a33d0306e8e0035e75fdbc876a5ce595361aace90f085a7343f978c0e95e0f",
+  "aResolvedConfig": {
+    "rulesVersion": "muju-phasing-3",
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 16,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 8,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": 0,
+          "2": 91,
+          "3": 2,
+          "4": -7187,
+          "5": 59,
+          "6": 0,
+          "7": 7,
+          "8": 0,
+          "9": -291,
+          "10": 11,
+          "11": 0,
+          "12": 0,
+          "13": -958,
+          "14": -431,
+          "15": 479,
+          "16": 216,
+          "17": -20,
+          "18": -55,
+          "19": 0,
+          "20": 0,
+          "21": 0,
+          "22": 0,
+          "23": 100,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "27": 0,
+          "28": -59,
+          "29": -59,
+          "30": 0,
+          "31": 0,
+          "32": 0,
+          "33": 49,
+          "34": -59,
+          "35": -44,
+          "36": -58,
+          "37": 219,
+          "38": 0,
+          "39": 0,
+          "40": 0,
+          "41": 0,
+          "42": 0,
+          "43": 0,
+          "44": -600,
+          "45": -197,
+          "46": -197,
+          "47": -958,
+          "48": -359,
+          "49": 0,
+          "50": -73,
+          "51": 0,
+          "52": 0,
+          "53": 0,
+          "54": 0,
+          "55": 0,
+          "56": 0,
+          "57": 0,
+          "58": 1,
+          "59": 0,
+          "60": 0,
+          "61": -104
+        },
+        "material": {
+          "0": 300,
+          "1": 984,
+          "2": 2108,
+          "3": 300,
+          "4": 984,
+          "5": 2108,
+          "6": 400,
+          "7": 1124,
+          "8": 2248,
+          "9": 400,
+          "10": 1124,
+          "11": 2248,
+          "12": 500,
+          "13": 1265,
+          "14": 2389,
+          "15": 500,
+          "16": 1265,
+          "17": 2389
+        },
+        "version": 2,
+        "featureSchema": "muju-phasing-eval-1",
+        "label": "p3-s10"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0,
+        "formatVersion": 3,
+        "weightsKey": "",
+        "mapKey": "",
+        "rulesKey": ""
+      }
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 6000,
+      "allocation": "whole-turn",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "bResolvedConfig": {
+    "rulesVersion": "muju-phasing-3",
+    "engine": "aiv2-turn",
+    "difficulty": "hard",
+    "fast": false,
+    "search": {
+      "mctsIterations": 1200,
+      "mctsTimeLimit": 3000,
+      "beamWidth": 50,
+      "outputPlans": 20,
+      "progressiveWideningAlpha": 0.5,
+      "tacticalDepth": 2,
+      "tacticalNodes": 600000,
+      "fixedWork": 0,
+      "scaleToBudget": false
+    },
+    "budget": {
+      "mode": "wall",
+      "fixedWork": 0,
+      "turnMs": 6000,
+      "allocation": "whole-turn",
+      "shippedTurnBudgetMs": 8000,
+      "overridesPresetTimeLimit": true
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat-lazy",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false,
+    "tacticalSolver": "wasm-tactics-or-reference-fallback"
+  },
+  "work": "wall:6000",
+  "seed": 20260971,
+  "pairs": 16,
+  "shards": 4,
+  "handicaps": [
+    0
+  ],
+  "legality": "as-shipped",
+  "sprt": null,
+  "openings": {
+    "path": "lab/hard-ai/ladder/openings/p1-dev.jsonl",
+    "sha256": "a58ca9d8aad304d82824ef38d7b12c776ea1547ba61a10cbfba1e387e78335c7",
+    "ids": [
+      "p1-g6-s2",
+      "p1-g5-s85",
+      "p1-g6-s310",
+      "p1-g5-s17",
+      "p1-g4-s420",
+      "p1-g7-s75",
+      "p1-g5-s135",
+      "p1-g8-s15",
+      "p1-g3-s4",
+      "p1-g7-s46",
+      "p1-g4-s72",
+      "p1-g6-s5",
+      "p1-g3-s570",
+      "p1-g4-s280",
+      "p1-g7-s155",
+      "p1-g5-s485",
+      "p1-g6-s410",
+      "p1-g7-s535",
+      "p1-g7-s7",
+      "p1-g4-s560",
+      "p1-g4-s380",
+      "p1-g4-s540",
+      "p1-g4-s215",
+      "p1-g4-s340",
+      "p1-g6-s130",
+      "p1-g6-s190",
+      "p1-g6-s110",
+      "p1-g8-s31",
+      "p1-g5-s245",
+      "p1-g6-s345",
+      "p1-g4-s400",
+      "p1-g5-s145",
+      "p1-g6-s305",
+      "p1-g4-s240",
+      "p1-g8-s95",
+      "p1-g6-s395",
+      "p1-g7-s527",
+      "p1-g4-s260",
+      "p1-g4-s100",
+      "p1-g7-s187",
+      "p1-g6-s490",
+      "p1-g5-s385",
+      "p1-g7-s355",
+      "p1-g7-s127",
+      "p1-g5-s165",
+      "p1-g4-s320",
+      "p1-g4-s200",
+      "p1-g3-s3"
+    ],
+    "count": 48,
+    "skip": null,
+    "selectedIds": null,
+    "used": [
+      "p1-g6-s2",
+      "p1-g5-s85",
+      "p1-g6-s310",
+      "p1-g5-s17",
+      "p1-g4-s420",
+      "p1-g7-s75",
+      "p1-g5-s135",
+      "p1-g8-s15",
+      "p1-g3-s4",
+      "p1-g7-s46",
+      "p1-g4-s72",
+      "p1-g6-s5",
+      "p1-g3-s570",
+      "p1-g4-s280",
+      "p1-g7-s155",
+      "p1-g5-s485"
+    ]
+  },
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "frozen": true
+  },
+  "replays": false,
+  "resume": false,
+  "schedule": [
+    {
+      "pairId": "p1-g6-s2:0:0",
+      "pairIndex": 0,
+      "openingId": "p1-g6-s2",
+      "handicap": 0,
+      "seed": 2684007917
+    },
+    {
+      "pairId": "p1-g5-s85:0:1",
+      "pairIndex": 1,
+      "openingId": "p1-g5-s85",
+      "handicap": 0,
+      "seed": 3252048101
+    },
+    {
+      "pairId": "p1-g6-s310:0:2",
+      "pairIndex": 2,
+      "openingId": "p1-g6-s310",
+      "handicap": 0,
+      "seed": 3497672718
+    },
+    {
+      "pairId": "p1-g5-s17:0:3",
+      "pairIndex": 3,
+      "openingId": "p1-g5-s17",
+      "handicap": 0,
+      "seed": 3804287269
+    },
+    {
+      "pairId": "p1-g4-s420:0:4",
+      "pairIndex": 4,
+      "openingId": "p1-g4-s420",
+      "handicap": 0,
+      "seed": 2907565741
+    },
+    {
+      "pairId": "p1-g7-s75:0:5",
+      "pairIndex": 5,
+      "openingId": "p1-g7-s75",
+      "handicap": 0,
+      "seed": 4156991646
+    },
+    {
+      "pairId": "p1-g5-s135:0:6",
+      "pairIndex": 6,
+      "openingId": "p1-g5-s135",
+      "handicap": 0,
+      "seed": 3049920548
+    },
+    {
+      "pairId": "p1-g8-s15:0:7",
+      "pairIndex": 7,
+      "openingId": "p1-g8-s15",
+      "handicap": 0,
+      "seed": 112117693
+    },
+    {
+      "pairId": "p1-g3-s4:0:8",
+      "pairIndex": 8,
+      "openingId": "p1-g3-s4",
+      "handicap": 0,
+      "seed": 1878222010
+    },
+    {
+      "pairId": "p1-g7-s46:0:9",
+      "pairIndex": 9,
+      "openingId": "p1-g7-s46",
+      "handicap": 0,
+      "seed": 2362143362
+    },
+    {
+      "pairId": "p1-g4-s72:0:10",
+      "pairIndex": 10,
+      "openingId": "p1-g4-s72",
+      "handicap": 0,
+      "seed": 1912238924
+    },
+    {
+      "pairId": "p1-g6-s5:0:11",
+      "pairIndex": 11,
+      "openingId": "p1-g6-s5",
+      "handicap": 0,
+      "seed": 3634761224
+    },
+    {
+      "pairId": "p1-g3-s570:0:12",
+      "pairIndex": 12,
+      "openingId": "p1-g3-s570",
+      "handicap": 0,
+      "seed": 1658453986
+    },
+    {
+      "pairId": "p1-g4-s280:0:13",
+      "pairIndex": 13,
+      "openingId": "p1-g4-s280",
+      "handicap": 0,
+      "seed": 802461319
+    },
+    {
+      "pairId": "p1-g7-s155:0:14",
+      "pairIndex": 14,
+      "openingId": "p1-g7-s155",
+      "handicap": 0,
+      "seed": 4060064850
+    },
+    {
+      "pairId": "p1-g5-s485:0:15",
+      "pairIndex": 15,
+      "openingId": "p1-g5-s485",
+      "handicap": 0,
+      "seed": 2687316492
+    }
+  ],
+  "resumedPairIds": [],
+  "sprtStop": null,
+  "rules": {
+    "rulesVersion": "muju-phasing-3",
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "argv": [
+    "--a",
+    "hard@env",
+    "--b",
+    "aiv2-hard-turn",
+    "--work",
+    "wall:6000",
+    "--handicaps",
+    "0",
+    "--pairs",
+    "16",
+    "--seed",
+    "20260971",
+    "--openings",
+    "lab/hard-ai/ladder/openings/p1-dev.jsonl",
+    "--replays",
+    "off",
+    "--shards",
+    "4",
+    "--out",
+    "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s10-aiv2-hard-turn"
+  ],
+  "git": "c301b3d82684fcedc23698cb3cde287b96d9b959",
+  "gitDirty": true,
+  "baseline": {
+    "ai": "26883482e4adadd10318e68a39f1a4512a68f53a3565cf8eab937ef4fe30f777",
+    "game": "8f2994b8e5f081ea1cea8e2f7306757b7d73cb93022b230e5ed2208259e95224",
+    "wasm": "6d3cf33382ff94d81ae32194c3af4849bff81115d1b6f7f4a9d4ac45c795573c",
+    "deps": "b17ce8cae69cdede37f74f14139e1afee7f9eb6e17676c391239a8ff985cbf45"
+  },
+  "wasmSha256": "6d3cf33382ff94d81ae32194c3af4849bff81115d1b6f7f4a9d4ac45c795573c",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpuCount": 12,
+  "loadavg": [
+    2.57568359375,
+    4.22265625,
+    4.7265625
+  ],
+  "at": "2026-09-23T10:15:38.110Z",
+  "finishedAt": "2026-09-23T10:32:08.481Z",
+  "wallMs": 990537,
+  "counts": {
+    "scheduledPairs": 16,
+    "completedPairs": 16,
+    "games": 32,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "voided": false,
+  "voidReason": null,
+  "error": null
+}

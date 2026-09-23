@@ -1,0 +1,14 @@
+4 of 4 rows to run, concurrency 2
+batch 1: C-control-Rush, C-p3-s08-Rush
+done: C-control-Rush
+done: C-p3-s08-Rush
+batch 2: C-hv-mine-Rush, C-p3-s18-Rush
+done: C-hv-mine-Rush
+done: C-p3-s18-Rush
+sweep: all rows in this plan attempted
+skip (already complete): C-control-Rush
+skip (already complete): C-p3-s08-Rush
+skip (already complete): C-hv-mine-Rush
+skip (already complete): C-p3-s18-Rush
+0 of 4 rows to run, concurrency 2
+sweep: all rows in this plan attempted

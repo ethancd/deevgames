@@ -1,0 +1,16 @@
+4 of 4 rows to run, concurrency 1
+batch 1: C-control-aiv2-hard-turn
+done: C-control-aiv2-hard-turn
+batch 2: C-p3-s08-aiv2-hard-turn
+done: C-p3-s08-aiv2-hard-turn
+batch 3: C-hv-mine-aiv2-hard-turn
+done: C-hv-mine-aiv2-hard-turn
+batch 4: C-p3-s18-aiv2-hard-turn
+done: C-p3-s18-aiv2-hard-turn
+sweep: all rows in this plan attempted
+skip (already complete): C-control-aiv2-hard-turn
+skip (already complete): C-p3-s08-aiv2-hard-turn
+skip (already complete): C-hv-mine-aiv2-hard-turn
+skip (already complete): C-p3-s18-aiv2-hard-turn
+0 of 4 rows to run, concurrency 1
+sweep: all rows in this plan attempted

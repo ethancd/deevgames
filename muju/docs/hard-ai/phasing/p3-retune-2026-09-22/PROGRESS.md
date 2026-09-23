@@ -114,3 +114,78 @@ Every arm, including `control`, beat the pure BankExcess/BankLiquid discount alo
 ranks 26th of 29) -- the positional/kill-clock knobs are doing real work, not just the cash
 discount. **STOPPING HERE per coordinator instruction (17:xx): Stage B and C are NOT started.**
 See `docs/changes/2026-09-22-p3-retune-laneT.md` for the resume handoff.
+
+## Overnight chain (coordinator, 2026-09-23T08:16:25Z, HEAD c301b3d8)
+
+Owner authorised an unattended Stage B -> Stage C run at 8 heavy slots (08:15Z, 01:15 local, 2026-09-23). Concurrency: aiv2 rows one at a time at shards 4 (MUJU_HEAVY_SLOTS=4); fixed rows two at a time at shards 4 (MUJU_HEAVY_SLOTS=8); the two sweeps run side by side and share the slot directory, so at most 8 games are live and at most 4 of them are aiv2 games. VOID aiv2 rows are set aside and re-run alone at shards 2. Selection rules as in lane T report sections 8-9; this script (`scripts/chain-BC.py`) applies them mechanically and records the result below.
+- control | Rush | B | 3-0-13 | score 0.188 | spend 98% | promo/g 2.44 | mined 146/283 | upkeepElim 0% | illegal 0 | valid | load 16.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/control-Rush]
+- control | Balanced | B | 15-0-1 | score 0.938 | spend 76% | promo/g 2.31 | mined 65/58 | upkeepElim 0% | illegal 0 | valid | load 17.7 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/control-Balanced]
+- control | Expand | B | 16-0-0 | score 1.000 | spend 69% | promo/g 2.56 | mined 89/63 | upkeepElim 6% | illegal 0 | valid | load 22.0 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/control-Expand]
+- hv-mine | Rush | B | 9-0-7 | score 0.563 | spend 93% | promo/g 4.44 | mined 205/219 | upkeepElim 0% | illegal 0 | valid | load 17.9 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-mine-Rush]
+- hv-mine | Balanced | B | 15-1-0 | score 0.969 | spend 74% | promo/g 2.75 | mined 76/59 | upkeepElim 13% | illegal 0 | valid | load 10.7 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-mine-Balanced]
+- hv-mine | Expand | B | 16-0-0 | score 1.000 | spend 69% | promo/g 2.81 | mined 143/66 | upkeepElim 0% | illegal 0 | valid | load 10.7 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-mine-Expand]
+- p3-s18 | Rush | B | 8-0-8 | score 0.500 | spend 95% | promo/g 4.25 | mined 177/200 | upkeepElim 6% | illegal 0 | valid | load 12.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s18-Rush]
+- p3-s18 | Balanced | B | 15-0-1 | score 0.938 | spend 78% | promo/g 2.88 | mined 65/60 | upkeepElim 6% | illegal 0 | valid | load 11.4 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s18-Balanced]
+- p3-s18 | Expand | B | 16-0-0 | score 1.000 | spend 70% | promo/g 2.63 | mined 90/58 | upkeepElim 0% | illegal 0 | valid | load 10.7 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s18-Expand]
+- hv-blocks | Rush | B | 6-0-10 | score 0.375 | spend 96% | promo/g 4.19 | mined 162/242 | upkeepElim 0% | illegal 0 | valid | load 10.5 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-blocks-Rush]
+- hv-blocks | Balanced | B | 15-0-1 | score 0.938 | spend 77% | promo/g 3.19 | mined 72/56 | upkeepElim 0% | illegal 0 | valid | load 9.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-blocks-Balanced]
+- hv-blocks | Expand | B | 16-0-0 | score 1.000 | spend 63% | promo/g 2.13 | mined 136/75 | upkeepElim 6% | illegal 0 | valid | load 9.0 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-blocks-Expand]
+- control | aiv2-hard-turn | B | 27-0-5 | score 0.844 | spend 72% | promo/g 2.13 | mined 100/69 | upkeepElim 6% | illegal 0 | valid | load 13.4 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/control-aiv2-hard-turn]
+- hv-clock | Rush | B | 7-0-9 | score 0.438 | spend 96% | promo/g 4.13 | mined 148/232 | upkeepElim 0% | illegal 0 | valid | load 8.7 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-clock-Rush]
+- hv-clock | Balanced | B | 15-0-1 | score 0.938 | spend 74% | promo/g 2.81 | mined 83/58 | upkeepElim 6% | illegal 0 | valid | load 7.9 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-clock-Balanced]
+- hv-clock | Expand | B | 16-0-0 | score 1.000 | spend 67% | promo/g 2.19 | mined 120/62 | upkeepElim 0% | illegal 0 | valid | load 11.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-clock-Expand]
+- p3-s19 | Rush | B | 4-0-12 | score 0.250 | spend 100% | promo/g 5.31 | mined 158/264 | upkeepElim 0% | illegal 0 | valid | load 13.2 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s19-Rush]
+- p3-s19 | Balanced | B | 15-0-1 | score 0.938 | spend 85% | promo/g 3.25 | mined 61/58 | upkeepElim 0% | illegal 0 | valid | load 19.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s19-Balanced]
+- p3-s19 | Expand | B | 16-0-0 | score 1.000 | spend 78% | promo/g 2.69 | mined 67/54 | upkeepElim 0% | illegal 0 | valid | load 18.9 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s19-Expand]
+- p3-s08 | Rush | B | 8-0-8 | score 0.500 | spend 96% | promo/g 3.81 | mined 131/212 | upkeepElim 0% | illegal 0 | valid | load 22.2 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s08-Rush]
+- p3-s08 | Balanced | B | 15-0-1 | score 0.938 | spend 77% | promo/g 3.44 | mined 86/72 | upkeepElim 13% | illegal 0 | valid | load 29.4 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s08-Balanced]
+- p3-s08 | Expand | B | 16-0-0 | score 1.000 | spend 71% | promo/g 2.13 | mined 87/58 | upkeepElim 0% | illegal 0 | valid | load 14.9 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s08-Expand]
+- p3-s21 | Rush | B | 9-0-7 | score 0.563 | spend 94% | promo/g 3.94 | mined 181/196 | upkeepElim 0% | illegal 0 | valid | load 12.0 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s21-Rush]
+- p3-s21 | Balanced | B | 16-0-0 | score 1.000 | spend 66% | promo/g 2.06 | mined 102/63 | upkeepElim 0% | illegal 0 | valid | load 13.9 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s21-Balanced]
+- p3-s21 | Expand | B | 16-0-0 | score 1.000 | spend 66% | promo/g 2.88 | mined 131/67 | upkeepElim 0% | illegal 0 | valid | load 13.8 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s21-Expand]
+- hv-mine | aiv2-hard-turn | B | 24-0-8 | score 0.750 | spend 78% | promo/g 2.94 | mined 98/66 | upkeepElim 6% | illegal 0 | valid | load 14.0 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-mine-aiv2-hard-turn]
+- p3-s10 | Rush | B | 7-0-9 | score 0.438 | spend 98% | promo/g 3.88 | mined 176/248 | upkeepElim 0% | illegal 0 | valid | load 12.0 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s10-Rush]
+- p3-s10 | Balanced | B | 15-0-1 | score 0.938 | spend 77% | promo/g 2.81 | mined 71/59 | upkeepElim 0% | illegal 0 | valid | load 15.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s10-Balanced]
+- p3-s10 | Expand | B | 16-0-0 | score 1.000 | spend 66% | promo/g 1.88 | mined 105/57 | upkeepElim 0% | illegal 0 | valid | load 8.2 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s10-Expand]
+- p3-s18 | aiv2-hard-turn | B | 25-0-7 | score 0.781 | spend 76% | promo/g 2.66 | mined 95/73 | upkeepElim 9% | illegal 0 | valid | load 7.8 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s18-aiv2-hard-turn]
+- hv-blocks | aiv2-hard-turn | B | 25-0-7 | score 0.781 | spend 75% | promo/g 2.91 | mined 104/71 | upkeepElim 0% | illegal 0 | valid | load 6.9 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-blocks-aiv2-hard-turn]
+- hv-clock | aiv2-hard-turn | B | 22-0-10 | score 0.688 | spend 75% | promo/g 3.13 | mined 110/76 | upkeepElim 3% | illegal 0 | valid | load 5.4 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/hv-clock-aiv2-hard-turn]
+- p3-s19 | aiv2-hard-turn | B | 26-0-6 | score 0.813 | spend 81% | promo/g 3.69 | mined 93/77 | upkeepElim 6% | illegal 0 | valid | load 5.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s19-aiv2-hard-turn]
+- p3-s08 | aiv2-hard-turn | B | 27-0-5 | score 0.844 | spend 85% | promo/g 3.84 | mined 94/73 | upkeepElim 3% | illegal 0 | valid | load 5.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s08-aiv2-hard-turn]
+- p3-s21 | aiv2-hard-turn | B | 23-0-9 | score 0.719 | spend 84% | promo/g 3.72 | mined 81/68 | upkeepElim 0% | illegal 0 | valid | load 5.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s21-aiv2-hard-turn]
+- p3-s10 | aiv2-hard-turn | B | 22-0-10 | score 0.688 | spend 77% | promo/g 3.03 | mined 104/79 | upkeepElim 0% | illegal 0 | valid | load 5.3 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageB/p3-s10-aiv2-hard-turn]
+
+### Stage B table (p1-dev, seed 20260971; aiv2 16 pairs wall:6000, others 8 pairs fixed:60000)
+
+| arm | aiv2-hard-turn W-D-L / score | Rush W-D-L / score | Balanced W-D-L / score | Expand W-D-L / score | sum(aiv2+Rush) | mined hard/opp (aiv2) | aiv2 winTypes |
+|---|---|---|---|---|---|---|---|
+| control | 27-0-5 / 0.844 | 3-0-13 / 0.188 | 15-0-1 / 0.938 | 16-0-0 / 1.000 | 1.031 | 100/69 | elimination 7, home-checkmate 23, upkeep-elimination 2 |
+| hv-mine | 24-0-8 / 0.750 | 9-0-7 / 0.562 | 15-1-0 / 0.969 | 16-0-0 / 1.000 | 1.312 | 98/66 | elimination 5, home-checkmate 25, upkeep-elimination 2 |
+| p3-s18 | 25-0-7 / 0.781 | 8-0-8 / 0.500 | 15-0-1 / 0.938 | 16-0-0 / 1.000 | 1.281 | 95/73 | elimination 8, home-checkmate 20, kill-clock 1, upkeep-elimination 3 |
+| hv-blocks | 25-0-7 / 0.781 | 6-0-10 / 0.375 | 15-0-1 / 0.938 | 16-0-0 / 1.000 | 1.156 | 104/71 | elimination 5, home-checkmate 27 |
+| hv-clock | 22-0-10 / 0.688 | 7-0-9 / 0.438 | 15-0-1 / 0.938 | 16-0-0 / 1.000 | 1.125 | 110/76 | elimination 3, home-checkmate 28, upkeep-elimination 1 |
+| p3-s19 | 26-0-6 / 0.812 | 4-0-12 / 0.250 | 15-0-1 / 0.938 | 16-0-0 / 1.000 | 1.062 | 92/77 | elimination 6, home-checkmate 24, upkeep-elimination 2 |
+| p3-s08 | 27-0-5 / 0.844 | 8-0-8 / 0.500 | 15-0-1 / 0.938 | 16-0-0 / 1.000 | 1.344 | 94/73 | elimination 5, home-checkmate 26, upkeep-elimination 1 |
+| p3-s21 | 23-0-9 / 0.719 | 9-0-7 / 0.562 | 16-0-0 / 1.000 | 16-0-0 / 1.000 | 1.281 | 80/68 | elimination 9, home-checkmate 23 |
+| p3-s10 | 22-0-10 / 0.688 | 7-0-9 / 0.438 | 15-0-1 / 0.938 | 16-0-0 / 1.000 | 1.125 | 104/79 | elimination 11, home-checkmate 20, kill-clock 1 |
+
+Regression guard (Balanced >= control 0.938 AND Expand >= control 1.000): dropped none. Ranking of survivors by sum(aiv2+Rush), ties by aiv2 score then Stage A order: ['p3-s08', 'hv-mine', 'p3-s18', 'p3-s21', 'hv-blocks', 'hv-clock', 'p3-s10', 'p3-s19']. **Stage C set: ['p3-s08', 'hv-mine', 'p3-s18']** (+ control).
+- control | Rush | C | 27-0-37 | score 0.422 | spend 95% | promo/g 1.88 | mined 118/226 | upkeepElim 2% | illegal 0 | valid | load 11.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/control-Rush]
+- p3-s08 | Rush | C | 29-1-34 | score 0.461 | spend 98% | promo/g 4.08 | mined 130/223 | upkeepElim 2% | illegal 0 | valid | load 11.0 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/p3-s08-Rush]
+- hv-mine | Rush | C | 30-0-34 | score 0.469 | spend 97% | promo/g 3.78 | mined 154/224 | upkeepElim 3% | illegal 0 | valid | load 11.8 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/hv-mine-Rush]
+- p3-s18 | Rush | C | 29-0-35 | score 0.453 | spend 98% | promo/g 3.69 | mined 161/219 | upkeepElim 3% | illegal 0 | valid | load 11.1 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/p3-s18-Rush]
+- control | aiv2-hard-turn | C | 52-0-12 | score 0.813 | spend 76% | promo/g 2.16 | mined 95/76 | upkeepElim 5% | illegal 0 | valid | load 10.9 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/control-aiv2-hard-turn]
+- p3-s08 | aiv2-hard-turn | C | 49-1-14 | score 0.773 | spend 88% | promo/g 4.06 | mined 90/76 | upkeepElim 0% | illegal 0 | valid | load 6.3 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/p3-s08-aiv2-hard-turn]
+- hv-mine | aiv2-hard-turn | C | 46-0-18 | score 0.719 | spend 79% | promo/g 3.09 | mined 94/66 | upkeepElim 2% | illegal 0 | valid | load 5.2 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/hv-mine-aiv2-hard-turn]
+- p3-s18 | aiv2-hard-turn | C | 44-0-20 | score 0.688 | spend 77% | promo/g 2.84 | mined 88/66 | upkeepElim 3% | illegal 0 | valid | load 5.6 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/p3-s18-aiv2-hard-turn]
+
+### Stage C table (p1-val, seed 20260972; 32 pairs vs aiv2-hard-turn wall:6000, 32 pairs vs Rush fixed:60000)
+
+| arm | aiv2-hard-turn W-D-L / score | Rush W-D-L / score | sum(aiv2+Rush) | mined hard/opp (aiv2) | aiv2 winTypes |
+|---|---|---|---|---|---|
+| control | 52-0-12 / 0.812 | 27-0-37 / 0.422 | 1.234 | 95/76 | elimination 24, home-checkmate 37, upkeep-elimination 3 |
+| p3-s08 | 49-1-14 / 0.773 | 29-1-34 / 0.461 | 1.234 | 90/76 | elimination 19, home-checkmate 43, kill-clock 2 |
+| hv-mine | 46-0-18 / 0.719 | 30-0-34 / 0.469 | 1.188 | 94/66 | elimination 10, home-checkmate 53, upkeep-elimination 1 |
+| p3-s18 | 44-0-20 / 0.688 | 29-0-35 / 0.453 | 1.141 | 88/66 | elimination 14, home-checkmate 48, upkeep-elimination 2 |
+
+Summed scores: control 1.234, p3-s08 1.234, hv-mine 1.188, p3-s18 1.141. **No candidate beats control on the sum (best p3-s08 1.234 vs control 1.234): ship control, no weight change.**

@@ -1,0 +1,72 @@
+27 of 27 rows to run, concurrency 2
+batch 1: B-control-Rush, B-control-Balanced
+done: B-control-Rush
+done: B-control-Balanced
+batch 2: B-control-Expand, B-hv-mine-Rush
+done: B-control-Expand
+done: B-hv-mine-Rush
+batch 3: B-hv-mine-Balanced, B-hv-mine-Expand
+done: B-hv-mine-Balanced
+done: B-hv-mine-Expand
+batch 4: B-p3-s18-Rush, B-p3-s18-Balanced
+done: B-p3-s18-Rush
+done: B-p3-s18-Balanced
+batch 5: B-p3-s18-Expand, B-hv-blocks-Rush
+done: B-p3-s18-Expand
+done: B-hv-blocks-Rush
+batch 6: B-hv-blocks-Balanced, B-hv-blocks-Expand
+done: B-hv-blocks-Balanced
+done: B-hv-blocks-Expand
+batch 7: B-hv-clock-Rush, B-hv-clock-Balanced
+done: B-hv-clock-Rush
+done: B-hv-clock-Balanced
+batch 8: B-hv-clock-Expand, B-p3-s19-Rush
+done: B-hv-clock-Expand
+done: B-p3-s19-Rush
+batch 9: B-p3-s19-Balanced, B-p3-s19-Expand
+done: B-p3-s19-Balanced
+done: B-p3-s19-Expand
+batch 10: B-p3-s08-Rush, B-p3-s08-Balanced
+done: B-p3-s08-Rush
+done: B-p3-s08-Balanced
+batch 11: B-p3-s08-Expand, B-p3-s21-Rush
+done: B-p3-s08-Expand
+done: B-p3-s21-Rush
+batch 12: B-p3-s21-Balanced, B-p3-s21-Expand
+done: B-p3-s21-Balanced
+done: B-p3-s21-Expand
+batch 13: B-p3-s10-Rush, B-p3-s10-Balanced
+done: B-p3-s10-Rush
+done: B-p3-s10-Balanced
+batch 14: B-p3-s10-Expand
+done: B-p3-s10-Expand
+sweep: all rows in this plan attempted
+skip (already complete): B-control-Rush
+skip (already complete): B-control-Balanced
+skip (already complete): B-control-Expand
+skip (already complete): B-hv-mine-Rush
+skip (already complete): B-hv-mine-Balanced
+skip (already complete): B-hv-mine-Expand
+skip (already complete): B-p3-s18-Rush
+skip (already complete): B-p3-s18-Balanced
+skip (already complete): B-p3-s18-Expand
+skip (already complete): B-hv-blocks-Rush
+skip (already complete): B-hv-blocks-Balanced
+skip (already complete): B-hv-blocks-Expand
+skip (already complete): B-hv-clock-Rush
+skip (already complete): B-hv-clock-Balanced
+skip (already complete): B-hv-clock-Expand
+skip (already complete): B-p3-s19-Rush
+skip (already complete): B-p3-s19-Balanced
+skip (already complete): B-p3-s19-Expand
+skip (already complete): B-p3-s08-Rush
+skip (already complete): B-p3-s08-Balanced
+skip (already complete): B-p3-s08-Expand
+skip (already complete): B-p3-s21-Rush
+skip (already complete): B-p3-s21-Balanced
+skip (already complete): B-p3-s21-Expand
+skip (already complete): B-p3-s10-Rush
+skip (already complete): B-p3-s10-Balanced
+skip (already complete): B-p3-s10-Expand
+0 of 27 rows to run, concurrency 2
+sweep: all rows in this plan attempted

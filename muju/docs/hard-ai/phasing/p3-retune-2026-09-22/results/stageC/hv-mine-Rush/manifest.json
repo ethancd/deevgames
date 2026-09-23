@@ -1,0 +1,615 @@
+{
+  "schema": "muju-ladder-manifest-v1",
+  "status": "complete",
+  "a": "hard@env",
+  "b": "Rush",
+  "aConfigHash": "hard:env:fixed:60000#240e83b76bbf498899b5008f3b9b7649c2a8dcbd56cc9e73ed5eaba5e61f7cb1",
+  "bConfigHash": "scripted:Rush",
+  "aResolvedConfig": {
+    "rulesVersion": "muju-phasing-3",
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 16,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 8,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 35,
+          "maxPlans": 12,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": 0,
+          "2": 85,
+          "3": 20,
+          "4": -3000,
+          "5": 45,
+          "6": 0,
+          "7": 10,
+          "8": 0,
+          "9": -400,
+          "10": 15,
+          "11": 0,
+          "12": 0,
+          "13": -400,
+          "14": -180,
+          "15": 200,
+          "16": 90,
+          "17": -10,
+          "18": -5,
+          "19": 0,
+          "20": 0,
+          "21": 0,
+          "22": 0,
+          "23": 100,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "27": 0,
+          "28": -30,
+          "29": -30,
+          "30": 0,
+          "31": 0,
+          "32": 0,
+          "33": 25,
+          "34": -30,
+          "35": -60,
+          "36": -80,
+          "37": 300,
+          "38": 0,
+          "39": 0,
+          "40": 0,
+          "41": 0,
+          "42": 0,
+          "43": 0,
+          "44": 0,
+          "45": -100,
+          "46": -100,
+          "47": -400,
+          "48": -150,
+          "49": 0,
+          "50": -100,
+          "51": 0,
+          "52": 0,
+          "53": -200,
+          "54": 0,
+          "55": 0,
+          "56": 0,
+          "57": 0,
+          "58": 1,
+          "59": 0,
+          "60": 0,
+          "61": -150
+        },
+        "material": {
+          "0": 300,
+          "1": 1225,
+          "2": 2625,
+          "3": 300,
+          "4": 1225,
+          "5": 2625,
+          "6": 400,
+          "7": 1400,
+          "8": 2800,
+          "9": 400,
+          "10": 1400,
+          "11": 2800,
+          "12": 500,
+          "13": 1575,
+          "14": 2975,
+          "15": 500,
+          "16": 1575,
+          "17": 2975
+        },
+        "version": 2,
+        "featureSchema": "muju-phasing-eval-1",
+        "label": "hv-mine"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0,
+        "formatVersion": 3,
+        "weightsKey": "",
+        "mapKey": "",
+        "rulesKey": ""
+      }
+    },
+    "budget": {
+      "mode": "fixed",
+      "fixedWork": 60000,
+      "turnMs": null,
+      "allocation": "per-decision-work-units",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "bResolvedConfig": {
+    "rulesVersion": "muju-phasing-3",
+    "engine": "scripted",
+    "bot": "Rush"
+  },
+  "work": "fixed:60000",
+  "seed": 20260972,
+  "pairs": 32,
+  "shards": 4,
+  "handicaps": [
+    0
+  ],
+  "legality": "as-shipped",
+  "sprt": null,
+  "openings": {
+    "path": "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "sha256": "cbd427dfd2ee88d7f9ef1722267c254568c973df7d4aa9c32dfba36acab35119",
+    "ids": [
+      "p1-g6-s82",
+      "p1-g3-s125",
+      "p1-g4-s80",
+      "p1-g7-s90",
+      "p1-g7-s415",
+      "p1-g7-s87",
+      "p1-g8-s51",
+      "p1-g7-s367",
+      "p1-g7-s255",
+      "p1-g5-s16",
+      "p1-g6-s10",
+      "p1-g7-s247",
+      "p1-g7-s207",
+      "p1-g4-s60",
+      "p1-g3-s150",
+      "p1-g7-s30",
+      "p1-g3-s175",
+      "p1-g6-s335",
+      "p1-g6-s45",
+      "p1-g5-s205",
+      "p1-g6-s102",
+      "p1-g7-s515",
+      "p1-g6-s375",
+      "p1-g6-s470",
+      "p1-g7-s495",
+      "p1-g8-s455",
+      "p1-g7-s47",
+      "p1-g7-s227",
+      "p1-g6-s250",
+      "p1-g4-s225",
+      "p1-g7-s275",
+      "p1-g7-s6"
+    ],
+    "count": 32,
+    "skip": null,
+    "selectedIds": null,
+    "used": [
+      "p1-g6-s82",
+      "p1-g3-s125",
+      "p1-g4-s80",
+      "p1-g7-s90",
+      "p1-g7-s415",
+      "p1-g7-s87",
+      "p1-g8-s51",
+      "p1-g7-s367",
+      "p1-g7-s255",
+      "p1-g5-s16",
+      "p1-g6-s10",
+      "p1-g7-s247",
+      "p1-g7-s207",
+      "p1-g4-s60",
+      "p1-g3-s150",
+      "p1-g7-s30",
+      "p1-g3-s175",
+      "p1-g6-s335",
+      "p1-g6-s45",
+      "p1-g5-s205",
+      "p1-g6-s102",
+      "p1-g7-s515",
+      "p1-g6-s375",
+      "p1-g6-s470",
+      "p1-g7-s495",
+      "p1-g8-s455",
+      "p1-g7-s47",
+      "p1-g7-s227",
+      "p1-g6-s250",
+      "p1-g4-s225",
+      "p1-g7-s275",
+      "p1-g7-s6"
+    ]
+  },
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "frozen": true
+  },
+  "replays": false,
+  "resume": false,
+  "schedule": [
+    {
+      "pairId": "p1-g6-s82:0:0",
+      "pairIndex": 0,
+      "openingId": "p1-g6-s82",
+      "handicap": 0,
+      "seed": 1555430399
+    },
+    {
+      "pairId": "p1-g3-s125:0:1",
+      "pairIndex": 1,
+      "openingId": "p1-g3-s125",
+      "handicap": 0,
+      "seed": 3900207812
+    },
+    {
+      "pairId": "p1-g4-s80:0:2",
+      "pairIndex": 2,
+      "openingId": "p1-g4-s80",
+      "handicap": 0,
+      "seed": 842510730
+    },
+    {
+      "pairId": "p1-g7-s90:0:3",
+      "pairIndex": 3,
+      "openingId": "p1-g7-s90",
+      "handicap": 0,
+      "seed": 3719924127
+    },
+    {
+      "pairId": "p1-g7-s415:0:4",
+      "pairIndex": 4,
+      "openingId": "p1-g7-s415",
+      "handicap": 0,
+      "seed": 2815739213
+    },
+    {
+      "pairId": "p1-g7-s87:0:5",
+      "pairIndex": 5,
+      "openingId": "p1-g7-s87",
+      "handicap": 0,
+      "seed": 2586514973
+    },
+    {
+      "pairId": "p1-g8-s51:0:6",
+      "pairIndex": 6,
+      "openingId": "p1-g8-s51",
+      "handicap": 0,
+      "seed": 738495202
+    },
+    {
+      "pairId": "p1-g7-s367:0:7",
+      "pairIndex": 7,
+      "openingId": "p1-g7-s367",
+      "handicap": 0,
+      "seed": 1107379516
+    },
+    {
+      "pairId": "p1-g7-s255:0:8",
+      "pairIndex": 8,
+      "openingId": "p1-g7-s255",
+      "handicap": 0,
+      "seed": 1461778864
+    },
+    {
+      "pairId": "p1-g5-s16:0:9",
+      "pairIndex": 9,
+      "openingId": "p1-g5-s16",
+      "handicap": 0,
+      "seed": 125190608
+    },
+    {
+      "pairId": "p1-g6-s10:0:10",
+      "pairIndex": 10,
+      "openingId": "p1-g6-s10",
+      "handicap": 0,
+      "seed": 938309555
+    },
+    {
+      "pairId": "p1-g7-s247:0:11",
+      "pairIndex": 11,
+      "openingId": "p1-g7-s247",
+      "handicap": 0,
+      "seed": 2102320950
+    },
+    {
+      "pairId": "p1-g7-s207:0:12",
+      "pairIndex": 12,
+      "openingId": "p1-g7-s207",
+      "handicap": 0,
+      "seed": 1292424598
+    },
+    {
+      "pairId": "p1-g4-s60:0:13",
+      "pairIndex": 13,
+      "openingId": "p1-g4-s60",
+      "handicap": 0,
+      "seed": 1794301877
+    },
+    {
+      "pairId": "p1-g3-s150:0:14",
+      "pairIndex": 14,
+      "openingId": "p1-g3-s150",
+      "handicap": 0,
+      "seed": 2425242829
+    },
+    {
+      "pairId": "p1-g7-s30:0:15",
+      "pairIndex": 15,
+      "openingId": "p1-g7-s30",
+      "handicap": 0,
+      "seed": 402965864
+    },
+    {
+      "pairId": "p1-g3-s175:0:16",
+      "pairIndex": 16,
+      "openingId": "p1-g3-s175",
+      "handicap": 0,
+      "seed": 2105801839
+    },
+    {
+      "pairId": "p1-g6-s335:0:17",
+      "pairIndex": 17,
+      "openingId": "p1-g6-s335",
+      "handicap": 0,
+      "seed": 1081843341
+    },
+    {
+      "pairId": "p1-g6-s45:0:18",
+      "pairIndex": 18,
+      "openingId": "p1-g6-s45",
+      "handicap": 0,
+      "seed": 141768799
+    },
+    {
+      "pairId": "p1-g5-s205:0:19",
+      "pairIndex": 19,
+      "openingId": "p1-g5-s205",
+      "handicap": 0,
+      "seed": 1526270375
+    },
+    {
+      "pairId": "p1-g6-s102:0:20",
+      "pairIndex": 20,
+      "openingId": "p1-g6-s102",
+      "handicap": 0,
+      "seed": 4097687685
+    },
+    {
+      "pairId": "p1-g7-s515:0:21",
+      "pairIndex": 21,
+      "openingId": "p1-g7-s515",
+      "handicap": 0,
+      "seed": 4048054320
+    },
+    {
+      "pairId": "p1-g6-s375:0:22",
+      "pairIndex": 22,
+      "openingId": "p1-g6-s375",
+      "handicap": 0,
+      "seed": 2567578337
+    },
+    {
+      "pairId": "p1-g6-s470:0:23",
+      "pairIndex": 23,
+      "openingId": "p1-g6-s470",
+      "handicap": 0,
+      "seed": 1263105444
+    },
+    {
+      "pairId": "p1-g7-s495:0:24",
+      "pairIndex": 24,
+      "openingId": "p1-g7-s495",
+      "handicap": 0,
+      "seed": 1609828697
+    },
+    {
+      "pairId": "p1-g8-s455:0:25",
+      "pairIndex": 25,
+      "openingId": "p1-g8-s455",
+      "handicap": 0,
+      "seed": 1640541063
+    },
+    {
+      "pairId": "p1-g7-s47:0:26",
+      "pairIndex": 26,
+      "openingId": "p1-g7-s47",
+      "handicap": 0,
+      "seed": 3874508612
+    },
+    {
+      "pairId": "p1-g7-s227:0:27",
+      "pairIndex": 27,
+      "openingId": "p1-g7-s227",
+      "handicap": 0,
+      "seed": 2937596855
+    },
+    {
+      "pairId": "p1-g6-s250:0:28",
+      "pairIndex": 28,
+      "openingId": "p1-g6-s250",
+      "handicap": 0,
+      "seed": 111790413
+    },
+    {
+      "pairId": "p1-g4-s225:0:29",
+      "pairIndex": 29,
+      "openingId": "p1-g4-s225",
+      "handicap": 0,
+      "seed": 2550183722
+    },
+    {
+      "pairId": "p1-g7-s275:0:30",
+      "pairIndex": 30,
+      "openingId": "p1-g7-s275",
+      "handicap": 0,
+      "seed": 1804116049
+    },
+    {
+      "pairId": "p1-g7-s6:0:31",
+      "pairIndex": 31,
+      "openingId": "p1-g7-s6",
+      "handicap": 0,
+      "seed": 1879977485
+    }
+  ],
+  "resumedPairIds": [],
+  "sprtStop": null,
+  "rules": {
+    "rulesVersion": "muju-phasing-3",
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "argv": [
+    "--a",
+    "hard@env",
+    "--b",
+    "Rush",
+    "--work",
+    "fixed:60000",
+    "--handicaps",
+    "0",
+    "--pairs",
+    "32",
+    "--seed",
+    "20260972",
+    "--openings",
+    "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "--replays",
+    "off",
+    "--shards",
+    "4",
+    "--out",
+    "docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC/hv-mine-Rush"
+  ],
+  "git": "c301b3d82684fcedc23698cb3cde287b96d9b959",
+  "gitDirty": true,
+  "baseline": {
+    "ai": "26883482e4adadd10318e68a39f1a4512a68f53a3565cf8eab937ef4fe30f777",
+    "game": "8f2994b8e5f081ea1cea8e2f7306757b7d73cb93022b230e5ed2208259e95224",
+    "wasm": "6d3cf33382ff94d81ae32194c3af4849bff81115d1b6f7f4a9d4ac45c795573c",
+    "deps": "b17ce8cae69cdede37f74f14139e1afee7f9eb6e17676c391239a8ff985cbf45"
+  },
+  "wasmSha256": "6d3cf33382ff94d81ae32194c3af4849bff81115d1b6f7f4a9d4ac45c795573c",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpuCount": 12,
+  "loadavg": [
+    8.82080078125,
+    9.57275390625,
+    8.75634765625
+  ],
+  "at": "2026-09-23T10:48:27.443Z",
+  "finishedAt": "2026-09-23T11:08:05.167Z",
+  "wallMs": 1177974,
+  "counts": {
+    "scheduledPairs": 32,
+    "completedPairs": 32,
+    "games": 64,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "voided": false,
+  "voidReason": null,
+  "error": null
+}

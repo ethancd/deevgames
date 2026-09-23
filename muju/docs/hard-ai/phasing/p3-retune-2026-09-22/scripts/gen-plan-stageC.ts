@@ -32,7 +32,7 @@ const RESULTS = 'docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageC';
 
 // FILL IN from the Stage B ranking (top 3 by summed aiv2-hard-turn + Rush score, after the
 // Balanced/Expand regression guard). Placeholder below is NOT a real answer.
-const TOP3 = ['FILL-IN-1', 'FILL-IN-2', 'FILL-IN-3'];
+const TOP3 = ['p3-s08', 'hv-mine', 'p3-s18']; // filled by chain-BC.py from the Stage B ranking
 const ARMS = ['control', ...TOP3];
 
 interface Row {
