@@ -1,4 +1,4 @@
-// ABI 7. Header: version, unit count, player, remaining Act actions.
+// ABI 8 (muju-phasing-4: Cleave has no tier cap; the tier column is packed but unused). Header: version, unit count, player, remaining Act actions.
 // A complete current-turn target-removal search. No hidden state is read.
 // The host supplies the canonical catalogue and elemental attack matrix.
 // Buffers stay rooted for the instance lifetime; DFS mutates/undoes in place.
@@ -30,7 +30,7 @@ let length: i32 = 0;
 
 @external('env', 'shouldStop')
 declare function shouldStop(): i32;
-export function abiVersion(): i32 { return 7; }
+export function abiVersion(): i32 { return 8; }
 export function inputPtr(): usize { return input.dataStart; }
 export function cataloguePtr(): usize { return catalogue.dataStart; }
 export function powersPtr(): usize { return powers.dataStart; }
@@ -46,8 +46,8 @@ function md(a: i32, b: i32): i32 { return abs(a % 10 - b % 10) + abs(a / 10 - b 
 function attacked(u: i32, v: i32): bool { return (input[at(u) + 5 + (v >> 5)] & (1 << (v & 31))) != 0; }
 function canAttack(u: i32): bool {
   const flags = input[at(u) + 4], attacks = input[at(u) + 9];
-  return (flags & 1) != 0 && attacks < catalogue[def(u) * 4 + 3]
-    && (attacks == 0 || (flags & 8) != 0);
+  // No tier cap (muju-phasing-4): each kill unlocks another; actions bound it.
+  return (flags & 1) != 0 && (attacks == 0 || (flags & 8) != 0);
 }
 function power(u: i32, v: i32): i32 { return powers[def(u) * catalogueSize + def(v)]; }
 function remainingDefense(u: i32): i32 { return max(0, catalogue[def(u) * 4 + 1] - input[at(u) + 3]); }
@@ -139,9 +139,9 @@ function dfs(actions: i32, depth: i32): bool {
   return false;
 }
 // 1 = proved (witness); 0 = exhaustive failure in stated scope; -1 = unknown.
-// Host accepts only Act roots; no resource or promotion inputs exist in ABI 7.
+// Host accepts only Act roots; no resource or promotion inputs exist in ABI 8.
 export function solve(targetIndex: i32, nodeLimit: i32): i32 {
-  if (input[0] != 7 || input[1] > MAX_UNITS || input[1] < 1 || targetIndex < 0 || targetIndex >= input[1] || input[3] < 0 || input[3] > 4) return -1;
+  if (input[0] != 8 || input[1] > MAX_UNITS || input[1] < 1 || targetIndex < 0 || targetIndex >= input[1] || input[3] < 0 || input[3] > 4) return -1;
   count = input[1]; player = input[2]; target = targetIndex;
   visited = 0; maxNodes = max(0, nodeLimit); cutoff = false; length = 0;
   occupied.fill(-1);

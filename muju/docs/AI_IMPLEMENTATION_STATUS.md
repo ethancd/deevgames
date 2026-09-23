@@ -33,7 +33,8 @@ an attack kill resets the quiet clock, and since 2026-09-19 (rules revision
 canonical draw transition as human and online play. Strength evidence measured
 under `muju-phasing-1` is not pooled with evidence measured under this revision.
 
-The rebuilt kernel uses **ABI 7**. Tactical proofs retain current-turn movement,
+The rebuilt kernel uses **ABI 8** (2026-09-23, rules revision `muju-phasing-4`: Cleave
+has no tier cap, so the packed tier column is no longer read; ABI 7 was otherwise identical). Tactical proofs retain current-turn movement,
 attacks/Cleave and home-blocked promotion subsets. **General placement and
 purchases remain outside the proof:** such queries return unknown. When an
 invader occupies home, every spawn rectangle is blocked, so the rescue proof
@@ -74,7 +75,8 @@ The user's implementation request explicitly favored WASM and skipping JavaScrip
 
 ## Cleave follow-up (2026-09-07)
 
-The subsequent v1.4 combat release adds kill-gated attacks capped by tier while
+The subsequent v1.4 combat release adds kill-gated attacks capped by tier (the cap
+was removed on 2026-09-23, `muju-phasing-4`; see SPEC §4.2) while
 retaining the v1.3 catalogue. The kernel now uses **ABI 2**: each unit carries an
 independent total attack count (including eliminated targets) and a last-kill flag;
 the catalogue also carries tier. JS and WASM enforce the same chain eligibility,

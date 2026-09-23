@@ -28,7 +28,7 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
     abort: () => { throw new Error('WASM tactical kernel trapped'); },
   } });
   const wasm = instance.exports as unknown as Exports;
-  if (wasm.abiVersion() !== 7) throw new Error('Muju WASM ABI/catalogue mismatch');
+  if (wasm.abiVersion() !== 8) throw new Error('Muju WASM ABI/catalogue mismatch');
   const defs = UNIT_DEFINITIONS;
   wasm.configureCatalogue(defs.length);
   return (state, targetId, maxNodes, budget) => {
@@ -50,7 +50,7 @@ export async function instantiateTactics(bytes: BufferSource): Promise<TacticalS
         { definitionId: defs[b].id, owner: 'black' } as GameState['board']['units'][number]);
     }
     const input = new Int32Array(wasm.memory.buffer, wasm.inputPtr(), 1016); input.fill(0);
-    input.set([7, units.length, player === 'white' ? 0 : 1, state.turn.actionsRemaining]);
+    input.set([8, units.length, player === 'white' ? 0 : 1, state.turn.actionsRemaining]);
     for (let i = 0; i < units.length; i++) {
       const u = units[i], offset = 16 + i * 10;
       input.set([u.position.y * 10 + u.position.x, u.owner === 'white' ? 0 : 1,
