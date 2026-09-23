@@ -204,8 +204,18 @@ function weightArmLabel(name: (typeof ALL_WEIGHT_ARMS)[number]): string {
  * again, so the resolved-configuration hash moves a fourth time for the same
  * structural reason as the second and third moves, not because anything under
  * `src/ai/hard/**` besides the revision string changed.
+ *
+ * 2026-09-23 muju-phasing-4 (Cleave without a tier cap): the fifth move, for
+ * the same structural reason. Forcing `rulesVersion` back to `muju-phasing-3`
+ * on today's resolved configuration reproduces the superseded value
+ * (`DESKTOP_WALL3000_HASH_PHASING_3`) byte for byte, so nothing else in the
+ * configuration moved; the Cleave change lives in the engine's code, which the
+ * rules revision is what names.
  */
-const DESKTOP_WALL3000_HASH = '65867011d62619f9436ce703ed7f37e7cc0caf6f1fccdf95fc8d4b0af4f1bbef';
+const DESKTOP_WALL3000_HASH = 'e8d36cc0bcea8cedf8a672bb09ad46afa17f7a3963b963b2c4d3fa19cf499b84';
+/** The same arm under `muju-phasing-3` (the kill clock, tier-capped Cleave):
+ * every manifest recorded between 2026-09-22 and 2026-09-23 quotes it. */
+const DESKTOP_WALL3000_HASH_PHASING_3 = '65867011d62619f9436ce703ed7f37e7cc0caf6f1fccdf95fc8d4b0af4f1bbef';
 /** The same arm under `muju-phasing-2` (the 20-ply draw clock): every E1/E4
  * manifest recorded between A4 (2026-09-19) and the 2026-09-22 kill clock
  * quotes it. */
@@ -529,7 +539,10 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     // 2026-09-22 muju-phasing-3: the revision string is part of every resolved
     // hash; the weights/config it names are byte-identical to the phasing-2
     // champion (old hash 6c8f9bb176bf1f365d6a4e6ca2e285c8117e3d5d7b73b6bb963d974cd562754e).
-    expect(arm.configHash).toBe('9b05b441f7479e7fb7c3d57c6ea35d46c0cf2a41bef35f4b3b520b39da7748ef');
+    // 2026-09-23 muju-phasing-4: revision string alone again; forcing
+    // `muju-phasing-3` back reproduces the old hash
+    // 9b05b441f7479e7fb7c3d57c6ea35d46c0cf2a41bef35f4b3b520b39da7748ef.
+    expect(arm.configHash).toBe('b98bfc2ee39009e0438efbb9713820dcc06e31b206f7cb24156695552ddf0006');
     expect(hardConfigFor('ablate:search-iter-fit').searchFix?.iterFit).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -569,7 +582,10 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     // 2026-09-22 muju-phasing-3: the revision string is part of every resolved
     // hash; the weights/config it names are byte-identical to the phasing-2
     // champion (old hash 6e3d2936d0564c13b331fe5435da15452e4ae4572636cdb898bfd045bd52973c).
-    expect(arm.configHash).toBe('0d8777e2d8e73579e623023726ba056657f645a8f868c9d4b97456802d6bbc55');
+    // 2026-09-23 muju-phasing-4: revision string alone again; forcing
+    // `muju-phasing-3` back reproduces the old hash
+    // 0d8777e2d8e73579e623023726ba056657f645a8f868c9d4b97456802d6bbc55.
+    expect(arm.configHash).toBe('c5ae1e8fcba8d70d12f7c19d2de97f9eaeb94845f3c3c5933dc376274bd78eea');
     expect(hardConfigFor('ablate:search-reach-cache').searchFix?.reachCache).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -640,10 +656,12 @@ describe('E4.2 search arms (factor `searchFix`)', () => {
     // until A4 moved the draw clock, nor the M6-bootstrap identity it carried
     // until the 2026-09-20 hand priors replaced `DEFAULT_WEIGHTS`, nor the
     // `muju-phasing-2` identity it carried until the 2026-09-22 kill clock
-    // advanced the revision again. All five are kept so a reader of an older
-    // manifest can find the hash it quotes.
+    // advanced the revision again, nor the `muju-phasing-3` identity it carried
+    // until the 2026-09-23 removal of Cleave's tier cap. All six are kept so a
+    // reader of an older manifest can find the hash it quotes.
     for (const superseded of [DESKTOP_WALL3000_HASH_STANDARD, DESKTOP_WALL3000_HASH_PHASING_M4,
-      DESKTOP_WALL3000_HASH_PHASING_1, DESKTOP_WALL3000_HASH_BOOTSTRAP_M6, DESKTOP_WALL3000_HASH_PHASING_2]) {
+      DESKTOP_WALL3000_HASH_PHASING_1, DESKTOP_WALL3000_HASH_BOOTSTRAP_M6, DESKTOP_WALL3000_HASH_PHASING_2,
+      DESKTOP_WALL3000_HASH_PHASING_3]) {
       expect(DESKTOP_WALL3000_HASH).not.toBe(superseded);
       expect(requireArm('base').configHash).not.toBe(superseded);
     }

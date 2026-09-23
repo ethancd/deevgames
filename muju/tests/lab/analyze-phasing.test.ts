@@ -65,8 +65,9 @@ describe('analyze: rules-bound reconstruction of a Phasing replay', () => {
     expect(file).not.toBeNull();
     // The revision this tree plays and stamps. `muju-phasing-2` since A4
     // (2026-09-19); `muju-phasing-3` since the 2026-09-22 kill clock advanced
-    // the revision again (SPEC §2).
-    expect(record.rulesVersion).toBe('muju-phasing-3');
+    // the revision again (SPEC §2); `muju-phasing-4` since the 2026-09-23
+    // removal of Cleave's tier cap (SPEC §4.2).
+    expect(record.rulesVersion).toBe('muju-phasing-4');
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'muju-phasing-recon-'));
     try {
       const out = path.join(dir, 'g.json');

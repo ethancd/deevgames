@@ -20,7 +20,8 @@
  * the revision from `muju-phasing-1` to `muju-phasing-2`; amendment A7
  * (2026-09-22, the kill clock) replaced the draw entirely — the tenth kill-free
  * ply now decides on mined totals instead of drawing — and advanced the revision
- * again, to `muju-phasing-3`. Carrying the revision as a literal was already
+ * again, to `muju-phasing-3`; removing the Cleave tier cap (2026-09-23) advanced
+ * it to `muju-phasing-4`. Carrying the revision as a literal was already
  * shown to be a defect once (fourteen stale `muju-phasing-1` literals found at
  * A4): a row would stamp, check and report a revision the harness no longer
  * plays, and could pass its own per-game check while `lab/harness/runner.ts`

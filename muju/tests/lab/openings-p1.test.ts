@@ -71,7 +71,9 @@ describe('P1 unsealed corpus', () => {
     // asserting the live constant here is tracking identity, not re-pinning a
     // frozen value that should have stayed put.
     const PHASING_1_LIMIT = 10, PHASING_1_WARNING = 7;
-    expect(RULES_VERSION).toBe('muju-phasing-3');
+    // `muju-phasing-4` (2026-09-23) keeps the kill clock and only lifts the
+    // Cleave tier cap, which no opening's clock of 1 can touch.
+    expect(RULES_VERSION).toBe('muju-phasing-4');
     expect(INACTIVITY_LIMIT).toBe(10);
     expect(INACTIVITY_WARNING).toBe(7);
 

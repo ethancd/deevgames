@@ -6,7 +6,7 @@ import { applyAction } from '../../../../src/ai/simulate';
 import { isLegalAction, phaseEndAction } from '../../../../src/game/legality';
 import { getActionsPerTurn } from '../../../../src/game/rules';
 import { setElementGraph } from '../../../../src/game/elements';
-import { setCombatHandicap } from '../../../../src/game/combat';
+import { CLEAVE_CHAIN, setCombatHandicap } from '../../../../src/game/combat';
 import { defaultUpkeepAction, setUpkeepVariant } from '../../../../src/game/upkeep';
 import { resolveSummons } from '../../../../src/game/summoning';
 import { INACTIVITY_LIMIT, LEGACY_INACTIVITY_LIMIT, type InactivityVerdict } from '../../../../src/game/inactivity';
@@ -45,7 +45,9 @@ export function canonicalSourceHashes(): Record<string, string> {
   const paths = [...walk(join(MUJU, 'src/game')), join(MUJU, 'src/ai/simulate.ts')].sort();
   return Object.fromEntries(paths.map(path => [relative(MUJU, path).replaceAll('\\', '/'), sha256(readFileSync(path))]));
 }
-export const RULES_VERSIONS = ['muju-phasing-1', 'muju-phasing-2', 'muju-phasing-3'] as const;
+export const RULES_VERSIONS = ['muju-phasing-1', 'muju-phasing-2', 'muju-phasing-3', 'muju-phasing-4'] as const;
+/** How far a Cleave chain runs: `tier-capped` through `muju-phasing-3`, `unbounded` from `muju-phasing-4`. */
+export type CleaveChain = 'tier-capped' | typeof CLEAVE_CHAIN;
 export type RulesVersion = typeof RULES_VERSIONS[number];
 /** The revision THIS worktree implements, read off the shipped inactivity
  * constant AND verdict rather than written down a second time.
@@ -60,8 +62,15 @@ export type RulesVersion = typeof RULES_VERSIONS[number];
  * the revision means a binding cannot claim `muju-phasing-1` while the code it
  * binds resolves on mined totals — exactly the drift a source binding exists
  * to catch, and the one thing a hard-coded literal could not see. An
- * unrecognised (limit, verdict) pair is a refusal, never a guess. */
-export function currentRulesVersion(limit: number = INACTIVITY_LIMIT, verdict: InactivityVerdict = 'mined-total'): RulesVersion {
+ * unrecognised (limit, verdict, cleave) triple is a refusal, never a guess.
+ *
+ * `muju-phasing-4` (owner decision 2026-09-23) keeps `-3`'s clock exactly and
+ * removes Cleave's tier cap, so the clock alone no longer separates them
+ * either: the third key is the shipped `CLEAVE_CHAIN` (`src/game/combat.ts`).
+ * Every earlier revision capped the chain at the unit's tier. */
+export function currentRulesVersion(limit: number = INACTIVITY_LIMIT, verdict: InactivityVerdict = 'mined-total', cleave: CleaveChain = CLEAVE_CHAIN): RulesVersion {
+  if (limit === INACTIVITY_LIMIT && verdict === 'mined-total' && cleave === 'unbounded') return 'muju-phasing-4';
+  if (cleave !== 'tier-capped') throw new Error(`No Phasing rules revision is defined for an inactivity limit of ${limit}, verdict "${verdict}" and an ${cleave} Cleave chain`);
   if (limit === INACTIVITY_LIMIT && verdict === 'mined-total') return 'muju-phasing-3';
   if (limit === LEGACY_INACTIVITY_LIMIT && verdict === 'draw') return 'muju-phasing-2';
   if (limit === INACTIVITY_LIMIT && verdict === 'draw') return 'muju-phasing-1';
