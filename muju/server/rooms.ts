@@ -156,6 +156,21 @@ export class RoomStore {
     if (Number(upgraded.changes) > 0) {
       console.log(`Muju rooms: ${upgraded.changes} ${UPGRADABLE_RULES_VERSION} room(s) continue under ${PHASING_RULES_VERSION}.`);
     }
+    // Every row still on a retired revision (a finished muju-phasing-3 game, or
+    // anything older left unarchived at an earlier cutover) can never be settled:
+    // `read()` refuses it, so the scheduler would retry it on every tick and it
+    // would count against `maxRooms` forever. Archive it in the lifecycle
+    // COLUMNS only — `archived_at` at its idle deadline (or now, if that is
+    // later), scheduling cleared — so it leaves the scheduler and the room cap
+    // and appears in the archived list flagged `retiredRules`, while its stored
+    // `data` bytes stay exactly as written.
+    const now = Date.now();
+    const retired = this.db.prepare(`UPDATE rooms SET archived_at = MIN(COALESCE(idle_at, ?), ?),
+      deadline_at = NULL, stage_at = NULL, idle_at = NULL
+      WHERE archived_at IS NULL AND json_extract(data, '$.rulesVersion') IS NOT ?`).run(now, now, PHASING_RULES_VERSION);
+    if (Number(retired.changes) > 0) {
+      console.log(`Muju rooms: archived ${retired.changes} unarchived room(s) on retired rules revisions.`);
+    }
   }
   /** Indexed sweep also adjudicates rooms with no connected clients, including after restart. */
   private settleDue() {

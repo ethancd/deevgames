@@ -197,9 +197,39 @@ describe('authoritative shared rooms', () => {
     try { reopened.get(id); } catch (error) { code=(error as {code?:string}).code; }
     expect(code).toBe('RULES_CHANGED');
     const after=new DatabaseSync(path);
-    const stored=JSON.parse(after.prepare('SELECT data FROM rooms WHERE id = ?').get(id)!.data as string) as {rulesVersion:string};
+    const row=after.prepare('SELECT data, archived_at, idle_at, deadline_at, stage_at FROM rooms WHERE id = ?').get(id)!;
     after.close();
+    const stored=JSON.parse(row.data as string) as {rulesVersion:string};
     expect(stored.rulesVersion).toBe('muju-phasing-3');
+    // Out of the scheduler and the room cap for good: archived in the lifecycle
+    // columns, listed as retired, and never retried by `settleDue`.
+    expect(row.archived_at).not.toBeNull();
+    if(kind==='finished') expect([row.idle_at,row.deadline_at,row.stage_at]).toEqual([null,null,null]);
+    expect(reopened.listArchived().rooms.find(r=>r.id===id)).toMatchObject({retiredRules:true});
+    expect(reopened.listActive().map(r=>r.id)).not.toContain(id);
+  });
+  it('archives a finished muju-phasing-3 room past its idle deadline without a scheduler retry loop', async () => {
+    const dir=mkdtempSync(join(tmpdir(),'muju-upgrade-'));directories.push(dir);
+    const path=join(dir,'rooms.sqlite'),store=new RoomStore(path);stores.push(store);
+    const host=store.create({name:'Human',side:'white'});
+    store.join(host.room.id,{name:'Agent',inviteCode:host.inviteCode});
+    const id=host.room.id;
+    const db=new DatabaseSync(path);
+    db.prepare("UPDATE rooms SET data = json_set(data, '$.rulesVersion', 'muju-phasing-3', '$.state.phase', 'victory', '$.state.winner', 'black', '$.state.victoryReason', 'elimination'), idle_at = ? WHERE id = ?").run(Date.now()-1000,id);
+    const before=db.prepare('SELECT data FROM rooms WHERE id = ?').get(id)!.data as string;
+    db.close();
+    const errors=vi.spyOn(console,'error').mockImplementation(()=>{});
+    try {
+      const reopened=new RoomStore(path);stores.push(reopened);
+      await new Promise(resolve=>setTimeout(resolve,600));
+      reopened.listActive();
+      expect(errors).not.toHaveBeenCalled();
+      const after=new DatabaseSync(path);
+      const row=after.prepare('SELECT data, archived_at FROM rooms WHERE id = ?').get(id)!;
+      after.close();
+      expect(row.data).toBe(before);
+      expect(row.archived_at).not.toBeNull();
+    } finally { errors.mockRestore(); }
   });
   it('keeps reusable invitations private and never exposes private credentials in snapshots', () => {
     const { store, host, guest, id } = setup();

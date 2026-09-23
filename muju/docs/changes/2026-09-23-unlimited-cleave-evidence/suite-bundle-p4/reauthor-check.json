@@ -1,0 +1,60 @@
+{
+  "purpose": "muju-phasing-4 suite re-authoring check (not committed as a bundle): `npm run hard:suite:phasing -- author-v2 --out <scratch>` at the unlimited-Cleave working tree, 2026-09-23, 1:56 wall.",
+  "authorReport": {
+    "valid": true,
+    "release": "v2",
+    "errors": [],
+    "acceptance": "not-established"
+  },
+  "manifestFileSha256": "6e49d410bb9a9c8d41e5022313cc3f07e55922b77285a77c4d3e20067e3aa2fc",
+  "manifestSourceBinding": {},
+  "fieldsDifferingFromV3Bundle": {
+    "economy.suite.json": {
+      ".positions[].binding.rulesSourcesSha256": 30,
+      ".positions[].binding.rulesVersion": 30,
+      ".cases[].root.sha256": 30
+    },
+    "home-fortify.suite.json": {
+      ".positions[].binding.rulesSourcesSha256": 20,
+      ".positions[].binding.rulesVersion": 20,
+      ".positions[].origin.seed.sha256": 10,
+      ".cases[].root.sha256": 10
+    },
+    "home-mate.suite.json": {
+      ".positions[].binding.rulesSourcesSha256": 100,
+      ".positions[].binding.rulesVersion": 100,
+      ".positions[].origin.seed.sha256": 44,
+      ".cases[].root.sha256": 56
+    },
+    "invariants.suite.json": {
+      ".positions[].binding.rulesSourcesSha256": 46,
+      ".positions[].binding.rulesVersion": 46,
+      ".positions[].origin.seed.sha256": 10,
+      ".cases[].violating.sha256": 20,
+      ".cases[].correct.sha256": 20
+    },
+    "summon-disruption.suite.json": {
+      ".positions[].binding.rulesSourcesSha256": 60,
+      ".positions[].binding.rulesVersion": 60,
+      ".positions[].origin.seed.sha256": 30,
+      ".cases[].root.sha256": 30
+    },
+    "tactics.suite.json": {
+      ".positions[].binding.rulesSourcesSha256": 95,
+      ".positions[].binding.rulesVersion": 95,
+      ".positions[].origin.seed.sha256": 16,
+      ".cases[].root.sha256": 79
+    }
+  },
+  "conclusion": "Every differing field is a source-binding hash, the rules-version string, or a sha256 derived from them; no position, expectation or verdict in any of the 225 cases moved.",
+  "cliSummary": {
+    "valid": true,
+    "release": "v2",
+    "cases": 225,
+    "members": 245,
+    "errors": [],
+    "vetoRefused": [],
+    "checksFailed": [],
+    "acceptance": "not-established"
+  }
+}
