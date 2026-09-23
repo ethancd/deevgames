@@ -47,3 +47,15 @@ with `--resume` before the rest of Stage A continues.
 - p3-s18 | Rush | A | 11-0-5 | score 0.688 | spend 97% | promo/g 3.69 | mined 210/205 | upkeepElim 0% | illegal 0 | valid | load 4.9 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s18-Rush]
 - p3-s19 | Rush | A | 10-0-6 | score 0.625 | spend 95% | promo/g 3.69 | mined 119/176 | upkeepElim 6% | illegal 0 | valid | load 5.2 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s19-Rush]
 - p3-s20 | Rush | A | 8-0-8 | score 0.500 | spend 97% | promo/g 5.06 | mined 132/196 | upkeepElim 0% | illegal 0 | valid | load 4.7 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s20-Rush]
+- p3-s21 | Rush | A | 9-0-7 | score 0.563 | spend 97% | promo/g 4.19 | mined 161/202 | upkeepElim 0% | illegal 0 | valid | load 4.3 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s21-Rush]
+- p3-s22 | Rush | A | 7-0-9 | score 0.438 | spend 99% | promo/g 4.06 | mined 133/249 | upkeepElim 6% | illegal 0 | valid | load 4.3 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s22-Rush]
+- p3-s23 | Rush | A | 6-0-10 | score 0.375 | spend 99% | promo/g 4.06 | mined 158/262 | upkeepElim 0% | illegal 0 | valid | load 4.6 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s23-Rush]
+- p3-s24 | Rush | A | 7-0-9 | score 0.438 | spend 96% | promo/g 5.13 | mined 189/211 | upkeepElim 0% | illegal 0 | valid | load 5.0 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/p3-s24-Rush]
+
+## Concurrency restored 17:04
+
+Owner released the CPU. Coordinator: full concurrency (two rows at a time, --shards 4,
+MUJU_HEAVY_SLOTS=8) for the remaining Stage A rows (hv-mine, hv-tier, hv-blocks). hv-clock had
+already been resumed as an orphaned single row (shards=2) when the previous single-concurrency
+sweep was stopped between batches; it finished cleanly and is logged below.
+- hv-clock | Rush | A | 10-0-6 | score 0.625 | spend 96% | promo/g 3.31 | mined 150/192 | upkeepElim 0% | illegal 0 | valid | load 4.4 | [docs/hard-ai/phasing/p3-retune-2026-09-22/results/stageA/hv-clock-Rush]

@@ -20,9 +20,9 @@ for (const arm of arms) {
   readFileSync(f); // throws if missing
 }
 
-// shards=2 per coordinator directive 2026-09-22 16:12 (PROGRESS.md "Concurrency reduced"; was 4
-// under MUJU_HEAVY_SLOTS=8 / two rows at a time -- now one row at a time under MUJU_HEAVY_SLOTS=2).
-const SHARDS = 2;
+// Coordinator directive 2026-09-22 17:04 (PROGRESS.md "Concurrency restored"): owner released the
+// CPU; back to shards=4 / two rows at a time / MUJU_HEAVY_SLOTS=8 for the rest of Stage A.
+const SHARDS = 4;
 const plan = arms.map(arm => ({
   id: `A-${arm}-Rush`,
   stage: 'A',
