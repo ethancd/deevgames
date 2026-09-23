@@ -7,9 +7,9 @@ import {
   getValidAnchors,
   getAllSpawnPositions,
   isValidSpawnPosition,
-  isPendingSummonDoomed,
   getLargestSpawnZone,
 } from '../../src/game/spawning';
+import { isPendingSummonDoomed } from '../../src/utils/pendingSummon';
 import { createEmptyBoard, placeUnit, getStartCorner } from '../../src/game/board';
 import type { BoardState, Unit, Position } from '../../src/game/types';
 

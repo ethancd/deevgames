@@ -9,7 +9,7 @@ afterEach(() => { cleanup(); localStorage.clear(); });
 const config = { mode: 'pass-play' as const, controls: { white: 'human' as const, black: 'human' as const }, aiDifficulty: { white: 'medium' as const, black: 'medium' as const } };
 
 it('marks an eliminable enemy with the KO badge and aria text when the own unit is selected', () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   // fire beats metal (+1): fire_2 attack 3 + 1 = 4 >= metal_1 defense 3, a lethal hit.
   state.board.units = [
     createUnit('fire_2', 'white', { x: 3, y: 3 }),
@@ -26,7 +26,7 @@ it('marks an eliminable enemy with the KO badge and aria text when the own unit 
 });
 
 it('marks a unit the inspected enemy could eliminate next turn with the reverse KO badge and aria text', () => {
-  const state = createInitialGameState();
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
   // fire beats metal (+1): fire_2 attack 3 + 1 = 4 >= metal_1 defense 3, a lethal hit.
   state.board.units = [
     createUnit('fire_2', 'black', { x: 6, y: 6 }),

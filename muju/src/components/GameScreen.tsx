@@ -37,7 +37,7 @@ import { SummoningStatus } from './SummoningStatus';
 import { getSpawnInvalidReason } from '../game/spawning';
 import { findAttackApproach, getMovementRange, getAttackFrontier, type MovementRangePosition } from '../game/movement';
 import { calculateAttackPower, calculateDefense } from '../game/combat';
-import { ownKoTargets, enemyKoThreats } from '../game/koIndicators';
+import { ownKoTargets, enemyKoThreats } from '../utils/koIndicators';
 import { PlayDialog } from './PlayDialog';
 import type { Position, GameConfig, PlayerId, Element, Unit } from '../game/types';
 import type { ReactNode } from 'react';

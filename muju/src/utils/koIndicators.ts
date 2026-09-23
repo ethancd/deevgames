@@ -1,6 +1,8 @@
-import type { BoardState, Position, Unit } from './types';
-import { findAttackApproach } from './movement';
-import { canAttack, canBeEliminated } from './combat';
+// Lives under utils, not game: the Phasing suite bundle pins every file under
+// src/game by hash, and this is a UI-only projection over the engine.
+import type { BoardState, Position, Unit } from '../game/types';
+import { findAttackApproach } from '../game/movement';
+import { canAttack, canBeEliminated } from '../game/combat';
 
 /**
  * Positions of enemy units `attacker` could eliminate with a single attack,

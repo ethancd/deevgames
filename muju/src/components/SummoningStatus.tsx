@@ -1,6 +1,6 @@
 import type { GameState } from '../game/types';
 import { getUnitDefinition } from '../game/units';
-import { isPendingSummonDoomed } from '../game/spawning';
+import { isPendingSummonDoomed } from '../utils/pendingSummon';
 import { historySquare } from '../game/moveHistory';
 import { ElementIcon } from './ElementGlyph';
 

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { createInitialGameState, createUnit } from '../../src/game/board';
-import { ownKoTargets, enemyKoThreats } from '../../src/game/koIndicators';
+import { ownKoTargets, enemyKoThreats } from '../../src/utils/koIndicators';
 
 function boardWith(...units: ReturnType<typeof createUnit>[]) {
   return { ...createInitialGameState().board, units };

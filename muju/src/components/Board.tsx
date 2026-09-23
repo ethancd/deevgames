@@ -3,7 +3,7 @@ import { UnitArtwork } from './UnitArtwork';
 import type { MovementRangePosition } from '../game/movement';
 import { BOARD_SIZE, getUnitAt } from '../game/board';
 import { getUnitDefinition } from '../game/units';
-import { isPendingSummonDoomed } from '../game/spawning';
+import { isPendingSummonDoomed } from '../utils/pendingSummon';
 import { Cell } from './Cell';
 import { Unit } from './Unit';
 
