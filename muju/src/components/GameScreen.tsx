@@ -923,7 +923,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
             const isActive = state.turn.currentPlayer === side;
             return (
               <div key={side} className={`player-card player-card-${side}${isActive ? ' player-card-active' : ''}`} aria-current={isActive ? 'true' : undefined}>
-                <strong><i className={`player-dot ${side}`} aria-hidden="true" />{playerNames[side]} <span className="vh-label">{side === 'white' ? 'White' : 'Black'}{isActive ? ' · active turn' : ''}</span> <b>◆ {sideState.resources}</b>{minedLeader === side && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
+                <strong><span className="vh-label">{side === 'white' ? 'White' : 'Black'}{isActive ? ' · active turn' : ''}: </span><i className={`player-dot ${side}`} aria-hidden="true" />{playerNames[side]} <b>◆ {sideState.resources}</b>{minedLeader === side && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
                 <small>Gained {sideState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[side]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, side)}</small><small className={isViewerSide && upkeepDue(state,side)>sideState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,side)} / turn</small>
               </div>
             );
