@@ -1,4 +1,5 @@
 import { ELEMENT_INFO } from '../game/elements';
+import { ELEMENT_HEX } from '../utils/colors';
 
 export function ElementLegend() {
   return (
@@ -14,12 +15,12 @@ export function ElementLegend() {
           <span className="text-gray-500 mx-1">→</span>
           <span style={{ color: ELEMENT_INFO.plant.color }}>Plant</span>
           <span className="text-gray-600">&</span>
-          <span style={{ color: ELEMENT_INFO.metal.color }}>Metal</span>
+          <span style={{ color: ELEMENT_HEX.metal }}>Metal</span>
         </div>
         <div className="flex items-center gap-1 flex-wrap">
           <span style={{ color: ELEMENT_INFO.plant.color }}>Plant</span>
           <span className="text-gray-600">&</span>
-          <span style={{ color: ELEMENT_INFO.metal.color }}>Metal</span>
+          <span style={{ color: ELEMENT_HEX.metal }}>Metal</span>
           <span className="text-gray-500 mx-1">→</span>
           <span style={{ color: ELEMENT_INFO.water.color }}>Water</span>
           <span className="text-gray-600">&</span>
