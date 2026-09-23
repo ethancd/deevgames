@@ -305,13 +305,20 @@ function replayWitness(state: GameState, invader: PlayerId, line: readonly AIAct
 }
 
 /**
- * SU §8.1, verified through the packed gate, in its PHASING shape: at
- * `clock = INACTIVITY_LIMIT - 1` a PROVEN home checkmate resolves as soon as the
- * invader's own `END_ACTION` has settled upkeep and entered Prepare — before the
- * hand-off would tick the LAST quiet ply — and so beats the draw, while an
- * UNPROVEN occupation (a rescue exists) survives Prepare and is still drawn at
- * the hand-off. The clock comes from the limit rather than being written out as
- * 9, so the fixture still straddles the boundary now A4 has moved it to twenty.
+ * SU §8.1, verified through the packed gate, in its PHASING shape: a PROVEN
+ * home checkmate, a few plies short of the kill clock's limit, resolves as
+ * soon as the invader's own `END_ACTION` has settled upkeep and entered
+ * Prepare — before the hand-off would tick the next quiet ply — and so beats
+ * the kill clock, while an UNPROVEN occupation (a rescue exists) survives
+ * Prepare and is still resolved by the kill clock at the LAST quiet ply's
+ * hand-off (`muju-phasing-3`, 2026-09-22, `src/game/inactivity.ts`): a tie in
+ * mined totals draws, an unequal one decides the game outright. `#` also has
+ * its own clock-relative boundary, ONE PLY EARLIER than the hand-off's:
+ * `killClockForbidsCheckmate` vetoes the award whenever it would predict an
+ * invader turn start the clock cannot guarantee (see the mate case below for
+ * the exact count). Clocks come from the limit rather than being written out
+ * as literals, so the fixture still straddles both boundaries now A4 has
+ * moved the limit from 10 to twenty.
  *
  * Under Phasing the MOVE onto the corner adjudicates NOTHING: `resolveHomeCheckmate`
  * returns the state untouched outside Prepare (homeCheckmate.ts:179), which is
@@ -323,7 +330,11 @@ export function clockFixture(): boolean {
   const undo = newUndo();
   const keep = newKeepSetTable();
 
-  const build = (rescuer: Unit | null): GameState => {
+  const build = (
+    rescuer: Unit | null,
+    gained: { white: number; black: number } = { white: 0, black: 0 },
+    plies: number = INACTIVITY_LIMIT - 1,
+  ): GameState => {
     const units: Unit[] = [
       // Black Hi one step from White's corner, ready to walk in.
       makeUnit('invader', 'fire_1', 'black', 1, 0),
@@ -340,18 +351,16 @@ export function clockFixture(): boolean {
       inactivityRule: 'on',
       upkeepPending: false,
       reviewUpkeep: { white: false, black: false },
-      // One ply SHORT of the draw, whatever the draw is: the point of the
-      // fixture is that END_ACTION adjudicates a mate BEFORE the hand-off that
-      // would have ended the same position as an inactivity draw, and that only
-      // bites on the last quiet ply. A literal here would have quietly stopped
-      // testing anything the moment A4 moved the limit from 10 to 20.
-      inactivityPlies: INACTIVITY_LIMIT - 1,
+      // Caller-chosen ply relative to the kill clock's limit, whatever that
+      // is: a literal here would have quietly stopped testing anything the
+      // moment A4 moved the limit from 10 to 20.
+      inactivityPlies: plies,
       progressThisTurn: false,
       phase: 'playing',
       board: { cells: buildCells(), units, initialResourceLayers: [...UNEQUAL_ROUTES_MAP] },
       players: {
-        white: { id: 'white', resources: 0, startCorner: { x: 0, y: 0 }, resourcesGained: 0, resourcesUpkeep: 0 },
-        black: { id: 'black', resources: 0, startCorner: { x: 9, y: 9 }, resourcesGained: 0, resourcesUpkeep: 0 },
+        white: { id: 'white', resources: 0, startCorner: { x: 0, y: 0 }, resourcesGained: gained.white, resourcesUpkeep: 0 },
+        black: { id: 'black', resources: 0, startCorner: { x: 9, y: 9 }, resourcesGained: gained.black, resourcesUpkeep: 0 },
       },
       turn: { currentPlayer: 'black', phase: 'action', actionsRemaining: 4, turnNumber: 9 },
       winner: null,
@@ -381,9 +390,18 @@ export function clockFixture(): boolean {
     return { replica: p, canonical, afterMove };
   };
 
-  // (a) Proven mate: nobody can answer, so END_ACTION wins at `INACTIVITY_LIMIT - 1`
-  // — before the hand-off, which is where the last quiet ply would have drawn.
-  const mate = step(build(null));
+  // (a) Proven mate: nobody can answer, so END_ACTION should win outright — but
+  // ONLY if `killClockForbidsCheckmate` (`src/game/inactivity.ts`) does not veto
+  // it first. That gate is `muju-phasing-3` (2026-09-22): `#` predicts the
+  // invader's NEXT turn start, and the kill clock forbids the award whenever the
+  // hand-off this turn would produce a count `c ≥ limit - 1` (9 of 10) — one ply
+  // EARLIER than the terminal ply itself, because a count of exactly 9 means the
+  // defender's own reply would already be the tenth (clock-ending) ply, so the
+  // invader's predicted next turn start is not guaranteed. `INACTIVITY_LIMIT - 1`
+  // (9) plies in — this fixture's old boundary, and where cases (b)/(c) still
+  // sit — therefore now FORBIDS the mate; the latest ply that still allows it is
+  // `INACTIVITY_LIMIT - 3` (7), which produces a hand-off count of 8 < 9.
+  const mate = step(build(null, undefined, INACTIVITY_LIMIT - 3));
   const mateOk =
     mate.afterMove.phase === 'playing' &&
     mate.replica.result === Result.BLACK_WIN &&
@@ -392,22 +410,49 @@ export function clockFixture(): boolean {
     mate.canonical.winner === 'black' &&
     mate.canonical.victoryReason === 'home-checkmate';
 
-  // (b) Unproven occupation: a White Radi sits next to A1 and kills the Hi, so
-  // Prepare is NOT a checkmate and the position survives to the hand-off, where
-  // the LAST quiet ply (`INACTIVITY_LIMIT`) ends it as a draw.
-  const rescued = step(build(makeUnit('rescuer', 'lightning_1', 'white', 10, 0)));
+  // (b) Unproven occupation, EQUAL mined totals: a White Radi sits next to A1
+  // and kills the Hi, so Prepare is NOT a checkmate and the position survives
+  // to the hand-off, where the LAST quiet ply (`INACTIVITY_LIMIT`) resolves
+  // the kill clock. The invader's own MOVE onto A1 auto-mines the crystal that
+  // sits under White's home corner (`UNEQUAL_ROUTES_MAP`), putting Black at 1
+  // before the hand-off even without a kill; White starts with a matching 1 so
+  // the totals TIE and `muju-phasing-3` draws — canonical
+  // `victoryReason: 'kill-clock'` with `winner: null`, replica
+  // `Reason.KILL_CLOCK` with `Result.DRAW`. (The `'inactivity'` reason/verdict
+  // is `muju-phasing-1`/`-2` only, and only for replaying an archived game
+  // recorded under that rule — never produced by live play, so never asserted
+  // here.)
+  const rescued = step(build(makeUnit('rescuer', 'lightning_1', 'white', 10, 0), { white: 1, black: 0 }));
   const occupiedOk = rescued.replica.result === Result.ONGOING && rescued.canonical.phase === 'playing';
 
   const p = rescued.replica;
   const canonicalEnd = apply(p, rescued.canonical, paMake(AKind.END_PLACE), { type: 'END_PLACE_PHASE' });
   const drawOk =
     p.result === Result.DRAW &&
-    p.reason === Reason.INACTIVITY &&
+    p.reason === Reason.KILL_CLOCK &&
     canonicalEnd.phase === 'victory' &&
     canonicalEnd.winner === null &&
-    canonicalEnd.victoryReason === 'inactivity';
+    canonicalEnd.victoryReason === 'kill-clock';
 
-  return mateOk && occupiedOk && drawOk;
+  // (c) The same unproven occupation, but with UNEQUAL mined totals: the kill
+  // clock is DECIDED rather than drawn. White starts at 2, Black at 5, and
+  // Black's own MOVE onto A1 mines one more (see (b)), so the hand-off totals
+  // are 2 vs 6: Black wins on the same last quiet ply that drew case (b) — the
+  // tie in (b) is not the only outcome the rule can produce, so this asserts
+  // the decided branch too.
+  const decided = step(build(makeUnit('rescuer', 'lightning_1', 'white', 10, 0), { white: 2, black: 5 }));
+  const decidedOccupiedOk = decided.replica.result === Result.ONGOING && decided.canonical.phase === 'playing';
+
+  const pDecided = decided.replica;
+  const canonicalDecidedEnd = apply(pDecided, decided.canonical, paMake(AKind.END_PLACE), { type: 'END_PLACE_PHASE' });
+  const decidedOk =
+    pDecided.result === Result.BLACK_WIN &&
+    pDecided.reason === Reason.KILL_CLOCK &&
+    canonicalDecidedEnd.phase === 'victory' &&
+    canonicalDecidedEnd.winner === 'black' &&
+    canonicalDecidedEnd.victoryReason === 'kill-clock';
+
+  return mateOk && occupiedOk && drawOk && decidedOccupiedOk && decidedOk;
 }
 
 export function runProverSurface(options: ProverSurfaceOptions): ProverSurfaceMetrics {
