@@ -622,7 +622,7 @@ export interface NodeTables {
   killNow: [KillTable, KillTable];   // what each side can kill THIS turn from this position (mover: actions left; other: 4)
   approach: Uint8Array;          // [MAX_SLOTS] ApproachClass of the cheapest enemy attacker of this slot
   retreats: Uint8Array;          // [MAX_SLOTS] retreat squares of that attacker outside our strike
-  chain: Int16Array;             // [MAX_SLOTS] Cleave-chain value (cc) exposed by this enemy tier-2+ unit
+  chain: Int16Array;             // [MAX_SLOTS] Cleave-chain value (cc) exposed by this enemy unit (any tier since muju-phasing-4)
   econ: [EconResult, EconResult];
 }
 export function allocTables(): NodeTables;
@@ -1017,7 +1017,7 @@ of the post-boundary position from the mover's perspective).
 + 100_000 · [kills a unit standing on MY corner]
 +  50_000 · [kills a unit whose killActions against me ≤ 4]          # remove the threat
 +   1_000 · victimValueCc / actionCost                                # MVV-LVA analogue (cost/action)
-+     600 · [Cleave continuation: attacker atkCount > 0 and tier allows]
++     600 · [Cleave continuation: attacker atkCount > 0 (no tier cap since muju-phasing-4)]
 +     400 · [move ends on the enemy corner]
 +     300 · anchorsVoidedBy(to)                                       # spawn denial
 +     200 · [move ends outside exposure[me] having started inside]    # retreat
@@ -1131,7 +1131,8 @@ minActionsToKill(target, attacker side, opts):
 
 Cost per target O((units + 6) × 4 × 5). `killTable` amortises with one multi-source BFS per side.
 `cleaveChain(v)`: for each square q in `reach(v, 3)` count own units adjacent to q that v one-shots
-(`killsInOne`); value = Σ of the `tier[v]` most valuable, capped by actions left after the approach.
+(`killsInOne`); value = Σ of the most valuable, capped by actions left after the approach (the `tier[v]` cap
+was removed with Cleave's tier cap in `muju-phasing-4`, 2026-09-23).
 Oracles (M7): exhaustive replica turn search on 2,000 positions with ≤ 8 own units (JF §1.1 sizing); the
 corner case must equal `homeCheckmate.ts:27-49`; the LH §4.1 Cleave probe (Kagari vs three adjacent Mujus
 kills 3 in 3 actions, spaced C1/E1/G1 kills 2 in 4).
@@ -1387,7 +1388,7 @@ charged **once**, as `Rent`; `PST_MINE` is rent-free; `EconDelta` subtracts `pst
 | 31 | ApproachStrand | Σ `material[u]·[approach[u] == STRAND]` | approach | L2 | −10 | SD P6 |
 | 32 | StrandPunish | Σ `material[a]` over enemy attackers stranded next to my unit and in `killNow[me]` next turn | approach+kill | L2 | 20 | SU addendum 20a |
 | 33 | KillAvailable | Σ `valueCc[target] / minActions` over `killNow[me]` | kill | L2 | 35 | EG G3 |
-| 34 | CleaveExposure | Σ `chain[v]` over enemy tier≥2 units | kill | L2 | −40 | archived t14 Hono B9→C8 |
+| 34 | CleaveExposure | Σ `chain[v]` over all enemy units (tier≥2 only before `muju-phasing-4`) | kill | L2 | −40 | archived t14 Hono B9→C8 |
 | 35 | AnchorFragility | `geom.fragility` | geom+kill | L2 | −120 | NK:11 |
 | 36 | BlockingDeficit | `max(0, 2 − blocking)` | geom | L2 | −150 | SU invariant 6 |
 | 37 | CornerInfiltration | `[own unit on the enemy corner or both enemy corner neighbours held by me]` | geom | L2 | 300 | every rectangle contains the corner (spawning.ts:8-29) |

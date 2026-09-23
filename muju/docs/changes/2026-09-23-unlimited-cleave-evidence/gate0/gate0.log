@@ -1,0 +1,10 @@
+gate0 start 2026-09-23T18:33:06Z base 63138eab + working tree (unlimited cleave) load 15.39 7.74 7.27
+== perft-canonical: npm run hard:perft -- --check (2026-09-23T18:33:06Z)
+== perft-canonical exit 0 (2026-09-23T18:33:13Z)
+== perft-replica: npm run hard:perft -- --check --engine replica (2026-09-23T18:33:13Z)
+== perft-replica exit 0 (2026-09-23T18:33:14Z)
+== fuzz: npm run hard:fuzz -- --actions 20000 --seed 7101 (2026-09-23T18:33:14Z)
+== fuzz exit 0 (2026-09-23T18:33:33Z)
+== determinism: npm run hard:determinism -- --engine hard@desktop --work 50000 --positions 4 (2026-09-23T18:33:33Z)
+== determinism exit 0 (2026-09-23T18:33:35Z)
+gate0 done 2026-09-23T18:33:35Z

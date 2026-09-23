@@ -1,0 +1,6 @@
+
+> elemental-tactics@0.1.0 hard:perft
+> node --import tsx lab/hard-ai/perft/run.ts --check
+
+hard:perft --check: wrote /Users/ashkie/src/deevgames-cleave/muju/lab/results/hard-ai-verify/perft.json
+{"ruleset":"phasing","perftActions_initial_4":14959,"perftMidStates_initial":1053,"perftTurns_initial":797,"standardTriple":"checked","phasingActions_initial":14959,"phasingMidStates_initial":1850,"phasingTurns_initial":797,"phasingInitialLimits":{"act":4,"prepare":0},"fixturesChecked":7,"fixturesMismatch":0,"digestMismatches":0,"replicaAgreed":true,"mismatches":0,"openings":797,"engine":"canonical","git":"63138eab637fa6ac95f93ae6c218ceaea4e9ad00","node":"v24.11.1","at":"2026-09-23T18:33:13.037Z"}

@@ -15,7 +15,8 @@
  * never agreed to. Nothing is thrown away: the board, players and score survive.
  */
 import { afterEach, expect, it } from 'vitest';
-import { createInitialGameState } from '../src/game/board';
+import { createInitialGameState, createUnit } from '../src/game/board';
+import { isLegalAction } from '../src/game/legality';
 import { startHistory } from '../src/game/analysis';
 import { INACTIVITY_LIMIT, INACTIVITY_WARNING, LEGACY_INACTIVITY_LIMIT } from '../src/game/inactivity';
 import { loadGameHistory, loadGameState, saveGameState, SCHEMA_VERSION, PHASING_1_DRAW_LIMIT } from '../src/utils/persistence';
@@ -27,7 +28,7 @@ const write = (schemaVersion: number, state: unknown, history?: unknown) =>
   localStorage.setItem(KEY, JSON.stringify({ schemaVersion, timestamp: 0, state, history }));
 
 it('pins the schema and the three clocks it can adjudicate a save under', () => {
-  expect(SCHEMA_VERSION).toBe(10);
+  expect(SCHEMA_VERSION).toBe(11);
   expect(INACTIVITY_LIMIT).toBe(10);
   expect(INACTIVITY_WARNING).toBe(7);
   expect(LEGACY_INACTIVITY_LIMIT).toBe(20);
@@ -145,8 +146,27 @@ it('(g) a schema-9 unfinished save restarts at 0 and stamps muju-phasing-3; a fi
   expect(loaded).toMatchObject({ phase: 'victory', winner: null, victoryReason: 'inactivity', inactivityPlies: LEGACY_INACTIVITY_LIMIT });
 });
 
+// Owner decision 2026-09-23 (SPEC v3.4, J-025): a schema-10 (`muju-phasing-3`)
+// save continues under `muju-phasing-4`. Its kill clock is the live one, so it
+// is carried over, not restarted; only the Cleave tier cap is gone.
+it('continues a schema-10 (muju-phasing-3) save under the uncapped chain, keeping its kill clock', () => {
+  const state = createInitialGameState(undefined, undefined, 0, 'phasing');
+  state.inactivityPlies = 6;
+  const hi = createUnit('fire_1', 'white', { x: 5, y: 5 });
+  hi.hasAttacked = true; hi.attackedThisTurn = ['already-killed']; hi.lastAttackKilled = true;
+  state.board.units = [...state.board.units, hi, createUnit('plant_1', 'black', { x: 5, y: 4 })];
+  write(10, state);
+  const resumed = loadGameState()!;
+  expect(resumed.phase).toBe('playing');
+  expect(resumed.inactivityPlies).toBe(6);
+  expect(resumed.board).toEqual(state.board);
+  expect(stored().schemaVersion).toBe(SCHEMA_VERSION);
+  // A tier-1 Hi whose last attack killed may attack again: muju-phasing-3 said no.
+  expect(isLegalAction(resumed, { type: 'ATTACK', unitId: hi.id, targetPosition: { x: 5, y: 4 } })).toBe(true);
+});
+
 it('still refuses save schemas it never supported', () => {
-  for (const schemaVersion of [1, 2, 3, 4, 11]) {
+  for (const schemaVersion of [1, 2, 3, 4, 12]) {
     write(schemaVersion, createInitialGameState(undefined, undefined, 0, 'phasing'));
     expect(loadGameState()).toBeNull();
     expect(localStorage.getItem(KEY)).toBeNull();

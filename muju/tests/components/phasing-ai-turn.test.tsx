@@ -116,7 +116,7 @@ it('copies a replayable report from any local game, with no opt-in', async () =>
   const compact = writeText.mock.calls[0][0] as string, parsed = parseCompactReport(compact);
   // Pin the literal target revision too, so a stale `PHASING_RULES_REVISION`
   // cannot silently make this test self-referential.
-  expect(PHASING_RULES_REVISION).toBe('muju-phasing-3');
+  expect(PHASING_RULES_REVISION).toBe('muju-phasing-4');
   expect(compact).toMatch(new RegExp(`^muju/2 phasing ${PHASING_RULES_REVISION} \\| easy quick v2 \\| T\\d+ black action `));
   expect(compact).toContain('note the summon looked pointless');
   expect(compact).toContain('last end; end');
@@ -134,7 +134,7 @@ it('copies a replayable report from any local game, with no opt-in', async () =>
   // (`src/utils/positionReport.ts`, which no Stage-1 lane owns).
   expect(report.kind).toBe('muju-phasing-preview-report');
   expect(report.rulesRevision).toBe(PHASING_RULES_REVISION);
-  expect(report.rulesRevision).toBe('muju-phasing-3');
+  expect(report.rulesRevision).toBe('muju-phasing-4');
   expect(report.ruleset).toBe('phasing');
   expect(report.engine).toBe('v2');
   expect(report.lastTurnActions.map((a: { type: string }) => a.type)).toEqual(['END_ACTION_PHASE', 'END_PLACE_PHASE']);

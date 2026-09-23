@@ -114,7 +114,7 @@ describe('authoritative shared rooms', () => {
     expect(version(explicit.room.id)).toBe(PHASING_RULES_VERSION);
     expect(omitted.room.state.ruleset).toBe('phasing');
     // `muju-online-5` belongs to the unmerged codex/phasing-only-canonical branch.
-    expect(PHASING_RULES_VERSION).toBe('muju-phasing-3');
+    expect(PHASING_RULES_VERSION).toBe('muju-phasing-4');
     // Named, never written: no room has carried it since 2026-09-21.
     expect(RETIRED_STANDARD_VERSION).toBe('muju-online-6');
     expect(db.prepare("SELECT COUNT(*) AS n FROM rooms WHERE json_extract(data, '$.rulesVersion') = ?").get(RETIRED_STANDARD_VERSION)!.n).toBe(0);
@@ -155,6 +155,81 @@ describe('authoritative shared rooms', () => {
     expect(stored.state.inactivityPlies).toBe(8);
     expect(stored.state.board).toEqual(before.state.board);
     expect(reopened.listActive().map(r=>r.id)).not.toContain(id);
+  });
+  // Owner decision 2026-09-23 (SPEC v3.4, J-025): muju-phasing-4 only lifts the
+  // Cleave tier cap, so an UNFINISHED, unarchived muju-phasing-3 room continues
+  // under it — restamped once at startup, everything else byte-for-byte. A
+  // finished or archived muju-phasing-3 room is retired like every other.
+  it('continues an unfinished muju-phasing-3 room under muju-phasing-4, keeping board and kill clock', () => {
+    const dir=mkdtempSync(join(tmpdir(),'muju-upgrade-'));directories.push(dir);
+    const path=join(dir,'rooms.sqlite'),store=new RoomStore(path);stores.push(store);
+    const host=store.create({name:'Human',side:'white'});
+    store.join(host.room.id,{name:'Agent',inviteCode:host.inviteCode});
+    const id=host.room.id,before=store.get(id);
+    const db=new DatabaseSync(path);
+    db.prepare("UPDATE rooms SET data = json_set(data, '$.rulesVersion', 'muju-phasing-3', '$.state.inactivityPlies', 6) WHERE id = ?").run(id);
+    db.close();
+    const reopened=new RoomStore(path);stores.push(reopened);
+    const resumed=reopened.get(id,host.credentials.token);
+    expect(resumed.state.board).toEqual(before.state.board);
+    expect(resumed.state.inactivityPlies).toBe(6);
+    expect(reopened.listActive().map(r=>r.id)).toContain(id);
+    const played=reopened.act(id,host.credentials.token,request(resumed.revision,[{type:'END_ACTION_PHASE'}],'upgraded-play'));
+    expect(played.revision).toBeGreaterThan(resumed.revision);
+    const after=new DatabaseSync(path);
+    const stored=JSON.parse(after.prepare('SELECT data FROM rooms WHERE id = ?').get(id)!.data as string) as {rulesVersion:string};
+    after.close();
+    expect(stored.rulesVersion).toBe(PHASING_RULES_VERSION);
+    expect(stored.rulesVersion).toBe('muju-phasing-4');
+  });
+  it.each(['finished','archived'] as const)('retires a %s muju-phasing-3 room instead of upgrading it', kind => {
+    const dir=mkdtempSync(join(tmpdir(),'muju-upgrade-'));directories.push(dir);
+    const path=join(dir,'rooms.sqlite'),store=new RoomStore(path);stores.push(store);
+    const host=store.create({name:'Human',side:'white'});
+    store.join(host.room.id,{name:'Agent',inviteCode:host.inviteCode});
+    const id=host.room.id;
+    const db=new DatabaseSync(path);
+    if(kind==='finished') db.prepare("UPDATE rooms SET data = json_set(data, '$.rulesVersion', 'muju-phasing-3', '$.state.phase', 'victory', '$.state.winner', 'white', '$.state.victoryReason', 'elimination') WHERE id = ?").run(id);
+    else db.prepare("UPDATE rooms SET data = json_set(data, '$.rulesVersion', 'muju-phasing-3', '$.archivedAt', '2026-09-22T00:00:00.000Z'), archived_at = ? WHERE id = ?").run(Date.parse('2026-09-22T00:00:00.000Z'),id);
+    db.close();
+    const reopened=new RoomStore(path);stores.push(reopened);
+    let code:string|undefined;
+    try { reopened.get(id); } catch (error) { code=(error as {code?:string}).code; }
+    expect(code).toBe('RULES_CHANGED');
+    const after=new DatabaseSync(path);
+    const row=after.prepare('SELECT data, archived_at, idle_at, deadline_at, stage_at FROM rooms WHERE id = ?').get(id)!;
+    after.close();
+    const stored=JSON.parse(row.data as string) as {rulesVersion:string};
+    expect(stored.rulesVersion).toBe('muju-phasing-3');
+    // Out of the scheduler and the room cap for good: archived in the lifecycle
+    // columns, listed as retired, and never retried by `settleDue`.
+    expect(row.archived_at).not.toBeNull();
+    if(kind==='finished') expect([row.idle_at,row.deadline_at,row.stage_at]).toEqual([null,null,null]);
+    expect(reopened.listArchived().rooms.find(r=>r.id===id)).toMatchObject({retiredRules:true});
+    expect(reopened.listActive().map(r=>r.id)).not.toContain(id);
+  });
+  it('archives a finished muju-phasing-3 room past its idle deadline without a scheduler retry loop', async () => {
+    const dir=mkdtempSync(join(tmpdir(),'muju-upgrade-'));directories.push(dir);
+    const path=join(dir,'rooms.sqlite'),store=new RoomStore(path);stores.push(store);
+    const host=store.create({name:'Human',side:'white'});
+    store.join(host.room.id,{name:'Agent',inviteCode:host.inviteCode});
+    const id=host.room.id;
+    const db=new DatabaseSync(path);
+    db.prepare("UPDATE rooms SET data = json_set(data, '$.rulesVersion', 'muju-phasing-3', '$.state.phase', 'victory', '$.state.winner', 'black', '$.state.victoryReason', 'elimination'), idle_at = ? WHERE id = ?").run(Date.now()-1000,id);
+    const before=db.prepare('SELECT data FROM rooms WHERE id = ?').get(id)!.data as string;
+    db.close();
+    const errors=vi.spyOn(console,'error').mockImplementation(()=>{});
+    try {
+      const reopened=new RoomStore(path);stores.push(reopened);
+      await new Promise(resolve=>setTimeout(resolve,600));
+      reopened.listActive();
+      expect(errors).not.toHaveBeenCalled();
+      const after=new DatabaseSync(path);
+      const row=after.prepare('SELECT data, archived_at FROM rooms WHERE id = ?').get(id)!;
+      after.close();
+      expect(row.data).toBe(before);
+      expect(row.archived_at).not.toBeNull();
+    } finally { errors.mockRestore(); }
   });
   it('keeps reusable invitations private and never exposes private credentials in snapshots', () => {
     const { store, host, guest, id } = setup();

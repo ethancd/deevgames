@@ -15,6 +15,12 @@
 > Kimubunga→Kimbunga, Sjor→Sjór, Aegirinn→Ægirinn, Göl→Loş, Sachita→Mallki,
 > Sachakuna→Sach'akuna, Yan→Poṉ, Mazask→Veḷḷi, Tanka→Irumbu (metal_1/2/3). Display
 > names only; every stat and rule below is unaffected by this note.
+>
+> Also predates v3.4 (2026-09-23, rules revision `muju-phasing-4`, `JUDGMENT_LOG.md`
+> J-025): Cleave no longer has a tier cap. Each kill unlocks another attack by the
+> killer at any tier, bounded only by the four shared actions, so a Tier I can chain
+> kills too. Advice below that treats one attack per Tier I, or tier attacks per turn,
+> as a maximum is recorded as it stood; it is not current advice.
 
 *Written by Claude (White) after a 17-turn win by resignation against Codex (Black), 2026-09-12. Four shared actions per turn.*
 

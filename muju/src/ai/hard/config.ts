@@ -156,15 +156,17 @@ export interface TimeConfig {
 }
 
 /**
- * The RULES REVISION this build replicates. `muju-phasing-3` (owner decision
- * 2026-09-22) is the KILL CLOCK: ten kill-free plies end the game, and the
- * higher mined total wins (Black's starting handicap counts, a tie draws) —
- * replacing `muju-phasing-2`'s twenty-ply inactivity DRAW. "Fixed definitions"
- * makes evidence non-poolable across revisions, so this string is part of every
- * book's compatibility descriptor (`book/probe.ts`) and a book built under
- * `muju-phasing-1` or `muju-phasing-2` can never be read by this build.
+ * The RULES REVISION this build replicates. `muju-phasing-4` (owner decision
+ * 2026-09-23) removes Cleave's tier cap: each kill unlocks another attack by
+ * the killer, bounded only by the four shared actions. It keeps
+ * `muju-phasing-3`'s KILL CLOCK (ten kill-free plies end the game on the higher
+ * mined total, Black's handicap included, a tie draws), which replaced
+ * `muju-phasing-2`'s twenty-ply inactivity DRAW. "Fixed definitions" makes
+ * evidence non-poolable across revisions, so this string is part of every
+ * book's compatibility descriptor (`book/probe.ts`) and a book built under any
+ * earlier revision can never be read by this build.
  */
-export const PHASING_RULES_REVISION = 'muju-phasing-3';
+export const PHASING_RULES_REVISION = 'muju-phasing-4';
 
 // --- eval/weights.ts ---
 /** Phasing meaning/units; indices 0–57 are preserved and 58–61 appended. */

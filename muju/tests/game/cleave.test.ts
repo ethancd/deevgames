@@ -24,24 +24,42 @@ function current(s: GameState, a: Unit) { return s.board.units.find(u=>u.id===a.
 afterEach(() => localStorage.clear());
 
 describe('Cleave', () => {
-  for (const tier of [1,2,3]) it(`Tier ${tier} stops at ${tier} paid lethal attacks`,()=>{
+  // muju-phasing-4 (SPEC v3.4, 2026-09-23): no tier cap. Every tier chains four
+  // lethal attacks, one per shared action; only the empty action pool stops it.
+  for (const tier of [1,2,3]) it(`Tier ${tier} chains four paid lethal attacks, bounded only by actions`,()=>{
     let {s,attacker}=arena(tier); const victims=s.board.units.slice(1,5);
-    for(let i=0;i<tier;i++) {
+    for(let i=0;i<4;i++) {
+      expect(canAttack(current(s,attacker))).toBe(true);
       s=attack(s,attacker,victims[i]);
       expect(s.board.units.some(u=>u.id===victims[i].id)).toBe(false);
       expect(getAttackCount(current(s,attacker))).toBe(i+1);
       expect(s.turn.actionsRemaining).toBe(3-i);
     }
-    expect(canAttack(current(s,attacker))).toBe(false);
-    expect(attack(s,attacker,victims[tier])).toBe(s);
+    // The chain is still live, but there is no action left to spend on it.
+    expect(canAttack(current(s,attacker))).toBe(true);
+    expect(isLegalAction(s,{type:'ATTACK',unitId:attacker.id,targetPosition:{x:9,y:8}})).toBe(false);
     const restored=startTurn(s,'white');
     expect(getAttackCount(current(restored,attacker))).toBe(0);
     expect(current(restored,attacker).lastAttackKilled).toBe(false);
     expect(canAttack(current(restored,attacker))).toBe(true);
   });
-  it('summons a Tier I that arrives next turn and cannot sweep three adjacent enemies',()=>{
+  it('the owner example: a Hi beside four Muju kills all four in one turn',()=>{
+    let s=createInitialGameState(undefined,4,0,'phasing');
+    const hi=createUnit('fire_1','white',{x:5,y:5});
+    const muju=[[5,4],[6,5],[5,6],[4,5]].map(([x,y])=>createUnit('plant_1','black',{x,y}));
+    s.board.units=[hi,...muju,createUnit('water_3','black',{x:9,y:8})];
+    for(const [i,target] of muju.entries()) {
+      expect(isLegalAction(s,{type:'ATTACK',unitId:hi.id,targetPosition:target.position})).toBe(true);
+      s=attack(s,hi,target);
+      expect(s.board.units.some(u=>u.id===target.id)).toBe(false);
+      expect(s.turn.actionsRemaining).toBe(3-i);
+    }
+    expect(s.board.units.filter(u=>u.definitionId==='plant_1')).toEqual([]);
+    expect(getAttackCount(current(s,hi))).toBe(4);
+  });
+  it('summons a Tier I that arrives next turn and sweeps three adjacent enemies',()=>{
     let s=createInitialGameState(undefined,4,0,'phasing');s.turn.phase='place';
-    s.board.units=[createUnit('plant_1','white',{x:4,y:4}),...[[5,4],[6,5],[5,6]].map(([x,y])=>createUnit('fire_1','black',{x,y}))];
+    s.board.units=[createUnit('plant_1','white',{x:4,y:4}),...[[5,2],[6,3],[5,4]].map(([x,y])=>createUnit('fire_1','black',{x,y})),createUnit('water_3','black',{x:9,y:8})];
     s.players.white.resources=3;s.players.white.resourcesGained=3;
     const place={type:'BUY_UNIT' as const,definitionId:'fire_1',position:{x:4,y:3}};
     expect(isLegalAction(s,place)).toBe(true);s=applyAction(s,place);
@@ -54,14 +72,17 @@ describe('Cleave', () => {
     s=applyAction(applyAction(s,{type:'END_ACTION_PHASE'}),{type:'END_PLACE_PHASE'});
     expect(s.turn).toMatchObject({currentPlayer:'white',phase:'action'});
     expect(s.pendingSummons).toEqual([]);
-    // Move the arrived unit to a square beside all three enemies.
+    // Move the arrived unit one step to the square beside all three enemies.
     const fresh=s.board.units.find(u=>u.owner==='white'&&u.position.x===4&&u.position.y===3)!;
     expect(fresh.placedThisTurn).toBe(false);
-    s=applyAction(s,{type:'MOVE',unitId:fresh.id,to:{x:5,y:5}});
-    const victims=s.board.units.filter(u=>u.owner==='black');
-    s=attack(s,fresh,victims[0]);expect(s.board.units.some(u=>u.id===victims[0].id)).toBe(false);
-    expect(attack(s,fresh,victims[1])).toBe(s);
-    expect(s.board.units.filter(u=>u.owner==='black')).toHaveLength(2);
+    s=applyAction(s,{type:'MOVE',unitId:fresh.id,to:{x:5,y:3}});
+    expect(s.turn.actionsRemaining).toBe(3);
+    const victims=s.board.units.filter(u=>u.owner==='black'&&u.definitionId==='fire_1');
+    for(const victim of victims) {
+      s=attack(s,fresh,victim);expect(s.board.units.some(u=>u.id===victim.id)).toBe(false);
+    }
+    expect(s.turn.actionsRemaining).toBe(0);
+    expect(s.board.units.filter(u=>u.owner==='black')).toHaveLength(1);
   });
   it('a nonlethal second hit closes a Tier III chain, even if another unit finishes that target',()=>{
     let {s,attacker}=arena(3);const first=s.board.units[1], tough=s.board.units[2], third=s.board.units[3];
@@ -82,19 +103,24 @@ describe('Cleave', () => {
   });
   it('paid movement preserves a live chain; exhausted actions still block it',()=>{
     let {s,attacker}=arena(2);const first=s.board.units[1], next=s.board.units[2];
+    const third=createUnit('fire_1','black',{x:7,y:4});s.board.units.push(third);
     s=attack(s,attacker,first);
     s=applyAction(s,{type:'MOVE',unitId:attacker.id,to:first.position});
     expect(s.turn.actionsRemaining).toBe(2);expect(canAttack(current(s,attacker))).toBe(true);
     s=applyAction(s,{type:'MOVE',unitId:attacker.id,to:{x:6,y:4}});
     s=attack(s,attacker,next);expect(s.turn.actionsRemaining).toBe(0);
-    expect(canAttack(current(s,attacker))).toBe(false);
-    const zero={...s,turn:{...s.turn,actionsRemaining:0}};
-    expect(isLegalAction(zero,{type:'ATTACK',unitId:attacker.id,targetPosition:s.board.units[1].position})).toBe(false);
+    // Two kills keep the chain live (no tier cap), but no action is left to use it.
+    expect(canAttack(current(s,attacker))).toBe(true);
+    expect(isLegalAction(s,{type:'ATTACK',unitId:attacker.id,targetPosition:third.position})).toBe(false);
+    expect(isLegalAction({...s,turn:{...s.turn,actionsRemaining:1}},{type:'ATTACK',unitId:attacker.id,targetPosition:third.position})).toBe(true);
   });
   it('round-trips live and spent chains through persistence without restoring attacks',()=>{
-    let {s,attacker}=arena(2);s=attack(s,attacker,s.board.units[1]);
+    let {s,attacker}=arena(1);s.board.units[2].definitionId='water_3';
+    s=attack(s,attacker,s.board.units[1]);
     saveGameState(s);s=loadGameState()!;expect(canAttack(current(s,attacker))).toBe(true);
-    s=attack(s,attacker,s.board.units[1]);saveGameState(s);s=loadGameState()!;
+    // The Ægirinn survives the Hi's hit, which closes the chain.
+    s=attack(s,attacker,s.board.units[1]);expect(s.board.units[1].definitionId).toBe('water_3');
+    saveGameState(s);s=loadGameState()!;
     expect(canAttack(current(s,attacker))).toBe(false);expect(getAttackCount(current(s,attacker))).toBe(2);
   });
   it('legacy mid-turn saves cannot infer Cleave from missing victims',()=>{

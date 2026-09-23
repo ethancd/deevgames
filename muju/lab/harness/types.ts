@@ -3,8 +3,8 @@ import type { AIAction } from '../../src/ai/types';
 import type { Rng } from './rng';
 
 /**
- * Every rules revision the lab can READ. Both are Phasing; they differ in one
- * number and that number decides results:
+ * Every rules revision the lab can READ. All are Phasing; each differs from the
+ * one before in a single rule, and that rule decides results:
  *
  *   - `muju-phasing-1` — inactivity draw at 10 plies (five hand-offs each).
  *     HISTORICAL. Every row measured before 2026-09-19 carries it.
@@ -12,10 +12,15 @@ import type { Rng } from './rng';
  *     (preregistration amendment A4, owner decision 2026-09-19). What resets
  *     the clock is unchanged: only an attack that removes a unit. Nothing else
  *     in the rules moved.
+ *   - `muju-phasing-3` — the kill clock: ten kill-free plies end the game on
+ *     the higher mined total, a tie draws (owner decision 2026-09-22).
+ *   - `muju-phasing-4` — Cleave has no tier cap: each kill unlocks another
+ *     attack, bounded only by the four shared actions (owner decision
+ *     2026-09-23). The clock is `-3`'s, unchanged. CURRENT.
  *
  * A record with NO `rulesVersion` is Standard and predates Phasing entirely.
  */
-export type RulesVersion = 'muju-phasing-1' | 'muju-phasing-2' | 'muju-phasing-3';
+export type RulesVersion = 'muju-phasing-1' | 'muju-phasing-2' | 'muju-phasing-3' | 'muju-phasing-4';
 
 /**
  * The revision this tree PLAYS. It is the single source of the value: the
@@ -28,7 +33,7 @@ export type RulesVersion = 'muju-phasing-1' | 'muju-phasing-2' | 'muju-phasing-3
  * Before A4 the same string was written out by hand in four places. It is one
  * constant now so a future revision cannot land in three of them.
  */
-export const HARNESS_RULES_VERSION = 'muju-phasing-3' as const satisfies RulesVersion;
+export const HARNESS_RULES_VERSION = 'muju-phasing-4' as const satisfies RulesVersion;
 
 /** The full, perfect-information game plus convenience fields for policies. */
 export interface BotView {

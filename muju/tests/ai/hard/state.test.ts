@@ -204,7 +204,7 @@ describe('Replica.isLegal', () => {
     expect(replica.isLegal(pAsleep, attack)).toBe(false);
     expect(replica.isLegal(pAsleep, paMake(AKind.MOVE, 0, 10))).toBe(false);
 
-    // One attack spent without a kill: tier 3 allows 3 attacks, but only a kill unlocks the next.
+    // One attack spent without a kill: only a kill unlocks the next.
     const spentNoKill = {
       ...base,
       board: { ...base.board, units: base.board.units.map((u, i) => (i === 0 ? { ...u, hasAttacked: true, attackedThisTurn: ['ghost'], lastAttackKilled: false } : u)) },
@@ -217,12 +217,19 @@ describe('Replica.isLegal', () => {
     };
     expect(replica.isLegal(replica.pack(spentWithKill), attack)).toBe(true);
 
-    // At the tier cap (3 attacks for a tier-3 unit) even a kill does not unlock a fourth.
-    const capped = {
+    // No tier cap since muju-phasing-4: three kills by a tier-3 unit unlock a fourth attack.
+    const fourth = {
       ...base,
       board: { ...base.board, units: base.board.units.map((u, i) => (i === 0 ? { ...u, hasAttacked: true, attackedThisTurn: ['a', 'b', 'c'], lastAttackKilled: true } : u)) },
     };
-    expect(replica.isLegal(replica.pack(capped), attack)).toBe(false);
+    expect(replica.isLegal(replica.pack(fourth), attack)).toBe(true);
+
+    // pack refuses an attack count no action budget can produce.
+    const impossible = {
+      ...base,
+      board: { ...base.board, units: base.board.units.map((u, i) => (i === 0 ? { ...u, hasAttacked: true, attackedThisTurn: ['a', 'b', 'c', 'd', 'e'], lastAttackKilled: true } : u)) },
+    };
+    expect(() => replica.pack(impossible)).toThrow(/attacks/);
   });
 
   it('rejects everything but RESIGN and PAY_UPKEEP while upkeep is pending', () => {
@@ -516,8 +523,15 @@ describe('Replica maintenance', () => {
     brokenDamage.damage[0] = 5;
     expect(() => replica.check(brokenDamage)).toThrow(/damage/);
 
+    // A tier-1 unit may legally reach four attacks (no tier cap); five exceeds the actions.
+    const fourAttacks = replica.pack(buildState({ units: [{ def: 'fire_1', owner: 'white', x: 3, y: 3 }] }));
+    fourAttacks.atkCount[0] = 4;
+    const fourKey = recomputeKturn(fourAttacks);
+    fourAttacks.kturnLo = fourKey.lo;
+    fourAttacks.kturnHi = fourKey.hi;
+    replica.check(fourAttacks);
     const brokenAtk = replica.pack(buildState({ units: [{ def: 'fire_1', owner: 'white', x: 3, y: 3 }] }));
-    brokenAtk.atkCount[0] = 2;
+    brokenAtk.atkCount[0] = 5;
     expect(() => replica.check(brokenAtk)).toThrow(/atkCount/);
 
     const brokenConservation = replica.pack(buildState({ units: [{ def: 'metal_3', owner: 'white', x: 3, y: 3 }] }));

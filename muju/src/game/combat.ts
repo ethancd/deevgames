@@ -9,11 +9,15 @@ export function getAttackCount(unit: Unit): number {
   return Math.max(unit.attackedThisTurn?.length ?? 0, unit.hasAttacked ? 1 : 0);
 }
 
-/** One initial attack; kills unlock another, up to the unit's tier. */
+/** Cleave under `muju-phasing-4` (SPEC v3.4 §4.2): no tier cap on the chain.
+ * `muju-phasing-3` and earlier capped it at the unit's tier (1/2/3). */
+export const CLEAVE_CHAIN = 'unbounded' as const;
+
+/** One initial attack; each of this unit's kills unlocks another, with no cap
+ * beyond the shared action pool. A surviving target ends the chain. */
 export function canAttack(unit: Unit): boolean {
   const count = getAttackCount(unit);
-  return unit.canActThisTurn && count < getUnitDefinition(unit.definitionId).tier
-    && (count === 0 || unit.lastAttackKilled === true);
+  return unit.canActThisTurn && (count === 0 || unit.lastAttackKilled === true);
 }
 
 /**

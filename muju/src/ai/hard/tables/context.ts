@@ -35,7 +35,6 @@
 import { DEAD, MAX_SLOTS, PEND_STRIDE, type PackedState, type Side } from '../types';
 import { bbNew, bbSet, type BB, type Scratch } from '../core/bits';
 import { ACTIONS_PER_TURN } from '../core/state';
-import { activeCatalog } from '../core/catalog';
 import { createDistanceCache, type DistanceCache, type ReachMemo } from '../core/movement';
 import { newSpawnInfo, spawnInfo, type SpawnInfo } from '../core/spawn';
 import { BOARD, CORNER } from '../core/tables';
@@ -108,7 +107,8 @@ export interface NodeTables {
   approach: Uint8Array;
   /** [MAX_SLOTS] retreat squares of that attacker outside our strike. */
   retreats: Uint8Array;
-  /** [MAX_SLOTS] Cleave-chain value (cc) exposed by this enemy tier-2+ unit. */
+  /** [MAX_SLOTS] Cleave-chain value (cc) exposed by this enemy unit — any tier
+   * since `muju-phasing-4` (no tier cap on Cleave). */
   chain: Int16Array;
   econ: [EconResult, EconResult];
   /** Monotone actually-executed forecast proof work; cache hits add zero. */
@@ -313,12 +313,12 @@ function buildLevel2(p: PackedState, sc: Scratch, ply: number, t: NodeTables): v
     t.retreats[slot] = APPROACH_RETREATS[owner][slot];
   }
 
-  // kill.ts — Cleave chains for the tier-2-and-up bodies (DESIGN §4.8: `chain`
-  // is "the value exposed by this enemy tier-2+ unit"; both sides are filled,
-  // since the feature is a symmetric difference).
-  const cat = activeCatalog();
+  // kill.ts — Cleave chains for every body. DESIGN §4.8 filled only tier-2+
+  // units, because a Tier I could never chain; under `muju-phasing-4` Cleave
+  // has no tier cap, so a Tier I chains too. Both sides are filled, since the
+  // feature is a symmetric difference.
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
-    if (p.sq[slot] === DEAD || cat.tier[p.defId[slot]] < 2) continue;
+    if (p.sq[slot] === DEAD) continue;
     const value = cleaveChain(p, t, slot, sc, ply);
     t.chain[slot] = value > 32767 ? 32767 : value;
   }

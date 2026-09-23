@@ -59,18 +59,30 @@ const PHASING3_HARNESS_EDITS: Record<string, string> = {
     'HARNESS_RULES_VERSION advanced to muju-phasing-3 and WinType gained kill-clock, the new decided terminal; nothing else in the file moved',
 };
 
+/**
+ * The `lab/harness/**` files the removal of Cleave's tier cap (`muju-phasing-4`,
+ * 2026-09-23, `docs/changes/2026-09-23-unlimited-cleave-SPEC.md`) changed under
+ * the p3 row, and why. p3 was the CURRENT reference until the rule underneath
+ * it moved; a Tier I that may now chain kills plays different games, so its
+ * bands are history exactly as p2's became under the kill clock, and there is
+ * no scripted reference at the live rules until a p4 campaign is played.
+ */
+const PHASING4_HARNESS_EDITS: Record<string, string> = {
+  'lab/harness/types.ts':
+    "HARNESS_RULES_VERSION advanced to muju-phasing-4, the RulesVersion union gained 'muju-phasing-4', and its doc comment lists -3 and -4; nothing else in the file moved",
+};
+
 const CAMPAIGNS = [
   { dir: 'lab/harness/results/p1-scripted-2026-09-18', rulesVersion: 'muju-phasing-1', current: false, edits: A4_HARNESS_EDITS },
   { dir: 'lab/harness/results/p2-scripted-2026-09-19', rulesVersion: 'muju-phasing-2', current: false, edits: PHASING3_HARNESS_EDITS },
-  { dir: 'lab/harness/results/p3-scripted-2026-09-22', rulesVersion: 'muju-phasing-3', current: true, edits: {} },
+  { dir: 'lab/harness/results/p3-scripted-2026-09-22', rulesVersion: 'muju-phasing-3', current: false, edits: PHASING4_HARNESS_EDITS },
 ] as const;
-// p3-scripted-2026-09-22 is now `current`: the kill clock (2026-09-22,
-// `docs/changes/2026-09-22-kill-clock-SPEC.md`) re-armed the "reference this
-// tree plays under" checks below, played fresh under muju-phasing-3
-// (`docs/changes/2026-09-22-p3-retune-SPEC.md` Lane P step 1). Its `edits` is
-// empty because this row was played by, and immediately committed with, the
-// live `lab/harness/**` bytes — nothing in the harness moved between the run
-// and the commit that pins it.
+// No row is `current` under muju-phasing-4 (2026-09-23): p3-scripted-2026-09-22
+// was played under the kill clock with Cleave still capped by tier, and the
+// "reference this tree plays under" checks below are dormant until a scripted
+// campaign is played at the uncapped chain. They are kept, not deleted, so that
+// campaign re-arms them — exactly as p3 re-armed them after the kill clock
+// (`docs/changes/2026-09-22-p3-retune-SPEC.md` Lane P step 1).
 
 describe.each(CAMPAIGNS)('scripted reference $dir', ({ dir: relDir, rulesVersion, current, edits }) => {
   const dir = path.join(root, relDir);

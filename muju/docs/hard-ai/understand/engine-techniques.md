@@ -69,7 +69,7 @@ zero actions) → Action (4 shared actions) → passive income → draw-clock up
   kills, otherwise chip damage accumulates into `damageTaken`.
   **[V]** `src/game/combat.ts:80-164`.
 - **Cleave**: a unit may attack once; each *kill it personally lands* unlocks one
-  more, capped at its tier (I:1, II:2, III:3). A surviving target ends that unit's
+  more, capped at its tier (I:1, II:2, III:3; cap removed 2026-09-23, `muju-phasing-4`). A surviving target ends that unit's
   chain for the turn. **[V]** `src/game/combat.ts:8-17`.
 - Chip damage heals completely at the *defender's* turn start, along with all
   action flags. **[V]** `src/game/board.ts:267-294`.

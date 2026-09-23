@@ -214,16 +214,15 @@ describe('minActionsToKill — candidate eligibility', () => {
       ],
     });
     expect(minActionsToKill(chaining.p, chaining.t, WHITE, slotAt(chaining.p, 4, 4), opts(), sc, 0, plan)).toBe(true);
-    expect(chaining.p.atkCount[slotAt(chaining.p, 3, 4)]).toBeLessThan(cat.tier[def('fire_2')]);
 
-    const capped = board({
+    const tierOne = board({
       units: [
         { def: 'plant_1', owner: 'black', x: 4, y: 4 },
         { def: 'fire_1', owner: 'white', x: 3, y: 4, atkCount: 1, lastAttackKilled: true },
       ],
     });
-    // fire_1 is tier 1: one attack per turn, kill or not.
-    expect(minActionsToKill(capped.p, capped.t, WHITE, slotAt(capped.p, 4, 4), opts(), sc, 0, plan)).toBe(false);
+    // muju-phasing-4: no tier cap — a tier-1 Hi whose last attack killed chains on.
+    expect(minActionsToKill(tierOne.p, tierOne.t, WHITE, slotAt(tierOne.p, 4, 4), opts(), sc, 0, plan)).toBe(true);
   });
 
   it('charges ceil(distance / speed) + 1 over BFS distance, not Manhattan', () => {
@@ -410,8 +409,8 @@ describe('cleaveChain', () => {
     expect(witness.square).toBe(3);
   });
 
-  it('is capped by the attacker’s tier, not by the number of victims', () => {
-    // A tier-1 Hi standing among three one-shot victims still gets one attack.
+  it('is not capped by the attacker’s tier (muju-phasing-4)', () => {
+    // A tier-1 Hi standing among three one-shot victims chains all three.
     const b = board({
       units: [
         { def: 'fire_1', owner: 'white', x: 4, y: 4 },
@@ -422,7 +421,7 @@ describe('cleaveChain', () => {
     });
     expect(power(WHITE, 'fire_1', 'plant_1')).toBeGreaterThanOrEqual(cat.def[def('plant_1')]);
     expect(cat.tier[def('fire_1')]).toBe(1);
-    expect(cleaveChain(b.p, b.t, slotAt(b.p, 4, 4), sc, 0)).toBe(mujuCc);
+    expect(cleaveChain(b.p, b.t, slotAt(b.p, 4, 4), sc, 0)).toBe(3 * mujuCc);
   });
 
   it('ignores victims the unit cannot one-shot', () => {
@@ -445,22 +444,27 @@ describe('cleaveChain', () => {
         { def: 'lightning_1', owner: 'black', x: 3, y: 4 },
       ],
     });
-    // tier 3 takes three hits, so this is a sum — but the ORDER is by value,
-    // which the two-action variant below exposes.
+    // Four actions take all three hits, so this is a sum — but the ORDER is by
+    // value, which the two-actions-left variant below exposes.
     expect(cleaveChain(b.p, b.t, slotAt(b.p, 4, 4), sc, 0)).toBe(
       (cat.cost[def('plant_1')] + cat.cost[def('fire_1')] + cat.cost[def('lightning_1')]) * 100,
     );
-    const capped = board({
+    // A Hi (speed 2) four squares away spends two actions reaching (4,4), so it
+    // has two left for the chain there, and every other square touches fewer
+    // victims or costs more to reach. With no tier cap, ACTIONS decide how many
+    // are taken, and the two most valuable (Muju and Poṉ, 5 each) beat Kimbunga (3).
+    const approach = board({
       units: [
-        { def: 'fire_2', owner: 'white', x: 4, y: 4 },
+        { def: 'fire_1', owner: 'white', x: 4, y: 0 },
         { def: 'plant_1', owner: 'black', x: 5, y: 4 },
-        { def: 'fire_1', owner: 'black', x: 4, y: 5 },
+        { def: 'metal_1', owner: 'black', x: 4, y: 5 },
         { def: 'lightning_1', owner: 'black', x: 3, y: 4 },
       ],
     });
-    expect(cat.tier[def('fire_2')]).toBe(2);
-    expect(cleaveChain(capped.p, capped.t, slotAt(capped.p, 4, 4), sc, 0)).toBe(
-      (cat.cost[def('plant_1')] + cat.cost[def('fire_1')]) * 100,
-    );
+    expect(cat.cost[def('lightning_1')]).toBeLessThan(cat.cost[def('metal_1')]);
+    const witness = cleavePlan(approach.p, approach.t, slotAt(approach.p, 4, 0), sc, 0, newCleavePlan());
+    expect(witness.kills).toBe(2);
+    expect(witness.actions).toBe(4);
+    expect(witness.valueCc).toBe((cat.cost[def('plant_1')] + cat.cost[def('metal_1')]) * 100);
   });
 });

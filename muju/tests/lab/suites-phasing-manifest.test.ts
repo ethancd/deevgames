@@ -75,7 +75,13 @@ const V3_MANIFEST_SHA256 = 'da3589338557f74329c72fc8a231967a2f3a89656b1405f573a6
  * not deleted, so the next suite-source edit after this bundle is committed
  * still has to be declared here rather than silently passing.
  */
-const KILL_CLOCK_ARTIFACT_EDITS: Record<string, string> = {};
+const KILL_CLOCK_ARTIFACT_EDITS: Record<string, string> = {
+  // 2026-09-23, `muju-phasing-4` (Cleave without a tier cap,
+  // `docs/changes/2026-09-23-unlimited-cleave-SPEC.md`): the first suite-source
+  // edit after this bundle was committed, declared here as this list promises.
+  'lab/hard-ai/suites/phasing/canonical.ts':
+    "currentRulesVersion keys on (limit, verdict, CLEAVE_CHAIN) instead of (limit, verdict), and RULES_VERSIONS gained 'muju-phasing-4' — the kill clock alone no longer separates muju-phasing-3 from muju-phasing-4",
+};
 
 describe('committed Phasing v3 release bundle', () => {
   it('keeps every artifact pin of the committed v3 bundle intact, except any declared edits', () => {
@@ -102,7 +108,16 @@ describe('committed Phasing v3 release bundle', () => {
   // authored against this tree's current `muju-phasing-3` rules and renamed
   // catalogue, so `loadBundle` succeeds without the source-binding mismatch
   // that superseded `fixtures/v2`.
-  it('still loads against the live tree through the measurement path loader', () => {
+  //
+  // Skipped again 2026-09-23: `muju-phasing-4` (Cleave without a tier cap)
+  // changed `src/game/combat.ts`, so v3-bundle's canonical source binding and
+  // rules revision no longer describe this tree, exactly as the kill clock
+  // superseded v2. Re-binding is a preregistration act the owner deferred to
+  // the next AI measurement campaign. A scratch re-authoring at this tree
+  // validated all 225 cases with no veto refusals or failed checks and moved
+  // only binding hashes — no position, expectation or verdict
+  // (`docs/changes/2026-09-23-unlimited-cleave-evidence/suite-bundle-p4/`).
+  it.skip('still loads against the live tree through the measurement path loader (superseded by muju-phasing-4; re-author with the next measurement)', () => {
     const { manifest: loaded, documents, identity } = loadBundle(MANIFEST);
     expect(identity.manifestSha256).toBe(V3_MANIFEST_SHA256);
     expect(hashJson(loaded)).toBe(V3_MANIFEST_SHA256);

@@ -965,7 +965,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
               cellInfo={selectedUnitCell}
               isPlacePhase={state.turn.phase === 'place' && interactive} isActionPhase={state.turn.phase === 'action' && interactive}
               resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView} inspectOnly={inspectOnly} showNextTier={observing}
-              onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer}
+              onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer} actionsRemaining={state.turn.actionsRemaining}
               showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} />
           : <div className={`selection-hint${showTurnTimer ? ' is-thinking' : ''}`}>
               {showTurnTimer && turnClock && <AIThinkingTimer budgetMs={turnClock.budgetMs} spentMs={turnClock.spentMs} searchingSince={turnClock.searchingSince} />}

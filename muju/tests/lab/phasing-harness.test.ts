@@ -81,10 +81,11 @@ describe('Phasing measurement substrate', () => {
     expect(record.incomeCurve).toHaveLength(INACTIVITY_LIMIT);
     expect(record.rulesVersion).toBe(HARNESS_RULES_VERSION);
     // 2026-09-22 muju-phasing-3: the coordinator advanced HARNESS_RULES_VERSION
-    // (lab/harness/types.ts) to the kill-clock revision; this literal pin
-    // tracks that live constant so a silent revert of the constant still
+    // (lab/harness/types.ts) to the kill-clock revision; 2026-09-23
+    // muju-phasing-4 advanced it again (Cleave without a tier cap). This literal
+    // pin tracks that live constant so a silent revert of the constant still
     // fails here.
-    expect(record.rulesVersion).toBe('muju-phasing-3');
+    expect(record.rulesVersion).toBe('muju-phasing-4');
     expect(replay!.steps[0].phase).toBe('action');
   });
 

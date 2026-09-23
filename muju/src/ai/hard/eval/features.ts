@@ -479,13 +479,13 @@ function killAvailableCc(p: PackedState, side: Side, t: NodeTables): Centi {
   return sum;
 }
 
-/** Σ `chain[v]` over the ENEMY's tier-2-and-up units — what they can harvest from `side`. */
-function cleaveExposureCc(p: PackedState, side: Side, t: NodeTables, cat: Catalog): Centi {
+/** Σ `chain[v]` over ALL the enemy's units — what they can harvest from `side`.
+ * Tier I counts since `muju-phasing-4` (Cleave has no tier cap). */
+function cleaveExposureCc(p: PackedState, side: Side, t: NodeTables): Centi {
   const enemy = (1 - side) as Side;
   let sum = 0;
   for (let slot = 0, limit = p.slotCount; slot < limit; slot++) {
     if (p.sq[slot] === DEAD || p.owner[slot] !== enemy) continue;
-    if (cat.tier[p.defId[slot]] < 2) continue;
     sum += t.chain[slot];
   }
   return sum;
@@ -553,7 +553,7 @@ function extractStage2(
     strandPunishCc(p, me, t, cat, SEEN_ME) - strandPunishCc(p, them, t, cat, SEEN_THEM),
   );
   out[F.KillAvailable] = div100(killAvailableCc(p, me, t) - killAvailableCc(p, them, t));
-  out[F.CleaveExposure] = div100(cleaveExposureCc(p, me, t, cat) - cleaveExposureCc(p, them, t, cat));
+  out[F.CleaveExposure] = div100(cleaveExposureCc(p, me, t) - cleaveExposureCc(p, them, t));
   out[F.AnchorFragility] = gMe.fragility - gThem.fragility;
   out[F.BlockingDeficit] = Math.max(0, 2 - gMe.blocking) - Math.max(0, 2 - gThem.blocking);
   out[F.CornerInfiltration] = cornerInfiltration(p, me) - cornerInfiltration(p, them);

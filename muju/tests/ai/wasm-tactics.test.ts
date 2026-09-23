@@ -141,15 +141,16 @@ for(const tier of [1,2]) it(`Tier ${tier} corridor requires kill, move, then ano
   s.board.units=[attacker,victim,createUnit('fire_1','black',{x:1,y:0}),...[0,1,2].map(x=>{
     const u=createUnit('metal_3','white',{x,y:1});u.canActThisTurn=false;return u;
   })];
-  const before=structuredClone(s), expected=tier===1?'disproved':'proved';
+  // muju-phasing-4: no tier cap, so the Tier I proves the corridor exactly as the Tier II does.
+  const before=structuredClone(s);
   const result=solver(s,victim.id,10000,new SearchBudget());
-  expect(result.status).toBe(expected);
-  expect(referenceTactics(s,victim.id,10000,new SearchBudget()).status).toBe(expected);
+  expect(result.status).toBe('proved');
+  expect(referenceTactics(s,victim.id,10000,new SearchBudget()).status).toBe('proved');
   expect(s).toEqual(before);
-  if(tier===2) {
-    expect(result.actions.map(a=>a.type)).toEqual(['ATTACK','MOVE','ATTACK']);
-    expect(applyActions(s,result.actions).turn.actionsRemaining).toBe(0);
-  }
+  expect(result.actions.map(a=>a.type)).toEqual(['ATTACK','MOVE','ATTACK']);
+  const after=applyActions(s,result.actions);
+  expect(after.turn.actionsRemaining).toBe(0);
+  expect(after.board.units.some(u=>u.id===victim.id)).toBe(false);
 });
 
 it.each([1,2])('Poṉ attacks at distance %s identically in JS and WASM without zero-speed traps', distance => {

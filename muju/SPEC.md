@@ -8,7 +8,19 @@ document and the code disagree, that is a bug in one of them: see
 of known divergences. The stat tables in §7 are transcriptions of
 `src/game/units.ts`, which is the canonical stat source.
 
-**Spec version:** v3.3 (2026-09-22) — replaces the inactivity draw clock with
+**Spec version:** v3.4 (2026-09-23) — **Cleave has no tier cap.** Every unit
+still begins its turn with one attack, and each of its own killing blows
+unlocks one further attack, now without limit: the only bound is the shared
+four-action pool, so one unit can make at most four attacks a turn. A Tier I
+can therefore chain exactly like a Tier III — a Hi beside four Muju kills all
+four with four actions. Everything else about Cleave is unchanged (§4.2).
+Advances the rules revision from `muju-phasing-3` to `muju-phasing-4`; every
+strength, ladder and suite record measured under the old revision is void for
+the new one. Unfinished `muju-phasing-3` games continue under the new rule.
+See §4.2, `JUDGMENT_LOG.md` J-025 and
+`muju/docs/changes/2026-09-23-unlimited-cleave-SPEC.md`.
+
+**Retained from v3.3** (2026-09-22) — replaces the inactivity draw clock with
 the **kill clock**: ten kill-free plies end the game on **mined totals**
 (higher wins; a tie draws) instead of drawing outright at twenty. Black's
 starting handicap counts toward Black's mined total. A predicted home
@@ -95,6 +107,12 @@ clock would end the game at or before the invader's own next turn start
 (`c ≥ 9`). Advances the rules revision from `muju-phasing-2` to
 `muju-phasing-3`. Entries at or before v3.2 describe the twenty-ply draw clock
 as it then stood and are history, not current rules.
+v3.4 (2026-09-23) removes the Cleave tier cap: a kill still unlocks the
+killer's next attack, but there is no longer a maximum of tier attacks per turn
+(formerly I: 1, II: 2, III: 3); the four shared actions are the only bound.
+Advances the rules revision from `muju-phasing-3` to `muju-phasing-4`. Entries
+at or before v3.3 (from v1.4 on) describe the tier-capped chain as it then
+stood and are history, not current rules.
 
 ---
 
@@ -144,15 +162,24 @@ Muju plays exactly one rule set. Every stored artefact still names the revision
 it was recorded under, and nothing is reinterpreted under a revision it was not
 recorded with.
 
-- **Online rooms.** Playable rooms are `muju-phasing-3` — the one revision new
+- **Online rooms.** Playable rooms are `muju-phasing-4` — the one revision new
   rooms are created under and the only one the server opens. `muju-online-2`,
   `muju-online-3`, `muju-online-4`, `muju-online-5`, `muju-online-6` (Standard),
   `muju-phasing-1` and `muju-phasing-2` are retired identifiers: those rows stay
   in the archive exactly as written, are listed as retired, and refuse to open
-  or mutate. They are never migrated in place.
-- **Local saves.** Save schema 10 resumes Phasing games only. A stored save whose
-  ruleset is not Phasing is moved byte-for-byte to a retired slot, never resumed
-  and never reinterpreted; it stays reviewable read-only.
+  or mutate. They are never migrated in place. `muju-phasing-3` is the one
+  deliberate exception (owner decision 2026-09-23): the change it precedes
+  only lifts a cap, and every stored unit field already means the same thing
+  under `muju-phasing-4`, so a `muju-phasing-3` room that is still playing and
+  not archived is restamped `muju-phasing-4` once, when the host starts, and
+  plays on under the uncapped chain from its next action. A finished or
+  archived `muju-phasing-3` room keeps its stamp and is retired like the rest.
+- **Local saves.** Save schema 11 resumes Phasing games only. A schema-10
+  (`muju-phasing-3`) save that is still playing resumes under the uncapped
+  chain and is restamped schema 11; its kill clock carries over unchanged,
+  since the clock's rule did not move. A stored save whose ruleset is not
+  Phasing is moved byte-for-byte to a retired slot, never resumed and never
+  reinterpreted; it stays reviewable read-only.
 - **Replays and move history.** Recorded boards, move labels and analysis text
   are frozen as written under the revision that produced them.
 - **Opening corpora.** `p1-dev`, `p1-val` and `p1-sealed` are Phasing corpora
@@ -161,8 +188,13 @@ recorded with.
   sha256. Only `p1-dev.jsonl` and `p1-val.jsonl` are in the repository:
   `p1-sealed.jsonl` is held outside it at mode 0600, with only its hash published,
   and is consumed once under the preregistered Gate 2 run.
-- **Strength records.** `docs/hard-ai/phasing/repair-2026-09-20/` was measured
-  under `muju-phasing-2` and remains valid. `docs/hard-ai/RELEASE-2026-09-18.md`
+- **Strength records.** No strength record yet exists for `muju-phasing-4`.
+  `docs/hard-ai/phasing/repair-2026-09-20/` was measured under `muju-phasing-2`
+  and `docs/hard-ai/RELEASE-2026-09-23-phasing-3-retune.md` (with
+  `docs/hard-ai/phasing/p3-retune-2026-09-22/`) under `muju-phasing-3`; each is
+  valid only for its own revision and is history, not evidence about current
+  play (see `docs/hard-ai/PHASING-4-UNLIMITED-CLEAVE-2026-09-23.md`).
+  `docs/hard-ai/RELEASE-2026-09-18.md`
   and every earlier Standard ladder, suite or balance study describe Standard and
   are valid only for the `standard-final` tag; they are history, not evidence
   about current play.
@@ -268,13 +300,18 @@ Upkeep is **not** paid at turn start. It is paid during the player's own turn, a
 
 ### 4.2 Cleave
 - Every unit begins its turn eligible to attack once.
-- **Killing the target** unlocks one further attack by that same unit, with a
-  maximum of **tier attacks per turn** (I: 1, II: 2, III: 3).
-- Each attack still costs **one shared action**. Moving between attacks
-  is allowed at the normal cost; it neither restores nor consumes attack eligibility.
+- **Killing the target** unlocks one further attack by that same unit. There is
+  **no tier cap**: every kill unlocks another, at any tier. (Through v3.3 the
+  chain was capped at tier attacks per turn, I: 1, II: 2, III: 3.)
+- Each attack still costs **one shared action**, so the four-action pool is the
+  only limit: one unit makes at most four attacks a turn. Example: a Hi (Fire I,
+  ATK 2, +1 against Plant) beside four Muju (DEF 3) kills all four in one turn.
+  Moving between attacks is allowed at the normal cost; it neither restores nor
+  consumes attack eligibility.
 - If a target survives, the attack chain ends for that unit this turn, including
   a zero-damage hit. A later kill by another unit does not reopen that chain.
-- A newly arrived Tier I can attack immediately but cannot attack twice.
+- A newly arrived unit can attack immediately, and its kills unlock further
+  attacks like any other unit's.
 - Combined attacks resolve individually; only the actual killing blow unlocks Cleave.
 - History includes eliminated targets (`attackedThisTurn`); `lastAttackKilled`
   records the result of this unit's last attack. Both reset on its owner's turn.

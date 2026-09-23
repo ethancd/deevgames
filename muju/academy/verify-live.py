@@ -42,6 +42,10 @@ assert 'The quiet-turn draw is retired.' in source
 assert 'Ten kill-free player turns, not twenty' in source,'Missing muju-phasing-3 kill-clock correction'
 assert "decided by each side's mined total" in source and "Black's starting handicap" in source
 assert 'Lessons R09 (the draw lesson) and R10 still teach the retired twenty-ply always-a-draw rule' in source,'Notice must name R09 (the draw lesson) and R10 as stating the superseded rule'
+assert source.count('id="cleave-notice"')==1,'Missing or duplicated Cleave notice'
+assert 'there is no longer a maximum by tier' in source,'Missing muju-phasing-4 Cleave correction'
+assert 'Lesson R03 still teaches the old limit of one, two or three attacks by tier' in source,'Notice must name R03 as stating the superseded cap'
+assert 'A surviving target still ends the chain' in source,'Notice must state what is unchanged'
 assert 'only an attack that removes a piece' in source,'Notice must state that what resets the clock is unchanged'
 assert len(videos)==len(set(videos))==16
 assert source.count('Video version 7 · Rules v2.8')==8

@@ -13,8 +13,10 @@ interface UnitInfoProps {
   isPlacePhase?: boolean; isActionPhase?: boolean; resources?: number;
   onPromote?: () => void; isEnemyView?: boolean; inspectOnly?: boolean; onClose?: () => void;
   currentPlayer?: PlayerId; showEnemyRange?: boolean; onToggleEnemyRange?: () => void; showNextTier?: boolean;
+  /** Shared actions left this turn: a live Cleave chain needs one to continue. */
+  actionsRemaining?: number;
 }
-export function UnitInfo({ phasingIn, unit, previewDefinitionId, cellInfo, isPlacePhase, isActionPhase, resources = 0, onPromote, isEnemyView, inspectOnly, onClose, currentPlayer, showEnemyRange, onToggleEnemyRange, showNextTier }: UnitInfoProps) {
+export function UnitInfo({ phasingIn, unit, previewDefinitionId, cellInfo, isPlacePhase, isActionPhase, resources = 0, onPromote, isEnemyView, inspectOnly, onClose, currentPlayer, showEnemyRange, onToggleEnemyRange, showNextTier, actionsRemaining }: UnitInfoProps) {
   const def = unit ? getUnitDefinition(unit.definitionId) : previewDefinitionId ? getUnitDefinition(previewDefinitionId) : null;
   if (!def) return null;
   const next = getNextTierDefinition(def.id);
@@ -32,7 +34,7 @@ export function UnitInfo({ phasingIn, unit, previewDefinitionId, cellInfo, isPla
       : isPlacePhase && unit.owner === currentPlayer ? <>
         <p>{!next ? nextStats : unit.placedThisTurn ? 'Placed this turn · promote next turn' : unit.promotedThisPlacement ? 'Already upgraded this placement' : nextStats}</p>
         {next && <button onClick={onPromote} disabled={!upgrade}>Promote · ◆ {cost} · rent {upkeepForTier(next.tier)}</button>}
-      </> : isActionPhase ? <p><span className="cleave-status" role="status">Attacks {getAttackCount(unit)}/{def.tier} · {!canAttack(unit) ? 'Attacks finished' : getAttackCount(unit) > 0 ? 'Cleave ready · 1 action' : def.tier > 1 ? 'Kill to continue' : 'One attack this turn'}</span></p> : null}
+      </> : isActionPhase ? <p><span className="cleave-status" role="status">Attacks {getAttackCount(unit)} · {!canAttack(unit) ? 'Attacks finished' : actionsRemaining === 0 ? 'No actions left' : getAttackCount(unit) > 0 ? 'Cleave ready · 1 action' : 'Kill to continue'}</span></p> : null}
       {unit && !phasingIn && cellInfo && <p className="unit-income">Takes {income} here at turn end</p>}
 
     </div>

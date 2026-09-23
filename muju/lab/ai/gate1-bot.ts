@@ -231,7 +231,7 @@ export function createGateBot(difficulty: GateDifficulty, solver: TacticalSolver
         exhausted: 'default upkeep or phase end' },
       dispatch: 'shipped whole-turn loop: one search per hand-off segment, plan replayed, re-searched only when ' +
         'the plan runs out or its head stops replaying legally (src/hooks/useAI.ts)',
-      resign: false, solver: 'wasm ABI 7; required' };
+      resign: false, solver: 'wasm ABI 8; required' };
     },
   };
 }

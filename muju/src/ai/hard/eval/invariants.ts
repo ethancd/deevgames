@@ -218,10 +218,11 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
   // --- 11: home left bare in front of a live invasion budget ---------------
   if (homeBare(p, t, side, cat)) bits |= bit(11);
 
-  // --- 12: an enemy tier-2+ body sits on a two-victim Cleave line ----------
+  // --- 12: an enemy body sits on a two-victim Cleave line -------------------
+  // Any tier since `muju-phasing-4`: Cleave has no tier cap, so a Tier I
+  // chains two kills exactly as a Tier II does.
   for (let slot = 0, limit = p.slotCount; slot < limit; slot++) {
     if (p.sq[slot] === DEAD || p.owner[slot] !== enemy) continue;
-    if (cat.tier[p.defId[slot]] < 2) continue;
     if (t.chain[slot] <= 0) continue;
     if (cleavePlan(p, t, slot, sc, ply, CLEAVE).kills >= 2) {
       bits |= bit(12);

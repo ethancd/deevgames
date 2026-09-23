@@ -181,7 +181,7 @@ export const rules = {
     'Act: spend up to 4 shared actions per turn. Movement is orthogonal through empty cells; cost is ceil(path length / speed). Speed 0 pieces cannot move, but may attack adjacent enemies. Attacks target orthogonally adjacent enemies and cost 1.',
     'END_ACTION_PHASE collects mining once, then pays upkeep from the resulting bank. It does not hand off. If upkeepPending, submit PAY_UPKEEP.',
     'Prepare (turn.phase=place): PROMOTE_UNIT once per actual piece, including arrivals this turn; BUY_UNIT pays now and commits type and empty legal square. END_PLACE_PHASE ends the full turn and hands over the clock.'],
-  combat: 'Attack ≥ remaining defense eliminates. Otherwise damage lasts until the defender’s turn starts. A unit gets one attack; its own killing blow unlocks another, up to its tier. Moving can repeat while actions remain.',
+  combat: 'Attack ≥ remaining defense eliminates. Otherwise damage lasts until the defender’s turn starts. A unit gets one attack; each of its own killing blows unlocks another, at any tier — the 4 shared actions are the only limit. Moving can repeat while actions remain.',
   elements: 'Fire/Lightning beats Plant/Metal beats Water/Shadow beats Fire/Lightning. Advantage +1 attack; disadvantage −1, minimum 0.',
   // The kill-clock sentence is built from the canonical constants so a rules
   // revision cannot leave the agent-facing text stating a previous limit or verdict.

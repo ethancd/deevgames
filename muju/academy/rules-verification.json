@@ -9,7 +9,8 @@
     "R02: C3 to C6 at Speed 2 costs 2 of 4 actions.",
     "R08: D7 to D4 and attack fits 4; D7 to D3 and attack requires 5.",
     "R06: all six elements use promotion costs 4 and 8, with no T4.",
-    "R03: Honō kills two DEF-3 Muju, then has no third attack.",
+    "R03: Honō kills two DEF-3 Muju and may attack a third time — no tier cap since muju-phasing-4 (R03 narration still states the 1/2/3 cap).",
+    "R03: a Tier I Hi beside four Muju kills all four, one per action; a surviving target still ends its chain.",
     "R09: the 10th kill-free ply ends the game on mined totals — the higher wins, counting Black's handicap; equal totals draw (R09 narration still says ten, always a draw).",
     "2026-09-22: catalogue display names renamed to Honō/Kimbunga/Sjór/Ægirinn/Loş/Mallki/Sach'akuna/Poṉ/Veḷḷi/Irumbu; IDs, stats and rules unchanged."
   ],

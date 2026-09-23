@@ -1,0 +1,16 @@
+
+Running 11 tests using 2 workers
+
+  ✓   1 e2e/ai-worker.spec.ts:19:1 › built worker loads hashed WASM and performs a coordinated home rescue (2.2s)
+  ✓   2 e2e/ai-worker.spec.ts:34:1 › menu responds during Hard search; mode switch terminates the old worker (3.0s)
+  ✓   4 e2e/ai-worker.spec.ts:59:1 › WASM fetch failure stays in the worker and exposes a usable JS fallback (513ms)
+  ✓   3 e2e/ai-worker.spec.ts:49:1 › restart during search cannot dispatch an old result into the new game (3.2s)
+  ✓   5 e2e/ai-worker.spec.ts:66:1 › pause terminates native computation and resume starts a fresh worker (2.5s)
+  ✓   6 e2e/ai-worker.spec.ts:73:1 › Hard worker executes kill, paid move, Cleave to clear home (2.3s)
+  ✓   8 e2e/cleave.spec.ts:33:1 › a new Tier I chains kills; the live chain survives reload and undo restores its first attack (1.1s)
+  ✓   9 e2e/cleave.spec.ts:54:1 › Tier II keeps Cleave through reload and pays one action for every further kill (870ms)
+  ✓  10 e2e/cleave.spec.ts:68:1 › a Hi among four Muju takes all four in one turn (890ms)
+  ✓  11 e2e/cleave.spec.ts:80:1 › a surviving target closes even a Tier III chain (608ms)
+  ✓   7 e2e/ai-worker.spec.ts:89:1 › Hard worker spends its fourth action on a capture before handing the turn back (7.4s)
+
+  11 passed (14.3s)

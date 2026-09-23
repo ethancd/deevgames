@@ -73,6 +73,14 @@ function synthetic(mode: Mode): Entry[] {
  * a future rules edit that voids this adoption (the way A7 voided A4's) will
  * flip these tests back to skipped rather than silently pass against stale
  * bands.
+ *
+ * 2026-09-23, rules revision muju-phasing-4 (Cleave without a tier cap): that
+ * is exactly what happened. A7 adopted Gate 1 at muju-phasing-3, whose p3
+ * bands were played with the tier cap, so `adoptedProtocol()` now refuses and
+ * the protocol-bound tests skip until an amendment re-freezes bands from a
+ * scripted campaign played at muju-phasing-4 (owner decision: strength
+ * measurement is a separate, later campaign; see
+ * `docs/hard-ai/PHASING-4-UNLIMITED-CLEAVE-2026-09-23.md`).
  */
 const GATE1_ADOPTED = (() => { try { adoptedProtocol(); return true; } catch { return false; } })();
 
@@ -80,7 +88,7 @@ describe('Gate 1 at the live rules revision', () => {
   it('either runs under an adopted protocol or refuses by naming the revision it needs', () => {
     if (GATE1_ADOPTED) { expect(adoptedProtocol().references.rulesVersion).toBe(RULES_VERSION); return; }
     expect(() => adoptedProtocol()).toThrow(`at rules revision ${RULES_VERSION}`);
-    expect(RULES_VERSION).toBe('muju-phasing-3');
+    expect(RULES_VERSION).toBe('muju-phasing-4');
   });
 });
 
