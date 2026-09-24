@@ -213,6 +213,22 @@ export const KILL_CLOCK_SOFT_CC: Centi = 200;
  * explores full-width at the top of the tree. */
 export const KILL_CLOCK_FORCED_HANDOFFS = 2;
 
+/**
+ * STRATEGOS W1.6 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.6), `EvalFix.clockLedger` only. CHOICE: `WIN_CC / 8`
+ * (125,000 cc). A kill-clock terminal whose root `ClockReading`
+ * (`strategy/clock.ts`) is only BOUNDED — the disjoint mined-total interval
+ * holds, but a kill or an earlier ending (home victory, upkeep elimination)
+ * is not yet ruled out — is worth more than `KILL_CLOCK_SOFT_CC`'s flat
+ * two-hand-off preference, because the reading has already established the
+ * disjoint interval `KILL_CLOCK_SOFT_CC`'s legacy path never computes; but it
+ * must stay far below `WIN_CC` scale, since "bounded" means precisely that a
+ * kill could still flip the verdict before the clock fires. Falsifier: the
+ * paired exam cases plan W1.13 builds, which must score a bounded verdict
+ * below a proven one and above a flat draw on the same corpus.
+ */
+export const BOUNDED_CLOCK_CC: Centi = WIN_CC / 8;
+
 /** The root position's clock, set by the engine when it packs the root. The
  * default makes every direct caller (tests, tools) treat the verdict as forced. */
 let killClockRootClock = INACTIVITY_LIMIT - 1;
@@ -259,8 +275,30 @@ export function killClockHandoffsFromRoot(): number {
   return INACTIVITY_LIMIT - rootClock;
 }
 
+/**
+ * STRATEGOS W1.6. `decidedCc` has no `EvalFix` of its own to read — DESIGN
+ * gives `terminalScore` no such parameter, and its signature is pinned
+ * (`tests/ai/hard/interfaces.test.ts:962`), so adding one is not an option.
+ * The installed `KillClockPolicy.reading` (`strategy/types.ts
+ * ClockReadingCore`) is used as the flag's proxy instead: `search/root.ts`
+ * installs a NON-null `reading` on exactly the searches that opted into
+ * `evalFix.clockLedger` (W1.6's change there), and leaves it `null` on every
+ * other search — `hard@desktop` and every other profile, always, even under
+ * `searchFix.killClockPolicy === 'ledger'` alone (W1.2) without the eval
+ * flag. So gating on "a reading is installed" is exactly gating on the flag,
+ * one level removed, and this branch is unreachable whenever the flag is off.
+ */
 function decidedCc(p: PackedState, ply: number): Centi {
-  if (p.reason === Reason.KILL_CLOCK && killClockHandoffsFromRoot() > KILL_CLOCK_FORCED_HANDOFFS) return KILL_CLOCK_SOFT_CC;
+  if (p.reason === Reason.KILL_CLOCK) {
+    const policy = getKillClockPolicy();
+    const reading = policy !== null ? policy.reading : null;
+    if (reading !== null) {
+      const proven = reading.verdict === 'proven-win' || reading.verdict === 'proven-loss';
+      if (proven || killClockHandoffsFromRoot() <= KILL_CLOCK_FORCED_HANDOFFS) return WIN_CC - ply * MATE_PLY_CC;
+      return BOUNDED_CLOCK_CC;
+    }
+    if (killClockHandoffsFromRoot() > KILL_CLOCK_FORCED_HANDOFFS) return KILL_CLOCK_SOFT_CC;
+  }
   return WIN_CC - ply * MATE_PLY_CC;
 }
 
