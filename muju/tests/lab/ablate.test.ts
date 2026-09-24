@@ -211,8 +211,19 @@ function weightArmLabel(name: (typeof ALL_WEIGHT_ARMS)[number]): string {
  * (`DESKTOP_WALL3000_HASH_PHASING_3`) byte for byte, so nothing else in the
  * configuration moved; the Cleave change lives in the engine's code, which the
  * rules revision is what names.
+ *
+ * 2026-09-23 purchase menu: the sixth move, and the first since the hand
+ * priors caused by the configuration itself. `gen.purchase` now enumerates
+ * every multiset (`maxMultisets` 35 → 209) and keeps 32 plans (was 12), and
+ * the Place-plan budgets went 16/8 → 24/12, so every class reaches the
+ * evaluator instead of `fire_1 ×1..4` alone. The superseded value is
+ * `DESKTOP_WALL3000_HASH_FIRE_MENU`.
  */
-const DESKTOP_WALL3000_HASH = 'e8d36cc0bcea8cedf8a672bb09ad46afa17f7a3963b963b2c4d3fa19cf499b84';
+const DESKTOP_WALL3000_HASH = '5de7ae20ba0b448a632d159a1633f73c8dc3c4ec628bf9658b18f6c970673a0d';
+/** The same arm under `muju-phasing-4` with the cheapest-first purchase menu
+ * (at bank >= 12, `fire_1 x1..4` only): every manifest recorded on 2026-09-23
+ * before the menu fix — including the LLM-vs-Hard pilot — quotes it. */
+const DESKTOP_WALL3000_HASH_FIRE_MENU = 'e8d36cc0bcea8cedf8a672bb09ad46afa17f7a3963b963b2c4d3fa19cf499b84';
 /** The same arm under `muju-phasing-3` (the kill clock, tier-capped Cleave):
  * every manifest recorded between 2026-09-22 and 2026-09-23 quotes it. */
 const DESKTOP_WALL3000_HASH_PHASING_3 = '65867011d62619f9436ce703ed7f37e7cc0caf6f1fccdf95fc8d4b0af4f1bbef';
@@ -312,8 +323,8 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     expect(armHardConfig('k96').genInterior.K).toBe(DESKTOP.genInterior.K);
     expect([...armHardConfig('action-width-wide').gen.action.widths]).toEqual([8, 6, 4, 3]);
     expect([...armHardConfig('action-width-narrow').gen.action.widths]).toEqual([4, 3, 2, 1]);
-    expect([armHardConfig('place-wide').gen.maxPlacePlans, armHardConfig('place-wide').genInterior.maxPlacePlans]).toEqual([32, 16]);
-    expect([armHardConfig('place-narrow').gen.maxPlacePlans, armHardConfig('place-narrow').genInterior.maxPlacePlans]).toEqual([8, 4]);
+    expect([armHardConfig('place-wide').gen.maxPlacePlans, armHardConfig('place-wide').genInterior.maxPlacePlans]).toEqual([48, 24]);
+    expect([armHardConfig('place-narrow').gen.maxPlacePlans, armHardConfig('place-narrow').genInterior.maxPlacePlans]).toEqual([12, 6]);
     // The reply node is `genInterior` (`search/pvs.ts generateAt`), so the
     // reply arm is the interior list and nothing else.
     expect([armHardConfig('reply-wide').kInterior, armHardConfig('reply-wide').genInterior.K]).toEqual([32, 32]);
@@ -335,7 +346,7 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     expect([iaw.K, iaw.kInterior]).toEqual([DESKTOP.K, DESKTOP.kInterior]);
 
     const ipw = armHardConfig('interior-place-wide');
-    expect(ipw.genInterior.maxPlacePlans).toBe(12);
+    expect(ipw.genInterior.maxPlacePlans).toBe(18);
     expect(ipw.gen.maxPlacePlans).toBe(DESKTOP.gen.maxPlacePlans);
     expect([...ipw.genInterior.action.widths]).toEqual([...DESKTOP.genInterior.action.widths]);
     expect([ipw.K, ipw.kInterior]).toEqual([DESKTOP.K, DESKTOP.kInterior]);
@@ -542,7 +553,9 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     // 2026-09-23 muju-phasing-4: revision string alone again; forcing
     // `muju-phasing-3` back reproduces the old hash
     // 9b05b441f7479e7fb7c3d57c6ea35d46c0cf2a41bef35f4b3b520b39da7748ef.
-    expect(arm.configHash).toBe('b98bfc2ee39009e0438efbb9713820dcc06e31b206f7cb24156695552ddf0006');
+    // 2026-09-23 purchase menu (every class on the menu, place plans 24/12):
+    // superseded b98bfc2ee39009e0438efbb9713820dcc06e31b206f7cb24156695552ddf0006.
+    expect(arm.configHash).toBe('4fb11bbfa17336b87d070b49aa9798e4ec0af019dd775833054b5db79fc21c6d');
     expect(hardConfigFor('ablate:search-iter-fit').searchFix?.iterFit).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -585,7 +598,9 @@ describe('ablation arm registry (E1.3: one factor per arm, full configurations r
     // 2026-09-23 muju-phasing-4: revision string alone again; forcing
     // `muju-phasing-3` back reproduces the old hash
     // 0d8777e2d8e73579e623023726ba056657f645a8f868c9d4b97456802d6bbc55.
-    expect(arm.configHash).toBe('c5ae1e8fcba8d70d12f7c19d2de97f9eaeb94845f3c3c5933dc376274bd78eea');
+    // 2026-09-23 purchase menu (every class on the menu, place plans 24/12):
+    // superseded c5ae1e8fcba8d70d12f7c19d2de97f9eaeb94845f3c3c5933dc376274bd78eea.
+    expect(arm.configHash).toBe('00fe38642826ebd4fcaf12c81fc19dafa9fe0fbd0c9ea847d199c85bee5bdb2c');
     expect(hardConfigFor('ablate:search-reach-cache').searchFix?.reachCache).toBe(true);
     expect(hardConfigFor('desktop').searchFix).toBeUndefined();
   });
@@ -657,11 +672,12 @@ describe('E4.2 search arms (factor `searchFix`)', () => {
     // until the 2026-09-20 hand priors replaced `DEFAULT_WEIGHTS`, nor the
     // `muju-phasing-2` identity it carried until the 2026-09-22 kill clock
     // advanced the revision again, nor the `muju-phasing-3` identity it carried
-    // until the 2026-09-23 removal of Cleave's tier cap. All six are kept so a
-    // reader of an older manifest can find the hash it quotes.
+    // until the 2026-09-23 removal of Cleave's tier cap, nor the fire-only
+    // purchase-menu identity it carried until the 2026-09-23 menu fix. All
+    // seven are kept so a reader of an older manifest can find the hash it quotes.
     for (const superseded of [DESKTOP_WALL3000_HASH_STANDARD, DESKTOP_WALL3000_HASH_PHASING_M4,
       DESKTOP_WALL3000_HASH_PHASING_1, DESKTOP_WALL3000_HASH_BOOTSTRAP_M6, DESKTOP_WALL3000_HASH_PHASING_2,
-      DESKTOP_WALL3000_HASH_PHASING_3]) {
+      DESKTOP_WALL3000_HASH_PHASING_3, DESKTOP_WALL3000_HASH_FIRE_MENU]) {
       expect(DESKTOP_WALL3000_HASH).not.toBe(superseded);
       expect(requireArm('base').configHash).not.toBe(superseded);
     }
