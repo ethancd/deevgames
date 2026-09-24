@@ -6,7 +6,7 @@ import { phaseEndAction } from '../../src/game/legality';
 import { AIWorkerClient, type WorkerLike } from '../../src/ai/worker/client';
 import { createSearchHandler, legalPrefix, type HardEngineFactory } from '../../src/ai/worker/handler';
 import { AI_PROTOCOL, type SearchRequest, type SearchResponse, type HardSearchStats, type TurnResult } from '../../src/ai/worker/protocol';
-import { placeholderWeights } from '../../src/ai/hard/config';
+import { placeholderWeights, strategosPatch } from '../../src/ai/hard/config';
 import type { HardConfig } from '../../src/ai/hard/config';
 import type { GameState } from '../../src/game/types';
 import { instantiateTactics, type TacticalSolver } from '../../src/ai/wasm/kernel';
@@ -145,6 +145,30 @@ it('strips a placeholder weight vector so the engine substitutes its trained wei
   const trained = { ...placeholderWeights(), version: 7, label: 'trained' };
   await handler({ ...request(), gameId: 'other', mode: 'turn', engine: 'hard', hard: { weights: trained } });
   expect(stub.patches[1]).toEqual({ weights: trained });
+});
+
+/**
+ * STRATEGOS W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.1b). `strategosPatch()` (`useAI.ts`'s `?hardEngine=strategos` path) never
+ * carries a `weights` key at all — unlike the placeholder-stripping case
+ * above, there is nothing to strip. This pins the OTHER branch of `hardPatch`
+ * (`patch?.weights === undefined` — see its doc comment): the patch reaches
+ * the engine factory byte for byte, so `HardEngine`'s own constructor takes
+ * its normal "no `weights` field at all" path and substitutes
+ * `DEFAULT_WEIGHTS` — real weights, not the placeholder — exactly as it does
+ * for a plain desktop request. `tests/lab/engine-seat.test.ts` and
+ * `tests/ai/phone-profile.test.ts` pin the same substitution for the lab
+ * adapter and the device patch respectively; this is the worker boundary's
+ * copy of that guarantee for the engine-profile patch.
+ */
+it('carries a weights-less strategos patch through untouched, so the engine still substitutes real weights', async () => {
+  const stub = hardStub();
+  const handler = createSearchHandler(solver, undefined, stub.factory);
+  const enginePatch = strategosPatch();
+  expect('weights' in enginePatch).toBe(false);
+  await handler({ ...request(), mode: 'turn', engine: 'hard', hard: enginePatch });
+  expect(stub.patches[0]).toEqual(enginePatch);
+  expect(stub.patches[0] && 'weights' in stub.patches[0]).toBe(false);
 });
 
 it('engine:"hard" without mode:"turn" still takes the unchanged per-action v2 path', async () => {

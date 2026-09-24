@@ -2,6 +2,9 @@ import { z } from 'zod';
 import { MAX_BLACK_CRYSTAL_HANDICAP } from '../../src/game/rules';
 import type { PlayerId } from '../../src/game/types';
 import type { RoomSnapshot } from '../../src/online/types';
+import type { Centi } from '../../src/ai/hard/types';
+import type { RootResult, RootSource } from '../../src/ai/hard/search/root';
+import type { StrategyChronicle } from '../../src/ai/hard/strategy/types';
 
 /**
  * The one string that opens the Phasing Hard seat.
@@ -114,4 +117,86 @@ export function assertSeatRoom(room: RoomSnapshot, expected?: { roomId: string; 
   if (room.ready && room.state.phase === 'playing' &&
       (clock.runningPlayer !== room.state.turn.currentPlayer || clock.deadlineAtMs === null || !Number.isFinite(clock.deadlineAtMs) ||
        clock.turnStartedAtMs === null || !Number.isFinite(clock.turnStartedAtMs))) throw new Error('Pinned room clock is not running for the current player.');
+}
+
+/**
+ * The version of `SearchTelemetryEvent` below. `main.ts` writes it on every
+ * `start` line (`searchTelemetryVersion`), next to the `profile` and the
+ * source hashes, so a reader of a `.jsonl` knows which shape the `search`
+ * lines that follow have without guessing from their keys. Bump it (and say
+ * what moved) the next time a field is added, renamed or dropped.
+ * DERIVED (plan B.2 W1.14: "version the contract", and the bump rule above):
+ * 1 is the first declared shape (master side of W1.14) — before W1.14 the line
+ * was an ad hoc `Record<string, unknown>`. 2 = 1 plus `queueDelayMs`, the
+ * per-search heavy-slot wait the LLM pilot's runner already logged
+ * (`claude/muju-llm-pilot` 20eb7945, unversioned); the W1.14 pilot-side merge
+ * made it a declared key, so the shape grew by one field. A version-1 line
+ * never carries it (that runner holds one slot for the whole game in
+ * `main.ts`); an unversioned wave-1 pilot line carries it but none of the
+ * four W1.14 fields.
+ */
+export const SEARCH_TELEMETRY_VERSION = 2;
+
+/**
+ * VERSION 2 (`SEARCH_TELEMETRY_VERSION`) of the seat's `event: 'search'`
+ * telemetry line (`runner.ts`, appended to `<stateFile>.jsonl`), STRATEGOS
+ * W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`, B.2 step
+ * W1.14). Before W1.14 the line was an ad hoc `Record<string, unknown>` with no
+ * declared shape at all; version 1 was the first typed shape, and version 2
+ * adds `queueDelayMs` (the pilot runner's per-search heavy-slot wait) and
+ * nothing else.
+ *
+ * FIXED KEYS, NEVER OMITTED. `scoreCc`, `clock` and `minedTotals` are cheap
+ * facts about the searched position that exist on every search, strategos or
+ * not. `strategy` is `RootResult.strategy` — present only when the profile set
+ * `searchFix.strategyPlans`/`strategyVeto` (`hard@strategos` today) — and is
+ * carried as an explicit `null` rather than an omitted key when the search did
+ * not compute one. CHOICE (why: `fallback` below is already exactly this
+ * shape — a fixed key valued `null` when there is nothing to report — so a
+ * downstream reader of the seat's `.jsonl` can assume every `search` event
+ * carries the same key set and never has to branch on `'strategy' in event`;
+ * falsifier: a consumer that needs to distinguish "this profile never
+ * computes a Chronicle" from "this search's Chronicle was empty", which no
+ * caller does as of this version). A `hard@desktop` seat's `search` events
+ * therefore gain three always-numeric keys and one always-`null` key; nothing
+ * about the events a `hard@desktop` seat already logged is removed or
+ * renamed, and `mode`/`work`/`stopReason`/`fallback`/`verified` etc. are
+ * unchanged.
+ */
+export interface SearchTelemetryEvent {
+  event: 'search';
+  revision: number;
+  turn: number;
+  player: PlayerId;
+  allowanceMs: number;
+  targetMs: number;
+  elapsedMs: number;
+  overrunMs: number;
+  /** VERSION 2. Milliseconds this seat waited in the shared heavy-work queue
+   * (`lab/hard-ai/ladder/heavy.ts acquireHeavySlot`) before this search; not
+   * part of `elapsedMs`, which starts once the slot is held and the room has
+   * been re-read. */
+  queueDelayMs: number;
+  depth: number;
+  rung: number;
+  work: number;
+  source: RootSource;
+  stopReason: RootResult['stats']['stopReason'];
+  /** `verify.ts classifyFallback(result)`. */
+  fallback: string | null;
+  verified: boolean;
+  /** `RootResult.scoreCc`: the root's own evaluation of the turn it returned,
+   * in centi-crystals from the SEAT's point of view (the side to move at the
+   * root). Read it next to `source`/`fallback`: an unsearched root reports 0. */
+  scoreCc: Centi;
+  /** The root position's inactivity (kill) clock: `state.inactivityPlies ?? 0`
+   * (`src/game/inactivity.ts`), 0 … `INACTIVITY_LIMIT - 1`. */
+  clock: number;
+  /** `[white, black]` mined totals at the root, `src/game/inactivity.ts
+   * minedTotal` — Black's handicap folded in, exactly as the kill clock's own
+   * verdict reads it. */
+  minedTotals: [number, number];
+  /** `RootResult.strategy` when the search computed one, `null` otherwise. See
+   * the FIXED KEYS note above for why this is never an omitted key. */
+  strategy: StrategyChronicle | null;
 }

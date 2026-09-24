@@ -317,6 +317,88 @@ export interface SearchFix {
    * shape). Only `hard@ablate:search-rescue-cap` sets it.
    */
   rescueCap?: number;
+
+  /**
+   * STRATEGOS W1.7 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+   * B.2 step W1.7). ON means `gen/actionsearch.ts`'s `dfs` loop skips
+   * generating an ATTACK whose `power === 0` — a move `src/game/combat.ts`'s
+   * `Math.max(0, …)` clamp in `calculateAttackPower` lets through but that
+   * deals no damage. W1.7's acceptance is what makes the prune exact: the
+   * naive and pruned END-POSITION SETS must be equal on `canonical-check`, so
+   * nothing reachable is lost, only a dead branch. The condition is
+   * `power === 0` and never `power < effectiveDef`: chip damage below the
+   * target's effective defence still changes state and must still be
+   * searched (plan B.1b).
+   *
+   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: `engine.ts` never calls the
+   * `gen/generate.ts` setter this flag wires, so `dfs` enumerates zero-power
+   * attacks exactly as it does today and the emitted `Turn` list is
+   * unchanged. Only `hard@strategos` (`strategosPatch()` below) sets it; W1.1
+   * only declares the key — the pruning code lands in W1.7.
+   */
+  pruneZeroDamage?: boolean;
+
+  /**
+   * STRATEGOS W1.9 (plan B.2 step W1.9). ON means `search/root.ts` installs
+   * `gen/generate.ts`'s `setStrategyWitness` callback before the root search,
+   * so `inject()` forces one complete ForceContact or Hold turn line
+   * (`strategy/contact.ts`, `strategy/hold.ts`) into the ply-0 candidate set
+   * through `injectLine`, flagged `FORCED|STRATEGY` (`gen/turn.ts
+   * TurnFlag.STRATEGY`), the same way `setRescueWitness` already forces a
+   * home-defence line in.
+   *
+   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: no witness is installed,
+   * `inject()` runs exactly as today and the root's candidate set is
+   * unchanged. Only `hard@strategos` sets it; the injection code lands in
+   * W1.9.
+   */
+  strategyPlans?: boolean;
+
+  /**
+   * STRATEGOS W1.10 (plan B.2 step W1.10). ON means `search/root.ts`, after
+   * `iterativeDeepening` completes, applies the plan-consistency veto: it
+   * picks the best PLAN-CONSISTENT candidate unless the searched score is
+   * terminal-scale worse than the tactical best (a proof — mate or a proven
+   * clock loss) or the contract's essential unit is lost in the first reply.
+   * Ordinary material loss is never a veto reason. The chosen candidate, the
+   * reading and the veto reason (if any) are recorded on the new, optional
+   * `RootResult.strategy` block.
+   *
+   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: `iterativeDeepening`'s own best
+   * candidate is returned exactly as today and `RootResult.strategy` is never
+   * set. Only `hard@strategos` sets it; the veto code lands in W1.10.
+   */
+  strategyVeto?: boolean;
+
+  /**
+   * STRATEGOS W1.2 (plan B.2 step W1.2) / W1.6. Selects the kill-clock policy
+   * `eval/evaluate.ts`'s `killClockHandoffsFromRoot()` reads.
+   *
+   *   absent (the champion) — the legacy module-level
+   *     `setKillClockRootClock`/`killClockRootClock` slot is read exactly as
+   *     today: set only on the wall-clock path, starting at
+   *     `INACTIVITY_LIMIT - 1`, and never saved or restored across searches.
+   *     `hard@desktop` must keep EXACTLY this behaviour (its bytes are pinned
+   *     by `tests/lab/ablate.test.ts`'s `DESKTOP_WALL3000_HASH`), leak
+   *     included: a wall-clock search's root clock can still leak into a
+   *     later FIXED-WORK search in the same process, because desktop never
+   *     sets this key.
+   *   `'ledger'` — `search/root.ts searchRootInner` saves the current
+   *     `getKillClockPolicy()`, sets a fresh `{ rootClock, reading }` scoped
+   *     to THIS search (the packed root's own clock; `reading` is `null`
+   *     until W1.6 computes one under `EvalFix.clockLedger`) before searching
+   *     and restores the saved policy in a `finally`, so the value can never
+   *     leak into the next search — the W1.2 fix the plan calls "the leak
+   *     fix" (plan B.1b). `engine.ts` also skips its legacy-slot writes (the
+   *     wall-clock pack and `calibrate`) for this value, so a strategos
+   *     search never hands its root clock to a later desktop search either
+   *     (`tests/ai/hard/kill-clock-policy.test.ts`).
+   *
+   * OPTIONAL, AND ABSENT ON EVERY SHIPPED PROFILE (`DESKTOP`, `MIDRANGE`,
+   * `PHONE`, `LAB` and every other `hardConfigFor` label): only
+   * `hard@strategos` sets `'ledger'`.
+   */
+  killClockPolicy?: 'ledger';
 }
 
 // --- search/pvs.ts ---
@@ -491,6 +573,85 @@ export interface EvalFix {
    * a rename with no behaviour change; see `docs/hard-ai/phasing/` follow-ups.
    */
   strength?: StrengthKnobs;
+
+  /**
+   * STRATEGOS W1.6 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+   * B.2 step W1.6), amended by coordinator decision (2026-09-24). ON means a
+   * kill-clock terminal beyond the forced hand-offs is signed by the LEAF's
+   * own result (never the reading's `side`/`verdict`), at a magnitude that
+   * depends on the root's `ClockReading` (`strategy/clock.ts`):
+   *
+   *   - `proven` (either `proven-win` or `proven-loss`), or the terminal
+   *     falls within the forced hand-offs regardless of grade: full terminal
+   *     scale, same as a mate;
+   *   - `bounded-win`/`bounded-loss` (the interval is disjoint but a kill, a
+   *     home victory, an upkeep elimination or a cancellable arrival is not
+   *     yet ruled out): `BOUNDED_CLOCK_CC` (CHOICE: `WIN_CC / 8`; falsifier:
+   *     the paired exam cases);
+   *   - `open` (the intervals overlap, no verdict established): the SAME
+   *     flat `KILL_CLOCK_SOFT_CC` desktop has always used — an open reading
+   *     has no verdict for `BOUNDED_CLOCK_CC`'s "signed by the verdict" to
+   *     sign, and paying the bigger prize on one reproduced the 2026-09-22
+   *     failure one flag later (`eval/evaluate.ts BOUNDED_CLOCK_CC`'s doc has
+   *     the full account).
+   *
+   * It also switches `DrawPressure` (`eval/features.ts:377-403`) from
+   * sign-only to a CHEAP per-node stay-put PROJECTION of the mined-total
+   * margin at the clock's end — each side's current `gained[]` plus its own
+   * `projectedIncome` times how many of its future mining events fall inside
+   * the remaining window, a single-event rate held constant across the
+   * window, never `ledger.ts`'s own per-turn reserve/rent simulation and
+   * never the bank or the ceiling `U` (rewarding cash would reward hoarding,
+   * the 2026-09-20 repair handoff's documented failure) — times clock
+   * squared, clamped to the feature's ±100 range. (Not "the projected
+   * midpoint margin": that would need `U`, which this cheap per-node read
+   * deliberately excludes.) It also gates `eval/invariants.ts`'s invariant 16
+   * (the −200 penalty for sitting on a lead) off, since that invariant
+   * contradicts a Hold posture that is winning the clock on purpose (plan
+   * Part A item 2).
+   *
+   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL, ON EVERY SHIPPED PROFILE:
+   * `evaluate.ts`'s existing `KILL_CLOCK_SOFT_CC` branch, `DrawPressure`'s
+   * sign-only computation and invariant 16 all run exactly as they do today;
+   * the feature and invariant vectors this flag would change are byte-for-byte
+   * unchanged on a corpus with the flag absent
+   * (`tests/ai/hard/strategos-eval.test.ts`, W1.6). Only `hard@strategos`
+   * sets it; the scoring code lands in W1.6. (See `promoteExhaustive` below,
+   * a separate flag, for the coordinator's root-only wiring decision.)
+   */
+  clockLedger?: boolean;
+
+  /**
+   * STRATEGOS W1.8 (plan B.2 step W1.8; owner decision B.1a: flag-gated). ON
+   * means `gen/promote.ts bestMission` returns a catch-all mission (the
+   * plan's `Mission.ANY`, benefit 0) instead of −1 — "no candidate" — for a
+   * legal promotion no mission claims (FORTIFY/SURVIVE/ANCHOR/INCOME/REACH,
+   * plus STRENGTH when `strength.promoteStrengthMission` is on), so it is
+   * offered at all instead of being skipped inside `planPromotions`, whose
+   * ordinary beam also widens from its `max` argument to `MAX_SLOTS`. W1.8
+   * also makes `gen/generate.ts buildCombos` pin one bare promotion-only combo
+   * per promotion, since emitting a promotion does not get it past
+   * `buildCombos`' 24-combo prune or the K=24 root cut (plan B.1b); the
+   * `forcedOnly` branch is untouched.
+   *
+   * ROOT GENERATOR ONLY, coordinator decision (2026-09-24): `engine.ts` wires
+   * this flag to the ROOT generator (`gen`) alone, not to `genInterior` or
+   * `genQuiesce` — unlike `SearchFix.rescueCap`/`pruneZeroDamage` above,
+   * which arm all three. CHOICE: the plan's proof obligation for W1.8 is ROOT
+   * recall (every legal promotion reaches the root candidate list,
+   * `tests/ai/hard/prepare-recall.test.ts`), and a lane review measured
+   * wiring all three costing search depth for no measured promotion-choice
+   * benefit — at fixed work 80,000 over 49 positions, nodes ratio 0.88 (13 of
+   * 82 depth plies lost) against root-only's 0.95 (6 lost). Falsifier: the R1
+   * ladder row (plan A8) or wave 2.
+   *
+   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: `bestMission` keeps returning
+   * −1 for every unclaimed promotion and `planPromotions`/`buildCombos` are
+   * unchanged, so `oracles/canonical-check.ts` sees the identical combo set.
+   * Only `hard@strategos` sets it, on `gen` alone; the exhaustive-promotion
+   * code lands in W1.8.
+   */
+  promoteExhaustive?: boolean;
 }
 
 // --- gen/{purchase,promote}.ts, eval/pending.ts (2026-09-21 strength lane) ----
@@ -712,6 +873,48 @@ export const MIDRANGE: HardConfig = makeConfig(MIDRANGE_SHAPE, null);
 export const PHONE: HardConfig = makeConfig(PHONE_SHAPE, null);
 /** Fixed work; identical search shape to DESKTOP, book supplied per run. */
 export const LAB: HardConfig = makeConfig(DESKTOP_SHAPE, null);
+
+/**
+ * STRATEGOS W1.1 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.1). The patch `lab/hard-ai/bots/hard.ts hardConfigFor` merges
+ * onto `DESKTOP` to make `hard@strategos` (`?hardEngine=strategos` in the
+ * browser once W1.14 lands, plan B.1b): turns on exactly the six flags
+ * declared above — `SearchFix.pruneZeroDamage`, `.strategyPlans`, `.strategyVeto`,
+ * `.killClockPolicy: 'ledger'` and `EvalFix.clockLedger`,
+ * `.promoteExhaustive` — and carries NO `weights` key of its own, so
+ * `hardEnginePatch`'s placeholder-vs-`DEFAULT_WEIGHTS` substitution
+ * (`lab/hard-ai/bots/hard.ts`) still runs off whatever `DESKTOP.weights`
+ * resolves to, exactly as it does for `hard@desktop`.
+ *
+ * `strategos = desktop + exactly these six flags, nothing else`: this patch
+ * MERGES onto whatever `DESKTOP.searchFix`/`DESKTOP.evalFix` already carry
+ * (both are absent as of this commit — `DESKTOP` sets neither block, see
+ * `SearchFix`'s and `EvalFix`'s own doc comments — but a future addition to
+ * DESKTOP itself, an `hard@ablate:*`-style knob turned on by default, must
+ * not be silently dropped by this patch) rather than replacing either block
+ * outright, so the six-flags-only claim holds even if `DESKTOP`'s own fix
+ * blocks grow. `tests/lab/strategos-identity.test.ts` pins both halves of
+ * that claim: the resolved `hard@strategos` configuration differs from the
+ * resolved `hard@desktop` configuration in exactly these six keys, and
+ * `hard@desktop`'s own resolved configuration and hash are unmoved by this
+ * patch's existence (nothing calls it for any profile but strategos).
+ */
+export function strategosPatch(): Partial<HardConfig> {
+  return {
+    searchFix: {
+      ...(DESKTOP.searchFix ?? {}),
+      pruneZeroDamage: true,
+      strategyPlans: true,
+      strategyVeto: true,
+      killClockPolicy: 'ledger',
+    },
+    evalFix: {
+      ...(DESKTOP.evalFix ?? {}),
+      clockLedger: true,
+      promoteExhaustive: true,
+    },
+  };
+}
 
 /**
  * DESIGN §6.3's trigger column: PHONE below 250 units/ms or with ≤ 2 GB of

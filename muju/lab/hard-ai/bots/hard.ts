@@ -101,7 +101,7 @@ import type { AIAction } from '../../../src/ai/types';
 import { HardEngine } from '../../../src/ai/hard/engine';
 import { now } from '../../../src/ai/hard/search/time';
 import type { RootResult } from '../../../src/ai/hard/search/root';
-import { DESKTOP, LAB, MIDRANGE, PHONE, type HardConfig, type Weights } from '../../../src/ai/hard/config';
+import { DESKTOP, LAB, MIDRANGE, PHONE, strategosPatch, type HardConfig, type Weights } from '../../../src/ai/hard/config';
 import { readFileSync } from 'node:fs';
 import { DEFAULT_WEIGHTS, loadWeights } from '../../../src/ai/hard/eval/weights';
 import type { EngineBot, HardSeatTurnRow } from '../../harness/types';
@@ -270,6 +270,17 @@ export function hardConfigFor(label: string): Partial<HardConfig> {
       return { ...LAB, useLmr: true, useAspiration: true, useFutility: true, useExtensions: true };
     case 'desktop':
       return { ...DESKTOP };
+    // STRATEGOS W1.1 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+    // B.2 step W1.1). `desktop`'s resolution merged with `strategosPatch()`
+    // (mirrors the `'desktop'` case immediately above): the six strategy
+    // flags on, nothing else, and no `weights` key of its own, so
+    // `hardEnginePatch`'s placeholder-vs-`DEFAULT_WEIGHTS` substitution below
+    // resolves `hard@strategos`'s weights exactly as it resolves
+    // `hard@desktop`'s. `lab/hard-ai/ladder/engines.ts`'s generic
+    // `HARD_NAME_RE` branch already calls this function for any `hard@<label>`
+    // name, so `hard@strategos` resolves with no change there.
+    case 'strategos':
+      return { ...DESKTOP, ...strategosPatch() };
     // The DESKTOP shape, and the ONLY label `MUJU_HARD_WEIGHTS` reaches
     // (`ENV_WEIGHTS_LABEL` below). `hard@env` vs `hard@desktop` is therefore a
     // weights-only comparison with the vector named on the seat that uses it.
@@ -282,7 +293,7 @@ export function hardConfigFor(label: string): Partial<HardConfig> {
       return { ...PHONE };
     default:
       throw new Error(
-        `hard@${label}: unknown label. Known: lab, lab-dfpn, lab-refined, desktop, env, midrange, phone, ` +
+        `hard@${label}: unknown label. Known: lab, lab-dfpn, lab-refined, desktop, strategos, env, midrange, phone, ` +
           `ablate:<arm> (an optional -<n>k/-<n>m suffix is documentary)`,
       );
   }

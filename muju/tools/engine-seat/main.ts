@@ -3,6 +3,7 @@ import { appendFileSync, chmodSync, closeSync, existsSync, mkdirSync, openSync, 
 import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ENGINE_ALLOWANCE_MS, runSeat, type SeatJournal } from './runner';
+import { SEARCH_TELEMETRY_VERSION } from './contract';
 import { assertSeatConfiguration, initializeSeat, seatConfigSchema, seatJournalSchema } from './config';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -55,13 +56,17 @@ async function main() {
     const log = (event: Record<string, unknown>) => appendFileSync(`${stateFile}.jsonl`, `${JSON.stringify({ at: new Date().toISOString(), ...event })}\n`, { mode: 0o600 });
     log({ event: 'start', roomId: config.roomId, player: journal.connection.player, seed: journal.seed,
       contract: journal.contract, admission: journal.admission,
-      profile: 'desktop', allowanceMs: ENGINE_ALLOWANCE_MS, source, resumed });
+      // STRATEGOS W1.14: was the literal `'desktop'`; now the configured
+      // profile (`config.profile`, `seatConfigSchema`'s default is still
+      // `'desktop'`), so the start line always names the engine this run
+      // actually builds.
+      profile: config.profile, searchTelemetryVersion: SEARCH_TELEMETRY_VERSION, allowanceMs: ENGINE_ALLOWANCE_MS, source, resumed });
     const controller = new AbortController();
     process.once('SIGINT', () => controller.abort()); process.once('SIGTERM', () => controller.abort());
     // The heavy slot is now acquired PER SEARCH, inside runSeat's turn loop —
     // not held for the whole game — so nothing is held here across the
     // opponent's turns or network waits.
-    await runSeat({ journal, save, log, signal: controller.signal });
+    await runSeat({ journal, save, log, signal: controller.signal, profile: config.profile });
   } finally { rmSync(lock, { recursive: true }); }
 }
 main().catch(error => { console.error(error instanceof Error ? error.message : 'Engine seat failed.'); process.exitCode = 1; });

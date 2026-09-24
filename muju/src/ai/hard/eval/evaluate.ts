@@ -46,6 +46,7 @@ import type { Replica } from '../core/state';
 import type { ReachMemo } from '../core/movement';
 import { allocTables, buildTables, type NodeTables } from '../tables/context';
 import type { EvalFix, Weights } from '../config';
+import type { KillClockPolicy } from '../strategy/types';
 import { DEFAULT_WEIGHTS, assertCurrentWeights } from './weights';
 import { F, FEATURE_COUNT, extract } from './features';
 
@@ -205,6 +206,12 @@ export class Evaluator {
  * scored as a win) over a free capture (2026-09-22, kill-clock lane 5). A
  * distant clock-out is therefore a mild flat preference, like a draw is a flat
  * zero; `DrawPressure` carries the growing urgency. Two-thirds of a tier-1.
+ *
+ * Coordinator decision (2026-09-24): this is also the desktop VALUE reused
+ * under `EvalFix.clockLedger` (`decidedCc` below) for an `open` root reading
+ * — the intervals overlap and neither side is established as the clock's
+ * winner, so there is no verdict to sign a bigger score with; see
+ * `BOUNDED_CLOCK_CC`'s doc for why `bounded-*` earns more but `open` does not.
  */
 export const KILL_CLOCK_SOFT_CC: Centi = 200;
 /** Hand-offs from the root within which a kill-clock verdict is forced: the
@@ -212,19 +219,136 @@ export const KILL_CLOCK_SOFT_CC: Centi = 200;
  * explores full-width at the top of the tree. */
 export const KILL_CLOCK_FORCED_HANDOFFS = 2;
 
+/**
+ * STRATEGOS W1.6 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.6), `EvalFix.clockLedger` only. CHOICE: `WIN_CC / 8`
+ * (125,000 cc). The magnitude of a kill-clock terminal beyond the forced
+ * hand-offs whenever the root `ClockReading` (`strategy/clock.ts`) is
+ * `bounded-win` or `bounded-loss` — the disjoint interval already holds (one
+ * side's stay-put floor beats the other's ceiling) but a kill, an earlier
+ * ending or a cancellable arrival is not yet ruled out, so the grade falls
+ * short of `proven`.
+ *
+ * CHOICE, coordinator decision (2026-09-24), superseding W1.6's original
+ * "bounded and open alike" brief: an `open` reading (the intervals overlap)
+ * no longer gets this score — it gets the flat `KILL_CLOCK_SOFT_CC` instead
+ * (`decidedCc` below). The plan itself describes this score as "signed by
+ * the verdict", and `open` names no verdict to sign: the root has not
+ * established that either side is winning the clock at all, so there is
+ * nothing for the sign to track. Paying `WIN_CC / 8` on an open reading
+ * reproduced the 2026-09-22 failure one flag later — a 125,000 cc prize on a
+ * deep, unverified clock-out that the candidate-limited interior search
+ * cannot confirm, which prefers a clock-out found nine hand-offs deep over a
+ * free capture available now. `bounded-*` earns the bigger prize precisely
+ * because it already has a disjoint interval behind it; `open` has not.
+ *
+ * Why `WIN_CC / 8` at all: a distant `bounded-*` clock-out is worth more than
+ * a tier-1 (the legacy flat `KILL_CLOCK_SOFT_CC` made it worth less, the
+ * plan's F1 root cause) but must stay far below a proven ending, since an
+ * unproven reading means a kill could still flip or reset the clock before
+ * it fires. The sign is always the LEAF's own result relative to the root
+ * side, never the reading's own `side`/`verdict` (`decidedCc` below).
+ * Falsifier: the paired exam cases plan W1.13 builds, which must score a
+ * distant bounded clock-out below a proven one, above an open one, and above
+ * a flat draw on the same corpus.
+ */
+export const BOUNDED_CLOCK_CC: Centi = WIN_CC / 8;
+
 /** The root position's clock, set by the engine when it packs the root. The
  * default makes every direct caller (tests, tools) treat the verdict as forced. */
 let killClockRootClock = INACTIVITY_LIMIT - 1;
 export function setKillClockRootClock(clock: number): void {
   killClockRootClock = clock;
 }
-/** Hand-offs between the root and the clock's end, given no kill on the way. */
-export function killClockHandoffsFromRoot(): number {
-  return INACTIVITY_LIMIT - killClockRootClock;
+
+/**
+ * STRATEGOS W1.2 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.2, "the leak fix"). The per-search kill-clock policy
+ * (`strategy/types.ts KillClockPolicy`): `search/root.ts searchRootInner`
+ * saves the current value, sets a fresh one scoped to ONE search when
+ * `SearchFix.killClockPolicy === 'ledger'` (`hard@strategos` only), and
+ * restores the saved value in a `finally` — synchronous end to end, so no
+ * search can leak its root clock into a search that runs after it.
+ *
+ * `null` — every profile but strategos, ALWAYS, `hard@desktop` included —
+ * means "this slot has nothing to say"; `killClockHandoffsFromRoot` then
+ * falls back to the legacy `killClockRootClock` module slot exactly as it did
+ * before this policy existed, leak and all. `hard@desktop`'s bytes are pinned
+ * (`tests/lab/ablate.test.ts DESKTOP_WALL3000_HASH`), so that fallback path
+ * must never move for any input.
+ */
+let killClockPolicy: KillClockPolicy | null = null;
+
+/** Sets or clears the per-search kill-clock policy (see `KillClockPolicy`
+ * and the field above). `null` restores the legacy-slot fallback. */
+export function setKillClockPolicy(policy: KillClockPolicy | null): void {
+  killClockPolicy = policy;
 }
 
+/** The per-search kill-clock policy currently installed, or `null` when none
+ * is (every profile but strategos, always). */
+export function getKillClockPolicy(): KillClockPolicy | null {
+  return killClockPolicy;
+}
+
+/** Hand-offs between the root and the clock's end, given no kill on the way.
+ * Reads the per-search policy's `rootClock` when one is installed
+ * (`hard@strategos`, W1.2); otherwise reads the legacy module slot exactly as
+ * before (`hard@desktop`, always — see `killClockPolicy` above). */
+export function killClockHandoffsFromRoot(): number {
+  const rootClock = killClockPolicy !== null ? killClockPolicy.rootClock : killClockRootClock;
+  return INACTIVITY_LIMIT - rootClock;
+}
+
+/**
+ * STRATEGOS W1.6. `decidedCc` has no `EvalFix` of its own to read — DESIGN
+ * gives `terminalScore` no such parameter, and its signature is pinned
+ * (`tests/ai/hard/interfaces.test.ts:962`), so adding one is not an option.
+ * The installed `KillClockPolicy.reading` (`strategy/types.ts
+ * ClockReadingCore`) is used as the flag's proxy instead: `search/root.ts`
+ * installs a NON-null `reading` on exactly the searches that opted into
+ * `evalFix.clockLedger` (W1.6's change there), and leaves it `null` on every
+ * other search — `hard@desktop` and every other profile, always, even under
+ * `searchFix.killClockPolicy === 'ledger'` alone (W1.2) without the eval
+ * flag. So gating on "a reading is installed" is exactly gating on the flag,
+ * one level removed, and this branch is unreachable whenever the flag is off.
+ *
+ * WHERE THE TERMINAL LIES. `ply` counts TURNS from the root: `search/pvs.ts`
+ * and `search/quiesce.ts` score a child terminal at `ply + 1` per
+ * `makeTurn` (one hand-off each), while the turn generator scores a
+ * completed candidate turn at its generating node's `ply`, one less. On a
+ * kill-free line from a fresh root, `killClockHandoffsFromRoot()` (the
+ * root's own hand-offs to the clock's end, the legacy test) IS the clock
+ * terminal's distance in turns. A line that kills first restarts the clock,
+ * so its clock terminal lies at least `INACTIVITY_LIMIT` turns deep —
+ * inside `maxDepth` (12) in principle — and the root's count says nothing
+ * about it. The flagged branch therefore calls a terminal "within the forced
+ * hand-offs" only when BOTH counts say so: the root's hand-offs (exact on
+ * kill-free lines, and immune to the generator's one-turn offset) and the
+ * terminal's own `ply` (which rules out the post-kill case).
+ *
+ * OUTSIDE THE FORCED WINDOW, coordinator decision (2026-09-24): the magnitude
+ * further splits on the reading's own grade. `bounded-win`/`bounded-loss`
+ * score `BOUNDED_CLOCK_CC` (a disjoint interval is behind them); `open`
+ * scores the flat desktop `KILL_CLOCK_SOFT_CC` (no disjoint interval, so no
+ * verdict to sign a bigger score with) — see `BOUNDED_CLOCK_CC`'s doc for the
+ * full rationale and falsifier. The sign in every case is the LEAF's own
+ * result relative to the root side (`terminalScore`'s `root === 0`/`1`
+ * branches below), never the installed `reading`'s own `side` or `verdict`.
+ */
 function decidedCc(p: PackedState, ply: number): Centi {
-  if (p.reason === Reason.KILL_CLOCK && killClockHandoffsFromRoot() > KILL_CLOCK_FORCED_HANDOFFS) return KILL_CLOCK_SOFT_CC;
+  if (p.reason === Reason.KILL_CLOCK) {
+    const policy = getKillClockPolicy();
+    const reading = policy !== null ? policy.reading : null;
+    if (reading !== null) {
+      const proven = reading.verdict === 'proven-win' || reading.verdict === 'proven-loss';
+      const forced = killClockHandoffsFromRoot() <= KILL_CLOCK_FORCED_HANDOFFS && ply <= KILL_CLOCK_FORCED_HANDOFFS;
+      if (proven || forced) return WIN_CC - ply * MATE_PLY_CC;
+      const bounded = reading.verdict === 'bounded-win' || reading.verdict === 'bounded-loss';
+      return bounded ? BOUNDED_CLOCK_CC : KILL_CLOCK_SOFT_CC;
+    }
+    if (killClockHandoffsFromRoot() > KILL_CLOCK_FORCED_HANDOFFS) return KILL_CLOCK_SOFT_CC;
+  }
   return WIN_CC - ply * MATE_PLY_CC;
 }
 
