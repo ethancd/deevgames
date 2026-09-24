@@ -46,6 +46,7 @@ import type { Replica } from '../core/state';
 import type { ReachMemo } from '../core/movement';
 import { allocTables, buildTables, type NodeTables } from '../tables/context';
 import type { EvalFix, Weights } from '../config';
+import type { KillClockPolicy } from '../strategy/types';
 import { DEFAULT_WEIGHTS, assertCurrentWeights } from './weights';
 import { F, FEATURE_COUNT, extract } from './features';
 
@@ -218,9 +219,44 @@ let killClockRootClock = INACTIVITY_LIMIT - 1;
 export function setKillClockRootClock(clock: number): void {
   killClockRootClock = clock;
 }
-/** Hand-offs between the root and the clock's end, given no kill on the way. */
+
+/**
+ * STRATEGOS W1.2 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.2, "the leak fix"). The per-search kill-clock policy
+ * (`strategy/types.ts KillClockPolicy`): `search/root.ts searchRootInner`
+ * saves the current value, sets a fresh one scoped to ONE search when
+ * `SearchFix.killClockPolicy === 'ledger'` (`hard@strategos` only), and
+ * restores the saved value in a `finally` — synchronous end to end, so no
+ * search can leak its root clock into a search that runs after it.
+ *
+ * `null` — every profile but strategos, ALWAYS, `hard@desktop` included —
+ * means "this slot has nothing to say"; `killClockHandoffsFromRoot` then
+ * falls back to the legacy `killClockRootClock` module slot exactly as it did
+ * before this policy existed, leak and all. `hard@desktop`'s bytes are pinned
+ * (`tests/lab/ablate.test.ts DESKTOP_WALL3000_HASH`), so that fallback path
+ * must never move for any input.
+ */
+let killClockPolicy: KillClockPolicy | null = null;
+
+/** Sets or clears the per-search kill-clock policy (see `KillClockPolicy`
+ * and the field above). `null` restores the legacy-slot fallback. */
+export function setKillClockPolicy(policy: KillClockPolicy | null): void {
+  killClockPolicy = policy;
+}
+
+/** The per-search kill-clock policy currently installed, or `null` when none
+ * is (every profile but strategos, always). */
+export function getKillClockPolicy(): KillClockPolicy | null {
+  return killClockPolicy;
+}
+
+/** Hand-offs between the root and the clock's end, given no kill on the way.
+ * Reads the per-search policy's `rootClock` when one is installed
+ * (`hard@strategos`, W1.2); otherwise reads the legacy module slot exactly as
+ * before (`hard@desktop`, always — see `killClockPolicy` above). */
 export function killClockHandoffsFromRoot(): number {
-  return INACTIVITY_LIMIT - killClockRootClock;
+  const rootClock = killClockPolicy !== null ? killClockPolicy.rootClock : killClockRootClock;
+  return INACTIVITY_LIMIT - rootClock;
 }
 
 function decidedCc(p: PackedState, ply: number): Centi {

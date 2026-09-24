@@ -71,7 +71,27 @@ function layerOf(fileRelToHard: string): Layer | null {
   // aliases and interfaces that import only `types.ts`), so every layer may
   // name its types the way every layer may name `types.ts`'s. The rest of
   // `strategy/` is its own layer, reachable only from `search` and `engine`.
-  if (fileRelToHard === path.join('strategy', 'types.ts')) return 'types';
+  //
+  // STRATEGOS W1.2 fix (same date): this function classifies TWO different
+  // strings for the same file. `listFiles` hands the SCANNED file its real,
+  // extension-bearing path (`'strategy/types.ts'`, matched above), but
+  // `resolveRelative` strips the extension off an IMPORT TARGET before this
+  // function ever sees it (so `'../types'` resolves to the bare `'types'`,
+  // not `'types.ts'` — that path returns `null` below via the ordinary
+  // top-level fallback, which is `strategy/types.ts`'s OWN import of
+  // `Side` from `'../types'`, and `null` is treated as "not this check's
+  // concern" by `checkLayering`, so that import was never actually gated by
+  // the `types.ts` special case above either). A `strategy/…` import target
+  // does NOT fall through to `null`, because `'strategy'` is itself a
+  // recognised top-level directory (line below), so `'strategy/types'`
+  // (no `.ts`) was being classified as the ORDINARY `strategy` layer instead
+  // of `types` — which every layer but `search`/`engine` is barred from
+  // reaching, so `eval/evaluate.ts`'s W1.2 `import type { KillClockPolicy }
+  // from '../strategy/types'` failed `hard:deps` even though the comment
+  // above says any layer may take this import. Matching the extension-less
+  // form here is the fix; nothing else in this function's behaviour for any
+  // OTHER path changes.
+  if (fileRelToHard === path.join('strategy', 'types.ts') || fileRelToHard === path.join('strategy', 'types')) return 'types';
   const top = fileRelToHard.split(path.sep)[0];
   if (['core', 'tables', 'gen', 'tactics', 'eval', 'strategy', 'search', 'book', 'verify'].includes(top)) return top as Layer;
   return null; // e.g. a stray file directly under src/ai/hard/ that isn't types/config/engine
