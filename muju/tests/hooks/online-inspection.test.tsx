@@ -48,7 +48,7 @@ for (const ruleset of ['standard', 'phasing'] as const) for (const player of ['w
     fireEvent.click(screen.getByTestId('cell-7-3'));
     expect(container.querySelector('.unit-detail')).not.toHaveTextContent('Enemy');
     expect(screen.getByTestId('cell-3-3')).toHaveAccessibleName(/attack frontier/);
-    expect(screen.getByTestId('cell-7-4')).toHaveAccessibleName(/move costs 1 actions/);
+    expect(screen.getByTestId('cell-7-4')).toHaveAccessibleName(/move costs 1 action$/);
     expect(screen.queryByRole('button', { name: /Promote|Confirm attack/ })).toBeNull();
     expect(screen.getByRole('button', { name: /Undo/ })).toBeDisabled();
     for (const key of ['ArrowDown', 'Enter', 'n', 'p']) fireEvent.keyDown(window, { key });
