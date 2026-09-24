@@ -23,8 +23,17 @@
  *   - SIDE-SWAP MIRROR: reading the identical position from the other side
  *     flips win/loss, negates the margins, and flips the posture;
  *   - PAIRED ONE-FACT FLIPS — the clock value, the mined lead, one unit added
- *     near a corner — each moving the verdict the way the isolated rule says
- *     it must;
+ *     near a corner, a miner alive or dead — each moving the verdict the way
+ *     the isolated rule says it must;
+ *   - the ARRIVAL GATE (W1.5 review): a winner whose floor `L` counts a
+ *     pending arrival the loser can cancel without a kill is never
+ *     `proven`, shown by REPLAYING the cancellation and watching the
+ *     "proven" loser win the clock;
+ *   - `homeVictoryEta` against real lines, not against itself: a replayed
+ *     relay (slow anchor walks, a bought `lightning_1` sprints) and a greedy
+ *     corner-rush playout oracle over random positions — the first ply a body
+ *     really stands on the enemy corner is never below the bound;
+ *   - the kill clock OFF: no verdict at all;
  *   - `killeta.ts clockPliesLeft(p) === ledger.ts pliesRemaining(p)` (both
  *     handle the extra ply after a kill — `strategy/types.ts
  *     ClockReadingCore.r`'s own doc calls this out) and `L <= U` for both
@@ -40,14 +49,17 @@
  *     still covered.
  */
 import { describe, expect, it } from 'vitest';
-import { AKind, newKeepSetTable, paMake } from '../../../src/ai/hard/core/action';
-import { Reason, Result, type PackedState, type Side } from '../../../src/ai/hard/types';
+import { AKind, newKeepSetTable, paA, paB, paC, paKind, paMake, type PA } from '../../../src/ai/hard/core/action';
+import { DEF_INDEX, activeCatalog } from '../../../src/ai/hard/core/catalog';
+import { DEAD, NO_SLOT, Reason, Result, type PackedState, type Side } from '../../../src/ai/hard/types';
 import { newUndo, Replica } from '../../../src/ai/hard/core/state';
 import { clockPliesLeft } from '../../../src/ai/hard/strategy/killeta';
 import { pliesRemaining } from '../../../src/ai/hard/strategy/ledger';
-import { clockReading, homeVictoryEta, upkeepEliminationRuledOut, type ClockReading } from '../../../src/ai/hard/strategy/clock';
+import { arrivalsSettled, clockReading, homeVictoryEta, upkeepEliminationRuledOut, type ClockReading } from '../../../src/ai/hard/strategy/clock';
+import { seededRandom } from '../../../src/ai/runtime';
 import { readPositions } from '../../../lab/hard-ai/positions/corpus';
-import { buildState, type StateSpec } from './game-fixture';
+import { buildState, randomState, type StateSpec } from './game-fixture';
+import { MANHATTAN } from '../../../src/ai/hard/core/tables';
 
 const rep = new Replica();
 const W: Side = 0;
@@ -376,9 +388,37 @@ describe('paired one-fact flips', () => {
     expect(r.ledger.sides[B].L.value).toBe(0);
   });
 
-  it('the same body REMOVED again returns to proven-win (the flip is reversible)', () => {
-    const r = clockReading(pack(quietPairSpec(100, 0)), W);
-    expect(r.verdict).toBe('proven-win');
+  it('a MINER ALIVE or DEAD: White\'s plant on a reserve carries the floor past Black\'s ceiling; without it the SAME totals are open', () => {
+    // White trails on mined total by 2 and has two mining events left
+    // (r = 3, White to move at its Act: plies 1 and 3). A `plant_1` standing
+    // on a 16-crystal cell mines 3 per event, so White's floor is `now + 6`
+    // = 9, one above Black's ceiling (8: Black's one event at its full
+    // `plant_1` rate, since `U` has no per-unit reserve model). Remove that
+    // one miner — nothing else differs — and White's floor falls back to
+    // `now` = 3, while its own ceiling still reaches Black's floor: open.
+    const reserves = Array(100).fill(0);
+    reserves[sqOf(0, 1)] = 16;
+    const spec = (withMiner: boolean): StateSpec => ({
+      units: [
+        { def: 'plant_1', owner: 'white', x: 0, y: 0 },
+        ...(withMiner ? [{ def: 'plant_1', owner: 'white' as const, x: 0, y: 1 }] : []),
+        { def: 'plant_1', owner: 'black', x: 9, y: 8 },
+      ],
+      reserves,
+      whiteGained: 3,
+      blackGained: 5,
+      white: 0,
+      black: 0,
+      inactivityPlies: 7,
+    });
+    const alive = clockReading(rep.pack(buildState(spec(true))), W);
+    const dead = clockReading(rep.pack(buildState(spec(false))), W);
+    expect(alive.ledger.sides[W].L.value).toBe(9);
+    expect(alive.ledger.sides[B].U.value).toBe(8);
+    expect(alive.verdict).toBe('proven-win');
+    expect(dead.ledger.sides[W].L.value).toBe(3);
+    expect(dead.verdict).toBe('open');
+    assertProvenSurvivesWalk(rep.pack(buildState(spec(true))), alive);
   });
 });
 
@@ -478,5 +518,268 @@ describe('no proven verdict is contradicted by a real kill-free walk to the cloc
       const r = clockReading(p, p.side);
       assertProvenSurvivesWalk(rep.pack(row.state), r);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// W1.5 review: the arrival gate, the purchase relay, and the clock turned off
+// ---------------------------------------------------------------------------
+
+const BUF = new Int32Array(4096);
+const UNDO = newUndo();
+const KEEP = newKeepSetTable();
+
+function play(p: PackedState, a: PA): void {
+  UNDO.top = 0;
+  rep.make(p, a, UNDO, KEEP);
+}
+
+/** Plays the legal MOVE of the body on `from` to `to` (throws if illegal). */
+function moveBody(p: PackedState, from: number, to: number): void {
+  const n = rep.genActions(p, BUF);
+  for (let i = 0; i < n; i++) {
+    const a = BUF[i];
+    if (paKind(a) === AKind.MOVE && p.sq[paA(a)] === from && paB(a) === to) return play(p, a);
+  }
+  throw new Error(`no legal move ${from} -> ${to}`);
+}
+
+/** Plays the legal BUY of `def` on `at` (throws if illegal). */
+function buyAt(p: PackedState, def: string, at: number): void {
+  const n = rep.genPlace(p, BUF);
+  for (let i = 0; i < n; i++) {
+    const a = BUF[i];
+    if (paKind(a) === AKind.BUY && paA(a) === DEF_INDEX.get(def) && paB(a) === at) return play(p, a);
+  }
+  throw new Error(`no legal buy ${def}@${at}`);
+}
+
+/** END_ACTION, and the default keep set if a bill routes to PAY_UPKEEP. */
+function endAct(p: PackedState): void {
+  play(p, paMake(AKind.END_ACTION));
+  if (p.result === Result.ONGOING && p.upkeepPending === 1) {
+    expect(rep.genKeepSets(p, KEEP)).toBeGreaterThan(0);
+    play(p, paMake(AKind.PAY_UPKEEP, 0));
+  }
+}
+
+function passTurn(p: PackedState): void {
+  if (p.result !== Result.ONGOING) return;
+  if (p.phase === 1) endAct(p);
+  if (p.result === Result.ONGOING) play(p, paMake(AKind.END_PLACE));
+}
+
+describe('the arrival gate: a floor resting on a cancellable arrival is never proven', () => {
+  /**
+   * Black leads by 1 and has a `plant_1` in flight onto a 2-crystal cell,
+   * landing at its next turn start (ply 2); `r = 3`. Black's floor counts
+   * that arrival's 2 crystals (`L = 3`), above White's ceiling (`U = 2`: the
+   * only reserve on the board caps it). Every other gate holds — nobody can
+   * damage anybody (plants only, no bank, too little reserve for a buy
+   * before ply 3) and both corners are far — so without the arrival gate
+   * this read `proven-loss` for White. The paired position has the SAME
+   * totals with the arrival already landed (a live Black `plant_1` on that
+   * cell): there the floor is Black's own to play out, and the loss is proven.
+   */
+  const spec = (inFlight: boolean): StateSpec => {
+    const reserves = Array(100).fill(0);
+    reserves[sqOf(5, 6)] = 2;
+    return {
+      units: [
+        { def: 'plant_1', owner: 'white', x: 4, y: 4 },
+        { def: 'plant_1', owner: 'black', x: 5, y: 5 },
+        ...(inFlight ? [] : [{ def: 'plant_1', owner: 'black' as const, x: 5, y: 6 }]),
+      ],
+      pendingSummons: inFlight ? [{ def: 'plant_1', owner: 'black', x: 5, y: 6 }] : [],
+      reserves,
+      white: 0,
+      black: 0,
+      whiteGained: 0,
+      blackGained: 1,
+      inactivityPlies: 7,
+    };
+  };
+
+  it('in flight -> bounded-loss (the gate names the arrival); landed -> proven-loss', () => {
+    const flight = clockReading(rep.pack(buildState(spec(true))), W);
+    const landed = clockReading(rep.pack(buildState(spec(false))), W);
+    expect(flight.ledger.sides[B].L.value).toBe(3);
+    expect(flight.ledger.sides[W].U.value).toBe(2);
+    expect(flight.killEta[W].plies).toBeGreaterThan(flight.r);
+    expect(flight.killEta[B].plies).toBeGreaterThan(flight.r);
+    expect(arrivalsSettled(rep.pack(buildState(spec(true))), B)).toBe(false);
+    expect(flight.verdict).toBe('bounded-loss');
+    expect(flight.claim.assumptions.some(a => a.includes('pending arrival'))).toBe(true);
+    expect(landed.verdict).toBe('proven-loss');
+    assertProvenSurvivesWalk(rep.pack(buildState(spec(false))), landed);
+  });
+
+  it('why: White steps onto the arrival square, Black is refunded, and White WINS the clock the reading would have called lost', () => {
+    const p = rep.pack(buildState(spec(true)));
+    moveBody(p, sqOf(4, 4), sqOf(5, 6)); // pending commitments never block movement
+    passTurn(p); // White mines the 2-crystal cell at its END_ACTION
+    passTurn(p); // Black's arrival finds its square occupied: refunded, nothing mined
+    passTurn(p); // the third hand-off ends the clock
+    expect(p.reason).toBe(Reason.KILL_CLOCK);
+    expect(p.gained[W]).toBe(2);
+    expect(p.gained[B]).toBe(1);
+    expect(p.result).toBe(Result.WHITE_WIN);
+  });
+});
+
+describe('homeVictoryEta against real lines (purchases and promotions included)', () => {
+  it('the relay: a slow anchor walks, a bought lightning_1 sprints — the bound never exceeds the ply it really stands on the corner', () => {
+    // A lone `plant_1` (speed 1 on its whole chain) 14 squares from Black's
+    // corner cannot arrive before ply 7. With 3 crystals, White walks it
+    // four squares, buys a `lightning_1` beside it, and the lightning stands
+    // on the corner at ply 3 — and wins there by home checkmate.
+    const spec: StateSpec = {
+      units: [
+        { def: 'plant_1', owner: 'white', x: 0, y: 4 },
+        { def: 'plant_1', owner: 'black', x: 9, y: 0 },
+      ],
+      reserves: NO_RESERVES,
+      white: 3,
+      black: 0,
+      inactivityPlies: 4, // r = 6
+    };
+    const bound = homeVictoryEta(rep.pack(buildState(spec)), W, 6);
+    const p = rep.pack(buildState(spec));
+    moveBody(p, sqOf(0, 4), sqOf(4, 4));
+    endAct(p);
+    buyAt(p, 'lightning_1', sqOf(4, 3));
+    play(p, paMake(AKind.END_PLACE));
+    passTurn(p); // ply 2, Black
+    moveBody(p, sqOf(4, 3), sqOf(7, 3)); // ply 3
+    moveBody(p, sqOf(7, 3), sqOf(9, 4));
+    moveBody(p, sqOf(9, 4), sqOf(9, 7));
+    moveBody(p, sqOf(9, 7), sqOf(9, 9));
+    endAct(p);
+    expect(p.result).toBe(Result.WHITE_WIN);
+    expect(p.reason).toBe(Reason.HOME_CHECKMATE);
+    expect(bound).toBeLessThanOrEqual(3);
+    // Without a crystal to buy with (and none left on the board to mine), the
+    // relay is impossible and the lone plant's own reach is the bound.
+    expect(homeVictoryEta(rep.pack(buildState({ ...spec, white: 0 })), W, 10)).toBe(7);
+  });
+
+  /**
+   * A greedy corner rush as a witness generator: the invader moves whichever
+   * body gets closest to the enemy corner, promotes everything it can and
+   * buys the fastest affordable tier-1 on the legal square nearest the
+   * corner; the defender passes. The first ply a body of the invader really
+   * stands on the corner must never be below `homeVictoryEta`. Positions are
+   * random (any classes, banks and phases), so the oracle is not the bound's
+   * own arithmetic; the counts at the end keep it from passing vacuously.
+   */
+  it('greedy corner-rush playouts over random positions never beat the bound', () => {
+    const rng = seededRandom(2026092405);
+    const cat = activeCatalog();
+    const LIMIT = 9;
+    let reached = 0;
+    let reachedLate = 0;
+    let reachedByPurchase = 0;
+    for (let trial = 0; trial < 160; trial++) {
+      const invader = (rng() < 0.5 ? 0 : 1) as Side;
+      let p: PackedState;
+      try {
+        p = rep.pack(
+          randomState(rng, 2 + Math.floor(rng() * 6), {
+            white: Math.floor(rng() * 40),
+            black: Math.floor(rng() * 40),
+            current: rng() < 0.5 ? 'white' : 'black',
+            phase: rng() < 0.75 ? 'action' : 'place',
+            inactivityPlies: 0,
+          }),
+        );
+      } catch {
+        continue;
+      }
+      if (p.result !== Result.ONGOING || p.upkeepPending === 1) continue;
+      const bound = homeVictoryEta(p, invader, LIMIT);
+      const corner = invader === 0 ? 99 : 0;
+      const toCorner = (s: number): number => MANHATTAN[corner * 100 + s];
+      const bornAtRoot = new Set<number>();
+      for (let slot = 0; slot < p.sq.length; slot++) if (p.sq[slot] !== DEAD && p.owner[slot] === invader) bornAtRoot.add(slot);
+      const onCorner = (): boolean => p.pieceAt[corner] !== NO_SLOT && p.owner[p.pieceAt[corner]] === invader;
+      let first = onCorner() ? 1 : 0;
+      for (let ply = 1; ply <= LIMIT && first === 0 && p.result === Result.ONGOING; ply++) {
+        if (p.side !== invader) {
+          passTurn(p);
+          continue;
+        }
+        if (p.phase === 1) {
+          // Act: keep making the move that ends nearest the corner (fewest
+          // actions on a tie) while it beats the closest body so far.
+          for (;;) {
+            const n = rep.genActions(p, BUF);
+            let best: PA = -1;
+            for (let i = 0; i < n; i++) {
+              const a = BUF[i];
+              if (paKind(a) !== AKind.MOVE) continue;
+              if (best === -1 || toCorner(paB(a)) < toCorner(paB(best)) || (toCorner(paB(a)) === toCorner(paB(best)) && paC(a) < paC(best))) best = a;
+            }
+            if (best === -1) break;
+            let closest = Infinity;
+            for (let slot = 0; slot < p.sq.length; slot++) {
+              if (p.sq[slot] !== DEAD && p.owner[slot] === invader && toCorner(p.sq[slot]) < closest) closest = toCorner(p.sq[slot]);
+            }
+            if (toCorner(paB(best)) >= closest) break;
+            play(p, best);
+            if (onCorner()) break;
+          }
+          if (onCorner()) {
+            first = ply;
+            break;
+          }
+          endAct(p);
+          if (p.result !== Result.ONGOING) break;
+        }
+        // Prepare: promote everything, then buy the fastest affordable tier-1
+        // on the legal square nearest the corner, while cash lasts.
+        for (;;) {
+          const n = rep.genPlace(p, BUF);
+          let pick: PA = -1;
+          let pickKey = -Infinity;
+          for (let i = 0; i < n; i++) {
+            const a = BUF[i];
+            if (paKind(a) === AKind.PROMOTE) {
+              pick = a;
+              break;
+            }
+            if (paKind(a) === AKind.BUY) {
+              const key = cat.spd[paA(a)] * 100 - toCorner(paB(a));
+              if (key > pickKey) {
+                pick = a;
+                pickKey = key;
+              }
+            }
+          }
+          if (pick === -1) break;
+          play(p, pick);
+        }
+        play(p, paMake(AKind.END_PLACE));
+      }
+      if (first === 0) continue;
+      reached++;
+      if (first > 1) reachedLate++;
+      if (!bornAtRoot.has(p.pieceAt[corner])) reachedByPurchase++;
+      expect(bound, `trial ${trial}: bound ${bound} but a body stood on the corner at ply ${first}`).toBeLessThanOrEqual(first);
+    }
+    // Not vacuous: plenty of real arrivals, many after ply 1, some by a body
+    // bought during the rush (the case the first version of the bound missed).
+    expect(reached).toBeGreaterThan(20);
+    expect(reachedLate).toBeGreaterThan(10);
+    expect(reachedByPurchase).toBeGreaterThan(0);
+  });
+});
+
+describe('the kill clock OFF', () => {
+  it('reads no verdict at all: open, status unknown, posture none, even with a huge lead', () => {
+    const p = pack({ ...quietPairSpec(100, 0), inactivityRule: 'off' });
+    const r = clockReading(p, W);
+    expect(r.verdict).toBe('open');
+    expect(r.claim.status).toBe('unknown');
+    expect(r.posture).toBe('none');
   });
 });
