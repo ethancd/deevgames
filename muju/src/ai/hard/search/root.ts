@@ -64,8 +64,13 @@ import { probeBook } from '../book/probe';
 import { verifyTurn, type ReplayCheck } from '../verify/replay';
 import type { HardConfig } from '../config';
 import { getKillClockPolicy, setKillClockPolicy } from '../eval/evaluate';
-import { clockReading } from '../strategy/clock';
-import type { StrategyChronicle } from '../strategy/types';
+import { activeCatalog } from '../core/catalog';
+import type { StrategyLine, StrategyWitness } from '../gen/generate';
+import { clockReading, type ClockReading } from '../strategy/clock';
+import { forceContactPlans } from '../strategy/contact';
+import { holdPlans } from '../strategy/hold';
+import { newPlanScratch, type PlanScratch, type PlanSet } from '../strategy/plan';
+import type { ClockReadingCore, InjectedPlan, StrategyChronicle } from '../strategy/types';
 import { WorkClass } from './time';
 import {
   PROVER_FULL,
@@ -131,9 +136,11 @@ export interface RootResult {
   candidateSource?: 'completed-depth' | 'partial-iteration' | 'generator-list';
   /** `opts.ply1Trace` only. The ply-1 node under each searched candidate. */
   ply1?: Ply1Node[];
-  /** STRATEGOS (plan W1.10): the Chronicle of a strategos search — clock
-   * reading, posture, injected plans, the choice and any veto. Absent unless
-   * the profile sets `searchFix.strategyPlans` or `strategyVeto`. */
+  /** STRATEGOS: the Chronicle of a strategos search — clock reading,
+   * posture, injected plans with their contracts, feasibility and queries,
+   * and what the root played (W1.9, `chronicle` below); W1.10 adds the veto.
+   * Absent unless the profile sets `searchFix.strategyPlans` (W1.9) or
+   * `strategyVeto` (W1.10). */
   strategy?: StrategyChronicle;
 }
 
@@ -163,6 +170,119 @@ function keyHex(hi: number, lo: number): string {
  */
 export function installRescueWitness(gen: TurnGenerator): void {
   gen.setRescueWitness((p, invader, out) => homeWitness(p, invader, PROOF_NODES, out));
+}
+
+/**
+ * The plan layer's share of the search budget: its rollouts stop, recorded
+ * `unresolved`, once it has spent `limit / STRATEGY_WORK_SHARE` units.
+ * CHOICE (why: a sixteenth of the rung leaves the tactical search its depth at
+ * every rung the ladder uses — 1,562 units at the smallest, 25,000, and 3,750
+ * at A8's fixed:60,000, where the six ForceContact rollouts measured on the
+ * W1.9 fixtures cost well under that; falsifier: a fixed-work root on the
+ * Phasing determinism corpus whose completed depth drops against the same
+ * search with `strategyPlans` off, or whose rollouts come back `unresolved`
+ * at the ladder's rungs).
+ */
+export const STRATEGY_WORK_SHARE = 16;
+
+/** The plan layer's scratch: allocated on first use, rebuilt when the
+ * catalogue moves (a lab rules toggle), never read before it is rewritten
+ * (`strategy/plan.ts newPlanScratch`). One is enough: the engine is
+ * single-threaded and a search never nests another. */
+let planScratch: PlanScratch | null = null;
+
+function scratchForPlans(): PlanScratch {
+  const cat = activeCatalog();
+  if (planScratch === null || planScratch.cat.signature !== cat.signature) planScratch = newPlanScratch(cat);
+  return planScratch;
+}
+
+const NO_LINES: readonly StrategyLine[] = [];
+
+/** What `installStrategyWitness` hands back: the plan set the source computed
+ * (null until the root first generates, and for ever when it never does). */
+export type PlanSetRef = () => PlanSet | null;
+
+/**
+ * STRATEGOS W1.9 (plan B.2 step W1.9): wires the strategic layer's plan lines
+ * into the ROOT generator for ONE search. The root owns the callback — `gen`
+ * never imports `strategy` (DESIGN §2, `lab/hard-ai/deps.ts`) — exactly as
+ * `installRescueWitness` owns injection 4's. `searchRootInner` calls it only
+ * when `searchFix.strategyPlans` is on and clears it (`setStrategyWitness(
+ * null)`) in the same `finally` that restores the kill-clock policy.
+ *
+ * The source answers only for the root it was installed for (`kpos`), with
+ * the lines of `reading`'s posture: `strategy/contact.ts forceContactPlans`
+ * on `force-contact`, `strategy/hold.ts holdPlans` on `hold`, none on `none`
+ * (or when there is no reading). The root regenerates its list every
+ * iteration, so the set is computed on the FIRST root generation and served
+ * from memory after that; its work (`PlanSet.work`, every query's
+ * `workCost`) is charged to the search meter once, at that first generation,
+ * through the generation's own sink — `WorkClass.TURN`, one unit per unit,
+ * the class `gen/actionsearch.ts` charges a within-turn node to — the way
+ * injection 4 charges its prover call. `STRATEGY_WORK_SHARE` bounds the
+ * rollouts inside it.
+ */
+export function installStrategyWitness(s: SearchContext, root: PackedState, reading: ClockReading | null): PlanSetRef {
+  const rootLo = root.kposLo;
+  const rootHi = root.kposHi;
+  let computed: PlanSet | null = null;
+  const source: StrategyWitness = (p, t, meter) => {
+    if (reading === null || p.kposLo !== rootLo || p.kposHi !== rootHi) return NO_LINES;
+    if (computed === null) {
+      const scratch = scratchForPlans();
+      scratch.cap = Math.floor(s.meter.limit / STRATEGY_WORK_SHARE);
+      computed =
+        reading.posture === 'force-contact'
+          ? forceContactPlans(p, t, reading, scratch)
+          : reading.posture === 'hold'
+            ? holdPlans(p, t, reading, scratch)
+            : { posture: reading.posture, lines: [], queries: [], work: 0 };
+      if (computed.work > 0) meter.spend(WorkClass.TURN, computed.work);
+    }
+    return computed.lines;
+  };
+  s.gen.setStrategyWitness(source);
+  return () => computed;
+}
+
+/** `ClockReadingCore`'s own fields, JSON-sized (the full reading carries the
+ * ledger and both killETA readings). */
+function readingCore(r: ClockReading): ClockReadingCore {
+  return { side: r.side, r: r.r, verdict: r.verdict, marginL: r.marginL, marginMid: r.marginMid };
+}
+
+/**
+ * The Chronicle of one strategos search (`StrategyChronicle`, plan B.1): the
+ * reading, the posture, every injected plan with its contract, feasibility
+ * and queries, and what the root played — `source: 'plan'` when its end key
+ * is an injected plan's. W1.10 adds the veto on top of this; W1.9 only
+ * records.
+ */
+function chronicle(reading: ClockReading | null, set: PlanSet | null, result: RootResult): StrategyChronicle {
+  const injected: InjectedPlan[] = (set?.lines ?? []).map(l => ({
+    contract: l.contract,
+    endKey: l.endKey,
+    label: l.label,
+    feasibility: l.feasibility,
+    queries: l.queries,
+  }));
+  const moved = result.source !== 'fallback' && result.actions.length > 0;
+  const played = moved ? injected.find(i => i.endKey === result.endKey) : undefined;
+  return {
+    reading: reading === null ? null : readingCore(reading),
+    posture: reading?.posture ?? 'none',
+    injected,
+    chosen: moved
+      ? {
+          endKey: result.endKey,
+          source: played !== undefined ? 'plan' : 'search',
+          scoreCc: result.scoreCc,
+          ...(played !== undefined ? { planLabel: played.label } : {}),
+        }
+      : null,
+    queries: set?.queries ?? [],
+  };
 }
 
 /** The canonical engine's own verdict: the game is over and `mover` won. */
@@ -410,17 +530,31 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
   // review, 2026-09-24): about 0.3 ms per call on the 24 roots of
   // `lab/hard-ai/positions/p4-determinism.jsonl`, against a search budget of
   // seconds, so it is left off the meter.
-  if (opts.config.searchFix?.killClockPolicy === 'ledger') {
-    const savedPolicy = getKillClockPolicy();
-    const reading = opts.config.evalFix?.clockLedger === true ? clockReading(p, p.side) : null;
-    setKillClockPolicy({ rootClock: p.clock, reading });
-    try {
-      return searchRootFromPacked(engine, state, opts, p);
-    } finally {
-      setKillClockPolicy(savedPolicy);
-    }
+  //
+  // STRATEGOS W1.9: `searchFix.strategyPlans` (again only `hard@strategos`)
+  // additionally installs the root generator's plan-line source
+  // (`installStrategyWitness`) for this search and clears it in the SAME
+  // `finally`. It reads the same reading W1.6 installs — one `clockReading`
+  // per search — and computes it itself when `clockLedger` is off; the
+  // policy's own `reading` stays `null` then, exactly as before, so the
+  // evaluator never sees a reading `clockLedger` did not ask for. With the
+  // flag on, the result carries the Chronicle (`RootResult.strategy`).
+  const fix = opts.config.searchFix;
+  const policyOn = fix?.killClockPolicy === 'ledger';
+  const plansOn = fix?.strategyPlans === true;
+  if (!policyOn && !plansOn) return searchRootFromPacked(engine, state, opts, p);
+  const ledgerOn = opts.config.evalFix?.clockLedger === true;
+  const reading = ledgerOn || plansOn ? clockReading(p, p.side) : null;
+  const savedPolicy = getKillClockPolicy();
+  if (policyOn) setKillClockPolicy({ rootClock: p.clock, reading: ledgerOn ? reading : null });
+  const planSet = plansOn ? installStrategyWitness(engine.ctx, p, reading) : null;
+  try {
+    const result = searchRootFromPacked(engine, state, opts, p);
+    return planSet === null ? result : { ...result, strategy: chronicle(reading, planSet(), result) };
+  } finally {
+    if (plansOn) engine.ctx.gen.setStrategyWitness(null);
+    if (policyOn) setKillClockPolicy(savedPolicy);
   }
-  return searchRootFromPacked(engine, state, opts, p);
 }
 
 function searchRootFromPacked(engine: RootEngine, state: GameState, opts: RootOptions, p: PackedState): RootResult {

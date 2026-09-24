@@ -339,18 +339,26 @@ export interface SearchFix {
   pruneZeroDamage?: boolean;
 
   /**
-   * STRATEGOS W1.9 (plan B.2 step W1.9). ON means `search/root.ts` installs
-   * `gen/generate.ts`'s `setStrategyWitness` callback before the root search,
-   * so `inject()` forces one complete ForceContact or Hold turn line
-   * (`strategy/contact.ts`, `strategy/hold.ts`) into the ply-0 candidate set
-   * through `injectLine`, flagged `FORCED|STRATEGY` (`gen/turn.ts
-   * TurnFlag.STRATEGY`), the same way `setRescueWitness` already forces a
-   * home-defence line in.
+   * STRATEGOS W1.9 (plan B.2 step W1.9). ON means `search/root.ts
+   * installStrategyWitness` installs `gen/generate.ts`'s
+   * `setStrategyWitness` source on the ROOT generator for each search, so
+   * `inject()` forces the root's plan lines — ForceContact
+   * (`strategy/contact.ts`: approach, approach + buy, approach + promote) on
+   * a clock-loss reading, Hold (`strategy/hold.ts`: pass, retreat, break a
+   * Cleave chain) on a clock-win reading, none on an open one — into the
+   * ply-0 candidate set as COMPLETE turns (`playStrategyTurn`: Act,
+   * `END_ACTION`, `PAY_UPKEEP`, Prepare, `END_PLACE`), flagged
+   * `FORCED|STRATEGY` (`gen/turn.ts TurnFlag.STRATEGY`), the same way
+   * `setRescueWitness` forces a home-defence line in; `search/order.ts`
+   * orders them first after the TT move and the home-corner answers
+   * (`ORDER_STRATEGY`), the plan layer's work is charged to the meter, and
+   * the result carries `RootResult.strategy` (the Chronicle).
    *
-   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: no witness is installed,
-   * `inject()` runs exactly as today and the root's candidate set is
-   * unchanged. Only `hard@strategos` sets it; the injection code lands in
-   * W1.9.
+   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: no source is installed,
+   * `inject()` runs exactly as today, the ordering bonus is never read and
+   * the root's candidate set, scores and result are unchanged
+   * (`tests/ai/hard/strategy-plans.test.ts` pins them against `c054136b`).
+   * Only `hard@strategos` sets it.
    */
   strategyPlans?: boolean;
 
