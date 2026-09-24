@@ -15,8 +15,8 @@ import { createHardBot } from '../../hard-ai/bots/hard';
  * Ladder: Random (L0) < Greedy (L1) < Rush/Expand/Balanced (L2) < AIv2-* (L3)
  *         < Hard-* (L4, the replica search of `src/ai/hard/`)
  * Probes: Turtle, Tier1Spam, MiningDenial, AntiRush
- * Kill-clock detector: ClockHeist (STRATEGOS W1.12, `clockheist.ts`'s header
- * for the full behaviour and why its name must never match `/AntiRush|Guard/`).
+ * Kill-clock detector: ClockHeist (STRATEGOS W1.12; see `clockheist.ts`'s
+ * header for its behaviour and why its name must never match `/AntiRush|Guard/`).
  *
  * `Hard-25k`/`Hard-400k` are fixed-WORK presets (deterministic, machine
  * independent); `Hard-wall-3000` is the shipped desktop wall-clock budget and

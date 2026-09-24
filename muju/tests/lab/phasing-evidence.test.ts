@@ -27,18 +27,6 @@ const root = path.resolve(import.meta.dirname, '../..');
  */
 
 /**
- * The `lab/harness/**` files amendment A4 changed, and why each one had to move.
- *
- * The 2026-09-18 manifest pinned the harness bytes that produced its 840 games.
- * Those bytes are history and are never edited, but the tree moved on, so a
- * bare "current bytes equal archived hash" check would now fail on the archive
- * for reasons that are correct. It is not relaxed into silence: every harness
- * file must STILL match its archived hash unless it is named here, and this
- * list must be exactly the set that differs — an undeclared harness edit fails
- * this test as loudly as before, and a declared one that turns out not to
- * differ fails too.
- */
-/**
  * `lab/harness/bots/index.ts` moved once more after all three of the
  * campaigns below were played, and by exactly the same edit each time: it
  * postdates p1, p2 AND p3 equally, so the same declaration is merged into
@@ -51,6 +39,18 @@ const root = path.resolve(import.meta.dirname, '../..');
 const CLOCKHEIST_INDEX_EDIT =
   'FACTORIES gained ClockHeist (STRATEGOS W1.12, 2026-09-24); no existing bot\'s factory moved';
 
+/**
+ * The `lab/harness/**` files amendment A4 changed, and why each one had to move.
+ *
+ * The 2026-09-18 manifest pinned the harness bytes that produced its 840 games.
+ * Those bytes are history and are never edited, but the tree moved on, so a
+ * bare "current bytes equal archived hash" check would now fail on the archive
+ * for reasons that are correct. It is not relaxed into silence: every harness
+ * file must STILL match its archived hash unless it is named here, and this
+ * list must be exactly the set that differs — an undeclared harness edit fails
+ * this test as loudly as before, and a declared one that turns out not to
+ * differ fails too.
+ */
 const A4_HARNESS_EDITS: Record<string, string> = {
   'lab/harness/types.ts':
     'holds HARNESS_RULES_VERSION, the single source of the rules revision, now muju-phasing-2; GameRecord.rulesVersion widened so both revisions can be read',

@@ -12,22 +12,43 @@
  * tries to win the clock: it drones a cheap economy, expands to an
  * uncontested flank instead of massing at the front, takes a kill only when
  * that kill helps it (it is behind on mined total), and once it is ahead and
- * the kill-free clock has run a few plies, it stops taking any risk at all and
- * simply waits the clock out.
+ * the kill-free clock has run a few plies, it stops touching the enemy and
+ * waits the clock out while it keeps mining.
  *
  * BEHAVIOUR (plan B.1), in priority order:
- *   1. Ahead on mined total AND the kill-free clock (`state.inactivityPlies`)
- *      has reached RETREAT_CLOCK: retreat every threatened unit out of reach
- *      and otherwise pass. No buys, no attacks, no promotions — an attack
- *      that KILLS would reset this bot's own clock lead
- *      (`src/game/inactivity.ts`'s doc comment: only an attack that removes a
- *      unit resets the counter), so once the lead is close to paying off,
- *      touching the enemy at all is the one thing that can undo it.
+ *   1. Action phase, ahead on mined total AND the kill-free clock
+ *      (`state.inactivityPlies`) at RETREAT_CLOCK or more: retreat every unit
+ *      standing in an enemy strike area to a square outside all of them, and
+ *      otherwise pass. No attacks and no relocations: an attack that KILLS
+ *      would reset this bot's own clock lead (`src/game/inactivity.ts`'s doc
+ *      comment: only an attack that removes a unit resets the counter), so
+ *      once the lead is close to paying off, touching the enemy at all is the
+ *      one thing that can undo it.
  *   2. Otherwise: buy cheap (tier 1) miners ("drone"), relocate idle units to
  *      rich cells on the flank corner away from the enemy's approach line
- *      ("expand"), and take a free kill (never a trade) ONLY while behind on
- *      mined total, and only when doing so does not leave the attacker inside
- *      a surviving enemy's strike area.
+ *      ("expand"), and take a free kill (never a trade) ONLY while strictly
+ *      behind on mined total, and only when the attacker is not left inside a
+ *      surviving enemy's strike area. The Place phase always runs this branch,
+ *      locked lead or not: a purchase never touches the enemy (an arrival is
+ *      inert until its owner's next turn, and `withPassiveEconomy` already
+ *      charges a square any enemy can reach), and a clock lead is held by
+ *      out-mining, so "pass" in plan B.1 is the Action-phase posture, not a
+ *      buying freeze.
+ *
+ * AHEAD AND BEHIND are the raw `minedTotal` comparison the plan names
+ * (`src/game/inactivity.ts`), read only in the Action phase, the only phase
+ * whose moves and attacks the posture governs. Income is taken at
+ * END_ACTION_PHASE (RULE `src/game/turn.ts endTurn`), so at White's Action
+ * phase both sides have taken the same number of incomes and the comparison is
+ * like for like; at Black's, White has taken one more, so Black reads itself
+ * one income step worse than a like-for-like count would — it locks later and
+ * kills sooner. CHOICE (why: simple, and conservative about the lock, whose
+ * cost is lost relocations). Falsifier: a like-for-like count (Black credited
+ * one step of `projectedIncome`, `src/game/mining.ts`) scoring at least as
+ * well against the same scripted bots; measured 2026-09-24 in the W1.12 review
+ * (p1-val, 16 openings x 2 seats, scores of 32) it scored lower against every
+ * one: Expand 14.5 vs 18, Balanced 10.5 vs 14.5, Turtle 13 vs 16.5, Greedy
+ * 4.5 vs 9, Rush 0 vs 2.5.
  *
  * NAME. Exactly `ClockHeist`, chosen in particular to NOT match
  * `/AntiRush|Guard/`. Grepping that pattern (it appears once, in
@@ -42,11 +63,14 @@
  * it takes the ordinary cost-descending order, and the name is chosen so it
  * never accidentally picks up the other order by matching the regex.
  *
- * Per plan B.1b, THIS NAME IS THE BOT'S LADDER IDENTITY: every scripted
- * reference campaign this tree can still bind against
- * (`tests/lab/phasing-evidence.test.ts`) pins bot BEHAVIOUR only by name, so
- * any future change to what ClockHeist actually does must ship as a new bot,
- * `ClockHeist-v2`, alongside this one — never as a silent edit to this file.
+ * Per plan B.1b, THIS NAME IS THE BOT'S LADDER IDENTITY: a scripted engine's
+ * ladder `configHash` is `scripted:<name>` and its resolved configuration is
+ * `{engine: 'scripted', bot: <name>}` (`lab/hard-ai/ladder/engines.ts
+ * scriptedEngine`, `lab/hard-ai/ladder/identity.ts`) — no byte of this file
+ * reaches either. A behaviour change under the same name would therefore look
+ * like the same opponent to every row that cites it, so any change to what
+ * ClockHeist does after this lane must ship as a new bot, `ClockHeist-v2`,
+ * alongside this one — never as a silent edit to this file.
  *
  * REUSE. Only `lab/harness/bots/bot-utils.ts` and the same game-rule
  * primitives every other archetype in this directory already imports
@@ -57,8 +81,9 @@ import { getUnitDefinition } from '../../../src/game/units';
 import { manhattanDistance } from '../../../src/game/board';
 import { phaseEndAction } from '../../../src/game/legality';
 import { minedTotal } from '../../../src/game/inactivity';
+import { getActionsPerTurn } from '../../../src/game/rules';
 import type { AIAction } from '../../../src/ai/types';
-import type { Position, Unit } from '../../../src/game/types';
+import type { Position } from '../../../src/game/types';
 import type { ScriptedBot, BotContext, BotView } from '../types';
 import { pickBest } from '../rng';
 import {
@@ -77,35 +102,55 @@ import {
  * DERIVED (plan Part B.1: "when ahead at clock >= 3 retreat out of reach and
  * pass"). `state.inactivityPlies` counts kill-free plies toward
  * `INACTIVITY_LIMIT` (`src/game/inactivity.ts`); once it reaches this value
- * while ClockHeist is ahead on mined total, the bot stops developing and locks
- * the lead in instead.
+ * while ClockHeist is ahead on mined total, the bot stops touching the enemy
+ * and locks the lead in instead. The counter starts at 0 with the game, so in a
+ * kill-free game this threshold is already met from ply 3 on.
  */
 const RETREAT_CLOCK = 3;
 
 /**
- * CHOICE: a cheap, symmetric over-approximation of "could this enemy unit
- * reach and hit this square next turn": one full move (RULE
- * `src/game/movement.ts getValidMoves` — a single MOVE action covers up to
- * `speed` tiles) followed by one melee attack (RULE
- * `src/game/combat.ts getValidAttacks` — attacks require adjacency; there is
- * no ranged attack in this ruleset). It ignores that a unit could spend more
- * than one of the turn's four shared actions moving before it attacks (so it
- * can UNDER-count a slow unit's true reach across a whole enemy turn) and
- * ignores board obstructions (so it can OVER-count through blockers). Used
- * only as ClockHeist's own safety margin, never asserted as a proof of
- * anything the opponent will actually do — "keep the definition simple" (plan
- * B.1). Falsifier: an authored position where a surviving enemy strictly
- * farther than `speed + 1` from a square still kills a unit standing there —
- * that would mean the bound itself, not just its precision, is wrong.
+ * How far an enemy piece can strike on its next turn: DERIVED from the rules,
+ * the same area the engine calls a strike area (`src/ai/hard/tables/threat.ts
+ * strikeArea`, DESIGN §5.1, `STRIKE_MOVE_ACTIONS` = 3 at four actions). A
+ * piece may spend any number of the turn's shared actions moving (RULE
+ * `src/game/movement.ts canMove`: "Units can move multiple times per turn"),
+ * each MOVE covering up to `speed` tiles (RULE `getValidMoves`), and must keep
+ * one action for an attack on an ADJACENT square (RULE `src/game/combat.ts
+ * getValidAttacks`; there is no ranged attack). So a piece whose owner has
+ * `actions` actions reaches Manhattan distance speed × (actions − 1) + 1.
+ *
+ * Measured on the empty board, this is a sound over-approximation for every
+ * existing enemy unit and every paid enemy arrival (`inEnemyStrikeArea`
+ * includes both): blockers can only lengthen a real path, a promotion bought in
+ * the enemy's next Place phase cannot act before the turn after, and a kill
+ * never moves its attacker. So a square outside it cannot be attacked on the
+ * enemy's next turn — which is what "retreat out of reach" and "a free kill"
+ * promise (plan B.1).
+ *
+ * It covers most of a 10×10 board once a few enemy pieces are out, so in
+ * practice most free kills are declined and most retreats become passes. A
+ * one-move reach (speed + 1, no arrivals) was measured against it in the W1.12
+ * review (2026-09-24, p1-val, 16 openings x 2 seats, every other rule as here,
+ * scores of 32): level against Expand (18), Turtle (16.5) and Greedy (9), and
+ * 15.5 vs 14.5 against Balanced and 3 vs 2.5 against Rush — no evidence that
+ * the smaller, unsound area buys strength.
  */
-function enemyReach(u: Unit): number {
-  return getUnitDefinition(u.definitionId).speed + 1;
+function enemyReach(definitionId: string, actions: number): number {
+  return getUnitDefinition(definitionId).speed * (actions - 1) + 1;
 }
 
 /** `excludeId` drops one enemy from consideration — the target a candidate
- * ATTACK would itself remove from the board before it could ever strike back. */
+ * ATTACK would itself remove from the board before it could ever strike back.
+ * The opponent's paid pending arrivals count: they act on its next turn
+ * (`bot-utils.ts safeCommitSquares` treats them as movers for the same reason). */
 function inEnemyStrikeArea(view: BotView, pos: Position, excludeId?: string): boolean {
-  return enemyUnits(view).some(e => e.id !== excludeId && manhattanDistance(e.position, pos) <= enemyReach(e));
+  const actions = getActionsPerTurn(view.state);
+  const strikers = [
+    ...enemyUnits(view),
+    ...view.pendingSummons.filter(s => s.owner === view.opponent),
+  ];
+  return strikers.some(e => e.id !== excludeId &&
+    manhattanDistance(e.position, pos) <= enemyReach(e.definitionId, actions));
 }
 
 /**
@@ -137,7 +182,7 @@ function wouldYieldAt(view: BotView, definitionId: string, pos: Position): numbe
  * uses is not reused for this branch.
  */
 function retreatScore(view: BotView, a: AIAction): number {
-  if (a.type !== 'MOVE') return -1; // no buys, no attacks, no promotions while locking in a lead
+  if (a.type !== 'MOVE') return -1; // no attacks while locking in a lead
   const unit = unitById(view, a.unitId);
   if (!unit) return -1;
   if (!inEnemyStrikeArea(view, unit.position)) return -1; // already out of reach: nothing to do
@@ -171,15 +216,16 @@ export function createClockHeistBot(): ScriptedBot {
     name: 'ClockHeist',
     chooseAction(ctx: BotContext) {
       const { view } = ctx;
-      const ahead = minedTotal(view.state, view.player) > minedTotal(view.state, view.opponent);
+      const mine = minedTotal(view.state, view.player);
+      const theirs = minedTotal(view.state, view.opponent);
       const clock = view.state.inactivityPlies ?? 0;
-      if (ahead && clock >= RETREAT_CLOCK) return chooseRetreat(ctx);
+      if (view.phase === 'action' && mine > theirs && clock >= RETREAT_CLOCK) return chooseRetreat(ctx);
 
       const flank = flankCorner(view);
       return chooseFrom(ctx, (a) => {
         switch (a.type) {
           case 'ATTACK': {
-            if (ahead) return -1; // free kills only while behind on the clock (plan B.1)
+            if (mine >= theirs) return -1; // free kills only while behind on the clock (plan B.1)
             const at = a as Extract<AIAction, { type: 'ATTACK' }>;
             const attacker = unitById(view, at.unitId);
             const target = defenderAt(view, at.targetPosition);
