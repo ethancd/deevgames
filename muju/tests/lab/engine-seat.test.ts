@@ -19,6 +19,7 @@ import {
   ENGINE_ALLOWANCE_MS,
   ENGINE_TARGET_MS,
   TRANSPORT_ATTEMPTS,
+  TRANSPORT_BACKOFF_CAP_MS,
   TRANSPORT_BACKOFF_MS,
   assertSeatRoom,
   classifyFallback,
@@ -374,6 +375,63 @@ it('never retries a server answer: an OnlineError stops the read leg at once', a
   expect(read).toHaveBeenCalledTimes(1);
   expect(logs.some(e => e.event === 'transport-retry')).toBe(false);
 });
+/**
+ * STRATEGOS W1.14 pilot review. The LLM pilot's seat behaviours below
+ * (`claude/muju-llm-pilot` 20eb7945) had no test of their own, so a merge
+ * resolution that dropped any of them passed this whole file (each was
+ * mutated out of the merged runner and survived). They are pinned here so the
+ * next merge of master into the pilot cannot lose them silently either.
+ */
+it('retries a 429 or 5xx read like a transport failure, logging the status', async () => {
+  const { room, journal, state, finish } = fixture(), logs: Record<string, unknown>[] = [], slept: number[] = [];
+  const read = vi.fn()
+    .mockRejectedValueOnce(new OnlineError('Too many requests', 'RATE_LIMITED', 429))
+    .mockRejectedValueOnce(new OnlineError('Bad gateway', 'UPSTREAM', 502))
+    .mockResolvedValue(room);
+  await runSeat({ journal, transport: { read, wait: vi.fn(), play: vi.fn().mockResolvedValue(finish) },
+    createEngine: () => ({ searchTurn: async () => resultFor(state) }), save: vi.fn(), log: e => logs.push(e), sleep: async ms => { slept.push(ms); } });
+  expect(slept).toEqual([TRANSPORT_BACKOFF_MS, TRANSPORT_BACKOFF_MS * 2]);
+  expect(logs.filter(e => e.event === 'transport-retry').map(e => e.status)).toEqual([429, 502]);
+  // A 4xx other than 429 is still the server's answer: stopped at once.
+  const refused = vi.fn().mockRejectedValue(new OnlineError('Forbidden', 'FORBIDDEN', 403));
+  await expect(runSeat({ journal: fixture().journal, transport: { read: refused, wait: vi.fn(), play: vi.fn() }, createEngine: vi.fn(),
+    save: vi.fn(), log: vi.fn(), sleep: async () => { throw new Error('must not sleep'); } })).rejects.toThrow('Forbidden');
+  expect(refused).toHaveBeenCalledTimes(1);
+});
+it('backs off 250 ms doubling for TRANSPORT_ATTEMPTS (7) reads: six sleeps, 15.75 s, never above the cap', async () => {
+  const always = vi.fn().mockRejectedValue(new TypeError('fetch failed')), slept: number[] = [];
+  await expect(runSeat({ journal: fixture().journal, transport: { read: always, wait: vi.fn(), play: vi.fn() },
+    createEngine: vi.fn(), save: vi.fn(), log: vi.fn(), sleep: async ms => { slept.push(ms); } })).rejects.toThrow('fetch failed');
+  expect(TRANSPORT_ATTEMPTS).toBe(7);
+  expect(slept).toEqual([250, 500, 1000, 2000, 4000, 8000]);
+  expect(slept.reduce((a, b) => a + b, 0)).toBe(15_750);
+  expect(Math.max(...slept)).toBeLessThanOrEqual(TRANSPORT_BACKOFF_CAP_MS);
+});
+it('re-reads the room once the slot is granted and, if the turn was lost meanwhile, searches nothing and waits again', async () => {
+  const { room, journal, state } = fixture(), logs: Record<string, unknown>[] = [];
+  // White's turn at revision 1; by the time the slot is granted the room is at
+  // revision 2 with Black to move; after Black's turn it is White's again at 3.
+  const blackToMove = MACRO_TURN.reduce(applyAction, state), whiteAgain = MACRO_TURN.reduce(applyAction, blackToMove);
+  expect(blackToMove.turn.currentPlayer).toBe('black');
+  expect(whiteAgain.turn.currentPlayer).toBe('white');
+  const lost = { ...room, revision: 2, state: blackToMove }, back = { ...room, revision: 3, state: whiteAgain };
+  const finish = { ...back, revision: 4, state: { ...whiteAgain, phase: 'victory' as const, winner: 'white' as const } };
+  const read = vi.fn().mockResolvedValueOnce(room).mockResolvedValueOnce(lost).mockResolvedValue(back);
+  const wait = vi.fn().mockResolvedValue({ changed: true, room: { ...back, authenticatedPlayer: undefined } });
+  const play = vi.fn().mockResolvedValue(finish);
+  const searchTurn = vi.fn(async (root: GameState) => resultFor(root));
+  await runSeat({ journal, transport: { read, wait, play }, createEngine: () => ({ searchTurn }), save: vi.fn(), log: e => logs.push(e) });
+  const lostEvents = logs.filter(e => e.event === 'slot-turn-lost');
+  expect(lostEvents).toHaveLength(1);
+  expect(lostEvents[0]).toMatchObject({ revision: 2 });
+  expect(typeof lostEvents[0].queueDelayMs).toBe('number');
+  expect(wait).toHaveBeenCalledWith(journal.connection, 2, undefined);
+  expect(searchTurn).toHaveBeenCalledTimes(1);
+  expect(searchTurn.mock.calls[0][0]).toBe(whiteAgain);
+  expect(logs.filter(e => e.event === 'search').map(e => e.revision)).toEqual([3]);
+  expect(play).toHaveBeenCalledTimes(1);
+  expect(play.mock.calls[0][1].expectedRevision).toBe(3);
+});
 it('recovers a pending request after terminal acknowledgement loss without searching again', async () => {
   const { journal, finish } = fixture();
   journal.pending = { expectedRevision: 1, requestId: 'persisted-batch', actions: MACRO_TURN };
@@ -667,6 +725,20 @@ describe('per-search heavy-slot acquisition (Component A)', () => {
     expect(maxConcurrentSlots).toBeGreaterThan(0); // real contention happened
     expect(maxConcurrentSlots).toBeLessThanOrEqual(2);
     expect(readSlots().filter(s => s.record !== null && !s.stale)).toHaveLength(0); // all released
+  }, 10_000);
+
+  it('logs search-failed with the queue wait and still releases the real slot when the engine throws', async () => {
+    const { readSlots } = await import('../../lab/hard-ai/ladder/heavy');
+    const { room, journal } = fixture(), logs: Record<string, unknown>[] = [];
+    const transport = { read: vi.fn().mockResolvedValue(room), wait: vi.fn(), play: vi.fn() };
+    await expect(runSeat({ journal, transport, createEngine: () => ({ searchTurn: async () => { throw new Error('engine blew up'); } }),
+      save: vi.fn(), log: e => logs.push(e) })).rejects.toThrow('engine blew up');
+    const failed = logs.find(e => e.event === 'search-failed')!;
+    expect(failed).toMatchObject({ revision: 1, fallback: 'engine-exception', verified: false });
+    expect(typeof failed.queueDelayMs).toBe('number');
+    expect(failed.queueDelayMs as number).toBeGreaterThanOrEqual(0);
+    expect(readSlots().filter(s => s.record !== null && !s.stale)).toHaveLength(0);
+    expect(transport.play).not.toHaveBeenCalled();
   }, 10_000);
 
   /**

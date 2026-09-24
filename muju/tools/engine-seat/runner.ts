@@ -34,8 +34,13 @@ export const ENGINE_TARGET_MS = ENGINE_ALLOWANCE_MS - ENGINE_TARGET_MARGIN_MS;
 /** Bounded backoff for the two READ-ONLY legs (authenticated read, long-poll wait). Covers a
  * transient site blip (a deploy restart, a 429/5xx burst) without falling through to a process
  * exit + dispatcher respawn, which is much slower and burns a restart from the budget in
- * dispatch.ts#superviseEngine. 7 attempts capped at 8s each (250ms, 500ms, 1s, 2s, 4s, 8s, 8s) is
- * ~24s of in-process retry before this leg gives up and lets the caller decide. */
+ * dispatch.ts#superviseEngine. 7 attempts means 6 sleeps between them (250ms, 500ms, 1s, 2s, 4s,
+ * 8s): 15.75s of in-process retry before this leg gives up and lets the caller decide. The 8s cap
+ * does not bind at 7 attempts (the 6th sleep is exactly 8s); it only bounds a later increase of
+ * TRANSPORT_ATTEMPTS. CHOICE (LLM pilot, 20eb7945; why: long enough to ride out a site restart or
+ * a rate-limit burst, short enough that a real outage still reaches the dispatcher's respawn
+ * budget; falsifier: a pilot `.jsonl` whose read leg exhausts all 7 attempts during a blip the
+ * site recovered from). */
 export const TRANSPORT_ATTEMPTS = 7;
 export const TRANSPORT_BACKOFF_MS = 250;
 export const TRANSPORT_BACKOFF_CAP_MS = 8_000;
