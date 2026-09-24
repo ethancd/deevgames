@@ -54,7 +54,9 @@ export interface ExperienceRecord {
 // Lock
 // ---------------------------------------------------------------------------
 
-const LOCK_STALE_MS = 5 * 60_000;
+/** A lock whose holder pid is alive is never reclaimed before this (curation holds the lock for a
+ * whole Claude call over the playbook, which can take several minutes). */
+const LOCK_STALE_MS = 45 * 60_000;
 function pidAlive(pid: number): boolean {
   try { process.kill(pid, 0); return true; }
   catch (error) { return (error as NodeJS.ErrnoException).code === 'EPERM'; }
@@ -66,7 +68,7 @@ function pidAlive(pid: number): boolean {
 export async function withPublishLock<T>(fn: () => Promise<T> | T, opts: { pollMs?: number; timeoutMs?: number } = {}): Promise<T> {
   ensureCampaignDirs();
   const lockPath = publishLockPath();
-  const pollMs = opts.pollMs ?? 200, timeoutMs = opts.timeoutMs ?? 60_000;
+  const pollMs = opts.pollMs ?? 200, timeoutMs = opts.timeoutMs ?? 40 * 60_000;
   const deadline = Date.now() + timeoutMs;
   for (;;) {
     try {
@@ -172,14 +174,18 @@ the rules, the tools, or the LLM's own mistakes don't depend on the engine.`;
  * `--curate --dry-run` and by tests.
  */
 export async function curatePlaybook(opts: { dryRun?: boolean } = {}): Promise<{ prompt: string; nextVersion: number; wrote: boolean }> {
-  const records = readExperiences();
-  const currentVersion = playbookVersion();
-  const nextVersion = currentVersion + 1;
-  const current = existsSync(playbookPath()) ? readFileSync(playbookPath(), 'utf8') : '(no playbook yet)';
-  const prompt = [CURATOR_PROMPT_PREAMBLE, '', `Current version: ${currentVersion}. Write version: ${nextVersion}.`, '',
-    '## Current playbook', current, '', '## Experience records', ...records.map(r => JSON.stringify(r))].join('\n');
-  if (opts.dryRun) return { prompt, nextVersion, wrote: false };
+  const compose = () => {
+    // Read under the lock (see below): two games finishing together must not curate from the same stale state.
+    const currentVersion = playbookVersion();
+    const nextVersion = currentVersion + 1;
+    const current = existsSync(playbookPath()) ? readFileSync(playbookPath(), 'utf8') : '(no playbook yet)';
+    const prompt = [CURATOR_PROMPT_PREAMBLE, '', `Current version: ${currentVersion}. Write version: ${nextVersion}.`, '',
+      '## Current playbook', current, '', '## Experience records', ...readExperiences().map(r => JSON.stringify(r))].join('\n');
+    return { currentVersion, nextVersion, prompt };
+  };
+  if (opts.dryRun) { const { prompt, nextVersion } = compose(); return { prompt, nextVersion, wrote: false }; }
   return withPublishLock(async () => {
+    const { currentVersion, nextVersion, prompt } = compose();
     // Subscription route only: API keys stripped, no tools, no MCP, run outside the repo.
     const cwd = mkdtempSync(join(tmpdir(), 'muju-pilot-curate-'));
     const { stdout } = await execFileAsync('claude', ['-p', prompt, '--model', 'claude-sonnet-5', '--effort', 'medium',
