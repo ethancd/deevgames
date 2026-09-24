@@ -235,8 +235,7 @@ Report the winner and stop. Clocks stop on any game result; undo never refunds t
   occupation, and no home-checkmate is awarded when the defender's reply would be
   the tenth ply. Read the live numbers from the observation's `killClock`: `plies`,
   `limit`, `warningAt`, `minedTotals` and `leader` (who is currently ahead, or null
-  when tied). The deprecated `quietTurns`/`drawAtQuietTurns` pair reads the same
-  counter and limit for one release.
+  when tied). A kill-clock ending is a win for the mined-total leader, not a draw.
 - Read `nextStep`, `turn.currentPlayer`, `turn.phase`, `upkeepPending`, resources,
   unit IDs and `revision`. Plan only for the seat you control.
 - Query `muju_legal_actions({roomId, unitId?, type?, offset?, limit?})` for legal
