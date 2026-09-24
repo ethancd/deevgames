@@ -17,13 +17,44 @@
  *
  * BEHAVIOUR (plan B.1), in priority order:
  *   1. Action phase, ahead on mined total AND the kill-free clock
- *      (`state.inactivityPlies`) at RETREAT_CLOCK or more: retreat every unit
- *      standing in an enemy strike area to a square outside all of them, and
- *      otherwise pass. No attacks and no relocations: an attack that KILLS
- *      would reset this bot's own clock lead (`src/game/inactivity.ts`'s doc
- *      comment: only an attack that removes a unit resets the counter), so
- *      once the lead is close to paying off, touching the enemy at all is the
- *      one thing that can undo it.
+ *      (`state.inactivityPlies`) at RETREAT_CLOCK or more ("the lock"): split
+ *      by unit. A unit standing inside an enemy strike area retreats, to the
+ *      safest reachable square outside every strike area (farthest from the
+ *      nearest enemy unit) and, among equally safe squares, the richest. A
+ *      unit already outside every enemy strike area keeps mining: it stays on
+ *      its cell unless one legal MOVE reaches a cell that pays it STRICTLY
+ *      more, is ALSO outside every enemy strike area, and does not reduce its
+ *      distance to the nearest enemy ("not toward the enemy"). Passing is what
+ *      is left once no unit has such a move. No attacks: an
+ *      attack that KILLS would reset this bot's own clock lead
+ *      (`src/game/inactivity.ts`'s doc comment: only an attack that removes a
+ *      unit resets the counter), so once the lead is close to paying off,
+ *      touching the enemy at all is the one thing that can undo it.
+ *
+ *      W1.12 FOLLOW-UP (the coordinator's step brief, "ClockHeist hold
+ *      economics", after the W1.12 review): the original lock retreated
+ *      threatened units by distance alone and froze every OTHER unit (any
+ *      MOVE by a safe unit scored like a pass), so a locked unit whose cell
+ *      had mined out (`src/game/mining.ts endOfTurnIncome` subtracts each take
+ *      from `cell.resourceLayers`) could never move to a fresher one. The
+ *      split above is the brief's fix. MEASURED EFFECT (2026-09-24 review,
+ *      exact replays of both p1-dev calibration rounds, `hard@desktop`
+ *      fixed:60000, Black handicaps 0-20, seeds 20260977 and 20260991): none.
+ *      The pre-follow-up lock replays all 96 games identically (winner,
+ *      plies, both mined totals): in them a safe locked unit never had a
+ *      strictly fresher cell that was also out of every strike area and not
+ *      toward the enemy, and no retreat had a richness tie to break.
+ *      What does keep ClockHeist from holding a handicap lead in those games
+ *      is its spawn area. Its units sit on the rich cells of its home spawn
+ *      block, which pay for several turns; the unlocked branch never moves a
+ *      unit off a paying cell and the lock only for a strictly richer, safe,
+ *      not-toward-the-enemy one, so the spawn rectangle (`src/game/spawning.ts`:
+ *      home corner to each own unit) stays full and the Place phase has no
+ *      legal square to buy on. As Black it bought 1.0-2.0 units in turns 1-4
+ *      against the engine's 5.5-6.5, its unspent bank at the end rose from
+ *      17 to 41 as the handicap rose from 0 to 20, and its own mining fell
+ *      (44.5 at handicap 8, 35-36 at 16 and 20). That is not a Place-phase
+ *      droning question: at that point there is nothing to buy on.
  *   2. Otherwise: buy cheap (tier 1) miners ("drone"), relocate idle units to
  *      rich cells on the flank corner away from the enemy's approach line
  *      ("expand"), and take a free kill (never a trade) ONLY while strictly
@@ -68,9 +99,12 @@
  * `{engine: 'scripted', bot: <name>}` (`lab/hard-ai/ladder/engines.ts
  * scriptedEngine`, `lab/hard-ai/ladder/identity.ts`) — no byte of this file
  * reaches either. A behaviour change under the same name would therefore look
- * like the same opponent to every row that cites it, so any change to what
- * ClockHeist does after this lane must ship as a new bot, `ClockHeist-v2`,
- * alongside this one — never as a silent edit to this file.
+ * like the same opponent to every row that cites it. The plan freezes the name
+ * at amendment A8 ("freeze it before A8, rename (ClockHeist-v2) on any
+ * change"): until A8 cites this bot its behaviour may still change under this
+ * name (the W1.12 follow-up did, so ladder output recorded before that commit
+ * is from the earlier lock); once A8 cites it, any change ships as a new bot,
+ * `ClockHeist-v2`, alongside this one — never as a silent edit to this file.
  *
  * REUSE. Only `lab/harness/bots/bot-utils.ts` and the same game-rule
  * primitives every other archetype in this directory already imports
@@ -174,25 +208,74 @@ function wouldYieldAt(view: BotView, definitionId: string, pos: Position): numbe
 }
 
 /**
- * Retreat mode deliberately bypasses `withPassiveEconomy`: mining deltas and
- * the spawn-disruption bonus are exactly the economic upside a locked-in
- * clock lead must not chase mid-flight, so every action but a genuine escape
- * move scores -1 here, full stop — the ordinary `chooseFrom`
- * (+ `withPassiveEconomy`) pairing every other archetype in this directory
- * uses is not reused for this branch.
+ * Locked-lead mode deliberately bypasses `withPassiveEconomy`, the pairing
+ * with `chooseFrom` that every other archetype in this directory uses. For a
+ * MOVE that wrapper adds two terms (`bot-utils.ts`): the mining delta x 45,
+ * which this scorer replaces with its own yield ranking
+ * (`wouldYieldAt`/`miningYieldAt` below), and a spawn-disruption bonus
+ * (`disruptedByMove`: the move makes a paid enemy arrival's square invalid),
+ * which it drops on purpose — blocking an arrival means standing in the
+ * enemy's spawn rectangle, the contact the lock exists to avoid. (Its
+ * unsafe-square penalty is BUY_UNIT-only and never applies in the Action
+ * phase.) Every non-MOVE action (ATTACK, END_ACTION_PHASE) scores -1: see the
+ * module doc comment for why attacks stay banned while the lead is locked in.
+ *
+ * Two disjoint cases, by where THIS action's unit currently stands
+ * (`unit.position`, not the destination):
+ *
+ *   - Inside an enemy strike area (in danger): only a destination that is
+ *     ALSO out of every enemy strike area counts as an improvement (plan
+ *     B.1's "retreat"). Among those, safest first — farther from the nearest
+ *     enemy is harder to be threatened again once the enemy advances — richest
+ *     only as the tie-break (the follow-up brief: "to the safest square, then
+ *     the richest"). "Nearest enemy" is `nearestEnemyDistance`, units on the
+ *     board only: paid arrivals decide safety (`inEnemyStrikeArea`) but not
+ *     this ranking, and with no enemy unit on the board every safe square
+ *     ties at Infinity and the rng picks one. DERIVED (lexicographic order):
+ *     the x 1000 on distance keeps safety dominant because a yield is at most
+ *     8 (the largest `mining` stat, `src/game/units.ts`), so no richness term
+ *     can outweigh one square of distance. CHOICE (safety before richness, as
+ *     the brief orders it; falsifier: a ladder row where a richest-safe-square
+ *     order keeps ClockHeist's lead measurably more often than this one).
+ *   - Outside every enemy strike area (already safe): the unit keeps mining.
+ *     A destination that steps INTO an enemy strike area is never worth it
+ *     (safety is not for sale). A destination that reduces the distance to
+ *     the nearest enemy is rejected outright, even if it is safe and richer
+ *     (the follow-up brief: "not toward the enemy"): the strike area covers
+ *     the enemy's next turn only, and a unit that closes the distance today
+ *     is the one the enemy reaches the turn after. What remains must also be
+ *     a STRICT improvement in yield over staying put
+ *     (`wouldYieldAt(...) > miningYieldAt(view, unit)`): an already-mining unit
+ *     never wanders for a same-or-worse cell, and a unit on a cell that has
+ *     mined out (`src/game/mining.ts`) has somewhere legal to go.
+ *
+ * CHOICE (score tiers, not magnitudes): any retreat (1_000_000 + ...) outranks
+ * any mining relocation (500 + yield, at most 508), and both outrank a pass
+ * (-1, then `chooseLocked` ends the phase), so a threatened unit always moves
+ * before a safe one spends the shared action budget (the bot re-scores after
+ * every action, so a relocation played because no retreat existed can still
+ * open one). Falsifier: a ladder row where spending the last action on income
+ * before safety keeps ClockHeist's lead measurably more often.
  */
-function retreatScore(view: BotView, a: AIAction): number {
-  if (a.type !== 'MOVE') return -1; // no attacks while locking in a lead
+function lockedScore(view: BotView, a: AIAction): number {
+  if (a.type !== 'MOVE') return -1;
   const unit = unitById(view, a.unitId);
   if (!unit) return -1;
-  if (!inEnemyStrikeArea(view, unit.position)) return -1; // already out of reach: nothing to do
-  if (inEnemyStrikeArea(view, a.to)) return -1; // would still be exposed: not an improvement
-  return 200 + nearestEnemyDistance(view, a.to);
+  const destSafe = !inEnemyStrikeArea(view, a.to);
+  if (inEnemyStrikeArea(view, unit.position)) {
+    if (!destSafe) return -1; // still exposed: not an improvement
+    return 1_000_000 + nearestEnemyDistance(view, a.to) * 1000 + wouldYieldAt(view, unit.definitionId, a.to);
+  }
+  if (!destSafe) return -1; // never walk a safe unit INTO reach
+  if (nearestEnemyDistance(view, a.to) < nearestEnemyDistance(view, unit.position)) return -1; // toward the enemy
+  const destYield = wouldYieldAt(view, unit.definitionId, a.to);
+  if (destYield <= miningYieldAt(view, unit)) return -1; // not a fresher cell: stay put instead
+  return 500 + destYield;
 }
 
-function chooseRetreat(ctx: BotContext): AIAction | null {
-  const best = pickBest(ctx.rng, ctx.legal, a => retreatScore(ctx.view, a));
-  if (best === undefined || retreatScore(ctx.view, best) <= 0) return phaseEndAction(ctx.view.state);
+function chooseLocked(ctx: BotContext): AIAction | null {
+  const best = pickBest(ctx.rng, ctx.legal, a => lockedScore(ctx.view, a));
+  if (best === undefined || lockedScore(ctx.view, best) <= 0) return phaseEndAction(ctx.view.state);
   return best;
 }
 
@@ -219,7 +302,7 @@ export function createClockHeistBot(): ScriptedBot {
       const mine = minedTotal(view.state, view.player);
       const theirs = minedTotal(view.state, view.opponent);
       const clock = view.state.inactivityPlies ?? 0;
-      if (view.phase === 'action' && mine > theirs && clock >= RETREAT_CLOCK) return chooseRetreat(ctx);
+      if (view.phase === 'action' && mine > theirs && clock >= RETREAT_CLOCK) return chooseLocked(ctx);
 
       const flank = flankCorner(view);
       return chooseFrom(ctx, (a) => {

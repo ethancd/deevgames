@@ -236,6 +236,173 @@ describe('ClockHeist authored positions: the lock (ahead at clock >= 3)', () => 
   });
 });
 
+describe('ClockHeist authored positions: locked-lead mining economics (W1.12 follow-up)', () => {
+  /**
+   * W1.12 follow-up (the coordinator's step brief for this lane, "ClockHeist
+   * hold economics"; plan Part B.1 names the lock, the brief splits it by
+   * unit): a unit outside every enemy strike area keeps mining, a unit inside
+   * one retreats. This pair changes exactly the mining unit's own square
+   * (plan Part A item 6). It is the brief's named pair, and the pre-follow-up
+   * lock ALSO passes it (it passed a safe unit and retreated a threatened
+   * one); the follow-up's new behaviour is pinned by the two describe blocks
+   * below, each with cases that fail against the pre-follow-up lock (checked
+   * in the W1.12 follow-up review, along with one mutation per guard).
+   * Black's water_1 sits at (4,9); its next-turn reach is
+   * `speed * (actions - 1) + 1 = 1*3+1 = 4` squares. (4,4) is Manhattan
+   * distance 5 away -- out of reach; (4,5) is distance 4 -- inside it.
+   * Fire_1 mines on both squares (row y=4 and y=5 both hold resource layers
+   * 8, `src/game/resourceMap.ts` `UNEQUAL_ROUTES_MAP`), so the only fact this
+   * pair varies is safety, never richness.
+   */
+  const paying1 = makeUnit('w1', 'fire_1', 'white', { x: 4, y: 4 });
+  const paying2 = makeUnit('w1', 'fire_1', 'white', { x: 4, y: 5 });
+  const threat = makeUnit('b1', 'water_1', 'black', { x: 4, y: 9 });
+
+  it('ahead at clock >= 3, unit outside every enemy strike area on a mining cell: stays and mines', () => {
+    const state = authoredPosition({ units: [paying1, threat], white: 20, black: 5, clock: 3 });
+    // The rules agree it is truly out of reach, not just past ClockHeist's
+    // own empty-board estimate.
+    expect(ruleStrikeSquares(state.board, threat).has(key(paying1.position))).toBe(false);
+    // Nothing to improve: the unit is already safe and already mining, and
+    // fire_1 mines 1 a turn (`src/game/units.ts`), so no reachable cell can
+    // pay it strictly more -- the lock moves a safe unit only for a STRICT
+    // yield gain, so it passes.
+    expect(decide(state)).toEqual({ type: 'END_ACTION_PHASE' });
+  });
+
+  it('the same unit one square inside an enemy strike area (one fact changed: its square): retreats', () => {
+    const state = authoredPosition({ units: [paying2, threat], white: 20, black: 5, clock: 3 });
+    expect(ruleStrikeSquares(state.board, threat).has(key(paying2.position))).toBe(true);
+    const action = decide(state);
+    expect(action.type).toBe('MOVE');
+    if (action.type !== 'MOVE') return;
+    expect(action.unitId).toBe('w1');
+    const after: BoardState = { ...state.board, units: state.board.units.map(u => u.id === 'w1' ? { ...u, position: action.to } : u) };
+    expect(ruleStrikeSquares(after, threat).has(key(action.to)), `retreated to ${key(action.to)}`).toBe(false);
+  });
+});
+
+/** The same position with every cell's reserve set to `fill`, except the
+ * squares named in `rich` (`"x,y"` -> reserve). Lets a test say exactly which
+ * cells pay, so a pair can differ in one cell's reserve and nothing else. */
+function withReserves(state: GameState, fill: number, rich: Record<string, number> = {}): GameState {
+  const cells = state.board.cells.map(row => row.map(c => ({ ...c, resourceLayers: rich[key(c.position)] ?? fill })));
+  return { ...state, board: { ...state.board, cells } };
+}
+
+const dist = (a: Position, b: Position) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+
+describe('ClockHeist authored positions: a safe unit on a mined-out cell under the lock (W1.12 follow-up)', () => {
+  /**
+   * The follow-up's reason for existing: before it, a locked unit whose cell
+   * had mined out could never move again. White fire_1 (speed 2, mines 1) at
+   * (4,2) on an EMPTY cell, seven squares from Black's water_1 at (4,9) (reach
+   * 4) -- safe. Every cell is empty except the one each case names, so the
+   * only fact that varies is WHERE the one paying cell is. Both candidate cells
+   * are one legal MOVE away and outside the rules' strike squares; the pair
+   * isolates the "not toward the enemy" guard.
+   */
+  const w1 = makeUnit('w1', 'fire_1', 'white', { x: 4, y: 2 });
+  const b1 = makeUnit('b1', 'water_1', 'black', { x: 4, y: 9 });
+  const locked = () => authoredPosition({ units: [w1, b1], white: 20, black: 5, clock: 3 });
+
+  it('the only paying cell lies away from the enemy (4,0): it steps there to keep mining', () => {
+    const state = withReserves(locked(), 0, { '4,0': 8 });
+    expect(ruleStrikeSquares(state.board, b1).has('4,0')).toBe(false);
+    expect(decide(state)).toEqual({ type: 'MOVE', unitId: 'w1', to: { x: 4, y: 0 } });
+  });
+
+  it('the only paying cell is safe but closer to the enemy (4,4) (one fact changed): it passes', () => {
+    const state = withReserves(locked(), 0, { '4,4': 8 });
+    // Safe by the rules (so the refusal is the direction guard, not safety) ...
+    expect(ruleStrikeSquares(state.board, b1).has('4,4')).toBe(false);
+    // ... but it shortens the distance to the nearest enemy from 7 to 5.
+    expect(dist({ x: 4, y: 4 }, b1.position)).toBeLessThan(dist(w1.position, b1.position));
+    expect(decide(state)).toEqual({ type: 'END_ACTION_PHASE' });
+  });
+
+  /**
+   * Isolates the "never INTO reach" guard from the direction guard: a second,
+   * faster Black piece (fire_1, reach 2 x 3 + 1 = 7) at (9,6), nine squares
+   * from w1. (6,2) is exactly seven from it -- inside its strike area -- yet
+   * no closer to the NEAREST enemy than w1 is now (7 from each). (2,2) is
+   * outside both strike areas. Only the paying cell differs.
+   */
+  const b2 = makeUnit('b2', 'fire_1', 'black', { x: 9, y: 6 });
+  const lockedTwo = () => authoredPosition({ units: [w1, b1, b2], white: 20, black: 5, clock: 3 });
+
+  it('the only paying cell (6,2) is not toward the nearest enemy but inside a second enemy\'s strike area: it passes', () => {
+    const state = withReserves(lockedTwo(), 0, { '6,2': 8 });
+    expect(ruleStrikeSquares(state.board, b2).has(key(w1.position))).toBe(false);
+    expect(ruleStrikeSquares(state.board, b2).has('6,2')).toBe(true);
+    const nearest = (p: Position) => Math.min(dist(p, b1.position), dist(p, b2.position));
+    expect(nearest({ x: 6, y: 2 })).toBeGreaterThanOrEqual(nearest(w1.position));
+    expect(decide(state)).toEqual({ type: 'END_ACTION_PHASE' });
+  });
+
+  it('the only paying cell (2,2) is outside both strike areas (one fact changed): it steps there', () => {
+    const state = withReserves(lockedTwo(), 0, { '2,2': 8 });
+    expect(ruleStrikeSquares(state.board, b1).has('2,2') || ruleStrikeSquares(state.board, b2).has('2,2')).toBe(false);
+    expect(decide(state)).toEqual({ type: 'MOVE', unitId: 'w1', to: { x: 2, y: 2 } });
+  });
+});
+
+describe('ClockHeist authored positions: where a threatened unit retreats under the lock (W1.12 follow-up)', () => {
+  /**
+   * White fire_1 at (4,5), four squares from Black's water_1 at (4,9): inside
+   * its strike area. The oracle below takes w1's legal MOVEs, keeps those the
+   * RULES put out of reach (`ruleStrikeSquares` on the board after the move),
+   * and ranks them the way the brief orders a retreat: farthest from the enemy
+   * first, then the richest. On an empty-reserve board the farthest safe
+   * squares are a set of ties (distance 6); the pair makes a different one of
+   * them the only paying square, so a distance-only retreat (the
+   * pre-follow-up order, ties broken by the rng) cannot pass both. A third case
+   * puts the only paying square one step LESS safe: safety must still win.
+   */
+  const w1 = makeUnit('w1', 'fire_1', 'white', { x: 4, y: 5 });
+  const b1 = makeUnit('b1', 'water_1', 'black', { x: 4, y: 9 });
+  const base = () => authoredPosition({ units: [w1, b1], white: 20, black: 5, clock: 3 });
+
+  function safeDestinations(state: GameState): Position[] {
+    return legalActions(state, 'white')
+      .filter((a): a is Extract<AIAction, { type: 'MOVE' }> => a.type === 'MOVE' && a.unitId === 'w1')
+      .map(a => a.to)
+      .filter(to => {
+        const after: BoardState = { ...state.board, units: state.board.units.map(u => u.id === 'w1' ? { ...u, position: to } : u) };
+        return !ruleStrikeSquares(after, b1).has(key(to));
+      });
+  }
+
+  it('the oracle sees several equally safest squares (the premise of the pair)', () => {
+    const safe = safeDestinations(base());
+    const far = Math.max(...safe.map(p => dist(p, b1.position)));
+    expect(safe.filter(p => dist(p, b1.position) === far).length).toBeGreaterThan(1);
+  });
+
+  for (const rich of ['2,5', '6,5']) {
+    it(`among the safest squares it takes the only paying one (${rich})`, () => {
+      const probe = base();
+      const safe = safeDestinations(probe);
+      const far = Math.max(...safe.map(p => dist(p, b1.position)));
+      expect(safe.some(p => key(p) === rich && dist(p, b1.position) === far)).toBe(true);
+      const action = decide(withReserves(probe, 0, { [rich]: 8 }));
+      expect(action).toEqual({ type: 'MOVE', unitId: 'w1', to: { x: Number(rich.split(',')[0]), y: Number(rich.split(',')[1]) } });
+    });
+  }
+
+  it('safety outranks richness: the only paying square one step less safe (4,4) is passed over', () => {
+    const state = withReserves(base(), 0, { '4,4': 8 });
+    const safe = safeDestinations(state);
+    const far = Math.max(...safe.map(p => dist(p, b1.position)));
+    expect(safe.some(p => key(p) === '4,4')).toBe(true);
+    expect(dist({ x: 4, y: 4 }, b1.position)).toBe(far - 1);
+    const action = decide(state);
+    expect(action.type).toBe('MOVE');
+    if (action.type !== 'MOVE') return;
+    expect(dist(action.to, b1.position)).toBe(far);
+  });
+});
+
 describe('ClockHeist authored positions: free kills', () => {
   /**
    * White fire_1 at (5,5) next to a Black plant_1 at (5,6): fire beats plant
