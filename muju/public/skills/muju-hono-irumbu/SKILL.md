@@ -333,8 +333,7 @@ Read the headline's economy as named checkpoints:
   or horizon. It never keeps an unaffordable army alive.
 - Deployment pairs are `[spawnableSquareCount, anyAnchorBlockedByEnemy]`. The
   headline's `killClock` reports `plies`, `limit`, `warningAt`, `minedTotals` and
-  `leader`; the deprecated `draw` pair `[quietPlayerTurns, limit]` reads the same
-  counter and limit for one release.
+  `leader`.
 - Urgent `captureNow`/`threatNow` flags use the current turn; `captureNextTurn`/
   `threatNextTurn` assume the current player ends now with the engine.
 

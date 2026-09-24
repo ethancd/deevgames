@@ -35,6 +35,18 @@ Compatibility: clients reading the aliases must read killClock instead; stored r
 Remaining work: none beyond live verification
 ```
 
-## Live evidence
+## Live evidence (PR #36, merge `9ebe7e60`, 2026-09-24T06:58:56Z)
 
-(Filled in after the Render deploy.)
+- Render served the rebuilt `/SKILL.md`, `/muju/skills/muju-hono-irumbu/SKILL.md` and
+  `/muju/skills/muju-hono-tanka/SKILL.md` (last-modified 06:59:26Z) by 07:00:08Z; `/api/muju/health` ok.
+- A live `muju_observe` over `/mcp` (room of wave-1 game SO01-B) returned `killClock` with neither `quietTurns` nor
+  `drawAtQuietTurns`. `muju_rules` still reports `muju-phasing-4`.
+- The restart produced a burst of 5xx for the live LLM-vs-Hard rooms (the campaign's site-health gate read 32% at
+  07:00:25Z); the rooms and their clocks persisted.
+
+## Follow-up: the analysis headline's `draw` alias (same day)
+
+The same deprecated counter survived in the analysis headline as `sections.draw = [quietPlayerTurns, limit]`
+(`server/analysis/index.ts`), which centaur-tier agents see every turn. It is removed the same way:
+`tests/server/analysis.test.ts` asserts it is absent; the skills and `docs/ANALYSIS_TOOLS.md` drop its sentence.
+`killClock` in the headline is unchanged.
