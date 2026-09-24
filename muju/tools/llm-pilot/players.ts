@@ -24,6 +24,7 @@ import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { CODEX_BIN, readCodexRollout, stripApiKeys } from './auth';
 import { sumHelperCpuSeconds } from './sandbox';
+import { prepareReflectionFacts } from './facts';
 import {
   PILOT_TIME_CONTROL,
   MODEL_CLI_ID, MODEL_FAMILY, pairById, parseGameId, readJson, writeJson,
@@ -77,6 +78,9 @@ export interface RunPlayerArgs {
   isGameOver?: () => Promise<boolean>;
   /** Called with each spawned phase's pid (process-group leader) so the dispatcher can --kill it. */
   onSpawn?: (pid: number) => void;
+  /** Play→reflect hook: writes the game's fact sheet (facts.json/facts.md) and copies facts.md into
+   * the workspace; resolves false on failure (the reflection proceeds anyway). Default: facts.ts. */
+  prepareFacts?: (workspace: string) => Promise<boolean>;
 }
 
 export interface PlayerResult {
@@ -477,6 +481,8 @@ export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
     }
     if (over) {
       if (!state.sessionId) { note('Game ended but no CLI session id was captured; cannot reflect in the same session.'); break; }
+      // Mechanical fact sheet for the reflection (facts.ts); never blocks the reflection.
+      if (!(await (args.prepareFacts ?? (ws => prepareReflectionFacts(args.gameDir, ws)))(workspace))) note('Fact sheet unavailable (see player/facts.log); reflected without it.');
       await runPhase('reflect', reflectPrompt, args.reflectTimeoutMs ?? 15 * 60 * 1000);
       break;
     }

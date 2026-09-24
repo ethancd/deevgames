@@ -20,6 +20,7 @@ import {
   actionsLogPath, experiencesPath, playbookPath, publishLockPath, snapshotDir, memoryDir, ensureCampaignDirs,
   type GameId, type Effort, type ModelId, type Seat, type ToolTier,
 } from './pilot';
+import type { FactsSummary } from './facts';
 
 const execFileAsync = promisify(execFile);
 
@@ -48,6 +49,8 @@ export interface ExperienceRecord {
   /** Engine source hash the game ran against. Absent on pilot records, which all ran the
    * fire-only purchase menu (source 98ac82cfe61c…); see the playbook's engine-change section. */
   engineSourceSha256?: string;
+  /** Compact numbers computed mechanically from the room history (facts.ts#summarizeFacts). */
+  facts?: FactsSummary;
 }
 
 // ---------------------------------------------------------------------------
@@ -166,7 +169,9 @@ The engine changed during the campaign. Records without "engineSourceSha256" (al
 whose purchase menu was almost only fire_1; later records name the engine they ran. Keep the playbook's
 "Read this first: the engine changed" section (update it, don't drop it), and label every claim about Hard's own
 behaviour with the engine it was observed on, keeping old-engine and current-engine evidence apart. Claims about
-the rules, the tools, or the LLM's own mistakes don't depend on the engine.`;
+the rules, the tools, or the LLM's own mistakes don't depend on the engine.
+A record's "facts" field is computed mechanically from the room history: where it disagrees with the reflection prose
+(revisions, mined totals, counts), the facts field is right; use its number, not the prose's.`;
 /**
  * Curates memory/playbook.md from experiences.jsonl via a Claude subscription
  * call (never the OpenAI API, per SPEC.md). `dryRun` composes the prompt and

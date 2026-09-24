@@ -233,3 +233,21 @@ All from `muju/`. `MUJU_PILOT_CAMPAIGN_DIR` overrides the campaign dir; `MUJU_SE
 - A player killed mid-`muju_play` can have a move accepted by the server that never reached `actions.jsonl`; the
   manifest's `crossCheck` (history entries vs. logged batches + engine submissions) surfaces it.
 - The launch gate still requires production and this branch to be on the Cleave rules before any of the 16 start.
+
+## Fact sheets (tools/llm-pilot/facts.ts)
+Mechanical per-game facts from the public room history (`GET /api/muju/rooms/<id>/history`, paced ≤ 2 req/s, GET only),
+so reflections, the curator and the digest cite true numbers instead of recollection.
+- `computeFacts(history, manifest)` (pure): identity/result, mined totals per turn end (every crystal mined + Black's
+  handicap — the kill-clock definition), kill-clock count after every hand-off and every kill (killer, victim, mined
+  totals and leader at the reset), per side attacks/kills/zero-damage attacks/promotions/buys by class/disrupted
+  summons/pass turns (no move, attack, buy or promotion)/upkeep releases, first revision with a mined gap > 20, and
+  per-turn wall time from history timestamps (approximate; bank use estimated beyond the free delay). `checks` holds
+  self-checks (e.g. a kill-clock ending reaches 10 and its winner has the higher mined total).
+- Play→reflect (`players.ts`): `prepareReflectionFacts` writes `<gameDir>/facts.json` + `facts.md` (≤ ~60 lines) and
+  copies `facts.md` into the player's workspace; `prompts/reflection.md` says the sheet outranks memory. A failure is
+  logged to `player/facts.log` and noted in `playerDetail`; the reflection still runs.
+- Publisher: `finishGame` attaches `facts` (`summarizeFacts`: a dozen numbers) to the experience record; the curator
+  preamble says facts outrank reflection prose.
+- Digest: `node --import tsx tools/llm-pilot/facts.ts --campaign <waveDir> [--out <file>] [--cache-dir <dir>] [--refresh]`
+  prints the outcome table (reuses `<gameDir>/facts.json` or the cache; writes nothing into the campaign dir);
+  `--game <gameDir> [--out-dir <dir>]` (re)computes one game's sheet.

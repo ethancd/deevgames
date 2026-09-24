@@ -43,6 +43,7 @@ import {
 } from './pilot';
 import { appendExperience, curatePlaybook, freezeSnapshot, type ExperienceRecord } from './publish';
 import { pidAlive, runPlayer, type PlayerResult, type RunPlayerArgs } from './players';
+import { factsSummaryFor } from './facts';
 
 const SERVER_URL = process.env.MUJU_SERVER_URL ?? 'https://deevgames-muju.onrender.com';
 const TOOLS_DIR = dirname(fileURLToPath(import.meta.url));
@@ -548,6 +549,7 @@ async function finishGame(game: ScheduleGame, player: PlayerResult, engineGaveUp
     llmSeat: game.llmSeat, handicap: game.blackCrystalHandicap, result, turns,
     citedRevisions: player.citedRevisions, finalRevision: room.revision, reflection: player.reflectionText,
     writtenAt: new Date().toISOString(), ...(isSmoke() ? { label: 'SMOKE' } : {}),
+    facts: await factsSummaryFor(gameDir(id)),
     engineSourceSha256: (readJson<{ engine?: { sourceSha256?: string } }>(`${gameDir(id)}/manifest.json`)?.engine?.sourceSha256) ?? engineSourceSha256(),
   });
   let curation = 'playbook curated';
