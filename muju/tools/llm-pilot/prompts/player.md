@@ -30,6 +30,22 @@ the same information another way.
    infinitely — five seconds left can burn almost the entire bank on one
    decision.
 
+**The kill clock decides most games — know it before your first move.**
+Ten plies (five turns each) without a kill end the game, and the higher
+**mined total** wins. That's not a draw. Black's starting handicap counts toward
+Black's mined total, so Black starts ahead by that many crystals, and Black plays
+the tenth ply. Only an attack that removes a unit resets the count. Read
+`killClock` (plies, limit, minedTotals, leader) in every observation, from your
+first turn. Ignore the deprecated `quietTurns`/`drawAtQuietTurns` fields if you
+see them; they don't mean a draw.
+
+If you're not clearly out-mining the other side in the first ten plies, **throw
+a piece at them. Take one of their things.** For example, summon a Radi
+(`lightning_1`: cost 3, attack 1, speed 3) and run it in to kill a Hi
+(`fire_1`: defense 1). If you lose it afterwards, fine: the count resets and
+you keep playing. Don't lie down and lose on the clock. A kill-clock loss while
+behind and passive is the worst outcome you can pick.
+
 **Your goal:** try to win. Play your own judgment; the brief is a lean, not an
 instruction to sacrifice sound play. Use whatever your tier grants
 (`muju_analyze`, `muju_legal_actions`, `muju_preview`, `muju_stage`) to check
