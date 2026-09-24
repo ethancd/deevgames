@@ -4,7 +4,7 @@ import { createBot, botNames } from '../../lab/harness/bots/index';
 import { playGame, buildView } from '../../lab/harness/runner';
 import { legalActions } from '../../lab/harness/legal';
 import { mulberry32 } from '../../lab/harness/rng';
-import { createInitialGameState, getAdjacentPositions } from '../../src/game/board';
+import { createInitialGameState, getAdjacentPositions, manhattanDistance } from '../../src/game/board';
 import { getMovementRange } from '../../src/game/movement';
 import { getUnitDefinition } from '../../src/game/units';
 import type { BoardState, GameState, PendingSummon, PlayerId, Unit, Position } from '../../src/game/types';
@@ -446,6 +446,35 @@ describe('ClockHeist authored positions: free kills', () => {
   });
 
   /**
+   * W1.12 REWORK (this round, the review's blocker issue 1, option (a)): the
+   * SAME `near` survivor as above -- Manhattan distance 4 from the attacker,
+   * exactly at the old empty-board bound (`speed(1) * (actions(4) - 1) + 1
+   * = 4`) -- but with one of ClockHeist's OWN units (`blocker`) standing on
+   * the direct approach square (5,7). The rules agree `near` cannot actually
+   * reach any square adjacent to the attacker within its real movement
+   * budget once it must detour around `blocker`: the only two routes (via
+   * (4,6)-(4,5) or (6,6)-(6,5)) cost 5 steps, one more than the budget of 3.
+   * The OLD bound (`manhattanDistance <= speed*(actions-1)+1`, ae294099 and
+   * earlier) does not see `blocker` at all -- Manhattan distance is still
+   * exactly 4 -- so it would still veto this kill. Only the exact reach this
+   * round ships (`strikerReachSquares`, via `getMovementRange` with
+   * blockers) sees the difference. One fact changed from the vetoed case
+   * above: `blocker` added.
+   */
+  it('the same near survivor, but blocked by one of our own units behind it (one fact changed): the kill proceeds', () => {
+    const blocker = makeUnit('w2', 'metal_1', 'white', { x: 5, y: 7 });
+    const state = authoredPosition({ units: [w1, target, near, blocker], white: 5, black: 20, clock: 5 });
+    const afterKill: BoardState = { ...state.board, units: state.board.units.filter(u => u.id !== 'b1') };
+    // The rule oracle (which computes the same exact, blocker-aware reach
+    // this round's fix does) agrees: `near` cannot reach the attacker.
+    expect(ruleStrikeSquares(afterKill, near).has(key(w1.position))).toBe(false);
+    // The old, blocker-blind bound would still call this reachable (it did,
+    // in the vetoed case above, at this same Manhattan distance).
+    expect(manhattanDistance(near.position, w1.position)).toBe(4);
+    expect(decide(state)).toEqual(kill);
+  });
+
+  /**
    * A paid Black arrival acts on Black's next turn, so it counts as a striker.
    * Black's metal_1 (speed 0) at home anchors the spawn and threatens nothing
    * near (5,5); the pending lightning_1 (speed 3, reach 10) six squares away
@@ -461,6 +490,68 @@ describe('ClockHeist authored positions: free kills', () => {
   it('with a paid Black arrival in reach (one fact changed): declines it', () => {
     const state = authoredPosition({ units: [w1, target, anchor], white: 5, black: 20, clock: 5, pending: [arrival] });
     expect(ruleStrikeSquares(state.board, arrival).has(key(w1.position))).toBe(true);
+    expect(decide(state).type).not.toBe('ATTACK');
+  });
+});
+
+describe('ClockHeist authored positions: defensive kill (W1.12 REWORK, review blocker issue 1 option (b))', () => {
+  /**
+   * White is AHEAD and locked (clock >= 3): every existing test above this
+   * point that reaches `chooseLocked` never sees an ATTACK (`lockedScore`
+   * scores every non-MOVE action -1) -- that is the exact gap the review's
+   * traces found, a raider parked beside the home cluster picking off units
+   * "that cannot answer, such as plant_1 with attack 0" while ClockHeist sat
+   * locked and passive. `plant_1` (attack 0, defense 3) at (5,5) is that
+   * exact victim; Black's `fire_1` (attack 2) at (5,6) threatens it (fire
+   * beats plant, `src/game/elements.ts`: 2 + 1 = 3 power meets defense 3).
+   * White's `water_1` (attack 2) at (6,6), adjacent to the raider, can
+   * answer: water beats fire, 2 + 1 = 3 power meets the raider's defense 1
+   * — a one-hit kill with no surviving third enemy to punish it.
+   */
+  const victim = makeUnit('w1', 'plant_1', 'white', { x: 5, y: 5 });
+  const defender = makeUnit('w2', 'water_1', 'white', { x: 6, y: 6 });
+  const raider = makeUnit('b1', 'fire_1', 'black', { x: 5, y: 6 });
+  const defensiveKill = { type: 'ATTACK', unitId: 'w2', targetPosition: raider.position };
+
+  it('ahead and locked: still kills a raider that threatens one of our units next turn', () => {
+    const state = authoredPosition({ units: [victim, defender, raider], white: 20, black: 5, clock: 3 });
+    // The rules agree the raider threatens the victim (it is adjacent, so
+    // this holds regardless of the exact-reach rework above).
+    expect(ruleStrikeSquares(state.board, raider).has(key(victim.position))).toBe(true);
+    expect(decide(state)).toEqual(defensiveKill);
+  });
+
+  /**
+   * One fact changed: the raider is `lightning_1` (attack 1) instead of
+   * `fire_1`. Lightning still beats plant (same fire-lightning pair,
+   * `src/game/elements.ts`), but 1 + 1 = 2 falls short of plant_1's defense
+   * 3 -- it cannot actually kill the victim, so it is not a threat, and the
+   * carve-out does not apply. Water still beats lightning (`water-shadow`
+   * beats `fire-lightning`), so the ATTACK stays legal and lethal -- this
+   * isolates "threatens" from "attack is available", proving the gate is
+   * `threatensOneOfOurs`, not just legality. Ahead and locked, with no
+   * qualifying defensive kill, `chooseLocked` never offers an ATTACK.
+   */
+  const weakRaider = makeUnit('b1', 'lightning_1', 'black', { x: 5, y: 6 });
+
+  it('a raider that cannot actually kill anything (one fact changed: its element) is not attacked', () => {
+    const state = authoredPosition({ units: [victim, defender, weakRaider], white: 20, black: 5, clock: 3 });
+    expect(decide(state).type).not.toBe('ATTACK');
+  });
+
+  /**
+   * One fact changed back from the base case: a third Black unit
+   * (`metal_1`, any speed) stands adjacent to the defender's OWN square
+   * (6,7) next to (6,6). Killing the raider would leave the defender
+   * exposed to this survivor (adjacency alone reaches it, regardless of
+   * speed -- the same "stays exposed" veto the opportunistic free-kill case
+   * above already uses). The carve-out declines for the same reason.
+   */
+  const thirdEnemy = makeUnit('b2', 'metal_1', 'black', { x: 6, y: 7 });
+
+  it('the defender would stay exposed to a survivor after the kill (one fact changed: a third enemy added): declines', () => {
+    const state = authoredPosition({ units: [victim, defender, raider, thirdEnemy], white: 20, black: 5, clock: 3 });
+    expect(ruleStrikeSquares(state.board, thirdEnemy).has(key(defender.position))).toBe(true);
     expect(decide(state).type).not.toBe('ATTACK');
   });
 });
@@ -622,5 +713,55 @@ describe('ClockHeist authored positions: decongestion opens Place-phase buy room
     const def = getUnitDefinition(action.definitionId);
     expect(def.tier).toBe(1);
     expect(def.mining).toBeGreaterThan(0);
+  });
+});
+
+describe('ClockHeist authored positions: never buys an immobile miner onto a scarce square (W1.12 FINAL FIX, review issue 3)', () => {
+  /**
+   * The initial position's three starting units (`getStartingPositions`)
+   * reduce White's spawn zone to exactly one square, (0,0) -- room 1, at
+   * `SPAWN_ROOM_FLOOR` (module doc comment on `SPAWN_ROOM_FLOOR`). Bank 10
+   * affords every tier-1 miner (`fire_1` 3, `water_1` 4, `plant_1`/`metal_1`
+   * 5). `metal_1` and `plant_1` tie exactly on cost and mining -- the only
+   * fact distinguishing them is speed (0 vs 1, `src/game/units.ts`) -- so
+   * without this round's fix a coin-flip (`pickBest`'s rng tie-break) would
+   * sometimes buy `metal_1` onto the only square there is, permanently
+   * sealing it. This test pins that it never does so while room is scarce.
+   */
+  it('room at the declog floor: buys a mobile miner, never metal_1', () => {
+    const start = createInitialGameState(undefined, 4, 0, 'phasing').board.units.filter(u => u.owner === 'white');
+    const threat = makeUnit('b1', 'water_1', 'black', { x: 9, y: 9 });
+    const state = authoredPosition({ units: [...start, threat], white: 0, black: 0, clock: 0, whiteBank: 10, phase: 'place' });
+    expect(getAllSpawnPositions('white', state.board).length).toBeLessThanOrEqual(3);
+    const action = decide(state);
+    expect(action.type).toBe('BUY_UNIT');
+    if (action.type !== 'BUY_UNIT') return;
+    const def = getUnitDefinition(action.definitionId);
+    expect(def.tier).toBe(1);
+    expect(def.mining).toBeGreaterThan(0);
+    expect(action.definitionId).not.toBe('metal_1');
+    expect(def.speed).toBeGreaterThan(0);
+  });
+
+  /**
+   * One fact changed: a fourth White unit far down the home column (0,5)
+   * becomes a candidate anchor whose own rectangle (home (0,0) to (0,5))
+   * unions in four more empty squares, so room is no longer scarce (6, well
+   * above the floor). The gate (`spawnRoom(view) <= SPAWN_ROOM_FLOOR`) does
+   * not apply here, so `metal_1` is not vetoed -- it is a legal BUY_UNIT
+   * candidate at an unchanged, non-negative score, exactly as it was before
+   * this round's fix. (Not asserting which tier-1 miner `decide` actually
+   * picks: `metal_1` and `plant_1` tie exactly, so that choice is the
+   * seeded rng's, not this gate's, business.)
+   */
+  it('room well above the floor (one fact changed): metal_1 remains a legal, ungated buy', () => {
+    const start = createInitialGameState(undefined, 4, 0, 'phasing').board.units.filter(u => u.owner === 'white');
+    const farAnchor = makeUnit('w4', 'fire_1', 'white', { x: 0, y: 5 });
+    const threat = makeUnit('b1', 'water_1', 'black', { x: 9, y: 9 });
+    const state = authoredPosition({ units: [...start, farAnchor, threat], white: 0, black: 0, clock: 0, whiteBank: 10, phase: 'place' });
+    const room = getAllSpawnPositions('white', state.board).length;
+    expect(room).toBeGreaterThan(3);
+    const legal = legalActions(state, 'white');
+    expect(legal.some(a => a.type === 'BUY_UNIT' && a.definitionId === 'metal_1')).toBe(true);
   });
 });
