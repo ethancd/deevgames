@@ -373,8 +373,8 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
   // B.2 step W1.2, "the leak fix"; B.1b's code fact). `hard@desktop` — and
   // every other profile that leaves `SearchFix.killClockPolicy` absent — takes
   // NONE of this branch, so `eval/evaluate.ts`'s legacy `killClockRootClock`
-  // module slot is read exactly as it is today: set only on the wall-clock
-  // pack (`engine.ts` ~520, ~814), starting at `INACTIVITY_LIMIT − 1`, and
+  // module slot is read exactly as it is today: written only by `engine.ts`'s
+  // wall-clock pack and `calibrate`, starting at `INACTIVITY_LIMIT − 1`, and
   // never saved or restored, so a wall-clock search's root clock can still
   // leak into a later FIXED-WORK search in the same process. That is
   // `hard@desktop`'s pinned behaviour, not a bug this step is allowed to fix.
@@ -385,9 +385,10 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
   // is synchronous end to end) is saved, a fresh policy scoped to the packed
   // root's own clock is installed, the search runs, and the saved policy is
   // restored in a `finally` — so a THROW out of `searchRootFromPacked` still
-  // restores it and no strategos search can leak into the next search of
-  // either profile. `reading` stays `null` here; W1.6 is what computes one
-  // under `EvalFix.clockLedger` and threads it through.
+  // restores it. `engine.ts` skips both legacy-slot writes for a `'ledger'`
+  // profile, so no strategos search, fixed-work or wall-clock, can leak into
+  // the next search of either profile. `reading` stays `null` here; W1.6 is
+  // what computes one under `EvalFix.clockLedger` and threads it through.
   if (opts.config.searchFix?.killClockPolicy === 'ledger') {
     const savedPolicy = getKillClockPolicy();
     setKillClockPolicy({ rootClock: p.clock, reading: null });

@@ -5,7 +5,7 @@
  * leak fix"; B.1b's code fact).
  *
  * `killClockRootClock` (`eval/evaluate.ts`) is a MODULE-LEVEL slot, set only
- * by `engine.ts`'s wall-clock pack (~520, ~814) and never saved or restored,
+ * by `engine.ts`'s wall-clock pack and `calibrate`, never saved or restored,
  * so a wall-clock search's root clock can leak into a later FIXED-WORK search
  * in the same process. `hard@desktop`'s bytes are pinned
  * (`tests/lab/ablate.test.ts DESKTOP_WALL3000_HASH`), so this file proves TWO
@@ -17,14 +17,27 @@
  *   2. `hard@strategos` does not leak: `search/root.ts searchRootInner`
  *      saves the current policy, installs one scoped to ITS OWN packed root
  *      clock, and restores the saved value in a `finally` — including when
- *      the search throws.
+ *      the search throws — and `engine.ts` never writes the legacy slot for
+ *      a `'ledger'` profile, so not even a WALL-CLOCK strategos search can
+ *      hand its root clock to a later desktop search.
+ *
+ * Every equality below is paired with a control that shows the observable is
+ * SENSITIVE to the slot (W1.2 review): on `leadAtClock(8)` desktop's
+ * fixed-work score is terminal-scale when the slot holds its default and
+ * soft (`KILL_CLOCK_SOFT_CC`) when a clock-4 root has leaked into it, so an
+ * "identical result" assertion there can actually fail. The quiet clock-4
+ * position alone cannot: its searched score is a decided NON-clock loss
+ * (−998000 at this work), which no kill-clock scale moves.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { INACTIVITY_LIMIT } from '../../../src/game/inactivity';
 import type { GameState } from '../../../src/game/types';
-import { DESKTOP, strategosPatch } from '../../../src/ai/hard/config';
+import { DESKTOP, strategosPatch, type HardConfig } from '../../../src/ai/hard/config';
 import { HardEngine } from '../../../src/ai/hard/engine';
+import type { RootResult } from '../../../src/ai/hard/search/root';
+import { WIN_CC } from '../../../src/ai/hard/types';
 import {
+  KILL_CLOCK_FORCED_HANDOFFS,
   getKillClockPolicy,
   killClockHandoffsFromRoot,
   setKillClockPolicy,
@@ -94,7 +107,66 @@ function quietPhasingWithClock(inactivityPlies: number): GameState {
   });
 }
 
+/**
+ * A scale verdict below reads `scoreCc` against half a win: a terminal-scale
+ * clock-out scores `WIN_CC − ply · MATE_PLY_CC` and a soft one
+ * `KILL_CLOCK_SOFT_CC` (`eval/evaluate.ts decidedCc`), and nothing else these
+ * two-unit, zero-reserve positions can score comes near half a win.
+ */
+const TERMINAL_SCALE = WIN_CC / 2; // DERIVED (eval/evaluate.ts decidedCc: WIN_CC − ply·MATE_PLY_CC vs KILL_CLOCK_SOFT_CC)
+
+/** CHOICE (fixed work large enough to reach the clock-out on `leadAtClock(7|8)`
+ * at depth ≥ 4 in well under a second; falsifier: a search that never reaches
+ * the clock terminal, which the terminal-scale control assertions catch). */
 const WORK = 100_000;
+
+/** CHOICE (any nonzero mined lead; falsifier: a tie scores `DRAW_CC` at both
+ * scales and makes every scale assertion vacuous). */
+const WHITE_LEAD = 5;
+
+/**
+ * `quietPhasingWithClock`'s board with White ahead on MINED TOTAL by
+ * `WHITE_LEAD` crystals and the clock at `inactivityPlies`, White to move. The
+ * lead is booked on an empty cell's INITIAL reserve so the reserve-conservation
+ * invariant (`Σ reserve + gained === Σ initialReserve`) still holds. At clock
+ * 7 or 8 neither piece can reach the other or a home corner before the clock
+ * runs out, so the searched score is the clock-out (the controls below assert
+ * its scale): a White win whose hand-off distance from the root is
+ * `INACTIVITY_LIMIT − inactivityPlies` — 2 at clock 8 (forced, terminal
+ * scale), 3 at clock 7 (beyond `KILL_CLOCK_FORCED_HANDOFFS`, soft) — IF the
+ * search reads the root's real clock.
+ */
+function leadAtClock(inactivityPlies: number): GameState {
+  const state = quietPhasingWithClock(inactivityPlies);
+  // Every cell of the quiet board starts and stays empty; E5 is where White's
+  // mined crystals came from.
+  const initialResourceLayers = new Array<number>(100).fill(0);
+  initialResourceLayers[44] = WHITE_LEAD;
+  return {
+    ...state,
+    board: { ...state.board, initialResourceLayers },
+    players: { ...state.players, white: { ...state.players.white, resourcesGained: WHITE_LEAD } },
+  };
+}
+
+/** The fields of a `RootResult` a leak could move. */
+function summary(r: RootResult): Record<string, unknown> {
+  return {
+    scoreCc: r.scoreCc,
+    depth: r.depth,
+    work: r.work,
+    endKey: r.endKey,
+    source: r.source,
+    fallback: r.fallback,
+    nodes: r.stats.nodes,
+    actions: JSON.stringify(r.actions),
+  };
+}
+
+/** Exactly W1.2's flag and nothing else, so the paired scale test below pins
+ * the policy PLUMBING and not whatever W1.6 (`EvalFix.clockLedger`) later
+ * does to strategos's clock scoring. */
+const POLICY_ONLY: Partial<HardConfig> = { searchFix: { killClockPolicy: 'ledger' } };
 
 afterEach(() => {
   // Every test in this file either leaves the module slots exactly as it
@@ -108,47 +180,72 @@ afterEach(() => {
 });
 
 describe('hard@desktop: unaffected by a prior hard@strategos search (the leak, fixed for strategos)', () => {
-  it('returns an identical result for a fixed-work search with vs without a strategos search first', async () => {
-    const state = quietPhasingWithClock(4);
+  it('control: desktop fixed work on leadAtClock(8) is terminal-scale by default and soft once a clock-4 root leaks in', async () => {
+    const target = leadAtClock(8);
+    const clean = await new HardEngine().searchTurn(target, { work: WORK });
+    expect(clean.fallback).toBeUndefined();
+    expect(clean.scoreCc).toBeGreaterThan(TERMINAL_SCALE);
 
-    const before = await new HardEngine().searchTurn(state, { work: WORK });
-
-    // A whole strategos search runs in between — the exact scenario the leak
-    // used to threaten: its own kill-clock policy must not survive it.
-    await new HardEngine(strategosPatch()).searchTurn(state, { work: WORK });
-    expect(getKillClockPolicy()).toBeNull();
-
-    const after = await new HardEngine().searchTurn(state, { work: WORK });
-
-    expect(after.scoreCc).toBe(before.scoreCc);
-    expect(after.depth).toBe(before.depth);
-    expect(after.work).toBe(before.work);
-    expect(after.endKey).toBe(before.endKey);
-    expect(after.source).toBe(before.source);
-    expect(after.stats.nodes).toBe(before.stats.nodes);
-    expect(JSON.stringify(after.actions)).toBe(JSON.stringify(before.actions));
+    // Exactly what a strategos search that FORGOT its `finally` would leave
+    // behind for its clock-4 root.
+    setKillClockPolicy({ rootClock: 4, reading: null });
+    const leaked = await new HardEngine().searchTurn(target, { work: WORK });
+    expect(leaked.scoreCc).toBeGreaterThan(0);
+    expect(leaked.scoreCc).toBeLessThan(TERMINAL_SCALE);
   });
 
-  it('DOCUMENTS the pinned leak: a fixed-work desktop search never resets, or even reads through, a leaked legacy clock — by design, not a bug this step may fix', async () => {
-    const state = quietPhasingWithClock(4);
-    // Stands in for "a prior WALL-CLOCK desktop search packed a root at clock
-    // 3" — literally the call `engine.ts`'s wall path makes
-    // (`setKillClockRootClock(packed.clock)`), reproduced directly so this
-    // test costs nothing in real wall-clock time.
-    setKillClockRootClock(3);
-    expect(killClockHandoffsFromRoot()).toBe(INACTIVITY_LIMIT - 3);
+  it('returns an identical result for a fixed-work search with vs without a FIXED-WORK strategos search first', async () => {
+    const target = leadAtClock(8);
+    const before = await new HardEngine().searchTurn(target, { work: WORK });
+
+    // A whole strategos search on a DIFFERENT clock (4, so a leaked policy
+    // would read 6 hand-offs and soften `target`'s clock-out; see the control
+    // above) runs in between.
+    await new HardEngine(strategosPatch()).searchTurn(quietPhasingWithClock(4), { work: WORK });
+    expect(getKillClockPolicy()).toBeNull();
+    expect(killClockHandoffsFromRoot()).toBe(1); // the legacy default, untouched
+
+    const after = await new HardEngine().searchTurn(target, { work: WORK });
+    expect(summary(after)).toEqual(summary(before));
+    expect(after.scoreCc).toBeGreaterThan(TERMINAL_SCALE);
+  });
+
+  it('returns an identical result for a fixed-work search with vs without a WALL-CLOCK strategos search first', async () => {
+    const target = leadAtClock(8);
+    const before = await new HardEngine().searchTurn(target, { work: WORK });
+
+    // `engine.ts`'s wall path packs the root and, for desktop, writes the
+    // legacy slot; for a `'ledger'` profile it must not (W1.2 review: before
+    // the gate this search turned `after` below into a soft 200).
+    // CHOICE: a 50 ms turn is the cheapest real wall-clock search; its own
+    // result is not asserted, only what it leaves behind.
+    const wall = await new HardEngine(strategosPatch()).searchTurn(quietPhasingWithClock(4), { targetMs: 50, deadlineMs: 50 });
+    expect(wall.fallback).toBeUndefined();
+    expect(getKillClockPolicy()).toBeNull();
+    expect(killClockHandoffsFromRoot()).toBe(1);
+
+    const after = await new HardEngine().searchTurn(target, { work: WORK });
+    expect(summary(after)).toEqual(summary(before));
+  });
+
+  it('DOCUMENTS the pinned leak: a wall-clock DESKTOP search still hands its root clock to a later fixed-work desktop search — by design, not a bug this step may fix', async () => {
+    const target = leadAtClock(8);
+    const before = await new HardEngine().searchTurn(target, { work: WORK });
+    expect(before.scoreCc).toBeGreaterThan(TERMINAL_SCALE);
 
     // `SearchFix.killClockPolicy` is absent from DESKTOP (`hardConfigFor`),
-    // so this search takes NONE of the new save/set/restore branch.
+    // so neither search below takes the new save/set/restore branch and the
+    // wall path writes the legacy slot exactly as before W1.2.
     expect(DESKTOP.searchFix?.killClockPolicy).toBeUndefined();
-    await new HardEngine().searchTurn(state, { work: WORK });
+    await new HardEngine().searchTurn(quietPhasingWithClock(4), { targetMs: 50, deadlineMs: 50 });
+    expect(killClockHandoffsFromRoot()).toBe(INACTIVITY_LIMIT - 4);
 
-    // Still leaked, after a whole completed search: nothing on desktop's path
-    // ever calls `setKillClockRootClock` in fixed-work mode, so the value a
-    // wall-clock search left behind is exactly what this search's every
-    // `killClockHandoffsFromRoot()` call read, and what the NEXT search will
-    // still read.
-    expect(killClockHandoffsFromRoot()).toBe(INACTIVITY_LIMIT - 3);
+    // Still leaked, and observably so: the fixed-work search reads the
+    // wall-clock root's 6 hand-offs and softens its own 2-hand-off clock-out.
+    const after = await new HardEngine().searchTurn(target, { work: WORK });
+    expect(after.scoreCc).toBeGreaterThan(0);
+    expect(after.scoreCc).toBeLessThan(TERMINAL_SCALE);
+    expect(killClockHandoffsFromRoot()).toBe(INACTIVITY_LIMIT - 4);
   });
 
   it('never installs the new per-search policy at all', async () => {
@@ -167,6 +264,27 @@ describe('hard@strategos: the per-search policy is saved, scoped, and restored',
     expect(result.fallback).toBeUndefined();
     expect(hooks.capturedHandoffs).toBe(INACTIVITY_LIMIT - 4);
     // And gone again once the search has returned.
+    expect(getKillClockPolicy()).toBeNull();
+  });
+
+  it('reaches terminalScore: one fact (the root clock, 7 vs 8) flips the clock-out between soft and terminal scale', async () => {
+    // Desktop on fixed work reads the legacy default (1 hand-off) and scores
+    // BOTH clock-outs as forced (plan B.1b); the policy reads each root's own
+    // clock, exactly as desktop's wall path would.
+    expect(INACTIVITY_LIMIT - 8).toBeLessThanOrEqual(KILL_CLOCK_FORCED_HANDOFFS);
+    expect(INACTIVITY_LIMIT - 7).toBeGreaterThan(KILL_CLOCK_FORCED_HANDOFFS);
+
+    const desktop7 = await new HardEngine().searchTurn(leadAtClock(7), { work: WORK });
+    const desktop8 = await new HardEngine().searchTurn(leadAtClock(8), { work: WORK });
+    expect(desktop7.scoreCc).toBeGreaterThan(TERMINAL_SCALE);
+    expect(desktop8.scoreCc).toBeGreaterThan(TERMINAL_SCALE);
+
+    const policy7 = await new HardEngine(POLICY_ONLY).searchTurn(leadAtClock(7), { work: WORK });
+    const policy8 = await new HardEngine(POLICY_ONLY).searchTurn(leadAtClock(8), { work: WORK });
+    expect(policy7.fallback).toBeUndefined();
+    expect(policy7.scoreCc).toBeGreaterThan(0);
+    expect(policy7.scoreCc).toBeLessThan(TERMINAL_SCALE);
+    expect(policy8.scoreCc).toBeGreaterThan(TERMINAL_SCALE);
     expect(getKillClockPolicy()).toBeNull();
   });
 

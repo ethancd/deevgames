@@ -389,7 +389,10 @@ export interface SearchFix {
    *     until W1.6 computes one under `EvalFix.clockLedger`) before searching
    *     and restores the saved policy in a `finally`, so the value can never
    *     leak into the next search — the W1.2 fix the plan calls "the leak
-   *     fix" (plan B.1b).
+   *     fix" (plan B.1b). `engine.ts` also skips its legacy-slot writes (the
+   *     wall-clock pack and `calibrate`) for this value, so a strategos
+   *     search never hands its root clock to a later desktop search either
+   *     (`tests/ai/hard/kill-clock-policy.test.ts`).
    *
    * OPTIONAL, AND ABSENT ON EVERY SHIPPED PROFILE (`DESKTOP`, `MIDRANGE`,
    * `PHONE`, `LAB` and every other `hardConfigFor` label): only

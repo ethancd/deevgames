@@ -517,7 +517,15 @@ export class HardEngine {
       let packed: PackedState;
       try {
         packed = ctx.rep.pack(state, this.rootState);
-        setKillClockRootClock(packed.clock);
+        // STRATEGOS W1.2 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+        // B.1b). The legacy module slot is desktop's, leak and all; a profile
+        // with `searchFix.killClockPolicy: 'ledger'` (hard@strategos) scopes
+        // its root clock per search in `search/root.ts searchRootInner` and
+        // never reads this slot, so it must not WRITE it either: otherwise a
+        // wall-clock strategos search would hand its root clock to a later
+        // fixed-work desktop search in the same process. Absent key (every
+        // shipped profile): the call below runs exactly as before.
+        if (this.config.searchFix?.killClockPolicy !== 'ledger') setKillClockRootClock(packed.clock);
       } catch (err) {
         ctx.stats.elapsedMs = now() - enteredAt;
         return {
@@ -811,7 +819,9 @@ export class HardEngine {
     const ctx = this.ctx;
     const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const p = ctx.rep.pack(state, allocState());
-    setKillClockRootClock(p.clock);
+    // STRATEGOS W1.2: as on the wall-clock pack above, a `'ledger'` profile
+    // leaves desktop's legacy slot alone.
+    if (this.config.searchFix?.killClockPolicy !== 'ledger') setKillClockRootClock(p.clock);
     p.proverMode = 2;
     const meter = new WorkMeter(0x7fffffff);
     const startedAt = now();
