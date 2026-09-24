@@ -253,14 +253,13 @@ export class AnalysisService {
         deployment: Object.fromEntries(sides.map(p => { const geometry = spawnGeometry(s, p); return [p, [geometry.count, geometry.anchors.some(a => a.blockedBy.length > 0)]]; })),
         // `killClock` is the current terminal (rules revision `muju-phasing-3`,
         // 2026-09-22): ten kill-free plies end the game on the higher mined
-        // total, a tie draws. `draw` is kept for one release as a deprecated
-        // [quietPlayerTurns, limit] alias of the same counter and limit; it no
-        // longer describes a draw-only terminal.
+        // total, a tie draws. The deprecated `draw` [quietPlayerTurns, limit]
+        // alias was removed 2026-09-24: agents read it as a draw clock.
         killClock: { plies: s.inactivityPlies ?? 0, limit: INACTIVITY_LIMIT, warningAt: INACTIVITY_WARNING,
           minedTotals: { white: minedTotal(s, 'white'), black: minedTotal(s, 'black') },
           leader: minedTotal(s, 'white') > minedTotal(s, 'black') ? 'white' as const
             : minedTotal(s, 'black') > minedTotal(s, 'white') ? 'black' as const : null },
-        draw: [s.inactivityPlies ?? 0, INACTIVITY_LIMIT], urgent: room.ready ? urgent(s, player, budget) : [] },
+        urgent: room.ready ? urgent(s, player, budget) : [] },
       search: budget.report(false, ['combinations', 'spending', 'nondefault upkeep', 'unlisted threats']),
       next: [followUp(room, player, ['threats'], { deep: true })] };
     this.put(key, result); return result;

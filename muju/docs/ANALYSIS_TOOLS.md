@@ -16,7 +16,7 @@ ordinary rooms retain all layers below. See the
 
 | Layer | Entry point | Content |
 | --- | --- | --- |
-| 0 | `analysis` in observe/create/join/play/changed wait | Both economies and depletion trends, deployment counts/blocking, `killClock` (`plies`, `limit`, `warningAt`, `minedTotals`, `leader`; the limit is ten plies and comes from the engine constant, never a copy — the deprecated `draw` pair `[quietPlayerTurns, limit]` reads the same counter for one release), a bounded set of urgent existing-unit witnesses |
+| 0 | `analysis` in observe/create/join/play/changed wait | Both economies and depletion trends, deployment counts/blocking, `killClock` (`plies`, `limit`, `warningAt`, `minedTotals`, `leader`; the limit is ten plies and comes from the engine constant, never a copy), a bounded set of urgent existing-unit witnesses |
 | 1 | Observe/wait with `briefing:true`, `player`, optional `sinceRevision` | Per-miner ledger, board matchups, spawn zones, threats including affordable spending, captures and mobility warnings |
 | 2 | `muju_analyze` with batched topics/targets | Focused accounting, geometry, approaches, conditional defenders, exchange costs, and executable evidence |
 | 3 | `deep:true`, `reply`, or `checkmate` | Bounded combined-turn search or the authoritative home-defense prover |

@@ -53,15 +53,15 @@ describe('financial checkpoints', () => {
     const nearly = createInitialGameState(); nearly.inactivityPlies = INACTIVITY_LIMIT - 3;
     expect(economyForecast(nearly, 1).stop).toBe('horizon');
   });
-  it('reports the kill-clock headline as killClock and the deprecated [quietPlayerTurns, limit] draw alias', () => {
+  it('reports the kill-clock headline as killClock, without the removed draw alias', () => {
     expect(INACTIVITY_LIMIT).toBe(10);
     const s = createInitialGameState(); s.inactivityPlies = INACTIVITY_LIMIT - 3;
     s.players.white.resourcesGained = 5; s.players.black.resourcesGained = 2;
     const room = { ...snapshot(s), ready: true };
     const sections = new AnalysisService().headline(room).sections as {
-      draw: [number, number]; killClock: { plies: number; limit: number; warningAt: number; minedTotals: { white: number; black: number }; leader: 'white' | 'black' | null };
+      killClock: { plies: number; limit: number; warningAt: number; minedTotals: { white: number; black: number }; leader: 'white' | 'black' | null };
     };
-    expect(sections.draw).toEqual([INACTIVITY_LIMIT - 3, INACTIVITY_LIMIT]);
+    expect(sections).not.toHaveProperty('draw');
     expect(sections.killClock).toEqual({ plies: INACTIVITY_LIMIT - 3, limit: INACTIVITY_LIMIT, warningAt: INACTIVITY_WARNING,
       minedTotals: { white: 5, black: 2 }, leader: 'white' });
   });
