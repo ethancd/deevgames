@@ -69,6 +69,7 @@ import {
   type OpeningStateOptions,
 } from '../ladder/openings';
 import { DEFAULT_RULES, type RulesBlock } from '../positions/corpus';
+import { gameplayDigest as phasingGameplayDigest, replayPhasingRecipe } from '../ladder/openings/phasing';
 
 export const EXAM_SCHEMA = 'muju-exam-case-v1';
 
@@ -264,8 +265,14 @@ export interface ExamCase {
   demand: ExamDemand;
   kind: ExamKind;
   rules: RulesBlock;
-  /** Board setup knobs `RulesBlock` does not carry. */
-  setup?: { actionsPerTurn?: number; resourceLayout?: number[] };
+  /**
+   * Board setup knobs `RulesBlock` does not carry. `ruleset: 'phasing'` marks a
+   * case whose recipe was recorded under Phasing (a loss taken from a Phasing
+   * replay by `from-loss.ts`): it is replayed from the Phasing initial state and
+   * digested with the Phasing digest, which covers the public pending summons.
+   * Absent means the historical Standard corpus, read exactly as before.
+   */
+  setup?: { actionsPerTurn?: number; resourceLayout?: number[]; ruleset?: 'phasing' };
   position: ExamPosition;
   sideToMove: PlayerId;
   witness: ExamWitness;
@@ -534,7 +541,9 @@ export function loadCaseState(c: ExamCase): GameState {
   } else {
     const spec = { id: c.position.openingId, actions: c.position.actions };
     try {
-      state = applyOpening(spec, openingOptionsFor(c));
+      state = c.setup?.ruleset === 'phasing'
+        ? replayPhasingRecipe(spec.actions, openingOptionsFor(c), `${c.id} recipe`)
+        : applyOpening(spec, openingOptionsFor(c));
     } catch (err) {
       throw new ExamFormatError(`${c.id}: recipe does not replay: ${err instanceof Error ? err.message : String(err)}`);
     }
@@ -544,11 +553,16 @@ export function loadCaseState(c: ExamCase): GameState {
   if (state.turn.currentPlayer !== c.sideToMove) {
     throw new ExamFormatError(`${c.id}: sideToMove is ${c.sideToMove} but ${state.turn.currentPlayer} is to move in the position`);
   }
-  const digest = gameplayDigest(state);
+  const digest = caseDigest(c, state);
   if (c.stateDigest !== undefined && c.stateDigest !== digest) {
     throw new ExamFormatError(`${c.id}: the position reconstructs to digest ${digest}, not the recorded ${c.stateDigest}; the case has drifted and must be re-authored, not repaired`);
   }
   return state;
+}
+
+/** The digest a case's `stateDigest` is written in: Phasing's for a Phasing case. */
+export function caseDigest(c: Pick<ExamCase, 'setup'>, state: GameState): string {
+  return c.setup?.ruleset === 'phasing' ? phasingGameplayDigest(state) : gameplayDigest(state);
 }
 
 /** Shape validation followed by a real reconstruction. */

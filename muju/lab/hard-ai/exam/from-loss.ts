@@ -56,7 +56,6 @@ import { applyAction } from '../../../src/ai/simulate';
 import { MATE_PLY_CC, WIN_CC } from '../../../src/ai/hard/types';
 import {
   actionToOpeningAction,
-  gameplayDigest,
   loadOpenings,
   type OpeningAction,
 } from '../ladder/openings';
@@ -68,6 +67,7 @@ import {
   EXAM_SCHEMA,
   EXAM_DEMANDS,
   EXAM_STRATA,
+  caseDigest,
   installExamRules,
   loadCaseState,
   normalizeKey,
@@ -125,6 +125,7 @@ export function demandForWinType(winType: string): ExamDemand {
     case 'upkeep-elimination':
       return 'recurring-upkeep';
     case 'inactivity':
+    case 'kill-clock': // `muju-phasing-3`+: the same clock, decided on mined totals
       return 'quiet-clock';
     default:
       return 'healing';
@@ -234,7 +235,13 @@ export function extractCase(analysis: AnalysisResult, replay: LoadedReplay, opts
   if (target === undefined) throw new Error(`${replay.fileId}: the reconstruction has no ${side} turn ${wantTurn}`);
 
   const rules = rulesFromReplay(replay);
-  const setup = { actionsPerTurn: replay.options.actionsPerTurn as number | undefined, resourceLayout: replay.options.resourceLayout === undefined ? undefined : [...replay.options.resourceLayout] };
+  const setup: NonNullable<ExamCase['setup']> = {
+    actionsPerTurn: replay.options.actionsPerTurn as number | undefined,
+    resourceLayout: replay.options.resourceLayout === undefined ? undefined : [...replay.options.resourceLayout],
+    // A Phasing game's recipe replays from the Phasing start (`format.ts
+    // loadCaseState`); a Standard one keeps the historical shape exactly.
+    ...(replay.ruleset === 'phasing' ? { ruleset: 'phasing' as const } : {}),
+  };
 
   const openingActions = replay.opening.actions ?? [];
   const playedActions = withMatchRules(replay.options, () => recipeActionsBefore(recon.turns, target, replay.fileId));
@@ -357,13 +364,13 @@ export function extractCase(analysis: AnalysisResult, replay: LoadedReplay, opts
     demand,
     kind,
     rules,
-    setup: setup.actionsPerTurn === undefined && setup.resourceLayout === undefined ? undefined : setup,
+    setup: setup.actionsPerTurn === undefined && setup.resourceLayout === undefined && setup.ruleset === undefined ? undefined : setup,
     position: { kind: 'recipe', openingId: replay.opening.id, openingPlies: openingActions.length, actions },
     sideToMove: side,
     witness,
     stratum,
     tags: ['loss', analysis.outcome.winType, `class:${analysis.firstConsequential.klass}`, `opening:${replay.opening.id}`],
-    stateDigest: gameplayDigest(target.startState),
+    stateDigest: caseDigest({ setup }, target.startState),
     rationale:
       `${analysis.fileId}, ${side} to move on turn ${wantTurn} (ply ${target.startPly}). ` +
       `The game ended ${analysis.outcome.winType} after ${analysis.outcome.turns} turns; this seat ${analysis.outcome.sideResult}.`,
@@ -372,7 +379,7 @@ export function extractCase(analysis: AnalysisResult, replay: LoadedReplay, opts
   // The recipe must reproduce the position it claims, or there is no case.
   const checked = validateCaseShape(draft, `${id} (extractor output)`);
   const rebuilt = loadCaseState(checked);
-  const rebuiltDigest = gameplayDigest(rebuilt);
+  const rebuiltDigest = caseDigest(checked, rebuilt);
   if (rebuiltDigest !== draft.stateDigest) {
     throw new Error(`${id}: the recipe rebuilds digest ${rebuiltDigest}, not the reconstruction's ${draft.stateDigest}`);
   }

@@ -54,7 +54,7 @@ function unitCount(state: GameState, player: PlayerId): number {
   return state.board.units.filter((u) => u.owner === player).length;
 }
 
-function snapshotStep(state: GameState, ply: number, actor: PlayerId, action: AIAction | null): ReplayStep {
+export function snapshotStep(state: GameState, ply: number, actor: PlayerId, action: AIAction | null): ReplayStep {
   const cells = state.board.cells.flat().map(cell => cell.resourceLayers);
   const res = {} as ReplayStep['res'];
   for (const p of ['white', 'black'] as PlayerId[]) {
