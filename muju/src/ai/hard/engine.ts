@@ -299,6 +299,17 @@ export class HardEngine {
       genInterior.setRescueCap(this.rescueCap);
       genQuiesce.setRescueCap(this.rescueCap);
     }
+    // STRATEGOS W1.7 (`SearchFix.pruneZeroDamage`, plan B.2 step W1.7): wired
+    // to all three generators, the same as the rescue cap above, so the fix
+    // reaches quiescence and interior nodes exactly like the root. Absent on
+    // every profile but `hard@strategos` (`config.ts strategosPatch`); when
+    // absent this `if` never calls the setter, so `gen/actionsearch.ts dfs`
+    // runs exactly as it does today (see that flag's own doc comment).
+    if (config.searchFix?.pruneZeroDamage === true) {
+      gen.setPruneZeroDamage(true);
+      genInterior.setPruneZeroDamage(true);
+      genQuiesce.setPruneZeroDamage(true);
+    }
 
     const tables: NodeTables[] = [];
     const keep: KeepSetTable[] = [];
