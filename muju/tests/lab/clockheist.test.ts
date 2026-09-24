@@ -11,6 +11,8 @@ import type { BoardState, GameState, PendingSummon, PlayerId, Unit, Position } f
 import type { AIAction } from '../../src/ai/types';
 import type { GameRecord, ReplayFile } from '../../lab/harness/types';
 import { resolveEngine } from '../../lab/hard-ai/ladder/engines';
+import { applyAction } from '../../src/ai/simulate';
+import { getAllSpawnPositions } from '../../src/game/spawning';
 
 /**
  * ClockHeist (STRATEGOS W1.12: `~/.claude/plans/can-you-respond-to-piped-book.md`
@@ -174,6 +176,9 @@ const key = (p: Position) => `${p.x},${p.y}`;
  * THIS board (`getMovementRange`, which respects blockers), plus its own, each
  * dilated by one (attacks are adjacent). ClockHeist's empty-board formula must
  * contain this set; a retreat destination inside it is not out of reach.
+ * The set is a lower bound on real reach, not the whole of it: a lethal hit
+ * unlocks another attack, so a piece can also strike through a square whose
+ * occupant it kills first (the W1.12 re-review's cleave test, below).
  */
 function ruleStrikeSquares(board: BoardState, enemy: { position: Position; definitionId: string }, actions = 4): Set<string> {
   const speed = getUnitDefinition(enemy.definitionId).speed;
@@ -459,6 +464,265 @@ describe('ClockHeist authored positions: free kills', () => {
   it('with a paid Black arrival in reach (one fact changed): declines it', () => {
     const state = authoredPosition({ units: [w1, target, anchor], white: 5, black: 20, clock: 5, pending: [arrival] });
     expect(ruleStrikeSquares(state.board, arrival).has(key(w1.position))).toBe(true);
+    expect(decide(state).type).not.toBe('ATTACK');
+  });
+});
+
+describe('ClockHeist authored positions: spawn declogging (W1.12 FINAL)', () => {
+  /**
+   * W1.12 FINAL (module doc comment): a unit standing on a still-paying cell
+   * now steps off it, even without a richness gain, when doing so relieves a
+   * clogged spawn rectangle. White fire_1 (speed 2, mining 1) alone at
+   * (0,1); its own spawn rectangle is home-to-self (0,0)-(0,1), both
+   * occupied -- room 1, at `SPAWN_ROOM_FLOOR`. Reserves are zeroed
+   * everywhere except (0,1) itself (paying, current) and (0,3) (paying,
+   * reachable in one MOVE, speed 2): the ONLY other fact that could make
+   * this bot move at all. Stepping to (0,3) frees (0,1) and widens the
+   * rectangle to home-to-(0,3) -- four cells, three empty -- a strict
+   * increase in `getAllSpawnPositions`, checked directly below rather than
+   * trusted. Black's water_1 sits at its own home corner (9,9), far outside
+   * either square's real next-turn reach in the base case; the pair moves
+   * it to (0,7), whose reach (`speed * (actions-1) + 1 = 4`) covers (0,3)
+   * but not (0,1) -- the ONLY changed fact between the two cases.
+   */
+  const w1 = makeUnit('w1', 'fire_1', 'white', { x: 0, y: 1 });
+  const reserves = { '0,1': 8, '0,3': 8 };
+
+  it('a unit on a still-paying spawn square with a fresh paying cell outward and safe: steps off', () => {
+    const b1 = makeUnit('b1', 'water_1', 'black', { x: 9, y: 9 });
+    const state = withReserves(authoredPosition({ units: [w1, b1], white: 0, black: 0, clock: 0 }), 0, reserves);
+    const before = getAllSpawnPositions('white', state.board).length;
+    expect(before).toBeLessThanOrEqual(3); // room is tight: the premise of this pair
+    expect(ruleStrikeSquares(state.board, b1).has('0,3')).toBe(false);
+    const movedBoard = { ...state.board, units: state.board.units.map(u => u.id === 'w1' ? { ...u, position: { x: 0, y: 3 } } : u) };
+    expect(getAllSpawnPositions('white', movedBoard).length, 'the move must provably widen the spawn zone').toBeGreaterThan(before);
+    expect(decide(state)).toEqual({ type: 'MOVE', unitId: 'w1', to: { x: 0, y: 3 } });
+  });
+
+  it("the same outward cell inside an enemy strike area (one fact changed: the threat's square): it stays", () => {
+    const b1 = makeUnit('b1', 'water_1', 'black', { x: 0, y: 7 });
+    const state = withReserves(authoredPosition({ units: [w1, b1], white: 0, black: 0, clock: 0 }), 0, reserves);
+    expect(ruleStrikeSquares(state.board, b1).has('0,1')).toBe(false); // current cell stays safe -- isolates the destination
+    expect(ruleStrikeSquares(state.board, b1).has('0,3')).toBe(true);
+    expect(decide(state)).toEqual({ type: 'END_ACTION_PHASE' });
+  });
+
+  /**
+   * Same pair, replayed through `chooseLocked` (ahead, clock >= 3) instead of
+   * the unlocked branch: plan B.1's own words, "units outside every enemy
+   * strike area keep mining (they may still step off spawn squares to keep
+   * buying room)". `destYield (1) <= miningYieldAt (1)` here (no richness
+   * gain: fire_1 mines 1 on both cells), so the pre-existing strictly-fresher
+   * branch alone would pass -- this pair is what pins the new fallback under
+   * the lock specifically.
+   */
+  it('the same pair under the lock (ahead, clock >= 3): steps off; unsafe: stays', () => {
+    const safe = withReserves(authoredPosition({
+      units: [w1, makeUnit('b1', 'water_1', 'black', { x: 9, y: 9 })], white: 20, black: 5, clock: 3,
+    }), 0, reserves);
+    expect(decide(safe)).toEqual({ type: 'MOVE', unitId: 'w1', to: { x: 0, y: 3 } });
+
+    const unsafe = withReserves(authoredPosition({
+      units: [w1, makeUnit('b1', 'water_1', 'black', { x: 0, y: 7 })], white: 20, black: 5, clock: 3,
+    }), 0, reserves);
+    expect(decide(unsafe)).toEqual({ type: 'END_ACTION_PHASE' });
+  });
+
+  /**
+   * Isolates the widen PROOF (`wouldOpenSpawnRoom`) from the room-tight gate:
+   * a second white unit, w2, sits at (0,4) -- ALSO a candidate anchor whose
+   * own rectangle already counts (0,3) as empty (`getAllSpawnPositions` is a
+   * union over every own unit). Room is tight (3, at the floor) and (0,3)
+   * pays and is safe, so a version of `declogScore` that dropped the widen
+   * recount (kept only safety + room-tight) would happily move either unit
+   * onto it -- but neither move actually grows the union: w1 moving there
+   * (freeing (0,1), a strict SUBSET of w2's existing rectangle) nets zero,
+   * and w2 moving there (shrinking its own rectangle toward home) nets
+   * negative. A heuristic ("is (0,3) farther from home than my square") would
+   * pass both; only the exact recount catches it.
+   */
+  /**
+   * Isolates the `finalScore` bypass in `chooseFrom` (module doc comment): a
+   * genuine richness LOSS, not a tie. plant_3 (mining 8) at (0,1), reserve 8
+   * (yield 8), steps to (0,2), reserve 1 (yield 1, still positive, still
+   * widens the zone -- checked directly). `withPassiveEconomy`'s
+   * mining-delta term (`bot-utils.ts`: `delta * 45`) would price this trade
+   * at 1 - 8 = -7, i.e. -315 -- well past `declogScore`'s 200-tier -- so a
+   * `chooseFrom` that ran every MOVE through it (the whole reason this fix
+   * bypasses it for a still-paying unit) would refuse exactly the trade this
+   * fix exists to make.
+   */
+  it('a genuine yield trade-down for room still steps off (bypasses withPassiveEconomy)', () => {
+    const heavy = makeUnit('w1', 'plant_3', 'white', { x: 0, y: 1 });
+    const b1 = makeUnit('b1', 'water_1', 'black', { x: 9, y: 9 });
+    const state = withReserves(authoredPosition({ units: [heavy, b1], white: 0, black: 0, clock: 0 }), 0, { '0,1': 8, '0,2': 1 });
+    const before = getAllSpawnPositions('white', state.board).length;
+    expect(before).toBeLessThanOrEqual(3);
+    const movedBoard = { ...state.board, units: state.board.units.map(u => u.id === 'w1' ? { ...u, position: { x: 0, y: 2 } } : u) };
+    expect(getAllSpawnPositions('white', movedBoard).length).toBeGreaterThan(before);
+    expect(decide(state)).toEqual({ type: 'MOVE', unitId: 'w1', to: { x: 0, y: 2 } });
+  });
+
+  it('a paying, safe, room-tight destination that is already counted via another unit: no move', () => {
+    const w2 = makeUnit('w2', 'fire_1', 'white', { x: 0, y: 4 });
+    const b1 = makeUnit('b1', 'water_1', 'black', { x: 9, y: 9 });
+    const state = withReserves(
+      authoredPosition({ units: [w1, w2, b1], white: 0, black: 0, clock: 0 }),
+      0, { ...reserves, '0,4': 8 },
+    );
+    const before = getAllSpawnPositions('white', state.board).length;
+    expect(before).toBeLessThanOrEqual(3); // room is tight: the premise
+    expect(ruleStrikeSquares(state.board, b1).has('0,3')).toBe(false); // safe: isolates the widen check
+    for (const moverId of ['w1', 'w2']) {
+      const movedBoard = { ...state.board, units: state.board.units.map(u => u.id === moverId ? { ...u, position: { x: 0, y: 3 } } : u) };
+      expect(getAllSpawnPositions('white', movedBoard).length, `${moverId} -> (0,3) must not widen the zone`).toBeLessThanOrEqual(before);
+    }
+    expect(decide(state)).toEqual({ type: 'END_ACTION_PHASE' });
+  });
+});
+
+describe('ClockHeist authored positions: decongestion opens Place-phase buy room (W1.12 FINAL)', () => {
+  /**
+   * Integration case, driving the bot's OWN decisions across a full Action
+   * phase into the Place phase: the initial position's three starting units
+   * (`getStartingPositions`) plus a fourth exactly at the home corner clog
+   * even the sole square the bare initial position leaves open (module doc
+   * comment: "reduce the spawn zone to exactly one square, (0,0)"), so
+   * `getAllSpawnPositions` starts at zero -- no legal BUY_UNIT exists yet.
+   * Against the pre-W1.12-FINAL bot (18669c3b) no unit ever steps off a
+   * paying cell for room alone, so this position's spawn zone stays empty
+   * into the Place phase and the loop below would end in END_PLACE_PHASE,
+   * never BUY_UNIT -- this is the review's own headline failure, reproduced
+   * directly rather than asserted.
+   */
+  it('from a fully clogged spawn rectangle, the bot declogs and then buys a tier-1 miner', () => {
+    const start = createInitialGameState(undefined, 4, 0, 'phasing').board.units.filter(u => u.owner === 'white');
+    const filler = makeUnit('w4', 'fire_1', 'white', { x: 0, y: 0 });
+    const threat = makeUnit('b1', 'water_1', 'black', { x: 9, y: 9 }); // its own corner: far from every candidate square
+    let state = authoredPosition({ units: [...start, filler, threat], white: 0, black: 0, clock: 0, whiteBank: 10 });
+    expect(getAllSpawnPositions('white', state.board)).toEqual([]);
+
+    let guard = 0;
+    while (state.turn.phase === 'action' || state.upkeepPending) {
+      expect(guard++, 'the Action phase did not end within a bounded number of decisions').toBeLessThan(20);
+      const bot = createBot('ClockHeist');
+      if (bot.kind !== 'scripted') throw new Error('ClockHeist must be a scripted bot');
+      const view = buildView(state, 'white');
+      const legal = legalActions(state, 'white');
+      const action = bot.chooseAction({ view, legal, rng: mulberry32(1) });
+      if (!action) break;
+      const next = applyAction(state, action);
+      expect(next, `${JSON.stringify(action)} was rejected as illegal`).not.toBe(state);
+      state = next;
+    }
+    expect(state.turn.phase).toBe('place');
+    expect(state.turn.currentPlayer).toBe('white');
+    expect(getAllSpawnPositions('white', state.board).length, 'declogging must have opened at least one buy square').toBeGreaterThan(0);
+
+    const action = decide(state);
+    expect(action.type).toBe('BUY_UNIT');
+    if (action.type !== 'BUY_UNIT') return;
+    const def = getUnitDefinition(action.definitionId);
+    expect(def.tier).toBe(1);
+    expect(def.mining).toBeGreaterThan(0);
+  });
+});
+
+describe('ClockHeist authored positions: W1.12 re-review regressions (9fdf6b95 reverted)', () => {
+  /**
+   * The rework round's `chooseDefensiveKill` killed a raider even while
+   * ClockHeist was ahead and locked, resetting a clock it was winning (module
+   * doc comment, "W1.12 FIX ROUND, REVERTED ON RE-REVIEW"). Plan B.1 and the
+   * W1.12 acceptance say ahead at clock >= 3 means retreat or pass. Here the
+   * clock stands at 9, one short of INACTIVITY_LIMIT (`src/game/inactivity.ts`),
+   * White leads 40-5, a Black fire_1 stands beside White's plant_1 (fire beats
+   * plant: 2 + 1 = 3 meets defense 3), and White's water_1 could kill it
+   * (water beats fire). A distant Black metal_1 keeps the kill from being an
+   * elimination. The pair changes one fact, the lead.
+   */
+  const units = [
+    makeUnit('w1', 'plant_1', 'white', { x: 5, y: 5 }),
+    makeUnit('w2', 'water_1', 'white', { x: 6, y: 6 }),
+    makeUnit('b1', 'fire_1', 'black', { x: 5, y: 6 }),
+    makeUnit('b9', 'metal_1', 'black', { x: 9, y: 9 }),
+  ];
+
+  /** Let ClockHeist play White's whole turn from `state`, one decision at a
+   * time, and return the position after it. */
+  function playWhiteTurn(state: GameState): GameState {
+    const bot = createBot('ClockHeist');
+    if (bot.kind !== 'scripted') throw new Error('ClockHeist must be a scripted bot');
+    let s = state;
+    for (let i = 0; s.phase === 'playing' && s.turn.currentPlayer === 'white'; i++) {
+      expect(i, 'White\'s turn did not end within a bounded number of decisions').toBeLessThan(30);
+      const action = bot.chooseAction({ view: buildView(s, 'white'), legal: legalActions(s, 'white'), rng: mulberry32(1) });
+      if (!action) throw new Error('ClockHeist returned no action');
+      const next = applyAction(s, action);
+      expect(next, `${JSON.stringify(action)} was rejected as illegal`).not.toBe(s);
+      s = next;
+    }
+    return s;
+  }
+
+  it('ahead on the last kill-free ply: retreats or passes, and its own turn wins on the kill clock', () => {
+    const state = authoredPosition({ units, white: 40, black: 5, clock: 9 });
+    expect(legalActions(state, 'white')).toContainEqual({ type: 'ATTACK', unitId: 'w2', targetPosition: { x: 5, y: 6 } });
+    expect(['MOVE', 'END_ACTION_PHASE']).toContain(decide(state).type);
+    const after = playWhiteTurn(state);
+    expect(after.phase).toBe('victory');
+    expect(after.winner).toBe('white');
+    expect(after.victoryReason).toBe('kill-clock');
+  });
+
+  it('behind (one fact changed: the lead): takes the free kill', () => {
+    const state = authoredPosition({ units, white: 5, black: 40, clock: 9 });
+    expect(decide(state)).toEqual({ type: 'ATTACK', unitId: 'w2', targetPosition: { x: 5, y: 6 } });
+  });
+
+  /**
+   * The rework round's blocker-aware reach (`getMovementRange`, the same
+   * computation as `ruleStrikeSquares`) treated ClockHeist's own pieces as
+   * walls. A lethal hit unlocks another attack (`src/game/combat.ts
+   * canAttack`), so a raider can kill the piece in its way and walk through.
+   * White is behind; its fire_1 on (5,5) can kill the Black plant_1 on (5,6).
+   * The Black water_1 on (5,8) stands behind White's fire_1 on (5,7); every
+   * detour to a square beside (5,5) is longer than its three moves, so
+   * blocker-aware reach calls the attacker safe. The rules do not: the test
+   * plays Black's four-action line and the attacker dies. `enemyReach`
+   * (speed 1 x 3 + 1 = 4 >= Manhattan 3) vetoes the kill.
+   */
+  it('a survivor that can kill its way through one of our pieces vetoes the free kill', () => {
+    const cleaveUnits = [
+      makeUnit('A', 'fire_1', 'white', { x: 5, y: 5 }),
+      makeUnit('X', 'fire_1', 'white', { x: 5, y: 7 }),
+      makeUnit('T', 'plant_1', 'black', { x: 5, y: 6 }),
+      makeUnit('S', 'water_1', 'black', { x: 5, y: 8 }),
+    ];
+    const state = authoredPosition({ units: cleaveUnits, white: 5, black: 20, clock: 5 });
+    const takeKill = { type: 'ATTACK', unitId: 'A', targetPosition: { x: 5, y: 6 } } as const;
+    expect(legalActions(state, 'white')).toContainEqual(takeKill);
+    // Blocker-aware reach misses the threat ...
+    const afterKillBoard: BoardState = { ...state.board, units: state.board.units.filter(u => u.id !== 'T') };
+    expect(ruleStrikeSquares(afterKillBoard, cleaveUnits[3]).has('5,5')).toBe(false);
+    // ... but the rules let Black kill the attacker next turn.
+    let s = applyAction(state, takeKill);
+    for (let i = 0; s.turn.currentPlayer === 'white'; i++) {
+      expect(i).toBeLessThan(10);
+      const legal = legalActions(s, 'white');
+      s = applyAction(s, legal.find(a => a.type === 'END_ACTION_PHASE') ?? legal.find(a => a.type === 'END_PLACE_PHASE') ?? legal[0]);
+    }
+    const line: AIAction[] = [
+      { type: 'ATTACK', unitId: 'S', targetPosition: { x: 5, y: 7 } },
+      { type: 'MOVE', unitId: 'S', to: { x: 5, y: 7 } },
+      { type: 'MOVE', unitId: 'S', to: { x: 5, y: 6 } },
+      { type: 'ATTACK', unitId: 'S', targetPosition: { x: 5, y: 5 } },
+    ];
+    for (const a of line) {
+      expect(legalActions(s, 'black'), JSON.stringify(a)).toContainEqual(a);
+      s = applyAction(s, a);
+    }
+    expect(s.board.units.some(u => u.id === 'A')).toBe(false);
+    // So ClockHeist declines the kill.
     expect(decide(state).type).not.toBe('ATTACK');
   });
 });
