@@ -1078,10 +1078,11 @@ describe('DESIGN §4 declaration tests', () => {
 
 describe('config.ts: DESIGN §6.3 profile table and §8 constants', () => {
   const profiles: readonly (readonly [string, HardConfig, number, number, number[], number, number, number, number, number, number, number])[] = [
-    ['DESKTOP', DESKTOP, 24, 16, [6, 4, 3, 2], 16, 8, 4, 19, 18, 2000, 6000],
-    ['MIDRANGE', MIDRANGE, 16, 12, [5, 3, 2, 2], 12, 6, 3, 18, 17, 1500, 4000],
-    ['PHONE', PHONE, 12, 8, [4, 3, 2, 1], 8, 4, 2, 15, 16, 1200, 2500],
-    ['LAB', LAB, 24, 16, [6, 4, 3, 2], 16, 8, 4, 19, 18, 2000, 6000],
+    // Place-plan budgets are §6.3's ×1.5 (2026-09-23, per-class pinned purchase plans).
+    ['DESKTOP', DESKTOP, 24, 16, [6, 4, 3, 2], 24, 12, 4, 19, 18, 2000, 6000],
+    ['MIDRANGE', MIDRANGE, 16, 12, [5, 3, 2, 2], 18, 9, 3, 18, 17, 1500, 4000],
+    ['PHONE', PHONE, 12, 8, [4, 3, 2, 1], 12, 6, 2, 15, 16, 1200, 2500],
+    ['LAB', LAB, 24, 16, [6, 4, 3, 2], 24, 12, 4, 19, 18, 2000, 6000],
   ];
 
   for (const [name, cfg, K, kInterior, widths, root, interior, qply, ttMacro, ttTurn, minMs, maxMs] of profiles) {

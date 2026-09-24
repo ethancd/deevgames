@@ -628,8 +628,15 @@ export class TurnGenerator {
 
   /**
    * `(purchase plan) × (promotion candidate)` pruned to `maxPlans` by combined
-   * score, with the empty plan pinned first and every home-race buy appended
-   * afterwards (DESIGN §5.5's last paragraph, F13).
+   * score, with the empty plan first, then every pinned purchase plan bare
+   * (one per affordable class, `gen/purchase.ts`), and every home-race buy
+   * appended afterwards (DESIGN §5.5's last paragraph, F13).
+   *
+   * Pinned plans are never pruned. The combined score is the purchase module's
+   * mining-only ordering heuristic, which ranks a cheap low-Mining class
+   * (`fire_1`, `lightning_1`) below Plant and Water whatever its tactical
+   * worth; only the evaluator should make that call, so each class's best buy
+   * reaches it.
    */
   private buildCombos(p: PackedState, planCount: number, promoCount: number, maxPlans: number): number {
     const side = p.side as Side;
@@ -641,10 +648,21 @@ export class TurnGenerator {
     first.promo2 = -1;
     first.scoreCc = 0;
     let n = 1;
+    // `planPurchases` writes the pinned plans first, from index 1.
+    let pinnedThrough = 1;
+    while (pinnedThrough < planCount && this.plans[pinnedThrough].pinned && n < limit) {
+      const combo = this.combos[n++];
+      combo.purchase = pinnedThrough;
+      combo.promo = -1;
+      combo.promo2 = -1;
+      combo.scoreCc = this.plans[pinnedThrough].scoreCc;
+      pinnedThrough++;
+    }
+    const pinnedEnd = n;
     for (let i = 0; i < planCount; i++) {
       const plan = this.plans[i];
       for (let j = -1; j < promoCount; j++) {
-        if (i === 0 && j === -1) continue;
+        if (j === -1 && i < pinnedThrough) continue;
         const promo = j >= 0 ? this.promos[j] : null;
         const spend = plan.spend + (promo === null ? 0 : promo.cost);
         if (spend > bank) continue;
@@ -652,9 +670,9 @@ export class TurnGenerator {
         let slot: number;
         if (n < limit) slot = n++;
         else {
-          if (n <= 1) continue;
-          let worst = 1;
-          for (let k = 2; k < n; k++) if (this.combos[k].scoreCc < this.combos[worst].scoreCc) worst = k;
+          if (n <= pinnedEnd) continue;
+          let worst = pinnedEnd;
+          for (let k = pinnedEnd + 1; k < n; k++) if (this.combos[k].scoreCc < this.combos[worst].scoreCc) worst = k;
           if (scoreCc <= this.combos[worst].scoreCc) continue;
           slot = worst;
         }
@@ -681,11 +699,13 @@ export class TurnGenerator {
       combo.promo2 = -1;
       combo.scoreCc = this.plans[i].scoreCc;
     }
-    // Descending score over `[1, n)`; index 0 stays the empty plan.
-    for (let i = 2; i < n; i++) {
+    // Descending score over `[pinnedEnd, n)`; the empty plan and the pinned
+    // plans keep their places ahead of it, so a meter that runs out mid-menu
+    // has already scored every class.
+    for (let i = pinnedEnd + 1; i < n; i++) {
       const combo = this.combos[i];
       let j = i - 1;
-      while (j >= 1 && this.combos[j].scoreCc < combo.scoreCc) {
+      while (j >= pinnedEnd && this.combos[j].scoreCc < combo.scoreCc) {
         this.combos[j + 1] = this.combos[j];
         j--;
       }
@@ -1432,11 +1452,10 @@ function referenceActionConfig(base: ActionSearchConfig): ActionSearchConfig {
 }
 
 function referencePurchaseConfig(base: PurchaseConfig): PurchaseConfig {
-  // `squares` and `maxMultisets` stay at DESIGN §8's numbers: the assignment
-  // search is `P(squares, bodies)` per multiset, so widening S from 8 to 12
-  // multiplies the Place phase's cost by seven for breadth the reference does
-  // not need (its extra reach is in the widths, the 200 place plans and the
-  // lines kept per plan). See DEVIATIONS under M13.
+  // `squares` and `maxMultisets` stay at the production numbers: every
+  // multiset is already enumerated, and the reference's extra reach is in the
+  // widths, the 200 place plans and the lines kept per plan. See DEVIATIONS
+  // under M13.
   return {
     maxBodies: base.maxBodies,
     maxMultisets: base.maxMultisets,

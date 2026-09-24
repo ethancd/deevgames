@@ -45,8 +45,8 @@ import { buildState } from './game-fixture';
 
 vi.setConfig({ testTimeout: 60_000 });
 
-/** The same mid-game action node `deadline.test.ts` uses: a real root list and
- * nothing forced. */
+/** A mid-game action node with a real root list and nothing forced (until
+ * 2026-09-23 the same node `deadline.test.ts` uses; see below). */
 // The banks are chosen so the cold probe's FIRST iteration lands in the narrow
 // band the "below the floor" case needs: heavy enough (> ~9,100 work) that the
 // iteration predictor refuses depth 2 inside `COLD_PROBE_WORK`, light enough
@@ -63,20 +63,27 @@ vi.setConfig({ testTimeout: 60_000 });
 // whole rung (25,175). Re-swept: 5/3 gives probe = 11,911 (`stopReason:
 // 'work'`, depth 1); 4/2 = 12,091, 5/2 = 11,991 and 4/0 = 12,309 also clear the
 // floor, while 12/10, 10/8 .. 20/18, 6/2, 4/4, 3/2, 2/2 and 0/0 do not.
+// (2026-09-23, purchase menu): every tier-1 class now reaches the Place menu,
+// so depth 1 searches different buying turns and costs ~17,500 at every bank
+// from 0/0 to 20/18 on the six-unit layout (1/2 = 12,909 was the closest), so
+// no bank re-sweep could restore the case. Re-swept the layout as well:
+// dropping Black's H8 Sjór gives 0/0 = 11,306 and 1/2 = 11,783 (`stopReason:
+// 'work'`, depth 1); swapping White's plant for metal_1 gives 1/2 = 11,758.
+// Kept the smallest change with the widest margin. This node is therefore no
+// longer the one `deadline.test.ts` uses.
 const MIDGAME: GameState = buildState({
   current: 'white',
   phase: 'action',
   actions: 4,
   turnNumber: 6,
-  white: 5,
-  black: 3,
+  white: 0,
+  black: 0,
   units: [
     { def: 'fire_1', owner: 'white', x: 2, y: 2 },
     { def: 'water_1', owner: 'white', x: 4, y: 3 },
     { def: 'plant_1', owner: 'white', x: 5, y: 5 },
     { def: 'metal_1', owner: 'black', x: 7, y: 6 },
     { def: 'fire_1', owner: 'black', x: 6, y: 8 },
-    { def: 'water_1', owner: 'black', x: 8, y: 7 },
   ],
 });
 

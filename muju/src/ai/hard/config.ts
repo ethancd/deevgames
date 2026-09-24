@@ -70,8 +70,9 @@ export interface PurchaseConfig {
   maxBodies: number;
   maxMultisets: number;
   maxPlans: number;
-  /** top-S squares of `spawn.legal` considered per multiset. */
+  /** top-S squares of `spawn.legal` kept per candidate class. */
   squares: number;
+  /** Distinct square assignments kept per multiset (≤ `PURCHASE_MAX_BODIES`). */
   keepPerMultiset: number;
   weights: PurchaseWeights;
 }
@@ -508,14 +509,14 @@ export interface EvalFix {
  */
 export interface StrengthKnobs {
   /**
-   * R1b. `gen/purchase.ts planPurchases` writes purchase plans into `out` in
-   * enumeration order and stops at `cfg.maxPlans` BEFORE it scores and sorts
-   * them, so at bank ≥ 12 the 12 plans it keeps are `fire_1 ×1..4` at three
-   * assignments each — the cheapest definition in catalogue order — and
-   * `water_1`/`plant_1` can never be bought however good they are. True writes
-   * every multiset × assignment the buffer holds, scores all of them, sorts,
-   * and only then truncates to `cfg.maxPlans`. The empty plan stays at index 0
-   * either way (`sortPlans` starts at index 2 and never moves index 0).
+   * R1b — RETIRED, NO LONGER READ (2026-09-23). It made `gen/purchase.ts
+   * planPurchases` score every plan before truncating to `cfg.maxPlans`
+   * instead of stopping in cheapest-first enumeration order, where at bank ≥ 12
+   * the only plans kept were `fire_1 ×1..4`. Scoring before truncating is now
+   * unconditional (and the enumeration is no longer capped before every
+   * multiset is seen), so this flag has no effect. It stays in the type only so
+   * the historical `hard@ablate:gen-purchase-score` / `stack-r1234` arms still
+   * resolve.
    */
   purchaseScoreBeforeTruncate?: boolean;
   /**
@@ -619,9 +620,13 @@ export function placeholderWeights(): Weights {
 }
 
 function purchaseConfig(): PurchaseConfig {
-  // `maxBodies` 4, S = 8 squares, keep 3 per multiset (DESIGN §8, §5.5);
-  // ≤ 35 multisets and ≤ 12 purchase plans are §5.5's own bounds.
-  return { maxBodies: 4, maxMultisets: 35, maxPlans: 12, squares: 8, keepPerMultiset: 3, weights: purchaseWeights() };
+  // `maxBodies` 4, S = 8 squares per class, keep 3 assignments per multiset
+  // (DESIGN §8, §5.5). 209 multisets is every multiset of ≤ 4 bodies over the
+  // six tier-1 classes, so none is lost to enumeration order; 32 plans leave
+  // room for one pinned plan per class plus the best of the rest. §5.5's
+  // original 35 multisets / 12 plans, written in cheapest-first order, kept
+  // only `fire_1 ×1..4` at a bank of 12 or more (2026-09-23).
+  return { maxBodies: 4, maxMultisets: 209, maxPlans: 32, squares: 8, keepPerMultiset: 3, weights: purchaseWeights() };
 }
 
 function genConfig(K: number, maxPlacePlans: number, widths: readonly number[], ttBits: number): GenConfig {
@@ -650,17 +655,21 @@ interface ProfileShape {
   unitsPerMs: number;
 }
 
-/** DESIGN §6.3's profile table, verbatim. */
+/**
+ * DESIGN §6.3's profile table, except the Place-plan budgets, raised by half
+ * (2026-09-23) so the per-class pinned purchase plans (`gen/purchase.ts`) fit
+ * beside the best mixed plans and promotions instead of displacing them.
+ */
 const DESKTOP_SHAPE: ProfileShape = {
-  K: 24, kInterior: 16, widths: [6, 4, 3, 2], placePlansRoot: 16, placePlansInterior: 8,
+  K: 24, kInterior: 16, widths: [6, 4, 3, 2], placePlansRoot: 24, placePlansInterior: 12,
   quiesceMaxPly: 4, ttBitsMacro: 19, ttBitsTurn: 18, minMs: 2000, maxMs: 6000, baseMs: 3000, unitsPerMs: 600,
 };
 const MIDRANGE_SHAPE: ProfileShape = {
-  K: 16, kInterior: 12, widths: [5, 3, 2, 2], placePlansRoot: 12, placePlansInterior: 6,
+  K: 16, kInterior: 12, widths: [5, 3, 2, 2], placePlansRoot: 18, placePlansInterior: 9,
   quiesceMaxPly: 3, ttBitsMacro: 18, ttBitsTurn: 17, minMs: 1500, maxMs: 4000, baseMs: 2500, unitsPerMs: 400,
 };
 const PHONE_SHAPE: ProfileShape = {
-  K: 12, kInterior: 8, widths: [4, 3, 2, 1], placePlansRoot: 8, placePlansInterior: 4,
+  K: 12, kInterior: 8, widths: [4, 3, 2, 1], placePlansRoot: 12, placePlansInterior: 6,
   quiesceMaxPly: 2, ttBitsMacro: 15, ttBitsTurn: 16, minMs: 1200, maxMs: 2500, baseMs: 1800, unitsPerMs: 200,
 };
 
