@@ -15,6 +15,19 @@
  * are not deterministic by construction (`src/ai/runtime.ts`), so this tool
  * never accepts `wall:`.
  *
+ * `--positions-file <jsonl>` (Strategos W1.11): reads a `muju-position-v1`
+ * corpus (`lab/hard-ai/positions/corpus.ts#readPositions`) instead of
+ * `lab/hard-ai/positions/openings.jsonl`, e.g.
+ * `lab/hard-ai/positions/p4-determinism.jsonl` (Phasing, `muju-phasing-4`,
+ * built across the kill clock's `inactivityPlies` range plus a few
+ * units-in-contact positions — see that file's sibling generator script's
+ * header comment for the recipe). Optional and additive: every existing flag
+ * and default is unchanged when it is omitted, so `--positions <n>` stays
+ * REQUIRED and reads from the same `openings.jsonl` path exactly as before.
+ * When `--positions-file` IS given, `--positions` becomes optional and
+ * defaults to every position in that file (an explicit `--positions <n>`
+ * still takes the first `n` rows, e.g. to keep a quick smoke run short).
+ *
  * `hard@*` engines (M14) run the same comparison on `src/ai/hard/engine.ts`'s
  * `searchTurn` at a fixed work budget. Three additional things change for them:
  *
@@ -60,12 +73,20 @@ interface Args {
   engine: string;
   workUnits: number[];
   positions: number;
+  /** `--positions-file`: absolute path to a `muju-position-v1` corpus, or
+   * `null` for the default `positions/openings.jsonl` (unchanged behaviour). */
+  positionsFile: string | null;
   seeds: number[];
   shards: number;
   shardIndex: number;
   shardCount: number;
   out: string;
   internalBatch: boolean;
+}
+
+/** `args.positionsFile ?? OPENINGS_PATH`, the one place the two are merged. */
+function positionsPathFor(args: Args): string {
+  return args.positionsFile ?? OPENINGS_PATH;
 }
 
 function isHardEngine(name: string): boolean {
@@ -90,10 +111,20 @@ function parseArgs(argv: string[]): Args {
   };
   const engine = require('--engine');
   const shards = get('--shards');
+  // `--positions-file` is additive (W1.11): when absent, `--positions` is
+  // REQUIRED exactly as before (same `require` call, same error message), so
+  // every existing invocation is byte-for-byte unaffected. Only when a
+  // positions file IS given does `--positions` become optional; `-1` is an
+  // internal sentinel `main()` resolves to "every row in that file" before
+  // anything else reads it (see the resolution step there).
+  const positionsFileRaw = get('--positions-file');
+  const positionsFile = positionsFileRaw === null ? null : path.resolve(REPO_ROOT, positionsFileRaw);
+  const positionsRaw = positionsFile === null ? require('--positions') : get('--positions');
   return {
     engine,
     workUnits: require('--work').split(',').map(Number),
-    positions: Number(require('--positions')),
+    positions: positionsRaw === null ? -1 : Number(positionsRaw),
+    positionsFile,
     seeds: (get('--seeds') ?? '1').split(',').map(Number),
     shards: shards === null ? defaultShards(engine) : Number(shards),
     shardIndex: Number(get('--shard-index') ?? '-1'),
@@ -126,11 +157,14 @@ interface Decision {
   work: number;
 }
 
-/** The deterministic work list: positions × seeds × budgets, in that order. */
+/** The deterministic work list: positions × seeds × budgets, in that order.
+ * `args.positions` must already be a concrete count (`main()` resolves the
+ * `-1` "every row" sentinel before this is ever called). */
 function buildDecisions(args: Args): Decision[] {
-  const positions = readPositions(OPENINGS_PATH).slice(0, args.positions);
+  const positionsPath = positionsPathFor(args);
+  const positions = readPositions(positionsPath).slice(0, args.positions);
   if (positions.length < args.positions) {
-    throw new Error(`hard:determinism: requested ${args.positions} positions but ${OPENINGS_PATH} only has ${positions.length}`);
+    throw new Error(`hard:determinism: requested ${args.positions} positions but ${positionsPath} only has ${positions.length}`);
   }
   const out: Decision[] = [];
   for (const pos of positions) {
@@ -197,7 +231,7 @@ async function runBatch(engine: string, decisions: readonly Decision[]): Promise
 }
 
 function freshProcessArgs(args: Args, shardIndex: number, shardCount: number): string[] {
-  return [
+  const out = [
     '--import', 'tsx', THIS_FILE,
     '--engine', args.engine,
     '--work', args.workUnits.join(','),
@@ -207,6 +241,8 @@ function freshProcessArgs(args: Args, shardIndex: number, shardCount: number): s
     '--shard-count', String(shardCount),
     '--internal-batch',
   ];
+  if (args.positionsFile !== null) out.push('--positions-file', args.positionsFile);
+  return out;
 }
 
 function runFreshProcess(args: Args, shardIndex: number, shardCount: number): DecisionSummary[] {
@@ -260,6 +296,7 @@ function spawnShardVerdict(args: Args, index: number, count: number): Promise<Sh
     '--shard-count', String(count),
     '--out', path.join(path.dirname(args.out), `.det-shard-${index}.json`),
   ];
+  if (args.positionsFile !== null) cliArgs.push('--positions-file', args.positionsFile);
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, cliArgs, { cwd: REPO_ROOT, stdio: ['ignore', 'pipe', 'pipe'] });
     let stderr = '';
@@ -311,6 +348,13 @@ function siblingMerges(outPath: string): Record<string, unknown> {
 
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
+  // Resolve the `-1` "`--positions` omitted, `--positions-file` given" sentinel
+  // to a concrete count exactly once, here, before anything downstream (the
+  // internal-batch branch, `buildDecisions`, the shard/fresh-process re-spawns,
+  // or the written artifact's `positions` field) ever reads `args.positions`.
+  if (args.positions === -1) {
+    args.positions = readPositions(positionsPathFor(args)).length;
+  }
 
   if (args.internalBatch) {
     const all = buildDecisions(args);
