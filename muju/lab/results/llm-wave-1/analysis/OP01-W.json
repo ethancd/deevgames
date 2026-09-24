@@ -1,0 +1,1951 @@
+{
+  "schema": "muju-hard-analyze-v2",
+  "replay": "/Users/ashkie/src/deevgames-llm-bridge/muju/lab/results/llm-wave-1/replays/OP01-W.json",
+  "fileId": "OP01-W",
+  "side": "black",
+  "seatBot": "hard@desktop",
+  "opponentBot": "llm@claude-opus-5-5",
+  "opening": "initial",
+  "outcome": {
+    "winner": "white",
+    "winType": "kill-clock",
+    "turns": 5,
+    "plies": 48,
+    "sideResult": "loss"
+  },
+  "config": {
+    "engineLabel": "hard@desktop",
+    "adviserWork": 1600000,
+    "ladderWorkRung": 400000,
+    "productionWork": 400000,
+    "swingCc": 300,
+    "recordedEngineConfigHash": null,
+    "analyserConfigHash": "hard:desktop:fixed:1600000#b449e33af2dcba68fbbef5f4f0e2e165c09d835b4f619cbd5274b5bb4fbbd2be",
+    "genK": 24,
+    "genInteriorK": 16
+  },
+  "reconstruction": {
+    "plies": 48,
+    "winner": "white",
+    "turnsAnalysed": 5,
+    "notes": []
+  },
+  "turns": [
+    {
+      "seatTurnIndex": 0,
+      "turnNumber": 1,
+      "side": "black",
+      "played": {
+        "actions": [
+          "MOVE 9,8→9,9",
+          "MOVE 8,8→9,8",
+          "MOVE 9,8→9,7",
+          "MOVE 8,9→8,8",
+          "END_ACTION",
+          "BUY fire_1@8,9",
+          "BUY metal_1@9,8",
+          "END_PLACE"
+        ],
+        "endKey": "ce07f87df996fc61",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 25,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "ce07f87df996fc61",
+        "actions": [
+          "MOVE 9,8→9,9",
+          "MOVE 8,8→9,8",
+          "MOVE 9,8→9,7",
+          "MOVE 8,9→8,8",
+          "END_ACTION",
+          "BUY fire_1@8,9",
+          "BUY metal_1@9,8",
+          "END_PLACE"
+        ],
+        "scoreCc": 2105,
+        "depth": 3,
+        "work": 1600300,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": true
+      },
+      "playedDeepCc": -1300,
+      "adviserBestDeepCc": -1300,
+      "swingCc": 0,
+      "swingRootCc": 3405,
+      "engine": {
+        "scoreCc": 1210,
+        "endKey": "07db5051b05db577",
+        "reproducedPlayed": false
+      },
+      "exposure": {
+        "source": "completed-depth",
+        "count": 25,
+        "searchedCount": 25,
+        "completedDepth": 2,
+        "lastCutoffAt": -1,
+        "adviserBest": {
+          "index": 5,
+          "endKey": "ce07f87df996fc61",
+          "genRankCc": 57,
+          "flags": 288,
+          "sig": -452496815,
+          "searched": true,
+          "scoreCc": 1210,
+          "chosen": false
+        },
+        "played": {
+          "index": 5,
+          "endKey": "ce07f87df996fc61",
+          "genRankCc": 57,
+          "flags": 288,
+          "sig": -452496815,
+          "searched": true,
+          "scoreCc": 1210,
+          "chosen": false
+        },
+        "candidates": [
+          {
+            "index": 0,
+            "endKey": "51cda769db7668a5",
+            "genRankCc": 2000057,
+            "flags": 288,
+            "sig": 2141359051,
+            "searched": true,
+            "scoreCc": -1756,
+            "chosen": false
+          },
+          {
+            "index": 1,
+            "endKey": "0c3e25a13ff341fd",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": 866450947,
+            "searched": true,
+            "scoreCc": -1756,
+            "chosen": false
+          },
+          {
+            "index": 2,
+            "endKey": "57bf6e7a03754f67",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": 1020894723,
+            "searched": true,
+            "scoreCc": -1756,
+            "chosen": false
+          },
+          {
+            "index": 3,
+            "endKey": "7643f57f6cabe6b3",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": 1041546755,
+            "searched": true,
+            "scoreCc": -1756,
+            "chosen": false
+          },
+          {
+            "index": 4,
+            "endKey": "07db5051b05db577",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -1170546095,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": true
+          },
+          {
+            "index": 5,
+            "endKey": "ce07f87df996fc61",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -452496815,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 6,
+            "endKey": "e0633bfb479665de",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -503931389,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 7,
+            "endKey": "9e63c6564abe0671",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -1515491837,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 8,
+            "endKey": "e401689481f1e04d",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": 1493052425,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 9,
+            "endKey": "2dddc0b8c83aa95b",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -291341303,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 10,
+            "endKey": "5a28d29954d89c2f",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": 1407634441,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 11,
+            "endKey": "93f47ab51d13d539",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": 303324169,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 12,
+            "endKey": "984c3b218e71549b",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -31888375,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 13,
+            "endKey": "bd90b933a3134c86",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -706892853,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 14,
+            "endKey": "c390449eae3b2f29",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": 79772619,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 15,
+            "endKey": "b9f2ea5c6574c915",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -1662664111,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 16,
+            "endKey": "702e42702cbf8003",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": 715854417,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 17,
+            "endKey": "c5bfb9e96af47dc3",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": 1711309393,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 18,
+            "endKey": "7be65a6022ab48e7",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -1103023535,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 19,
+            "endKey": "0a4cecb2e7f0663f",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -432903221,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 20,
+            "endKey": "2bb077b7882ecfeb",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -1820390453,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 21,
+            "endKey": "2615d8a8c62e61bf",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -657777655,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 22,
+            "endKey": "efc970848fe528a9",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": 1334479881,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 23,
+            "endKey": "d097e523aa2646e6",
+            "genRankCc": 57,
+            "flags": 288,
+            "sig": -1209336823,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          },
+          {
+            "index": 24,
+            "endKey": "57e792022a3878db",
+            "genRankCc": 4,
+            "flags": 768,
+            "sig": 715474893,
+            "searched": true,
+            "scoreCc": 1210,
+            "chosen": false
+          }
+        ],
+        "rootTrace": [
+          {
+            "depth": 1,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 2,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 3,
+            "n": 25,
+            "searched": 19,
+            "completed": false,
+            "cutoffAt": -1,
+            "truncated": true
+          }
+        ]
+      },
+      "reply": {
+        "refutationKey": "713be2f1cb200872",
+        "inRootGenList": true,
+        "rootGenCount": 25,
+        "inInteriorGenList": true,
+        "interiorGenCount": 17
+      },
+      "timing": {
+        "turnMs": 60016,
+        "budgetMs": 60000,
+        "overran": false,
+        "emptyPlan": false
+      },
+      "notes": []
+    },
+    {
+      "seatTurnIndex": 1,
+      "turnNumber": 2,
+      "side": "black",
+      "played": {
+        "actions": [
+          "END_ACTION",
+          "END_PLACE"
+        ],
+        "endKey": "ca8167507cc13e1d",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 25,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "ca8167507cc13e1d",
+        "actions": [
+          "END_ACTION",
+          "END_PLACE"
+        ],
+        "scoreCc": -2284,
+        "depth": 4,
+        "work": 1380772,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": true
+      },
+      "playedDeepCc": -388,
+      "adviserBestDeepCc": -388,
+      "swingCc": 0,
+      "swingRootCc": -1896,
+      "engine": {
+        "scoreCc": -2378,
+        "endKey": "87353cd9fc790755",
+        "reproducedPlayed": false
+      },
+      "exposure": {
+        "source": "completed-depth",
+        "count": 25,
+        "searchedCount": 25,
+        "completedDepth": 3,
+        "lastCutoffAt": -1,
+        "adviserBest": {
+          "index": 0,
+          "endKey": "ca8167507cc13e1d",
+          "genRankCc": 1999961,
+          "flags": 768,
+          "sig": 715474893,
+          "searched": true,
+          "scoreCc": -2674,
+          "chosen": false
+        },
+        "played": {
+          "index": 0,
+          "endKey": "ca8167507cc13e1d",
+          "genRankCc": 1999961,
+          "flags": 768,
+          "sig": 715474893,
+          "searched": true,
+          "scoreCc": -2674,
+          "chosen": false
+        },
+        "candidates": [
+          {
+            "index": 0,
+            "endKey": "ca8167507cc13e1d",
+            "genRankCc": 1999961,
+            "flags": 768,
+            "sig": 715474893,
+            "searched": true,
+            "scoreCc": -2674,
+            "chosen": false
+          },
+          {
+            "index": 1,
+            "endKey": "87353cd9fc790755",
+            "genRankCc": -162,
+            "flags": 288,
+            "sig": -1239090894,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": true
+          },
+          {
+            "index": 2,
+            "endKey": "bb25dcfda73043bd",
+            "genRankCc": -166,
+            "flags": 288,
+            "sig": -1430132676,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 3,
+            "endKey": "cd6d631e5b1d336a",
+            "genRankCc": -166,
+            "flags": 288,
+            "sig": -766425994,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 4,
+            "endKey": "c7b300b638e86417",
+            "genRankCc": -166,
+            "flags": 288,
+            "sig": 1333494902,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 5,
+            "endKey": "44a196792e140a6d",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -1907139570,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 6,
+            "endKey": "3a447d51a9282248",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": 1659306925,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 7,
+            "endKey": "1c7545e60c2de963",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -1229204563,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 8,
+            "endKey": "a65c4e6b2d17e695",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -174711794,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 9,
+            "endKey": "692b967656259ec0",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": 742816050,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 10,
+            "endKey": "9d2112b758a0fda9",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": 491023412,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 11,
+            "endKey": "cc198c55a45fa779",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -1319781324,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 12,
+            "endKey": "d628a46a55da72ed",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": 1237093428,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 13,
+            "endKey": "ed5c1555a0df33d9",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -1497039850,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 14,
+            "endKey": "f76d3d6a515ae64d",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -808825834,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 15,
+            "endKey": "425985f43d29d02a",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": 719122727,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 16,
+            "endKey": "13611b16c1d68afa",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -986037977,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 17,
+            "endKey": "0950332930535f6e",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": 1526837543,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 18,
+            "endKey": "91d603fcead3cd33",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": 1129418069,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 19,
+            "endKey": "8be72bc31b5618a7",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -1252524715,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 20,
+            "endKey": "b3b791f23873c355",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -13332828,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 21,
+            "endKey": "a986b9cdc9f616c1",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": 572661412,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 22,
+            "endKey": "6ccf06b15dfaeed6",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -1952202357,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 23,
+            "endKey": "76fe2e8eac7f3b42",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -1339797109,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          },
+          {
+            "index": 24,
+            "endKey": "b5f7c7995ab90c66",
+            "genRankCc": -168,
+            "flags": 288,
+            "sig": -409400754,
+            "searched": true,
+            "scoreCc": -2378,
+            "chosen": false
+          }
+        ],
+        "rootTrace": [
+          {
+            "depth": 1,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 2,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 3,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          }
+        ]
+      },
+      "reply": {
+        "refutationKey": "9a4b1e542629dcc1",
+        "inRootGenList": true,
+        "rootGenCount": 25,
+        "inInteriorGenList": true,
+        "interiorGenCount": 17
+      },
+      "timing": {
+        "turnMs": 60002,
+        "budgetMs": 60000,
+        "overran": false,
+        "emptyPlan": true
+      },
+      "notes": []
+    },
+    {
+      "seatTurnIndex": 2,
+      "turnNumber": 3,
+      "side": "black",
+      "played": {
+        "actions": [
+          "END_ACTION",
+          "END_PLACE"
+        ],
+        "endKey": "d9fa64aec89b3081",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 25,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "d9fa64aec89b3081",
+        "actions": [
+          "END_ACTION",
+          "END_PLACE"
+        ],
+        "scoreCc": -5857,
+        "depth": 4,
+        "work": 1600781,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": true
+      },
+      "playedDeepCc": -3978,
+      "adviserBestDeepCc": -3978,
+      "swingCc": 0,
+      "swingRootCc": -1879,
+      "engine": {
+        "scoreCc": -3800,
+        "endKey": "9ad4137f0f3171ca",
+        "reproducedPlayed": false
+      },
+      "exposure": {
+        "source": "completed-depth",
+        "count": 25,
+        "searchedCount": 25,
+        "completedDepth": 3,
+        "lastCutoffAt": -1,
+        "adviserBest": {
+          "index": 0,
+          "endKey": "d9fa64aec89b3081",
+          "genRankCc": 1999874,
+          "flags": 768,
+          "sig": 715474893,
+          "searched": true,
+          "scoreCc": -3901,
+          "chosen": false
+        },
+        "played": {
+          "index": 0,
+          "endKey": "d9fa64aec89b3081",
+          "genRankCc": 1999874,
+          "flags": 768,
+          "sig": 715474893,
+          "searched": true,
+          "scoreCc": -3901,
+          "chosen": false
+        },
+        "candidates": [
+          {
+            "index": 0,
+            "endKey": "d9fa64aec89b3081",
+            "genRankCc": 1999874,
+            "flags": 768,
+            "sig": 715474893,
+            "searched": true,
+            "scoreCc": -3901,
+            "chosen": false
+          },
+          {
+            "index": 1,
+            "endKey": "9ad4137f0f3171ca",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": -1732764658,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": true
+          },
+          {
+            "index": 2,
+            "endKey": "9d6c6d1cb2d52f78",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": -1348592626,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 3,
+            "endKey": "bb5d55ab17d0e453",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": 259492878,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 4,
+            "endKey": "d665dbc1bfafa03c",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": 1437121550,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 5,
+            "endKey": "875d45234350faec",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": -1110922226,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 6,
+            "endKey": "057cb52078544f05",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": 1817256986,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 7,
+            "endKey": "1f4d9d1f89d19a91",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": 1761997850,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 8,
+            "endKey": "234d8d97dd51842e",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": -1320905702,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 9,
+            "endKey": "4e7503fd752ec041",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": 380830746,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 10,
+            "endKey": "92b0b7ef6c1ce4a1",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": 476967962,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 11,
+            "endKey": "ff883985c463a0ce",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": -1901550566,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 12,
+            "endKey": "aeb0a767389cfa1e",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": -870394854,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 13,
+            "endKey": "b4818f58c9192f8a",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": -170179558,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 14,
+            "endKey": "b63ab74271781537",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": 1703795135,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 15,
+            "endKey": "db023928d9075158",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": -1413543489,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 16,
+            "endKey": "8a3aa7ca25f80b88",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": 333380031,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 17,
+            "endKey": "900b8ff5d47dde1c",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": 95709631,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 18,
+            "endKey": "2aab8940cf3c8d81",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": -288462401,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 19,
+            "endKey": "267ac61a6ffb387f",
+            "genRankCc": -209,
+            "flags": 288,
+            "sig": 717525066,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 20,
+            "endKey": "d7b5437f4be797b0",
+            "genRankCc": -211,
+            "flags": 288,
+            "sig": -473044932,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 21,
+            "endKey": "f3138bd604d50d85",
+            "genRankCc": -211,
+            "flags": 288,
+            "sig": -277182404,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 22,
+            "endKey": "bb972b7d3aa923b1",
+            "genRankCc": -211,
+            "flags": 288,
+            "sig": 30337084,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 23,
+            "endKey": "f63c05ab53060229",
+            "genRankCc": -211,
+            "flags": 288,
+            "sig": 1654691900,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          },
+          {
+            "index": 24,
+            "endKey": "66c393df20acb6f8",
+            "genRankCc": -211,
+            "flags": 288,
+            "sig": 2073909308,
+            "searched": true,
+            "scoreCc": -3800,
+            "chosen": false
+          }
+        ],
+        "rootTrace": [
+          {
+            "depth": 1,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 2,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 3,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          }
+        ]
+      },
+      "reply": {
+        "refutationKey": "fe158ac1c69aff44",
+        "inRootGenList": true,
+        "rootGenCount": 25,
+        "inInteriorGenList": true,
+        "interiorGenCount": 17
+      },
+      "timing": {
+        "turnMs": 44314,
+        "budgetMs": 60000,
+        "overran": false,
+        "emptyPlan": true
+      },
+      "notes": []
+    },
+    {
+      "seatTurnIndex": 3,
+      "turnNumber": 4,
+      "side": "black",
+      "played": {
+        "actions": [
+          "END_ACTION",
+          "END_PLACE"
+        ],
+        "endKey": "39ae755ac4a997ca",
+        "inCheapList": true,
+        "endsGame": false
+      },
+      "cheap": {
+        "count": 25,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "e4bc7f9abd31fbea",
+        "actions": [
+          "MOVE 8,8→8,2",
+          "MOVE 8,2→7,1",
+          "END_ACTION",
+          "BUY plant_1@8,1",
+          "BUY plant_1@7,2",
+          "BUY plant_1@8,2",
+          "BUY plant_1@7,9",
+          "END_PLACE"
+        ],
+        "scoreCc": -9662,
+        "depth": 4,
+        "work": 895668,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": false
+      },
+      "playedDeepCc": -998000,
+      "adviserBestDeepCc": -11716,
+      "swingCc": 986284,
+      "swingRootCc": 988338,
+      "engine": {
+        "scoreCc": -5853,
+        "endKey": "e4bc7f9abd31fbea",
+        "reproducedPlayed": false
+      },
+      "exposure": {
+        "source": "completed-depth",
+        "count": 25,
+        "searchedCount": 25,
+        "completedDepth": 3,
+        "lastCutoffAt": -1,
+        "adviserBest": {
+          "index": 1,
+          "endKey": "e4bc7f9abd31fbea",
+          "genRankCc": -344,
+          "flags": 288,
+          "sig": -1732764658,
+          "searched": true,
+          "scoreCc": -5853,
+          "chosen": true
+        },
+        "played": {
+          "index": 0,
+          "endKey": "39ae755ac4a997ca",
+          "genRankCc": 1999716,
+          "flags": 768,
+          "sig": 715474893,
+          "searched": true,
+          "scoreCc": -997000,
+          "chosen": false
+        },
+        "candidates": [
+          {
+            "index": 0,
+            "endKey": "39ae755ac4a997ca",
+            "genRankCc": 1999716,
+            "flags": 768,
+            "sig": 715474893,
+            "searched": true,
+            "scoreCc": -997000,
+            "chosen": false
+          },
+          {
+            "index": 1,
+            "endKey": "e4bc7f9abd31fbea",
+            "genRankCc": -344,
+            "flags": 288,
+            "sig": -1732764658,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": true
+          },
+          {
+            "index": 2,
+            "endKey": "e30401f900d5a558",
+            "genRankCc": -344,
+            "flags": 288,
+            "sig": -1348592626,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 3,
+            "endKey": "c535394ea5d06e73",
+            "genRankCc": -344,
+            "flags": 288,
+            "sig": 259492878,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 4,
+            "endKey": "a80db7240daf2a1c",
+            "genRankCc": -344,
+            "flags": 288,
+            "sig": 1437121550,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 5,
+            "endKey": "f93529c6f15070cc",
+            "genRankCc": -344,
+            "flags": 288,
+            "sig": -1110922226,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 6,
+            "endKey": "54c3e5a57d3c07a1",
+            "genRankCc": -344,
+            "flags": 288,
+            "sig": -288462401,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 7,
+            "endKey": "c852dba7c3789f17",
+            "genRankCc": -344,
+            "flags": 288,
+            "sig": 1703795135,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 8,
+            "endKey": "a56a55cd6b07db78",
+            "genRankCc": -344,
+            "flags": 288,
+            "sig": -1413543489,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 9,
+            "endKey": "591b13cd6c6de70c",
+            "genRankCc": -349,
+            "flags": 288,
+            "sig": 1817256986,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 10,
+            "endKey": "432a3bf29de83298",
+            "genRankCc": -349,
+            "flags": 288,
+            "sig": 1761997850,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 11,
+            "endKey": "7f2a2b7ac9682c27",
+            "genRankCc": -349,
+            "flags": 288,
+            "sig": -1320905702,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 12,
+            "endKey": "1212a51061176848",
+            "genRankCc": -349,
+            "flags": 288,
+            "sig": 380830746,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 13,
+            "endKey": "a9dd2f9af9e71d90",
+            "genRankCc": -350,
+            "flags": 288,
+            "sig": -473044932,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 14,
+            "endKey": "8d7be733b6d587a5",
+            "genRankCc": -350,
+            "flags": 288,
+            "sig": -277182404,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 15,
+            "endKey": "c5ff479888a9a991",
+            "genRankCc": -350,
+            "flags": 288,
+            "sig": 30337084,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 16,
+            "endKey": "18abff3a92ac3cd8",
+            "genRankCc": -350,
+            "flags": 288,
+            "sig": 2073909308,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 17,
+            "endKey": "8854694ee1068809",
+            "genRankCc": -350,
+            "flags": 288,
+            "sig": 1654691900,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 18,
+            "endKey": "19a2b5a539eae1db",
+            "genRankCc": -350,
+            "flags": 288,
+            "sig": 971257325,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 19,
+            "endKey": "85338ba787ae796d",
+            "genRankCc": -350,
+            "flags": 288,
+            "sig": -1195973139,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 20,
+            "endKey": "801c05dad07d76c1",
+            "genRankCc": -350,
+            "flags": 288,
+            "sig": 1167119853,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 21,
+            "endKey": "f0d161bf27e31510",
+            "genRankCc": -354,
+            "flags": 288,
+            "sig": -170179558,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 22,
+            "endKey": "3312b61f7dfe5835",
+            "genRankCc": -354,
+            "flags": 288,
+            "sig": -1664417718,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 23,
+            "endKey": "29239e208c7b8da1",
+            "genRankCc": -354,
+            "flags": 288,
+            "sig": 1987702858,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          },
+          {
+            "index": 24,
+            "endKey": "622a28fd810102e5",
+            "genRankCc": -354,
+            "flags": 288,
+            "sig": 717525066,
+            "searched": true,
+            "scoreCc": -5853,
+            "chosen": false
+          }
+        ],
+        "rootTrace": [
+          {
+            "depth": 1,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 2,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 3,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          }
+        ]
+      },
+      "reply": {
+        "refutationKey": "e3c1e8e4e2af35cf",
+        "inRootGenList": true,
+        "rootGenCount": 25,
+        "inInteriorGenList": true,
+        "interiorGenCount": 17
+      },
+      "timing": {
+        "turnMs": 47793,
+        "budgetMs": 60000,
+        "overran": false,
+        "emptyPlan": true
+      },
+      "notes": []
+    },
+    {
+      "seatTurnIndex": 4,
+      "turnNumber": 5,
+      "side": "black",
+      "played": {
+        "actions": [
+          "END_ACTION",
+          "END_PLACE"
+        ],
+        "endKey": "7c94b77fe4464064",
+        "inCheapList": true,
+        "endsGame": true
+      },
+      "cheap": {
+        "count": 25,
+        "containsPlayed": true,
+        "containsAdviserBest": true
+      },
+      "adviser": {
+        "endKey": "7c94b77fe4464064",
+        "actions": [
+          "END_ACTION",
+          "END_PLACE"
+        ],
+        "scoreCc": -999000,
+        "depth": 12,
+        "work": 41310,
+        "source": "search",
+        "fallback": null,
+        "agreesWithPlayed": true
+      },
+      "playedDeepCc": -999000,
+      "adviserBestDeepCc": -999000,
+      "swingCc": 0,
+      "swingRootCc": 0,
+      "engine": {
+        "scoreCc": -999000,
+        "endKey": "7c94b77fe4464064",
+        "reproducedPlayed": true
+      },
+      "exposure": {
+        "source": "completed-depth",
+        "count": 25,
+        "searchedCount": 25,
+        "completedDepth": 12,
+        "lastCutoffAt": -1,
+        "adviserBest": {
+          "index": 0,
+          "endKey": "7c94b77fe4464064",
+          "genRankCc": 1937500,
+          "flags": 768,
+          "sig": 715474893,
+          "searched": true,
+          "scoreCc": -999000,
+          "chosen": true
+        },
+        "played": {
+          "index": 0,
+          "endKey": "7c94b77fe4464064",
+          "genRankCc": 1937500,
+          "flags": 768,
+          "sig": 715474893,
+          "searched": true,
+          "scoreCc": -999000,
+          "chosen": true
+        },
+        "candidates": [
+          {
+            "index": 0,
+            "endKey": "7c94b77fe4464064",
+            "genRankCc": 1937500,
+            "flags": 768,
+            "sig": 715474893,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": true
+          },
+          {
+            "index": 1,
+            "endKey": "c1c54f9588e8098e",
+            "genRankCc": -62500,
+            "flags": 256,
+            "sig": 1944818100,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 2,
+            "endKey": "898f2a92b05fa36b",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -908684792,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 3,
+            "endKey": "a1b7d9ac1b545df3",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -2067426808,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 4,
+            "endKey": "bc3fd6ea493f0a41",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": 354136584,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 5,
+            "endKey": "593e29b7b2599910",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": 1927156232,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 6,
+            "endKey": "dfa6acd07b98976e",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -171199992,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 7,
+            "endKey": "f4d807532dd5eb47",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": 896299528,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 8,
+            "endKey": "b2bafc55379818dc",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -270988175,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 9,
+            "endKey": "fa6d04a6c43ea65a",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -439897198,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 10,
+            "endKey": "440feba39c218f74",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -431227791,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 11,
+            "endKey": "4bf952e3f5a39752",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -600136814,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 12,
+            "endKey": "e8b7006cad8b969b",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -1068924408,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 13,
+            "endKey": "343286189bcfd132",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": 817689096,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 14,
+            "endKey": "62974e1a39a16883",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": 1455385713,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 15,
+            "endKey": "96d8f1dbce262026",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": 1286476690,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 16,
+            "endKey": "de2b4a452970f1af",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -14560760,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 17,
+            "endKey": "dfd6669ce53da56c",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -1747578360,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 18,
+            "endKey": "8973ae9e47531cdd",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -1109881743,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 19,
+            "endKey": "7d3c115fb0d45478",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -1278790766,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 20,
+            "endKey": "7293a18a18dae840",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": 623135857,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 21,
+            "endKey": "7d6518ca7158f066",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": 454226834,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 22,
+            "endKey": "0353e0e8d379e2c5",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": 2030723592,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 23,
+            "endKey": "afeb0b27e2d3fb2a",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -1626547087,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          },
+          {
+            "index": 24,
+            "endKey": "a01db2678b51e30c",
+            "genRankCc": -62500,
+            "flags": 288,
+            "sig": -1795456110,
+            "searched": true,
+            "scoreCc": -999000,
+            "chosen": false
+          }
+        ],
+        "rootTrace": [
+          {
+            "depth": 1,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 2,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 3,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 4,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 5,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 6,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 7,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 8,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 9,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 10,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 11,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          },
+          {
+            "depth": 12,
+            "n": 25,
+            "searched": 25,
+            "completed": true,
+            "cutoffAt": -1,
+            "truncated": false
+          }
+        ]
+      },
+      "reply": {
+        "refutationKey": null,
+        "inRootGenList": null,
+        "rootGenCount": 0,
+        "inInteriorGenList": null,
+        "interiorGenCount": 0
+      },
+      "timing": {
+        "turnMs": 112,
+        "budgetMs": 60000,
+        "overran": false,
+        "emptyPlan": true
+      },
+      "notes": []
+    }
+  ],
+  "firstConsequential": {
+    "turn": 4,
+    "seatTurnIndex": 3,
+    "klass": "clock-fallback",
+    "rule": "the seat's own turn wall time exceeded its allowance (max(10ms, 1%) tolerance), or the turn dispatched nothing but phase ends, or the adviser itself returned a fallback (pack-error / engine-error / divergence). Per-turn wall time is real (players[side].turnMs); the run's overruns/budgetExhausted counters are per GAME, so a fallback on a specific turn can be suspected from them but not proved",
+    "evidence": "the turn dispatched nothing but phase ends"
+  },
+  "largestSwing": {
+    "turn": 4,
+    "seatTurnIndex": 3,
+    "klass": "clock-fallback",
+    "rule": "the seat's own turn wall time exceeded its allowance (max(10ms, 1%) tolerance), or the turn dispatched nothing but phase ends, or the adviser itself returned a fallback (pack-error / engine-error / divergence). Per-turn wall time is real (players[side].turnMs); the run's overruns/budgetExhausted counters are per GAME, so a fallback on a specific turn can be suspected from them but not proved",
+    "evidence": "the turn dispatched nothing but phase ends"
+  },
+  "classRules": {
+    "clock-fallback": "the seat's own turn wall time exceeded its allowance (max(10ms, 1%) tolerance), or the turn dispatched nothing but phase ends, or the adviser itself returned a fallback (pack-error / engine-error / divergence). Per-turn wall time is real (players[side].turnMs); the run's overruns/budgetExhausted counters are per GAME, so a fallback on a specific turn can be suspected from them but not proved",
+    "candidate-absent": "the adviser's best end key is NOT in the production generator's K list at that root, so no search budget could have reached it",
+    "reply-outside-beam": "the adviser disagreed with the played turn, and its own answer TO the played turn — the refutation — is not in the candidate list the SAME generator configuration that produced it builds at the reply node. The engine had no way to answer this reply because the generator does not offer it there. This is a statement about the generator's cone at one node and NOTHING MORE: it is not a claim that the search examined the reply and mis-scored it, nor that the engine \"missed\" it, because RootResult reports neither",
+    "strong-candidate-discarded": "the adviser's best turn IS in the production generator's K list AND in the root's own candidate list, and the root never searched it (`searched: false` in `RootResult.candidates`, E2 lane 1's `expose`). No search budget reached it, so no evaluation of it was ever wrong: this is an ordering or a beam-width fault, not a scoring one",
+    "strong-candidate-misjudged": "the adviser's best turn IS in the root's candidate list, the root DID search it (`searched: true`), and did not prefer it — its score is at or below the played candidate's. The search saw the turn and chose another: this is an evaluation or a depth fault. Equality is the usual case and is a FAIL-LOW BOUND, not a tie: a candidate that does not beat the incumbent returns the incumbent's score, so the exposure says \"searched, not preferred\" and cannot say by how much. Before E2 lane 1 this class also swallowed \"in the list but never searched\", which is now `strong-candidate-discarded`",
+    "fixed-work-divergence": "the fixed-work re-run did not play what the seat played (`engine.reproducedPlayed` false) AND it scored the adviser's best turn strictly above the played candidate. The engine prefers the better turn when it is given this much work; the seat, under a wall clock at a coarser rung, did not. This is a statement about the WORK the seat had, not about its judgement, and it is not evidence that the seat would have found the turn in its allowance — `E2-LANE2-EXPOSED-LOSSES.md`'s work sweep is what tests that",
+    "exposure-inconsistent": "the root exposure and the rest of the analysis disagree, so no split is asserted. One of: the adviser's best turn is in the generator's list but absent from the root's published candidate list; the root searched it and scored it strictly ABOVE the played candidate while the re-run DID reproduce the played turn, which contradicts itself (when the re-run did not reproduce it, the class is `fixed-work-divergence`); it ties the played candidate while the played candidate is not the one the root chose; the played turn is absent from the candidate list, so there is nothing to compare against; or the root published a `generator-list` (the must-answer scan, the book probe, `pickUnsearched` or a fallback answered), where every candidate is unsearched by construction. The re-run is FIXED work while the seat played under a wall clock, which is the most likely cause of the first three",
+    "unclear": "none of the above separates, or no turn reached the swing threshold"
+  },
+  "wallMs": 98021,
+  "at": "2026-09-24T15:37:06.120Z"
+}
