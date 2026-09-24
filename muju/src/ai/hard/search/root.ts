@@ -64,6 +64,7 @@ import { probeBook } from '../book/probe';
 import { verifyTurn, type ReplayCheck } from '../verify/replay';
 import type { HardConfig } from '../config';
 import { getKillClockPolicy, setKillClockPolicy } from '../eval/evaluate';
+import { clockReading } from '../strategy/clock';
 import type { StrategyChronicle } from '../strategy/types';
 import { WorkClass } from './time';
 import {
@@ -392,11 +393,27 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
   // restored in a `finally` — so a THROW out of `searchRootFromPacked` still
   // restores it. `engine.ts` skips both legacy-slot writes for a `'ledger'`
   // profile, so no strategos search, fixed-work or wall-clock, can leak into
-  // the next search of either profile. `reading` stays `null` here; W1.6 is
-  // what computes one under `EvalFix.clockLedger` and threads it through.
+  // the next search of either profile.
+  //
+  // STRATEGOS W1.6: `reading` stays `null` here unless `evalFix.clockLedger`
+  // is ALSO on, in which case `strategy/clock.ts clockReading` is computed
+  // ONCE for this search, from the same packed root `p` and its own side to
+  // move, and installed alongside `rootClock` in this one `setKillClockPolicy`
+  // call — so it is saved and restored by the very same `finally` above, and
+  // a throw inside `clockReading` itself (it allocates no scratch and touches
+  // no module state) would simply propagate before any policy is installed,
+  // leaving the saved policy untouched. The computation runs BEFORE
+  // `s.meter.reset(opts.work)` (`searchRootFromPacked`, below), so it is not,
+  // and cannot be, charged to this search's own work meter; it is cheap by
+  // construction (`ledger.ts`/`killeta.ts`/`clock.ts`'s own "sound but loose"
+  // bounds, none of which searches the game tree). Measured cost (W1.6
+  // review, 2026-09-24): about 0.3 ms per call on the 24 roots of
+  // `lab/hard-ai/positions/p4-determinism.jsonl`, against a search budget of
+  // seconds, so it is left off the meter.
   if (opts.config.searchFix?.killClockPolicy === 'ledger') {
     const savedPolicy = getKillClockPolicy();
-    setKillClockPolicy({ rootClock: p.clock, reading: null });
+    const reading = opts.config.evalFix?.clockLedger === true ? clockReading(p, p.side) : null;
+    setKillClockPolicy({ rootClock: p.clock, reading });
     try {
       return searchRootFromPacked(engine, state, opts, p);
     } finally {

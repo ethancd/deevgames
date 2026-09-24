@@ -53,6 +53,7 @@ import { bbHas, type Scratch } from '../core/bits';
 import { ADJ_COUNT, ADJ_LIST, CORNER, CORNER_NEIGHBOURS, CORRIDOR, RECT } from '../core/tables';
 import { NDEF, activeCatalog, powerIndex, type Catalog } from '../core/catalog';
 import { ACTIONS_PER_TURN, INACTIVITY_LIMIT } from '../core/state';
+import { projectedIncome } from '../core/income';
 import type { NodeTables } from '../tables/context';
 import { KILL_IMPOSSIBLE } from '../tables/kill';
 import { Approach } from '../tables/approach';
@@ -349,6 +350,33 @@ function voidedAnchors(p: PackedState, me: Side, victim: Side): number {
   return voided;
 }
 
+/**
+ * STRATEGOS W1.6 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.6), `EvalFix.clockLedger` only — `strategy/ledger.ts
+ * pliesRemaining`'s own `r` formula (RULE `core/state.ts:1370-1373`
+ * `makeEndPlace`), DUPLICATED here rather than imported: DESIGN §2's layering
+ * (`lab/hard-ai/deps.ts`) lets only `search`/`engine` import `strategy`, and
+ * `eval` is neither, so the two copies must be kept in sync by hand (the same
+ * arrangement `invariants.ts leadCc` already uses for a different cycle —
+ * see that function's own doc). `tests/ai/hard/strategos-eval.test.ts` pins
+ * this copy against `strategy/ledger.ts`'s directly.
+ */
+function nodeR(p: PackedState): number {
+  return p.progress === 1 ? INACTIVITY_LIMIT + 1 : INACTIVITY_LIMIT - p.clock;
+}
+
+/**
+ * `strategy/ledger.ts futureMiningEvents`'s parity rule, duplicated for the
+ * same layering reason `nodeR` states. How many of `side`'s own future mining
+ * events (future `END_ACTION`s) fall inside the next `r` `END_PLACE`s.
+ */
+function nodeFutureMiningEvents(p: PackedState, side: Side, r: number): number {
+  const isMoverSide = side === p.side;
+  const total = isMoverSide ? Math.ceil(r / 2) : Math.floor(r / 2);
+  const alreadyMined = isMoverSide && p.phase === 0 && r >= 1 ? 1 : 0;
+  return Math.max(0, total - alreadyMined);
+}
+
 function extractStage1(p: PackedState, t: NodeTables, me: Side, them: Side, out: Int32Array, cat: Catalog): void {
   const sMe = t.spawn[me];
   const sThem = t.spawn[them];
@@ -375,32 +403,82 @@ function extractStage1(p: PackedState, t: NodeTables, me: Side, them: Side, out:
   out[F.Exposure] = div100(exposedPriorCc(p, me, t, cat) - exposedPriorCc(p, them, t, cat));
 
   const clock = p.drawRuleOn === 1 ? p.clock : 0;
-  // `muju-phasing-3` (owner decision 2026-09-22): the kill clock's verdict is
-  // the higher MINED TOTAL (`gained[]`, which already carries Black's
-  // handicap folded in — `pack` above), not a material/bank lead. Sign the
-  // feature by that quantity so it reads "am I the side the clock is about to
-  // declare the winner", which is the thing that is now actually true when it
-  // runs out — under `muju-phasing-1`/`-2` the clock only ever drew, so no
-  // lead of any kind was "correct" to sit on; here one specific lead is.
-  const lead = p.gained[me] - p.gained[them];
-  // Quadratic in HOW FAR ALONG the clock is, not in its raw ply count, so the
-  // feature keeps the 0..100 range its (zero) bootstrap weight was authored
-  // against as the limit moved 10 -> 20 (A4) -> 10 (this change). The
-  // magnitude is truncated before the sign is applied, so `f(side) = -f(other)`
-  // still holds exactly.
-  const pressure = ((clock * clock * DRAW_PRESSURE_FULL_SCALE) / DRAW_PRESSURE_DENOM) | 0;
-  // POLARITY (2026-09-22, kill-clock lane 5 + coordinator): `DEFAULT_WEIGHTS`
-  // is frozen and its `DrawPressure` weight is NEGATIVE, fitted under the draw
-  // clock where the running clock HURT the side that was ahead. Under the kill
-  // clock the side ahead on mined total is the side the clock is about to
-  // declare the winner, so the same magnitude must act with the opposite
-  // polarity. That is expressed here, in the feature, so the weight vector
-  // stays byte-identical: `w · f = (−|w|) · (−sign(lead) · pressure)` rewards
-  // the leader and presses the trailer to kill. With the other polarity the
-  // DESKTOP profile handed the turn back instead of taking a free capture on
-  // turn 1 (`e2e/ai-worker.spec.ts`), rewarded for letting the clock run while
-  // behind. Retuning the sign into the weight itself is the next campaign's job.
-  out[F.DrawPressure] = -(lead > 0 ? 1 : lead < 0 ? -1 : 0) * pressure;
+  if (t.evalFix !== null && t.evalFix.clockLedger === true) {
+    // STRATEGOS W1.6: a CHEAP per-node PROJECTION of the mined-total margin at
+    // the clock's end, replacing the sign-only `lead` below. "Cheap" means one
+    // pass over each side's living units for `projectedIncome` (already the
+    // eval's own per-node income read, `core/income.ts`) times how many of the
+    // side's OWN future mining events fall inside the window
+    // (`nodeFutureMiningEvents`, the parity rule above) — a SINGLE-event
+    // stay-put rate held constant across the window, not `ledger.ts`'s own
+    // per-turn reserve-depletion/rent-release simulation, which is exactly
+    // the accounting this feature cannot afford at every node (module doc,
+    // "the accounting the eval tables already compute"). Never the bank or
+    // `U`: `strategy/types.ts ClockReadingCore.marginL`'s own doc is why —
+    // rewarding cash would reward hoarding, the 2026-09-20 repair handoff's
+    // documented failure.
+    const r = nodeR(p);
+    const projMe = p.gained[me] + nodeFutureMiningEvents(p, me, r) * projectedIncome(p, me);
+    const projThem = p.gained[them] + nodeFutureMiningEvents(p, them, r) * projectedIncome(p, them);
+    const margin = projMe - projThem;
+    // Quadratic in the clock, same as the legacy formula below, but in
+    // crystals: `margin` is already a crystal quantity, not a 0..100-normalised
+    // one, so the clamp below — not this division — is what keeps the feature
+    // inside its documented range. CHOICE (the W1.6 brief's formula,
+    // `margin · clock² / 100`: one crystal of projected margin at clock 9 is
+    // worth ~0.8 feature units, ~6.5 cc at the frozen weight; falsifier: the
+    // paired exam cases of plan W1.13, where a projected clock loser must
+    // prefer contact to a quiet turn).
+    const scaled = (margin * clock * clock) / 100;
+    // Symmetric ("round half away from zero"), not `Math.round` (which
+    // rounds every half toward +infinity — `Math.round(-0.5)` is `-0`,
+    // `Math.round(-1.5)` is `-1` — breaking EXACT antisymmetry at a tie;
+    // `tests/ai/hard/strategos-eval.test.ts` checks this at a constructed
+    // half-integer margin, not just typical corpus values where a tie is
+    // rare).
+    const rounded = scaled === 0 ? 0 : Math.sign(scaled) * Math.round(Math.abs(scaled));
+    // DERIVED (plan B.1b: "the DrawPressure replacement must be clamped to
+    // the feature's ±100 range", the range the legacy branch's
+    // `DRAW_PRESSURE_FULL_SCALE` spans): at the frozen weight −8 this term
+    // never exceeds 800 cc.
+    const clamped = rounded > 100 ? 100 : rounded < -100 ? -100 : rounded;
+    // POLARITY (derive, do not assume — the 2026-09-22 kill-clock postmortem:
+    // this feature's polarity was inverted once already). `DEFAULT_WEIGHTS`
+    // is frozen at `w[F.DrawPressure] = -8`; the score contribution from
+    // `me`'s point of view is `w · out[F.DrawPressure]`. For a side PROJECTED
+    // TO WIN the clock (`margin > 0`) to score BETTER as the clock advances,
+    // `w · out` must be POSITIVE and growing with `clock²` — since `w` is
+    // negative, `out` must therefore be NEGATIVE when `margin > 0`: the sign
+    // of `clamped` (which already carries `margin`'s sign) must be FLIPPED.
+    out[F.DrawPressure] = -clamped;
+  } else {
+    // `muju-phasing-3` (owner decision 2026-09-22): the kill clock's verdict is
+    // the higher MINED TOTAL (`gained[]`, which already carries Black's
+    // handicap folded in — `pack` above), not a material/bank lead. Sign the
+    // feature by that quantity so it reads "am I the side the clock is about to
+    // declare the winner", which is the thing that is now actually true when it
+    // runs out — under `muju-phasing-1`/`-2` the clock only ever drew, so no
+    // lead of any kind was "correct" to sit on; here one specific lead is.
+    const lead = p.gained[me] - p.gained[them];
+    // Quadratic in HOW FAR ALONG the clock is, not in its raw ply count, so the
+    // feature keeps the 0..100 range its (zero) bootstrap weight was authored
+    // against as the limit moved 10 -> 20 (A4) -> 10 (this change). The
+    // magnitude is truncated before the sign is applied, so `f(side) = -f(other)`
+    // still holds exactly.
+    const pressure = ((clock * clock * DRAW_PRESSURE_FULL_SCALE) / DRAW_PRESSURE_DENOM) | 0;
+    // POLARITY (2026-09-22, kill-clock lane 5 + coordinator): `DEFAULT_WEIGHTS`
+    // is frozen and its `DrawPressure` weight is NEGATIVE, fitted under the draw
+    // clock where the running clock HURT the side that was ahead. Under the kill
+    // clock the side ahead on mined total is the side the clock is about to
+    // declare the winner, so the same magnitude must act with the opposite
+    // polarity. That is expressed here, in the feature, so the weight vector
+    // stays byte-identical: `w · f = (−|w|) · (−sign(lead) · pressure)` rewards
+    // the leader and presses the trailer to kill. With the other polarity the
+    // DESKTOP profile handed the turn back instead of taking a free capture on
+    // turn 1 (`e2e/ai-worker.spec.ts`), rewarded for letting the clock run while
+    // behind. Retuning the sign into the weight itself is the next campaign's job.
+    out[F.DrawPressure] = -(lead > 0 ? 1 : lead < 0 ? -1 : 0) * pressure;
+  }
 
   out[F.ActionsLeft] = p.phase === 1 ? (p.side === me ? p.actions : -p.actions) : 0;
   out[F.Corridor] = corridorUnits(p, me, cat) - corridorUnits(p, them, cat);

@@ -213,6 +213,23 @@ export const KILL_CLOCK_SOFT_CC: Centi = 200;
  * explores full-width at the top of the tree. */
 export const KILL_CLOCK_FORCED_HANDOFFS = 2;
 
+/**
+ * STRATEGOS W1.6 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.6), `EvalFix.clockLedger` only. CHOICE: `WIN_CC / 8`
+ * (125,000 cc). The magnitude of a kill-clock terminal beyond the forced
+ * hand-offs whenever the root `ClockReading` (`strategy/clock.ts`) is NOT
+ * proven — `bounded-*` (the disjoint interval holds but a kill, an earlier
+ * ending or a cancellable arrival is not ruled out) AND `open` alike, as the
+ * W1.6 brief specifies ("otherwise"). Why: a distant clock-out is worth more
+ * than a tier-1 (the legacy flat `KILL_CLOCK_SOFT_CC` made it worth less, the
+ * plan's F1 root cause) but must stay far below a proven ending, since an
+ * unproven reading means a kill could still flip or reset the clock before
+ * it fires. The sign is the leaf's own result, not the reading's. Falsifier:
+ * the paired exam cases plan W1.13 builds, which must score a distant
+ * clock-out below a proven one and above a flat draw on the same corpus.
+ */
+export const BOUNDED_CLOCK_CC: Centi = WIN_CC / 8;
+
 /** The root position's clock, set by the engine when it packs the root. The
  * default makes every direct caller (tests, tools) treat the verdict as forced. */
 let killClockRootClock = INACTIVITY_LIMIT - 1;
@@ -259,8 +276,45 @@ export function killClockHandoffsFromRoot(): number {
   return INACTIVITY_LIMIT - rootClock;
 }
 
+/**
+ * STRATEGOS W1.6. `decidedCc` has no `EvalFix` of its own to read — DESIGN
+ * gives `terminalScore` no such parameter, and its signature is pinned
+ * (`tests/ai/hard/interfaces.test.ts:962`), so adding one is not an option.
+ * The installed `KillClockPolicy.reading` (`strategy/types.ts
+ * ClockReadingCore`) is used as the flag's proxy instead: `search/root.ts`
+ * installs a NON-null `reading` on exactly the searches that opted into
+ * `evalFix.clockLedger` (W1.6's change there), and leaves it `null` on every
+ * other search — `hard@desktop` and every other profile, always, even under
+ * `searchFix.killClockPolicy === 'ledger'` alone (W1.2) without the eval
+ * flag. So gating on "a reading is installed" is exactly gating on the flag,
+ * one level removed, and this branch is unreachable whenever the flag is off.
+ *
+ * WHERE THE TERMINAL LIES. `ply` counts TURNS from the root: `search/pvs.ts`
+ * and `search/quiesce.ts` score a child terminal at `ply + 1` per
+ * `makeTurn` (one hand-off each), while the turn generator scores a
+ * completed candidate turn at its generating node's `ply`, one less. On a
+ * kill-free line from a fresh root, `killClockHandoffsFromRoot()` (the
+ * root's own hand-offs to the clock's end, the legacy test) IS the clock
+ * terminal's distance in turns. A line that kills first restarts the clock,
+ * so its clock terminal lies at least `INACTIVITY_LIMIT` turns deep —
+ * inside `maxDepth` (12) in principle — and the root's count says nothing
+ * about it. The flagged branch therefore calls a terminal "within the forced
+ * hand-offs" only when BOTH counts say so: the root's hand-offs (exact on
+ * kill-free lines, and immune to the generator's one-turn offset) and the
+ * terminal's own `ply` (which rules out the post-kill case).
+ */
 function decidedCc(p: PackedState, ply: number): Centi {
-  if (p.reason === Reason.KILL_CLOCK && killClockHandoffsFromRoot() > KILL_CLOCK_FORCED_HANDOFFS) return KILL_CLOCK_SOFT_CC;
+  if (p.reason === Reason.KILL_CLOCK) {
+    const policy = getKillClockPolicy();
+    const reading = policy !== null ? policy.reading : null;
+    if (reading !== null) {
+      const proven = reading.verdict === 'proven-win' || reading.verdict === 'proven-loss';
+      const forced = killClockHandoffsFromRoot() <= KILL_CLOCK_FORCED_HANDOFFS && ply <= KILL_CLOCK_FORCED_HANDOFFS;
+      if (proven || forced) return WIN_CC - ply * MATE_PLY_CC;
+      return BOUNDED_CLOCK_CC;
+    }
+    if (killClockHandoffsFromRoot() > KILL_CLOCK_FORCED_HANDOFFS) return KILL_CLOCK_SOFT_CC;
+  }
   return WIN_CC - ply * MATE_PLY_CC;
 }
 
