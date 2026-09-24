@@ -123,17 +123,53 @@
  *      would sustain buying further past turn 4; it did not measurably help
  *      (whole-game buys and the win column were flat-to-slightly-worse), so
  *      the floor stayed at 3 rather than being changed without evidence.
- *      Reading: the spawn rectangle was a real, fixable bottleneck for the
- *      FIRST few turns (exactly the review's own headline number), but the
- *      dominant remaining gap is a per-turn income/placement-quality
- *      difference — ClockHeist never promotes (`PROMOTE_UNIT` stays -1,
- *      unchanged, item 2) and its MOVE scorers take the first qualifying cell
- *      each ply rather than a globally best one — which this lane's scope
- *      (spawn declogging only) does not touch. ClockHeist post-fix is a
- *      stronger clock-holder than before, but not yet strong enough on its
- *      own to reproduce the wave-1 LLM-vs-Hard clock loss against the full
- *      `hard@desktop` search; see plan B.2's step recommendation below for
- *      what that means for A8's rows.
+ *      The lane's own reading was that the remaining gap is per-turn
+ *      income/placement quality (no promotions, first-qualifying-cell moves).
+ *      The review below replaces it.
+ *
+ *      W1.12 FINAL REVIEW (2026-09-24, adversarial review of this lane; the
+ *      numbers are recomputed from calib-1/calib-2 `games.jsonl`, and the
+ *      traces come from an exact re-run of calib-1's first 12 pairs, 24 of 24
+ *      games identical, with replays on). Verdict: rework. The clock outcome
+ *      is decided by kills, not by the income ratio:
+ *        - With desktop as White and ClockHeist as Black holding the handicap,
+ *          desktop drew first blood in 57 of 72 games (58 of 72 in calib-2).
+ *          In at least 53 of them (55 in calib-2) desktop was BEHIND on mined
+ *          total when it did, with a median deficit of 21 (23). This count
+ *          credits White's whole opening income, which makes it conservative.
+ *          Desktop won every game that had a kill. All 8 of ClockHeist's wins
+ *          in this seat (5 in calib-2) came from the 14 (12) kill-free games.
+ *          The kills come from one raider (fire_2, lightning_2, fire_1)
+ *          parked beside ClockHeist's home cluster. It picks off units that
+ *          cannot answer, such as plant_1 with attack 0. Each kill resets the
+ *          clock, and desktop's wider economy then overtakes. So the premise
+ *          that desktop does not attack is false against this bot. Desktop's
+ *          search takes a one-turn kill when a clock loss is within its
+ *          horizon. What wave 1 showed was that Hard does not PLAN contact
+ *          that takes more than one turn.
+ *        - The fix did not stop the spawn clog after turn 4. In the 24 re-run
+ *          games, 82 of ClockHeist's 180 Place phases had zero legal buy
+ *          squares while it held at least 3 crystals. Of its buys, 46% (634
+ *          of 1388 in calib-1) were metal_1, which has speed 0 (RULE
+ *          `src/game/movement.ts canMove`), so it can never step off the spawn
+ *          square it lands on. `declogScore` also needs a destination outside
+ *          every enemy strike area. Once a few desktop pieces are out, no
+ *          such square exists, so no declog move is ever taken.
+ *        - Undeclared behaviour change: before this lane, the unlocked branch
+ *          DID move a unit on a paying cell to a strictly richer one, through
+ *          `withPassiveEconomy`'s `delta * 45` term (-1 + 45 x delta > 0). The
+ *          earlier diagnosis, "the unlocked branch never moves a unit off a
+ *          paying cell", missed this. `finalScore` now bypasses that wrapper
+ *          for any unit on a paying cell. The effect: with a plant_1 on a
+ *          yield-1 cell next to a yield-3 cell, spawn room 35 and clock 0,
+ *          18669c3b moves the unit and this version passes.
+ *        - Same 24 games with the 18669c3b bot: desktop 21, ClockHeist 2,
+ *          1 draw (this version: 21-3). With desktop as White, 11 of 12 of
+ *          those games were kill-free and lost narrowly on mined total. This
+ *          version has 3 of 12 kill-free. The early buying traded a narrow
+ *          clog loss for a raid loss. Two single-change variants on the same
+ *          24 games did not help: never buying speed-0 units went 20-4, and
+ *          restoring the richness step went 24-0.
  *
  *   2. Otherwise: buy cheap (tier 1) miners ("drone"), relocate idle units to
  *      rich cells on the flank corner away from the enemy's approach line
@@ -184,6 +220,13 @@
  * range, both showing ClockHeist's least-bad rate at floor=3) are the
  * pair to keep.
  *
+ * Review note (W1.12 FINAL REVIEW, above): this recommendation assumes R0
+ * measures the clock failure seen in wave 1. Against this version it would
+ * not. In the desktop=White seat, every lost game follows a one-turn desktop
+ * kill that resets the clock, so R0 would record desktop raiding a passive
+ * miner. Choosing handicaps is premature until the coordinator decides
+ * whether ClockHeist must deny one-turn kills while it is ahead.
+ *
  * NAME. Exactly `ClockHeist`, chosen in particular to NOT match
  * `/AntiRush|Guard/`. Grepping that pattern (it appears once, in
  * `lab/harness/runner.ts`'s upkeep handling) finds: a bot whose name matches
@@ -213,7 +256,9 @@
  * first to run against THIS behaviour, and cite it as the frozen `ClockHeist`.
  * Any further change to this bot's decisions, from here on, ships as a new
  * bot, `ClockHeist-v2`, alongside this one — never as a silent edit to this
- * file.
+ * file. Review note: the W1.12 final review returned rework, so this freeze
+ * holds only if the coordinator accepts this behaviour as is. If a rework
+ * lands before A8, that later commit is the freeze point.
  *
  * REUSE. Only `lab/harness/bots/bot-utils.ts` and the same game-rule
  * primitives every other archetype in this directory already imports
@@ -342,7 +387,10 @@ function wouldYieldAt(view: BotView, definitionId: string, pos: Position): numbe
  * gap outside this lane (ClockHeist never promotes and picks the first
  * reachable paying cell each ply, not a globally best one) -- left at 3, the
  * simpler and equally-effective value, and recorded here rather than
- * re-opened without new evidence. Falsifier for a FUTURE lane: a ladder row
+ * re-opened without new evidence. (Review correction, module header "W1.12
+ * FINAL REVIEW": spawn-square supply IS still binding after turn 4. The floor
+ * cannot fix it, because immobile metal_1 buys fill the squares and the
+ * strike-area gate vetoes every declog destination.) Falsifier for a FUTURE lane: a ladder row
  * where a different floor (or a room target that also accounts for bank
  * size) buys measurably more of the WHOLE-game total, not just turns 1-4.
  */
