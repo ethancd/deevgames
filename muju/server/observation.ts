@@ -49,13 +49,10 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
       ...(bare ? {} : { projectedIncome: projectedIncome(s, player), upkeepDue: upkeepDue(s, player) }), reviewUpkeep: !!s.reviewUpkeep?.[player],
       occupyingEnemyHome: getHomeOccupier(s.board, player)?.id ?? null,
     }])),
-    // `killClock` is the current name (rules revision `muju-phasing-3`,
-    // 2026-09-22): ten kill-free plies end the game on the higher mined total,
-    // a tie draws. `quietTurns`/`drawAtQuietTurns` are kept for one release as
-    // deprecated aliases of the SAME counter and limit — `quietTurns` reads
-    // `killClock.plies` and `drawAtQuietTurns` reads `killClock.limit`
-    // unchanged; they no longer describe a draw. Read `killClock` going forward.
-    quietTurns: s.inactivityPlies ?? 0, drawAtQuietTurns: INACTIVITY_LIMIT,
+    // Rules revision `muju-phasing-3` (2026-09-22): ten kill-free plies end the
+    // game on the higher mined total; a tie draws. The deprecated
+    // `quietTurns`/`drawAtQuietTurns` aliases were removed 2026-09-24: agents read
+    // `drawAtQuietTurns` as "ten quiet plies is a draw" and lost games on the clock.
     killClock: { plies: s.inactivityPlies ?? 0, limit: INACTIVITY_LIMIT, warningAt: INACTIVITY_WARNING,
       minedTotals: { white: minedTotal(s, 'white'), black: minedTotal(s, 'black') },
       leader: minedTotal(s, 'white') > minedTotal(s, 'black') ? 'white' as const
