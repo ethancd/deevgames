@@ -1,8 +1,8 @@
 /**
- * `npm run hard:analyze:from-room -- --room <id> --engine-seat white|black [--handicap <n>] --out <file>`
- * `npm run hard:analyze:from-room -- --game-dir <waveGameDir> [--out <file>]`
- * `npm run hard:analyze:from-room -- --campaign <waveDir> [--losses-only] [--out-dir <dir>]`
- * `npm run hard:analyze:from-room -- --bundle <file.room.json> --engine-seat white|black --out <file>`
+ * `node --import tsx lab/hard-ai/analyze/from-room.ts --room <id> --engine-seat white|black [--handicap <n>] --out <file>`
+ * `node --import tsx lab/hard-ai/analyze/from-room.ts --game-dir <waveGameDir> [--out <file>]`
+ * `node --import tsx lab/hard-ai/analyze/from-room.ts --campaign <waveDir> [--losses-only] [--out-dir <dir>]`
+ * `node --import tsx lab/hard-ai/analyze/from-room.ts --bundle <file.room.json> --engine-seat white|black --out <file>`
  *
  * THE BRIDGE from an online room (an LLM-vs-Hard game played on the production
  * server) to a `muju-lab-replay-v2` file that `hard:analyze --replay` and
@@ -113,7 +113,6 @@ import { getUnitDefinition } from '../../../src/game/units';
 import { UNEQUAL_ROUTES_MAP } from '../../../src/game/resourceMap';
 import type { GameState, PlayerId, Position, VictoryReason } from '../../../src/game/types';
 import type { AIAction } from '../../../src/ai/types';
-import { snapshotStep } from '../../harness/runner';
 import {
   DEFAULT_MATCH_OPTIONS,
   HARNESS_RULES_VERSION,
@@ -126,6 +125,39 @@ import {
 } from '../../harness/types';
 import { initialStateForRules } from '../ladder/ruleset';
 import { REPLAY_SCHEMA, buildIdMap, loadReplay, reconstruct, withMatchRules, type StoredReplay } from './replay';
+
+/**
+ * A copy of `lab/harness/runner.ts snapshotStep` (not exported there). runner.ts's bytes are pinned by the
+ * p2/p3 scripted-campaign manifests (`tests/lab/phasing-evidence.test.ts`), so it can't gain an export for
+ * this tool. Drift between the two is caught anyway: every replay this tool writes must pass
+ * `analyze/replay.ts reconstruct`, which compares each step against its own rebuilt snapshot.
+ */
+function snapshotStep(state: GameState, ply: number, actor: PlayerId, action: AIAction | null): ReplayStep {
+  const cells = state.board.cells.flat().map(cell => cell.resourceLayers);
+  const res = {} as ReplayStep['res'];
+  for (const p of ['white', 'black'] as PlayerId[]) {
+    const ps = state.players[p];
+    res[p] = { r: ps.resources, g: ps.resourcesGained, s: ps.resourcesGained - ps.resources };
+  }
+  return {
+    ply,
+    turn: state.turn.turnNumber,
+    player: actor,
+    phase: state.turn.phase,
+    actionsRemaining: state.turn.actionsRemaining,
+    action,
+    units: state.board.units.map((u) => ({
+      o: u.owner,
+      d: u.definitionId,
+      x: u.position.x,
+      y: u.position.y,
+      dmg: u.damageTaken,
+    })),
+    pendingSummons: (state.pendingSummons ?? []).map(s => ({ o: s.owner, d: s.definitionId, x: s.position.x, y: s.position.y, cost: s.cost })),
+    cells,
+    res,
+  };
+}
 
 export const DEFAULT_SERVER = 'https://deevgames-muju.onrender.com';
 export const ROOM_BUNDLE_SCHEMA = 'muju-room-bundle-v1';
@@ -1245,10 +1277,10 @@ async function main(): Promise<void> {
     args = parseCliArgs(process.argv.slice(2));
   } catch (err) {
     console.error(`hard:analyze:from-room: ${err instanceof Error ? err.message : String(err)}`);
-    console.error('usage: npm run hard:analyze:from-room -- --room <id> --engine-seat white|black [--handicap <n>] [--engine hard@<profile>] --out <file>');
-    console.error('       npm run hard:analyze:from-room -- --bundle <file.room.json> --engine-seat white|black --out <file>');
-    console.error('       npm run hard:analyze:from-room -- --game-dir <waveGameDir> [--out <file>]');
-    console.error('       npm run hard:analyze:from-room -- --campaign <waveDir> [--losses-only] [--out-dir <dir>]');
+    console.error('usage: node --import tsx lab/hard-ai/analyze/from-room.ts --room <id> --engine-seat white|black [--handicap <n>] [--engine hard@<profile>] --out <file>');
+    console.error('       node --import tsx lab/hard-ai/analyze/from-room.ts --bundle <file.room.json> --engine-seat white|black --out <file>');
+    console.error('       node --import tsx lab/hard-ai/analyze/from-room.ts --game-dir <waveGameDir> [--out <file>]');
+    console.error('       node --import tsx lab/hard-ai/analyze/from-room.ts --campaign <waveDir> [--losses-only] [--out-dir <dir>]');
     process.exitCode = 2;
     return;
   }
