@@ -268,8 +268,8 @@ still builds exactly the `hard@desktop` engine it always built.
 
 `profile: 'strategos'` is accepted like any other label `hardConfigFor`
 resolves (`lab`, `midrange`, `phone`, `ablate:<arm>`, …); it is not a special
-case in the config schema. What IS special-cased: **`hard@env` (and any
-`env`-prefixed label such as `env-400k`) is REFUSED**, even though
+case in the config schema. What IS special-cased: **`env` (and `env` with a
+documentary suffix, such as `env-400k`) is REFUSED**, even though
 `hardConfigFor` itself accepts it. Reason: `hard@env`'s weight vector comes
 from a `MUJU_HARD_WEIGHTS` file path that the seat's `start` telemetry line
 never records (only the string `"env"` does), and that file is read lazily —
@@ -277,8 +277,8 @@ not at config-parse time, but inside `runner.ts`'s `makeEngine`, which is not
 called until this seat's FIRST search after joining a live room. A missing or
 malformed file would therefore fail minutes into a match, with no record on
 disk of which weights a resumed or replayed run actually used. The refusal
-strips the same documentary numeric/unit suffix `hardConfigFor` itself
-normalises (`-400k`, `-25000`, `-units`) before comparing, so `env-400k` is
+strips the same documentary suffix `hardConfigFor` itself normalises
+(`-<n>k`, `-<n>m` or `-units`, e.g. `-400k`) before comparing, so `env-400k` is
 refused for the identical reason `env` bare is, not treated as a separate,
 allowed label. Use a named profile (`desktop`, `strategos`, `midrange`,
 `phone`, …) instead.
@@ -308,9 +308,10 @@ now declares `SearchTelemetryEvent` and an exported
 `profile` and the source hashes, so a reader of a `.jsonl` file knows which
 `search`-line shape follows without guessing from its keys.
 
-Four fields are new on every `search` line, STRATEGOS-specific, and — the
-CHOICE this addendum records — NEVER OMITTED, even on a `hard@desktop` seat
-that computes none of them meaningfully:
+Four fields are new on every `search` line and — the CHOICE `contract.ts`
+records — NEVER OMITTED. `scoreCc`, `clock` and `minedTotals` are facts about
+the searched position that exist on every search, desktop or strategos;
+`strategy` is `null` on a `hard@desktop` seat:
 
 - `scoreCc: Centi` — `RootResult.scoreCc`, the root's own evaluation of the
   turn it returned, in centi-crystals from the seat's (side-to-move) point of
@@ -334,7 +335,7 @@ that computes none of them meaningfully:
   expected, not a defect in the telemetry.
 
 Nothing about the events a `hard@desktop` seat already logged is removed or
-renamed; `mode`/`work`/`stopReason`/`fallback`/`verified` and the rest are
+renamed; `depth`/`work`/`stopReason`/`fallback`/`verified` and the rest are
 unchanged. A `hard@desktop` seat's `search` events simply gain these four
 always-present keys.
 

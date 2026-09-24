@@ -2425,130 +2425,140 @@ failures array is diagnostic; nothing reads it as a criterion.
 
 Plan `~/.claude/plans/can-you-respond-to-piped-book.md`, Part B. Change record
 `docs/changes/2026-09-24-strategos-w1.md`. `hard@strategos` is `hard@desktop` plus six optional
-`SearchFix`/`EvalFix` keys (`config.ts strategosPatch()`); every entry below is gated by one of them or by
-a bug the campaign's parallel lanes found in shared, ungated code. `hard@desktop`'s resolved configuration
-and hash (`tests/lab/ablate.test.ts DESKTOP_WALL3000_HASH`, `5de7ae20…`) do not move for any entry here.
+`SearchFix`/`EvalFix` keys (`config.ts strategosPatch()`); every entry below is gated by one of them or
+records a pre-existing problem the campaign's lanes found in shared, ungated code. `hard@desktop`'s resolved
+configuration and hash (`tests/lab/ablate.test.ts DESKTOP_WALL3000_HASH`, `5de7ae20…`) do not move for any
+entry here.
 
 ### 2026-09-24: `killClockRootClock`'s cross-search leak is kept, by design, on desktop; strategos scopes its own policy per search
 
-`eval/evaluate.ts`'s module-level `killClockRootClock` slot is set only on the wall-clock path
-(`engine.ts`'s wall-clock pack, and `calibrate()`), starts at `INACTIVITY_LIMIT − 1`, and is never saved or
-restored. So a wall-clock `hard@desktop` search's root clock can leak into a later FIXED-WORK
-`hard@desktop` search in the same process. The W1.2 review reproduced it directly: after a 30 ms strategos
-search at clock 4, `hard@desktop`'s score on a clock-8 position with White ahead on mined crystals dropped
-from 998,000 to 200; over 12 p1-dev openings × 8 turns, 1 of 96 comparison rows moved. This is
-`hard@desktop`'s PINNED behaviour (the `DESKTOP_WALL3000_HASH` hash above) and this entry does not fix it —
-fixing it would move desktop's bytes, which STRATEGOS W1 may not do.
+`eval/evaluate.ts`'s module-level `killClockRootClock` slot is set only on the wall-clock path (`engine.ts`'s
+wall-clock pack, and `calibrate()`), starts at `INACTIVITY_LIMIT − 1`, and is never saved or restored. So a
+wall-clock `hard@desktop` search's root clock can leak into a later FIXED-WORK `hard@desktop` search in the
+same process. The W1.2 review measured what one leaked root clock does, with a wall-clock STRATEGOS search as
+the writer (before `bddfe903` stopped strategos writing the slot): after a 30 ms strategos search at clock 4,
+`hard@desktop`'s score on `leadAtClock(8)` (White ahead on mined total, two hand-offs from the clock-out)
+dropped from 998,000 to 200, and over 12 p1-dev openings × 8 turns, 1 of 96 golden rows moved.
+Desktop-into-desktop is the same mechanism; `tests/ai/hard/kill-clock-policy.test.ts` documents it by its
+observable effect after a real desktop wall-clock search. This is `hard@desktop`'s pinned behaviour
+(`a5d198ba`: its bytes are pinned by `DESKTOP_WALL3000_HASH`) and this entry does not fix it — fixing it would
+move desktop's bytes, which STRATEGOS W1 may not do.
 
-`hard@strategos` sets `SearchFix.killClockPolicy: 'ledger'`. Under it, `search/root.ts searchRootInner`
-saves whatever per-search policy `eval/evaluate.ts getKillClockPolicy()` currently holds, installs a fresh
+`hard@strategos` sets `SearchFix.killClockPolicy: 'ledger'`. Under it, `search/root.ts searchRootInner` saves
+whatever per-search policy `eval/evaluate.ts getKillClockPolicy()` currently holds, installs a fresh
 `{ rootClock: p.clock, reading }` scoped to exactly this one search (computed from the packed root before
-`s.meter.reset(opts.work)`, so it is never charged to the search's own work meter — measured at about
-0.3 ms per call on the 24 roots of `lab/hard-ai/positions/p4-determinism.jsonl`), runs the search, and
-restores the saved policy in a `finally` — synchronous end to end, so a throw cannot skip the restore.
-`engine.ts` additionally skips both of its own legacy-slot writes (the wall-clock pack and `calibrate()`)
-whenever `killClockPolicy === 'ledger'`, so a strategos search never writes desktop's slot either, in
-either direction: no strategos search can leak into a later search of any profile, and no later profile
-can inherit a strategos root clock. `hard@desktop`'s own leak, among desktop searches, is untouched by any
-of this.
+`s.meter.reset(opts.work)`, so it is never charged to the search's own work meter — measured at about 0.3 ms
+per call on the 24 roots of `lab/hard-ai/positions/p4-determinism.jsonl`), runs the search, and restores the
+saved policy in a `finally` — synchronous end to end, so a throw cannot skip the restore. `engine.ts`
+additionally skips both of its own legacy-slot writes (the wall-clock pack and `calibrate()`) whenever
+`killClockPolicy === 'ledger'` (`bddfe903`). A strategos search therefore neither reads nor writes desktop's
+slot: it cannot leak its root clock into a later search of any profile, and a desktop wall-clock search cannot
+leak into it. `hard@desktop`'s own leak, among desktop searches, is untouched.
 
 ### 2026-09-24: the zero-damage prune shifts the beam; five lab instruments never apply it
 
 `SearchFix.pruneZeroDamage` (W1.7) makes `gen/actionsearch.ts`'s `dfs` drop `power === 0` ATTACKs
 (`dropZeroPowerAttacks`) from the candidate list BEFORE `orderTop`'s width cut, not after. The W1.7 review
-found the implementer's original placement — after the cut — left a pruned candidate's beam slot empty
-instead of handing it to the next real candidate: on the shipped widths `[6,4,3,2]` it explored 5 root
-candidates instead of 6, and a `[2,1,1,1]` beam collapsed from 7 end positions to 2. Fixed before merge.
+found the implementer's original placement — after the cut — left a pruned candidate's beam slot empty instead
+of handing it to the next real candidate: on the zero-damage fixtures the shipped widths `[6,4,3,2]` explored
+5 root candidates instead of 6, and a `[2,1,1,1]` beam reached 2 end positions instead of 7. Fixed before
+merge (`e91e47e5`).
 
-So beyond the work saved, `hard@strategos` sees a DIFFERENT SET of real candidates at every contact node
-than `hard@desktop` does — a freed slot is filled by whichever candidate next clears the cut, and that
-candidate is otherwise invisible to a beam-limited search. With the flag absent, `engine.ts` never calls
-the setter this flag wires, so `dfs` enumerates zero-power attacks exactly as it does today and the emitted
-`Turn` list is byte-for-byte unchanged.
+So beyond the work saved, `hard@strategos` sees a DIFFERENT SET of real candidates at every contact node than
+`hard@desktop` does — a freed slot is filled by whichever candidate next clears the cut, and that candidate is
+otherwise invisible to a beam-limited search. With the flag absent, `engine.ts` never calls the setter this
+flag wires, so `dfs` enumerates zero-power attacks exactly as it does today and the emitted `Turn` list is
+byte-for-byte unchanged.
 
-Five lab instruments build their own `TurnGenerator`s directly, outside `HardEngine`, and none of them
-calls `setPruneZeroDamage`: `lab/hard-ai/recall/run.ts`, `lab/hard-ai/coverage/run.ts`,
-`lab/hard-ai/audit/gen-view.ts`, `lab/hard-ai/analyze/engine.ts`, `lab/hard-ai/bench/p6-turn-time.ts`.
-Recall, coverage, audit and bench numbers these tools report for `hard@strategos` describe the UNPRUNED
-generator — not the one that actually plays under the flag.
+Five lab instruments build their own `TurnGenerator`s directly, outside `HardEngine`, and none of them calls
+`setPruneZeroDamage`: `lab/hard-ai/recall/run.ts`, `lab/hard-ai/coverage/run.ts`,
+`lab/hard-ai/audit/gen-view.ts`, `lab/hard-ai/analyze/engine.ts`, `lab/hard-ai/bench/p6-turn-time.ts`. Recall,
+coverage, audit and bench numbers these tools report for `hard@strategos` describe the UNPRUNED generator —
+not the one that actually plays under the flag.
 
 ### 2026-09-24: exhaustive promotions (`EvalFix.promoteExhaustive`) are wired to the root generator only
 
-W1.8's `bestMission` substitutes a catch-all `Mission.ANY` (benefit 0) for its ordinary `-1` ("no mission
-claims this promotion"), and `planPromotions`'s beam widens from `max` to `MAX_SLOTS`, so every legal
-promotion is offered at all rather than silently skipped. The question the flag-off implementer's plan text
-left open was which generators should see it: `engine.ts` originally wired all three (`gen`, `genInterior`,
-`genQuiesce`), the same way `rescueCap`/`pruneZeroDamage` above do.
+Under W1.8's flag, `planPromotions` offers a slot that `bestMission` leaves at `-1` ("no mission claims this
+promotion") at a catch-all `Mission.ANY` (benefit 0) instead of skipping it, its beam widens from `max` to
+`MAX_SLOTS`, and `buildCombos` pins one bare promotion-only combo per candidate (FORTIFY excepted since
+`b636d46d`: `expand()` already runs those FORCED), so every legal promotion is offered rather than silently
+skipped (`49a7876a`). The open question was which generators should see it: `engine.ts` originally wired all
+three (`gen`, `genInterior`, `genQuiesce`), the same way `rescueCap`/`pruneZeroDamage` do.
 
 Coordinator decision (2026-09-24), superseding that: `promoteExhaustive` is wired to the ROOT generator
 (`gen`) alone. `genInterior` and `genQuiesce` never call `setPromoteExhaustive`, on any profile, including
-`hard@strategos`. Measured at fixed work 80,000 over 49 non-terminal positions: wiring all three cost 13 of
-82 depth plies against desktop (nodes ratio 0.88) and changed 18 moves, choosing a promotion in 3 of 4
-comparison positions; root-only wiring lost 6 plies (ratio 0.95), changed 14 moves, and chose the promotion
-in 4 of 4 — no measured promotion-CHOICE benefit from the interior/quiescence widening, at a real search-
-depth cost. W1.8's own proof obligation is ROOT recall (`tests/ai/hard/prepare-recall.test.ts`: every legal
-promotion reaches the root candidate list), which root-only wiring already satisfies. Falsifier: the R1
-ladder row (plan A8) or wave 2 showing a promotion-choice regression that root-only wiring would have
-caught, in which case the interior/quiescence wiring should be revisited.
+`hard@strategos`. The W1.8 review measured both wirings against `hard@strategos` at `a54e9885` (before W1.8),
+at fixed work 80,000 over 49 non-terminal positions: wiring all three lost 13 of 82 depth plies (mean nodes
+ratio 0.88), changed 18 moves and chose a promotion 3 times against 4; root-only wiring lost 6 plies (ratio
+0.95), changed 14 moves and chose a promotion 4 times against 4. No measured promotion-choice benefit from the
+interior/quiescence widening, at a real search-depth cost. W1.8's acceptance is at the root generator
+(`tests/ai/hard/prepare-recall.test.ts`: every legal promotion gets past the mission filter and `buildCombos`'
+prune; recall after the K=24 root cut is reported, not asserted), which root-only wiring already satisfies.
+Falsifier: the R1 ladder row (plan A8) or wave 2 showing a promotion-choice regression that root-only wiring
+would have caught, in which case the interior/quiescence wiring should be revisited.
 
 Root recall after the K=24 root cut stays low without W1.9's plan injection (an unclaimed promotion scores
-at best `Δmaterial − cost·CC − rent`, usually negative, and loses the cut to ordinary purchase/attack
-turns): 1/3, 3/11 and 1/5 on the W1.8 lane's own test fixtures. Expected (plan B.1b), not a defect — getting
-an unmissioned promotion in front of the search is W1.9's job, not W1.8's.
+`Δmaterial − cost·CC − rent` within the turn, which is `−rent` under the shipped prices, and usually loses the
+cut): 1/3, 3/11 and 1/5 on the W1.8 test fixtures, and 3/3 on the FORTIFY fixture. Expected (plan B.1b), not a
+defect — getting an unmissioned promotion in front of the search is W1.9's job, not W1.8's.
 
 ### 2026-09-24: pre-existing dead read — `TurnGenerator.prepareTables` never receives the engine's `EvalFix`
 
-Found while building W1.8, in code outside that step's own file list, and left unfixed there. Inside a real
-search, `gen/promote.ts bestMission`'s `t.evalFix` reads are answered not by the per-ply `NodeTables[]`
-array `engine.ts`'s constructor stamps `evalFix` onto, but by `TurnGenerator.expand()`'s OWN Place-phase
+Found while building W1.8 (`49a7876a`), in code outside that step's own file list, and left unfixed there.
+Inside a real search, the `t.evalFix` reads in `gen/promote.ts` (`bestMission` for `promoteStrengthMission`,
+`orderingRentPv` for `promoteOrderingRentPv`) are answered not by the per-ply `NodeTables[]` array
+`engine.ts`'s constructor stamps `evalFix` onto, but by `TurnGenerator.expand()`'s OWN Place-phase
 Prepare-position table, `this.prepareTables` — a bare `allocTables()` call (`tables/context.ts`) whose
 `evalFix` field is `null` and which nothing, anywhere, ever restamps.
 
 Consequence: the 2026-09-21 strength knobs `EvalFix.strength.promoteStrengthMission` (ablate arm R2) and
 `.promoteOrderingRentPv` (R3, and the combined `stack-r1234` arm) are DEAD inside any real
-`HardEngine.searchTurn` call — only `tests/ai/hard/promote.test.ts`'s isolated unit calls, which build
-their own `NodeTables` and set `.evalFix` directly, ever exercise them. Confirmed by running both arms
-against `hard@desktop` on 54 positions (the 24 `p4-determinism.jsonl` rows, the same rows at bank 30, and 6
-fixture roots) at fixed work 20,000 and 80,000: every field (`endKey`, `actions`, `score`, `depth`, `work`,
-`nodes`) came back identical to desktop's own. Any conclusion drawn from the R2/R3 ablation arms to date —
-including the 2026-09-21 strength-pass writeup's own framing of them as measured, unadopted knobs —
-measured nothing. Not fixed here (outside W1.8's owned files); a follow-up should either stamp the real
+`HardEngine.searchTurn` call — only `tests/ai/hard/promote.test.ts`'s isolated unit calls, which build their
+own `NodeTables` and set `.evalFix` directly, ever exercise them. The W1.8 review confirmed it in real search:
+R2 (`promoteStrengthMission`) and R3's endpoint (`promoteOrderingRentPv` 0) each produced output identical to
+`hard@desktop` on 54 of 54 positions at fixed work 20,000, bank-30 positions with many legal promotions
+included. So the R2/R3 ablation arms have measured nothing to date. `RELEASE-2026-09-21-phasing.md`'s
+strength-knob screen found `gen-promote-strength` (R2) and `gen-promote-rent211` (R3) move-for-move identical
+to desktop in 32/32 games and called the knobs "genuinely live"; R2 and R3 were not, which alone explains
+those identical games. Not fixed here (outside W1.8's owned files); a follow-up should either stamp the real
 `config.evalFix` onto `prepareTables` inside `gen/generate.ts`'s Prepare-table build (around
 `buildTables(p, this.sc, ctx.ply, 2, this.prepareTables)`) or pass it through explicitly.
 
 ### 2026-09-24: `canonical-check`'s default fixture sets are Standard-ruleset and skipped outright by the Phasing-only replica
 
 `lab/hard-ai/oracles/canonical-check.ts`'s default `--fixtures` (`authored`, `canonical`; also the
-separately-reported `initial` item) are all Standard-ruleset rows, and every one of them is silently
-SKIPPED by the Phasing-only replica — so a default invocation, including the W1.7/W1.8 lanes' own first
-"unchanged" runs against `origin/master`, checks nothing at all under Phasing. This was true before
-STRATEGOS W1 and remains true after it; it is recorded here because two lane reviews independently
-re-derived it while checking their own flags (W1.7: the zero-damage prune; W1.8: exhaustive promotions) and
-because `--prune-zero-damage` would otherwise silently prove nothing.
+separately-reported `initial` item) are all Standard-ruleset rows, and every one of them is silently SKIPPED
+by the Phasing-only replica — so a default invocation checks nothing at all under Phasing. The W1.8
+implementer's "unchanged" run against its base `a54e9885` was one such run: all 216 default items were
+skipped. This was true before STRATEGOS W1 and remains true after it; it is recorded here because two lane
+reviews independently re-derived it while checking their own flags (W1.7: the zero-damage prune; W1.8:
+exhaustive promotions) and because `--prune-zero-damage` would otherwise silently prove nothing.
 
 To actually exercise the Phasing replica, pass either `--fixtures zero-damage` (`positions/zero-damage.jsonl`,
 zero-power attacker/defender pairs plus a power-1 control so the same run proves chip damage survives) or
 `--corpus lab/hard-ai/positions/p4-determinism.jsonl --corpus-positions 24 --max-own-units 40` (real Phasing
 Act roots, W1.11). `--prune-zero-damage` itself already defends against the silent-pass case: it pulls in
-`zero-damage` automatically unless the caller names its own `--fixtures`. Re-run with `--corpus
-p4-determinism.jsonl`, W1.7 and W1.8's own "unchanged" claims held: 0 mismatches over 22–24 positions.
+`zero-damage` automatically unless the caller names its own `--fixtures`. Run on Phasing positions, both
+lanes' claims held: W1.8's review ran `--corpus p4-determinism.jsonl` (22 positions checked, 0 end-set
+mismatches), and W1.7's review ran the prune over the `zero-damage` fixtures and all 24 `p4-determinism` rows
+(0 mismatches).
 
 ### 2026-09-24: `lab/hard-ai/deps.ts` gains the `strategy` layer; `strategy/types.ts` is vocabulary
 
-W1.0 registers `strategy/` as its own layer in `lab/hard-ai/deps.ts`, reachable only from `search` and
-`engine` (the same restriction `tactics`/`eval` carry, since `gen` may never import it — every strategic
-witness is installed through a setter the root owns, never through a `gen` import). `strategy/types.ts` is
-classified as pure vocabulary — the `types` layer every layer may import — the same treatment
-`config.ts`/`src/ai/types.ts` already get.
+W1.0 (`a4d9b48e`) registers `strategy/` as its own layer in `lab/hard-ai/deps.ts`, reachable only from
+`search` and `engine`. `gen` and `eval` never import it: the root installs what `strategy/` computes through
+setters (`eval/evaluate.ts setKillClockPolicy` today; W1.9's `gen/generate.ts setStrategyWitness`).
+`strategy/types.ts` is classified as pure vocabulary: the `types` layer, which every layer may import, like
+`src/ai/hard/types.ts`.
 
-Fixed alongside it, in the shared base commit rather than in any one lane's owned files (every parallel
-lane needed the same fix and would otherwise have produced an identical or near-identical merge conflict):
-`layerOf`'s existing special case for `strategy/types.ts` matched only the extension-bearing SCANNED-file
-path (the literal string `'strategy/types.ts'`); `resolveRelative` strips the `.ts` extension off an IMPORT
-TARGET before `layerOf` ever sees it, so every real `import type { KillClockPolicy } from '../strategy/types'`
-was misclassified as the ordinary, more restrictive `strategy` layer everywhere it was imported. Fixed by
-also matching the extension-stripped form (`'strategy/types'`). `hard:deps` scans 48 files with 0
-violations under the fix; only the two literal strings above are affected.
+Fixed by the W1.2 implementer (`a5d198ba`, a file outside that lane's list; comment shortened in `bddfe903`),
+when `eval/evaluate.ts` took the first such import: `layerOf`'s existing special case for `strategy/types.ts`
+matched only the extension-bearing SCANNED-file path (the literal string `'strategy/types.ts'`);
+`resolveRelative` strips the `.ts` extension off an IMPORT TARGET before `layerOf` ever sees it, so every real
+`import type { KillClockPolicy } from '../strategy/types'` was misclassified as the ordinary, more restrictive
+`strategy` layer everywhere it was imported. Fixed by also matching the extension-stripped form
+(`'strategy/types'`). At the W1.2 review `hard:deps` scanned 48 files with 0 violations; only the two literal
+strings above change classification.
 
 ### 2026-09-24 (PENDING W1.9/W1.10): the veto overrides the search's own best candidate
 
@@ -2556,11 +2566,11 @@ W1.9 (plan injection, `strategy/contact.ts`/`hold.ts`) and W1.10 (the veto, `Roo
 `chosen`/`veto` fields) are being built in a separate lane as this entry is written; `search/root.ts` today
 installs no strategy witness and runs no veto pass — `RootResult.strategy` is declared (W1.0b) but never
 populated by a real search. Recorded here as a placeholder so the shape of the coming deviation is visible
-before it lands: per plan B.1/B.2 step W1.10, after `iterativeDeepening` completes, `search/root.ts` will
-pick the best PLAN-CONSISTENT root candidate instead of the search's own top-scored one, UNLESS the
-searched score is terminal-scale worse than the tactical best (a proof — mate, or a proven clock loss) or
-the plan's contract loses an essential slot in the opponent's first reply. Ordinary material loss is never
-a veto reason (Part A item 2: the search's job is to falsify the plan's CONTRACT, not to protect material).
-This is a genuine deviation from "the root plays its highest-scored searched candidate" — DESIGN's rule for
-every other profile, unchanged there — scoped to `SearchFix.strategyVeto`, `hard@strategos` only. This
-entry will be replaced with the shipped mechanism, its commit(s) and what review found once W1.9/W1.10 land.
+before it lands: per plan B.1/B.2 step W1.10, after `iterativeDeepening` completes, `search/root.ts` will pick
+the best PLAN-CONSISTENT root candidate instead of the search's own top-scored one, UNLESS the searched score
+is terminal-scale worse than the tactical best (a proof — mate, or a proven clock loss) or the plan's contract
+loses an essential slot in the opponent's first reply. Ordinary material loss is never a veto reason (Part A
+item 2: the search's job is to falsify the plan's CONTRACT, not to protect material). This is a genuine
+deviation from "the root plays its highest-scored searched candidate" — the rule every other profile keeps —
+scoped to `SearchFix.strategyVeto`, `hard@strategos` only. This entry will be replaced with the shipped
+mechanism, its commit(s) and what review found once W1.9/W1.10 land.
