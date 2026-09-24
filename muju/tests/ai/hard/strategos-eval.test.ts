@@ -19,10 +19,15 @@
  *     already (2026-09-22 kill-clock postmortem, the napkin);
  *   - invariant 16 is NEVER set under the flag, on a fixture that DOES set it
  *     with the flag off (so the assertion is not vacuous);
+ *   - the flag reads the PROJECTED margin, not the current lead: a paired
+ *     position where the side ahead now is behind at the clock's end is
+ *     penalised under the flag and rewarded without it;
  *   - with the flag absent, `DrawPressure` reproduces the legacy formula
  *     EXACTLY (independently re-derived here, not by calling the code under
- *     test) over the P4 determinism corpus — the byte-identical guarantee for
- *     every shipped profile, none of which sets the flag.
+ *     test) over the P4 determinism corpus, and the WHOLE feature vector and
+ *     score match a digest computed with `a54e9885`'s `eval/` files swapped
+ *     in (W1.6 review) — the byte-identical guarantee for every shipped
+ *     profile, none of which sets the flag.
  */
 import { describe, expect, it } from 'vitest';
 import { seededRandom } from '../../../src/ai/runtime';
@@ -168,6 +173,40 @@ describe('DrawPressure polarity: proven by behaviour, not by reading the code', 
     expect(at8).toBeLessThan(at2); // and MORE penalised as the clock advances
   });
 
+  it('the WHOLE evaluation moves the same way (not just w * f): leader up, trailer down, from clock 2 to clock 8', () => {
+    const ev = new Evaluator(rep, DEFAULT_WEIGHTS, CLOCK_LEDGER);
+    const score = (clock: number, side: Side): number => ev.full(rep.pack(buildState(leaderSpec(clock))), side, SC, 0);
+    expect(score(8, WHITE)).toBeGreaterThan(score(2, WHITE));
+    expect(score(8, BLACK)).toBeLessThan(score(2, BLACK));
+  });
+
+  it('reads the PROJECTED margin, not the current lead: ahead now but out-mined by the clock\'s end is penalised (and only under the flag)', () => {
+    // White leads by 10 now, but its only miner stands on an empty cell while
+    // Black's four `plant_1`s take 3 each per event. r = 4 (clock 6, White to
+    // act): two events each, so Black is projected to finish 14 ahead.
+    const reserves = Array(100).fill(0);
+    for (const s of [67, 77, 78, 87]) reserves[s] = 16;
+    const state = buildState({
+      units: [
+        { def: 'plant_1', owner: 'white', x: 2, y: 2 },
+        { def: 'plant_1', owner: 'black', x: 7, y: 6 },
+        { def: 'plant_1', owner: 'black', x: 7, y: 7 },
+        { def: 'plant_1', owner: 'black', x: 8, y: 7 },
+        { def: 'plant_1', owner: 'black', x: 7, y: 8 },
+      ],
+      reserves,
+      whiteGained: 10,
+      blackGained: 0,
+      inactivityPlies: 6,
+      current: 'white',
+      phase: 'action',
+    });
+    const w = DEFAULT_WEIGHTS.w[F.DrawPressure];
+    expect(w * features(CLOCK_LEDGER, state, WHITE)[F.DrawPressure]).toBeLessThan(0); // projected loser: pressed
+    expect(w * features(null, state, WHITE)[F.DrawPressure]).toBeGreaterThan(0); // legacy: rewarded for the lead now
+    expect(w * features(CLOCK_LEDGER, state, BLACK)[F.DrawPressure]).toBeGreaterThan(0);
+  });
+
   it('the clamp holds: at most +-100 on the feature, so at most 800 cc from this weight', () => {
     const huge = buildState({
       units: [
@@ -268,6 +307,62 @@ describe('flag absent: DrawPressure is byte-identical to the pre-Strategos formu
       expect(white).toBe(legacyDrawPressure(p, WHITE, BLACK));
       expect(black).toBe(legacyDrawPressure(p, BLACK, WHITE));
     }
+  });
+
+  /**
+   * The WHOLE flag-absent evaluation, pinned to `a54e9885` (the commit before
+   * W1.6): FNV-1a over `Evaluator.full`'s score and every feature (invariant
+   * bits included) for both sides of the 24 corpus roots plus 120 seeded
+   * random late-clock positions (where invariant 16 and `DrawPressure` both
+   * fire). The digest `a8fa3730` was computed on this tree AND with
+   * `a54e9885`'s `eval/evaluate.ts`, `features.ts` and `invariants.ts`
+   * swapped in (W1.6 review, 2026-09-24): identical. A drift in any
+   * flag-absent branch moves it.
+   */
+  it('the whole feature vector and score, fix null, match the pre-W1.6 digest', () => {
+    const ev = new Evaluator(rep, DEFAULT_WEIGHTS, null);
+    const out = new Int32Array(FEATURE_COUNT);
+    let h = 0x811c9dc5;
+    const mix = (v: number): void => {
+      for (let k = 0; k < 4; k++) {
+        h ^= (v >>> (8 * k)) & 0xff;
+        h = Math.imul(h, 0x01000193) >>> 0;
+      }
+    };
+    const positions: PackedState[] = readPositions('lab/hard-ai/positions/p4-determinism.jsonl').map(r => rep.pack(r.state));
+    const rng = seededRandom(2026092406);
+    while (positions.length < 24 + 120) {
+      try {
+        positions.push(
+          rep.pack(
+            randomState(rng, 4 + Math.floor(rng() * 10), {
+              current: rng() < 0.5 ? 'white' : 'black',
+              phase: rng() < 0.5 ? 'place' : 'action',
+              inactivityPlies: INACTIVITY_WARNING + Math.floor(rng() * 3),
+              white: Math.floor(rng() * 30),
+              black: Math.floor(rng() * 30),
+              whiteGained: Math.floor(rng() * 60),
+              blackGained: Math.floor(rng() * 60),
+            }),
+          ),
+        );
+      } catch {
+        // unpackable random board: draw another
+      }
+    }
+    let inv16 = 0;
+    let pressure = 0;
+    for (const p of positions) {
+      for (const side of [WHITE, BLACK]) {
+        mix(ev.full(p, side, SC, 0, out));
+        for (let i = 0; i < out.length; i++) mix(out[i]);
+        if (out[F.Inv16ClockDiscipline] !== 0) inv16++;
+        if (out[F.DrawPressure] !== 0) pressure++;
+      }
+    }
+    expect(inv16).toBeGreaterThan(0); // the gated invariant is exercised
+    expect(pressure).toBeGreaterThan(0); // and so is the replaced feature
+    expect(h.toString(16).padStart(8, '0')).toBe('a8fa3730');
   });
 
   it('fix: {clockLedger: false} takes the same legacy branch as fix: null', () => {

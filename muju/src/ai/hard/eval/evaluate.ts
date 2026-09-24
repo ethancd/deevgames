@@ -216,16 +216,17 @@ export const KILL_CLOCK_FORCED_HANDOFFS = 2;
 /**
  * STRATEGOS W1.6 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
  * B.2 step W1.6), `EvalFix.clockLedger` only. CHOICE: `WIN_CC / 8`
- * (125,000 cc). A kill-clock terminal whose root `ClockReading`
- * (`strategy/clock.ts`) is only BOUNDED — the disjoint mined-total interval
- * holds, but a kill or an earlier ending (home victory, upkeep elimination)
- * is not yet ruled out — is worth more than `KILL_CLOCK_SOFT_CC`'s flat
- * two-hand-off preference, because the reading has already established the
- * disjoint interval `KILL_CLOCK_SOFT_CC`'s legacy path never computes; but it
- * must stay far below `WIN_CC` scale, since "bounded" means precisely that a
- * kill could still flip the verdict before the clock fires. Falsifier: the
- * paired exam cases plan W1.13 builds, which must score a bounded verdict
- * below a proven one and above a flat draw on the same corpus.
+ * (125,000 cc). The magnitude of a kill-clock terminal beyond the forced
+ * hand-offs whenever the root `ClockReading` (`strategy/clock.ts`) is NOT
+ * proven — `bounded-*` (the disjoint interval holds but a kill, an earlier
+ * ending or a cancellable arrival is not ruled out) AND `open` alike, as the
+ * W1.6 brief specifies ("otherwise"). Why: a distant clock-out is worth more
+ * than a tier-1 (the legacy flat `KILL_CLOCK_SOFT_CC` made it worth less, the
+ * plan's F1 root cause) but must stay far below a proven ending, since an
+ * unproven reading means a kill could still flip or reset the clock before
+ * it fires. The sign is the leaf's own result, not the reading's. Falsifier:
+ * the paired exam cases plan W1.13 builds, which must score a distant
+ * clock-out below a proven one and above a flat draw on the same corpus.
  */
 export const BOUNDED_CLOCK_CC: Centi = WIN_CC / 8;
 
@@ -287,6 +288,20 @@ export function killClockHandoffsFromRoot(): number {
  * `searchFix.killClockPolicy === 'ledger'` alone (W1.2) without the eval
  * flag. So gating on "a reading is installed" is exactly gating on the flag,
  * one level removed, and this branch is unreachable whenever the flag is off.
+ *
+ * WHERE THE TERMINAL LIES. `ply` counts TURNS from the root: `search/pvs.ts`
+ * and `search/quiesce.ts` score a child terminal at `ply + 1` per
+ * `makeTurn` (one hand-off each), while the turn generator scores a
+ * completed candidate turn at its generating node's `ply`, one less. On a
+ * kill-free line from a fresh root, `killClockHandoffsFromRoot()` (the
+ * root's own hand-offs to the clock's end, the legacy test) IS the clock
+ * terminal's distance in turns. A line that kills first restarts the clock,
+ * so its clock terminal lies at least `INACTIVITY_LIMIT` turns deep —
+ * inside `maxDepth` (12) in principle — and the root's count says nothing
+ * about it. The flagged branch therefore calls a terminal "within the forced
+ * hand-offs" only when BOTH counts say so: the root's hand-offs (exact on
+ * kill-free lines, and immune to the generator's one-turn offset) and the
+ * terminal's own `ply` (which rules out the post-kill case).
  */
 function decidedCc(p: PackedState, ply: number): Centi {
   if (p.reason === Reason.KILL_CLOCK) {
@@ -294,7 +309,8 @@ function decidedCc(p: PackedState, ply: number): Centi {
     const reading = policy !== null ? policy.reading : null;
     if (reading !== null) {
       const proven = reading.verdict === 'proven-win' || reading.verdict === 'proven-loss';
-      if (proven || killClockHandoffsFromRoot() <= KILL_CLOCK_FORCED_HANDOFFS) return WIN_CC - ply * MATE_PLY_CC;
+      const forced = killClockHandoffsFromRoot() <= KILL_CLOCK_FORCED_HANDOFFS && ply <= KILL_CLOCK_FORCED_HANDOFFS;
+      if (proven || forced) return WIN_CC - ply * MATE_PLY_CC;
       return BOUNDED_CLOCK_CC;
     }
     if (killClockHandoffsFromRoot() > KILL_CLOCK_FORCED_HANDOFFS) return KILL_CLOCK_SOFT_CC;

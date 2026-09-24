@@ -406,8 +406,10 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
   // `s.meter.reset(opts.work)` (`searchRootFromPacked`, below), so it is not,
   // and cannot be, charged to this search's own work meter; it is cheap by
   // construction (`ledger.ts`/`killeta.ts`/`clock.ts`'s own "sound but loose"
-  // bounds, none of which searches the game tree) and its cost is reported
-  // separately, from a fixed-work throughput comparison, in the change record.
+  // bounds, none of which searches the game tree). Measured cost (W1.6
+  // review, 2026-09-24): about 0.3 ms per call on the 24 roots of
+  // `lab/hard-ai/positions/p4-determinism.jsonl`, against a search budget of
+  // seconds, so it is left off the meter.
   if (opts.config.searchFix?.killClockPolicy === 'ledger') {
     const savedPolicy = getKillClockPolicy();
     const reading = opts.config.evalFix?.clockLedger === true ? clockReading(p, p.side) : null;

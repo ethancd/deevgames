@@ -88,6 +88,20 @@ describe('kill-clock terminal scoring under EvalFix.clockLedger (a policy.readin
     expect(terminalScore(decided(Result.WHITE_WIN, Reason.KILL_CLOCK), 0, 2)).toBe(WIN_CC - 2 * MATE_PLY_CC);
   });
 
+  it('a clock-out that follows a kill is NOT forced, even from a root two hand-offs from the end', () => {
+    // Root hand-offs = 1 (inside the window), but the terminal sits 11 turns
+    // deep: a kill on the way restarted the clock, so the root's count says
+    // nothing about it and an unproven reading keeps it at BOUNDED_CLOCK_CC.
+    setKillClockRootClock(INACTIVITY_LIMIT - 1);
+    setKillClockPolicy({ rootClock: INACTIVITY_LIMIT - 1, reading: readingOf('bounded-win') });
+    expect(terminalScore(decided(Result.WHITE_WIN, Reason.KILL_CLOCK), 0, INACTIVITY_LIMIT + 1)).toBe(BOUNDED_CLOCK_CC);
+    // ...while a proven reading still scores it at full scale.
+    setKillClockPolicy({ rootClock: INACTIVITY_LIMIT - 1, reading: readingOf('proven-win') });
+    expect(terminalScore(decided(Result.WHITE_WIN, Reason.KILL_CLOCK), 0, INACTIVITY_LIMIT + 1)).toBe(
+      WIN_CC - (INACTIVITY_LIMIT + 1) * MATE_PLY_CC,
+    );
+  });
+
   it('the sign follows the leaf\'s own winner, not the reading\'s side or verdict', () => {
     setKillClockRootClock(0);
     setKillClockPolicy({ rootClock: 0, reading: readingOf('proven-loss') }); // read from White's side

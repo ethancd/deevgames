@@ -421,18 +421,26 @@ function extractStage1(p: PackedState, t: NodeTables, me: Side, them: Side, out:
     const projMe = p.gained[me] + nodeFutureMiningEvents(p, me, r) * projectedIncome(p, me);
     const projThem = p.gained[them] + nodeFutureMiningEvents(p, them, r) * projectedIncome(p, them);
     const margin = projMe - projThem;
-    // Quadratic in the clock, same as the legacy formula below, but scaled by
-    // 100 directly (DESIGN §5.12.1's clamp range) rather than by
-    // `DRAW_PRESSURE_DENOM`: `margin` is already a crystal quantity, not a
-    // 0..100-normalised one, so the clamp below — not this division — is what
-    // keeps the feature inside its documented range.
+    // Quadratic in the clock, same as the legacy formula below, but in
+    // crystals: `margin` is already a crystal quantity, not a 0..100-normalised
+    // one, so the clamp below — not this division — is what keeps the feature
+    // inside its documented range. CHOICE (the W1.6 brief's formula,
+    // `margin · clock² / 100`: one crystal of projected margin at clock 9 is
+    // worth ~0.8 feature units, ~6.5 cc at the frozen weight; falsifier: the
+    // paired exam cases of plan W1.13, where a projected clock loser must
+    // prefer contact to a quiet turn).
     const scaled = (margin * clock * clock) / 100;
     // Symmetric ("round half away from zero"), not `Math.round` (which
-    // special-cases a negative half-integer to `-0`, breaking EXACT
-    // antisymmetry at a tie — `tests/ai/hard/strategos-eval.test.ts` checks
-    // this at a constructed half-integer margin, not just typical corpus
-    // values where a tie is rare).
+    // rounds every half toward +infinity — `Math.round(-0.5)` is `-0`,
+    // `Math.round(-1.5)` is `-1` — breaking EXACT antisymmetry at a tie;
+    // `tests/ai/hard/strategos-eval.test.ts` checks this at a constructed
+    // half-integer margin, not just typical corpus values where a tie is
+    // rare).
     const rounded = scaled === 0 ? 0 : Math.sign(scaled) * Math.round(Math.abs(scaled));
+    // DERIVED (plan B.1b: "the DrawPressure replacement must be clamped to
+    // the feature's ±100 range", the range the legacy branch's
+    // `DRAW_PRESSURE_FULL_SCALE` spans): at the frozen weight −8 this term
+    // never exceeds 800 cc.
     const clamped = rounded > 100 ? 100 : rounded < -100 ? -100 : rounded;
     // POLARITY (derive, do not assume — the 2026-09-22 kill-clock postmortem:
     // this feature's polarity was inverted once already). `DEFAULT_WEIGHTS`
