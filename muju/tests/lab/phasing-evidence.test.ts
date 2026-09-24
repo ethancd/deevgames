@@ -38,6 +38,19 @@ const root = path.resolve(import.meta.dirname, '../..');
  * this test as loudly as before, and a declared one that turns out not to
  * differ fails too.
  */
+/**
+ * `lab/harness/bots/index.ts` moved once more after all three of the
+ * campaigns below were played, and by exactly the same edit each time: it
+ * postdates p1, p2 AND p3 equally, so the same declaration is merged into
+ * every campaign's edit list rather than appearing under one revision's
+ * story. STRATEGOS W1.12 (2026-09-24, `~/.claude/plans/can-you-respond-to-piped-book.md`):
+ * FACTORIES gained ClockHeist; no existing bot's factory moved, and the new
+ * bot is a brand-new file (`lab/harness/bots/clockheist.ts`) that appears in
+ * no manifest of its own.
+ */
+const CLOCKHEIST_INDEX_EDIT =
+  'FACTORIES gained ClockHeist (STRATEGOS W1.12, 2026-09-24); no existing bot\'s factory moved';
+
 const A4_HARNESS_EDITS: Record<string, string> = {
   'lab/harness/types.ts':
     'holds HARNESS_RULES_VERSION, the single source of the rules revision, now muju-phasing-2; GameRecord.rulesVersion widened so both revisions can be read',
@@ -45,6 +58,7 @@ const A4_HARNESS_EDITS: Record<string, string> = {
     'stamps HARNESS_RULES_VERSION on every GameRecord instead of a hard-coded muju-phasing-1 string',
   'lab/harness/phasing-round-robin.ts':
     'defaults to the p2 results directory, takes its run id from that directory, records the inactivity limit in the manifest and re-checks source identity after the run; the band formula is untouched',
+  'lab/harness/bots/index.ts': CLOCKHEIST_INDEX_EDIT,
 };
 
 /**
@@ -57,6 +71,7 @@ const A4_HARNESS_EDITS: Record<string, string> = {
 const PHASING3_HARNESS_EDITS: Record<string, string> = {
   'lab/harness/types.ts':
     'HARNESS_RULES_VERSION advanced to muju-phasing-3 and WinType gained kill-clock, the new decided terminal; nothing else in the file moved',
+  'lab/harness/bots/index.ts': CLOCKHEIST_INDEX_EDIT,
 };
 
 /**
@@ -70,6 +85,7 @@ const PHASING3_HARNESS_EDITS: Record<string, string> = {
 const PHASING4_HARNESS_EDITS: Record<string, string> = {
   'lab/harness/types.ts':
     "HARNESS_RULES_VERSION advanced to muju-phasing-4, the RulesVersion union gained 'muju-phasing-4', and its doc comment lists -3 and -4; nothing else in the file moved",
+  'lab/harness/bots/index.ts': CLOCKHEIST_INDEX_EDIT,
 };
 
 const CAMPAIGNS = [
