@@ -2,7 +2,8 @@
 import { describe, expect, it } from 'vitest';
 import {
   ALL_GAME_IDS, MODEL_FAMILY, PILOT_TABLE, activeCount, admissionTrace, allSettled, buildSchedule,
-  gameId, llmDisplayName, llmSeatFor, engineSeatFor, nextAdmissible, pairById, parseGameId, syncSchedule, validateTickets,
+  engineDisplayNameFor, gameId, gamesForTicket, llmDisplayName, llmSeatFor, engineSeatFor, nextAdmissible,
+  pairById, parseGameId, syncSchedule, validateEngineProfile, validateTickets,
   type StatusSnapshot,
 } from '../../tools/llm-pilot/pilot';
 
@@ -136,5 +137,71 @@ describe('parseClock', () => {
     expect(parseClock('60/1800')).toEqual({ delaySeconds: 60, bankSeconds: 1800 });
     expect(() => parseClock('60m/30m')).toThrow();
     expect(() => parseClock('900/1800')).toThrow();
+  });
+});
+
+// STRATEGOS W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`): per-game engine profile.
+describe('validateEngineProfile (same rules tools/engine-seat/config.ts enforces on the live seat)', () => {
+  it('accepts every label hardConfigFor accepts', () => {
+    for (const label of ['desktop', 'strategos', 'lab', 'midrange', 'phone']) expect(() => validateEngineProfile(label)).not.toThrow();
+  });
+  it('refuses an unknown label, same message hardConfigFor throws', () => {
+    expect(() => validateEngineProfile('nonsense')).toThrow(/unknown label/);
+  });
+  it('refuses "env" even though hardConfigFor itself accepts it (nothing on disk would record the weights file)', () => {
+    expect(() => validateEngineProfile('env')).toThrow(/refused/);
+    expect(() => validateEngineProfile('env-400k')).toThrow(/refused/); // documentary-suffix form, same rule
+  });
+});
+
+describe('ticket-level engineProfile validation (validateTickets)', () => {
+  const ok = { id: 'ST01', model: 'sonnet', blackCrystalHandicap: 3, toolTier: 'bare', effort: 'low' } as const;
+  it('accepts a ticket with a valid engineProfile', () => {
+    expect(() => validateTickets([{ ...ok, engineProfile: 'strategos' }])).not.toThrow();
+  });
+  it('rejects a ticket whose engineProfile is unknown', () => {
+    expect(() => validateTickets([{ ...ok, engineProfile: 'nonsense' }])).toThrow(/Ticket ST01.*unknown label/);
+  });
+  it('rejects a ticket whose engineProfile is "env"', () => {
+    expect(() => validateTickets([{ ...ok, engineProfile: 'env' }])).toThrow(/Ticket ST01.*refused/);
+  });
+});
+
+describe('gamesForTicket / buildSchedule engineProfile resolution', () => {
+  const base = { id: 'ST02', model: 'sonnet', blackCrystalHandicap: 3, toolTier: 'bare', effort: 'low' } as const;
+  it('leaves ScheduleGame.engineProfile unset for a plain ticket (desktop, byte-identical to before)', () => {
+    const [game] = gamesForTicket({ ...base, legs: ['W'] });
+    expect(game.engineProfile).toBeUndefined();
+  });
+  it('carries a ticket\'s own engineProfile onto its games', () => {
+    const [game] = gamesForTicket({ ...base, legs: ['W'], engineProfile: 'strategos' });
+    expect(game.engineProfile).toBe('strategos');
+  });
+  it('a ticket explicitly set to "desktop" also leaves the field unset (same resolved engine, same convention as journalProfile)', () => {
+    const [game] = gamesForTicket({ ...base, legs: ['W'], engineProfile: 'desktop' });
+    expect(game.engineProfile).toBeUndefined();
+  });
+  it('falls back to the wave-level default when the ticket sets none', () => {
+    const [game] = gamesForTicket({ ...base, legs: ['W'] }, 'strategos');
+    expect(game.engineProfile).toBe('strategos');
+  });
+  it('the ticket\'s own field wins over the wave-level default', () => {
+    const [game] = gamesForTicket({ ...base, legs: ['W'], engineProfile: 'midrange' }, 'strategos');
+    expect(game.engineProfile).toBe('midrange');
+  });
+  it('buildSchedule threads the wave-level default onto every ticket that sets none', () => {
+    const schedule = buildSchedule([{ ...base, legs: ['W'] }, { ...base, id: 'ST03', legs: ['B'], engineProfile: 'phone' }], 'strategos');
+    expect(schedule.games.find(g => g.gameId === 'ST02-W')!.engineProfile).toBe('strategos');
+    expect(schedule.games.find(g => g.gameId === 'ST03-B')!.engineProfile).toBe('phone');
+  });
+});
+
+describe('engineDisplayNameFor (the room\'s own registered name for the engine seat)', () => {
+  it('is bare "Hard" for desktop (undefined or explicit), byte-identical to every game before STRATEGOS W1.14', () => {
+    expect(engineDisplayNameFor(undefined)).toBe('Hard');
+    expect(engineDisplayNameFor('desktop')).toBe('Hard');
+  });
+  it('names a non-desktop profile legibly, so the LLM\'s opponent is never silently swapped under the same name', () => {
+    expect(engineDisplayNameFor('strategos')).toBe('Hard (strategos)');
   });
 });

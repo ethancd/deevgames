@@ -10,6 +10,7 @@
 import { mkdirSync, readFileSync, writeFileSync, renameSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { MAX_BLACK_CRYSTAL_HANDICAP } from '../../src/game/rules';
+import { ENV_WEIGHTS_LABEL, hardConfigFor } from '../../lab/hard-ai/bots/hard';
 
 export type ModelId = 'sonnet' | 'luna' | 'sol' | 'astra' | 'opus' | 'fable';
 export type Family = 'claude' | 'codex';
@@ -43,6 +44,16 @@ export interface Pair {
   hold?: string;
   /** Operator note: why this ticket exists / what changed. Recorded, never shown to the player. */
   note?: string;
+  /**
+   * STRATEGOS W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`, "Then Ethan runs LLM
+   * wave 2 against it"). Which `hardConfigFor`/`hardEnginePatch` label (`lab/hard-ai/bots/hard.ts`)
+   * this ticket's engine seat builds from: `'desktop'` (the default), `'strategos'`, or any other
+   * label that function accepts (`lab`, `midrange`, `phone`, `ablate:<arm>`, …) — `hard@env` is
+   * refused, same rule `tools/engine-seat/config.ts`'s `profile` field enforces (see
+   * `validateEngineProfile`). Absent, a ticket falls back to the wave's own default
+   * (`wave.json`'s top-level `"engine": { "profile": … }`), else `'desktop'`. Checked HERE, at
+   * schedule-load time, before any room is created — never left to fail deep inside a live room. */
+  engineProfile?: string;
 }
 
 /** The pilot pair schedule (claude-pilot-prompt.md). Order matters: it is the
@@ -61,6 +72,23 @@ export const PILOT_TABLE: readonly Pair[] = [
 const MODELS: readonly ModelId[] = ['sonnet', 'luna', 'sol', 'astra', 'opus', 'fable'];
 const TIERS: readonly ToolTier[] = ['bare', 'harnessed', 'centaur', 'tool-builder'];
 const EFFORTS: readonly Effort[] = ['low', 'medium', 'high', 'max'];
+/**
+ * The SAME rules `tools/engine-seat/config.ts`'s `profile` field enforces on the live seat:
+ * `hardConfigFor` must accept the label, and `hard@env` is refused even though `hardConfigFor`
+ * itself accepts it — its weights come from the `MUJU_HARD_WEIGHTS` file, a path nothing in the
+ * schedule or manifest records, so a missing/malformed file would fail only at the engine seat's
+ * first search, deep inside a live room. Checked here, at schedule-load time, before any room is
+ * created (`validateTickets`, `waveEngineDefault`), so a bad ticket/wave default fails on
+ * `--dry-run` or the first tick, not mid-game.
+ */
+export function validateEngineProfile(profile: string): void {
+  try { hardConfigFor(profile); }
+  catch (error) { throw new Error(`Engine profile "${profile}": ${error instanceof Error ? error.message : 'unknown label.'}`); }
+  if (profile.replace(/-(?:\d+(?:k|m)|units)$/i, '') === ENV_WEIGHTS_LABEL) {
+    throw new Error(`Engine profile "${profile}" is refused: hard@env's weights come from MUJU_HARD_WEIGHTS, `
+      + 'a file path nothing in the schedule/manifest records; use a named profile (desktop, strategos, midrange, phone, …) instead.');
+  }
+}
 /** Throws on anything the runner could not play exactly as written (never coerces). */
 export function validateTickets(tickets: readonly Pair[]): void {
   const seen = new Set<string>();
@@ -77,17 +105,32 @@ export function validateTickets(tickets: readonly Pair[]): void {
     const legs = t.legs ?? ['W', 'B'];
     if (legs.length === 0 || legs.some(l => l !== 'W' && l !== 'B') || new Set(legs).size !== legs.length) throw new Error(`Ticket ${t.id}: legs must be a non-empty subset of W/B.`);
     if (t.clock !== undefined) parseClock(t.clock);
+    if (t.engineProfile !== undefined) {
+      try { validateEngineProfile(t.engineProfile); }
+      catch (error) { throw new Error(`Ticket ${t.id}: ${error instanceof Error ? error.message : String(error)}`); }
+    }
   }
 }
 validateTickets(PILOT_TABLE);
 
+interface WaveFile { tickets: Pair[]; engine?: { profile?: string } }
+function readWaveFile(): WaveFile | undefined { return readJson<WaveFile>(waveJsonPath()); }
 /** The current campaign's tickets: `<campaign>/wave.json` when present, else the pilot table.
  * Re-read on every call (cheap, and lets the operator add or re-brief pending tickets mid-wave). */
 export function loadTickets(): Pair[] {
-  const wave = readJson<{ tickets: Pair[] }>(waveJsonPath());
+  const wave = readWaveFile();
   const tickets = wave ? wave.tickets : [...PILOT_TABLE];
   validateTickets(tickets);
   return tickets;
+}
+/** The wave's default engine profile (`wave.json`'s top-level `"engine": { "profile": … }`,
+ * alongside `sourceSha256`/`rulesId`/`note`), for tickets that set no `engineProfile` of their own.
+ * Validated the same way a ticket's own field is (see `validateEngineProfile`). Undefined when the
+ * wave sets none (or there is no wave.json), which leaves every ticket's own resolution unchanged. */
+export function waveEngineDefault(): string | undefined {
+  const profile = readWaveFile()?.engine?.profile;
+  if (profile !== undefined) validateEngineProfile(profile);
+  return profile;
 }
 export function pairById(id: PairId): Pair {
   const pair = loadTickets().find(p => p.id === id);
@@ -129,6 +172,15 @@ export function llmDisplayName(model: ModelId, effort: Effort): string {
 }
 /** The engine seat's existing in-game name (unchanged by this pilot). */
 export const ENGINE_DISPLAY_NAME = 'Hard';
+/** The engine seat's in-room name for a game's resolved profile: bare "Hard" for `desktop`
+ * (byte-identical to every game before STRATEGOS W1.14), else a legible suffix ("Hard (strategos)")
+ * so the LLM's opponent is never silently swapped for a different engine under the same name —
+ * an explorable-conditions campaign records what it varied, including the opponent's own identity. */
+export function engineDisplayNameFor(profile?: string): string {
+  const name = !profile || profile === 'desktop' ? ENGINE_DISPLAY_NAME : `${ENGINE_DISPLAY_NAME} (${profile})`;
+  if (name.length > 40) throw new Error(`Engine display name "${name}" exceeds the room's 40-character name limit.`);
+  return name;
+}
 
 /** Public, non-secret identifier for this frozen experiment protocol (matchPolicy.protocolId). */
 export const PROTOCOL_ID = 'muju-llm-pilot-2026-09-23';
@@ -241,22 +293,32 @@ export interface ScheduleGame {
   brief?: string;
   timeControl?: TimeControl;
   hold?: string;
+  /** Resolved `hardConfigFor` label this game's engine seat builds from. Absent means `'desktop'`
+   * (the only engine every game before STRATEGOS W1.14 could have run) — mirrors `journalProfile`'s
+   * "absent means desktop" convention so a pre-existing schedule.json/game reads exactly as before. */
+  engineProfile?: string;
 }
 export interface Schedule { generatedAt: string; games: ScheduleGame[] }
 
 export function defaultBrief(game: Pick<ScheduleGame, 'pairId' | 'llmSeat' | 'toolTier' | 'effort' | 'blackCrystalHandicap'>): string {
   return `Pair ${game.pairId}: you play ${game.llmSeat} with the ${game.toolTier} tool tier at ${game.effort} effort; Black starts with ${game.blackCrystalHandicap} extra crystals. Play to win.`;
 }
-export function gamesForTicket(pair: Pair): ScheduleGame[] {
+/** `waveEngineProfile`: the wave-level default (`waveEngineDefault()`) for tickets with no
+ * `engineProfile` of their own. Resolution order: the ticket's own field, else the wave default,
+ * else `'desktop'` — written onto the game only when it resolves to something other than
+ * `'desktop'` (see `ScheduleGame.engineProfile`). */
+export function gamesForTicket(pair: Pair, waveEngineProfile?: string): ScheduleGame[] {
+  const engineProfile = pair.engineProfile ?? waveEngineProfile;
   return (pair.legs ?? ['W', 'B']).map(leg => ({
     gameId: gameId(pair.id, leg), pairId: pair.id, model: pair.model, toolTier: pair.toolTier, effort: pair.effort,
     blackCrystalHandicap: pair.blackCrystalHandicap, llmSeat: llmSeatFor(leg), engineSeat: engineSeatFor(leg),
     ...(pair.brief ? { brief: pair.brief } : {}), timeControl: parseClock(pair.clock) ?? PILOT_TIME_CONTROL,
     ...(pair.hold ? { hold: pair.hold } : {}),
+    ...(engineProfile && engineProfile !== 'desktop' ? { engineProfile } : {}),
   }));
 }
-export function buildSchedule(tickets: readonly Pair[] = loadTickets()): Schedule {
-  return { generatedAt: new Date().toISOString(), games: tickets.flatMap(gamesForTicket) };
+export function buildSchedule(tickets: readonly Pair[] = loadTickets(), waveEngineProfile: string | undefined = waveEngineDefault()): Schedule {
+  return { generatedAt: new Date().toISOString(), games: tickets.flatMap(pair => gamesForTicket(pair, waveEngineProfile)) };
 }
 export function loadOrInitSchedule(): Schedule {
   return readJson<Schedule>(scheduleJsonPath()) ?? buildSchedule();

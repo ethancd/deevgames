@@ -33,8 +33,8 @@ import { readSlots, slotCount } from '../../lab/hard-ai/ladder/heavy';
 import { researchReadinessSchema } from '../engine-seat/contract';
 import { probeClaudeModel, probeCodexModel, runAuthPreflight, readCodexRollout, type CodexRateLimits } from './auth';
 import {
-  CAMPAIGN_DIR, ENGINE_DISPLAY_NAME, FAMILY_CAP, MAX_LIVE_GAMES, MAX_PLAYER_TURNS, MODEL_CLI_ID, MODEL_FAMILY,
-  PILOT_TIME_CONTROL, PROTOCOL_ID, activeCount, admissionTrace, buildSchedule, defaultBrief, ensureCampaignDirs,
+  CAMPAIGN_DIR, FAMILY_CAP, MAX_LIVE_GAMES, MAX_PLAYER_TURNS, MODEL_CLI_ID, MODEL_FAMILY,
+  PILOT_TIME_CONTROL, PROTOCOL_ID, activeCount, admissionTrace, buildSchedule, defaultBrief, engineDisplayNameFor, ensureCampaignDirs,
   ensureGameDirs, engineConfigPath, engineDir, engineStatePath, gameDir, llmDisplayName, loadTickets,
   nextAdmissible, pidsJsonPath, playerDir, progressMdPath, readJson, readStatus,
   saveSchedule, scheduleJsonPath, seatSecretPath, snapshotDir, stopFilePath, syncSchedule, writeFileAtomic, writeJson,
@@ -282,7 +282,7 @@ interface PilotRoomAdmission extends RoomAdmission { credentials: { roomId: stri
  * joins the player's seat here, before either process starts (the second join starts the clocks). */
 async function createPilotRoom(game: ScheduleGame): Promise<PilotRoomAdmission> {
   const admission = await roomRequest<RoomAdmission>(SERVER_URL, '', {
-    name: ENGINE_DISPLAY_NAME, side: game.engineSeat,
+    name: engineDisplayNameFor(game.engineProfile), side: game.engineSeat,
     matchPolicy: { version: 1 as const, toolTier: game.toolTier, protocolId: PROTOCOL_ID },
     blackCrystalHandicap: game.blackCrystalHandicap, timeControl: clockOf(game),
   });
@@ -300,8 +300,25 @@ export function buildEngineConfig(game: ScheduleGame, roomId: string, credential
     credentials: { roomId, player: credentials.player, token: credentials.token },
     expectedMatchPolicy: { version: 1, toolTier: game.toolTier, protocolId: PROTOCOL_ID },
     expectedTimeControl: clockOf(game), expectedHandicap: game.blackCrystalHandicap,
+    // Only a non-desktop profile is written (mirrors seatConfigSchema's own `.default('desktop')` and
+    // `journalProfile`'s "absent means desktop" convention), so a desktop game's engine config stays
+    // byte-identical to every config this dispatcher wrote before STRATEGOS W1.14.
+    ...(game.engineProfile ? { profile: game.engineProfile } : {}),
     ...engineReadinessClaim(),
   };
+}
+
+/** manifest.json's `engine` block. `name` is the room's own registered name for this game
+ * (`engineDisplayNameFor`), so the manifest never says "Hard" for a game the room actually showed
+ * the LLM as "Hard (strategos)"; `profile` is the real resolved profile (never hard-coded
+ * `'desktop'`), for every downstream reader — `players.ts`/`reflect-interrupted.ts`'s
+ * `engineIdentity` string, the digest, the operator. Pure (network-free) so it is unit-testable
+ * the same way `buildEngineConfig` is. */
+export function engineManifestBlock(game: ScheduleGame, seed: number): {
+  name: string; profile: string; targetMs: number; deadlineMs: number; rulesId: string; sourceSha256: string; seed: number;
+} {
+  return { name: engineDisplayNameFor(game.engineProfile), profile: game.engineProfile ?? 'desktop',
+    targetMs: 55_000, deadlineMs: 60_000, rulesId: PHASING_RULES_VERSION, sourceSha256: engineSourceSha256(), seed };
 }
 
 /** Room creation failed (nothing exists on the server): the game goes back to pending. */
@@ -334,8 +351,7 @@ async function prepareGame(game: ScheduleGame, snapshotVersion: number): Promise
     displayName: llmDisplayName(game.model, game.effort), roomId, watchUrl: prep.watchUrl, snapshotVersion,
     brief: briefFor(game), ticketNote: loadTickets().find(t => t.id === game.pairId)?.note ?? null,
     heavySlots: slotCount(), campaign: basename(CAMPAIGN_DIR),
-    engine: { name: ENGINE_DISPLAY_NAME, profile: 'desktop', targetMs: 55_000, deadlineMs: 60_000, rulesId: PHASING_RULES_VERSION,
-      sourceSha256: engineSourceSha256(), seed: seedFor(game.gameId, isSmoke() ? `smoke-${roomId}` : '') },
+    engine: engineManifestBlock(game, seedFor(game.gameId, isSmoke() ? `smoke-${roomId}` : '')),
     timeControl: clockOf(game), protocolId: PROTOCOL_ID, startedAt: prep.preparedAt,
     inputs: experimentInputs(briefFor(game), snapshotVersion),
   });
@@ -991,7 +1007,7 @@ function dryRun(): void {
   const schedule = buildSchedule();
   console.log(`Schedule (${schedule.games.length} games) from ${existsSync(join(CAMPAIGN_DIR, 'wave.json')) ? 'wave.json' : 'the pilot table'}:`);
   for (const g of schedule.games) {
-    console.log(`  ${g.gameId}  ${llmDisplayName(g.model, g.effort)} tier=${g.toolTier} handicap=${g.blackCrystalHandicap} llmSeat=${g.llmSeat} clock=${g.timeControl?.delaySeconds}/${g.timeControl?.bankSeconds}${g.hold ? ` HOLD(${g.hold})` : ''}`);
+    console.log(`  ${g.gameId}  ${llmDisplayName(g.model, g.effort)} tier=${g.toolTier} handicap=${g.blackCrystalHandicap} llmSeat=${g.llmSeat} clock=${g.timeControl?.delaySeconds}/${g.timeControl?.bankSeconds}${g.engineProfile ? ` engine=${g.engineProfile}` : ''}${g.hold ? ` HOLD(${g.hold})` : ''}`);
     console.log(`      brief: ${briefFor(g)}`);
   }
   console.log(`\nAdmission order (families alternate; started pair's remaining leg first; caps ${MAX_LIVE_GAMES} live / ${FAMILY_CAP} per family):`);

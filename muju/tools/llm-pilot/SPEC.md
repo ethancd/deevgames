@@ -170,7 +170,10 @@ reflectionText, detail? }`. Args add `handicap?` (smoke override), `isGameOver?`
 - Safety ceiling: 200 completed player turns → labeled truncation.
 
 ## Player display names (owner request)
-The LLM seat's in-game player name = model + reasoning level, title case: "Sonnet 5 Low", "Sonnet 5 High", "Luna 6 Medium", later "Opus 5.5 High", "Fable 5.1 Max", "Sol 6 Medium", "Astra 6 Max". The engine seat keeps its existing Hard name. Derive from a single table in dispatch.ts; check the server's name length/charset limit.
+The LLM seat's in-game player name = model + reasoning level, title case: "Sonnet 5 Low", "Sonnet 5 High", "Luna 6 Medium", later "Opus 5.5 High", "Fable 5.1 Max", "Sol 6 Medium", "Astra 6 Max". The engine seat keeps its existing Hard name for a `desktop` game; a game whose engine profile is anything else is named "Hard (<profile>)" (see "Engine profile" below), never a silently-swapped "Hard". Derive from a single table in dispatch.ts; check the server's name length/charset limit.
+
+## Engine profile (STRATEGOS W1.14, plan `~/.claude/plans/can-you-respond-to-piped-book.md`)
+A ticket may set `"engineProfile": "strategos"` (or any other `hardConfigFor` label from `lab/hard-ai/bots/hard.ts` — `desktop`, `midrange`, `phone`, …; `hard@env` is refused) to run that ticket's engine seat from a different profile than the pilot's default `desktop`; a wave may set a wave-wide fallback at `wave.json`'s top-level `"engine": { "profile": "strategos" }`, which every ticket that sets no `engineProfile` of its own picks up. Both are validated with the exact rules the engine seat itself enforces (`pilot.ts#validateEngineProfile`) at schedule-load time — before any room is created — so an unknown or refused label fails on `--dry-run` or the first tick, never mid-game; a `desktop` resolution writes no `profile` key into the engine seat's config and keeps every desktop game's config/manifest byte-identical to before this knob existed, while `manifest.json`'s `engine.profile` always records the game's real, resolved profile.
 
 ## Launch gate: uncapped Cleave (muju-phasing-4) must be in production first (owner request)
 The Cleave change (branch claude/muju-unlimited-cleave, worktree ~/src/deevgames-cleave, another session) changes rules to

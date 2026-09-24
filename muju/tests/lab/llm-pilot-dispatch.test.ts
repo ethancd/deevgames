@@ -6,7 +6,7 @@ import { join } from 'node:path';
 
 process.env.MUJU_PILOT_CAMPAIGN_DIR = mkdtempSync(join(tmpdir(), 'muju-llm-pilot-dispatch-'));
 
-const { productionRulesId, assertProductionRulesGate, buildEngineConfig, siteHealthOk } = await import('../../tools/llm-pilot/dispatch');
+const { productionRulesId, assertProductionRulesGate, buildEngineConfig, engineManifestBlock, siteHealthOk } = await import('../../tools/llm-pilot/dispatch');
 const { PHASING_RULES_VERSION } = await import('../../server/rooms');
 const { llmSeatFor, engineSeatFor, gameId } = await import('../../tools/llm-pilot/pilot');
 
@@ -48,6 +48,37 @@ describe('engine-seat config seam (Component A)', () => {
     expect((config.researchReadiness as Record<string, unknown>)?.kind).toBe('research');
     expect(config.expectedHandicap).toBe(2);
     expect(config.expectedTimeControl).toEqual({ delaySeconds: 600, bankSeconds: 3600 });
+  });
+});
+
+// STRATEGOS W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`): per-game engine profile.
+describe('buildEngineConfig engine profile (STRATEGOS W1.14)', () => {
+  const baseGame = { gameId: gameId('P02', 'W'), pairId: 'P02' as const, model: 'sonnet' as const, toolTier: 'bare' as const,
+    effort: 'low' as const, blackCrystalHandicap: 2, llmSeat: llmSeatFor('W'), engineSeat: engineSeatFor('W') };
+  it('a desktop game (no engineProfile) writes no "profile" key: byte-identical to every config before this feature', () => {
+    const config = buildEngineConfig(baseGame, 'a'.repeat(32), { player: 'black', token: 'x'.repeat(32) }) as Record<string, unknown>;
+    expect('profile' in config).toBe(false);
+  });
+  it('a strategos game writes profile "strategos"', () => {
+    const config = buildEngineConfig({ ...baseGame, engineProfile: 'strategos' }, 'a'.repeat(32), { player: 'black', token: 'x'.repeat(32) }) as Record<string, unknown>;
+    expect(config.profile).toBe('strategos');
+  });
+});
+
+describe('engineManifestBlock (manifest.json engine identity, STRATEGOS W1.14)', () => {
+  const baseGame = { gameId: gameId('P02', 'W'), pairId: 'P02' as const, model: 'sonnet' as const, toolTier: 'bare' as const,
+    effort: 'low' as const, blackCrystalHandicap: 2, llmSeat: llmSeatFor('W'), engineSeat: engineSeatFor('W') };
+  it('a desktop game (no engineProfile) records name "Hard" and profile "desktop", matching every manifest before this feature', () => {
+    const engine = engineManifestBlock(baseGame, 123);
+    expect(engine.name).toBe('Hard');
+    expect(engine.profile).toBe('desktop');
+    expect(engine.rulesId).toBe(PHASING_RULES_VERSION);
+    expect(engine.seed).toBe(123);
+  });
+  it('a strategos game records the real profile and a legibly-suffixed name, not a silently swapped "Hard"', () => {
+    const engine = engineManifestBlock({ ...baseGame, engineProfile: 'strategos' }, 123);
+    expect(engine.profile).toBe('strategos');
+    expect(engine.name).toBe('Hard (strategos)');
   });
 });
 
