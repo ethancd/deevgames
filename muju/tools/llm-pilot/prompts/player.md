@@ -11,26 +11,73 @@ the same information another way.
 - Black's starting crystal handicap: `{{handicap}}`
 - Tool tier: `{{tier}}`
 - Model / effort: `{{model}}` / `{{effort}}`
+- Clock: {{delaySeconds}} s free delay per turn, then a {{bankSeconds}} s bank for the whole game
 
-**Investigation brief:** {{brief}}
+**Order of priority.** When two instructions pull different ways, the higher
+one wins, always:
+1. **Don't lose on time** (the wall clock, below).
+2. **Don't lose on the kill clock** (below).
+3. **Try to win.**
+4. **The investigation brief** (at the end). It's a lean on how to play and
+   what to record. It never overrides 1–3. If it says "stay passive", "press
+   only with superior numbers" or anything similar while the kill clock is
+   running out against you, ignore that part and force a kill. In wave 1 a
+   player followed a "press only with superior numbers" brief, never attacked
+   and lost on the kill clock at turn 5.
 
 **Before you do anything else**
 
-1. Call `pilot_memory` and read it. It returns the frozen shared playbook and
-   recent experience records other players have published — read it before
-   your first move, not partway through the game. It is passive: it will not
-   answer questions or give live advice, only the same frozen snapshot every
-   call.
-2. Call `muju_rules` (and `muju_time_awareness`) before your first move. The
+1. Call `pilot_memory` once and read it. It returns the frozen shared playbook
+   and recent experience records other players have published. Read the rules
+   primer at the top closely and skim the rest for what bears on your seat and
+   brief. It's large and never changes, so don't call it again.
+2. Call `muju_rules` and `muju_time_awareness` before your first move. The
    room is pre-created and your seat is already admitted. Room id:
    `{{roomId}}`. The gateway supplies your real seat credential: wherever a
    tool asks for `token`, pass exactly `{{placeholderToken}}`.
-3. Note the clock: {{delaySeconds}} seconds of free delay per turn, then a {{bankSeconds}}-second
-   bank shared across the whole game. Spend it like a resource, not
-   infinitely — five seconds left can burn almost the entire bank on one
-   decision.
 
-**The kill clock decides most games — know it before your first move.**
+**1. The wall clock: you can't feel time passing, so measure it.**
+
+Each turn you get {{delaySeconds}} s free, then your {{bankSeconds}} s bank
+drains. When it hits zero you lose. Your own thinking is the main cost: a long
+deliberation, a large tool result read into context, or several analyses in a
+row can each take minutes of real time, and nothing tells you it's happening.
+In wave 1 one player spent up to ten minutes a turn on a 60 s delay and lost a
+game on time. Treat time as something you check, never something you estimate
+from how the turn feels.
+
+- **Budget.** Aim to finish routine turns inside the free delay. Spend bank
+  only on turns that decide something: a home threat, a consequential
+  exchange, a kill that resets the kill clock, hard upkeep. **Never spend more
+  than a tenth of your remaining bank on one turn** (at the start that's
+  {{delaySeconds}} + {{bankTenthSeconds}} = {{turnCapSeconds}} s for the whole
+  turn). This cap shrinks as the bank shrinks, so you can't run out.
+- **Checkpoints.** At the start of each turn, read the clock (time left =
+  `deadlineAtMs − serverNowMs`) and note it. Before any further expensive step
+  (another `muju_analyze`, a batch of previews, a long think, a helper run),
+  call `muju_clock` (a small, cheap read) and compare with your turn-start
+  reading. If you've used your budget, stop investigating and play the best
+  candidate you have.
+- **Calibrate.** After each turn, check `clockPressure` for your side: its
+  mean bank spend per turn shows your real pace. If you went over budget, cut
+  the scope of the next turn (fewer analyses, fewer previews, commit the first
+  sound move) rather than hoping it balances out.
+- **Keep your context lean.** Every large result makes every later step
+  slower. Ask for `briefing:true` at most once per turn, at the start of your
+  turn, and pass `sinceRevision` (your last briefing's revision) so you get
+  only what changed; don't request a briefing on every wait. Keep
+  `muju_analyze` calls focused on one or two questions. Batch a whole turn's
+  actions into one `muju_play` where you can.
+- **Safety net (every tier except `bare`).** As soon as you have any sound
+  legal full turn ending in `END_PLACE_PHASE`, stage it with `muju_stage`,
+  with `commitWhenRemainingMs` set to about 90% of the bank you had at turn
+  start (in ms). It fires once you've used the free delay plus a tenth of the
+  bank. Replace it if you find better; commit with `muju_play` when you're
+  done. On `bare`, commit as soon as you have a sound move and never let a
+  turn run past the cap.
+
+**2. The kill clock decides most games: track it every turn.**
+
 Ten plies (five turns each) without a kill end the game, and the higher
 **mined total** wins. That's not a draw. Black's starting handicap counts toward
 Black's mined total, so Black starts ahead by that many crystals, and Black plays
@@ -39,6 +86,17 @@ the tenth ply. Only an attack that removes a unit resets the count. Read
 first turn. Ignore the deprecated `quietTurns`/`drawAtQuietTurns` fields if you
 see them; they don't mean a draw.
 
+At the start of every turn, before thinking about the brief, answer:
+- Who leads on mined totals, and by how much?
+- How many of *my* turns are left before the count reaches ten?
+- If I'm behind: can I close the gap by mining in those turns? If not, where
+  is my kill coming from, and does it land in time? Units take turns to arrive
+  (a summon arrives on your next turn), so plan contact early, not on your last
+  turn. As White you start behind by the handicap and don't get the last ply,
+  so from turn 1 plan a kill that lands by your fifth turn.
+- If I'm ahead: a kill resets the count and gives the other side more time.
+  Take a kill when it's worth more than the clock lead, not by reflex.
+
 If you're not clearly out-mining the other side in the first ten plies, **throw
 a piece at them. Take one of their things.** For example, summon a Radi
 (`lightning_1`: cost 3, attack 1, speed 3) and run it in to kill a Hi
@@ -46,14 +104,15 @@ a piece at them. Take one of their things.** For example, summon a Radi
 you keep playing. Don't lie down and lose on the clock. A kill-clock loss while
 behind and passive is the worst outcome you can pick.
 
-**Your goal:** try to win. Play your own judgment; the brief is a lean, not an
-instruction to sacrifice sound play. Use whatever your tier grants
+**3. Try to win.** Play your own judgment. Use whatever your tier grants
 (`muju_analyze`, `muju_legal_actions`, `muju_preview`, `muju_stage`) to check
-candidate moves before committing them. The clock keeps running while you
-think or preview — thinking and previews never RESERVE extra time or reset
-your delay, but they still spend it, so budget accordingly.
+candidate moves before committing them, within your time budget. Thinking and
+previews never reserve extra time or reset your delay; they spend it.
 `muju_wait_for_change` is how you wait for the engine's turn; never call it
 on your own turn.
+
+**4. Investigation brief** (a lean; priorities 1–3 win any conflict):
+{{brief}}
 
 **If you are `tool-builder`:** you may write and run your own helper code to
 support your play — search, evaluation, whatever you judge useful. You have
@@ -64,17 +123,17 @@ sandboxed — no network, no read or write access to anything outside your
 workspace — and capped at 60 CPU seconds, sharing the compute queue the
 engine itself uses, so a run may sit and wait for a slot rather than starting
 immediately. Don't launch a helper you expect to need more than that, and
-don't fire off several at once expecting them to run in parallel.
+don't fire off several at once expecting them to run in parallel. Helper
+runs come out of your turn budget like everything else.
 
-Building tools is the point of this tier, and no earlier tool-builder player
-ever ran one. So: **before your third turn, write and run at least one small
-helper** — for example a threat/exchange scanner that takes the board from
-`muju_observe` (saved to a workspace file) and lists, for each of your units,
-which enemy units could attack it next turn and what each trade would cost
-both sides. Keep it small (tens of lines), fix it if it's wrong, extend it
-when a position calls for more (e.g. an economy tracker for mined totals and
-the kill clock). Use it to inform real moves; you are still playing to win,
-so don't let tool-building run you out of clock.
+Building tools is the point of this tier. So: **before your third turn, write
+and run at least one small helper** — for example a threat/exchange scanner
+that takes the board from `muju_observe` (saved to a workspace file) and lists,
+for each of your units, which enemy units could attack it next turn and what
+each trade would cost both sides. Keep it small (tens of lines), fix it if it's
+wrong, extend it when a position calls for more (e.g. an economy tracker for
+mined totals and the kill clock). Use it to inform real moves; you are still
+playing to win, so don't let tool-building run you out of clock.
 
 **Ending the game:** the game ends when `muju_play` or `muju_wait_for_change`
 returns a terminal `result` (a winner, a draw, or your own timeout/loss).
@@ -90,8 +149,8 @@ do not deliberately lose.
   point of the comparison, not a gap to work around by other means. Your own
   reasoning is expected and encouraged wherever a hosted tool is missing
   (and, if you are `tool-builder`, your own workspace code, within the
-  compute allowance above) — reason and compute as hard as you judge useful;
-  only calling a tool outside your tier is off-limits.
+  compute allowance above) — reason and compute as hard as your time budget
+  allows; only calling a tool outside your tier is off-limits.
 - Do not read or write any file outside your workspace directory.
 - Do not narrate hidden chain-of-thought into tool arguments or file
   contents; keep your reasoning in your own turns, and keep written

@@ -32,7 +32,10 @@ export interface Pair {
   effort: Effort;
   /** Legs to play, in admission order. Default both, W first. */
   legs?: LegKey[];
-  /** Investigation brief shown to the player. Default: a plain "play to win" line. */
+  /** Investigation brief shown to the player. Default: a plain "play to win" line. The prompt ranks it
+   * below the wall clock, the kill clock and playing to win, so write it as a lean, not an order: never
+   * forbid attacking without "unless the kill clock needs a kill" (wave 1 SN05-W lost at turn 5 obeying
+   * "press only with superior numbers"). */
   brief?: string;
   /** Room clock "delay/bank" for this ticket. Default: MUJU_PILOT_CLOCK. */
   clock?: string;

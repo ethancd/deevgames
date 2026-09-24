@@ -187,3 +187,28 @@ describe('codexArgs gateway env', () => {
     expect(args).toContain('mcp_servers.muju.env={MUJU_PILOT_GAME_DIR="/g/P05-W",MUJU_PILOT_WORKSPACE_DIR="/tmp/ws"}');
   });
 });
+
+describe('player prompt (wave 2 harness fixes)', () => {
+  it('renders every var, states the per-turn cap from the room clock, and puts the brief after both clocks', async () => {
+    const { mkdtempSync, readFileSync, writeFileSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const { clockVars, renderTemplate } = await import('../../tools/llm-pilot/players');
+    const gameDir = mkdtempSync(join(tmpdir(), 'pilot-prompt-'));
+    writeFileSync(join(gameDir, 'manifest.json'), JSON.stringify({ timeControl: { delaySeconds: 60, bankSeconds: 1800 } }));
+    expect(clockVars(gameDir)).toEqual({ delaySeconds: '60', bankSeconds: '1800', bankTenthSeconds: '180', turnCapSeconds: '240' });
+    const vars = { gameId: 'X01-W', roomId: 'abcdef', placeholderToken: 'PLACEHOLDER', seat: 'white', seatColor: 'White', handicap: '5',
+      tier: 'centaur', model: 'gpt-6-luna', effort: 'low', brief: 'BRIEF-TEXT: press only with superior numbers.',
+      ...clockVars(gameDir), engineIdentity: 'hard', snapshotVersion: '1' };
+    for (const file of ['player.md', 'reflection.md']) {
+      const text = renderTemplate(readFileSync(new URL(`../../tools/llm-pilot/prompts/${file}`, import.meta.url), 'utf8'), vars);
+      expect(text).not.toMatch(/\{\{\w+\}\}/);
+    }
+    const prompt = renderTemplate(readFileSync(new URL('../../tools/llm-pilot/prompts/player.md', import.meta.url), 'utf8'), vars);
+    expect(prompt).toContain('60 + 180 = 240 s');
+    const at = (needle: string) => { const index = prompt.indexOf(needle); expect(index).toBeGreaterThanOrEqual(0); return index; };
+    expect(at('**Order of priority.**')).toBeLessThan(at('**1. The wall clock'));
+    expect(at('**1. The wall clock')).toBeLessThan(at('**2. The kill clock'));
+    expect(at('**2. The kill clock')).toBeLessThan(at('BRIEF-TEXT'));
+  });
+});

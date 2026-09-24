@@ -17,6 +17,8 @@ that will be checked mechanically before this record is trusted:
   from what you verified as a legal alternative (checked with `muju_preview`
   or `muju_analyze`, if your tier allowed it) versus merely imagined. Winning
   does not make every earlier choice correct — say so if it doesn't.
+- Under your own mistakes, name any turn that went past your per-turn time
+  cap (or say none did), with its revision, and what the time went on.
 - One pattern/weakness hypothesis, with a concrete condition that would
   disprove it — not a restatement of "the engine is strong/weak".
 - One concrete next test (seat, handicap, position/strategy, and the

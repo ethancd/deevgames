@@ -33,11 +33,14 @@ import {
 export type PlayerKind = 'claude' | 'codex';
 export type Phase = 'play' | 'continue' | 'reflect';
 
-/** The room clock this game was admitted with (manifest.json), for the prompt. */
-function clockVars(gameDir: string): { delaySeconds: string; bankSeconds: string } {
+/** The room clock this game was admitted with (manifest.json), for the prompt, plus the prompt's
+ * per-turn cap: the free delay and a tenth of the bank (the cap the prompt asks for on turn 1). */
+export function clockVars(gameDir: string): { delaySeconds: string; bankSeconds: string; bankTenthSeconds: string; turnCapSeconds: string } {
   let clock = PILOT_TIME_CONTROL;
   try { clock = JSON.parse(readFileSync(path.join(gameDir, 'manifest.json'), 'utf8')).timeControl ?? clock; } catch { /* not yet written */ }
-  return { delaySeconds: String(clock.delaySeconds), bankSeconds: String(clock.bankSeconds) };
+  const bankTenth = Math.floor(clock.bankSeconds / 10);
+  return { delaySeconds: String(clock.delaySeconds), bankSeconds: String(clock.bankSeconds),
+    bankTenthSeconds: String(bankTenth), turnCapSeconds: String(clock.delaySeconds + bankTenth) };
 }
 /** Identity fields the reflection template asks for, from manifest.json (no secrets). */
 function identityVars(gameDir: string): { engineIdentity: string; snapshotVersion: string } {
@@ -186,7 +189,7 @@ export function codexArgs(opts: { prompt: string; model: string; effort: string;
     : ['exec', ...common, '-C', opts.cwd, '--sandbox', codexSandboxFor(opts.tier), opts.prompt];
 }
 
-function renderTemplate(template: string, vars: Record<string, string>): string {
+export function renderTemplate(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_match, key: string) => {
     if (!(key in vars)) throw new Error(`Prompt template references unknown var "${key}"`);
     return vars[key];
@@ -351,8 +354,9 @@ const CONTINUE_PROMPT = `The Muju game in this session is NOT over yet: the auth
 Re-orient with muju_observe (and muju_clock), then keep playing exactly as instructed at the start of this
 session — use muju_wait_for_change while the engine is on move, and continue until muju_play or
 muju_wait_for_change reports a terminal result. Any muju_play you already sent was recorded; if you are
-unsure whether a play landed, observe first — a retried identical play is idempotent. Do not write the
-reflection yet.`;
+unsure whether a play landed, observe first — a retried identical play is idempotent. Time kept running
+while this session was down: read the clock before anything else and keep to the per-turn cap from the start
+of the session. Do not write the reflection yet.`;
 
 /** Plays (or re-attaches to) one whole game, then writes the reflection. See the file header. */
 export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
