@@ -93,11 +93,28 @@ export type Posture = 'hold' | 'force-contact' | 'none';
  */
 export interface ClockReadingCore {
   side: Side;
-  /** Plies left before the clock ends if no unit dies: INACTIVITY_LIMIT − clock. */
+  /**
+   * Plies left before the clock ends if no unit is killed, in `killEta`'s
+   * convention: `strategy/killeta.ts clockPliesLeft(p)` (equal to
+   * `strategy/ledger.ts pliesRemaining(p)`). That is `INACTIVITY_LIMIT − clock`
+   * at every fresh root (`progress === 0`) and `INACTIVITY_LIMIT + 1` for a
+   * mid-turn root whose turn already killed — one ply MORE than the naive
+   * formula, which would make "killETA > r" unsound there (W1.4 review).
+   */
   r: number;
   verdict: ClockVerdict;
-  /** Projected mined-total margin for `side` at the clock's end, in crystals:
-   * midpoint of `side`'s [L, U] minus midpoint of the opponent's. */
+  /**
+   * Projected mined-total margin for `side` at the clock's end, in crystals,
+   * from the stay-put floors: `L_side − L_opponent`. This is the margin the
+   * evaluator reads (W1.6). CHOICE (why: the ceiling U grows with the bank
+   * through reinvestment, so a U-weighted margin would pay the engine for
+   * hoarding cash, the failure the 2026-09-20 repair handoff documents;
+   * falsifier: a paired position where converting bank into miners raises
+   * the true clock outcome but lowers `marginL`).
+   */
+  marginL: number;
+  /** Midpoint margin: midpoint of `side`'s [L, U] minus the opponent's.
+   * Reported in the Chronicle only; no decision reads it. */
   marginMid: number;
 }
 
@@ -113,4 +130,62 @@ export interface KillClockPolicy {
   rootClock: number;
   /** The root reading, or null when it was not computed. */
   reading: ClockReadingCore | null;
+}
+
+/** The two Workflow 1 plans (plan B.1 `contact.ts`, `hold.ts`). */
+export type PlanKind = 'force-contact' | 'hold';
+
+/** What a plan must achieve (plan B.1, Part A item 2). The tactical search's
+ * job is to FALSIFY this contract, not to protect material. */
+export type PlanEndPredicate =
+  /** ForceContact: a damaging attack has been made by the deadline. */
+  | 'damaging-attack'
+  /** ForceContact: the clock verdict no longer reads a loss. */
+  | 'verdict-flipped'
+  /** Hold: the enemy's killETA exceeds the plies left at every hand-off. */
+  | 'enemy-killeta-exceeds-r';
+
+/** A plan's contract (Part A item 2). */
+export interface PlanContract {
+  kind: PlanKind;
+  /** What the plan may spend: units and crystals it is allowed to lose. */
+  permittedLoss: { units: number; crystals: number };
+  /** Live slots that must survive the opponent's best reply; losing one in
+   * the first reply is a veto reason (W1.10). */
+  essentialSlots: readonly number[];
+  /** The last ply (killEta convention: ply 1 = the turn in progress) by
+   * which `endPredicate` must hold. */
+  deadlinePly: number;
+  endPredicate: PlanEndPredicate;
+}
+
+/** One plan candidate injected at the root (W1.9). */
+export interface InjectedPlan {
+  contract: PlanContract;
+  /** The injected turn's canonical end key (`RootResult.endKey` form). */
+  endKey: string;
+  /** Short human label, e.g. `approach:slot3->e5`, `buy:fire_1@c3`, `hold:pass`. */
+  label: string;
+  /** `witnessed` when a rollout against the scripted replies achieved the
+   * end predicate; never `forced` in Workflow 1. */
+  feasibility: Feasibility;
+  queries: readonly AnalysisQuery[];
+}
+
+/**
+ * `RootResult.strategy`: the Chronicle of one strategos root search (plan
+ * B.1, W1.10) — the question the strategic layer asked, what it found, and
+ * what the root did about it. JSON-serialisable; the engine seat forwards it
+ * in its `search` telemetry (W1.14). Absent on every non-strategos search.
+ */
+export interface StrategyChronicle {
+  reading: ClockReadingCore | null;
+  posture: Posture;
+  injected: readonly InjectedPlan[];
+  /** What the root played: a plan candidate or the search's own best. */
+  chosen: { endKey: string; source: 'plan' | 'search'; scoreCc: number; planLabel?: string } | null;
+  /** Present when the root refused the best plan-consistent candidate. */
+  veto?: { reason: 'mate' | 'proven-clock-loss' | 'essential-lost'; vetoedEndKey: string; detail: string };
+  /** Every strategic query this search ran, in order. */
+  queries: readonly AnalysisQuery[];
 }

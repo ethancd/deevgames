@@ -64,6 +64,7 @@ import { probeBook } from '../book/probe';
 import { verifyTurn, type ReplayCheck } from '../verify/replay';
 import type { HardConfig } from '../config';
 import { getKillClockPolicy, setKillClockPolicy } from '../eval/evaluate';
+import type { StrategyChronicle } from '../strategy/types';
 import { WorkClass } from './time';
 import {
   PROVER_FULL,
@@ -129,6 +130,10 @@ export interface RootResult {
   candidateSource?: 'completed-depth' | 'partial-iteration' | 'generator-list';
   /** `opts.ply1Trace` only. The ply-1 node under each searched candidate. */
   ply1?: Ply1Node[];
+  /** STRATEGOS (plan W1.10): the Chronicle of a strategos search — clock
+   * reading, posture, injected plans, the choice and any veto. Absent unless
+   * the profile sets `searchFix.strategyPlans` or `strategyVeto`. */
+  strategy?: StrategyChronicle;
 }
 
 /** The slice of `engine.ts`'s `HardEngine` the root needs (see the header). */
