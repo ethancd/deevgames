@@ -356,8 +356,8 @@ export class ActionSearch {
   /**
    * STRATEGOS W1.7 (`HardConfig.searchFix.pruneZeroDamage`, plan B.2 step
    * W1.7). `false` — every profile but `hard@strategos` — is the champion:
-   * `dfs` never looks at it, so the field costs one `false &&` per candidate
-   * and nothing else. See `setPruneZeroDamage` and `isZeroPowerAttack`.
+   * `dfs` tests it once per node and does nothing else with it. See
+   * `setPruneZeroDamage`, `dropZeroPowerAttacks` and `isZeroPowerAttack`.
    */
   private pruneZeroDamage = false;
   private observer: EndObserver | null = null;
@@ -459,11 +459,13 @@ export class ActionSearch {
   /**
    * Installs (or clears) STRATEGOS W1.7's zero-damage attack prune
    * (`HardConfig.searchFix.pruneZeroDamage`, plan B.2 step W1.7): ON, `dfs`
-   * skips generating an ATTACK whose power against its target is exactly 0
-   * — a move `src/game/combat.ts calculateAttackPower`'s `Math.max(0, …)`
-   * clamp lets through but that deals no damage. `false` (never called) is
-   * the champion, byte-identical: no shipped profile but `hard@strategos`
-   * turns this on. See `isZeroPowerAttack` for the soundness argument.
+   * drops every ATTACK whose power against its target is exactly 0 — a move
+   * `src/game/combat.ts calculateAttackPower`'s `Math.max(0, …)` clamp lets
+   * through but that deals no damage — from a node's candidate list BEFORE
+   * the width cut (`dropZeroPowerAttacks`), so it never occupies a beam slot
+   * a real candidate could have had. `false` (never called) is the champion,
+   * byte-identical: no shipped profile but `hard@strategos` turns this on.
+   * See `isZeroPowerAttack` for the soundness argument.
    *
    * NOT an `ActionSearchConfig` field, for the reason `setTrace`/
    * `setRescueCap` are not one: `HardConfig` is serialised into the engine
@@ -579,20 +581,26 @@ export class ActionSearch {
 
   /**
    * STRATEGOS W1.7's soundness test (plan B.1b, B.2 step W1.7). True iff `a`
-   * is an ATTACK whose power against its target is exactly 0 — the same
-   * computation `core/state.ts Replica.makeAttack` and `flagsFor` above run,
-   * duplicated here so `dfs` can decide BEFORE applying `a` rather than after.
+   * is an ATTACK whose power against its target is exactly 0 AND that is not
+   * lethal — the same computation `core/state.ts Replica.makeAttack` and
+   * `flagsFor` above run, duplicated here so `dfs` can decide BEFORE applying
+   * `a` rather than after.
    *
-   * WHY DROPPING IT NEVER CHANGES A REACHABLE END POSITION. `makeAttack`'s
-   * non-lethal branch — the ONLY branch a zero-power attack can take, because
-   * an alive victim always has `effectiveDef > 0` (the hit that would have
-   * brought it to exactly 0 was itself lethal at that step and removed the
-   * victim, by induction on the attacks that preceded it), so `0 >=
-   * effectiveDef` never holds — does exactly three things: `atkCount[slot]
-   * += 1` and `uflags[slot]`'s `F_LAST_KILLED` cleared (both `xKturn`-only,
-   * `core/state.ts`, so neither is part of `Kpos`), `setDamage(victim,
-   * damage + 0)` (XORs the same `Kpos` bucket out and back in — a no-op), and
-   * `actions -= 1`. `resolveHomeCheckmate` no-ops mid-Act (`phase !== 0`).
+   * WHY DROPPING IT NEVER CHANGES A REACHABLE END POSITION. The second
+   * condition (`effectiveDef > 0`) confines the prune to `makeAttack`'s
+   * NON-LETHAL branch by construction. On every legally reached position it is
+   * redundant: every catalogue defence is at least 1 (RULE,
+   * `src/game/units.ts`), the victim's side healed at its own turn start
+   * (`makeEndPlace` step 6) so its damage starts this Act at 0, and a non-lethal
+   * hit leaves `damage < def` — so an alive victim always has `effectiveDef >
+   * 0`. The guard makes the proof local instead of resting on that
+   * invariant, for packed states built by hand or by a fuzzer. That branch
+   * does exactly four things: `atkCount[slot] += 1` and `uflags[slot]`'s
+   * `F_LAST_KILLED` cleared (both `xKturn`-only, `core/state.ts`, so neither is
+   * part of `Kpos`), `setDamage(victim, damage + 0)` (XORs the same `Kpos`
+   * bucket out and back in — a no-op), and `actions -= 1`; it never touches
+   * `clock`/`progress` (only a kill does, `src/game/inactivity.ts`), and
+   * `resolveHomeCheckmate` returns early in the action phase (`phase !== 0`).
    * So the action never changes a single `Kpos` bit and never ends the turn
    * (`isDone` stays false); it only SPENDS one action point and locks `slot`
    * out of attacking again this turn (DESIGN's "one hit, more only after a
@@ -600,13 +608,15 @@ export class ActionSearch {
    * byte-identical, so every action sequence legal after applying it remains
    * legal after skipping it (a superset, since `slot` may now attack again
    * where the zero-power hit had locked it out) and — because `considerEnd`
-   * records the turn boundary at EVERY step — reaches the identical `Kpos`:
-   * "apply `a`, then more actions, then end" and "skip `a`, apply the same
-   * more actions, then end" land on the same position. `lab/hard-ai/oracles/
-   * canonical-check.ts --prune-zero-damage` checks this on a fixture set of
-   * zero-power attacker/defender pairs; `tests/ai/hard/zero-damage-prune.
-   * test.ts` checks it against the true naive enumeration and the p4
-   * determinism corpus.
+   * records the turn boundary at EVERY step, and `makeEndAction` zeroes the
+   * leftover actions and reads neither `atkCount` nor `uflags` — reaches the
+   * identical `Kpos`: "apply `a`, then more actions, then end" and "skip `a`,
+   * apply the same more actions, then end" land on the same position.
+   * `lab/hard-ai/oracles/canonical-check.ts --prune-zero-damage` checks this
+   * on a fixture set of zero-power attacker/defender pairs;
+   * `tests/ai/hard/zero-damage-prune.test.ts` checks it against the true naive
+   * enumeration on those fixtures, the p4 determinism corpus and seeded
+   * random contact positions (kills, cleaves and chip damage mixed in).
    *
    * The condition is `power === 0`, NEVER `power < effectiveDef`: a
    * non-lethal but NON-ZERO hit still changes `p.damage[victim]` (a real
@@ -619,7 +629,31 @@ export class ActionSearch {
     const victim = p.pieceAt[target];
     if (victim === NO_SLOT) return false;
     const cat = this.rep.cat;
-    return cat.power[powerIndex(p.side as Side, p.defId[slot], p.defId[victim])] === 0;
+    const victimDef = p.defId[victim];
+    if (cat.power[powerIndex(p.side as Side, p.defId[slot], victimDef)] !== 0) return false;
+    return cat.def[victimDef] - p.damage[victim] > 0;
+  }
+
+  /**
+   * STRATEGOS W1.7: compacts `buf[0..n)` in place, keeping generation order,
+   * without the zero-power ATTACKs `isZeroPowerAttack` accepts; returns the
+   * new length. `dfs` runs it BEFORE the width cut, so a dropped attack never
+   * holds one of `widthAt(step)`'s slots: `actionPriority` ranks every ATTACK
+   * by victim value (MVV-LVA), which puts a zero-power hit near the top of the
+   * list, and dropping it after `orderTop` would leave that slot empty — with
+   * the shipped widths `6, 4, 3, 2` (`config.ts`) a sixth to a half of the
+   * beam at every node where one ranks inside the width. With unbounded
+   * widths the two placements visit the same nodes; with a binding width this
+   * one fills the slot with the next real candidate.
+   */
+  private dropZeroPowerAttacks(p: PackedState, buf: Int32Array, n: number): number {
+    let w = 0;
+    for (let i = 0; i < n; i++) {
+      const a = buf[i];
+      if (this.isZeroPowerAttack(p, a)) continue;
+      buf[w++] = a;
+    }
+    return w;
   }
 
   private dfs(step: number): void {
@@ -643,6 +677,13 @@ export class ActionSearch {
     const buf = this.buffers[step];
     let n = this.rep.genActions(p, buf);
     if (n > 0 && paKind(buf[n - 1]) === AKind.END_ACTION) n--;
+    // STRATEGOS W1.7: a zero-power ATTACK is dropped as if it were never a
+    // candidate at all — not ranked, not applied, not recorded, its subtree
+    // never visited — and dropped BEFORE the width cut so it cannot take a
+    // beam slot (`dropZeroPowerAttacks`). `isZeroPowerAttack`'s doc has the
+    // soundness argument. Off (every profile but `hard@strategos`), this is
+    // one test of a `false` field.
+    if (this.pruneZeroDamage) n = this.dropZeroPowerAttacks(p, buf, n);
     if (n === 0) {
       if (tt !== null) tt.store(p.kturnLo, p.kturnHi, p.actions);
       return;
@@ -659,12 +700,6 @@ export class ActionSearch {
 
     for (let i = 0; i < take; i++) {
       const a = buf[i];
-      // STRATEGOS W1.7: a zero-power ATTACK is dropped as if it were never a
-      // candidate at all — not applied, not recorded, its subtree never
-      // visited. `isZeroPowerAttack`'s doc has the soundness argument; the
-      // check runs before C1 so a pruned action can never become `prev` (or
-      // spend a footprint/undo slot) for anything below it.
-      if (this.pruneZeroDamage && this.isZeroPowerAttack(p, a)) continue;
       // C1: drop the non-canonical order of an independent adjacent pair. The
       // swapped order is only guaranteed to exist while `a` leaves the game
       // running — an action that ENDS it (the kill that eliminates the last

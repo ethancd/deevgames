@@ -118,13 +118,21 @@ const BLACK_EXTRA_SQ = { x: 8, y: 8 };
 const WHITE_EXTRA_DEF = 'water_1';
 const BLACK_EXTRA_DEF = 'shadow_1';
 
+/** `createUnit` names a unit from `Date.now()` and `Math.random()`, so the
+ * file would change on every regeneration; a fixture is rewritten with ids
+ * fixed by owner, definition and square instead, so rerunning this script
+ * reproduces `zero-damage.jsonl` byte for byte. */
+function fixedUnit(def: string, owner: 'white' | 'black', at: { x: number; y: number }) {
+  return { ...createUnit(def, owner, at), id: `${owner}-${def}-${at.x}${at.y}` };
+}
+
 function buildRow(row: Row): StoredPosition {
   const base = createInitialGameState(undefined, 4, 0, 'phasing');
   let board = { ...base.board, units: [] as typeof base.board.units };
-  board = { ...board, units: [...board.units, createUnit(row.pair[0], 'white', ATTACKER_SQ)] };
-  board = { ...board, units: [...board.units, createUnit(row.pair[1], 'black', DEFENDER_SQ)] };
-  board = { ...board, units: [...board.units, createUnit(WHITE_EXTRA_DEF, 'white', WHITE_EXTRA_SQ)] };
-  board = { ...board, units: [...board.units, createUnit(BLACK_EXTRA_DEF, 'black', BLACK_EXTRA_SQ)] };
+  board = { ...board, units: [...board.units, fixedUnit(row.pair[0], 'white', ATTACKER_SQ)] };
+  board = { ...board, units: [...board.units, fixedUnit(row.pair[1], 'black', DEFENDER_SQ)] };
+  board = { ...board, units: [...board.units, fixedUnit(WHITE_EXTRA_DEF, 'white', WHITE_EXTRA_SQ)] };
+  board = { ...board, units: [...board.units, fixedUnit(BLACK_EXTRA_DEF, 'black', BLACK_EXTRA_SQ)] };
 
   const state = {
     ...base,

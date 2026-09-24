@@ -45,14 +45,18 @@
  *
  * **`--prune-zero-damage`** (STRATEGOS W1.7, plan
  * `~/.claude/plans/can-you-respond-to-piped-book.md` B.2 step W1.7) turns
- * `gen/actionsearch.ts SearchFix.pruneZeroDamage` ON for `canon` and
- * `canon+TT` only — `naive` stays the unpruned ground truth — so
- * `endSetMismatch`/`ttEndSetMismatch` become exactly the prune's own
+ * `gen/actionsearch.ts ActionSearch.setPruneZeroDamage` (the prune
+ * `config.ts SearchFix.pruneZeroDamage` selects) ON for `canon`, `canon+TT`
+ * and the shipped-TT search only — `naive` stays the unpruned ground truth —
+ * so `endSetMismatch`/`ttEndSetMismatch` become exactly the prune's own
  * soundness test: a zero-power ATTACK dropped from the candidate set must
- * never remove a reachable end position. Because `authored`/`canonical`
- * carry no zero-power pair, the flag pulls in the `zero-damage` fixture set
- * (`positions/zero-damage.jsonl`, `positions/generate-zero-damage.ts` has the
- * recipe) unless the caller names its own `--fixtures`.
+ * never remove a reachable end position. The default `authored`/`canonical`
+ * sets are Standard-ruleset rows the Phasing-only replica skips (as is the
+ * `initial` item), so without more fixtures the flag would prove nothing: it
+ * pulls in the `zero-damage` set (`positions/zero-damage.jsonl`,
+ * `positions/generate-zero-damage.ts` has the recipe) unless the caller
+ * names its own `--fixtures`. `--corpus p4-determinism.jsonl
+ * --corpus-positions 24 --max-own-units 40` adds real Phasing Act roots.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -141,8 +145,9 @@ function parseArgs(argv: string[]): Args {
     else throw new Error(`oracles/canonical-check: unrecognised argument "${a}"`);
   }
   // `--prune-zero-damage` with the default fixtures would silently prove
-  // nothing (`authored`/`canonical` carry no zero-power pair), so the flag
-  // pulls in `zero-damage` unless the caller named its own `--fixtures`.
+  // nothing (`authored`/`canonical` are Standard rows the Phasing-only
+  // replica skips), so the flag pulls in `zero-damage` unless the caller
+  // named its own `--fixtures`.
   if (args.pruneZeroDamage && !fixturesGiven && !args.fixtures.includes('zero-damage')) {
     args.fixtures = [...args.fixtures, 'zero-damage'];
   }
