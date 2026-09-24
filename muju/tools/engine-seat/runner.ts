@@ -4,10 +4,11 @@ import { HardEngine } from '../../src/ai/hard/engine';
 import { hardEnginePatch } from '../../lab/hard-ai/bots/hard';
 import type { RootResult } from '../../src/ai/hard/search/root';
 import type { GameState } from '../../src/game/types';
+import { minedTotal } from '../../src/game/inactivity';
 import type { ActionRequest, RoomChange, RoomConnection, RoomSnapshot } from '../../src/online/types';
 import { OnlineError, playRoom, readRoom, waitRoom } from '../../src/online/client';
 import { classifyFallback, verifySeatTurn } from './verify';
-import { assertAuthenticatedSeat, assertSeatRoom, seatContractSchema, type SeatContract } from './contract';
+import { assertAuthenticatedSeat, assertSeatRoom, seatContractSchema, type SeatContract, type SearchTelemetryEvent } from './contract';
 export { assertSeatRoom } from './contract';
 export { classifyFallback } from './verify';
 
@@ -55,6 +56,15 @@ export interface SeatOptions {
   signal?: AbortSignal;
   transport?: SeatTransport;
   createEngine?: (seed: number) => SeatEngine;
+  /**
+   * STRATEGOS W1.14: which `hardConfigFor`/`hardEnginePatch` label
+   * (`lab/hard-ai/bots/hard.ts`) the DEFAULT engine factory below builds from.
+   * Ignored when `createEngine` is supplied (every test in this file supplies
+   * its own stub). Unset means `'desktop'` — byte for byte the only engine
+   * this seat ever built before this option existed, and still its default
+   * with no configuration change at all.
+   */
+  profile?: string;
   /** Injected so a test exercises the backoff without waiting for it. */
   sleep?: (ms: number) => Promise<void>;
 }
@@ -98,7 +108,7 @@ export async function runSeat(options: SeatOptions): Promise<void> {
     return current;
   };
   let engine: SeatEngine | undefined;
-  const makeEngine = options.createEngine ?? (seed => { const e = new HardEngine(hardEnginePatch('desktop')); e.setSeed(seed); return e; });
+  const makeEngine = options.createEngine ?? (seed => { const e = new HardEngine(hardEnginePatch(options.profile ?? 'desktop')); e.setSeed(seed); return e; });
   let room = await readAuthenticatedRoom();
   log({ event: 'room-contract-verified', mode: expected.contract.mode, roomId: room.id, ruleset: room.state.ruleset ?? 'standard',
     matchPolicy: room.matchPolicy ?? null, timeControl: room.timeControl ?? null, handicap: room.state.blackCrystalHandicap ?? null });
@@ -139,10 +149,23 @@ export async function runSeat(options: SeatOptions): Promise<void> {
     try { verifySeatTurn(room.state, result); verified = true; }
     finally {
       const elapsedMs = performance.now() - started;
-      log({ event: 'search', revision: room.revision, turn: room.state.turn.turnNumber, player: journal.connection.player,
+      // STRATEGOS W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+      // B.2 step W1.14): `scoreCc`/`clock`/`minedTotals`/`strategy` let an
+      // operator read the kill-clock facts and (for `hard@strategos`) the
+      // Chronicle straight off the seat's `.jsonl`, without replaying the game
+      // through the room's history. See `SearchTelemetryEvent` for the fixed-key
+      // decision on `strategy`. Every other field is unchanged from before W1.14.
+      const event: SearchTelemetryEvent = {
+        event: 'search', revision: room.revision, turn: room.state.turn.turnNumber, player: journal.connection.player,
         allowanceMs: ENGINE_ALLOWANCE_MS, targetMs: ENGINE_TARGET_MS, elapsedMs, overrunMs: Math.max(0, elapsedMs - ENGINE_ALLOWANCE_MS),
         depth: result.depth, rung: result.stats.rung, work: result.work, source: result.source,
-        stopReason: result.stats.stopReason, fallback: classifyFallback(result), verified });
+        stopReason: result.stats.stopReason, fallback: classifyFallback(result), verified,
+        scoreCc: result.scoreCc,
+        clock: room.state.inactivityPlies ?? 0,
+        minedTotals: [minedTotal(room.state, 'white'), minedTotal(room.state, 'black')],
+        strategy: result.strategy ?? null,
+      };
+      log(event as unknown as Record<string, unknown>);
     }
     if (signal?.aborted) return;
     journal.pending = { expectedRevision: room.revision, requestId: randomUUID(), actions: result.actions };

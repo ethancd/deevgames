@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { actionRequestSchema, joinSchema, roomIdSchema, tokenSchema } from '../../server/schema';
 import { joinRoom, normalizeServer, readRoom, roomRequest } from '../../src/online/client';
 import type { RoomAdmission, RoomConnection, RoomSnapshot } from '../../src/online/types';
+import { hardConfigFor } from '../../lab/hard-ai/bots/hard';
 import { PHASING_HARD_READINESS, assertAuthenticatedSeat, assertSeatRoom, seatContractSchema, type SeatContract } from './contract';
 import type { SeatJournal } from './runner';
 
@@ -9,7 +10,19 @@ const credentialsSchema = z.object({ roomId: roomIdSchema, player: z.enum(['whit
 const common = { serverUrl: z.string().transform(normalizeServer), roomId: roomIdSchema,
   seed: z.number().int().min(0).max(0xffffffff), stateFile: z.string().min(1),
   // Default closed: absent here means `assertSeatRoom` refuses the room.
-  phasingHardReadiness: z.literal(PHASING_HARD_READINESS).optional() };
+  phasingHardReadiness: z.literal(PHASING_HARD_READINESS).optional(),
+  /**
+   * STRATEGOS W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+   * B.2 step W1.14). Which `hardConfigFor`/`hardEnginePatch` label
+   * (`lab/hard-ai/bots/hard.ts`) this seat builds its engine from: `'desktop'`
+   * (the default — byte for byte the only engine this seat ever ran before
+   * this field existed), `'strategos'`, or any other label that function
+   * accepts (`lab`, `midrange`, `phone`, `ablate:<arm>`, …). Checked against
+   * that same function below, so an unknown label is refused HERE — before
+   * any room is read, joined or reserved — rather than surfacing as a
+   * first-turn engine-construction failure deep inside a live room.
+   */
+  profile: z.string().min(1).default('desktop') };
 export const seatConfigSchema = z.discriminatedUnion('mode', [
   z.object({ ...common, ...seatContractSchema.options[0].shape,
     name: joinSchema.shape.name.optional(), inviteCode: joinSchema.shape.inviteCode.optional(), credentials: credentialsSchema.optional() }).strict(),
@@ -18,6 +31,10 @@ export const seatConfigSchema = z.discriminatedUnion('mode', [
   if (config.credentials && config.credentials.roomId !== config.roomId) context.addIssue({ code: 'custom', message: 'Issued credentials belong to a different room.' });
   if (config.mode === 'phasing-smoke' && (config.credentials ? config.name !== undefined || config.inviteCode !== undefined : !config.name || !config.inviteCode)) {
     context.addIssue({ code: 'custom', message: 'Smoke mode requires either issued credentials or both name and inviteCode, never both admission methods.' });
+  }
+  try { hardConfigFor(config.profile); }
+  catch (error) {
+    context.addIssue({ code: 'custom', path: ['profile'], message: error instanceof Error ? error.message : 'Unknown engine-seat profile.' });
   }
 });
 export type SeatConfig = z.infer<typeof seatConfigSchema>;

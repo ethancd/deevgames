@@ -49,10 +49,14 @@ async function main() {
     const log = (event: Record<string, unknown>) => appendFileSync(`${stateFile}.jsonl`, `${JSON.stringify({ at: new Date().toISOString(), ...event })}\n`, { mode: 0o600 });
     log({ event: 'start', roomId: config.roomId, player: journal.connection.player, seed: journal.seed,
       contract: journal.contract, admission: journal.admission,
-      profile: 'desktop', allowanceMs: ENGINE_ALLOWANCE_MS, source: sourceIdentity(), resumed });
+      // STRATEGOS W1.14: was the literal `'desktop'`; now the configured
+      // profile (`config.profile`, `seatConfigSchema`'s default is still
+      // `'desktop'`), so the start line always names the engine this run
+      // actually builds.
+      profile: config.profile, allowanceMs: ENGINE_ALLOWANCE_MS, source: sourceIdentity(), resumed });
     const controller = new AbortController();
     process.once('SIGINT', () => controller.abort()); process.once('SIGTERM', () => controller.abort());
-    await runSeat({ journal, save, log, signal: controller.signal });
+    await runSeat({ journal, save, log, signal: controller.signal, profile: config.profile });
   } finally { rmSync(lock, { recursive: true }); }
   });
 }

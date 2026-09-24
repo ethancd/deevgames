@@ -6,8 +6,8 @@ import { aiTurnBudgetMs, DEFAULT_AI_PACE, type AIPace } from '../ai/turnTime';
 import { applyAction } from '../ai/simulate';
 import { isLegalAction, phaseEndAction } from '../game/legality';
 import { isPhasing } from '../game/rules';
-import { fallbackKindFor, noteHardBudgetExhausted, noteHardPlanReplayed, noteHardRequest, noteHardTurn, readHardTurnBudgetMs, recordHardFallback, resolveHardAiRoute, resolveHardDeviceProfile } from '../ai/hardOptIn';
-import { deviceProfilePatch, type DeviceProfileName } from '../ai/hard/config';
+import { fallbackKindFor, noteHardBudgetExhausted, noteHardPlanReplayed, noteHardRequest, noteHardTurn, readHardTurnBudgetMs, recordHardFallback, resolveHardAiRoute, resolveHardDeviceProfile, resolveHardEngineProfile, type HardEngineProfileName } from '../ai/hardOptIn';
+import { deviceProfilePatch, strategosPatch, type DeviceProfileName, type HardConfig } from '../ai/hard/config';
 import { fallbackDecisionsRemaining, turnSearchAllowance } from '../ai/turnFunding';
 
 interface UseAIOptions {
@@ -95,8 +95,14 @@ export function useAI(options: UseAIOptions = {}) {
    * per game start next to the other two and cleared by the same `cancel`.
    * `null` is "not read yet"; only a Hard seat ever asks. */
   const hardDevice = useRef<DeviceProfileName | null>(null);
+  /** STRATEGOS W1.14: which strategy patch this game's hard engine carries,
+   * resolved once per game start next to `hardDevice` and cleared by the same
+   * `cancel`. `null` is "not read yet"; only a Hard seat ever asks. A separate
+   * ref from `hardDevice` because the two are a separate axis (module header,
+   * `src/ai/hardOptIn.ts`): a game can be `?hardProfile=phone&hardEngine=strategos`. */
+  const hardEngine = useRef<HardEngineProfileName | null>(null);
   const currentGetter = useRef(getCurrentState); currentGetter.current = getCurrentState;
-  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; hardOptIn.current = null; hardBudgetMs.current = undefined; hardDevice.current = null; client.current?.restart(); setIsThinking(false); setTurnClock(null); }, []);
+  const cancel = useCallback(() => { pendingCommit.current?.(null); pendingCommit.current = null; generation.current++; busy.current = false; hardOptIn.current = null; hardBudgetMs.current = undefined; hardDevice.current = null; hardEngine.current = null; client.current?.restart(); setIsThinking(false); setTurnClock(null); }, []);
   const clearLastTurnActions = useCallback(() => { setLastTurnActions([]); setLastDebug(null); }, []);
   useEffect(() => { cancel(); }, [difficulty, enabled, cancel]);
   useEffect(() => { setDifficulty(initialDifficulty); }, [initialDifficulty]);
@@ -126,10 +132,22 @@ export function useAI(options: UseAIOptions = {}) {
     // here keeps that honest.
     if (useHard && hardDevice.current === null) hardDevice.current = resolveHardDeviceProfile();
     const devicePatch = useHard ? deviceProfilePatch(hardDevice.current ?? 'desktop') : undefined;
+    // WHICH STRATEGY PATCH RIDES ALONG (STRATEGOS W1.14, plan
+    // `~/.claude/plans/can-you-respond-to-piped-book.md`, B.1b). Read once per
+    // game, same guard as the device hint above: only a seat that will reach
+    // `HardEngine` ever asks, and `'desktop'` (absent, or any value that is not
+    // `'strategos'`) contributes nothing, so a desktop game's engine patch is
+    // exactly the device patch it always sent. `strategosPatch()` sets only
+    // `searchFix`/`evalFix` (never a table field `deviceProfilePatch` sets, and
+    // never `weights`), so merging the two is order-independent.
+    if (useHard && hardEngine.current === null) hardEngine.current = resolveHardEngineProfile();
+    const enginePatch = useHard && hardEngine.current === 'strategos' ? strategosPatch() : undefined;
+    const hardConfigPatch: Partial<HardConfig> | undefined =
+      devicePatch === undefined && enginePatch === undefined ? undefined : { ...devicePatch, ...enginePatch };
     // `hard` is OMITTED, not set to undefined, on a desktop: the request object
     // itself stays the one that shipped.
     const hardRequest = useHard
-      ? { engine: 'hard' as const, ...(devicePatch === undefined ? {} : { hard: devicePatch }) }
+      ? { engine: 'hard' as const, ...(hardConfigPatch === undefined ? {} : { hard: hardConfigPatch }) }
       : undefined;
     const token = ++generation.current;
     // `?hardMs` funds the HARD SEAT only; easy and medium keep the pace's

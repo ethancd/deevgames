@@ -10,6 +10,7 @@ import type { GameState } from '../../src/game/types';
 import type { RoomSnapshot } from '../../src/online/types';
 import { HardEngine } from '../../src/ai/hard/engine';
 import { hardEnginePatch } from '../../lab/hard-ai/bots/hard';
+import { minedTotal } from '../../src/game/inactivity';
 import { OnlineError } from '../../src/online/client';
 import {
   ENGINE_ALLOWANCE_MS,
@@ -123,6 +124,72 @@ describe('canonical whole-turn verification', () => {
     }
   });
 });
+
+/**
+ * STRATEGOS W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.14). Two claims: the seat's `profile` config field resolves to
+ * the right `hardConfigFor` label (or refuses an unknown one before any room
+ * is touched), and the `search` telemetry event carries the four new fields —
+ * `strategy` as a FIXED key, `null` rather than omitted, when the search
+ * computed no Chronicle (see `SearchTelemetryEvent`'s doc comment).
+ */
+describe('profile selection and search telemetry', () => {
+  it('defaults the seat profile to desktop and accepts a known label', () => {
+    const { config } = pinnedFixture();
+    expect(config.profile).toBe('desktop');
+    expect(seatConfigSchema.parse({ ...config, profile: 'strategos' }).profile).toBe('strategos');
+  });
+  it('refuses an unknown profile label with a clear error, before any room is touched', () => {
+    const { config } = pinnedFixture();
+    expect(() => seatConfigSchema.parse({ ...config, profile: 'not-a-real-profile' })).toThrow(/unknown label/);
+  });
+  // Mirrors `runner.ts`'s DEFAULT engine factory,
+  // `new HardEngine(hardEnginePatch(options.profile ?? 'desktop'))`, without
+  // paying for a search: construction alone proves which configuration the
+  // label resolved to.
+  it("'strategos' resolves the six-flag strategos patch onto desktop; 'desktop' is untouched", () => {
+    const desktop = new HardEngine(hardEnginePatch('desktop'));
+    const strategos = new HardEngine(hardEnginePatch('strategos'));
+    expect(desktop.config.searchFix?.strategyPlans).toBeUndefined();
+    expect(desktop.config.evalFix?.clockLedger).toBeUndefined();
+    expect(strategos.config.searchFix?.pruneZeroDamage).toBe(true);
+    expect(strategos.config.searchFix?.strategyPlans).toBe(true);
+    expect(strategos.config.searchFix?.strategyVeto).toBe(true);
+    expect(strategos.config.searchFix?.killClockPolicy).toBe('ledger');
+    expect(strategos.config.evalFix?.clockLedger).toBe(true);
+    expect(strategos.config.evalFix?.promoteExhaustive).toBe(true);
+    // Same tables and the same shipped weights either way — strategos changes
+    // only the six flags above, never the search shape or the evaluation.
+    expect(strategos.config.K).toBe(desktop.config.K);
+    expect(strategos.config.weights.version).not.toBe(0);
+    expect(strategos.config.weights.label).toBe(desktop.config.weights.label);
+  });
+  it('carries scoreCc, clock, minedTotals and the Chronicle when the search reports one', async () => {
+    const { room, journal, state, finish } = fixture(), logs: Record<string, unknown>[] = [];
+    const chronicle = { reading: null, posture: 'none' as const, injected: [], chosen: null, queries: [] };
+    const withChronicle: RootResult = { ...resultFor(state), scoreCc: 1234, strategy: chronicle };
+    const transport = { read: vi.fn().mockResolvedValue(room), wait: vi.fn(), play: vi.fn().mockResolvedValue(finish) };
+    await runSeat({ journal, transport, createEngine: () => ({ searchTurn: async () => withChronicle }), save: vi.fn(), log: e => logs.push(e) });
+    const event = logs.find(e => e.event === 'search')!;
+    expect(event.scoreCc).toBe(1234);
+    expect(event.clock).toBe(state.inactivityPlies ?? 0);
+    expect(event.minedTotals).toEqual([minedTotal(state, 'white'), minedTotal(state, 'black')]);
+    expect(event.strategy).toEqual(chronicle);
+  });
+  it('carries strategy: null — a FIXED key, never an omitted one — when the search reports no Chronicle', async () => {
+    const { room, journal, state, finish } = fixture(), logs: Record<string, unknown>[] = [];
+    const transport = { read: vi.fn().mockResolvedValue(room), wait: vi.fn(), play: vi.fn().mockResolvedValue(finish) };
+    await runSeat({ journal, transport, createEngine: () => ({ searchTurn: async () => resultFor(state) }), save: vi.fn(), log: e => logs.push(e) });
+    const event = logs.find(e => e.event === 'search')!;
+    expect('strategy' in event).toBe(true);
+    expect(event.strategy).toBeNull();
+    // A fresh Phasing initial position: nothing mined yet, clock at zero.
+    expect(event.scoreCc).toBe(0);
+    expect(event.clock).toBe(0);
+    expect(event.minedTotals).toEqual([0, 0]);
+  });
+});
+
 it('long-polls, searches under the deadline, durably saves before submission, and retries the identical batch', async () => {
   const { room, journal, state, finish } = fixture();
   const stored: SeatJournal[] = [], logs: Record<string, unknown>[] = [];
@@ -390,8 +457,8 @@ describe('private issued credentials and resume contract', () => {
       value => ({ ...value, expectedHandicap: 3 }),
       value => ({ ...value, credentials: { ...value.credentials, player: 'black' } }),
       value => ({ ...value, credentials: { ...value.credentials, token: 'changed'.repeat(8) } }),
-      value => ({ mode: 'phasing-smoke', serverUrl: value.serverUrl, roomId: value.roomId, seed: value.seed, stateFile: value.stateFile, credentials: value.credentials, ...READINESS }),
-      value => ({ mode: 'phasing-smoke', serverUrl: value.serverUrl, roomId: value.roomId, seed: value.seed, stateFile: value.stateFile, name: 'Engine', inviteCode: 'a'.repeat(64), ...READINESS }),
+      value => ({ mode: 'phasing-smoke', serverUrl: value.serverUrl, roomId: value.roomId, seed: value.seed, stateFile: value.stateFile, profile: value.profile, credentials: value.credentials, ...READINESS }),
+      value => ({ mode: 'phasing-smoke', serverUrl: value.serverUrl, roomId: value.roomId, seed: value.seed, stateFile: value.stateFile, profile: value.profile, name: 'Engine', inviteCode: 'a'.repeat(64), ...READINESS }),
     ];
     for (const mutate of mutations) expect(() => assertSeatConfiguration(journal, seatConfigSchema.parse(mutate(config)))).toThrow(/differs|differ/);
     expect(() => seatJournalSchema.parse({ ...journal, version: 1, contract: undefined })).toThrow();
