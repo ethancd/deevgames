@@ -27,7 +27,7 @@ import {
   type SeatTransport,
 } from '../../tools/engine-seat/runner';
 import { verifySeatTurn } from '../../tools/engine-seat/verify';
-import { PHASING_HARD_READINESS, type SeatContract } from '../../tools/engine-seat/contract';
+import { PHASING_HARD_READINESS, SEARCH_TELEMETRY_VERSION, type SeatContract } from '../../tools/engine-seat/contract';
 import { assertSeatConfiguration, contractFor, initializeSeat, seatConfigSchema, seatJournalSchema, type SeatConfig } from '../../tools/engine-seat/config';
 
 /**
@@ -667,5 +667,75 @@ describe('per-search heavy-slot acquisition (Component A)', () => {
     expect(maxConcurrentSlots).toBeGreaterThan(0); // real contention happened
     expect(maxConcurrentSlots).toBeLessThanOrEqual(2);
     expect(readSlots().filter(s => s.record !== null && !s.stale)).toHaveLength(0); // all released
+  }, 10_000);
+
+  /**
+   * STRATEGOS W1.14, pilot side (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+   * B.1a: "the profile selector must be added to both runners ... or the merge
+   * conflict resolved to keep both"). The config below has exactly the keys
+   * `tools/llm-pilot/dispatch.ts buildEngineConfig` writes — pinned contract,
+   * issued credentials, a version-pinned `researchReadiness` and never the M7
+   * literal — plus `profile: 'strategos'`. One seat, end to end through the
+   * merged code: it parses, the readiness claim travels in the contract and
+   * the profile in the journal, a resume under another profile is refused, the
+   * DEFAULT engine factory builds `hard@strategos` (not desktop), the search
+   * runs while holding a REAL per-search heavy slot (this block's temp queue)
+   * and releases it, and the `search` line carries the pilot's `queueDelayMs`
+   * beside the four W1.14 fields — the whole SEARCH_TELEMETRY_VERSION 2 key
+   * set, no more and no fewer.
+   */
+  it("runs a pilot-style research-readiness config with profile 'strategos' as hard@strategos on a per-search heavy slot", async () => {
+    const { readSlots } = await import('../../lab/hard-ai/ladder/heavy');
+    const { room, state, finish } = pinnedFixture();
+    const research = { kind: 'research' as const, campaign: 'muju-llm-pilot-2026-09-23', rulesId: 'muju-phasing-4',
+      engineSourceSha256: 'b'.repeat(64), readinessEvidence: 'strategos W1.14 pilot-side merge test' };
+    const raw = { mode: 'pinned', serverUrl: 'http://localhost', roomId: room.id, seed: 7, stateFile: '/private/pilot-seat.json',
+      credentials: { roomId: room.id, player: 'white', token: 'pilot'.repeat(8) },
+      expectedMatchPolicy: room.matchPolicy, expectedTimeControl: room.timeControl, expectedHandicap: 0,
+      researchReadiness: research, profile: 'strategos' };
+    const config = seatConfigSchema.parse(raw);
+    expect(config.profile).toBe('strategos');
+    expect(config.phasingHardReadiness).toBeUndefined();
+    const contract = contractFor(config);
+    expect(contract.researchReadiness).toEqual(research);
+    expect(contract.phasingHardReadiness).toBeUndefined();
+    // Neither side's refusal was lost in the merge: both readiness claims at once, and hard@env.
+    expect(() => seatConfigSchema.parse({ ...raw, phasingHardReadiness: PHASING_HARD_READINESS })).toThrow(/both/);
+    expect(() => seatConfigSchema.parse({ ...raw, profile: 'env' })).toThrow(/MUJU_HARD_WEIGHTS/);
+
+    const journal = seatJournalSchema.parse(JSON.parse(JSON.stringify(await initializeSeat(config, vi.fn(),
+      { read: vi.fn().mockResolvedValue(room), inspect: vi.fn(), join: vi.fn() }))));
+    expect(journal.profile).toBe('strategos');
+    expect(journal.contract).toEqual(contract);
+    expect(() => assertSeatConfiguration(journal, config)).not.toThrow();
+    expect(() => assertSeatConfiguration(journal, seatConfigSchema.parse({ ...raw, profile: 'desktop' }))).toThrow(/engine profile/);
+
+    const built: { searchFix?: unknown; evalFix?: unknown; slotsHeld: number }[] = [];
+    const search = vi.spyOn(HardEngine.prototype, 'searchTurn').mockImplementation(async function (this: HardEngine, root: GameState) {
+      built.push({ searchFix: this.config.searchFix, evalFix: this.config.evalFix,
+        slotsHeld: readSlots().filter(s => s.record !== null && !s.stale).length });
+      return resultFor(root);
+    });
+    const logs: Record<string, unknown>[] = [];
+    const transport = { read: vi.fn().mockResolvedValue(room), wait: vi.fn(), play: vi.fn().mockResolvedValue(finish) };
+    try {
+      // No `profile` option: the journal's recorded profile alone must select strategos.
+      await runSeat({ journal, transport, save: vi.fn(), log: e => logs.push(e) });
+    } finally { search.mockRestore(); }
+    const strategos = hardEnginePatch('strategos');
+    expect(strategos.searchFix?.strategyPlans).toBe(true);
+    expect(built).toEqual([{ searchFix: strategos.searchFix, evalFix: strategos.evalFix, slotsHeld: 1 }]);
+    expect(readSlots().filter(s => s.record !== null && !s.stale)).toHaveLength(0);
+    expect(transport.play).toHaveBeenCalledTimes(1);
+
+    const event = logs.find(e => e.event === 'search')!;
+    expect(SEARCH_TELEMETRY_VERSION).toBe(2);
+    expect(Object.keys(event).sort()).toEqual(['allowanceMs', 'clock', 'depth', 'elapsedMs', 'event', 'fallback', 'minedTotals',
+      'overrunMs', 'player', 'queueDelayMs', 'revision', 'rung', 'scoreCc', 'source', 'stopReason', 'strategy', 'targetMs',
+      'turn', 'verified', 'work']);
+    expect(typeof event.queueDelayMs).toBe('number');
+    expect(event.queueDelayMs as number).toBeGreaterThanOrEqual(0);
+    expect(event).toMatchObject({ verified: true, fallback: null, scoreCc: 0, clock: 0, strategy: null,
+      minedTotals: [minedTotal(state, 'white'), minedTotal(state, 'black')] });
   }, 10_000);
 });
