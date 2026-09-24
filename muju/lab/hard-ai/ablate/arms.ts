@@ -24,7 +24,7 @@
  * | `K`            | 24        | `gen.K` — the root candidate list          |
  * | `kInterior`    | 16        | `genInterior.K` — the reply/interior list  |
  * | `widths`       | [6,4,3,2] | `gen.action.widths` AND `genInterior`'s    |
- * | `placePlans`   | 16 / 8    | `gen.maxPlacePlans` / `genInterior`'s      |
+ * | `placePlans`   | 24 / 12   | `gen.maxPlacePlans` / `genInterior`'s      |
  *
  * `widths` and `placePlans` are ONE knob of the shape each, spent on both
  * generators by `makeConfig`; an arm that moved only the root half of one of
@@ -239,7 +239,7 @@ function interiorWidths(w: readonly number[]): Partial<HardConfig> {
   return { genInterior: withGen(DESKTOP.genInterior, { widths: w }) };
 }
 
-/** E2.2's interior-only placement arm; the root's `maxPlacePlans` stays at 16. */
+/** E2.2's interior-only placement arm; the root's `maxPlacePlans` stays at DESKTOP's. */
 function interiorPlacePlans(n: number): Partial<HardConfig> {
   return { genInterior: withGen(DESKTOP.genInterior, { maxPlacePlans: n }) };
 }
@@ -492,8 +492,10 @@ const SPECS: ArmSpec[] = [
     change: 'action widths [6,4,3,2] → [4,3,2,1]',
     patch: widths([4, 3, 2, 1]),
   },
-  { name: 'place-wide', factor: 'placePlans', change: 'place plans 16/8 → 32/16', patch: placePlans(32, 16) },
-  { name: 'place-narrow', factor: 'placePlans', change: 'place plans 16/8 → 8/4', patch: placePlans(8, 4) },
+  // Rebased 2026-09-23 when DESKTOP's place plans went 16/8 → 24/12 (per-class
+  // pinned purchase plans): each arm keeps its ratio to DESKTOP (×2, ×½).
+  { name: 'place-wide', factor: 'placePlans', change: 'place plans 24/12 → 48/24', patch: placePlans(48, 24) },
+  { name: 'place-narrow', factor: 'placePlans', change: 'place plans 24/12 → 12/6', patch: placePlans(12, 6) },
   {
     name: 'reply-wide',
     factor: 'kInterior',
@@ -511,8 +513,9 @@ const SPECS: ArmSpec[] = [
   {
     name: 'interior-place-wide',
     factor: 'placePlans',
-    change: 'place plans 16/8 → 16/12 (the REPLY/interior node only). E2.2 arm: 5 traced reply misses had a buy set inside planCount 12 but outside comboCount 8',
-    patch: interiorPlacePlans(12),
+    // Rebased 2026-09-23 (DESKTOP interior 8 → 12): the arm keeps its ×1.5.
+    change: 'place plans 24/12 → 24/18 (the REPLY/interior node only). E2.2 arm: 5 traced reply misses had a buy set inside planCount 12 but outside comboCount 8',
+    patch: interiorPlacePlans(18),
     rootDiagnostic: false,
   },
   {

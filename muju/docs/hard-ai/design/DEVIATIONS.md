@@ -1907,6 +1907,31 @@ DESIGN §5.10 caps the keep-set branch at "all <= 64 at the root, 4 at interior 
 `HardConfig.gen` versus `HardConfig.genInterior`). `generate` therefore reads `ply === 0` as the root for
 the keep-set cap alone; the place-plan cap comes from whichever config the caller passed.
 
+### 2026-09-23: the purchase menu scores every multiset, pins one plan per class, and assigns greedily
+
+DESIGN §5.5 bounds Prepare purchases at 35 multisets, 12 plans and 3 exhaustive `P(S, k)` assignments
+per multiset. `planPurchases` enumerated multisets cheapest-first and stopped writing at 12 plans before
+sorting, and the 35-multiset cap fell inside the same order, so every multiset it saw contained a
+`fire_1`. At a bank of 12 or more the whole menu was `fire_1 ×1..4`. The 2026-09-23 LLM-vs-Hard pilot
+recorded 669 of Hard's 700 purchases as `fire_1`, with the other classes bought only at small banks.
+R1b (sort before truncating) could not fix it, because the multisets were already fire-only.
+
+Now: all 209 multisets of up to 4 bodies over the six classes are enumerated (`maxMultisets` 209,
+`MAX_MULTISETS` 256), and each class ranks its own top `S` squares. Each multiset is assigned greedily
+(best free square for the body whose class scores highest), with up to `keepPerMultiset` alternatives,
+each withholding the previous alternative's weakest square. That is exact for single-class multisets
+and replaces the exhaustive walk, which cannot be afforded 209 times. Plans are scored before truncating
+to `maxPlans` (32). Each affordable class's largest single-class plan is `pinned`, written right after the
+empty plan, and `buildCombos` keeps pinned plans bare and unpruned. The combo score is the mining-only
+ordering heuristic, and without the pin it would push low-Mining classes off the menu before the evaluator
+saw them. §6.3's Place-plan budgets rose by half (desktop 16/8 → 24/12, midrange 12/6 → 18/9, phone
+8/4 → 12/6) so the pins sit beside mixed plans and promotions. R1b is retired and no longer read.
+
+Cost: with the old bounds forced, the new code spends the same depth-1 work as before on the
+calibration fixture (11,953 vs 11,911). With the shipped bounds, depth 1 costs 14.6k to 25k units
+depending on which plans are kept. That is the search exploring different buying turns, not generator
+overhead. Strength is unmeasured.
+
 ## M14
 
 ### 2026-09-15: `searchRoot` takes a STRUCTURAL engine, and `search` may reach `verify`/`book`/`src/game`
