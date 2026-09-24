@@ -24,7 +24,9 @@
  *      unit already outside every enemy strike area keeps mining: it stays on
  *      its cell unless one legal MOVE reaches a cell that pays it STRICTLY
  *      more, is ALSO outside every enemy strike area, and does not reduce its
- *      distance to the nearest enemy ("not toward the enemy"). Passing is what
+ *      distance to the nearest enemy ("not toward the enemy") — OR (W1.12
+ *      FINAL, below) the spawn rectangle is tight and stepping off, even for
+ *      no richness gain, provably widens it. Passing is what
  *      is left once no unit has such a move. No attacks: an
  *      attack that KILLS would reset this bot's own clock lead
  *      (`src/game/inactivity.ts`'s doc comment: only an attack that removes a
@@ -55,16 +57,95 @@
  *      17 to 41 as the handicap rose from 0 to 20, and its own mining fell
  *      (44.5 at handicap 8, 35-36 at 16 and 20). That is not a Place-phase
  *      droning question: at that point there is nothing to buy on.
+ *
+ *      W1.12 FINAL (this lane, "ClockHeist3", the coordinator's diagnosis from
+ *      commit c6bb8a8e's message and this module's own comment: SPAWN
+ *      CLOGGING). Neither the unlocked branch (item 2: a paying unit's MOVE
+ *      always scored -1) nor the lock (item 1: a safe unit needed a STRICTLY
+ *      fresher destination) ever moved a unit off a cell that still paid, so
+ *      ClockHeist's own units filled its home spawn rectangle
+ *      (`src/game/spawning.ts getSpawnRectangle`: home corner to an anchor
+ *      unit) and the Place phase ran out of empty squares in it to buy on —
+ *      confirmed on the initial position itself: White's three starting units
+ *      (`getStartingPositions`) already reduce the spawn zone to exactly one
+ *      square, (0,0), and a single buy there empties it to zero.
+ *
+ *      Fix (`declogScore`, `wouldOpenSpawnRoom`, `spawnRoom`): a unit standing
+ *      on a still-paying cell may now ALSO step to a cell that pays it
+ *      something (not necessarily more), when three things hold — (a) safe:
+ *      the destination is outside every enemy strike area, the same bound as
+ *      the lock's own retreat (`enemyReach`); (b) needed: the CURRENT total
+ *      spawn room (`getAllSpawnPositions` over every one of the player's own
+ *      units as a candidate anchor, RULE `src/game/spawning.ts`) is at or
+ *      below `SPAWN_ROOM_FLOOR`; (c) it actually helps: replaying the move
+ *      through the real spawning rules (not a distance heuristic) shows a
+ *      STRICTLY larger total spawn room afterward. (c) is what makes this
+ *      exact rather than a guess — a "wider-looking" box that a currently
+ *      standing enemy unit blocks (`hasEnemyInRectangle`) contributes nothing,
+ *      and the recount catches that, where a heuristic (e.g. "farther from
+ *      home") would not. Deliberately NOT gated on "not toward the enemy"
+ *      (unlike the lock's richness-chase branch, item 1): that check compares
+ *      distance to the nearest enemy UNIT, and with an enemy sitting near its
+ *      own home corner — the common case at kickoff — Manhattan distance to
+ *      it shrinks for almost any outward step from ClockHeist's OWN home
+ *      corner, which would veto the very decongestion this fix exists to
+ *      make. Safety alone (a) plus the exact widen proof (c) are the review's
+ *      bound and the plan's "so the Place phase always has legal buy
+ *      squares"; direction is not separately asserted.
+ *
+ *      Priority: strictly-fresher (existing) outranks a same-or-less-paying
+ *      declog step (CHOICE, tier 200 vs 500 — see `declogScore`'s own doc
+ *      comment), which outranks nothing. In the unlocked branch this bypasses
+ *      `withPassiveEconomy` (see `chooseFrom`): that wrapper's mining-delta
+ *      term prices a yield trade-down as a loss and could zero out exactly
+ *      the move this fix adds, the same reason the lock already bypasses it
+ *      (this module's own comment on `lockedScore`).
+ *
+ *      MEASURED EFFECT (2026-09-24, this lane's calibration round 1 — the
+ *      shipped `SPAWN_ROOM_FLOOR = 3` — MUJU_HEAVY_SLOTS=4 hard:ladder,
+ *      p1-dev, `hard@desktop` fixed:60000, seed 20260976, handicaps 0-20 step
+ *      4, 12 openings x 2 seats per handicap, 144 games, 0 failures): the
+ *      diagnosed symptom is fixed. ClockHeist's turns-1-4 buys rose from the
+ *      review's 1.0-2.0 to 4.42-7.17 across handicap x seat cells (desktop's
+ *      own range there is 5.50-12.17 — the two are now the same order of
+ *      magnitude, not 3-6x apart), and its whole-game buy count from roughly
+ *      flat to 6.83-14.33 (still below desktop's 15.25-30.83). The clock
+ *      outcome did not flip: desktop still wins 133 of 144 games (92.4%; 64
+ *      of 72 with ClockHeist as Black receiving the handicap, 69 of 72 with
+ *      ClockHeist as White receiving none), all but a handful of the wins by
+ *      `kill-clock` adjudication — i.e. desktop simply out-mines ClockHeist by
+ *      game end at a roughly stable ~2-2.5x ratio at every tested handicap,
+ *      handicap does not narrow it monotonically (ClockHeist's best showing,
+ *      3 of 12, is at handicap 0; its worst, 0 of 12, at handicap 16), and
+ *      unspent bank stays substantial throughout (14.4-51.0). A second round
+ *      raised `SPAWN_ROOM_FLOOR` to 10 (see that constant's own doc comment
+ *      for the full numbers) on the hypothesis that a bigger standing buffer
+ *      would sustain buying further past turn 4; it did not measurably help
+ *      (whole-game buys and the win column were flat-to-slightly-worse), so
+ *      the floor stayed at 3 rather than being changed without evidence.
+ *      Reading: the spawn rectangle was a real, fixable bottleneck for the
+ *      FIRST few turns (exactly the review's own headline number), but the
+ *      dominant remaining gap is a per-turn income/placement-quality
+ *      difference — ClockHeist never promotes (`PROMOTE_UNIT` stays -1,
+ *      unchanged, item 2) and its MOVE scorers take the first qualifying cell
+ *      each ply rather than a globally best one — which this lane's scope
+ *      (spawn declogging only) does not touch. ClockHeist post-fix is a
+ *      stronger clock-holder than before, but not yet strong enough on its
+ *      own to reproduce the wave-1 LLM-vs-Hard clock loss against the full
+ *      `hard@desktop` search; see plan B.2's step recommendation below for
+ *      what that means for A8's rows.
+ *
  *   2. Otherwise: buy cheap (tier 1) miners ("drone"), relocate idle units to
  *      rich cells on the flank corner away from the enemy's approach line
- *      ("expand"), and take a free kill (never a trade) ONLY while strictly
- *      behind on mined total, and only when the attacker is not left inside a
- *      surviving enemy's strike area. The Place phase always runs this branch,
- *      locked lead or not: a purchase never touches the enemy (an arrival is
- *      inert until its owner's next turn, and `withPassiveEconomy` already
- *      charges a square any enemy can reach), and a clock lead is held by
- *      out-mining, so "pass" in plan B.1 is the Action-phase posture, not a
- *      buying freeze.
+ *      ("expand"), step a still-mining unit off a spawn square when the spawn
+ *      rectangle is tight (W1.12 FINAL, above), and take a free kill (never a
+ *      trade) ONLY while strictly behind on mined total, and only when the
+ *      attacker is not left inside a surviving enemy's strike area. The Place
+ *      phase always runs this branch, locked lead or not: a purchase never
+ *      touches the enemy (an arrival is inert until its owner's next turn, and
+ *      `withPassiveEconomy` already charges a square any enemy can reach), and
+ *      a clock lead is held by out-mining, so "pass" in plan B.1 is the
+ *      Action-phase posture, not a buying freeze.
  *
  * AHEAD AND BEHIND are the raw `minedTotal` comparison the plan names
  * (`src/game/inactivity.ts`), read only in the Action phase, the only phase
@@ -80,6 +161,28 @@
  * (p1-val, 16 openings x 2 seats, scores of 32) it scored lower against every
  * one: Expand 14.5 vs 18, Balanced 10.5 vs 14.5, Turtle 13 vs 16.5, Greedy
  * 4.5 vs 9, Rush 0 vs 2.5.
+ *
+ * A8 HANDICAP RECOMMENDATION (this lane's step 5, from the W1.12 FINAL
+ * calibration above): R0 (`hard@desktop` vs ClockHeist) and R1
+ * (`hard@strategos` vs ClockHeist) should both run the full swept set,
+ * handicaps 0/4/8/12/16/20, seat-mirrored — the same set this lane
+ * calibrated on, not a narrowed one. Reasons: (1) no single handicap in this
+ * range is qualitatively different for ClockHeist post-fix — its win share
+ * against `hard@desktop` ranges 0-3 of 12 per handicap x seat cell with no
+ * monotonic trend (best at handicap 0, worst at 16), so narrowing to
+ * "the best handicap" would cherry-pick noise, not a real regime change; (2)
+ * R0's own bar is "documents the failure", and the honest document is that
+ * `hard@desktop` wins the clock at every tested handicap (133 of 144 games,
+ * 92.4%) — ClockHeist post-fix is a real improvement over pre-fix but is not
+ * yet a strong enough clock-holder on its own to reproduce wave-1's
+ * LLM-vs-Hard result, and R0 across the full set is what shows that plainly
+ * rather than at one cherry-picked point; (3) R1's bar (score > 0.5, LOS >=
+ * 95%) is a comparison to `hard@desktop`'s OWN showing here, so running it on
+ * the identical set is what makes "did strategos's clock-awareness fix this"
+ * a same-conditions question, not a different-conditions one. If box time
+ * forces a narrower R1, handicaps 0 and 20 (the two ends of the calibrated
+ * range, both showing ClockHeist's least-bad rate at floor=3) are the
+ * pair to keep.
  *
  * NAME. Exactly `ClockHeist`, chosen in particular to NOT match
  * `/AntiRush|Guard/`. Grepping that pattern (it appears once, in
@@ -101,10 +204,16 @@
  * reaches either. A behaviour change under the same name would therefore look
  * like the same opponent to every row that cites it. The plan freezes the name
  * at amendment A8 ("freeze it before A8, rename (ClockHeist-v2) on any
- * change"): until A8 cites this bot its behaviour may still change under this
- * name (the W1.12 follow-up did, so ladder output recorded before that commit
- * is from the earlier lock); once A8 cites it, any change ships as a new bot,
- * `ClockHeist-v2`, alongside this one — never as a silent edit to this file.
+ * change").
+ *
+ * FROZEN (W1.12 FINAL, this lane): this commit is the freeze point. Ladder
+ * output recorded before it (the original lock, the W1.12 follow-up's split)
+ * is from earlier behaviour under the same name — amendment A8's rows
+ * (R0 `hard@desktop` vs ClockHeist, R1 `hard@strategos` vs ClockHeist) are the
+ * first to run against THIS behaviour, and cite it as the frozen `ClockHeist`.
+ * Any further change to this bot's decisions, from here on, ships as a new
+ * bot, `ClockHeist-v2`, alongside this one — never as a silent edit to this
+ * file.
  *
  * REUSE. Only `lab/harness/bots/bot-utils.ts` and the same game-rule
  * primitives every other archetype in this directory already imports
@@ -116,8 +225,9 @@ import { manhattanDistance } from '../../../src/game/board';
 import { phaseEndAction } from '../../../src/game/legality';
 import { minedTotal } from '../../../src/game/inactivity';
 import { getActionsPerTurn } from '../../../src/game/rules';
+import { getAllSpawnPositions } from '../../../src/game/spawning';
 import type { AIAction } from '../../../src/ai/types';
-import type { Position } from '../../../src/game/types';
+import type { Position, Unit } from '../../../src/game/types';
 import type { ScriptedBot, BotContext, BotView } from '../types';
 import { pickBest } from '../rng';
 import {
@@ -208,6 +318,105 @@ function wouldYieldAt(view: BotView, definitionId: string, pos: Position): numbe
 }
 
 /**
+ * CHOICE: how many empty buyable squares (`spawnRoom`, below) ClockHeist
+ * tries to keep in reserve before spending an Action-phase move on
+ * decongestion rather than a richness chase or a pass. Low enough that the
+ * many-units, big-rectangle positions already covered by the existing tests
+ * (rooms in the 10s-20s) never trigger it, and low enough to fire on the
+ * initial position's spawn zone (exactly one square, `getStartingPositions`)
+ * on the very first Action phase.
+ *
+ * MEASURED (W1.12 FINAL calibration round 2, this lane, p1-dev, `hard@desktop`
+ * fixed:60000, seed 20260976, 6 handicaps x 2 seats x 12 pairs): raising this
+ * to 10 was tried as the falsifier this comment originally named. Turns 1-4
+ * buys moved a little (up at several handicaps, e.g. handicap 12 desktop=White
+ * 5.25 -> 8.92, handicap 20 6.58 -> 9.00; flat at others, e.g. handicap 4
+ * 6.08 -> 6.75), but the whole-game buy gap against desktop and the win
+ * column did not improve -- if anything a shade worse (desktop's win share
+ * per handicap x seat cell went from 9-12 of 12 to 10-12 of 12) and unspent
+ * bank at game end stayed in the same 8-52 range either way. So the bind
+ * past the first few turns is not spawn-square SUPPLY (this fix's whole
+ * scope): `hard@desktop` buys roughly double ClockHeist's whole-game total
+ * (mean 15-38 vs 7-16 across handicaps, calib-1) even though both buy almost
+ * entirely tier-1 units, which points at a per-turn income/placement-quality
+ * gap outside this lane (ClockHeist never promotes and picks the first
+ * reachable paying cell each ply, not a globally best one) -- left at 3, the
+ * simpler and equally-effective value, and recorded here rather than
+ * re-opened without new evidence. Falsifier for a FUTURE lane: a ladder row
+ * where a different floor (or a room target that also accounts for bank
+ * size) buys measurably more of the WHOLE-game total, not just turns 1-4.
+ */
+const SPAWN_ROOM_FLOOR = 3;
+
+/** Every currently-empty square this player could legally buy on, across
+ * every one of its own units as a candidate anchor (RULE
+ * `src/game/spawning.ts getAllSpawnPositions`: the union of each unblocked
+ * anchor's home-corner rectangle). The Place phase's entire legal BUY_UNIT
+ * set is exactly this, so its size is literally "room to buy." */
+function spawnRoom(view: BotView): number {
+  return getAllSpawnPositions(view.player, view.board).length;
+}
+
+/**
+ * Would relocating `unit` to `to` leave this player with STRICTLY more total
+ * spawn room than it has right now? Recomputed through the real spawning
+ * rules on a hypothetical board (`getAllSpawnPositions` before vs. after),
+ * not a distance heuristic: a box that widens on paper but that a currently
+ * standing enemy unit blocks (`hasEnemyInRectangle`, inside
+ * `getSpawnRectangle`'s callers) contributes zero new squares, so the recount
+ * catches it where "farther from home" alone would not. See `declogScore`'s
+ * doc comment for why this is the only "outward" test this fix uses.
+ */
+function wouldOpenSpawnRoom(view: BotView, unit: Unit, to: Position): boolean {
+  const before = spawnRoom(view);
+  const movedBoard = { ...view.board, units: view.board.units.map(u => u.id === unit.id ? { ...u, position: to } : u) };
+  const after = getAllSpawnPositions(view.player, movedBoard).length;
+  return after > before;
+}
+
+/**
+ * W1.12 FINAL: should a unit already standing on a paying cell step to
+ * `to` (which also pays `yieldAt`, checked by both callers before this runs)
+ * purely to relieve a clogged spawn rectangle? Module doc comment has the
+ * full diagnosis and falsifier; this is the shared predicate/score both
+ * `lockedScore` (the safe-unit branch) and the unlocked switch's MOVE case
+ * call, so there is exactly one definition of "declog."
+ *
+ * Gated on:
+ *   - safe: `to` is outside every enemy strike area (`enemyReach`'s bound —
+ *     RULE, the same one `lockedScore`'s retreat uses);
+ *   - needed: `spawnRoom` is at or below `SPAWN_ROOM_FLOOR` — a unit with
+ *     rooms to spare (every position the pre-existing tests authored) never
+ *     bothers;
+ *   - proven: `wouldOpenSpawnRoom` — an exact recount, not a guess.
+ *
+ * Deliberately NOT gated on "not toward the enemy" (unlike the strictly-
+ * fresher branch above it, which this never overrides — see the caller):
+ * that check is Manhattan distance to the nearest enemy UNIT, and an enemy
+ * sitting anywhere near its OWN home corner (routine at kickoff, opposite
+ * ClockHeist's own corner on the board's main diagonal, `getStartCorner`)
+ * is far enough along BOTH axes that almost any outward step from
+ * ClockHeist's own corner shortens the Manhattan distance to it — the check
+ * would veto the very decongestion this exists to perform. Safety
+ * (`inEnemyStrikeArea`, a real next-turn-reach bound) plus the exact widen
+ * proof are what the review called for; a live enemy's current square is not
+ * an extra veto here.
+ *
+ * CHOICE (score tier 200 + yieldAt, capped near 208 since mining tops out at
+ * 8 same as the lock's richness tier): below a genuine richness upgrade
+ * (500 +) so an outright better cell is still preferred when both are legal
+ * this ply, above zero so it beats a pass. Falsifier: a ladder row where
+ * ranking a declog step ABOVE a richness upgrade buys measurably more
+ * miners in turns 1-4.
+ */
+function declogScore(view: BotView, unit: Unit, to: Position, yieldAt: number): number {
+  if (inEnemyStrikeArea(view, to)) return -1;
+  if (spawnRoom(view) > SPAWN_ROOM_FLOOR) return -1;
+  if (!wouldOpenSpawnRoom(view, unit, to)) return -1;
+  return 200 + yieldAt;
+}
+
+/**
  * Locked-lead mode deliberately bypasses `withPassiveEconomy`, the pairing
  * with `chooseFrom` that every other archetype in this directory uses. For a
  * MOVE that wrapper adds two terms (`bot-utils.ts`): the mining delta x 45,
@@ -240,17 +449,23 @@ function wouldYieldAt(view: BotView, definitionId: string, pos: Position): numbe
  *   - Outside every enemy strike area (already safe): the unit keeps mining.
  *     A destination that steps INTO an enemy strike area is never worth it
  *     (safety is not for sale). A destination that reduces the distance to
- *     the nearest enemy is rejected outright, even if it is safe and richer
- *     (the follow-up brief: "not toward the enemy"): the strike area covers
- *     the enemy's next turn only, and a unit that closes the distance today
- *     is the one the enemy reaches the turn after. What remains must also be
- *     a STRICT improvement in yield over staying put
- *     (`wouldYieldAt(...) > miningYieldAt(view, unit)`): an already-mining unit
- *     never wanders for a same-or-worse cell, and a unit on a cell that has
- *     mined out (`src/game/mining.ts`) has somewhere legal to go.
+ *     the nearest enemy is rejected for a richness chase, even if it is safe
+ *     and richer (the follow-up brief: "not toward the enemy"): the strike
+ *     area covers the enemy's next turn only, and a unit that closes the
+ *     distance today is the one the enemy reaches the turn after. A STRICT
+ *     improvement in yield over staying put, not toward the enemy, wins
+ *     outright (`destYield > miningYieldAt(...) && !towardEnemy`, 500 tier).
+ *     Short of that (same-or-worse yield, or toward the enemy, but the
+ *     destination still pays something), `declogScore` (W1.12 FINAL, its own
+ *     doc comment) gets one more look: it may still be worth stepping off a
+ *     paying, mined-out-adjacent cell purely to relieve a clogged spawn
+ *     rectangle, at a lower (200) tier — a unit on a cell that has mined out
+ *     (`src/game/mining.ts`) or that is simply in the way has somewhere
+ *     legal to go either way.
  *
  * CHOICE (score tiers, not magnitudes): any retreat (1_000_000 + ...) outranks
- * any mining relocation (500 + yield, at most 508), and both outrank a pass
+ * any richness relocation (500 + yield, at most 508), which outranks a declog
+ * step (200 + yield, at most 208, W1.12 FINAL), and all three outrank a pass
  * (-1, then `chooseLocked` ends the phase), so a threatened unit always moves
  * before a safe one spends the shared action budget (the bot re-scores after
  * every action, so a relocation played because no retreat existed can still
@@ -267,10 +482,14 @@ function lockedScore(view: BotView, a: AIAction): number {
     return 1_000_000 + nearestEnemyDistance(view, a.to) * 1000 + wouldYieldAt(view, unit.definitionId, a.to);
   }
   if (!destSafe) return -1; // never walk a safe unit INTO reach
-  if (nearestEnemyDistance(view, a.to) < nearestEnemyDistance(view, unit.position)) return -1; // toward the enemy
   const destYield = wouldYieldAt(view, unit.definitionId, a.to);
-  if (destYield <= miningYieldAt(view, unit)) return -1; // not a fresher cell: stay put instead
-  return 500 + destYield;
+  if (destYield <= 0) return -1; // never move to a cell that doesn't pay at all
+  const towardEnemy = nearestEnemyDistance(view, a.to) < nearestEnemyDistance(view, unit.position);
+  if (destYield > miningYieldAt(view, unit) && !towardEnemy) return 500 + destYield; // strictly fresher: unchanged
+  // W1.12 FINAL: no richness gain (or moving toward the enemy) — still worth
+  // a step if the spawn rectangle is clogged and this specific move relieves
+  // it (`declogScore`'s own doc comment has the full gate and falsifier).
+  return declogScore(view, unit, a.to, destYield);
 }
 
 function chooseLocked(ctx: BotContext): AIAction | null {
@@ -279,10 +498,27 @@ function chooseLocked(ctx: BotContext): AIAction | null {
   return best;
 }
 
+/**
+ * W1.12 FINAL: a still-paying unit's own MOVE bypasses `withPassiveEconomy`
+ * (like `lockedScore` already does for the whole lock, and for the same
+ * reason, per that function's doc comment). That wrapper's mining-delta term
+ * prices any yield decrease as a loss (`delta * 45`, `bot-utils.ts`) and can
+ * swing by hundreds — enough to zero out or invert the modest 200s-tier
+ * `declogScore` returns, defeating a move whose entire point is trading yield
+ * for spawn room. Every other action keeps the wrapper unchanged.
+ */
+function finalScore(view: BotView, a: AIAction, scorer: (a: AIAction) => number): number {
+  if (a.type === 'MOVE') {
+    const unit = unitById(view, a.unitId);
+    if (unit && miningYieldAt(view, unit) > 0) return scorer(a);
+  }
+  return withPassiveEconomy(view, a, scorer(a));
+}
+
 function chooseFrom(ctx: BotContext, scorer: (a: AIAction) => number): AIAction | null {
-  const best = pickBest(ctx.rng, ctx.legal, a => withPassiveEconomy(ctx.view, a, scorer(a)));
+  const best = pickBest(ctx.rng, ctx.legal, a => finalScore(ctx.view, a, scorer));
   if (!best) return null;
-  if (withPassiveEconomy(ctx.view, best, scorer(best)) <= 0) {
+  if (finalScore(ctx.view, best, scorer) <= 0) {
     return phaseEndAction(ctx.view.state);
   }
   return best;
@@ -321,10 +557,15 @@ export function createClockHeistBot(): ScriptedBot {
             const m = a as Extract<AIAction, { type: 'MOVE' }>;
             const unit = unitById(view, m.unitId);
             if (!unit) return -1;
-            if (miningYieldAt(view, unit) > 0) return -1; // already on a paying cell
             const yieldAt = wouldYieldAt(view, unit.definitionId, m.to);
-            if (yieldAt <= 0) return -1;
-            // Rich, flank-ward, enemy-avoiding cells score highest.
+            if (yieldAt <= 0) return -1; // never move to a cell that doesn't pay at all
+            if (miningYieldAt(view, unit) > 0) {
+              // W1.12 FINAL: already on a paying cell -- only worth leaving to
+              // declog the spawn rectangle (`declogScore`'s own doc comment);
+              // this bypasses withPassiveEconomy (`finalScore`, above).
+              return declogScore(view, unit, m.to, yieldAt);
+            }
+            // Idle: rich, flank-ward, enemy-avoiding cells score highest.
             return 50 + yieldAt * 10 - manhattanDistance(m.to, flank) * 2 +
               Math.min(nearestEnemyDistance(view, m.to), 10);
           }
