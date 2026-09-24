@@ -23,7 +23,13 @@
  *   - FEASIBILITY GRADES as paired positions that differ in one fact — the
  *     enemy's unit able to outrun us or not — flipping `witnessed` to
  *     `not-ruled-out`; `forced` checked against the engine's own one-turn
- *     kill table where the plies left make that an exact test;
+ *     kill table where the plies left make that an exact test, and paired
+ *     on the clock where the enemy's first possible kill falls one ply after
+ *     it ends;
+ *   - every WITNESS REPLAYED: each witnessed rollout's recorded actions are
+ *     replayed at the root's full prover and must reach our damaging attack
+ *     at exactly the claimed ply, never past the contract's deadline (roots
+ *     on the deadline's edge included); the rollout budget is shown to bind;
  *   - POSTURE as a paired flip: the same board with the mined lead moved
  *     from one side to the other swaps ForceContact for Hold, and a tie
  *     injects nothing;
@@ -41,15 +47,16 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { GameState } from '../../../src/game/types';
 import { strategosPatch, type HardConfig } from '../../../src/ai/hard/config';
 import { HardEngine } from '../../../src/ai/hard/engine';
-import { installStrategyWitness, type RootResult } from '../../../src/ai/hard/search/root';
+import { STRATEGY_WORK_SHARE, installStrategyWitness, type RootResult } from '../../../src/ai/hard/search/root';
 import { NO_PRUNE_FLAGS, NO_REDUCE_FLAGS, PROVER_FULL, buildSearchTables, generateAt } from '../../../src/ai/hard/search/pvs';
 import { ORDER_STRATEGY } from '../../../src/ai/hard/search/order';
 import { TACTICAL_FLAGS, TurnFlag, type Turn } from '../../../src/ai/hard/gen/turn';
-import { newStrategyTurn, playStrategyTurn, type StrategyLine } from '../../../src/ai/hard/gen/generate';
+import { firstLegalKeepSet, newStrategyTurn, playStrategyTurn, type StrategyLine } from '../../../src/ai/hard/gen/generate';
 import { clockReading } from '../../../src/ai/hard/strategy/clock';
 import { clockPliesLeft, killEta } from '../../../src/ai/hard/strategy/killeta';
 import { holdEssentialSlots } from '../../../src/ai/hard/strategy/hold';
-import type { PlanSet } from '../../../src/ai/hard/strategy/plan';
+import { WORK_KILL_ETA, type PlanSet } from '../../../src/ai/hard/strategy/plan';
+import type { ContactRollout } from '../../../src/ai/hard/strategy/contact';
 import { verifyTurn } from '../../../src/ai/hard/verify/replay';
 import { Replica, allocState, copyState, newUndo } from '../../../src/ai/hard/core/state';
 import { AKind, newKeepSetTable, paA, paB, paKind, paMake, type KeepSetTable } from '../../../src/ai/hard/core/action';
@@ -61,7 +68,8 @@ import { KILL_IMPOSSIBLE, KILL_MAX_LANES, cleavePlan, killTable, newCleavePlan, 
 import { getKillClockPolicy, setKillClockPolicy } from '../../../src/ai/hard/eval/evaluate';
 import { DEAD, MAX_SLOTS, Result, type PackedState, type Side } from '../../../src/ai/hard/types';
 import { readPositions } from '../../../lab/hard-ai/positions/corpus';
-import { buildState } from './game-fixture';
+import { buildState, type UnitSpec } from './game-fixture';
+import { UNEQUAL_ROUTES_MAP } from '../../../src/game/resourceMap';
 import {
   CORPUS_POSTURE_IDS,
   PLAN_FIXTURES,
@@ -72,6 +80,7 @@ import {
   resultDigestSource,
   tooFarToReach,
   trailingNoContact,
+  withMined,
   type ExposedResultLike,
 } from './strategy-plans-fixture';
 
@@ -214,6 +223,38 @@ function strategyTurns(turns: readonly Turn[]): Turn[] {
 
 function lineOf(set: PlanSet | null, turn: Turn) {
   return set?.lines.find(l => l.endKey === keyOf(turn)) ?? null;
+}
+
+/**
+ * Roots one fact away from a fixture that put a ForceContact witness on the
+ * deadline's edge (reviewer, W1.9): `evadeEscapes` with the clock one higher
+ * (the chase the mining reply concedes at ply 3 now has deadline 2) and
+ * `contactThisTurn` at clock 9 (the hit lands at ply 1 with deadline 0). They
+ * pin nothing about the deadline FORMULA — only that no witness is ever
+ * graded past the deadline the contract declares.
+ */
+const DEADLINE_EDGES: ReadonlyArray<readonly [string, () => GameState]> = [
+  ['evadeEscapesClock7', () => ({ ...evadeEscapes(), inactivityPlies: 7 })],
+  ['contactThisTurnClock9', () => ({ ...contactThisTurn(), inactivityPlies: 9 })],
+];
+
+/** Does `turn`, played from `p`, make an ATTACK whose power (read before it
+ * lands) is nonzero — i.e. a damaging attack? */
+function turnDamages(p: PackedState, turn: Turn): boolean {
+  const q = allocState();
+  copyState(q, p);
+  const undo = newUndo();
+  const keep: KeepSetTable | undefined = turn.keepMask === undefined ? undefined : { masks: turn.keepMask, count: 1 };
+  let damages = false;
+  for (let i = 0; i < turn.count; i++) {
+    const a = turn.actions[i];
+    if (paKind(a) === AKind.ATTACK) {
+      const v = q.pieceAt[paB(a)];
+      if (cat.power[powerIndex(q.owner[paA(a)] as Side, q.defId[paA(a)], q.defId[v])] > 0) damages = true;
+    }
+    rep.make(q, a, undo, keep);
+  }
+  return damages;
 }
 
 // ---------------------------------------------------------------------------
@@ -391,8 +432,24 @@ describe('ForceContact (strategy/contact.ts)', () => {
     expect(kinds.slice(0, kinds.indexOf(AKind.END_ACTION)).every(k => k === AKind.MOVE || k === AKind.ATTACK)).toBe(true);
     expect(kinds[at - 1] === AKind.END_ACTION || kinds[at - 1] === AKind.PAY_UPKEEP).toBe(true);
     expect(kinds[kinds.length - 1]).toBe(AKind.END_PLACE);
-    // The bought body is the fastest class that can damage the target.
+    // The bought body stands on a legal spawn square nearest the enemy: no
+    // square where the same BUY is legal after the same prefix is closer
+    // (Manhattan) to a live Black unit.
     const def = paA(turn.actions[at]);
+    const prefix = allocState();
+    copyState(prefix, g.p);
+    const prefixUndo = newUndo();
+    const prefixKeep: KeepSetTable | undefined = turn.keepMask === undefined ? undefined : { masks: turn.keepMask, count: 1 };
+    for (let i = 0; i < at; i++) rep.make(prefix, turn.actions[i], prefixUndo, prefixKeep);
+    const toEnemy = (sq: number): number => {
+      let best = 100;
+      for (let v = 0; v < MAX_SLOTS; v++) if (prefix.sq[v] !== DEAD && prefix.owner[v] === B) best = Math.min(best, MANHATTAN[sq * 100 + prefix.sq[v]]);
+      return best;
+    };
+    let nearest = 100;
+    for (let sq = 0; sq < 100; sq++) if (rep.isLegal(prefix, paMake(AKind.BUY, def, sq, 0))) nearest = Math.min(nearest, toEnemy(sq));
+    expect(toEnemy(paB(turn.actions[at]))).toBe(nearest);
+    // The bought body is the fastest class that can damage the target.
     const target = st?.queries.find(q => q.name === 'contact.target')?.result as { def: string } | null;
     expect(target).not.toBeNull();
     for (let d = 0; d < DEF_ID.length; d++) {
@@ -495,6 +552,78 @@ describe('ForceContact (strategy/contact.ts)', () => {
         expect(l.queries.map(q => q.name)).toEqual(['contact.rollout.continue', 'contact.rollout.evade']);
       }
     }
+  });
+
+  it("every witness is a replayable line: the recorded rollout replays at the root's full prover to our damaging attack at exactly the claimed ply, never past the deadline", () => {
+    let replayed = 0;
+    let inLine = 0;
+    for (const [name, build] of [...ALL_STATES, ...DEADLINE_EDGES]) {
+      const g = rootGeneration(build());
+      const me = g.p.side as Side;
+      for (const l of g.planSet?.lines ?? []) {
+        if (l.contract.kind !== 'force-contact') continue;
+        const turn = g.turns.find(t => keyOf(t) === l.endKey) as Turn;
+        for (const q of l.queries) {
+          if (q.outcome !== 'witnessed') continue;
+          const res = q.result as ContactRollout;
+          expect(res.ply, `${name} ${l.label} ${q.name}`).not.toBeNull();
+          expect(res.ply as number, `${name} ${l.label} ${q.name}`).toBeLessThanOrEqual(l.contract.deadlinePly);
+          if (res.ply === 1) {
+            // Contact in the line itself: the recorded turn makes it.
+            expect(turnDamages(g.p, turn), `${name} ${l.label}`).toBe(true);
+            expect(res.actions).toEqual([]);
+            inLine++;
+            continue;
+          }
+          // Replayed from the position the generator's own turn reaches, at
+          // the ROOT's prover mode (the rollout ran at the admissible bound),
+          // every rent paid with the rule the rollout used.
+          const b = applyTurn(g.p, turn);
+          expect(b.proverMode).toBe(PROVER_FULL);
+          const undo = newUndo();
+          const table = newKeepSetTable();
+          let ply = 2;
+          let hit = -1;
+          for (let i = 0; i < res.actions.length; i++) {
+            expect(b.result, `${name} ${l.label}: the game ended before the witness`).toBe(Result.ONGOING);
+            const a = res.actions[i];
+            const keep = paKind(a) === AKind.PAY_UPKEEP ? (firstLegalKeepSet(rep, b, g.t, table) ?? undefined) : undefined;
+            expect(rep.isLegal(b, a, keep), `${name} ${l.label} action ${i}`).toBe(true);
+            if (paKind(a) === AKind.ATTACK && b.side === me) {
+              const v = b.pieceAt[paB(a)];
+              if (cat.power[powerIndex(me, b.defId[paA(a)], b.defId[v])] > 0) {
+                hit = ply;
+                expect(i).toBe(res.actions.length - 1); // the first contact ends the witness
+              }
+            }
+            const mover = b.side;
+            undo.top = 0;
+            rep.resetUndoScratch();
+            rep.make(b, a, undo, keep);
+            if (b.side !== mover) ply++;
+          }
+          expect(hit, `${name} ${l.label} ${q.name}`).toBe(res.ply);
+          replayed++;
+        }
+      }
+    }
+    expect(replayed).toBeGreaterThanOrEqual(3);
+    expect(inLine).toBeGreaterThanOrEqual(3);
+  });
+
+  it('the rollout budget binds: at a rung whose sixteenth the plan layer has spent before any rollout, every rollout is unresolved and no grade is claimed', () => {
+    // A rung of 384 units: its sixteenth is one `killEta`, which passing's own
+    // `killEta` spends before the first rollout starts.
+    const STARVED = 384;
+    expect(Math.floor(STARVED / STRATEGY_WORK_SHARE)).toBe(WORK_KILL_ETA);
+    const starved = rootGeneration(evadeEscapes(), strategosPatch(), STARVED).planSet as PlanSet;
+    const rollouts = starved.queries.filter(q => q.name.startsWith('contact.rollout.'));
+    expect(rollouts.length).toBeGreaterThan(0);
+    for (const q of rollouts) expect(q.outcome).toBe('unresolved');
+    for (const l of starved.lines) expect(l.feasibility).toBe('unknown');
+    // The same root at the ladder's rung resolves both (the control).
+    const fed = rootGeneration(evadeEscapes()).planSet as PlanSet;
+    expect(fed.queries.filter(q => q.name.startsWith('contact.rollout.')).map(q => q.outcome)).toEqual(['witnessed', 'refuted']);
   });
 
   it('the promote line crosses a one-shot threshold against the target, as a complete PROMOTION turn', () => {
@@ -629,6 +758,61 @@ describe('Hold (strategy/hold.ts)', () => {
     // Paired lines, one fact apart (the retreated unit): pass unknown, retreat forced.
     expect(grades.get('hold:pass')).toBe('unknown');
     expect(grades.get('hold:retreat')).toBe('forced');
+  });
+
+  it('a kill first possible one ply after the clock ends is too late: the same far board is forced at clock 7 and unknown at clock 5', () => {
+    // Black's only striker, a fire_1 on (9,9), cannot reach any White body in
+    // its next Act; its first possible kill (the bound's first window) is its
+    // second Act, ply 3 counted from the position the pass reaches.
+    const far = (clock: number): GameState => {
+      const units: UnitSpec[] = [
+        { def: 'plant_1', owner: 'white', x: 4, y: 4 },
+        { def: 'plant_1', owner: 'white', x: 4, y: 6 },
+        { def: 'plant_1', owner: 'white', x: 0, y: 1 },
+        { def: 'fire_1', owner: 'white', x: 6, y: 2 },
+        { def: 'fire_1', owner: 'black', x: 9, y: 9 },
+        { def: 'plant_1', owner: 'black', x: 9, y: 0 },
+      ];
+      return withMined({ units, reserves: UNEQUAL_ROUTES_MAP, white: 5, black: 3, inactivityPlies: clock, turnNumber: 13, current: 'white' }, 50, 10);
+    };
+    for (const [clock, left, grade] of [[7, 2, 'forced'], [5, 4, 'unknown']] as const) {
+      const g = rootGeneration(far(clock));
+      expect(g.reading.posture).toBe('hold');
+      const pass = (g.planSet?.lines ?? []).find(l => l.label === 'hold:pass') as PlanSet['lines'][number];
+      const post = applyTurn(g.p, g.turns.find(t => keyOf(t) === pass.endKey) as Turn);
+      expect(clockPliesLeft(post)).toBe(left);
+      // The bound's first window is ply 3 whatever the limit, so only the
+      // plies left decide the grade.
+      expect(killEta(post, B, { limit: left + 1 }).plies).toBe(3);
+      expect(pass.feasibility).toBe(grade);
+      expect(pass.queries[0].result).toEqual({ plies: Math.min(3, left + 1), left });
+    }
+  });
+
+  it("a nearly spent cell caps a unit's share: a plant on a cell with one crystal left is not essential where the same plant on a full cell is", () => {
+    // leadingExposed(w, 10) with (4,4) — slot 0's cell — holding 1 crystal
+    // instead of 8, the map's initial reserve moved with it so the
+    // conservation invariant still holds. Slot 0 mines min(3·2, 1) = 1.
+    const spent = (whiteGained: number): GameState => {
+      const base = leadingExposed(whiteGained, 10);
+      const cells = base.board.cells.map(row => row.map(c => ({ ...c })));
+      const initial = [...(base.board.initialResourceLayers ?? [])];
+      initial[44] -= cells[4][4].resourceLayers - 1;
+      cells[4][4] = { ...cells[4][4], resourceLayers: 1 };
+      return { ...base, board: { ...base.board, cells, initialResourceLayers: initial } };
+    };
+    for (const [w, expected] of [[9, [1, 2, 3]], [11, [1, 2]]] as const) {
+      const p = rep.pack(spent(w), allocState());
+      const reading = clockReading(p, W);
+      expect(reading.verdict).toBe('bounded-win');
+      const L = reading.ledger.sides[W].L.value;
+      const U = reading.ledger.sides[B].U.value;
+      // w = 9: L 24, U 22 — slot 0 (share 1) leaves 23 > 22, the fire (share
+      // 2) exactly 22, a tie, so the fire is essential and slot 0 is not;
+      // w = 11: L 26 — only the two full-cell plants (share 6) are.
+      expect(L - U).toBe(w - 7);
+      expect(holdEssentialSlots(p, reading)).toEqual(expected);
+    }
   });
 
   it('essential slots are exactly the units whose stay-put share would cost the clock win (paired margins, a tie included)', () => {

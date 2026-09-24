@@ -56,9 +56,12 @@
  * unit of ours it is adjacent to and kills in one hit) and `evade` (the
  * opponent first moves every unit inside our next-Act strike area out of it —
  * the blocker-free ball `strikeReach` explains — then mines, and buys outside
- * that area). Each rollout is an
- * `AnalysisQuery` (`contact.rollout.continue` / `contact.rollout.evade`,
- * outcome `witnessed | refuted | unresolved`). The line is `witnessed` only
+ * that area). Each rollout is an `AnalysisQuery` (`contact.rollout.continue`
+ * / `contact.rollout.evade`, outcome `witnessed | refuted | unresolved`) that
+ * carries the rollout's own actions (`ContactRollout.actions`), so a witness
+ * is a line anyone can replay; rollouts run at `ROLLOUT_PROVER_MODE`, and a
+ * replay at the root's full prover must reach the same attack at the same ply
+ * (the test replays every witness that way). The line is `witnessed` only
  * if BOTH witnessed the predicate by the deadline; `not-ruled-out` if one
  * did (a replayed line reached contact, so it is not impossible); `unknown`
  * otherwise. NEVER `forced`: two scripted replies are not every reply, and
@@ -69,8 +72,12 @@
  * kill, ours or theirs, resets it, so no single body's survival is what the
  * contract needs (W1.10's essential-unit veto therefore never fires on a
  * ForceContact line; mate and a proven clock loss still do); `permittedLoss`
- * `CONTACT_PERMITTED_UNITS` body and the crystals the line spends plus our
- * most expensive unit's price (below).
+ * `CONTACT_PERMITTED_UNITS` body (below) and, in crystals, what the line's
+ * Prepare spends plus our most expensive unit's price — CHOICE (why: the
+ * spend is the plan's own investment in contact, and the one body it may
+ * trade is at most our costliest; falsifier: a W1.10 veto replay where a line
+ * inside this allowance still loses the clock because of what it spent or
+ * traded).
  */
 import { DEAD, F_CAN_ACT, MAX_SLOTS, NO_SLOT, PEND_STRIDE, Result, type PackedState, type Side } from '../types';
 import { AKind, paA, paB, paKind, paMake } from '../core/action';
@@ -143,6 +150,17 @@ export interface ContactRollout {
   ply: number | null;
   /** Plies actually rolled (the line's own included). */
   plies: number;
+  /**
+   * The rollout itself: every packed action (`core/action.ts paMake`) both
+   * sides played after the line's own turn, in order, up to and including the
+   * damaging `ATTACK` when `witnessed`. Each `PAY_UPKEEP` in it pays `gen/
+   * generate.ts firstLegalKeepSet`'s choice. Replaying it on a `Replica` from
+   * the position the line reaches is what makes a `witnessed` grade a
+   * replayable line (Part A item 1), not just a claim
+   * (`tests/ai/hard/strategy-plans.test.ts` replays every one). Empty when the
+   * line's own turn decided the query.
+   */
+  actions: number[];
 }
 
 /** A unit of `side` that can damage at least one live enemy unit. */
@@ -437,16 +455,16 @@ function rollout(
 ): AnalysisQuery<ContactRollout> {
   const name = reply === 'continue' ? 'contact.rollout.continue' : 'contact.rollout.evade';
   const start = s.work;
-  const done = (outcome: AnalysisQuery['outcome'], ply: number | null, plies: number): AnalysisQuery<ContactRollout> => ({
-    name,
-    workCost: s.work - start,
-    outcome,
-    result: { reply, ply, plies },
-  });
+  const actions: number[] = [];
+  const done = (outcome: AnalysisQuery['outcome'], ply: number | null, plies: number): AnalysisQuery<ContactRollout> => {
+    s.rec = null;
+    return { name, workCost: s.work - start, outcome, result: { reply, ply, plies, actions } };
+  };
   if (damagedInLine) return done(1 <= deadline ? 'witnessed' : 'refuted', 1 <= deadline ? 1 : null, 1);
   const p = s.roll;
   copyState(p, s.line);
   p.proverMode = ROLLOUT_PROVER_MODE;
+  s.rec = actions;
   for (let ply = 2; ply <= deadline; ply++) {
     if (p.result !== Result.ONGOING) return done('refuted', null, ply - 1);
     if (s.work >= s.cap) return done('unresolved', null, ply - 1);
@@ -558,6 +576,7 @@ function closeness(s: PlanScratch, p: PackedState, me: Side, target: number, tar
  */
 export function forceContactPlans(root: PackedState, t: NodeTables, reading: ClockReading, s: PlanScratch): PlanSet {
   s.work = 0;
+  s.rec = null;
   const queries: AnalysisQuery[] = [];
   const empty = (): PlanSet => ({ posture: reading.posture, lines: [], queries, work: s.work });
   if (reading.posture !== 'force-contact' || root.result !== Result.ONGOING || root.phase !== 1 || root.upkeepPending === 1) return empty();

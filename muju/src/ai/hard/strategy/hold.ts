@@ -39,12 +39,14 @@
  * (`strategy/killeta.ts`): if, on the position a line's turn reaches, the
  * enemy's `killEta` exceeds the plies left there (`clockPliesLeft`), then in
  * EVERY legal continuation by both sides — ours included — no unit of ours is
- * killed before the kill clock ends the game. That clause, and only that
- * clause, is `forced`. NOT forced: the clock outcome itself (it also needs
- * the mined-total lead to hold — `clock.ts`'s verdict grade says how strong
- * that is — and no home or elimination ending first); our OWN kills (a kill
- * we make resets the clock too, and nothing here stops the search choosing
- * one; W1.10's veto is where "a free kill is suppressed under Hold" lives).
+ * killed in those plies, which, unless a kill of OURS resets the clock and
+ * extends the game past them, are all the plies before the kill clock ends
+ * it. That clause, and only that clause, is `forced`. NOT forced: the clock
+ * outcome itself (it also needs the mined-total lead to hold — `clock.ts`'s
+ * verdict grade says how strong that is — and no home or elimination ending
+ * first); our OWN kills (a kill we make resets the clock too, and nothing
+ * here stops the search choosing one; W1.10's veto is where "a free kill is
+ * suppressed under Hold" lives).
  * When the enemy's `killEta` does not exceed the plies left the bound cannot
  * say either way, and the line is `unknown` — a lower bound at or below `r`
  * rules nothing in.
@@ -60,7 +62,12 @@
  * remaining stay-put mining is inside the lead's margin — if it died, our
  * floor less its share would no longer beat the opponent's ceiling
  * (`L_me − share ≤ U_opp`; a tie is a draw, not a win). Its share is
- * `ledger.ts`'s per-unit closed form, `min(mine · minings, reserve)`.
+ * `ledger.ts`'s per-unit closed form, `min(mine · minings, reserve)`, taken
+ * for that unit alone: `L_me` is not recomputed for the army that would
+ * remain, so where rent is unaffordable (`ledger.ts settleRent` releases a
+ * unit) the dead unit's rent and income, which change which OTHER units the
+ * rent releases, are not accounted for — the set is then an approximation of
+ * plan B.2's rule, exact whenever the ledger releases nothing.
  */
 import { DEAD, F_CAN_ACT, MAX_SLOTS, NO_SLOT, Result, type PackedState, type Side } from '../types';
 import { AKind, paMake } from '../core/action';
@@ -252,6 +259,7 @@ function breakChainAct(s: PlanScratch, root: PackedState, t: NodeTables): { act:
  */
 export function holdPlans(root: PackedState, t: NodeTables, reading: ClockReading, s: PlanScratch): PlanSet {
   s.work = 0;
+  s.rec = null;
   const queries: AnalysisQuery[] = [];
   if (reading.posture !== 'hold' || root.result !== Result.ONGOING || root.phase !== 1 || root.upkeepPending === 1) {
     return { posture: reading.posture, lines: [], queries, work: s.work };

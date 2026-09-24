@@ -89,6 +89,15 @@ export const WORK_ROW = 1;
  * posture roots (the same measurement).
  */
 export const WORK_KILL_ETA = 24;
+/**
+ * One full-prover call a line's `END_PLACE` makes on the scratch's own
+ * `Replica` (`core/state.ts provesHomeCheckmate`, only when the line leaves a
+ * body of ours on the enemy corner in Prepare). DERIVED (DESIGN §8
+ * `WORK_COST`, `search/time.ts`: PROVER = 40 per full-prover call — the price
+ * the search pays for the same call on its own replica, spelled here because
+ * `strategy` may not import `search`).
+ */
+export const WORK_PROVER = 40;
 
 // ---------------------------------------------------------------------------
 // scratch
@@ -122,6 +131,13 @@ export interface PlanScratch {
   readonly rowA: Int8Array;
   readonly rowB: Int8Array;
   readonly rowC: Int8Array;
+  /**
+   * Where `forward` records every action it plays, while a ForceContact
+   * rollout is running (`contact.ts rollout` sets it, and clears it when the
+   * rollout ends); `null` otherwise. The rollout's `AnalysisQuery` carries the
+   * list, so a witness is a replayable line, not just a claim.
+   */
+  rec: number[] | null;
   /** Work units spent by the computation in progress. */
   work: number;
   /** The computation's budget; rollouts stop (`unresolved`) past it. */
@@ -150,6 +166,7 @@ export function newPlanScratch(cat: Catalog = activeCatalog()): PlanScratch {
     rowA: new Int8Array(100),
     rowB: new Int8Array(100),
     rowC: new Int8Array(100),
+    rec: null,
     work: 0,
     cap: 0,
   };
@@ -170,8 +187,10 @@ export function playLine(root: PackedState, t: NodeTables, line: StrategyLine, s
   copyState(s.line, root);
   s.undo.top = 0;
   s.rep.resetUndoScratch();
+  const proverBefore = s.rep.fullProverCalls;
   playStrategyTurn(s.rep, s.line, t, line, s.undo, s.keep, s.actions, s.turn);
   s.work += WORK_MAKE * (s.turn.count > 0 ? s.turn.count : line.act.length + line.prep.length + 1);
+  s.work += WORK_PROVER * (s.rep.fullProverCalls - proverBefore);
   s.undo.top = 0;
   s.rep.resetUndoScratch();
   return s.turn.count >= 0;
@@ -180,7 +199,8 @@ export function playLine(root: PackedState, t: NodeTables, line: StrategyLine, s
 /**
  * Forward-only `make` on a scratch board (`decodeTurn`'s pattern: the undo
  * record of an applied action is never replayed, so both stacks are dropped
- * first). False, with nothing applied, when `rep.isLegal` refuses.
+ * first). False, with nothing applied, when `rep.isLegal` refuses. Appends the
+ * action to `s.rec` while a rollout is recording.
  */
 export function forward(s: PlanScratch, p: PackedState, a: number, keep?: KeepSetTable): boolean {
   if (!s.rep.isLegal(p, a, keep)) return false;
@@ -188,6 +208,7 @@ export function forward(s: PlanScratch, p: PackedState, a: number, keep?: KeepSe
   s.rep.resetUndoScratch();
   s.rep.make(p, a, s.undo, keep);
   s.work += WORK_MAKE;
+  if (s.rec !== null) s.rec.push(a);
   return true;
 }
 

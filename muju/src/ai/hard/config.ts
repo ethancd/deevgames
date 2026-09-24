@@ -350,8 +350,9 @@ export interface SearchFix {
    * `END_ACTION`, `PAY_UPKEEP`, Prepare, `END_PLACE`), flagged
    * `FORCED|STRATEGY` (`gen/turn.ts TurnFlag.STRATEGY`), the same way
    * `setRescueWitness` forces a home-defence line in; `search/order.ts`
-   * orders them first after the TT move and the home-corner answers
-   * (`ORDER_STRATEGY`), the plan layer's work is charged to the meter, and
+   * orders them right after the TT move, the home-corner answers and a
+   * denial of four or more spawn anchors (`ORDER_STRATEGY`), the plan
+   * layer's work is charged to the meter, and
    * the result carries `RootResult.strategy` (the Chronicle).
    *
    * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: no source is installed,

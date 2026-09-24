@@ -190,8 +190,8 @@ export interface InjectedPlan {
    * `not-ruled-out` when one did, else `unknown`; never `forced`. Hold
    * (`strategy/hold.ts`): `forced` when the enemy's killETA on the position
    * the line reaches exceeds the plies left there — which forces the "no
-   * enemy kill before the clock" clause, and only that clause — else
-   * `unknown`.
+   * enemy kill in the plies the clock has left" clause, and only that clause
+   * (`strategy/hold.ts`, "what is and is not forced") — else `unknown`.
    */
   feasibility: Feasibility;
   queries: readonly AnalysisQuery[];
