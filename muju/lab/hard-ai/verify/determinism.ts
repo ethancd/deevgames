@@ -26,7 +26,15 @@
  * REQUIRED and reads from the same `openings.jsonl` path exactly as before.
  * When `--positions-file` IS given, `--positions` becomes optional and
  * defaults to every position in that file (an explicit `--positions <n>`
- * still takes the first `n` rows, e.g. to keep a quick smoke run short).
+ * still takes the first `n` rows, e.g. to keep a quick smoke run short); a
+ * selection that resolves to no positions is refused rather than reported as
+ * a vacuous `identical: true`, and the artifact records the file it read
+ * (`positionsFile`, repo-relative) so a Gate 0 artifact names its corpus.
+ *
+ * Every repetition is compared row by row against the first; a repetition
+ * that is missing a decision, has an extra one, or lists a different
+ * position/seed/budget at the same index is a mismatch (`field: 'decision'`),
+ * never a silent skip.
  *
  * `hard@*` engines (M14) run the same comparison on `src/ai/hard/engine.ts`'s
  * `searchTurn` at a fixed work budget. Three additional things change for them:
@@ -272,10 +280,20 @@ async function runShardVerdict(args: Args, shardIndex: number, shardCount: numbe
   const [first, ...rest] = runs;
   const mismatches: ShardVerdict['mismatches'] = [];
   for (let r = 0; r < rest.length; r++) {
+    // W1.11 review: a repetition that returned a different decision list is a
+    // mismatch, not a row to skip — before this, a fresh process that came back
+    // short compared only the rows it did return and could report `identical`.
+    for (let i = first.length; i < rest[r].length; i++) {
+      const b = rest[r][i];
+      mismatches.push({ run: r + 1, positionId: b.positionId, seed: b.seed, work: b.work, field: 'decision' });
+    }
     for (let i = 0; i < first.length; i++) {
       const a = first[i];
       const b = rest[r][i];
-      if (!b) continue;
+      if (!b || b.positionId !== a.positionId || b.seed !== a.seed || b.work !== a.work) {
+        mismatches.push({ run: r + 1, positionId: a.positionId, seed: a.seed, work: a.work, field: 'decision' });
+        continue;
+      }
       for (const field of ['endKey', 'score', 'depth', 'nodesSearched', 'tacticalNodes'] as const) {
         if (a[field] !== b[field]) mismatches.push({ run: r + 1, positionId: a.positionId, seed: a.seed, work: a.work, field });
       }
@@ -352,8 +370,15 @@ async function main(): Promise<void> {
   // to a concrete count exactly once, here, before anything downstream (the
   // internal-batch branch, `buildDecisions`, the shard/fresh-process re-spawns,
   // or the written artifact's `positions` field) ever reads `args.positions`.
-  if (args.positions === -1) {
-    args.positions = readPositions(positionsPathFor(args)).length;
+  // Only on the `--positions-file` path: without it, `--positions` is whatever
+  // the caller typed, exactly as before this flag existed.
+  if (args.positionsFile !== null) {
+    if (args.positions === -1) args.positions = readPositions(args.positionsFile).length;
+    // `!(n > 0)` also catches NaN, which `slice(0, NaN)` would turn into an
+    // empty batch and a vacuous `identical: true`.
+    if (!(args.positions > 0)) {
+      throw new Error(`hard:determinism: --positions-file ${args.positionsFile} selects no positions (--positions ${args.positions})`);
+    }
   }
 
   if (args.internalBatch) {
@@ -378,6 +403,9 @@ async function main(): Promise<void> {
     engine: args.engine,
     workUnits: args.workUnits,
     positions: args.positions,
+    // Present only when `--positions-file` was given, so an `openings.jsonl`
+    // run writes exactly the keys it always wrote.
+    ...(args.positionsFile !== null ? { positionsFile: path.relative(REPO_ROOT, args.positionsFile) } : {}),
     seeds: args.seeds,
     shards,
     decisions,
