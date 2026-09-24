@@ -236,6 +236,48 @@ describe('ClockHeist authored positions: the lock (ahead at clock >= 3)', () => 
   });
 });
 
+describe('ClockHeist authored positions: locked-lead mining economics (W1.12 follow-up)', () => {
+  /**
+   * W1.12 follow-up (`~/.claude/plans/can-you-respond-to-piped-book.md` Part
+   * B, "ClockHeist hold economics"): the original lock treated every safe
+   * unit's MOVE the same as a threatened unit's -- always worse than passing
+   * -- so a unit already out of every enemy strike area, sitting on a paying
+   * cell, was never distinguished from one that genuinely needed to run. This
+   * pair changes exactly the mining unit's own square (Part A item 6):
+   * Black's water_1 sits at (4,9); its next-turn reach is
+   * `speed * (actions - 1) + 1 = 1*3+1 = 4` squares. (4,4) is Manhattan
+   * distance 5 away -- out of reach; (4,5) is distance 4 -- inside it.
+   * Fire_1 mines on both squares (row y=4 and y=5 both hold resource layers
+   * 8, `src/game/resourceMap.ts` `UNEQUAL_ROUTES_MAP`), so the only fact this
+   * pair varies is safety, never richness.
+   */
+  const paying1 = makeUnit('w1', 'fire_1', 'white', { x: 4, y: 4 });
+  const paying2 = makeUnit('w1', 'fire_1', 'white', { x: 4, y: 5 });
+  const threat = makeUnit('b1', 'water_1', 'black', { x: 4, y: 9 });
+
+  it('ahead at clock >= 3, unit outside every enemy strike area on a mining cell: stays and mines', () => {
+    const state = authoredPosition({ units: [paying1, threat], white: 20, black: 5, clock: 3 });
+    // The rules agree it is truly out of reach, not just past ClockHeist's
+    // own empty-board estimate.
+    expect(ruleStrikeSquares(state.board, threat).has(key(paying1.position))).toBe(false);
+    // Nothing to improve: the unit is already safe and already mining, so
+    // there is no legal MOVE this lock scores above a pass (`lockedScore`
+    // never rewards moving a safe unit off a cell that still pays).
+    expect(decide(state)).toEqual({ type: 'END_ACTION_PHASE' });
+  });
+
+  it('the same unit one square inside an enemy strike area (one fact changed: its square): retreats', () => {
+    const state = authoredPosition({ units: [paying2, threat], white: 20, black: 5, clock: 3 });
+    expect(ruleStrikeSquares(state.board, threat).has(key(paying2.position))).toBe(true);
+    const action = decide(state);
+    expect(action.type).toBe('MOVE');
+    if (action.type !== 'MOVE') return;
+    expect(action.unitId).toBe('w1');
+    const after: BoardState = { ...state.board, units: state.board.units.map(u => u.id === 'w1' ? { ...u, position: action.to } : u) };
+    expect(ruleStrikeSquares(after, threat).has(key(action.to)), `retreated to ${key(action.to)}`).toBe(false);
+  });
+});
+
 describe('ClockHeist authored positions: free kills', () => {
   /**
    * White fire_1 at (5,5) next to a Black plant_1 at (5,6): fire beats plant
