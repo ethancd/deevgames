@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { actionRequestSchema, joinSchema, roomIdSchema, tokenSchema } from '../../server/schema';
 import { joinRoom, normalizeServer, readRoom, roomRequest } from '../../src/online/client';
 import type { RoomAdmission, RoomConnection, RoomSnapshot } from '../../src/online/types';
+import { hardConfigFor } from '../../lab/hard-ai/bots/hard';
 import { PHASING_HARD_READINESS, assertAuthenticatedSeat, assertSeatRoom, seatContractSchema, type SeatContract } from './contract';
 import type { SeatJournal } from './runner';
 
@@ -9,7 +10,19 @@ const credentialsSchema = z.object({ roomId: roomIdSchema, player: z.enum(['whit
 const common = { serverUrl: z.string().transform(normalizeServer), roomId: roomIdSchema,
   seed: z.number().int().min(0).max(0xffffffff), stateFile: z.string().min(1),
   // Default closed: absent here means `assertSeatRoom` refuses the room.
-  phasingHardReadiness: z.literal(PHASING_HARD_READINESS).optional() };
+  phasingHardReadiness: z.literal(PHASING_HARD_READINESS).optional(),
+  /**
+   * STRATEGOS W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+   * B.2 step W1.14). Which `hardConfigFor`/`hardEnginePatch` label
+   * (`lab/hard-ai/bots/hard.ts`) this seat builds its engine from: `'desktop'`
+   * (the default — byte for byte the only engine this seat ever ran before
+   * this field existed), `'strategos'`, or any other label that function
+   * accepts (`lab`, `midrange`, `phone`, `ablate:<arm>`, …). Checked against
+   * that same function below, so an unknown label is refused HERE — before
+   * any room is read, joined or reserved — rather than surfacing as a
+   * first-turn engine-construction failure deep inside a live room.
+   */
+  profile: z.string().min(1).default('desktop') };
 export const seatConfigSchema = z.discriminatedUnion('mode', [
   z.object({ ...common, ...seatContractSchema.options[0].shape,
     name: joinSchema.shape.name.optional(), inviteCode: joinSchema.shape.inviteCode.optional(), credentials: credentialsSchema.optional() }).strict(),
@@ -19,6 +32,10 @@ export const seatConfigSchema = z.discriminatedUnion('mode', [
   if (config.mode === 'phasing-smoke' && (config.credentials ? config.name !== undefined || config.inviteCode !== undefined : !config.name || !config.inviteCode)) {
     context.addIssue({ code: 'custom', message: 'Smoke mode requires either issued credentials or both name and inviteCode, never both admission methods.' });
   }
+  try { hardConfigFor(config.profile); }
+  catch (error) {
+    context.addIssue({ code: 'custom', path: ['profile'], message: error instanceof Error ? error.message : 'Unknown engine-seat profile.' });
+  }
 });
 export type SeatConfig = z.infer<typeof seatConfigSchema>;
 /**
@@ -27,11 +44,22 @@ export type SeatConfig = z.infer<typeof seatConfigSchema>;
  * resuming a Standard seat's journal into a Phasing-only seat would be a
  * cross-ruleset resume, which is exactly the confusion the rules revision was
  * put inside every identity to prevent. Such a run is restarted, not migrated.
+ *
+ * STRATEGOS W1.14 added the OPTIONAL `profile` key without a version bump: a
+ * version-3 journal written before it has no key and reads as `'desktop'`,
+ * which is what it ran; a journal that does carry it is refused by an older
+ * runner's `.strict()`, which is the safe direction (it cannot silently run
+ * the wrong engine).
  */
 export const seatJournalSchema = z.object({ version: z.literal(3), seed: z.number().int().min(0).max(0xffffffff),
   admission: z.enum(['issued', 'join']), contract: seatContractSchema,
   connection: z.object({ serverUrl: z.string().transform(normalizeServer), ...credentialsSchema.shape }).strict(),
   pending: actionRequestSchema.optional(),
+  // STRATEGOS W1.14 review: the engine profile is part of the seat's identity
+  // (`journalProfile` below). Optional so every journal written before the
+  // field existed still parses — and means `'desktop'`, the only engine such a
+  // run could have built.
+  profile: z.string().min(1).optional(),
 }).strict().superRefine((journal, context) => {
   if (journal.contract.mode === 'pinned' && journal.admission !== 'issued') context.addIssue({ code: 'custom', message: 'Pinned seats require issued credentials.' });
 });
@@ -47,12 +75,33 @@ export function contractFor(config: SeatConfig): SeatContract {
   return config.mode === 'phasing-smoke' ? { mode: config.mode, ...readiness } : { mode: config.mode,
     expectedMatchPolicy: { ...config.expectedMatchPolicy }, expectedTimeControl: { ...config.expectedTimeControl }, expectedHandicap: config.expectedHandicap, ...readiness };
 }
+/**
+ * THE ENGINE PROFILE IS PART OF THE SEAT'S IDENTITY (STRATEGOS W1.14 review).
+ * A run started as `hard@desktop` that crashes and is resumed with
+ * `profile: "strategos"` in its config (or the reverse) would switch engines
+ * mid-game, silently: the `start` line would name the new profile, but nothing
+ * would refuse it. So the journal records the profile and
+ * `assertSeatConfiguration` compares it like the seed and the contract.
+ *
+ * `'desktop'` is written as an ABSENT key, never as `profile: "desktop"`, for
+ * the same reason `useAI.ts` omits `hard` on a desktop request: a desktop
+ * seat's journal stays byte-for-byte the journal it wrote before the field
+ * existed, and an absent key is exactly what every pre-W1.14 journal carries.
+ * The comparison is on the LABEL, so `desktop-400k` (documentary suffix, same
+ * engine) does not resume a `desktop` run either — refusing is the safe side.
+ */
+export function journalProfile(profile: string): Pick<SeatJournal, 'profile'> {
+  return profile === 'desktop' ? {} : { profile };
+}
 export function assertSeatConfiguration(journal: SeatJournal, config: SeatConfig): void {
   journal = seatJournalSchema.parse(journal);
   config = seatConfigSchema.parse(config);
   const admission = config.credentials ? 'issued' : 'join';
   if (journal.connection.serverUrl !== config.serverUrl || journal.connection.roomId !== config.roomId || journal.seed !== config.seed || journal.admission !== admission ||
       JSON.stringify(journal.contract) !== JSON.stringify(contractFor(config))) throw new Error('Stored seat identity or expected contract differs from the configuration.');
+  if ((journal.profile ?? 'desktop') !== config.profile) {
+    throw new Error(`Stored engine profile "${journal.profile ?? 'desktop'}" differs from the configuration's "${config.profile}"; a resumed seat cannot change engines mid-game.`);
+  }
   if (config.credentials && (journal.connection.player !== config.credentials.player || journal.connection.token !== config.credentials.token)) {
     throw new Error('Stored issued credentials differ from the configuration.');
   }
@@ -75,7 +124,7 @@ export async function initializeSeat(config: SeatConfig, reserve: () => void, tr
     assertSeatRoom(room, expected);
     assertAuthenticatedSeat(room, connection.player);
     reserve();
-    return { version: 3, admission: 'issued', connection, seed: config.seed, contract };
+    return { version: 3, admission: 'issued', connection, seed: config.seed, contract, ...journalProfile(config.profile) };
   }
   assertSeatRoom(await transport.inspect(config.serverUrl, config.roomId), expected);
   reserve();
@@ -85,5 +134,5 @@ export async function initializeSeat(config: SeatConfig, reserve: () => void, tr
   if (credentials.roomId !== config.roomId) throw new Error('Joined credentials belong to a different room.');
   assertSeatRoom(admission.room, expected);
   assertAuthenticatedSeat(admission.room, credentials.player);
-  return { version: 3, admission: 'join', connection: { ...credentials, serverUrl: config.serverUrl }, seed: config.seed, contract };
+  return { version: 3, admission: 'join', connection: { ...credentials, serverUrl: config.serverUrl }, seed: config.seed, contract, ...journalProfile(config.profile) };
 }

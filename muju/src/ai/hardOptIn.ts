@@ -38,6 +38,28 @@
  * `src/ai/hard/config.ts`'s, and its `deviceProfilePatch` is what goes on the
  * wire as the request's `hard` patch.
  *
+ * ENGINE PROFILE (STRATEGOS W1.14, plan
+ * `~/.claude/plans/can-you-respond-to-piped-book.md`, B.1b). `?hardEngine=strategos`
+ * (or `localStorage['muju.hardEngine']`) merges `src/ai/hard/config.ts`'s
+ * `strategosPatch()` — the six strategy flags `hard@strategos` sets, no
+ * weights, no tables — onto whatever the device profile above already put on
+ * the wire; without it `resolveHardEngineProfile()` answers `'desktop'`, sends
+ * no patch at all, and the request is unchanged. THIS IS A SEPARATE AXIS from
+ * `?hardProfile`: that flag picks the search TABLES a device runs (its own
+ * shape, unrelated to strategy); this one picks which STRATEGY PATCH rides
+ * along with them. A phone and a desktop can each run `hard@strategos`, and a
+ * desktop's default (`?hardEngine` absent, or any value but `strategos`) still
+ * sends the exact request it always has.
+ *
+ * The `hard` patch sent when both apply is `{ ...devicePatch, ...enginePatch }`
+ * — spread order does not matter because `deviceProfilePatch` only ever sets
+ * table fields (`K`, `gen`, `time`, …) and `strategosPatch` only ever sets
+ * `searchFix`/`evalFix`; the two never touch the same key
+ * (`tests/ai/hard-engine-profile.test.ts` pins the disjointness, and that the
+ * browser's strategos engine resolves to the very configuration the seat and
+ * the ladder build for `hard@strategos`; `tests/hooks/ai-hard-engine-profile.test.tsx`
+ * pins what reaches the wire).
+ *
  * WHAT THE ENGINE DOES WITH IT. The allowance reaches `HardEngine.searchTurn`
  * as `targetMs` (and, since A11, as `deadlineMs`), and an explicit `targetMs`
  * is used verbatim — the device profile's `time.maxMs` is the default the
@@ -46,10 +68,10 @@
  * reaches 51,200,000 units so the longer paces buy a proportionally longer
  * search rather than the same 5 s one (`search/time.ts WORK_LADDER`).
  *
- * Every one of these is read ONCE per game start (`useAI.ts` caches them and
- * clears the cache in `cancel`, which every new game / restart / difficulty
- * change already runs through), so flipping a flag mid-turn cannot split one
- * turn across two engines or two budgets.
+ * Every one of these, `?hardEngine` included, is read ONCE per game start
+ * (`useAI.ts` caches them and clears the cache in `cancel`, which every new
+ * game / restart / difficulty change already runs through), so flipping a
+ * flag mid-turn cannot split one turn across two engines or two budgets.
  *
  * DIAGNOSTICS. Every fallback is counted on `window.__mujuHardDiag` and logged
  * once with the fixed prefix `[hard-ai]`. The counters are the "an engine
@@ -70,6 +92,13 @@ export const HARD_AI_MS_QUERY_PARAM = 'hardMs';
  * forms, read in the same order, as `?hardAi`. See `resolveHardDeviceProfile`. */
 export const HARD_AI_PROFILE_QUERY_PARAM = 'hardProfile';
 export const HARD_AI_PROFILE_STORAGE_KEY = 'muju.hardProfile';
+/** Page-URL override for the ENGINE PROFILE (STRATEGOS W1.14): `?hardEngine=strategos`
+ * or `?hardEngine=desktop`, with `localStorage['muju.hardEngine']` as the
+ * stored spelling — the same two forms, read in the same order, as `?hardAi`
+ * and `?hardProfile`, and a SEPARATE axis from `?hardProfile` (see the module
+ * header). See `resolveHardEngineProfile`. */
+export const HARD_ENGINE_QUERY_PARAM = 'hardEngine';
+export const HARD_ENGINE_STORAGE_KEY = 'muju.hardEngine';
 /** Every `[hard-ai]` console line starts with this, so a test can grep for it. */
 export const HARD_AI_LOG_PREFIX = '[hard-ai]';
 
@@ -351,4 +380,27 @@ export function resolveHardDeviceProfile(): DeviceProfileName {
   const device = forced ?? detectDeviceProfile();
   console.warn(`${HARD_AI_LOG_PREFIX} device profile ${device}${forced === null ? '' : ` (forced by ${HARD_AI_PROFILE_QUERY_PARAM}=${forced})`} — this game builds the hard engine from the ${device} tables (override with ?${HARD_AI_PROFILE_QUERY_PARAM}=phone or =desktop)`);
   return device;
+}
+
+/** `'desktop'` | `'strategos'` — the two `?hardEngine` spellings
+ * `resolveHardEngineProfile` recognises. See the module header's ENGINE
+ * PROFILE note for how this differs from `DeviceProfileName`. */
+export type HardEngineProfileName = 'desktop' | 'strategos';
+
+/**
+ * WHICH STRATEGY PATCH THIS GAME'S HARD ENGINE CARRIES (STRATEGOS W1.14).
+ *
+ * Override first, exactly like `resolveHardDeviceProfile`: `?hardEngine=strategos`
+ * / `?hardEngine=desktop` (or `localStorage['muju.hardEngine']`) decides on
+ * its own; any other value — including absence — is `'desktop'`, which sends
+ * no patch (see `useAI.ts`). Logged once per game with the same `[hard-ai]`
+ * prefix, so "why is this game playing strategos" is answerable from the
+ * console alone.
+ */
+export function resolveHardEngineProfile(): HardEngineProfileName {
+  const raw = readPageFlag(HARD_ENGINE_QUERY_PARAM, HARD_ENGINE_STORAGE_KEY)?.trim().toLowerCase();
+  const forced = raw === 'strategos' || raw === 'desktop' ? raw : null;
+  const engineProfile = forced ?? 'desktop';
+  console.warn(`${HARD_AI_LOG_PREFIX} engine profile ${engineProfile}${forced === null ? '' : ` (forced by ${HARD_ENGINE_QUERY_PARAM}=${forced})`} — this game's hard seat ${engineProfile === 'strategos' ? 'merges the strategos strategy patch onto' : 'sends no strategy patch with'} its search configuration (override with ?${HARD_ENGINE_QUERY_PARAM}=strategos or =desktop)`);
+  return engineProfile;
 }
