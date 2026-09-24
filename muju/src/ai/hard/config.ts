@@ -321,20 +321,20 @@ export interface SearchFix {
   /**
    * STRATEGOS W1.7 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
    * B.2 step W1.7). ON means `gen/actionsearch.ts`'s `dfs` loop skips
-   * generating an ATTACK whose `power === 0` — a move `combat.ts:94`'s clamp
-   * guarantees deals no damage and changes no invariant a legal reply can see
-   * (proof: the naive and pruned END-POSITION SETS are equal on
-   * `canonical-check`, so nothing reachable is lost, only a dead branch). The
-   * condition is `power === 0` and never `power < effectiveDef`: a zero-power
-   * attack is provably inert, but chip damage below the target's effective
-   * defence still changes state (retreat pressure, invariant bits) and must
-   * still be searched.
+   * generating an ATTACK whose `power === 0` — a move `src/game/combat.ts`'s
+   * `Math.max(0, …)` clamp in `calculateAttackPower` lets through but that
+   * deals no damage. W1.7's acceptance is what makes the prune exact: the
+   * naive and pruned END-POSITION SETS must be equal on `canonical-check`, so
+   * nothing reachable is lost, only a dead branch. The condition is
+   * `power === 0` and never `power < effectiveDef`: chip damage below the
+   * target's effective defence still changes state and must still be
+   * searched (plan B.1b).
    *
-   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: `gen/generate.ts` never calls
-   * the setter this flag installs, so `dfs` enumerates zero-power attacks
-   * exactly as it does today and the emitted `Turn` list is unchanged. Only
-   * `hard@strategos` (`strategosPatch()` below) sets it; W1.1 only declares
-   * and wires the key — the pruning code lands in W1.7.
+   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: `engine.ts` never calls the
+   * `gen/generate.ts` setter this flag wires, so `dfs` enumerates zero-power
+   * attacks exactly as it does today and the emitted `Turn` list is
+   * unchanged. Only `hard@strategos` (`strategosPatch()` below) sets it; W1.1
+   * only declares the key — the pruning code lands in W1.7.
    */
   pruneZeroDamage?: boolean;
 
@@ -595,19 +595,20 @@ export interface EvalFix {
   clockLedger?: boolean;
 
   /**
-   * STRATEGOS W1.8 (plan B.2 step W1.8). ON means `gen/promote.ts
-   * bestMission` returns `Mission.ANY` (benefit 0) instead of −1 — "no
-   * candidate" — for a promotion that is not FORTIFY/SURVIVE/ANCHOR/INCOME/
-   * REACH, so a plain strength upgrade (e.g. `fire_1 → fire_2`) is offered at
-   * all instead of being silently dropped before `planPromotions` ever sees
-   * it, and `planPromotions` itself runs up to `MAX_SLOTS` instead of
-   * stopping at the first `bestMission` refusal. `gen/generate.ts
-   * buildCombos` still pins one bare promotion-only combo per promotion so a
-   * legal promotion is not lost to the K=24 root cut; the `forcedOnly` branch
-   * is untouched.
+   * STRATEGOS W1.8 (plan B.2 step W1.8; owner decision B.1a: flag-gated). ON
+   * means `gen/promote.ts bestMission` returns a catch-all mission (the
+   * plan's `Mission.ANY`, benefit 0) instead of −1 — "no candidate" — for a
+   * legal promotion no mission claims (FORTIFY/SURVIVE/ANCHOR/INCOME/REACH,
+   * plus STRENGTH when `strength.promoteStrengthMission` is on), so it is
+   * offered at all instead of being skipped inside `planPromotions`, whose
+   * ordinary beam also widens from its `max` argument to `MAX_SLOTS`. W1.8
+   * also makes `gen/generate.ts buildCombos` pin one bare promotion-only combo
+   * per promotion, since emitting a promotion does not get it past
+   * `buildCombos`' 24-combo prune or the K=24 root cut (plan B.1b); the
+   * `forcedOnly` branch is untouched.
    *
    * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: `bestMission` keeps returning
-   * −1 for every non-listed mission and `planPromotions`/`buildCombos` are
+   * −1 for every unclaimed promotion and `planPromotions`/`buildCombos` are
    * unchanged, so `oracles/canonical-check.ts` sees the identical combo set.
    * Only `hard@strategos` sets it; the exhaustive-promotion code lands in
    * W1.8.
@@ -839,8 +840,8 @@ export const LAB: HardConfig = makeConfig(DESKTOP_SHAPE, null);
  * STRATEGOS W1.1 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
  * B.2 step W1.1). The patch `lab/hard-ai/bots/hard.ts hardConfigFor` merges
  * onto `DESKTOP` to make `hard@strategos` (`?hardEngine=strategos` in the
- * browser, plan B.1b): turns on exactly the six flags declared above --
- * `SearchFix.pruneZeroDamage`, `.strategyPlans`, `.strategyVeto`,
+ * browser once W1.14 lands, plan B.1b): turns on exactly the six flags
+ * declared above — `SearchFix.pruneZeroDamage`, `.strategyPlans`, `.strategyVeto`,
  * `.killClockPolicy: 'ledger'` and `EvalFix.clockLedger`,
  * `.promoteExhaustive` — and carries NO `weights` key of its own, so
  * `hardEnginePatch`'s placeholder-vs-`DEFAULT_WEIGHTS` substitution

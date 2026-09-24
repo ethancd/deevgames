@@ -158,10 +158,12 @@ describe('hard@strategos identity (STRATEGOS W1.1)', () => {
       });
       expect(patch.evalFix).toEqual({ rentOnce: true, clockLedger: true, promoteExhaustive: true });
     } finally {
-      DESKTOP.searchFix = undefined;
-      DESKTOP.evalFix = undefined;
+      // `delete`, not `= undefined`: DESKTOP carries neither KEY today, and an
+      // own key holding `undefined` would make `'searchFix' in DESKTOP` true.
+      delete DESKTOP.searchFix;
+      delete DESKTOP.evalFix;
     }
-    expect(DESKTOP.searchFix).toBeUndefined();
-    expect(DESKTOP.evalFix).toBeUndefined();
+    expect('searchFix' in DESKTOP).toBe(false);
+    expect('evalFix' in DESKTOP).toBe(false);
   });
 });
