@@ -20,7 +20,7 @@
  * is reported `interrupted`, never replaced.
  */
 import { createHash } from 'node:crypto';
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { closeSync, existsSync, openSync, readFileSync, readSync, readdirSync, rmSync, statSync, appendFileSync } from 'node:fs';
 import { dirname, resolve, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,8 +41,8 @@ import {
   writeStatus, memoryDir, gameIsSettled, type Family, type GameId, type ModelId, type Schedule, type ScheduleGame,
   type StatusSnapshot, type TimeControl,
 } from './pilot';
-import { appendExperience, curatePlaybook, freezeSnapshot, type ExperienceRecord } from './publish';
-import { pidAlive, runPlayer, type PlayerResult, type RunPlayerArgs } from './players';
+import { appendExperience, curatePlaybook, freezeSnapshot, PLAYBOOK_WORD_TARGET, type ExperienceRecord } from './publish';
+import { pidAlive, promptInputHashes, runPlayer, type PlayerResult, type RunPlayerArgs } from './players';
 import { factsSummaryFor } from './facts';
 
 const SERVER_URL = process.env.MUJU_SERVER_URL ?? 'https://deevgames-muju.onrender.com';
@@ -62,6 +62,25 @@ const PREFLIGHT_MAX_AGE_MS = 12 * 60 * 60 * 1000;
 // `engineSourceSha256` uses the SAME walk as engine-seat main.ts#sourceIdentity(), which refuses to
 // start on a mismatch, so a stale checkout is caught before any search.
 // ---------------------------------------------------------------------------
+/** The harness's own identity for manifest.json: commit, whether tools/llm-pilot has uncommitted changes. */
+function harnessCommit(): { commit: string | null; dirty: boolean | null } {
+  try {
+    const commit = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: TOOLS_DIR, encoding: 'utf8' }).trim();
+    const dirty = execFileSync('git', ['status', '--porcelain', '--', '.'], { cwd: TOOLS_DIR, encoding: 'utf8' }).trim() !== '';
+    return { commit, dirty };
+  } catch { return { commit: null, dirty: null }; }
+}
+/** Everything that shaped what the player saw, hashed: prompts, brief and the frozen memory snapshot. */
+export function experimentInputs(brief: string, snapshotVersion: number): Record<string, unknown> {
+  const snapshotHash = createHash('sha256');
+  for (const file of ['playbook.md', 'experiences.jsonl']) {
+    const full = join(snapshotDir(snapshotVersion), file);
+    snapshotHash.update(`${file}\0`).update(existsSync(full) ? readFileSync(full) : '');
+  }
+  return { harness: harnessCommit(), ...promptInputHashes(), briefSha256: createHash('sha256').update(brief).digest('hex'),
+    memorySnapshotSha256: snapshotHash.digest('hex') };
+}
+
 function engineSourceSha256(): string {
   const files: Record<string, string> = {};
   const walk = (directory: string) => {
@@ -318,6 +337,7 @@ async function prepareGame(game: ScheduleGame, snapshotVersion: number): Promise
     engine: { name: ENGINE_DISPLAY_NAME, profile: 'desktop', targetMs: 55_000, deadlineMs: 60_000, rulesId: PHASING_RULES_VERSION,
       sourceSha256: engineSourceSha256(), seed: seedFor(game.gameId, isSmoke() ? `smoke-${roomId}` : '') },
     timeControl: clockOf(game), protocolId: PROTOCOL_ID, startedAt: prep.preparedAt,
+    inputs: experimentInputs(briefFor(game), snapshotVersion),
   });
   return prep;
 }
@@ -553,9 +573,87 @@ async function finishGame(game: ScheduleGame, player: PlayerResult, engineGaveUp
     engineSourceSha256: (readJson<{ engine?: { sourceSha256?: string } }>(`${gameDir(id)}/manifest.json`)?.engine?.sourceSha256) ?? engineSourceSha256(),
   });
   let curation = 'playbook curated';
-  try { const curated = await curatePlaybook(); curation = `playbook v${curated.nextVersion}`; }
+  try {
+    const curated = await curatePlaybook();
+    const long = curated.words !== undefined && curated.words > PLAYBOOK_WORD_TARGET * 1.5;
+    curation = `playbook v${curated.nextVersion} (${curated.words ?? '?'} words${long ? `, OVER the ${PLAYBOOK_WORD_TARGET}-word target` : ''})`;
+  }
   catch (error) { curation = `playbook curation failed: ${(error as Error).message}`; }
   writeStatus(id, 'finished', `result ${result}; published (${record.citedRevisions.length} citations, ${record.droppedCitations?.length ?? 0} dropped); ${curation}`);
+}
+
+// ---------------------------------------------------------------------------
+// Clock telemetry (operator-only: never shown to the player, so it cannot steer play)
+// ---------------------------------------------------------------------------
+/** Operator alert when the LLM seat's bank falls below this share (Luna's wave-1 timeout, LU05-B). */
+export const LLM_BANK_ALERT_FRACTION = 0.3;
+/** Operator alert when the engine seat's bank falls below this share (search-slot queueing drains it). */
+export const ENGINE_BANK_ALERT_FRACTION = 0.6;
+const CLOCK_SAMPLE_MS = 60_000;
+export interface ClockTelemetry {
+  sampledAt: string; revision: number; bankSeconds: number;
+  llm: { bankRemainingS: number; completedTurns: number; meanTurnS: number | null; slowestTurnS: number | null; slowestTurnExact: boolean; runningTurnS: number | null };
+  engine: { bankRemainingS: number };
+  alerts: string[];
+  /** Carried between samples: the LLM's clockPressure totals at the last sample. */
+  last: { completedTurns: number; totalElapsedMs: number };
+}
+const clockPath = (id: GameId) => `${gameDir(id)}/clock.json`;
+/** Folds one public room read into the game's clock telemetry. The slowest turn is exact when a
+ * single LLM turn completed between samples (any turn over a minute), else the mean of those turns. */
+export function foldClockSample(previous: ClockTelemetry | undefined, room: Pick<RoomSnapshot, 'revision' | 'clock' | 'clockPressure' | 'timeControl'>,
+  llmSeat: PlayerId, engineSeat: PlayerId, nowIso: string): ClockTelemetry | undefined {
+  const clock = room.clock, pressure = room.clockPressure?.players, control = room.timeControl;
+  if (!clock || !pressure || !control) return previous;
+  const totals = pressure[llmSeat];
+  // The snapshot's banks are current as of its serverNowMs (see timeControl.ts projectClock).
+  const bankS = (side: PlayerId) => Math.round(clock.bankRemainingMs[side] / 1000);
+  let slowest = previous?.llm.slowestTurnS ?? null, exact = previous?.llm.slowestTurnExact ?? true;
+  const turnsDone = totals.completedTurns - (previous?.last.completedTurns ?? 0);
+  if (turnsDone > 0) {
+    const seconds = Math.round((totals.totalElapsedMs - (previous?.last.totalElapsedMs ?? 0)) / turnsDone / 1000);
+    if (slowest === null || seconds > slowest) { slowest = seconds; exact = turnsDone === 1; }
+  }
+  const runningTurnS = clock.runningPlayer === llmSeat && clock.turnStartedAtMs !== null ? Math.round((clock.serverNowMs - clock.turnStartedAtMs) / 1000) : null;
+  const llmBank = bankS(llmSeat), engineBank = bankS(engineSeat);
+  const alerts = [...(previous?.alerts ?? [])];
+  const raise = (key: string, text: string) => { if (!alerts.some(a => a.startsWith(key))) alerts.push(`${key} ${text} (r${room.revision}, ${nowIso})`); };
+  if (llmBank < control.bankSeconds * LLM_BANK_ALERT_FRACTION) raise('llm-bank-low:', `LLM bank ${llmBank}s of ${control.bankSeconds}s`);
+  if (engineBank < control.bankSeconds * ENGINE_BANK_ALERT_FRACTION) raise('engine-bank-low:', `engine bank ${engineBank}s of ${control.bankSeconds}s`);
+  return { sampledAt: nowIso, revision: room.revision, bankSeconds: control.bankSeconds,
+    llm: { bankRemainingS: llmBank, completedTurns: totals.completedTurns, meanTurnS: totals.meanElapsedMs === null ? null : Math.round(totals.meanElapsedMs / 1000),
+      slowestTurnS: slowest, slowestTurnExact: exact, runningTurnS },
+    engine: { bankRemainingS: engineBank }, alerts,
+    last: { completedTurns: totals.completedTurns, totalElapsedMs: totals.totalElapsedMs } };
+}
+let clockSampling = false;
+/** One public (tokenless) room read per live game per minute; new alerts go to alerts.log. */
+async function sampleClocks(): Promise<void> {
+  if (clockSampling) return;
+  clockSampling = true;
+  try {
+    for (const id of scopeIds()) {
+      if (readStatus(id).state !== 'live') continue;
+      const manifest = readJson<{ roomId?: string; llmSeat?: PlayerId; engineSeat?: PlayerId }>(`${gameDir(id)}/manifest.json`);
+      if (!manifest?.roomId || !manifest.llmSeat || !manifest.engineSeat) continue;
+      let room: RoomSnapshot;
+      try { room = await roomRequest<RoomSnapshot>(SERVER_URL, `/${manifest.roomId}`); } catch { continue; }
+      const previous = readJson<ClockTelemetry>(clockPath(id)) ?? undefined;
+      const next = foldClockSample(previous, room, manifest.llmSeat, manifest.engineSeat, new Date().toISOString());
+      if (!next) continue;
+      writeJson(clockPath(id), next);
+      for (const alert of next.alerts.filter(a => !previous?.alerts.includes(a))) {
+        appendFileSync(join(CAMPAIGN_DIR, 'alerts.log'), `${new Date().toISOString()} ${id} ${alert}\n`);
+      }
+    }
+  } finally { clockSampling = false; }
+}
+/** The progress.md cell: LLM bank left, slowest turn so far (≥ when approximate), and a flag on any alert. */
+export function formatClockCell(t: ClockTelemetry | null | undefined): string {
+  if (!t) return '-';
+  const pct = Math.round((100 * t.llm.bankRemainingS) / t.bankSeconds);
+  const slowest = t.llm.slowestTurnS === null ? '-' : `${t.llm.slowestTurnExact ? '' : '~'}${t.llm.slowestTurnS}s`;
+  return `${t.alerts.length ? '⚠ ' : ''}${t.llm.bankRemainingS}s (${pct}%) · slowest ${slowest}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -570,15 +668,17 @@ export function formatProgress(schedule: Schedule, gameIds: readonly GameId[] = 
     const elapsed = manifest?.startedAt ? fmtElapsed(Date.parse(manifest.finishedAt ?? new Date().toISOString()) - Date.parse(manifest.startedAt)) : '-';
     const clock = g.timeControl ? `${g.timeControl.delaySeconds}/${g.timeControl.bankSeconds}` : '-';
     const state = g.hold && status.state === 'pending' ? `held (${g.hold})` : status.state;
-    return `| ${g.gameId} | ${llmDisplayName(g.model, g.effort)} | ${g.toolTier} | ${g.blackCrystalHandicap} | ${g.llmSeat} | ${clock} | ${state} | ${manifest?.watchUrl ?? '-'} | ${manifest?.result ?? '-'} | ${turns} | ${elapsed} |`;
+    const clockCell = formatClockCell(readJson<ClockTelemetry>(clockPath(g.gameId)));
+    return `| ${g.gameId} | ${llmDisplayName(g.model, g.effort)} | ${g.toolTier} | ${g.blackCrystalHandicap} | ${g.llmSeat} | ${clock} | ${state} | ${manifest?.watchUrl ?? '-'} | ${manifest?.result ?? '-'} | ${turns} | ${elapsed} | ${clockCell} |`;
   });
   const states = schedule.games.filter(g => gameIds.includes(g.gameId)).map(g => readStatus(g.gameId).state);
   const count = (s: string) => states.filter(x => x === s).length;
   return [
     `# ${basename(CAMPAIGN_DIR)} progress${isSmoke() ? ' (SMOKE)' : ''} — updated ${new Date().toISOString()}`, '',
     `${states.length} games: ${count('live') + count('preparing')} live, ${count('pending')} pending, ${count('finished')} finished, ${count('interrupted')} interrupted, ${count('failed')} failed.`, '',
-    '| Game | Player | Tier | Black +crystals | LLM seat | Clock | State | Watch | Result | Turn | Elapsed |',
-    '|---|---|---|---:|---|---|---|---|---|---:|---:|', ...rows, '',
+    '| Game | Player | Tier | Black +crystals | LLM seat | Clock | State | Watch | Result | Turn | Elapsed | LLM bank · slowest turn |',
+    '|---|---|---|---:|---|---|---|---|---|---:|---:|---|', ...rows, '',
+    `LLM bank sampled once a minute (operator-only). ⚠ = an alert in \`${join(CAMPAIGN_DIR, 'alerts.log')}\` (LLM bank < ${LLM_BANK_ALERT_FRACTION * 100}%, engine bank < ${ENGINE_BANK_ALERT_FRACTION * 100}%). ~ = mean of several quick turns.`, '',
     `Stop admitting: \`touch ${stopFilePath()}\` · Hard stop: \`node --import tsx tools/llm-pilot/dispatch.ts --kill\` · Resume: \`node --import tsx tools/llm-pilot/dispatch.ts --resume\` (from muju/)`, '',
   ].join('\n');
 }
@@ -845,6 +945,7 @@ async function runLoop(): Promise<void> {
     inflight.set(id, runGame(game, true).finally(() => inflight.delete(id)));
   }
   const sampler = setInterval(sampleHeavySlots, 2000);
+  const clockSampler = setInterval(() => { void sampleClocks(); }, CLOCK_SAMPLE_MS);
   for (;;) {
     try { await tick(); }
     catch (error) { appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} tick error (will retry): ${error instanceof Error ? error.message : String(error)}\n`); }
@@ -854,6 +955,7 @@ async function runLoop(): Promise<void> {
     await new Promise(resolve => setTimeout(resolve, 5000));
   }
   clearInterval(sampler);
+  clearInterval(clockSampler);
   untrackPid('dispatcher');
   refreshProgress();
   console.log(existsSync(stopFilePath()) ? 'STOP present and no games in flight; dispatcher exiting.' : 'All scheduled games settled.');

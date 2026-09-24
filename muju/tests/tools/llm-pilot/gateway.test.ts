@@ -14,8 +14,10 @@ import {
   attachPilotMemoryTool,
   createGatewayServer,
   deterministicPlayRequestId,
+  PILOT_MEMORY_RECENT_EXPERIENCES,
   readPilotMemory,
   seatConfigSchema,
+  stripDuplicateStructuredContent,
   withGatewayGuarantees,
 } from '../../../tools/llm-pilot/gateway';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -167,12 +169,27 @@ describe('pilot_memory', () => {
     const snapshotDir = join(gameDir, '..', '..', 'memory', 'snapshots', 'v3');
     mkdirSync(snapshotDir, { recursive: true });
     writeFileSync(join(snapshotDir, 'playbook.md'), '# version: 3\nOpen with Hi toward a rich patch.');
-    writeFileSync(join(snapshotDir, 'experiences.jsonl'), `${JSON.stringify({ game: 'P01-W', lesson: 'anchor the rectangle' })}\n`);
+    writeFileSync(join(snapshotDir, 'experiences.jsonl'), `${JSON.stringify({ gameId: 'P01-W', reflection: 'anchor the rectangle' })}\n`);
 
     const memory = readPilotMemory(gameDir);
     expect(memory.available).toBe(true);
     expect(memory.playbook).toContain('Hi toward a rich patch');
-    expect(memory.experiences).toEqual([{ game: 'P01-W', lesson: 'anchor the rectangle' }]);
+    expect(memory.experiences).toEqual([{ gameId: 'P01-W', reflection: 'anchor the rectangle' }]);
+    expect(memory.olderExperiences).toBe(0);
+  });
+  it('serves only the most recent records, trimmed to identity and reflection (older ones live in the playbook)', () => {
+    const gameDir = tmpGameDir();
+    writeFileSync(join(gameDir, 'manifest.json'), JSON.stringify({ snapshotVersion: 4 }));
+    const snapshotDir = join(gameDir, '..', '..', 'memory', 'snapshots', 'v4');
+    mkdirSync(snapshotDir, { recursive: true });
+    writeFileSync(join(snapshotDir, 'playbook.md'), 'version: 4');
+    const records = Array.from({ length: PILOT_MEMORY_RECENT_EXPERIENCES + 3 }, (_, i) =>
+      JSON.stringify({ gameId: `G${i}`, result: 'loss', reflection: `r${i}`, citedRevisions: [1, 2, 3], droppedCitations: [], writtenAt: 'x' }));
+    writeFileSync(join(snapshotDir, 'experiences.jsonl'), `${records.join('\n')}\n`);
+    const memory = readPilotMemory(gameDir);
+    expect(memory.experiences).toHaveLength(PILOT_MEMORY_RECENT_EXPERIENCES);
+    expect(memory.experiences![0]).toEqual({ gameId: 'G3', result: 'loss', reflection: 'r3' });
+    expect(memory.olderExperiences).toBe(3);
   });
   it('reports unavailable rather than fabricating memory when no snapshot exists', () => {
     const gameDir = tmpGameDir();
@@ -254,4 +271,15 @@ describe('tool-builder helper tools (muju_run_helper / muju_write_file)', () => 
 
     await client.close();
   }, 30_000);
+});
+
+describe('stripDuplicateStructuredContent', () => {
+  it('drops the duplicate structured copy only when text content carries the result', () => {
+    const withBoth = { jsonrpc: '2.0', id: 1, result: { content: [{ type: 'text', text: '{"a":1}' }], structuredContent: { a: 1 } } };
+    expect(stripDuplicateStructuredContent(withBoth)).toEqual({ jsonrpc: '2.0', id: 1, result: { content: [{ type: 'text', text: '{"a":1}' }] } });
+    const structuredOnly = { jsonrpc: '2.0', id: 2, result: { content: [], structuredContent: { a: 1 } } };
+    expect(stripDuplicateStructuredContent(structuredOnly)).toEqual(structuredOnly);
+    const notification = { jsonrpc: '2.0', method: 'notifications/progress', params: {} };
+    expect(stripDuplicateStructuredContent(notification)).toEqual(notification);
+  });
 });
