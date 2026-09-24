@@ -59,6 +59,23 @@ Tactical witnesses cover the modeled action phase, including pieces that already
 arrived. End-of-turn promotions and new commitments cannot attack that turn;
 future discretionary preparation is outside a next-turn reply model.
 
+**Where you can buy.** Every actual unit you own anchors a *spawn rectangle*: the
+rectangle from your home corner (White `A1`, Black `J10`) to that unit's square,
+inclusive. `BUY_UNIT` needs an empty square inside at least one rectangle with **no
+enemy unit anywhere inside it**. One enemy blocks every rectangle that contains it.
+For White, units on `C3` and `A5` give `A1–C3` and `A1–A5`; an enemy on `B2` blocks
+the first but not the second, and an enemy on your home corner blocks them all.
+Pending summons never anchor or block. Buying costs crystals, not actions.
+
+**Mining and upkeep.** At `END_ACTION_PHASE` each unit takes min(its mining stat,
+the crystals left on its own square). Squares never refill, so income needs units
+on fresh squares; every lightning and `shadow_1` mine 0. Your **mined total** (every
+crystal ever taken, plus Black's handicap) never goes down and decides the kill
+clock. Upkeep is 1 per tier-2 and 2 per tier-3 unit each turn, paid after mining;
+tier 1 is free and can never be released. If you own no tier-1 unit, an
+unaffordable bill can release every unit, and zero units loses
+(`upkeep-elimination`).
+
 ## Connect
 
 Add the MCP endpoint to your client's remote servers using **Streamable HTTP**.
