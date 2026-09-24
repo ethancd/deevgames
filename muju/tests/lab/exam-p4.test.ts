@@ -17,7 +17,10 @@
  *    zero-power attack, an attack on the wrong unit, a kill on the last ply, a
  *    move that falls one turn short of contact, buying the one open square —
  *    it is a second BAD (or, for the Hold, a second GOOD) turn. Hard's own
- *    recorded reply is checked against `witness.played.holds`.
+ *    recorded reply is checked against `witness.played.holds`. Contact never
+ *    counts a zero-power strike, this turn or after the passive reply (the
+ *    second pinned by a one-fact flip of AS01-W's board: White's elements), and
+ *    a turn is judged only for the side to move and only up to its hand-off.
  *
  *  3 THE FORMAT. A plan case's shape rules: label and kind agree, the side is
  *    the side to move, contact-in-n takes n in {1, 3}, only damaging-attack
@@ -27,7 +30,8 @@
  *  4 THE RUNNER. `--cases-dir lab/hard-ai/exam/cases-p4` is accepted; a stub
  *    engine playing the GOOD (then the BAD) turns is scored into the `plan`
  *    tally, never into `exact` or `judgment`, with the expected-fail row
- *    reported as unexpected when it passes.
+ *    reported as unexpected when it passes; a mixed set (a plan row beside a
+ *    judgment row) keeps each row in its own tally.
  *
  * Engine scores are NOT asserted here. They are an artifact of
  * `npm run hard:exam -- --cases-dir lab/hard-ai/exam/cases-p4 ...`.
@@ -38,6 +42,10 @@ import { describe, expect, it, vi } from 'vitest';
 import type { GameState, Position } from '../../src/game/types';
 import type { AIAction } from '../../src/ai/types';
 import { applyAction } from '../../src/ai/simulate';
+import { phaseEndAction } from '../../src/game/legality';
+import { getUnitAt } from '../../src/game/board';
+import { calculateAttackPower } from '../../src/game/combat';
+import { findAttackApproach } from '../../src/game/movement';
 import type { RootResult } from '../../src/ai/hard/search/root';
 import { newSearchStats } from '../../src/ai/hard/search/pvs';
 import { resolveOpeningAction, type OpeningAction } from '../../lab/hard-ai/ladder/openings';
@@ -323,6 +331,58 @@ describe('cases-p4: each predicate holds on a GOOD turn and fails on a BAD one',
     expect(withExamRules(c, () => evaluatePlan({ ...w, n: 3 }, state, { line: [EA, EP] }, 'contact-in-3')).holds).toBe(true);
   });
 
+  it('contact-in-n never counts a zero-power strike, this turn or after the passive reply', () => {
+    const c = caseOf('wave1-AS01-W-t3');
+    const state = loadCaseState(c);
+    const w1: PlanWitness = { ...c.witness, predicate: 'contact-in-n', n: 1 };
+    const w3: PlanWitness = { ...w1, n: 3 };
+    const pass = [EA, EP];
+
+    // This turn: the Lightning on D2 strikes the Water on C2 at power 0 and touches nothing else.
+    const zeroNow = withExamRules(c, () => evaluatePlan(w1, state, { line: [mv('G6', 'D2'), atk('D2', 'C2'), EA, EP] }, 'zero now'));
+    expect(zeroNow.replayed, zeroNow.evidence).toBe(true);
+    expect(zeroNow.facts.attacks).toEqual([expect.objectContaining({ attacker: 'lightning_1', defender: 'water_1', power: 0 })]);
+    expect(zeroNow.holds, zeroNow.evidence).toBe(false);
+
+    // Next turn, one fact flipped: every White unit, on the board and pending,
+    // becomes a Water. The Lightning on G6 still reaches B3 after a passive
+    // reply, but now strikes it at power 0 instead of 2, so the pass loses its
+    // contact-in-3.
+    const allWater: GameState = {
+      ...state,
+      pendingSummons: (state.pendingSummons ?? []).map(p => (p.owner === 'white' ? { ...p, definitionId: 'water_1' } : p)),
+      board: { ...state.board, units: state.board.units.map(u => (u.owner === 'white' ? { ...u, definitionId: 'water_1' } : u)) },
+    };
+    // What the Lightning on G6 can do to B3 once White has passed back.
+    const reachB3 = (end: GameState | null) =>
+      withExamRules(c, () => {
+        if (end === null) throw new Error('the pass did not replay');
+        let s = end;
+        while (s.turn.currentPlayer !== 'black') s = applyAction(s, phaseEndAction(s));
+        const lightning = getUnitAt(s.board, sq('G6'));
+        const target = getUnitAt(s.board, sq('B3'));
+        if (lightning === null || target === null) throw new Error('fixture moved');
+        return { power: calculateAttackPower(lightning, target), approach: findAttackApproach(lightning, target, s.board, s.turn.actionsRemaining) };
+      });
+    const real = withExamRules(c, () => evaluatePlan(w3, state, { line: pass }, 'real'));
+    expect(real.holds, real.evidence).toBe(true);
+    expect(reachB3(real.end)).toMatchObject({ power: 2, approach: expect.any(Array) });
+    const flipped = withExamRules(c, () => evaluatePlan(w3, allWater, { line: pass }, 'all water'));
+    expect(flipped.replayed, flipped.evidence).toBe(true);
+    expect(reachB3(flipped.end)).toMatchObject({ power: 0, approach: expect.any(Array) });
+    expect(flipped.holds, flipped.evidence).toBe(false);
+  });
+
+  it('judges only the side to move, and only up to the hand-off', () => {
+    const c = caseOf('wave1-SO01-B-t11');
+    const state = loadCaseState(c);
+    expect(() => withExamRules(c, () => evaluatePlan({ ...c.witness, side: 'black' }, state, { line: [EA, EP] }, 't'))).toThrow(/judges black, but white is to move/);
+    const past = judge('wave1-SO01-B-t11', [atk('C2', 'C3'), EA, EP, EA]);
+    expect(past.replayed).toBe(false);
+    expect(past.holds).toBe(false);
+    expect(past.evidence).toMatch(/action 3 follows the end of the turn/);
+  });
+
   it('a turn that does not replay satisfies nothing and says why', () => {
     const shortLine = judge('wave1-FB01-B-t18', [promo('C5')]);
     expect(shortLine.replayed).toBe(false);
@@ -483,6 +543,24 @@ describe('cases-p4: the runner scores plan cases in their own tally', () => {
     expect(run.results[0].evidence).toBe('no promotion in the turn');
     expect(run.results[0].note).toMatch(/wins the game outright/);
     expect(run.plan.wonOutrightAdjudications).toBe(1);
+  });
+
+  it('a mixed set keeps the tallies apart: a judgment row never enters plan, a plan row never enters judgment', async () => {
+    const plan = caseOf('wave1-SN05-W-t5');
+    const judgment = {
+      ...structuredClone(plan),
+      id: 'mixed-judgment-row',
+      kind: 'judgment',
+      witness: { label: 'judgment', preferredKeys: ['0'.repeat(16)], avoidKeys: [], reason: 'a stub preference', by: 'author' },
+    } as ExamCase;
+    const run = await runExam([plan, judgment], args(), { engineFactory: playing([playedLine(plan.id), playedLine(plan.id)]) });
+    expect(run.errors).toEqual([]);
+    expect(run.results.map(r => r.kind)).toEqual(['plan', 'judgment']);
+    expect(run.plan).toMatchObject({ cases: 1, passed: 1, failed: 0, asExpected: 1, unexpected: [] });
+    expect(run.judgment.cases).toBe(1);
+    expect(run.exact.cases).toBe(0);
+    expect(run.results[1]).toMatchObject({ predicate: null, expected: null, asExpected: null, at: null, line: null, evidence: null });
+    expect(run.byDemand['quiet-clock']).toMatchObject({ planCases: 1, planPassed: 1, judgmentCases: 1, exactCases: 0 });
   });
 
   it('an engine turn that does not replay is a failed row with a note, not an error', async () => {
