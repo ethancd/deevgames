@@ -130,7 +130,14 @@ function parseArgs(argv: string[]): Args {
   const positionsRaw = positionsFile === null ? require('--positions') : get('--positions');
   return {
     engine,
-    workUnits: require('--work').split(',').map(Number),
+    // Plain fixed-work units, comma-separated (`--work 60000`, not `fixed:60000`).
+    // A NaN budget would make every `b.work !== a.work` comparison true and
+    // report 24 phantom mismatches (Strategos W1.15, 2026-09-24), so refuse it.
+    workUnits: require('--work').split(',').map(w => {
+      const n = Number(w);
+      if (!Number.isInteger(n) || n <= 0) throw new Error(`hard:determinism: --work takes positive integer work units, got "${w}"`);
+      return n;
+    }),
     positions: positionsRaw === null ? -1 : Number(positionsRaw),
     positionsFile,
     seeds: (get('--seeds') ?? '1').split(',').map(Number),
