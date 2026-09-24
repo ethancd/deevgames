@@ -383,11 +383,19 @@ export class TurnGenerator {
    * `exhaustive: true` (every `canPromote` slot becomes a candidate, up to
    * `MAX_SLOTS`, instead of the ordinary `cfg.maxPromotions`-wide beam that
    * only slots with a claimed mission compete for) and makes `buildCombos`
-   * pin one bare promotion-only combo per candidate, so the widened list
-   * survives buildCombos' own 24-combo score prune (plan B.1b). The
-   * `forcedOnly` branch of `expand()` (`gen/generate.ts:521-535`) is NOT
-   * wired to this flag and stays exactly as it is today: it only ever widens
-   * FORTIFY's already-unbounded beam, which this flag does not touch.
+   * pin one bare promotion-only combo per non-FORTIFY candidate (FORTIFY's
+   * bare combos `expand()` already runs itself, FORCED, before
+   * `buildCombos`), so the widened list survives buildCombos' own
+   * `maxPlans`-wide score prune (plan B.1b). The `forcedOnly` branch of
+   * `expand()` (the `if (forcedOnly)` block) is NOT wired to this flag and
+   * stays exactly as it is today: it only ever widens FORTIFY's
+   * already-unbounded beam, which this flag does not touch.
+   *
+   * The flag reshapes the combo list, it does not only extend it: the widened
+   * candidate list also enters `buildCombos`' ordinary `(purchase plan) ×
+   * (promotion)` product, where a `Mission.ANY` pairing whose combined score
+   * beats a missioned pairing can displace it from that product's beam. What it
+   * guarantees is that every candidate's BARE promotion is generated.
    *
    * WHY A SETTER, NOT `t.evalFix` (`NodeTables`) — the pattern
    * `gen/promote.ts bestMission`/`orderingRentPv` already use for the
@@ -398,9 +406,9 @@ export class TurnGenerator {
    * `ctx.t = t;`, just above `planPromotions`'s two call sites) BEFORE
    * `planPromotions` is ever called — so the `t` that reaches it is never the
    * per-ply `NodeTables` `engine.ts`'s constructor stamps `evalFix` onto (that
-   * stamping runs only over the interior-search `tables: NodeTables[]` array,
-   * `engine.ts:303-315`); `this.prepareTables` comes from a bare
-   * `allocTables()` (`evalFix: null`, `tables/context.ts:187-213`) that
+   * stamping, `t.evalFix = evalFix`, runs only over the constructor's per-ply
+   * `tables: NodeTables[]` array); `this.prepareTables` comes from a bare
+   * `allocTables()` (`evalFix: null`, `tables/context.ts allocTables`) that
    * nothing ever restamps. So `t.evalFix` reads inside `bestMission` answer
    * correctly only in `tests/ai/hard/promote.test.ts`'s isolated unit calls,
    * which build their own `t` and set `.evalFix` on it directly — never
@@ -764,15 +772,31 @@ export class TurnGenerator {
     // same way the home-race loop just above pins purchase plans. Without
     // this, `planPromotions`'s widened list (every `canPromote` slot, plan
     // W1.8) still loses to this method's OWN `maxPlans`-wide score prune
-    // above: a promotion `bestMission` left unclaimed scores at best
-    // `0 − cost·CC − rent` (`Mission.ANY`'s benefit is 0), so it is exactly
-    // the kind of candidate that beam would drop first. Pinning only
-    // GUARANTEES the combo reaches `buildCombos`' return list — the root's
-    // own `K`-candidate cut (`GenConfig.K`) still competes it on within-turn
-    // score like everything else (plan B.1b: "do not try to beat the root K
-    // cut; measure and report recall after it").
+    // above: a promotion `bestMission` left unclaimed scores
+    // `0 + Δmaterial − cost·CC − rent`, which is `−rent` under the shipped
+    // price list (`gen/promote.ts` header: the middle terms cancel), so it is
+    // exactly the kind of candidate that beam would drop first.
+    //
+    // FORTIFY candidates are skipped: `expand()` has already run every
+    // FORTIFY candidate's bare combo itself, FORCED, before calling here, so
+    // pinning it again would only re-run a turn `offerForced` then dedupes.
+    //
+    // Capacity (DERIVED from the constructor's sizing): `this.combos.length`
+    // is `max(maxPlacePlans, REFERENCE_PLACE_PLANS) + max(purchase.maxPlans,
+    // REFERENCE_PLACE_PLANS) + 1` (401 on every shipped profile), and on the
+    // search path `n` here is at most `maxPlacePlans` + `purchase.maxPlans`
+    // home-race pins, so `n + promoCount ≤ 24 + 32 + MAX_SLOTS = 184` on
+    // DESKTOP's root — the `n < this.combos.length` guard can drop a pin only
+    // on the lab's reference path, whose prune is `REFERENCE_PLACE_PLANS` wide.
+    //
+    // Pinning only GUARANTEES the combo reaches `buildCombos`' return list —
+    // the root's own `K`-candidate cut (`GenConfig.K`) still competes it on
+    // within-turn score like everything else, and a meter that runs out
+    // mid-menu still stops the `runCombo` loop in `expand()` (plan B.1b: "do
+    // not try to beat the root K cut; measure and report recall after it").
     if (this.promoteExhaustive) {
       for (let j = 0; j < promoCount && n < this.combos.length; j++) {
+        if (this.promos[j].mission === Mission.FORTIFY) continue;
         let present = false;
         for (let k = 0; k < n && !present; k++) {
           if (this.combos[k].purchase === 0 && this.combos[k].promo === j) present = true;
@@ -1105,7 +1129,9 @@ export class TurnGenerator {
     tr.planCount = planCount;
     tr.planLimit = planLimit;
     tr.promoCount = promoCount;
-    tr.promoLimit = this.cfg.maxPromotions;
+    // Under W1.8's `promoteExhaustive` `planPromotions` is capped at
+    // `MAX_SLOTS`, not `cfg.maxPromotions`; record the cap that applied.
+    tr.promoLimit = this.promoteExhaustive ? MAX_SLOTS : this.cfg.maxPromotions;
     tr.comboCount = comboCount;
     tr.comboLimit = comboLimit;
     tr.planCutoffCc = planCount > 0 ? this.plans[planCount - 1].scoreCc : 0;

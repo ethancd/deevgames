@@ -12,22 +12,29 @@
  * reach the root, which also cuts to `K` candidates — this file measures and
  * REPORTS that second cut's recall; it does not try to beat it).
  *
- * Three layers, one per `GenTrace` field, checked with ONE trace-armed
+ * Four layers, one per `GenTrace` field, checked with ONE trace-armed
  * `TurnGenerator.generate()` call per candidate slot:
  *   promoRank  `gen/promote.ts planPromotions` offered the slot at all;
- *   comboRank  `gen/generate.ts buildCombos` kept its bare-promotion combo;
- *   finalRank  the combo's turn survived the root's own `K`-candidate cut.
- * The plan asserts 100% recall on the first two and only REPORTS the third.
+ *   comboRank  `gen/generate.ts buildCombos` kept its bare-promotion combo
+ *              (FORTIFY candidates excepted: `expand()` runs their bare combo
+ *              itself, FORCED, before `buildCombos`, and the W1.8 pin skips
+ *              them — so for those the next layer is the evidence);
+ *   offered    the bare promotion turn itself reached the candidate list;
+ *   finalRank  that turn survived the root's own `K`-candidate cut.
+ * This file asserts 100% recall on the first three and only REPORTS the last.
  *
- * Fixtures: two authored (`buildState`) — one where no tier-1 unit qualifies
- * for any mission (isolated from combat, no speed gain, not fortifying), and
- * one where every unit already qualifies for FORTIFY (a same-side unit
- * occupies the enemy's home corner) — plus one built from a REAL
- * `lab/hard-ai/positions/p4-determinism.jsonl` row's unit layout (`p4-det-007`,
- * DESIGN F20's `--positions-file` corpus), replayed into a fresh Prepare
- * phase with the bank raised so its promotions are legal (that row itself is
- * an Act-phase root with a bank of 1-2 crystals, never enough to promote —
- * the corpus is reused for its board GEOMETRY, not its exact turn state).
+ * Fixtures: three authored (`buildState`) — one where no tier-1 unit
+ * qualifies for any mission (isolated from combat, no speed gain, not
+ * fortifying); one with MORE promotable units than `GenConfig.maxPromotions`,
+ * so the flag's beam widening (`max` -> `MAX_SLOTS`) is exercised, not only
+ * its `Mission.ANY` substitution; and one where every unit already qualifies
+ * for FORTIFY (a same-side unit occupies the enemy's home corner) — plus one
+ * built from a REAL `lab/hard-ai/positions/p4-determinism.jsonl` row's unit
+ * layout (`p4-det-007`, STRATEGOS W1.11's Phasing determinism corpus),
+ * replayed into a fresh Prepare phase with the bank raised so its promotions
+ * are legal (that row itself is an Act-phase root with a bank of 1-2
+ * crystals, never enough to promote — the corpus is reused for its board
+ * GEOMETRY, not its exact turn state).
  */
 import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
@@ -42,11 +49,12 @@ import { TurnPool, type Turn } from '../../../src/ai/hard/gen/turn';
 import { UNLIMITED_WORK } from '../../../src/ai/hard/gen/actionsearch';
 import { TurnGenerator, newGenStats, outCapacityFor, type GenStats } from '../../../src/ai/hard/gen/generate';
 import { newGenTrace, resetGenTrace } from '../../../src/ai/hard/gen/trace';
-import { DESKTOP } from '../../../src/ai/hard/config';
+import { DESKTOP, strategosPatch } from '../../../src/ai/hard/config';
+import { HardEngine } from '../../../src/ai/hard/engine';
 import { DEAD, MAX_SLOTS, Result, type Centi, type PackedState, type Side } from '../../../src/ai/hard/types';
 import type { GameState } from '../../../src/game/types';
 import { readPositions } from '../../../lab/hard-ai/positions/corpus';
-import { newPromoCandidate, planPromotions } from '../../../src/ai/hard/gen/promote';
+import { Mission, newPromoCandidate, planPromotions } from '../../../src/ai/hard/gen/promote';
 
 vi.setConfig({ testTimeout: 30_000 });
 
@@ -112,6 +120,7 @@ interface SlotRecall {
   slot: number;
   promoRank: number;
   comboRank: number;
+  offered: number;
   finalRank: number;
 }
 
@@ -130,14 +139,14 @@ function traceSlots(gen: TurnGenerator, p: PackedState, slots: readonly number[]
     scoreMover = p.side as Side;
     gen.generate(p, tables, score, UNLIMITED_WORK, 0, keep, out, stats);
     gen.setTrace(null);
-    rows.push({ slot, promoRank: trace.promoRank, comboRank: trace.comboRank, finalRank: trace.finalRank });
+    rows.push({ slot, promoRank: trace.promoRank, comboRank: trace.comboRank, offered: trace.offered, finalRank: trace.finalRank });
   }
   return rows;
 }
 
 /** Full untraced `generate()` output, reduced the way `gen-trace.test.ts` does,
  * for the byte-identity check ("flag absent -> identical combos"). */
-function runFull(gen: TurnGenerator, p: PackedState): { count: number; rows: string[] } {
+function runFull(gen: TurnGenerator, p: PackedState): { count: number; placePlans: number; rows: string[] } {
   buildTables(p, sc, 0, 2, tables);
   pool.reset();
   scoreMover = p.side as Side;
@@ -148,11 +157,26 @@ function runFull(gen: TurnGenerator, p: PackedState): { count: number; rows: str
     const actions = Array.from(t.actions.subarray(0, t.count)).join(',');
     rows.push(`${t.endHi}|${t.endLo}|${t.gainCc}|${t.flags}|${t.place}|${t.sig}|${t.count}|${actions}`);
   }
-  return { count: n, rows };
+  // `placePlans` counts every combo the generator RAN, so a duplicate run the
+  // candidate list dedupes away still shows up here.
+  return { count: n, placePlans: stats.placePlans, rows };
+}
+
+/** `planPromotions`' mission per slot under the flag, for the same root the
+ * generator sees (a Prepare root's `expand()` builds its tables from `p`). */
+function missionsOf(p: PackedState): Map<number, number> {
+  buildTables(p, sc, 0, 2, tables);
+  const buf = Array.from({ length: MAX_SLOTS }, () => newPromoCandidate());
+  const n = planPromotions(p, tables, DESKTOP.gen.maxPromotions, buf, true);
+  return new Map(buf.slice(0, n).map(c => [c.slot, c.mission]));
 }
 
 // --- fixtures ----------------------------------------------------------------
 
+/** CHOICE (enough for every tier-1 -> tier-2 `promoCost` in `units.ts`, so
+ * `canPromote` is decided by the unit, never the bank; falsifier: a fixture
+ * whose `legalPromoteSlots` comes back shorter than its white tier-1 unit
+ * count). */
 const BANK = 30;
 
 /** Fixture A: three tier-1 units, isolated from combat and from either home
@@ -163,6 +187,26 @@ const isolatedNoMission: UnitSpec[] = [
   { def: 'fire_1', owner: 'white', x: 1, y: 1 },
   { def: 'water_1', owner: 'white', x: 2, y: 2 },
   { def: 'shadow_1', owner: 'white', x: 3, y: 1 },
+  { def: 'fire_1', owner: 'black', x: 9, y: 9 },
+];
+
+/** Fixture W: ELEVEN no-mission tier-1 bodies (fixture A's elements, packed
+ * into white's quarter, far from the lone black unit), more than
+ * `DESKTOP.gen.maxPromotions` (8). Flag off, none is a candidate; flag on,
+ * every one must be — which needs BOTH halves of the flag: `Mission.ANY`
+ * and the beam widened past `max`. */
+const wideNoMission: UnitSpec[] = [
+  { def: 'fire_1', owner: 'white', x: 1, y: 0 },
+  { def: 'water_1', owner: 'white', x: 2, y: 0 },
+  { def: 'shadow_1', owner: 'white', x: 3, y: 0 },
+  { def: 'fire_1', owner: 'white', x: 0, y: 1 },
+  { def: 'water_1', owner: 'white', x: 1, y: 1 },
+  { def: 'shadow_1', owner: 'white', x: 2, y: 1 },
+  { def: 'fire_1', owner: 'white', x: 3, y: 1 },
+  { def: 'water_1', owner: 'white', x: 0, y: 2 },
+  { def: 'shadow_1', owner: 'white', x: 1, y: 2 },
+  { def: 'fire_1', owner: 'white', x: 2, y: 2 },
+  { def: 'water_1', owner: 'white', x: 0, y: 3 },
   { def: 'fire_1', owner: 'black', x: 9, y: 9 },
 ];
 
@@ -179,8 +223,8 @@ const fortifyDominant: UnitSpec[] = [
 ];
 
 /** Fixture C: `p4-det-007`'s own unit layout (`lab/hard-ai/positions/
- * p4-determinism.jsonl`, row index 7 — a real Phasing opening, DESIGN F20's
- * determinism corpus), replayed as a Prepare root with the bank raised to
+ * p4-determinism.jsonl`, row index 7 — a real Phasing opening from STRATEGOS
+ * W1.11's determinism corpus), replayed as a Prepare root with the bank raised to
  * `BANK` (that row's own bank, 1-2 crystals at an Act-phase root, is never
  * enough to promote anything — every other fact, including the board and
  * every unit's square, owner and element, is the corpus row's own). White's
@@ -207,6 +251,7 @@ interface Fixture {
 
 const fixtures: Fixture[] = [
   { id: 'isolated-no-mission', units: isolatedNoMission },
+  { id: 'wide-no-mission', units: wideNoMission },
   { id: 'fortify-dominant', units: fortifyDominant },
   { id: 'corpus-p4-det-007', units: loadCorpusFixture() },
 ];
@@ -223,7 +268,7 @@ function stateFor(f: Fixture): GameState {
 }
 
 describe('gen/promote.ts + gen/generate.ts: STRATEGOS W1.8 promoteExhaustive recall', () => {
-  it('has at least three fixtures, each with several promotable units', () => {
+  it('has four fixtures, each with several promotable units', () => {
     for (const f of fixtures) {
       const p = pack(stateFor(f));
       expect(legalPromoteSlots(p).length).toBeGreaterThanOrEqual(2);
@@ -238,28 +283,49 @@ describe('gen/promote.ts + gen/generate.ts: STRATEGOS W1.8 promoteExhaustive rec
     const legal = legalPromoteSlots(p);
     buildTables(p, sc, 0, 2, tables);
     const outPromos = Array.from({ length: MAX_SLOTS }, () => newPromoCandidate());
-    const n = planPromotions(p, tables, 8, outPromos, false);
+    const n = planPromotions(p, tables, DESKTOP.gen.maxPromotions, outPromos, false);
     const seen = new Set(outPromos.slice(0, n).map(c => c.slot));
     expect(legal.some(slot => !seen.has(slot))).toBe(true);
   });
 
-  const report: { fixture: string; flag: boolean; total: number; promo: number; combo: number; final: number }[] = [];
+  it('fixture W has more promotable units than the ordinary beam holds', () => {
+    const p = pack(stateFor(fixtures[1]));
+    expect(legalPromoteSlots(p).length).toBeGreaterThan(DESKTOP.gen.maxPromotions);
+  });
+
+  const report: { fixture: string; flag: boolean; total: number; promo: number; combo: number; offered: number; final: number }[] = [];
+  const tally = (f: Fixture, flag: boolean, rows: SlotRecall[]): void => {
+    report.push({
+      fixture: f.id,
+      flag,
+      total: rows.length,
+      promo: rows.filter(r => r.promoRank >= 0).length,
+      combo: rows.filter(r => r.comboRank >= 0).length,
+      offered: rows.filter(r => r.offered === 1).length,
+      final: rows.filter(r => r.finalRank >= 0).length,
+    });
+  };
 
   for (const f of fixtures) {
-    it(`${f.id}: flag ON — every canPromote slot reaches promoRank and comboRank`, () => {
+    it(`${f.id}: flag ON — every canPromote slot is a candidate, keeps a combo, and its bare turn is generated`, () => {
       const gen = new TurnGenerator(rep, DESKTOP.gen, pool, sc);
       gen.setPromoteExhaustive(true);
       const p = pack(stateFor(f));
       const legal = legalPromoteSlots(p);
       expect(legal.length).toBeGreaterThanOrEqual(2);
+      const missions = missionsOf(p);
 
       const rows = traceSlots(gen, p, legal);
       for (const r of rows) {
         expect(r.promoRank, `slot ${r.slot} promoRank`).toBeGreaterThanOrEqual(0);
-        expect(r.comboRank, `slot ${r.slot} comboRank`).toBeGreaterThanOrEqual(0);
+        // FORTIFY's bare combo is run by `expand()` itself, not `buildCombos`.
+        if (missions.get(r.slot) !== Mission.FORTIFY) {
+          expect(r.comboRank, `slot ${r.slot} comboRank`).toBeGreaterThanOrEqual(0);
+        }
+        expect(r.offered, `slot ${r.slot} offered`).toBe(1);
       }
-      const final = rows.filter(r => r.finalRank >= 0).length;
-      report.push({ fixture: f.id, flag: true, total: rows.length, promo: rows.length, combo: rows.length, final });
+      tally(f, true, rows);
+      tally(f, false, traceSlots(new TurnGenerator(rep, DESKTOP.gen, pool, sc), p, legal));
     });
 
     it(`${f.id}: flag OFF — identical to a generator that never heard of the flag, and to itself after toggling on and back off`, () => {
@@ -283,9 +349,40 @@ describe('gen/promote.ts + gen/generate.ts: STRATEGOS W1.8 promoteExhaustive rec
     });
   }
 
-  it('reports root recall after the K cut (informational, not asserted)', () => {
+  it('flag ON changes nothing where every candidate is already FORTIFY (fixture B)', () => {
+    // FORTIFY's bare combos are emitted by `expand()` itself, so the W1.8 pin
+    // has nothing to add here: same turns AND same combo count run — a pin
+    // that re-ran them would be deduped out of the list but not out of
+    // `placePlans` (or the meter).
+    const f = fixtures.find(x => x.id === 'fortify-dominant') as Fixture;
+    const p = pack(stateFor(f));
+    expect([...missionsOf(p).values()].every(m => m === Mission.FORTIFY)).toBe(true);
+    const off = runFull(new TurnGenerator(rep, DESKTOP.gen, pool, sc), p);
+    const on = new TurnGenerator(rep, DESKTOP.gen, pool, sc);
+    on.setPromoteExhaustive(true);
+    expect(runFull(on, p)).toEqual(off);
+  });
+
+  it('reports recall per layer, flag ON and OFF, including after the root K cut (informational, not asserted)', () => {
     console.table(report);
-    expect(report.length).toBe(fixtures.length);
+    expect(report.length).toBe(fixtures.length * 2);
+  });
+
+  it('engine.ts wiring: hard@strategos arms all three generators, hard@desktop none', () => {
+    // Behavioural, not a private-field read: on fixture A (no slot has a
+    // mission) a generator sees a legal promotion as a candidate iff its flag
+    // is on. Proves `config.evalFix.promoteExhaustive` actually reaches every
+    // generator the search uses, through `strategosPatch()` and `HardEngine`.
+    const p = pack(stateFor(fixtures[0]));
+    const legal = legalPromoteSlots(p);
+    const strategos = new HardEngine(strategosPatch());
+    const desktop = new HardEngine();
+    for (const which of ['gen', 'genInterior', 'genQuiesce'] as const) {
+      const on = traceSlots(strategos.ctx[which], p, legal);
+      const off = traceSlots(desktop.ctx[which], p, legal);
+      expect(on.every(r => r.promoRank >= 0), `strategos ${which}`).toBe(true);
+      expect(off.every(r => r.promoRank < 0), `desktop ${which}`).toBe(true);
+    }
   });
 
   it('flag OFF is missing at least one legal slot that flag ON recovers, on some fixture', () => {
