@@ -59,11 +59,19 @@ import { KILL_NEVER, type NodeTables } from '../tables/context';
  * shipped profile, so no candidate carries it by default). Appended at 5 rather
  * than inserted, so every mission code already written into a trace, a recall
  * artifact or a test keeps its meaning.
+ *
+ * `ANY` — STRATEGOS W1.8 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.8; `EvalFix.promoteExhaustive`, off by default). The catch-all
+ * `bestMission` never assigns on its own: under the flag, `planPromotions`
+ * substitutes it (benefit 0) for `bestMission`'s -1 ("no mission claims this
+ * slot") instead of skipping the slot, so every `Replica.canPromote` legal
+ * promotion is offered as a candidate. Appended at 6 for the same reason
+ * `STRENGTH` was appended at 5.
  */
-export const Mission = { FORTIFY: 0, SURVIVE: 1, INCOME: 2, REACH: 3, ANCHOR: 4, STRENGTH: 5 } as const;
+export const Mission = { FORTIFY: 0, SURVIVE: 1, INCOME: 2, REACH: 3, ANCHOR: 4, STRENGTH: 5, ANY: 6 } as const;
 export type Mission = (typeof Mission)[keyof typeof Mission];
 
-export const MISSION_NAMES: readonly string[] = ['FORTIFY', 'SURVIVE', 'INCOME', 'REACH', 'ANCHOR', 'STRENGTH'];
+export const MISSION_NAMES: readonly string[] = ['FORTIFY', 'SURVIVE', 'INCOME', 'REACH', 'ANCHOR', 'STRENGTH', 'ANY'];
 
 export interface PromoCandidate {
   slot: Slot;
@@ -234,8 +242,22 @@ function orderingRentPv(t: NodeTables): number {
  *
  * Only slots `Replica.canPromote` would accept are considered — in Prepare, owned by the mover, neither `F_PLACED` nor `F_PROMOTED`, with a next
  * tier the bank can pay for — so every emitted candidate dispatches legally.
+ *
+ * `exhaustive` (STRATEGOS W1.8, `EvalFix.promoteExhaustive` via
+ * `TurnGenerator.setPromoteExhaustive` — see that setter for why this is a
+ * plain parameter and not a `t.evalFix` read): `false` (every caller but the
+ * `hard@strategos` generator) reproduces today's behaviour exactly — a slot
+ * `bestMission` assigns no mission to (return `-1`) is skipped, and the
+ * ordinary beam stays capped at `max`. `true` does two things per plan B.1b:
+ * a slot `bestMission` leaves unclaimed gets `Mission.ANY` at benefit 0
+ * instead of being dropped, and the ordinary beam's cap widens from `max` to
+ * `MAX_SLOTS` (`out.length`'s own size for every real caller, so in practice
+ * this raises `limit` to `out.length` — no candidate is evicted by the
+ * worst-of-`n` replacement below unless a single side's own live unit count
+ * ever exceeds `MAX_SLOTS`, which it structurally cannot, DESIGN F20). Net
+ * effect: every `canPromote` slot becomes a `PromoCandidate`.
  */
-export function planPromotions(p: PackedState, t: NodeTables, max: number, out: PromoCandidate[]): number {
+export function planPromotions(p: PackedState, t: NodeTables, max: number, out: PromoCandidate[], exhaustive = false): number {
   if (out.length === 0) return 0;
   if (p.result !== Result.ONGOING || p.upkeepPending === 1 || p.phase !== 0) return 0;
   const side = p.side as Side;
@@ -263,7 +285,11 @@ export function planPromotions(p: PackedState, t: NodeTables, max: number, out: 
   // A smaller caller-owned buffer is an explicit hard capacity, never exceeded.
   const home = p.pieceAt[side === WHITE ? 99 : 0];
   const fortifying = home !== NO_SLOT && p.owner[home] === side;
-  const limit = fortifying ? out.length : Math.min(Math.max(0, max), out.length);
+  // `exhaustive` widens the ordinary beam to `MAX_SLOTS` (plan B.1b); `false`
+  // reproduces `max` exactly, so this line alone changes nothing on any path
+  // that never passes `exhaustive: true`.
+  const effectiveMax = exhaustive ? MAX_SLOTS : max;
+  const limit = fortifying ? out.length : Math.min(Math.max(0, effectiveMax), out.length);
   if (limit === 0) return 0;
   let n = 0;
   for (let slot = 0; slot < MAX_SLOTS; slot++) {
@@ -277,8 +303,14 @@ export function planPromotions(p: PackedState, t: NodeTables, max: number, out: 
     const cost = cat.promoCost[def];
     if (cost > bank) continue;
 
-    const mission = bestMission(p, t, cat, slot, next, deepestAnchor, SC_BENEFIT);
-    if (mission < 0) continue;
+    let mission = bestMission(p, t, cat, slot, next, deepestAnchor, SC_BENEFIT);
+    if (mission < 0) {
+      // Today: no mission claims this slot, so it is not a candidate at all.
+      // `exhaustive` (W1.8): offer it anyway, at `Mission.ANY`/benefit 0 —
+      // `bestMission` already left `SC_BENEFIT[0]` at 0 for this case.
+      if (!exhaustive) continue;
+      mission = Mission.ANY;
+    }
     const materialGain = (cat.cost[next] - cat.cost[def]) * CC;
     // R3 (`EvalFix.strength.promoteOrderingRentPv`, absent = `RENT_PV`): the
     // rent this ORDERING expression charges. The keep-set ranking in
