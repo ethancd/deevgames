@@ -50,14 +50,14 @@ describe('the kill clock is stated as ten plies, decided on mined totals, everyw
     expect(rulesFor().checkmate).toMatch(/kill clock/i);
   });
 
-  it('reports the live clock, mined totals and leader in every observation, and keeps the deprecated aliases', () => {
+  it('reports the live clock, mined totals and leader in every observation, without the removed draw-named aliases', () => {
     const s = createInitialGameState();
     s.inactivityPlies = INACTIVITY_WARNING;
     s.players.white.resourcesGained = 6; s.players.black.resourcesGained = 2; s.blackCrystalHandicap = 3;
     const view = observe({ ...snapshot(s), ready: true });
-    // Deprecated aliases: same counter and limit, kept for one release.
-    expect(view.drawAtQuietTurns).toBe(INACTIVITY_LIMIT);
-    expect(view.quietTurns).toBe(INACTIVITY_WARNING);
+    // The draw-named aliases misled agents into treating the clock as a draw (removed 2026-09-24).
+    expect(view).not.toHaveProperty('drawAtQuietTurns');
+    expect(view).not.toHaveProperty('quietTurns');
     // Current shape.
     expect(view.killClock).toEqual({ plies: INACTIVITY_WARNING, limit: INACTIVITY_LIMIT, warningAt: INACTIVITY_WARNING,
       minedTotals: { white: minedTotal(s, 'white'), black: minedTotal(s, 'black') }, leader: 'white' });

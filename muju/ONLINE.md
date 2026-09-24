@@ -270,9 +270,8 @@ totals: the higher of each side's mined total (every crystal that side's units
 have taken from the board, plus Black's starting handicap, never reduced by
 spending, upkeep, release or refund) wins; equal totals draw. Observations
 carry the live values as `killClock` (`plies`, `limit`, `warningAt`,
-`minedTotals`, `leader`); the deprecated `quietTurns`/`drawAtQuietTurns` pair
-reads the same counter and limit for one release. The browser board warns
-from 7.
+`minedTotals`, `leader`). The deprecated `quietTurns`/`drawAtQuietTurns`
+aliases were removed on 2026-09-24. The browser board warns from 7.
 
 Suggested agent instructions:
 
