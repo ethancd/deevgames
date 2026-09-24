@@ -436,12 +436,23 @@ export class TurnGenerator {
    * inside a real `TurnGenerator.generate()`, and so never inside a real
    * search. `promoteExhaustive` must actually fire in `hard@strategos`
    * search, so it takes the setter path `setRescueCap` above already
-   * established (`engine.ts` reads `config.evalFix?.promoteExhaustive` and
-   * wires all three generators) instead of a `GenConfig`/`HardConfig.gen`
-   * field, for the same identity-hash reason `setRescueCap` gives.
+   * established instead of a `GenConfig`/`HardConfig.gen` field, for the same
+   * identity-hash reason `setRescueCap` gives.
    *
-   * `false` — every profile but `hard@strategos` — leaves `planPromotions`
-   * and `buildCombos` byte-identical to today.
+   * ROOT GENERATOR ONLY, coordinator decision (2026-09-24): `engine.ts` reads
+   * `config.evalFix?.promoteExhaustive` and wires it to the ROOT generator
+   * (`gen`) alone — `genInterior` and `genQuiesce` never call this setter, so
+   * their `promoteExhaustive` stays `false` on every profile, `hard@strategos`
+   * included. Unlike `setRescueCap`/`setPruneZeroDamage`, which arm all three
+   * generators, W1.8's proof obligation is ROOT recall (every legal promotion
+   * reaches the root candidate list), and a lane review measured wiring all
+   * three costing search depth (nodes ratio 0.88 vs root-only's 0.95 at fixed
+   * work 80,000, 49 positions) for no measured promotion-choice benefit — see
+   * `engine.ts`'s wiring comment for the numbers.
+   *
+   * `false` — every profile but `hard@strategos`, and every generator but the
+   * root one even under `hard@strategos` — leaves `planPromotions` and
+   * `buildCombos` byte-identical to today.
    */
   setPromoteExhaustive(on: boolean): void {
     this.promoteExhaustive = on;

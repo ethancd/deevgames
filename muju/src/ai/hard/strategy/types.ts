@@ -71,15 +71,33 @@ export interface AnalysisQuery<R = unknown> {
 
 /**
  * The kill-clock verdict from ONE side's point of view (`ClockReading.side`,
- * normally the root mover). Verdict table (plan B.1, `strategy/clock.ts`):
+ * normally the root mover). Verdict table (plan B.1, `strategy/clock.ts`,
+ * whose module doc and `clockReading` derive this exactly):
  *
  *   `proven-win`   — my stay-put floor beats the opponent's ceiling strictly
- *                    (`L_me > U_opp`; a tie is a draw) AND neither side can
- *                    kill before the clock ends (both killETA > r).
- *   `proven-loss`  — the mirror.
- *   `bounded-win`  — intervals disjoint in my favour, a kill not ruled out.
+ *                    (`L_me > U_opp`; a tie is a draw) AND ALL FOUR of:
+ *                    neither side can kill before the clock ends (both
+ *                    killETA > r); no home victory is possible for either
+ *                    side within r (`clock.ts homeVictoryEta(p, side, r) > r`
+ *                    for both sides — a sound reachability lower bound,
+ *                    purchases and promotions included); upkeep elimination
+ *                    is ruled out for both sides (`clock.ts
+ *                    upkeepEliminationRuledOut` — each side holds a living
+ *                    tier-1 body, which `settleRent` never releases); and the
+ *                    winning side (me) has no pending commitment its floor
+ *                    rests on (`clock.ts arrivalsSettled` — a pending arrival
+ *                    can be cancelled by the loser without a kill, so a floor
+ *                    that counts one is not yet proven).
+ *   `proven-loss`  — the mirror (all four gates, with the opponent as the
+ *                    winning side whose `arrivalsSettled` is checked).
+ *   `bounded-win`  — intervals disjoint in my favour (`L_me > U_opp`), but at
+ *                    least one of the four gates above does not hold: a kill,
+ *                    a home victory, an upkeep elimination or a cancellable
+ *                    pending arrival is not yet ruled out within r.
  *   `bounded-loss` — the mirror.
- *   `open`         — the intervals overlap (exact ties included).
+ *   `open`         — the intervals overlap (exact ties included); no other
+ *                    gate is even checked, since (1) alone already caps the
+ *                    grade below `proven`.
  */
 export type ClockVerdict = 'proven-win' | 'proven-loss' | 'bounded-win' | 'bounded-loss' | 'open';
 

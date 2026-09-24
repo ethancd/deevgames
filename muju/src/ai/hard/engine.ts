@@ -312,15 +312,27 @@ export class HardEngine {
     }
     // STRATEGOS W1.8 (`EvalFix.promoteExhaustive`, off on every profile but
     // `hard@strategos`): read straight off `config.evalFix`, the way
-    // `rescueCap` above reads `config.searchFix`, and wired explicitly to all
-    // three generators. `gen/generate.ts setPromoteExhaustive` explains why
-    // this cannot instead ride `NodeTables.evalFix`, the way
-    // `gen/promote.ts`'s `strength.*` knobs do: that plumbing never reaches
-    // `planPromotions` from inside a real `TurnGenerator.generate()` call.
+    // `rescueCap` above reads `config.searchFix`. `gen/generate.ts
+    // setPromoteExhaustive` explains why this cannot instead ride
+    // `NodeTables.evalFix`, the way `gen/promote.ts`'s `strength.*` knobs do:
+    // that plumbing never reaches `planPromotions` from inside a real
+    // `TurnGenerator.generate()` call.
+    //
+    // ROOT GENERATOR ONLY (`gen`), coordinator decision (2026-09-24;
+    // supersedes wiring all three the same way `rescueCap`/`pruneZeroDamage`
+    // above do). CHOICE: the plan's proof obligation for W1.8 is ROOT
+    // recall — every legal promotion reaches the ROOT candidate list
+    // (`tests/ai/hard/prepare-recall.test.ts`), not that the interior search
+    // sees them too. A lane review measured wiring all three at fixed work
+    // 80,000 over 49 positions: nodes ratio 0.88 against root-only's 0.95 (a
+    // 12% search-depth tax from `genInterior`/`genQuiesce` re-running the
+    // widened promotion beam at every interior node), losing 6 more depth
+    // plies of the 82 measured (13 lost vs 6), with no measured
+    // promotion-choice benefit from the interior widening. Falsifier: the R1
+    // ladder row (plan A8) or wave 2 showing a promotion-choice regression
+    // that root-only wiring would have caught.
     if (config.evalFix?.promoteExhaustive === true) {
       gen.setPromoteExhaustive(true);
-      genInterior.setPromoteExhaustive(true);
-      genQuiesce.setPromoteExhaustive(true);
     }
 
     const tables: NodeTables[] = [];

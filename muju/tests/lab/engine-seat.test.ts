@@ -143,6 +143,24 @@ describe('profile selection and search telemetry', () => {
     const { config } = pinnedFixture();
     expect(() => seatConfigSchema.parse({ ...config, profile: 'not-a-real-profile' })).toThrow(/unknown label/);
   });
+  /**
+   * Coordinator decision (2026-09-24): `hard@env` is a legitimate LAB label
+   * (`hardConfigFor` resolves it, `lab/hard-ai/bots/hard.ts`), but the engine
+   * seat refuses it specifically. Its weights come from
+   * `process.env.MUJU_HARD_WEIGHTS`, a file path the seat's `start` log line
+   * never records (only the string `"env"` is), and that file is read lazily
+   * — a missing or malformed one fails only at the first search after
+   * joining a live room, not here before any room is touched. A documentary
+   * suffix (`env-400k`, mirroring `hardConfigFor`'s own normalisation) is
+   * refused the same way, not treated as a different, allowed label.
+   */
+  it("refuses profile 'env' (and a documentary-suffixed variant) with a clear error, before any room is touched", () => {
+    const { config } = pinnedFixture();
+    expect(() => seatConfigSchema.parse({ ...config, profile: 'env' })).toThrow(/MUJU_HARD_WEIGHTS/);
+    expect(() => seatConfigSchema.parse({ ...config, profile: 'env-400k' })).toThrow(/MUJU_HARD_WEIGHTS/);
+    // Every OTHER label `hardConfigFor` accepts still resolves normally.
+    expect(seatConfigSchema.parse({ ...config, profile: 'midrange' }).profile).toBe('midrange');
+  });
   // Mirrors `runner.ts`'s DEFAULT engine factory,
   // `new HardEngine(hardEnginePatch(options.profile ?? 'desktop'))`, without
   // paying for a search: construction alone proves which configuration the

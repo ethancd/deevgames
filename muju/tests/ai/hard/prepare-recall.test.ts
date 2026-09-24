@@ -368,11 +368,15 @@ describe('gen/promote.ts + gen/generate.ts: STRATEGOS W1.8 promoteExhaustive rec
     expect(report.length).toBe(fixtures.length * 2);
   });
 
-  it('engine.ts wiring: hard@strategos arms all three generators, hard@desktop none', () => {
+  it('engine.ts wiring: hard@strategos arms the ROOT generator only, hard@desktop none', () => {
     // Behavioural, not a private-field read: on fixture A (no slot has a
     // mission) a generator sees a legal promotion as a candidate iff its flag
-    // is on. Proves `config.evalFix.promoteExhaustive` actually reaches every
-    // generator the search uses, through `strategosPatch()` and `HardEngine`.
+    // is on. Proves `config.evalFix.promoteExhaustive` reaches `gen` alone
+    // through `strategosPatch()` and `HardEngine` — coordinator decision
+    // (2026-09-24): `genInterior`/`genQuiesce` stay unarmed under
+    // `hard@strategos` too (W1.8's proof obligation is ROOT recall; see
+    // `engine.ts`'s wiring comment for the lane-review numbers that reversed
+    // the original "wire all three" plan).
     const p = pack(stateFor(fixtures[0]));
     const legal = legalPromoteSlots(p);
     const strategos = new HardEngine(strategosPatch());
@@ -380,7 +384,11 @@ describe('gen/promote.ts + gen/generate.ts: STRATEGOS W1.8 promoteExhaustive rec
     for (const which of ['gen', 'genInterior', 'genQuiesce'] as const) {
       const on = traceSlots(strategos.ctx[which], p, legal);
       const off = traceSlots(desktop.ctx[which], p, legal);
-      expect(on.every(r => r.promoRank >= 0), `strategos ${which}`).toBe(true);
+      if (which === 'gen') {
+        expect(on.every(r => r.promoRank >= 0), `strategos ${which}`).toBe(true);
+      } else {
+        expect(on.every(r => r.promoRank < 0), `strategos ${which}`).toBe(true);
+      }
       expect(off.every(r => r.promoRank < 0), `desktop ${which}`).toBe(true);
     }
   });

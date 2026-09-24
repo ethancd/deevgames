@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { actionRequestSchema, joinSchema, roomIdSchema, tokenSchema } from '../../server/schema';
 import { joinRoom, normalizeServer, readRoom, roomRequest } from '../../src/online/client';
 import type { RoomAdmission, RoomConnection, RoomSnapshot } from '../../src/online/types';
-import { hardConfigFor } from '../../lab/hard-ai/bots/hard';
+import { ENV_WEIGHTS_LABEL, hardConfigFor } from '../../lab/hard-ai/bots/hard';
 import { PHASING_HARD_READINESS, assertAuthenticatedSeat, assertSeatRoom, seatContractSchema, type SeatContract } from './contract';
 import type { SeatJournal } from './runner';
 
@@ -35,6 +35,32 @@ export const seatConfigSchema = z.discriminatedUnion('mode', [
   try { hardConfigFor(config.profile); }
   catch (error) {
     context.addIssue({ code: 'custom', path: ['profile'], message: error instanceof Error ? error.message : 'Unknown engine-seat profile.' });
+  }
+  // Coordinator decision (2026-09-24): the engine seat refuses `hard@env`,
+  // even though `hardConfigFor` itself accepts it (the label is a legitimate
+  // lab-ladder tool for comparing an ad hoc weights file against `desktop`).
+  // `hard@env`'s weights come from `process.env.MUJU_HARD_WEIGHTS`, a file
+  // PATH the seat's `start` log line never records — only the string
+  // `"env"` does (`main.ts` logs `profile: config.profile`), so nothing on
+  // disk says which vector a resumed or replayed run actually used. Worse,
+  // the file is read lazily: `runner.ts`'s `makeEngine` (and so
+  // `hardEnginePatch`/`envWeights`) is not called until this seat's FIRST
+  // search after joining a live room, so a missing or malformed file fails
+  // there — deep inside a room, potentially minutes into a match — instead
+  // of here, before any room is read, joined or reserved. Matches
+  // `hardConfigFor`'s own documentary-suffix normalisation (`hard.ts
+  // hardEnginePatch`'s `envLabel` check) so `env-400k` is refused for the
+  // same reason `env` is, not treated as a different, allowed label.
+  if (config.profile.replace(/-(?:\d+(?:k|m)|units)$/i, '') === ENV_WEIGHTS_LABEL) {
+    context.addIssue({
+      code: 'custom',
+      path: ['profile'],
+      message:
+        `Engine-seat profile "${config.profile}" is refused: hard@env's weights come from the ` +
+        'MUJU_HARD_WEIGHTS file, which this seat\'s start line does not record, and a missing or ' +
+        'malformed file fails only at the first search after joining a room, not here. Use a named ' +
+        'profile (desktop, strategos, midrange, phone, …) instead.',
+    });
   }
 });
 export type SeatConfig = z.infer<typeof seatConfigSchema>;

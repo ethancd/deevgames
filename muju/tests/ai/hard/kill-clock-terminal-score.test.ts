@@ -73,13 +73,33 @@ describe('kill-clock terminal scoring under EvalFix.clockLedger (a policy.readin
     expect(terminalScore(decided(Result.BLACK_WIN, Reason.KILL_CLOCK), 1, 9)).toBe(WIN_CC - 9 * MATE_PLY_CC);
   });
 
-  it('BOUNDED_CLOCK_CC, not the flat KILL_CLOCK_SOFT_CC, when the reading is only bounded (or open) and far from the root', () => {
+  it('BOUNDED_CLOCK_CC, not the flat KILL_CLOCK_SOFT_CC, when the reading is bounded-win/bounded-loss and far from the root', () => {
     setKillClockRootClock(0);
-    for (const verdict of ['bounded-win', 'bounded-loss', 'open'] as const) {
+    for (const verdict of ['bounded-win', 'bounded-loss'] as const) {
       setKillClockPolicy({ rootClock: 0, reading: readingOf(verdict) });
       expect(terminalScore(decided(Result.WHITE_WIN, Reason.KILL_CLOCK), 0, 9)).toBe(BOUNDED_CLOCK_CC);
       expect(BOUNDED_CLOCK_CC).not.toBe(KILL_CLOCK_SOFT_CC);
     }
+  });
+
+  /**
+   * Coordinator decision (2026-09-24), superseding W1.6's original "bounded
+   * and open alike" brief: an `open` reading has no verdict to sign the
+   * bigger `BOUNDED_CLOCK_CC` with (the plan's own "signed by the verdict"
+   * language for the bounded score) — the intervals overlap and neither side
+   * is established as winning the clock at all. Scoring it at
+   * `BOUNDED_CLOCK_CC` anyway reproduced the 2026-09-22 failure one flag
+   * later: a 125,000 cc prize on a deep, unverified clock-out the
+   * candidate-limited interior search cannot confirm, preferring a clock-out
+   * found nine hand-offs deep over a free capture available now. So `open`,
+   * unlike `bounded-*`, keeps the SAME soft value desktop has always used.
+   */
+  it('KILL_CLOCK_SOFT_CC, not BOUNDED_CLOCK_CC, when the reading is open and far from the root', () => {
+    setKillClockRootClock(0);
+    setKillClockPolicy({ rootClock: 0, reading: readingOf('open') });
+    expect(terminalScore(decided(Result.WHITE_WIN, Reason.KILL_CLOCK), 0, 9)).toBe(KILL_CLOCK_SOFT_CC);
+    expect(terminalScore(decided(Result.BLACK_WIN, Reason.KILL_CLOCK), 1, 9)).toBe(KILL_CLOCK_SOFT_CC);
+    expect(KILL_CLOCK_SOFT_CC).not.toBe(BOUNDED_CLOCK_CC);
   });
 
   it('full scale within the forced hand-offs even when the reading is only bounded', () => {

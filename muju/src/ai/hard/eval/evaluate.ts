@@ -206,6 +206,12 @@ export class Evaluator {
  * scored as a win) over a free capture (2026-09-22, kill-clock lane 5). A
  * distant clock-out is therefore a mild flat preference, like a draw is a flat
  * zero; `DrawPressure` carries the growing urgency. Two-thirds of a tier-1.
+ *
+ * Coordinator decision (2026-09-24): this is also the desktop VALUE reused
+ * under `EvalFix.clockLedger` (`decidedCc` below) for an `open` root reading
+ * — the intervals overlap and neither side is established as the clock's
+ * winner, so there is no verdict to sign a bigger score with; see
+ * `BOUNDED_CLOCK_CC`'s doc for why `bounded-*` earns more but `open` does not.
  */
 export const KILL_CLOCK_SOFT_CC: Centi = 200;
 /** Hand-offs from the root within which a kill-clock verdict is forced: the
@@ -217,16 +223,34 @@ export const KILL_CLOCK_FORCED_HANDOFFS = 2;
  * STRATEGOS W1.6 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
  * B.2 step W1.6), `EvalFix.clockLedger` only. CHOICE: `WIN_CC / 8`
  * (125,000 cc). The magnitude of a kill-clock terminal beyond the forced
- * hand-offs whenever the root `ClockReading` (`strategy/clock.ts`) is NOT
- * proven — `bounded-*` (the disjoint interval holds but a kill, an earlier
- * ending or a cancellable arrival is not ruled out) AND `open` alike, as the
- * W1.6 brief specifies ("otherwise"). Why: a distant clock-out is worth more
- * than a tier-1 (the legacy flat `KILL_CLOCK_SOFT_CC` made it worth less, the
+ * hand-offs whenever the root `ClockReading` (`strategy/clock.ts`) is
+ * `bounded-win` or `bounded-loss` — the disjoint interval already holds (one
+ * side's stay-put floor beats the other's ceiling) but a kill, an earlier
+ * ending or a cancellable arrival is not yet ruled out, so the grade falls
+ * short of `proven`.
+ *
+ * CHOICE, coordinator decision (2026-09-24), superseding W1.6's original
+ * "bounded and open alike" brief: an `open` reading (the intervals overlap)
+ * no longer gets this score — it gets the flat `KILL_CLOCK_SOFT_CC` instead
+ * (`decidedCc` below). The plan itself describes this score as "signed by
+ * the verdict", and `open` names no verdict to sign: the root has not
+ * established that either side is winning the clock at all, so there is
+ * nothing for the sign to track. Paying `WIN_CC / 8` on an open reading
+ * reproduced the 2026-09-22 failure one flag later — a 125,000 cc prize on a
+ * deep, unverified clock-out that the candidate-limited interior search
+ * cannot confirm, which prefers a clock-out found nine hand-offs deep over a
+ * free capture available now. `bounded-*` earns the bigger prize precisely
+ * because it already has a disjoint interval behind it; `open` has not.
+ *
+ * Why `WIN_CC / 8` at all: a distant `bounded-*` clock-out is worth more than
+ * a tier-1 (the legacy flat `KILL_CLOCK_SOFT_CC` made it worth less, the
  * plan's F1 root cause) but must stay far below a proven ending, since an
  * unproven reading means a kill could still flip or reset the clock before
- * it fires. The sign is the leaf's own result, not the reading's. Falsifier:
- * the paired exam cases plan W1.13 builds, which must score a distant
- * clock-out below a proven one and above a flat draw on the same corpus.
+ * it fires. The sign is always the LEAF's own result relative to the root
+ * side, never the reading's own `side`/`verdict` (`decidedCc` below).
+ * Falsifier: the paired exam cases plan W1.13 builds, which must score a
+ * distant bounded clock-out below a proven one, above an open one, and above
+ * a flat draw on the same corpus.
  */
 export const BOUNDED_CLOCK_CC: Centi = WIN_CC / 8;
 
@@ -302,6 +326,15 @@ export function killClockHandoffsFromRoot(): number {
  * hand-offs" only when BOTH counts say so: the root's hand-offs (exact on
  * kill-free lines, and immune to the generator's one-turn offset) and the
  * terminal's own `ply` (which rules out the post-kill case).
+ *
+ * OUTSIDE THE FORCED WINDOW, coordinator decision (2026-09-24): the magnitude
+ * further splits on the reading's own grade. `bounded-win`/`bounded-loss`
+ * score `BOUNDED_CLOCK_CC` (a disjoint interval is behind them); `open`
+ * scores the flat desktop `KILL_CLOCK_SOFT_CC` (no disjoint interval, so no
+ * verdict to sign a bigger score with) — see `BOUNDED_CLOCK_CC`'s doc for the
+ * full rationale and falsifier. The sign in every case is the LEAF's own
+ * result relative to the root side (`terminalScore`'s `root === 0`/`1`
+ * branches below), never the installed `reading`'s own `side` or `verdict`.
  */
 function decidedCc(p: PackedState, ply: number): Centi {
   if (p.reason === Reason.KILL_CLOCK) {
@@ -311,7 +344,8 @@ function decidedCc(p: PackedState, ply: number): Centi {
       const proven = reading.verdict === 'proven-win' || reading.verdict === 'proven-loss';
       const forced = killClockHandoffsFromRoot() <= KILL_CLOCK_FORCED_HANDOFFS && ply <= KILL_CLOCK_FORCED_HANDOFFS;
       if (proven || forced) return WIN_CC - ply * MATE_PLY_CC;
-      return BOUNDED_CLOCK_CC;
+      const bounded = reading.verdict === 'bounded-win' || reading.verdict === 'bounded-loss';
+      return bounded ? BOUNDED_CLOCK_CC : KILL_CLOCK_SOFT_CC;
     }
     if (killClockHandoffsFromRoot() > KILL_CLOCK_FORCED_HANDOFFS) return KILL_CLOCK_SOFT_CC;
   }

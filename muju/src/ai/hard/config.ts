@@ -576,16 +576,39 @@ export interface EvalFix {
 
   /**
    * STRATEGOS W1.6 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
-   * B.2 step W1.6). ON means a kill-clock terminal is scored at terminal
-   * scale only when the root's `ClockReading` (`strategy/clock.ts`) is
-   * `proven` or the terminal falls within the forced hand-offs;
-   * otherwise it is signed by the verdict at `BOUNDED_CLOCK_CC` (CHOICE:
-   * `WIN_CC / 8`; falsifier: the paired exam cases). It also switches
-   * `DrawPressure` (`eval/features.ts:377-403`) from sign-only to the
-   * projected midpoint margin times clock squared, clamped to the feature's
-   * ±100 range, and gates `eval/invariants.ts`'s invariant 16 (the
-   * −200 penalty for sitting on a lead) off, since that invariant contradicts
-   * a Hold posture that is winning the clock on purpose (plan Part A item 2).
+   * B.2 step W1.6), amended by coordinator decision (2026-09-24). ON means a
+   * kill-clock terminal beyond the forced hand-offs is signed by the LEAF's
+   * own result (never the reading's `side`/`verdict`), at a magnitude that
+   * depends on the root's `ClockReading` (`strategy/clock.ts`):
+   *
+   *   - `proven` (either `proven-win` or `proven-loss`), or the terminal
+   *     falls within the forced hand-offs regardless of grade: full terminal
+   *     scale, same as a mate;
+   *   - `bounded-win`/`bounded-loss` (the interval is disjoint but a kill, a
+   *     home victory, an upkeep elimination or a cancellable arrival is not
+   *     yet ruled out): `BOUNDED_CLOCK_CC` (CHOICE: `WIN_CC / 8`; falsifier:
+   *     the paired exam cases);
+   *   - `open` (the intervals overlap, no verdict established): the SAME
+   *     flat `KILL_CLOCK_SOFT_CC` desktop has always used — an open reading
+   *     has no verdict for `BOUNDED_CLOCK_CC`'s "signed by the verdict" to
+   *     sign, and paying the bigger prize on one reproduced the 2026-09-22
+   *     failure one flag later (`eval/evaluate.ts BOUNDED_CLOCK_CC`'s doc has
+   *     the full account).
+   *
+   * It also switches `DrawPressure` (`eval/features.ts:377-403`) from
+   * sign-only to a CHEAP per-node stay-put PROJECTION of the mined-total
+   * margin at the clock's end — each side's current `gained[]` plus its own
+   * `projectedIncome` times how many of its future mining events fall inside
+   * the remaining window, a single-event rate held constant across the
+   * window, never `ledger.ts`'s own per-turn reserve/rent simulation and
+   * never the bank or the ceiling `U` (rewarding cash would reward hoarding,
+   * the 2026-09-20 repair handoff's documented failure) — times clock
+   * squared, clamped to the feature's ±100 range. (Not "the projected
+   * midpoint margin": that would need `U`, which this cheap per-node read
+   * deliberately excludes.) It also gates `eval/invariants.ts`'s invariant 16
+   * (the −200 penalty for sitting on a lead) off, since that invariant
+   * contradicts a Hold posture that is winning the clock on purpose (plan
+   * Part A item 2).
    *
    * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL, ON EVERY SHIPPED PROFILE:
    * `evaluate.ts`'s existing `KILL_CLOCK_SOFT_CC` branch, `DrawPressure`'s
@@ -593,7 +616,8 @@ export interface EvalFix {
    * the feature and invariant vectors this flag would change are byte-for-byte
    * unchanged on a corpus with the flag absent
    * (`tests/ai/hard/strategos-eval.test.ts`, W1.6). Only `hard@strategos`
-   * sets it; the scoring code lands in W1.6.
+   * sets it; the scoring code lands in W1.6. (See `promoteExhaustive` below,
+   * a separate flag, for the coordinator's root-only wiring decision.)
    */
   clockLedger?: boolean;
 
@@ -610,11 +634,22 @@ export interface EvalFix {
    * `buildCombos`' 24-combo prune or the K=24 root cut (plan B.1b); the
    * `forcedOnly` branch is untouched.
    *
+   * ROOT GENERATOR ONLY, coordinator decision (2026-09-24): `engine.ts` wires
+   * this flag to the ROOT generator (`gen`) alone, not to `genInterior` or
+   * `genQuiesce` — unlike `SearchFix.rescueCap`/`pruneZeroDamage` above,
+   * which arm all three. CHOICE: the plan's proof obligation for W1.8 is ROOT
+   * recall (every legal promotion reaches the root candidate list,
+   * `tests/ai/hard/prepare-recall.test.ts`), and a lane review measured
+   * wiring all three costing search depth for no measured promotion-choice
+   * benefit — at fixed work 80,000 over 49 positions, nodes ratio 0.88 (13 of
+   * 82 depth plies lost) against root-only's 0.95 (6 lost). Falsifier: the R1
+   * ladder row (plan A8) or wave 2.
+   *
    * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: `bestMission` keeps returning
    * −1 for every unclaimed promotion and `planPromotions`/`buildCombos` are
    * unchanged, so `oracles/canonical-check.ts` sees the identical combo set.
-   * Only `hard@strategos` sets it; the exhaustive-promotion code lands in
-   * W1.8.
+   * Only `hard@strategos` sets it, on `gen` alone; the exhaustive-promotion
+   * code lands in W1.8.
    */
   promoteExhaustive?: boolean;
 }
