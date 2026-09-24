@@ -45,6 +45,9 @@ export interface ExperienceRecord {
   reflection: string;
   writtenAt: string;
   label?: string;
+  /** Engine source hash the game ran against. Absent on pilot records, which all ran the
+   * fire-only purchase menu (source 98ac82cfe61c…); see the playbook's engine-change section. */
+  engineSourceSha256?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -156,7 +159,12 @@ playbook: concise, evidence-linked (cite gameId and revision numbers from the re
 invent a revision), organized by tool tier and by recurring pattern. Preserve any counterexample
 that contradicts an earlier claim; do not silently drop it. Output ONLY the new playbook body in
 Markdown, starting with the line "version: <N>" where <N> is one more than the current version.
-Do not fabricate outcomes not present in the records.`;
+Do not fabricate outcomes not present in the records.
+The engine changed during the campaign. Records without "engineSourceSha256" (all pilot games) ran a Hard engine
+whose purchase menu was almost only fire_1; later records name the engine they ran. Keep the playbook's
+"Read this first: the engine changed" section (update it, don't drop it), and label every claim about Hard's own
+behaviour with the engine it was observed on, keeping old-engine and current-engine evidence apart. Claims about
+the rules, the tools, or the LLM's own mistakes don't depend on the engine.`;
 /**
  * Curates memory/playbook.md from experiences.jsonl via a Claude subscription
  * call (never the OpenAI API, per SPEC.md). `dryRun` composes the prompt and

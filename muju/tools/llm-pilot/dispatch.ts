@@ -548,6 +548,7 @@ async function finishGame(game: ScheduleGame, player: PlayerResult, engineGaveUp
     llmSeat: game.llmSeat, handicap: game.blackCrystalHandicap, result, turns,
     citedRevisions: player.citedRevisions, finalRevision: room.revision, reflection: player.reflectionText,
     writtenAt: new Date().toISOString(), ...(isSmoke() ? { label: 'SMOKE' } : {}),
+    engineSourceSha256: (readJson<{ engine?: { sourceSha256?: string } }>(`${gameDir(id)}/manifest.json`)?.engine?.sourceSha256) ?? engineSourceSha256(),
   });
   let curation = 'playbook curated';
   try { const curated = await curatePlaybook(); curation = `playbook v${curated.nextVersion}`; }
