@@ -35,6 +35,7 @@ type Layer =
   | 'gen'
   | 'tactics'
   | 'eval'
+  | 'strategy'
   | 'search'
   | 'book'
   | 'verify'
@@ -66,8 +67,13 @@ function layerOf(fileRelToHard: string): Layer | null {
   if (fileRelToHard === 'types.ts') return 'types';
   if (fileRelToHard === 'config.ts') return 'config';
   if (fileRelToHard === 'engine.ts') return 'engine';
+  // STRATEGOS W1 (2026-09-24): `strategy/types.ts` is pure vocabulary (type
+  // aliases and interfaces that import only `types.ts`), so every layer may
+  // name its types the way every layer may name `types.ts`'s. The rest of
+  // `strategy/` is its own layer, reachable only from `search` and `engine`.
+  if (fileRelToHard === path.join('strategy', 'types.ts')) return 'types';
   const top = fileRelToHard.split(path.sep)[0];
-  if (['core', 'tables', 'gen', 'tactics', 'eval', 'search', 'book', 'verify'].includes(top)) return top as Layer;
+  if (['core', 'tables', 'gen', 'tactics', 'eval', 'strategy', 'search', 'book', 'verify'].includes(top)) return top as Layer;
   return null; // e.g. a stray file directly under src/ai/hard/ that isn't types/config/engine
 }
 
@@ -80,6 +86,13 @@ const LAYER_ALLOWS: Record<Layer, Layer[]> = {
   gen: ['core', 'tables', 'types', 'config'],
   tactics: ['core', 'tables', 'types', 'config'],
   eval: ['core', 'tables', 'types', 'config'],
+  // STRATEGOS W1 (plan W1.3-W1.10): the clock ledger, the kill-ETA bound, the
+  // clock reading and the Hold/ForceContact plans read the packed root and the
+  // tables, build complete turn lines with `gen`, cross-check against
+  // `tactics` and may score with `eval`. `gen` and `eval` never import
+  // `strategy`: the root installs what it computes through setters
+  // (`gen/generate.ts setStrategyWitness`, `eval/evaluate.ts setKillClockPolicy`).
+  strategy: ['core', 'tables', 'gen', 'tactics', 'eval', 'types', 'config'],
   // DESIGN §2's table stops `search` at `eval`, but §4.16 puts `searchRoot`
   // — the must-answer layer — in `search/root.ts`, and §5.10 requires it to
   // replay its FORCED lines through the CANONICAL engine and to probe the
@@ -88,10 +101,10 @@ const LAYER_ALLOWS: Record<Layer, Layer[]> = {
   // wins: `search` may reach `verify` and `book` (neither of which imports
   // `search`, so no cycle) and, like them, `src/game` and `src/ai/simulate`.
   // See DEVIATIONS.md under M14.
-  search: ['core', 'tables', 'gen', 'tactics', 'eval', 'verify', 'book', 'types', 'config'],
+  search: ['core', 'tables', 'gen', 'tactics', 'eval', 'strategy', 'verify', 'book', 'types', 'config'],
   book: ['core', 'gen', 'types', 'config'],
   verify: ['core', 'gen', 'types', 'config'],
-  engine: ['core', 'tables', 'gen', 'tactics', 'eval', 'search', 'book', 'verify', 'types', 'config'],
+  engine: ['core', 'tables', 'gen', 'tactics', 'eval', 'strategy', 'search', 'book', 'verify', 'types', 'config'],
 };
 
 /** Named exceptions outside src/ai/hard/, per layer. Keyed by the module's
