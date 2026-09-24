@@ -24,9 +24,11 @@
  *      mining-maximising heuristic below, which never attacks — see
  *      `scoreAction`'s doc for why that is a deliberate, documented choice
  *      and not an oversight);
- *   4. STOPS the trial the instant a kill happens (`board.units.length`
- *      drops) — that playout is DISCARDED, not scored, because the window
- *      `U` describes has already ended (`playoutsDiscardedByKill`);
+ *   4. STOPS the trial the instant a kill happens (an `ATTACK` after which
+ *      `board.units.length` dropped; a `PAY_UPKEEP` release also removes a
+ *      unit but is not a kill and does not touch the clock, so it must not
+ *      discard the trial) — that playout is DISCARDED, not scored, because
+ *      the window `U` describes has already ended (`playoutsDiscardedByKill`);
  *   5. if the replay instead runs all the way to `state.phase === 'victory'`
  *      with `victoryReason === 'kill-clock'` and no kill occurred, THIS is a
  *      genuine "kill-free continuation to the clock's end": `minedTotal`
@@ -76,6 +78,11 @@ export interface ClockLedgerOracleReport {
   playoutsDiscardedByCap: number;
   playoutsDiscardedNoWindow: number;
   violations: ClockLedgerViolation[];
+  /** Over every scored side with `U > now`: the largest
+   * `(achieved - now) / (U - now)`. Evidence the oracle is not vacuous — a
+   * bound far wider than anything play reaches would pass the violation
+   * check for free, and this ratio is where that shows. */
+  tightestRatio: number;
 }
 
 /** `playOne`'s outcome, discriminated so the caller can tally precisely why
@@ -100,6 +107,13 @@ export interface ClockLedgerOracleOptions {
   /** Safety cap on total actions applied per playout, so a bug that never
    * reaches a terminal cannot hang the process. */
   maxActionsPerPlayout?: number;
+  /** Crystals added to BOTH banks at every odd-numbered root (default 0).
+   * CHOICE: random-play roots rarely hold enough cash to exercise `U`'s
+   * investment term (buys and promotions compounding over the window), so
+   * the acceptance copy tops the banks up on half its roots; a bank is free
+   * state, so the root stays a legal position. Falsifier: none needed — it
+   * only widens what the oracle tries. */
+  bankBonus?: number;
 }
 
 /** CHOICE: `r <= INACTIVITY_LIMIT + 1 = 11` plies, each at most 4 actions
@@ -186,7 +200,9 @@ function playOne(root: GameState, mode: PlayoutMode, rng: RNG, maxActions: numbe
     const action = pickAction(state, actions, mode, rng);
     const next = applyAction(state, action);
     if (next === state) return { kind: 'other-terminal' };
-    if (livingCount(next) < before) return { kind: 'kill' }; // the window this root's U describes is over
+    // The window this root's U describes is over. Only an ATTACK kills; a
+    // PAY_UPKEEP release also shrinks the roster but is part of the window.
+    if (action.type === 'ATTACK' && livingCount(next) < before) return { kind: 'kill' };
     state = next;
   }
   if (state.phase === 'playing') return { kind: 'cap-exceeded' };
@@ -218,8 +234,9 @@ export function runClockLedgerOracle(options: ClockLedgerOracleOptions): ClockLe
   const report: ClockLedgerOracleReport = {
     rootsSampled: 0, playoutsRun: 0, playoutsCompletedKillFree: 0,
     playoutsDiscardedByKill: 0, playoutsDiscardedOtherTerminal: 0, playoutsDiscardedByCap: 0,
-    playoutsDiscardedNoWindow: 0, violations: [],
+    playoutsDiscardedNoWindow: 0, violations: [], tightestRatio: 0,
   };
+  const bankBonus = options.bankBonus ?? 0;
   if (openings.length === 0) return report;
   for (let trial = 0; trial < options.trials; trial++) {
     // CHOICE: distinct large-prime multipliers per stream (root walk vs. each
@@ -233,8 +250,15 @@ export function runClockLedgerOracle(options: ClockLedgerOracleOptions): ClockLe
     // clocks (measured: clocks spread 1..9) without spending most trials on
     // long walks that only shrink `r`.
     const walkSteps = 4 + Math.floor(rootRng() * 40);
-    const rootState = randomLegalWalk(applyOpening(opening), rootRng, walkSteps);
-    if (rootState.phase !== 'playing') continue;
+    const walked = randomLegalWalk(applyOpening(opening), rootRng, walkSteps);
+    if (walked.phase !== 'playing') continue;
+    const rootState: GameState = bankBonus > 0 && trial % 2 === 1 ? {
+      ...walked,
+      players: {
+        white: { ...walked.players.white, resources: walked.players.white.resources + bankBonus },
+        black: { ...walked.players.black, resources: walked.players.black.resources + bankBonus },
+      },
+    } : walked;
     report.rootsSampled++;
     const rootLabel = `${opening.id}+walk(${walkSteps})#${trial}`;
     const p = replica.pack(rootState, allocState());
@@ -253,6 +277,8 @@ export function runClockLedgerOracle(options: ClockLedgerOracleOptions): ClockLe
         const achieved = minedTotal(outcome.state, player);
         const u = ledger.sides[side].U.value;
         if (achieved > u) report.violations.push({ rootLabel, mode, side, u, achieved });
+        const now = ledger.sides[side].now;
+        if (u > now) report.tightestRatio = Math.max(report.tightestRatio, (achieved - now) / (u - now));
       }
     }
   }
@@ -267,7 +293,8 @@ const invokedDirectly = process.argv[1] !== undefined &&
 if (invokedDirectly) {
   const trials = Number(process.argv.find(a => a.startsWith('--trials='))?.slice('--trials='.length) ?? 300);
   const seed = Number(process.argv.find(a => a.startsWith('--seed='))?.slice('--seed='.length) ?? 1);
-  const report = runClockLedgerOracle({ trials, seed, modes: ['random', 'greedy'] });
+  const bankBonus = Number(process.argv.find(a => a.startsWith('--bank-bonus='))?.slice('--bank-bonus='.length) ?? 0);
+  const report = runClockLedgerOracle({ trials, seed, modes: ['random', 'greedy'], bankBonus });
   console.log(JSON.stringify(report, null, 2));
   if (report.violations.length > 0) process.exitCode = 1;
 }
