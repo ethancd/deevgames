@@ -299,6 +299,18 @@ export class HardEngine {
       genInterior.setRescueCap(this.rescueCap);
       genQuiesce.setRescueCap(this.rescueCap);
     }
+    // STRATEGOS W1.8 (`EvalFix.promoteExhaustive`, off on every profile but
+    // `hard@strategos`): read straight off `config.evalFix`, the way
+    // `rescueCap` above reads `config.searchFix`, and wired explicitly to all
+    // three generators. `gen/generate.ts setPromoteExhaustive` explains why
+    // this cannot instead ride `NodeTables.evalFix`, the way
+    // `gen/promote.ts`'s `strength.*` knobs do: that plumbing never reaches
+    // `planPromotions` from inside a real `TurnGenerator.generate()` call.
+    if (config.evalFix?.promoteExhaustive === true) {
+      gen.setPromoteExhaustive(true);
+      genInterior.setPromoteExhaustive(true);
+      genQuiesce.setPromoteExhaustive(true);
+    }
 
     const tables: NodeTables[] = [];
     const keep: KeepSetTable[] = [];

@@ -330,6 +330,12 @@ export class TurnGenerator {
   private rescueCap: RescueCap | null = null;
   /** E2.2's opt-in stage trace; `null` in every search. See `gen/trace.ts`. */
   private trace: GenTrace | null = null;
+  /**
+   * STRATEGOS W1.8's `EvalFix.promoteExhaustive`; `false` on every profile but
+   * `hard@strategos`. See `setPromoteExhaustive` for why this is a field with
+   * a setter rather than a `NodeTables.evalFix` read.
+   */
+  private promoteExhaustive = false;
 
   constructor(rep: Replica, cfg: GenConfig, pool: TurnPool, sc: Scratch) {
     this.rep = rep;
@@ -367,6 +373,49 @@ export class TurnGenerator {
    */
   setRescueCap(cap: RescueCap | null): void {
     this.rescueCap = cap;
+  }
+
+  /**
+   * Installs (or clears) STRATEGOS W1.8's exhaustive-promotion flag
+   * (`HardConfig.evalFix.promoteExhaustive`, plan
+   * `~/.claude/plans/can-you-respond-to-piped-book.md` B.2 step W1.8). `true`
+   * makes the MAIN `expand()` call to `gen/promote.ts planPromotions` pass
+   * `exhaustive: true` (every `canPromote` slot becomes a candidate, up to
+   * `MAX_SLOTS`, instead of the ordinary `cfg.maxPromotions`-wide beam that
+   * only slots with a claimed mission compete for) and makes `buildCombos`
+   * pin one bare promotion-only combo per candidate, so the widened list
+   * survives buildCombos' own 24-combo score prune (plan B.1b). The
+   * `forcedOnly` branch of `expand()` (`gen/generate.ts:521-535`) is NOT
+   * wired to this flag and stays exactly as it is today: it only ever widens
+   * FORTIFY's already-unbounded beam, which this flag does not touch.
+   *
+   * WHY A SETTER, NOT `t.evalFix` (`NodeTables`) — the pattern
+   * `gen/promote.ts bestMission`/`orderingRentPv` already use for the
+   * 2026-09-21 strength knobs, and the plan's first-choice wiring. That
+   * pattern is a dead read here: `expand()` rebuilds the generator's OWN
+   * `this.prepareTables` for the post-Act Prepare position and reassigns
+   * `ctx.t` to it (`buildTables(p, this.sc, ctx.ply, 2, this.prepareTables)`,
+   * `ctx.t = t;`, just above `planPromotions`'s two call sites) BEFORE
+   * `planPromotions` is ever called — so the `t` that reaches it is never the
+   * per-ply `NodeTables` `engine.ts`'s constructor stamps `evalFix` onto (that
+   * stamping runs only over the interior-search `tables: NodeTables[]` array,
+   * `engine.ts:303-315`); `this.prepareTables` comes from a bare
+   * `allocTables()` (`evalFix: null`, `tables/context.ts:187-213`) that
+   * nothing ever restamps. So `t.evalFix` reads inside `bestMission` answer
+   * correctly only in `tests/ai/hard/promote.test.ts`'s isolated unit calls,
+   * which build their own `t` and set `.evalFix` on it directly — never
+   * inside a real `TurnGenerator.generate()`, and so never inside a real
+   * search. `promoteExhaustive` must actually fire in `hard@strategos`
+   * search, so it takes the setter path `setRescueCap` above already
+   * established (`engine.ts` reads `config.evalFix?.promoteExhaustive` and
+   * wires all three generators) instead of a `GenConfig`/`HardConfig.gen`
+   * field, for the same identity-hash reason `setRescueCap` gives.
+   *
+   * `false` — every profile but `hard@strategos` — leaves `planPromotions`
+   * and `buildCombos` byte-identical to today.
+   */
+  setPromoteExhaustive(on: boolean): void {
+    this.promoteExhaustive = on;
   }
 
   /**
@@ -521,6 +570,12 @@ export class TurnGenerator {
     if (forcedOnly) {
       // A forced Act prefix retains its bare completion and every eligible
       // fortification suffix, not unrelated ordinary purchase combinations.
+      // STRATEGOS W1.8 (plan B.1b): NOT wired to `promoteExhaustive` — this
+      // branch already emits every legal FORTIFY unconditionally (`max: 0`
+      // still returns the full `out.length` FORTIFY beam, see
+      // `planPromotions`'s `fortifying` bypass), and it deliberately does not
+      // widen to other missions or to unmissioned slots, so it is unchanged
+      // whatever `promoteExhaustive` says.
       this.plans[0].count = 0; this.plans[0].flags = 0;
       const n = planPromotions(p, t, 0, this.promos);
       let plans = includeBare ? 1 : 0;
@@ -535,7 +590,11 @@ export class TurnGenerator {
     }
     const purchaseCfg = ctx.reference ? this.referencePurchase : this.cfg.purchase;
     const planCount = planPurchases(p, t, purchaseCfg, this.sc, ctx.ply, this.plans);
-    const promoCount = planPromotions(p, t, this.cfg.maxPromotions, this.promos);
+    // STRATEGOS W1.8: `this.promoteExhaustive` (`setPromoteExhaustive`) is the
+    // ONLY place this branch reads the flag; `buildCombos` below reads the
+    // same field directly (it is a method on this class) rather than taking
+    // it as a parameter, to keep both call sites' signatures unchanged.
+    const promoCount = planPromotions(p, t, this.cfg.maxPromotions, this.promos, this.promoteExhaustive);
     for (let i = 0; i < promoCount; i++) {
       if (this.promos[i].mission === Mission.FORTIFY) {
         this.runCombo(ctx, prefixLen, { purchase: 0, promo: i, promo2: -1, scoreCc: 0 }, -1);
@@ -698,6 +757,33 @@ export class TurnGenerator {
       combo.promo = -1;
       combo.promo2 = -1;
       combo.scoreCc = this.plans[i].scoreCc;
+    }
+    // STRATEGOS W1.8 (`promoteExhaustive`, plan B.1b): pin one bare
+    // promotion-only combo — `(purchase: 0 [the empty plan, `planPurchases`'s
+    // own invariant], promo: j, promo2: -1)` — per promotion candidate, the
+    // same way the home-race loop just above pins purchase plans. Without
+    // this, `planPromotions`'s widened list (every `canPromote` slot, plan
+    // W1.8) still loses to this method's OWN `maxPlans`-wide score prune
+    // above: a promotion `bestMission` left unclaimed scores at best
+    // `0 − cost·CC − rent` (`Mission.ANY`'s benefit is 0), so it is exactly
+    // the kind of candidate that beam would drop first. Pinning only
+    // GUARANTEES the combo reaches `buildCombos`' return list — the root's
+    // own `K`-candidate cut (`GenConfig.K`) still competes it on within-turn
+    // score like everything else (plan B.1b: "do not try to beat the root K
+    // cut; measure and report recall after it").
+    if (this.promoteExhaustive) {
+      for (let j = 0; j < promoCount && n < this.combos.length; j++) {
+        let present = false;
+        for (let k = 0; k < n && !present; k++) {
+          if (this.combos[k].purchase === 0 && this.combos[k].promo === j) present = true;
+        }
+        if (present) continue;
+        const combo = this.combos[n++];
+        combo.purchase = 0;
+        combo.promo = j;
+        combo.promo2 = -1;
+        combo.scoreCc = this.promos[j].scoreCc;
+      }
     }
     // Descending score over `[pinnedEnd, n)`; the empty plan and the pinned
     // plans keep their places ahead of it, so a meter that runs out mid-menu
