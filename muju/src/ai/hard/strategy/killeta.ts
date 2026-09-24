@@ -47,9 +47,12 @@
  * kill before the clock rules are `1 … clockPliesLeft(p)`, so
  *
  *     killEta(p, 0).plies > clockPliesLeft(p)  and  killEta(p, 1).plies > clockPliesLeft(p)
- *       ⇒  no unit dies before the kill clock ends the game
+ *       ⇒  no unit is killed before the kill clock ends the game
  *
- * (unless a home or elimination ending comes first — neither is a kill). The
+ * (unless a home or elimination ending comes first — neither is a kill; nor
+ * is an upkeep release, which removes a unit without resetting the clock:
+ * only an ATTACK that removes a unit sets `progress`, `src/ai/simulate.ts`
+ * and `core/state.ts`). The
  * plan's acceptance anchors follow from the same convention and are pinned by
  * `tests/ai/hard/strategy-killeta.test.ts`: whenever `tables/kill.ts
  * killTable(p, t, p.side, {horizon: 'current'})` finds a kill, `killEta(p,
@@ -230,7 +233,7 @@ export interface KillEtaOptions {
 // ---------------------------------------------------------------------------
 
 /**
- * The ply at whose hand-off the kill clock ends the game if no unit dies,
+ * The ply at whose hand-off the kill clock ends the game if no unit is killed,
  * in `killEta`'s convention (ply 1 = the turn in progress): `INACTIVITY_LIMIT
  * − clock` when `p.progress === 0`, `INACTIVITY_LIMIT + 1` when this turn
  * already killed (the hand-off then writes 0; `core/state.ts makeEndPlace`
@@ -286,8 +289,9 @@ const MAX_GROUP_OPTIONS = ACTIONS_PER_TURN * (NEED_CAP + 1);
 
 /**
  * Caller-owned working memory, so repeated calls (the plan's W1.9 contract
- * checks) do not allocate. Holds no state between calls: every field is
- * rewritten before it is read.
+ * checks) do not re-allocate the per-ply tables; a call still builds its small
+ * result objects. Holds no state between calls: every field is rewritten
+ * before it is read.
  */
 export interface KillEtaScratch {
   /** Spawn-region masks per side per arrival ply. */
@@ -315,6 +319,9 @@ export interface KillEtaScratch {
   groupDef: Int32Array;
   groupMinDef: Int32Array;
   groupRadius: Int32Array;
+  /** One target's candidate classes and their closing radii (`windowOpen`). */
+  targetDefs: Int32Array;
+  targetRadii: Int32Array;
 }
 
 export function newKillEtaScratch(): KillEtaScratch {
@@ -337,6 +344,8 @@ export function newKillEtaScratch(): KillEtaScratch {
     groupDef: new Int32Array(MAX_TARGET_OPTIONS),
     groupMinDef: new Int32Array(MAX_TARGET_OPTIONS),
     groupRadius: new Int32Array(MAX_TARGET_OPTIONS),
+    targetDefs: new Int32Array(MAX_TARGET_OPTIONS),
+    targetRadii: new Int32Array(MAX_TARGET_OPTIONS),
   };
 }
 
@@ -368,7 +377,9 @@ function actBudget(c: Ctx, x: Side, q: number): number {
   return ACTIONS_PER_TURN;
 }
 
-/** `x`'s first turn start after the root: arrivals land and units heal there. */
+/** `x`'s first turn start after the root: arrivals land and units heal there.
+ * DERIVED (the ply convention): the mover's next turn starts after ply 2's
+ * hand-off, i.e. at ply 3; the other side's after ply 1's, at ply 2. */
 function nextTurnStart(c: Ctx, x: Side): number {
   return x === c.mover ? 3 : 2;
 }
@@ -981,8 +992,8 @@ export function killEta(p: PackedState, side: Side, opts: KillEtaOptions = {}, s
   fillSpawnRegions(c, enemy);
   fillRegionDistances(c, side);
 
-  const defs = new Int32Array(MAX_TARGET_OPTIONS);
-  const radii = new Int32Array(MAX_TARGET_OPTIONS);
+  const defs = ws.targetDefs;
+  const radii = ws.targetRadii;
   const window: KillEtaWindow = { ply: 0, target: 'unit', slot: -1, square: -1, need: 0 };
   for (let k = 1; k <= limit; k++) {
     if (!owns(c, side, k)) continue;

@@ -85,8 +85,8 @@ const PLAYOUT_ACTION_GUARD = 4000;
 /** CHOICE: exhaustive-search node budget; the authored cases use under 10^5
  * (falsifier: `truncated > 0` on an authored case). */
 const EXHAUSTIVE_NODE_LIMIT = 2_000_000;
-/** DERIVED (`units.ts`): a Manhattan distance on a 10×10 board is at most 18,
- * so 99 reads "no enemy unit at all". */
+/** DERIVED (`board.ts BOARD_SIZE`): a Manhattan distance on the 10×10 board
+ * is at most 18, so 99 reads "no enemy unit at all". */
 const NO_ENEMY = 99;
 /** CHOICE: slack histogram buckets 0 … 11 and "12 or more" (falsifier: none —
  * reporting only). */
@@ -102,6 +102,15 @@ const SPARSE_MAX_BANK = 12;
 const SPARSE_POOR_MAX_BANK = 3;
 const SPARSE_MAX_RESERVE = 6;
 const SPARSE_POOR_SHARE = 1 / 3;
+/** CHOICE: half the sparse boards carry a paid commitment for the side not to
+ * move, and either colour moves first with equal odds (falsifier: no
+ * `'pending'`-decided bound in the corpus, which the unit test asserts). */
+const SPARSE_PENDING_SHARE = 1 / 2;
+const WHITE_TO_MOVE_SHARE = 1 / 2;
+/** CHOICE: a prime multiplier that spreads per-playout seeds so consecutive
+ * `--seed` values never share a stream (falsifier: two seeds with identical
+ * playout lines). */
+const PLAYOUT_SEED_STRIDE = 7919;
 /** Playouts cover every ply the bound can speak about, plus one. DERIVED
  * (`KILL_ETA_HORIZON`): a first kill after the horizon cannot violate any bound. */
 export const PLAYOUT_PLIES = KILL_ETA_HORIZON + 1;
@@ -383,7 +392,7 @@ export function sparseStarts(count: number, seed: number): StartPosition[] {
         units.push({ def: defs[Math.floor(rng() * defs.length)], owner, x: s % 10, y: Math.floor(s / 10) });
       }
     }
-    const current: PlayerId = rng() < 0.5 ? 'white' : 'black';
+    const current: PlayerId = rng() < WHITE_TO_MOVE_SHARE ? 'white' : 'black';
     // A third of the boards are POOR (banks 0 … 3, no reserve anywhere): the
     // bodies on the board are then nearly all there is, and bounds run long.
     const poor = rng() < SPARSE_POOR_SHARE;
@@ -396,7 +405,7 @@ export function sparseStarts(count: number, seed: number): StartPosition[] {
       current,
     };
     let state = authoredState(spec);
-    if (rng() < 0.5) {
+    if (rng() < SPARSE_PENDING_SHARE) {
       const other: PlayerId = current === 'white' ? 'black' : 'white';
       const squares = getAllSpawnPositions(other, state.board);
       if (squares.length > 0) {
@@ -468,7 +477,7 @@ export function checkPlayouts(starts: readonly StartPosition[], playoutsPer: num
     m.bounds[Math.min(bound[0], m.bounds.length - 1)]++;
     m.bounds[Math.min(bound[1], m.bounds.length - 1)]++;
     for (let k = 0; k < playoutsPer; k++) {
-      const rng = seededRandom((seed * 7919 + s++) >>> 0);
+      const rng = seededRandom((seed * PLAYOUT_SEED_STRIDE + s++) >>> 0);
       const policies = POLICY_PAIRS[k % POLICY_PAIRS.length];
       const r = playout(rep, start.p, policies, rng, PLAYOUT_PLIES, work, walker);
       m.playouts++;
@@ -484,7 +493,7 @@ export function checkPlayouts(starts: readonly StartPosition[], playoutsPer: num
           if (m.mismatches.length < MAX_REPORTED) {
             m.mismatches.push({
               kind: 'playout', id: start.id, side, bound: bound[side], firstKill: first,
-              detail: `policies ${policies.join('/')} seed ${(seed * 7919 + s - 1) >>> 0} line ${JSON.stringify(r.line)}`,
+              detail: `policies ${policies.join('/')} seed ${(seed * PLAYOUT_SEED_STRIDE + s - 1) >>> 0} line ${JSON.stringify(r.line)}`,
             });
           }
         }

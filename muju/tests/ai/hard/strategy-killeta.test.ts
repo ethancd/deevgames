@@ -22,6 +22,9 @@
  *     commitment, the enemy's means to buy a victim, a point of damage, the
  *     phase, the actions left, a spent attack — each moving the bound the way
  *     the rule it isolates says it must;
+ *   - a WITNESS LINE for the refund clause: a legal line on the replica that
+ *     kills exactly at the bound, so dropping the refund from the crystal
+ *     ceiling (a mutation the playouts only catch at CLI scale) fails here;
  *   - that every kind of victim (live unit, commitment, purchase) actually
  *     decides bounds in the corpus, so no clause is dead code;
  *   - side-swap symmetry on every generated position.
@@ -32,14 +35,15 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { GameState, PlayerId } from '../../../src/game/types';
 import { getMoveCost } from '../../../src/game/movement';
-import { AKind, newKeepSetTable, paMake } from '../../../src/ai/hard/core/action';
+import { AKind, newKeepSetTable, paA, paB, paKind, paMake, type PA } from '../../../src/ai/hard/core/action';
+import { DEF_INDEX } from '../../../src/ai/hard/core/catalog';
 import { Scratch, bbNew } from '../../../src/ai/hard/core/bits';
 import { bfsFrom } from '../../../src/ai/hard/core/movement';
 import { newSpawnInfo, spawnInfo } from '../../../src/ai/hard/core/spawn';
 import { INACTIVITY_LIMIT, Replica, newUndo } from '../../../src/ai/hard/core/state';
 import { MANHATTAN } from '../../../src/ai/hard/core/tables';
 import { killTable, newKillTable, type KillContext, type KillOpts } from '../../../src/ai/hard/tables/kill';
-import { Reason, Result, type PackedState, type Side } from '../../../src/ai/hard/types';
+import { DEAD, MAX_SLOTS, Reason, Result, type PackedState, type Side } from '../../../src/ai/hard/types';
 import {
   KILL_ETA_ASSUMPTIONS,
   KILL_ETA_EVIDENCE,
@@ -345,6 +349,57 @@ describe('killEta — the killTable anchors (plan W1.4 acceptance)', () => {
 // authored fixtures: far apart, close, and paired one-fact changes
 // ---------------------------------------------------------------------------
 
+/**
+ * Plays a scripted legal line on the replica, choosing each action from the
+ * replica's own legal list by a predicate (so the line cannot cheat), and
+ * records each side's first kill in `killEta`'s ply convention.
+ */
+class LineWalker {
+  ply = 1;
+  firstKill: [number, number] = [Infinity, Infinity];
+  // The replica's generator capacity (as in `oracles/killeta.ts`).
+  private buf = new Int32Array(4 + MAX_SLOTS * 104);
+  private keep = newKeepSetTable();
+  private undo = newUndo();
+
+  constructor(private p: PackedState) {}
+
+  play(pred: (a: PA) => boolean, what: string): void {
+    const p = this.p;
+    let n: number;
+    if (p.upkeepPending === 1) {
+      n = rep.genKeepSets(p, this.keep);
+      for (let i = 0; i < n; i++) this.buf[i] = paMake(AKind.PAY_UPKEEP, i);
+    } else {
+      n = p.phase === 1 ? rep.genActions(p, this.buf) : rep.genPlace(p, this.buf);
+    }
+    for (let i = 0; i < n; i++) {
+      const a = this.buf[i];
+      if (!pred(a)) continue;
+      const kind = paKind(a);
+      const mover = p.side;
+      const victim = kind === AKind.ATTACK ? p.pieceAt[paB(a)] : -1;
+      this.undo.top = 0;
+      rep.make(p, a, this.undo, this.keep);
+      if (victim >= 0 && p.sq[victim] === DEAD && this.firstKill[mover] === Infinity) this.firstKill[mover] = this.ply;
+      if (kind === AKind.END_PLACE && p.result === Result.ONGOING) this.ply++;
+      return;
+    }
+    throw new Error(`LineWalker: no legal action for "${what}" at ply ${this.ply}`);
+  }
+
+  upkeep(): void {
+    if (this.p.upkeepPending === 1) this.play(a => paKind(a) === AKind.PAY_UPKEEP, 'upkeep');
+  }
+
+  /** END_ACTION (if in Act), the automatic upkeep, END_PLACE. */
+  passTurn(): void {
+    if (this.p.phase === 1) this.play(a => paKind(a) === AKind.END_ACTION, 'END_ACTION');
+    this.upkeep();
+    this.play(a => paKind(a) === AKind.END_PLACE, 'END_PLACE');
+  }
+}
+
 describe('killEta — far-apart fixtures give killETA > r', () => {
   it('two 0-power plants in opposite corners with no crystals: no kill ever, so > r at every clock', () => {
     for (const clock of [0, 5, 8, 9]) {
@@ -476,6 +531,43 @@ describe('killEta — paired fixtures that differ in one fact', () => {
     expect(eta(without, B)).toBe(BEYOND);
     const r = killEta(withPending, B);
     expect(r.plies).toBe(2);
+  });
+
+  it('a disrupted commitment\'s refund pays for the kill: a witness line kills at ply 4, the bound; with no commitment, never', () => {
+    // Black's only money is the 5 its pending plant_1 cost. Nothing Black owns
+    // can hurt White's plant_1 (plant → plant is 0), so its first kill needs a
+    // purchase, and a purchase needs that refund. White steps onto the
+    // commitment's square in ply 1, the commitment is disrupted at Black's
+    // turn start (ply 2) and refunded (`summoning.ts resolveSummons`); Black
+    // buys a fire_1 (3 against plant) in Prepare 2 in the rectangle to its
+    // other plant_1; it arrives in ply 4 and kills. That legal line makes 4
+    // the latest a sound bound may say, and 4 is what the bound says.
+    const units: AuthoredSpec['units'] = [
+      { def: 'plant_1', owner: 'white', x: 8, y: 7 },
+      { def: 'plant_1', owner: 'black', x: 9, y: 5 },
+      { def: 'plant_1', owner: 'black', x: 7, y: 9 },
+    ];
+    const withPending = pack({ units, pending: [{ def: 'plant_1', owner: 'black', x: 9, y: 7 }] });
+    expect(withPending.bank[B]).toBe(0);
+    expect(withPending.pendCostSum[B]).toBe(5);
+    expect(eta(withPending, B)).toBe(4);
+    expect(eta(pack({ units }), B)).toBe(BEYOND);
+
+    const at = (x: number, y: number): number => y * 10 + x;
+    const line = new LineWalker(withPending);
+    line.play(a => paKind(a) === AKind.MOVE && paB(a) === at(9, 7), 'White steps onto the commitment');
+    line.passTurn();
+    expect(withPending.pendCount[B]).toBe(0);
+    expect(withPending.bank[B]).toBe(5); // refunded, not arrived
+    line.play(a => paKind(a) === AKind.END_ACTION, 'Black ends its Act');
+    line.upkeep();
+    line.play(a => paKind(a) === AKind.BUY && paA(a) === DEF_INDEX.get('fire_1') && paB(a) === at(8, 9), 'Black buys fire_1 at (8,9)');
+    line.play(a => paKind(a) === AKind.END_PLACE, 'Black ends its Prepare');
+    line.passTurn();
+    const fire = withPending.pieceAt[at(8, 9)];
+    line.play(a => paKind(a) === AKind.MOVE && paA(a) === fire && paB(a) === at(9, 8), 'fire_1 to (9,8)');
+    line.play(a => paKind(a) === AKind.ATTACK && paA(a) === fire && paB(a) === at(9, 7), 'fire_1 hits (9,7)');
+    expect(line.firstKill[B]).toBe(4);
   });
 
   it('an enemy purchase is a target: Black\'s three crystals offer White a ply-4 kill its broke twin never does', () => {
