@@ -55,6 +55,37 @@ export function applyOpening(opening: OpeningSpec, options: OpeningStateOptions 
   });
 }
 
+/**
+ * Replays an arbitrary Phasing action RECIPE — not a P1 opening — from the
+ * canonical Phasing initial state, under exactly `applyOpening`'s contract:
+ * every action legal for the side to move, no simulator no-op, harness
+ * invariants after each, and a playable (non-terminal) result.
+ *
+ * `applyOpening` refuses any id that is not `p1-…` so the Standard books can
+ * never be relabelled as Phasing. A recipe is not a book row: it is the
+ * position an exam case taken from a Phasing loss (`exam/from-loss.ts`, e.g. an
+ * online room converted by `analyze/from-room.ts`) is ABOUT, written as the
+ * game's own actions from the initial state. It is replayed here, under the
+ * rule set it was recorded under, and nowhere near the book check.
+ */
+export function replayPhasingRecipe(actions: readonly OpeningSpec['actions'][number][], options: OpeningStateOptions = {}, where = 'Phasing recipe'): GameState {
+  return withOpeningRules(options, () => {
+    let state = initialStateFor(options);
+    for (let i = 0; i < actions.length; i++) {
+      const at = `${where} action ${i} (${actions[i].type})`;
+      if (state.phase !== 'playing') throw new Error(`${at}: the recipe has already ended the game`);
+      const action = resolveOpeningAction(state, actions[i], at);
+      if (!isLegalAction(state, action, state.turn.currentPlayer)) throw new Error(`${at}: illegal for ${state.turn.currentPlayer} in this position`);
+      const next = applyAction(state, action);
+      if (next === state) throw new Error(`${at}: simulator no-op`);
+      checkInvariants(next, at);
+      state = next;
+    }
+    if (state.phase !== 'playing') throw new Error(`${where}: terminal position`);
+    return state;
+  });
+}
+
 /** Stable across minted ids and ordering; pending type, owner, square AND paid
  * cost change the position. Standard and Phasing can never share a digest. */
 export function gameplayDigest(state: GameState): string {

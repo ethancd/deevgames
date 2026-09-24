@@ -51,6 +51,7 @@
     "hard:ablate": "node --import tsx lab/hard-ai/ablate/run.ts",
     "hard:analyze": "node --import tsx lab/hard-ai/analyze/run.ts",
     "hard:analyze:report": "node --import tsx lab/hard-ai/analyze/loss-report.ts",
+    "hard:analyze:from-room": "node --import tsx lab/hard-ai/analyze/from-room.ts",
     "hard:analyze:work-sweep": "node --import tsx lab/hard-ai/analyze/work-sweep.ts",
     "hard:coverage": "node --import tsx lab/hard-ai/coverage/run.ts",
     "hard:audit": "node --import tsx lab/hard-ai/audit/run.ts",

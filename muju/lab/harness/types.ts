@@ -370,6 +370,18 @@ export interface ReplayStep {
   pendingSummons?: Array<{ o: PlayerId; d: string; x: number; y: number; cost: number }>;
   cells: number[];
   res: Record<PlayerId, { r: number; g: number; s: number }>; // resources, gained, spent
+  /**
+   * The upkeep REVIEW preference (`GameState.reviewUpkeep`) in force from this
+   * step's action on, present only on a step where it CHANGED. The harness never
+   * writes it: a lab bot has no preference. An online room does
+   * (`SET_UPKEEP_REVIEW`, a room setting rather than an `AIAction`), and it
+   * decides whether an affordable upkeep settles automatically at
+   * `END_ACTION_PHASE` or waits for a chosen `PAY_UPKEEP` that may release
+   * units, so `lab/hard-ai/analyze/from-room.ts` records it here and
+   * `analyze/replay.ts` installs it before applying the step's action. Absent
+   * means unchanged, so every existing replay reads exactly as before.
+   */
+  reviewUpkeep?: Record<PlayerId, boolean>;
 }
 
 export interface ReplayFile {

@@ -356,7 +356,7 @@ export function buildIdMap(state: GameState, where: string): Map<string, string>
   return map;
 }
 
-function translateId(recorded: string, map: Map<string, string>, where: string): string {
+export function translateId(recorded: string, map: Map<string, string>, where: string): string {
   const m = STAMPED_ID.exec(recorded);
   if (m === null) return recorded;
   const key = `${m[1]}|${m[2]}`;
@@ -384,8 +384,13 @@ export function translateAction(action: AIAction, map: Map<string, string>, wher
 
 /** Rule-based outcomes the canonical engine reaches on its own; the runner's
  * `adjudication`/`timeout`/`invariant-violation` verdicts come from the loop,
- * not from the rules, so they are reported but not asserted. */
-const RULE_WIN_TYPES: readonly WinType[] = ['home-checkmate', 'home-occupation', 'elimination', 'inactivity', 'upkeep-elimination', 'resignation'];
+ * not from the rules, so they are reported but not asserted. `kill-clock` is a
+ * rules verdict (`src/game/inactivity.ts resolveKillClock`, `muju-phasing-3`
+ * onward) and is asserted like the others; it is how most online rooms
+ * converted by `analyze/from-room.ts` end. An online `timeout` (the server's
+ * clock) or `abandoned` (the 24-hour archive) is, like the runner's own
+ * `timeout`, decided outside the rules and stays unasserted. */
+const RULE_WIN_TYPES: readonly WinType[] = ['home-checkmate', 'home-occupation', 'elimination', 'inactivity', 'kill-clock', 'upkeep-elimination', 'resignation'];
 
 function derivedWinner(state: GameState): PlayerId | null {
   if (state.phase === 'victory') return state.winner;
@@ -471,6 +476,12 @@ function reconstructInner(replay: LoadedReplay): Reconstruction {
       open = { turnNumber: state.turn.turnNumber, side: player, startState: state, startPly: ply, actions: [], recorded: [], noops: 0 };
     }
 
+    // An online room's upkeep-review preference change (`ReplayStep.reviewUpkeep`,
+    // written only by `analyze/from-room.ts`): a setting, not an action, so it
+    // is installed before the step's action and consumes no ply.
+    if (step.reviewUpkeep !== undefined) {
+      state = { ...state, reviewUpkeep: { white: step.reviewUpkeep.white === true, black: step.reviewUpkeep.black === true } };
+    }
     const recorded = step.action;
     const action = translateAction(recorded, idMap, where);
     const legal = isLegalAction(state, action, player);
