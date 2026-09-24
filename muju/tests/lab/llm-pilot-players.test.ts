@@ -9,6 +9,10 @@ describe('playerKindForModel', () => {
   it('maps the pilot table\'s short model ids to the right CLI', () => {
     expect(playerKindForModel('sonnet')).toBe('claude');
     expect(playerKindForModel('luna')).toBe('codex');
+    expect(playerKindForModel('sol')).toBe('codex');
+    expect(playerKindForModel('astra')).toBe('codex');
+    expect(playerKindForModel('opus')).toBe('claude');
+    expect(playerKindForModel('fable')).toBe('claude');
   });
   it('refuses an unknown model rather than guessing a CLI for it', () => {
     // @ts-expect-error intentionally wrong input

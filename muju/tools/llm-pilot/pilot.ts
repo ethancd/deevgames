@@ -11,24 +11,39 @@ import { mkdirSync, readFileSync, writeFileSync, renameSync, existsSync } from '
 import { dirname, join } from 'node:path';
 import { MAX_BLACK_CRYSTAL_HANDICAP } from '../../src/game/rules';
 
-export type ModelId = 'sonnet' | 'luna';
+export type ModelId = 'sonnet' | 'luna' | 'sol' | 'astra' | 'opus' | 'fable';
+export type Family = 'claude' | 'codex';
 export type ToolTier = 'bare' | 'harnessed' | 'centaur' | 'tool-builder';
-export type Effort = 'low' | 'medium' | 'high';
+export type Effort = 'low' | 'medium' | 'high' | 'max';
 export type Seat = 'white' | 'black';
-export type PairId = 'P01' | 'P02' | 'P03' | 'P04' | 'P05' | 'P06' | 'P07' | 'P08';
+/** A ticket (pair or single) id: letters/digits only, since `-` separates it from the leg. */
+export type PairId = string;
 export type LegKey = 'W' | 'B'; // which seat the LLM occupies, not white/black literally
-export type GameId = `${PairId}-${LegKey}`;
+export type GameId = `${string}-${LegKey}`;
+export interface TimeControl { delaySeconds: number; bankSeconds: number }
 
+/** One scheduled ticket: a seat-swapped pair (legs W and B) or a single leg. Wave files
+ * (`<campaign>/wave.json`) list these; the pilot used the fixed `PILOT_TABLE` below. */
 export interface Pair {
   id: PairId;
   model: ModelId;
   blackCrystalHandicap: number;
   toolTier: ToolTier;
   effort: Effort;
+  /** Legs to play, in admission order. Default both, W first. */
+  legs?: LegKey[];
+  /** Investigation brief shown to the player. Default: a plain "play to win" line. */
+  brief?: string;
+  /** Room clock "delay/bank" for this ticket. Default: MUJU_PILOT_CLOCK. */
+  clock?: string;
+  /** Set to a reason to keep the ticket out of admission (e.g. an investigation awaiting its brief). */
+  hold?: string;
+  /** Operator note: why this ticket exists / what changed. Recorded, never shown to the player. */
+  note?: string;
 }
 
 /** The pilot pair schedule (claude-pilot-prompt.md). Order matters: it is the
- * admission priority within each model's queue. */
+ * admission priority within each model's queue. Used when the campaign dir has no wave.json. */
 export const PILOT_TABLE: readonly Pair[] = [
   { id: 'P01', model: 'luna', blackCrystalHandicap: 1, toolTier: 'bare', effort: 'low' },
   { id: 'P02', model: 'sonnet', blackCrystalHandicap: 2, toolTier: 'bare', effort: 'low' },
@@ -39,13 +54,40 @@ export const PILOT_TABLE: readonly Pair[] = [
   { id: 'P07', model: 'luna', blackCrystalHandicap: 9, toolTier: 'tool-builder', effort: 'high' },
   { id: 'P08', model: 'sonnet', blackCrystalHandicap: 12, toolTier: 'tool-builder', effort: 'high' },
 ];
-for (const pair of PILOT_TABLE) {
-  if (pair.blackCrystalHandicap < 0 || pair.blackCrystalHandicap > MAX_BLACK_CRYSTAL_HANDICAP) {
-    throw new Error(`Pair ${pair.id} handicap ${pair.blackCrystalHandicap} exceeds MAX_BLACK_CRYSTAL_HANDICAP (${MAX_BLACK_CRYSTAL_HANDICAP}).`);
+
+const MODELS: readonly ModelId[] = ['sonnet', 'luna', 'sol', 'astra', 'opus', 'fable'];
+const TIERS: readonly ToolTier[] = ['bare', 'harnessed', 'centaur', 'tool-builder'];
+const EFFORTS: readonly Effort[] = ['low', 'medium', 'high', 'max'];
+/** Throws on anything the runner could not play exactly as written (never coerces). */
+export function validateTickets(tickets: readonly Pair[]): void {
+  const seen = new Set<string>();
+  for (const t of tickets) {
+    if (!/^[A-Za-z0-9]+$/.test(t.id)) throw new Error(`Ticket id "${t.id}" must be letters/digits only.`);
+    if (seen.has(t.id)) throw new Error(`Duplicate ticket id "${t.id}".`);
+    seen.add(t.id);
+    if (!MODELS.includes(t.model)) throw new Error(`Ticket ${t.id}: unknown model "${t.model}".`);
+    if (!TIERS.includes(t.toolTier)) throw new Error(`Ticket ${t.id}: unknown tool tier "${t.toolTier}".`);
+    if (!EFFORTS.includes(t.effort)) throw new Error(`Ticket ${t.id}: unknown effort "${t.effort}".`);
+    if (!Number.isInteger(t.blackCrystalHandicap) || t.blackCrystalHandicap < 0 || t.blackCrystalHandicap > MAX_BLACK_CRYSTAL_HANDICAP) {
+      throw new Error(`Ticket ${t.id} handicap ${t.blackCrystalHandicap} is outside 0..MAX_BLACK_CRYSTAL_HANDICAP (${MAX_BLACK_CRYSTAL_HANDICAP}).`);
+    }
+    const legs = t.legs ?? ['W', 'B'];
+    if (legs.length === 0 || legs.some(l => l !== 'W' && l !== 'B') || new Set(legs).size !== legs.length) throw new Error(`Ticket ${t.id}: legs must be a non-empty subset of W/B.`);
+    if (t.clock !== undefined) parseClock(t.clock);
   }
 }
+validateTickets(PILOT_TABLE);
+
+/** The current campaign's tickets: `<campaign>/wave.json` when present, else the pilot table.
+ * Re-read on every call (cheap, and lets the operator add or re-brief pending tickets mid-wave). */
+export function loadTickets(): Pair[] {
+  const wave = readJson<{ tickets: Pair[] }>(waveJsonPath());
+  const tickets = wave ? wave.tickets : [...PILOT_TABLE];
+  validateTickets(tickets);
+  return tickets;
+}
 export function pairById(id: PairId): Pair {
-  const pair = PILOT_TABLE.find(p => p.id === id);
+  const pair = loadTickets().find(p => p.id === id);
   if (!pair) throw new Error(`Unknown pair id "${id}".`);
   return pair;
 }
@@ -64,10 +106,18 @@ export const ALL_GAME_IDS: readonly GameId[] = PILOT_TABLE.flatMap(pair => [game
 /** Player display name shown as the LLM seat's in-game name: "Sonnet 5 Low",
  * "Luna 6 Medium", etc. Table so new models/efforts are a one-line addition,
  * per the owner's "Player display names" note in SPEC.md. */
-const MODEL_DISPLAY: Record<ModelId, string> = { sonnet: 'Sonnet 5', luna: 'Luna 6' };
+const MODEL_DISPLAY: Record<ModelId, string> = {
+  sonnet: 'Sonnet 5', luna: 'Luna 6', sol: 'Sol 6', astra: 'Astra 6', opus: 'Opus 5.5', fable: 'Fable 5.1',
+};
 /** Full model id strings the player adapters (Component C, `players.ts`)
  * expect — `playerKindForModel` picks the CLI from this exact string. */
-export const MODEL_CLI_ID: Record<ModelId, string> = { sonnet: 'claude-sonnet-5', luna: 'gpt-6-luna' };
+export const MODEL_CLI_ID: Record<ModelId, string> = {
+  sonnet: 'claude-sonnet-5', luna: 'gpt-6-luna', sol: 'gpt-6-sol', astra: 'gpt-6-astra', opus: 'claude-opus-5-5', fable: 'claude-fable-5-1',
+};
+/** Which CLI (and subscription) serves each model. */
+export const MODEL_FAMILY: Record<ModelId, Family> = {
+  sonnet: 'claude', opus: 'claude', fable: 'claude', luna: 'codex', sol: 'codex', astra: 'codex',
+};
 function titleCase(effort: Effort): string { return effort.charAt(0).toUpperCase() + effort.slice(1); }
 export function llmDisplayName(model: ModelId, effort: Effort): string {
   const name = `${MODEL_DISPLAY[model]} ${titleCase(effort)}`;
@@ -79,13 +129,11 @@ export const ENGINE_DISPLAY_NAME = 'Hard';
 
 /** Public, non-secret identifier for this frozen experiment protocol (matchPolicy.protocolId). */
 export const PROTOCOL_ID = 'muju-llm-pilot-2026-09-23';
-/** Immutable room clocks for every pilot game (SPEC.md Component D). Within the
- * server's custom timeControl bounds (delaySeconds <= 600, bankSeconds <= 14400). */
-/** Room clock for newly admitted games. The 16-game pilot ran at 600s delay / 3600s bank; the owner
- * set 60s / 1800s for later waves (2026-09-23), selected with MUJU_PILOT_CLOCK="60/1800". Each game
- * records its own clock in manifest.json, so resumed games keep theirs. */
-export const PILOT_TIME_CONTROL = parseClock(process.env.MUJU_PILOT_CLOCK) ?? { delaySeconds: 600, bankSeconds: 3600 };
-export function parseClock(value?: string): { delaySeconds: number; bankSeconds: number } | undefined {
+/** Default room clock for newly admitted games. The 16-game pilot ran at 600s delay / 3600s bank; the
+ * owner set 60s / 1800s for later waves (2026-09-23), selected with MUJU_PILOT_CLOCK="60/1800". A ticket
+ * may override it (`clock`). Each game records its own clock in manifest.json, so resumed games keep theirs. */
+export const PILOT_TIME_CONTROL: TimeControl = parseClock(process.env.MUJU_PILOT_CLOCK) ?? { delaySeconds: 600, bankSeconds: 3600 };
+export function parseClock(value?: string): TimeControl | undefined {
   if (!value) return undefined;
   const match = /^(\d+)\/(\d+)$/.exec(value.trim());
   if (!match) throw new Error(`MUJU_PILOT_CLOCK must be "<delaySeconds>/<bankSeconds>", got "${value}".`);
@@ -95,16 +143,10 @@ export function parseClock(value?: string): { delaySeconds: number; bankSeconds:
 }
 /** Safety ceiling: report truncation rather than let a stuck game run forever. */
 export const MAX_PLAYER_TURNS = 200;
-/** Two active games per model, four total, unless the operator ramps up (MUJU_PILOT_RAMP_FROM). */
-export const PER_MODEL_CONCURRENCY = 2;
-/** Ramp ceiling per model (8 total), owner-approved 2026-09-23 alongside MUJU_HEAVY_SLOTS=4. */
-export const PER_MODEL_RAMP_MAX = Number(process.env.MUJU_PILOT_PER_MODEL_MAX ?? 4);
-/** Each game of a model that finishes after the ramp start frees its slot and adds one more:
- * the model's cap grows 2 -> 3 -> 4 as its original games end, so every finish admits two games. */
-export function perModelCap(finishedSinceRamp: number, rampFrom = process.env.MUJU_PILOT_RAMP_FROM): number {
-  if (!rampFrom) return PER_MODEL_CONCURRENCY;
-  return Math.min(PER_MODEL_RAMP_MAX, PER_MODEL_CONCURRENCY + finishedSinceRamp);
-}
+/** Live games at once across every model (owner, 2026-09-24: 12). */
+export const MAX_LIVE_GAMES = Number(process.env.MUJU_MAX_LIVE ?? 12);
+/** Live games at once per CLI family, so both families stay interleaved under the global cap. */
+export const FAMILY_CAP = Number(process.env.MUJU_FAMILY_CAP ?? 7);
 
 export type GameLifecycle = 'pending' | 'preparing' | 'live' | 'finished' | 'failed' | 'interrupted';
 export interface StatusRecord { state: GameLifecycle; detail?: string; updatedAt: string }
@@ -117,10 +159,11 @@ export interface StatusRecord { state: GameLifecycle; detail?: string; updatedAt
  * in SPEC.md (outside git, shared by all components, in the MAIN checkout —
  * never the worktree — per the operator's "creating files under .../pilot/"
  * carve-out). */
-export const CAMPAIGN_DIR = process.env.MUJU_PILOT_CAMPAIGN_DIR
+export const CAMPAIGN_DIR = process.env.MUJU_CAMPAIGN_DIR ?? process.env.MUJU_PILOT_CAMPAIGN_DIR
   ?? '/Users/ashkie/src/deevgames/outputs/muju-llm-opponent-campaign-2026-09-23/pilot';
 
 export const scheduleJsonPath = () => join(CAMPAIGN_DIR, 'schedule.json');
+export const waveJsonPath = () => join(CAMPAIGN_DIR, 'wave.json');
 export const progressMdPath = () => join(CAMPAIGN_DIR, 'progress.md');
 export const stopFilePath = () => join(CAMPAIGN_DIR, 'STOP');
 export const pidsJsonPath = () => join(CAMPAIGN_DIR, 'pids.json');
@@ -191,20 +234,56 @@ export interface ScheduleGame {
   blackCrystalHandicap: number;
   llmSeat: Seat;
   engineSeat: Seat;
+  /** Absent on pilot-era schedule.json entries (their prompt used a generated line). */
+  brief?: string;
+  timeControl?: TimeControl;
+  hold?: string;
 }
 export interface Schedule { generatedAt: string; games: ScheduleGame[] }
 
-export function buildSchedule(): Schedule {
-  const games: ScheduleGame[] = PILOT_TABLE.flatMap(pair => (['W', 'B'] as const).map(leg => ({
+export function defaultBrief(game: Pick<ScheduleGame, 'pairId' | 'llmSeat' | 'toolTier' | 'effort' | 'blackCrystalHandicap'>): string {
+  return `Pair ${game.pairId}: you play ${game.llmSeat} with the ${game.toolTier} tool tier at ${game.effort} effort; Black starts with ${game.blackCrystalHandicap} extra crystals. Play to win.`;
+}
+export function gamesForTicket(pair: Pair): ScheduleGame[] {
+  return (pair.legs ?? ['W', 'B']).map(leg => ({
     gameId: gameId(pair.id, leg), pairId: pair.id, model: pair.model, toolTier: pair.toolTier, effort: pair.effort,
     blackCrystalHandicap: pair.blackCrystalHandicap, llmSeat: llmSeatFor(leg), engineSeat: engineSeatFor(leg),
-  })));
-  return { generatedAt: new Date().toISOString(), games };
+    ...(pair.brief ? { brief: pair.brief } : {}), timeControl: parseClock(pair.clock) ?? PILOT_TIME_CONTROL,
+    ...(pair.hold ? { hold: pair.hold } : {}),
+  }));
+}
+export function buildSchedule(tickets: readonly Pair[] = loadTickets()): Schedule {
+  return { generatedAt: new Date().toISOString(), games: tickets.flatMap(gamesForTicket) };
 }
 export function loadOrInitSchedule(): Schedule {
   return readJson<Schedule>(scheduleJsonPath()) ?? buildSchedule();
 }
 export function saveSchedule(schedule: Schedule): void { writeJson(scheduleJsonPath(), schedule); }
+/**
+ * Merges the current tickets into the saved schedule: a game that has left `pending` keeps its
+ * saved (frozen) entry, so editing a ticket never changes a game already started; pending games
+ * take the ticket's current setup; pending games whose ticket was removed are dropped. Returns the
+ * merged schedule and one line per change, for the operator's record.
+ */
+export function syncSchedule(saved: Schedule | undefined, tickets: readonly Pair[], stateOf: (id: GameId) => GameLifecycle): { schedule: Schedule; changes: string[] } {
+  const fresh = buildSchedule(tickets).games;
+  const savedById = new Map((saved?.games ?? []).map(g => [g.gameId, g]));
+  const changes: string[] = [];
+  const games: ScheduleGame[] = [];
+  for (const g of fresh) {
+    const old = savedById.get(g.gameId);
+    savedById.delete(g.gameId);
+    if (old && stateOf(g.gameId) !== 'pending') { games.push(old); continue; }
+    if (!old) changes.push(`added ${g.gameId}: ${JSON.stringify(g)}`);
+    else if (JSON.stringify(old) !== JSON.stringify(g)) changes.push(`changed ${g.gameId}: ${JSON.stringify(old)} -> ${JSON.stringify(g)}`);
+    games.push(g);
+  }
+  for (const [id, old] of savedById) {
+    if (stateOf(id) !== 'pending') games.push(old); // started games never leave the record
+    else changes.push(`removed pending ${id}`);
+  }
+  return { schedule: { generatedAt: saved?.generatedAt ?? new Date().toISOString(), games }, changes };
+}
 
 // ---------------------------------------------------------------------------
 // Admission (pure: takes a state snapshot, returns a decision — no I/O)
@@ -215,45 +294,41 @@ export type StatusSnapshot = Partial<Record<GameId, GameLifecycle>>;
 function isActive(state: GameLifecycle): boolean { return state === 'preparing' || state === 'live'; }
 function isSettled(state: GameLifecycle): boolean { return state === 'finished' || state === 'failed' || state === 'interrupted'; }
 
-export function activeCountFor(model: ModelId, snapshot: StatusSnapshot): number {
-  return PILOT_TABLE.filter(p => p.model === model)
-    .flatMap(p => [gameId(p.id, 'W'), gameId(p.id, 'B')])
-    .filter(id => isActive(snapshot[id] ?? 'pending')).length;
+export function activeCount(games: readonly ScheduleGame[], snapshot: StatusSnapshot): number {
+  return games.filter(g => isActive(snapshot[g.gameId] ?? 'pending')).length;
 }
 
 /**
- * The next game to admit for `model`, or null when its whole queue is either
- * active or settled. Priority (SPEC.md Component D): a started pair's
- * remaining leg beats starting a new pair; within a pair, W before B; pairs
- * in table order. A pair with a `failed`/`interrupted` leg still owes its
- * sibling leg admission — the operator resolves the failure separately
- * (`--resume`/manual retry of the failed one); this function only decides
- * what starts next, never re-admits a settled leg.
+ * The next game to admit from `games` (one family's or one model's queue, in schedule order), or
+ * null. A started pair's remaining leg beats starting a new ticket; within a ticket, legs in their
+ * listed order; tickets in schedule order. Held games are skipped. A pair with a
+ * `failed`/`interrupted` leg still owes its sibling leg admission; this never re-admits a settled leg.
  */
-export function nextAdmissible(model: ModelId, snapshot: StatusSnapshot): GameId | null {
-  const pairs = PILOT_TABLE.filter(p => p.model === model);
-  const legsOf = (p: Pair) => [gameId(p.id, 'W'), gameId(p.id, 'B')] as const;
-  const startedPairs = pairs.filter(p => legsOf(p).some(id => (snapshot[id] ?? 'pending') !== 'pending'));
-  for (const pair of startedPairs) {
-    for (const id of legsOf(pair)) if ((snapshot[id] ?? 'pending') === 'pending') return id;
+export function nextAdmissible(games: readonly ScheduleGame[], snapshot: StatusSnapshot): GameId | null {
+  const state = (id: GameId) => snapshot[id] ?? 'pending';
+  const pairIds = [...new Set(games.map(g => g.pairId))];
+  const legsOf = (pairId: PairId) => games.filter(g => g.pairId === pairId);
+  const started = pairIds.filter(p => legsOf(p).some(g => state(g.gameId) !== 'pending'));
+  for (const pairId of started) {
+    for (const g of legsOf(pairId)) if (state(g.gameId) === 'pending' && !g.hold) return g.gameId;
   }
-  for (const pair of pairs) {
-    if (startedPairs.includes(pair)) continue;
-    return legsOf(pair)[0];
+  for (const pairId of pairIds) {
+    if (started.includes(pairId)) continue;
+    const first = legsOf(pairId).find(g => !g.hold);
+    if (first) return first.gameId;
   }
   return null;
 }
 
-/** Pure trace of what dispatch WOULD admit next, model by model, assuming each
- * admitted game immediately settles before the next admission — i.e. the
- * queue order, not real concurrency. Used by `--dry-run`. */
-export function admissionTrace(): GameId[] {
+/** Pure trace of admission order: families alternate one game at a time (codex, claude, ...),
+ * each admitted game assumed to settle at once — queue order, not real concurrency (`--dry-run`). */
+export function admissionTrace(schedule: Schedule = buildSchedule()): GameId[] {
   const snapshot: StatusSnapshot = {};
   const trace: GameId[] = [];
   for (;;) {
     let admittedAny = false;
-    for (const model of ['luna', 'sonnet'] as const) {
-      const next = nextAdmissible(model, snapshot);
+    for (const family of ['codex', 'claude'] as const) {
+      const next = nextAdmissible(schedule.games.filter(g => MODEL_FAMILY[g.model] === family), snapshot);
       if (next) { trace.push(next); snapshot[next] = 'finished'; admittedAny = true; }
     }
     if (!admittedAny) break;
@@ -261,7 +336,7 @@ export function admissionTrace(): GameId[] {
   return trace;
 }
 
-export function allSettled(snapshot: StatusSnapshot): boolean {
-  return ALL_GAME_IDS.every(id => isSettled(snapshot[id] ?? 'pending'));
+export function allSettled(snapshot: StatusSnapshot, ids: readonly GameId[] = ALL_GAME_IDS): boolean {
+  return ids.every(id => isSettled(snapshot[id] ?? 'pending'));
 }
 export { isActive as gameIsActive, isSettled as gameIsSettled };

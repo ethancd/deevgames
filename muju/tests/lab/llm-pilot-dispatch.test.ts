@@ -73,7 +73,7 @@ describe('GPT quota admission (ChatGPT subscription only, no paid credits)', () 
     expect(gptQuotaDecision(undefined, undefined).ok).toBe(true);
     expect(gptQuotaDecision({ primary: { used_percent: 40 }, credits: { balance: '100.0' } }, base).ok).toBe(true);
     expect(gptQuotaDecision({ primary: { used_percent: 70 }, credits: { balance: '100.0' } }, base, 70).ok).toBe(false);
-    expect(gptQuotaDecision({ primary: { used_percent: 5 }, credits: { balance: '99.5' } }, base).detail).toMatch(/credits balance dropped/);
+    expect(gptQuotaDecision({ primary: { used_percent: 5 }, credits: { balance: '99.5' } }, base).detail).toMatch(/credits balance changed/);
     expect(gptQuotaDecision({ primary: { used_percent: 5 }, rate_limit_reached_type: 'primary' }, base).ok).toBe(false);
   });
 });
@@ -138,5 +138,42 @@ describe('site health ignores long-poll latency', () => {
     const polls = Array.from({ length: 10 }, () => ({ at, status: 200, latencyMs: 25_000, path: '/r/changes?afterRevision=3' }));
     expect(siteHealthOk([...polls, { at, status: 200, latencyMs: 300, path: '/r' }]).ok).toBe(true);
     expect(siteHealthOk(polls.map(p => ({ ...p, path: '/r' }))).ok).toBe(false);
+  });
+});
+
+describe('Claude quota admission (claude.ai subscription headroom)', () => {
+  it('admits with headroom, holds at the cap, on a non-allowed status, or on overage', async () => {
+    const { claudeQuotaDecision } = await import('../../tools/llm-pilot/dispatch');
+    const windows = (five: number, seven: number) => ({ five_hour: { utilization: five }, seven_day: { utilization: seven } });
+    expect(claudeQuotaDecision(undefined).ok).toBe(true);
+    expect(claudeQuotaDecision({ status: 'allowed_warning', unifiedWindows: windows(0.4, 0.56) }, 0.85).ok).toBe(true);
+    expect(claudeQuotaDecision({ status: 'allowed', unifiedWindows: windows(0.4, 0.86) }, 0.85).ok).toBe(false);
+    expect(claudeQuotaDecision({ status: 'allowed', unifiedWindows: windows(0.9, 0.5) }, 0.85).ok).toBe(false);
+    expect(claudeQuotaDecision({ status: 'rejected', unifiedWindows: windows(0.1, 0.1) }, 0.85).ok).toBe(false);
+    expect(claudeQuotaDecision({ status: 'allowed', isUsingOverage: true }, 0.85).ok).toBe(false);
+  });
+});
+
+describe('timeoutDuringOutage (outages are pauses, never results)', () => {
+  it('labels a clock-decided game with a network failure inside the losing turn\'s span, and nothing else', async () => {
+    const { timeoutDuringOutage } = await import('../../tools/llm-pilot/dispatch');
+    const clock = { delaySeconds: 60, bankSeconds: 1800 };
+    const endedAt = Date.parse('2026-09-24T03:00:00Z');
+    const room = (reason: string) => ({ updatedAt: new Date(endedAt).toISOString(), state: { victoryReason: reason } }) as never;
+    const during = [{ at: new Date(endedAt - 20 * 60_000).toISOString() }];
+    const longBefore = [{ at: new Date(endedAt - 3 * 60 * 60_000).toISOString() }];
+    expect(timeoutDuringOutage(room('timeout'), clock, during)).toBe(true);
+    expect(timeoutDuringOutage(room('timeout'), clock, longBefore)).toBe(false);
+    expect(timeoutDuringOutage(room('elimination'), clock, during)).toBe(false);
+  });
+});
+
+describe('gptQuotaDecision credits tripwire', () => {
+  it('halts on any change in the credits balance, up or down', async () => {
+    const { gptQuotaDecision } = await import('../../tools/llm-pilot/dispatch');
+    const at = (balance: string) => ({ primary: { used_percent: 3 }, credits: { balance } });
+    expect(gptQuotaDecision(at('1022.85'), at('1022.85')).ok).toBe(true);
+    expect(gptQuotaDecision(at('1021.00'), at('1022.85')).ok).toBe(false);
+    expect(gptQuotaDecision(at('1030.00'), at('1022.85')).ok).toBe(false);
   });
 });

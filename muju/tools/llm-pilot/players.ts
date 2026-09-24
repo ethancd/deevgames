@@ -26,7 +26,7 @@ import { CODEX_BIN, readCodexRollout, stripApiKeys } from './auth';
 import { sumHelperCpuSeconds } from './sandbox';
 import {
   PILOT_TIME_CONTROL,
-  MODEL_CLI_ID, pairById, parseGameId, readJson, writeJson,
+  MODEL_CLI_ID, MODEL_FAMILY, pairById, parseGameId, readJson, writeJson,
   type Effort, type GameId, type ModelId, type Seat, type ToolTier,
 } from './pilot';
 
@@ -95,8 +95,7 @@ const DEFAULT_REFLECTION_TEMPLATE = path.resolve(HERE, '../../../outputs/muju-ll
 const TSX_LOADER = import.meta.resolve('tsx');
 
 export function playerKindForModel(model: ModelId): PlayerKind {
-  if (model === 'sonnet') return 'claude';
-  if (model === 'luna') return 'codex';
+  if (Object.hasOwn(MODEL_FAMILY, model)) return MODEL_FAMILY[model];
   throw new Error(`Unknown model id "${model}": cannot pick a CLI for it. Never substitute a different model silently.`);
 }
 function billingRouteFor(kind: PlayerKind) { return kind === 'claude' ? 'claude.ai subscription' : 'ChatGPT subscription'; }
@@ -341,6 +340,13 @@ async function countTurnsFromActionsLog(logPath: string): Promise<number> {
   return turns;
 }
 
+/** How long the room may stay unreadable (network outage) before the player gives up. */
+const OUTAGE_PATIENCE_MS = 6 * 60 * 60 * 1000;
+/** A CLI phase shorter than this is treated as a fast failure (provider/network), not a choice. */
+const SHORT_PHASE_MS = 3 * 60 * 1000;
+/** Consecutive fast-failing phases tolerated (with 15s..120s backoff between them: ~1h). */
+const MAX_SHORT_PHASES = 30;
+
 const CONTINUE_PROMPT = `The Muju game in this session is NOT over yet: the authoritative room is still playing.
 Re-orient with muju_observe (and muju_clock), then keep playing exactly as instructed at the start of this
 session — use muju_wait_for_change while the engine is on move, and continue until muju_play or
@@ -387,7 +393,7 @@ export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
   await writeFile(mcpConfigPath, JSON.stringify({ mcpServers: { muju: { command: gateway.command, args: gateway.args } } }, null, 2), 'utf8');
   const gatewayEnv = { MUJU_PILOT_GAME_DIR: args.gameDir, MUJU_PILOT_WORKSPACE_DIR: workspace };
   const isGameOver = args.isGameOver ?? (() => defaultIsGameOver(args.gameDir));
-  const maxContinuations = args.maxContinuations ?? 6;
+  const maxContinuations = args.maxContinuations ?? 8;
 
   const finishPhase = async (record: PhaseRecord, exitCode: number | null, lost = false) => {
     const summary = parseTranscript(kind, existsSync(record.transcript) ? await readFile(record.transcript, 'utf8') : '');
@@ -432,22 +438,37 @@ export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
   let detail: string | undefined;
   const note = (text: string) => { detail = detail ? `${detail} ${text}` : text; };
   let consecutiveReadFailures = 0;
+  let readFailingSince: number | undefined;
+  const reflectionFile = path.join(workspace, 'reflection.md');
+  const reflectionTextOf = async (phase: PhaseRecord | undefined): Promise<string> => {
+    if (!phase) return '';
+    if (existsSync(reflectionFile) && statSync(reflectionFile).mtimeMs >= Date.parse(phase.startedAt) - 1000) return readFile(reflectionFile, 'utf8');
+    return parseTranscript(kind, existsSync(phase.transcript) ? await readFile(phase.transcript, 'utf8') : '').finalText.trim();
+  };
   for (;;) {
-    if (state.phases.some(p => p.phase === 'reflect' && p.endedAt)) break;
+    const reflects = state.phases.filter(p => p.phase === 'reflect' && p.endedAt);
+    // A reflection lost to a provider/network failure is retried (same session) up to 3 times.
+    if (reflects.length > 0 && ((await reflectionTextOf(reflects.at(-1))) || reflects.length >= 3)) break;
+    if (reflects.length > 0) await new Promise(resolve => setTimeout(resolve, 60_000 * reflects.length));
     let over: boolean;
-    try { over = await isGameOver(); consecutiveReadFailures = 0; }
+    try { over = await isGameOver(); consecutiveReadFailures = 0; readFailingSince = undefined; }
     catch (error) {
       // An unreadable room is an UNKNOWN state, not "the game is over" or "give up on this game" —
       // `isGameOver` (dispatch.ts's `readSeatRoom`) already retries internally; a failure reaching
       // here means that whole bounded retry was exhausted. Still worth a few more spaced attempts
       // before this game is reported failed, so one bad network minute cannot lose a real result
       // or its reflection (review finding).
+      // A network outage is a pause, not a failure (the pilot lost three games to giving up after
+      // five tries): keep retrying at a capped 60s backoff for up to OUTAGE_PATIENCE_MS; once the
+      // network returns, the authoritative room says whether the game is still on.
       consecutiveReadFailures += 1;
-      note(`Could not read the room (attempt ${consecutiveReadFailures}): ${(error as Error).message}.`);
-      if (consecutiveReadFailures >= 5) {
+      readFailingSince ??= Date.now();
+      if (consecutiveReadFailures === 1 || consecutiveReadFailures % 10 === 0) note(`Could not read the room (attempt ${consecutiveReadFailures}): ${(error as Error).message}.`);
+      if (Date.now() - readFailingSince > OUTAGE_PATIENCE_MS) {
+        note(`Room unreadable for ${Math.round((Date.now() - readFailingSince) / 60000)} min; giving up.`);
         return { outcome: 'failed', turns: await countTurnsFromActionsLog(path.join(args.gameDir, "actions.jsonl")), citedRevisions: [], reflectionText: '', detail };
       }
-      await new Promise(resolve => setTimeout(resolve, Math.min(5000 * 2 ** (consecutiveReadFailures - 1), 60_000)));
+      await new Promise(resolve => setTimeout(resolve, Math.min(5000 * 2 ** Math.min(consecutiveReadFailures - 1, 4), 60_000)));
       continue;
     }
     if (over) {
@@ -457,20 +478,24 @@ export async function runPlayer(args: RunPlayerArgs): Promise<PlayerResult> {
     }
     if (!state.phases.some(p => p.phase === 'play')) { await runPhase('play', playPrompt, args.playTimeoutMs ?? 3 * 60 * 60 * 1000); continue; }
     if (!state.sessionId) { note('Play phase produced no session id; cannot resume it.'); break; }
-    const continuations = state.phases.filter(p => p.phase === 'continue').length;
-    if (continuations >= maxContinuations) { note(`Room still playing after ${continuations} resumed phases; giving up (game left to its clock).`); break; }
+    // A phase that dies within SHORT_PHASE_MS is almost always the provider or the network failing
+    // fast (an outage), not the model choosing to stop; those get their own larger, backed-off
+    // budget so an outage cannot burn the real continuation budget in a few minutes.
+    const continued = state.phases.filter(p => p.phase === 'continue');
+    const isShort = (p: PhaseRecord) => (p.elapsedMs ?? 0) < SHORT_PHASE_MS;
+    const longContinuations = continued.filter(p => !isShort(p)).length;
+    const lastPhase = state.phases.at(-1);
+    let trailingShort = 0;
+    for (const p of [...state.phases].reverse()) { if (p.phase === 'reflect' || !isShort(p)) break; trailingShort += 1; }
+    if (longContinuations >= maxContinuations) { note(`Room still playing after ${longContinuations} resumed phases; giving up (game left to its clock).`); break; }
+    if (trailingShort >= MAX_SHORT_PHASES) { note(`${trailingShort} consecutive phases failed within ${SHORT_PHASE_MS / 1000}s; giving up (game left to its clock).`); break; }
+    if (lastPhase && isShort(lastPhase)) await new Promise(resolve => setTimeout(resolve, Math.min(15_000 * 2 ** Math.min(trailingShort - 1, 3), 120_000)));
     await runPhase('continue', CONTINUE_PROMPT, args.playTimeoutMs ?? 3 * 60 * 60 * 1000);
   }
 
   // Reflection text: the workspace file if the CLI could write one, else the final message.
-  let reflectionText = '';
   const reflectPhase = state.phases.filter(p => p.phase === 'reflect').at(-1);
-  const reflectionFile = path.join(workspace, 'reflection.md');
-  if (reflectPhase && existsSync(reflectionFile) && statSync(reflectionFile).mtimeMs >= Date.parse(reflectPhase.startedAt) - 1000) {
-    reflectionText = await readFile(reflectionFile, 'utf8');
-  } else if (reflectPhase) {
-    reflectionText = parseTranscript(kind, existsSync(reflectPhase.transcript) ? await readFile(reflectPhase.transcript, 'utf8') : '').finalText.trim();
-  }
+  const reflectionText = await reflectionTextOf(reflectPhase);
   if (reflectPhase && !reflectionText) note('Reflection turn produced no text.');
 
   const billingViolations = state.phases.filter(p => p.apiKeySource && p.apiKeySource !== 'none').map(p => `${p.phase}:${p.apiKeySource}`);

@@ -1,8 +1,8 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest';
 import {
-  ALL_GAME_IDS, PILOT_TABLE, activeCountFor, admissionTrace, allSettled, buildSchedule,
-  gameId, llmDisplayName, llmSeatFor, engineSeatFor, nextAdmissible, pairById, parseGameId,
+  ALL_GAME_IDS, MODEL_FAMILY, PILOT_TABLE, activeCount, admissionTrace, allSettled, buildSchedule,
+  gameId, llmDisplayName, llmSeatFor, engineSeatFor, nextAdmissible, pairById, parseGameId, syncSchedule, validateTickets,
   type StatusSnapshot,
 } from '../../tools/llm-pilot/pilot';
 
@@ -31,38 +31,45 @@ describe('pilot table', () => {
 });
 
 describe('admission ordering', () => {
-  it('initially admits both legs of the first pair for each model (P01 Luna, P02 Sonnet)', () => {
+  const pilot = buildSchedule(PILOT_TABLE).games;
+  const luna = pilot.filter(g => MODEL_FAMILY[g.model] === 'codex');
+  const sonnet = pilot.filter(g => MODEL_FAMILY[g.model] === 'claude');
+  it('initially admits the first pair of each family (P01 Luna, P02 Sonnet)', () => {
     const snapshot: StatusSnapshot = {};
-    expect(nextAdmissible('luna', snapshot)).toBe('P01-W');
-    expect(nextAdmissible('sonnet', snapshot)).toBe('P02-W');
+    expect(nextAdmissible(luna, snapshot)).toBe('P01-W');
+    expect(nextAdmissible(sonnet, snapshot)).toBe('P02-W');
   });
   it('prioritizes a started pair\'s remaining leg over a fresh pair', () => {
-    const snapshot: StatusSnapshot = { 'P01-W': 'live' };
-    expect(nextAdmissible('luna', snapshot)).toBe('P01-B');
+    expect(nextAdmissible(luna, { 'P01-W': 'live' })).toBe('P01-B');
   });
   it('moves to the next pair once both legs of the current one are active/settled', () => {
-    const snapshot: StatusSnapshot = { 'P01-W': 'finished', 'P01-B': 'live' };
-    expect(nextAdmissible('luna', snapshot)).toBe('P03-W');
+    expect(nextAdmissible(luna, { 'P01-W': 'finished', 'P01-B': 'live' })).toBe('P03-W');
   });
-  it('returns null once every game for a model is active or settled', () => {
-    const snapshot: StatusSnapshot = Object.fromEntries(
-      PILOT_TABLE.filter(p => p.model === 'luna').flatMap(p => [[gameId(p.id, 'W'), 'finished'], [gameId(p.id, 'B'), 'finished']]),
-    ) as StatusSnapshot;
-    expect(nextAdmissible('luna', snapshot)).toBeNull();
+  it('returns null once every game in the queue is active or settled', () => {
+    const snapshot = Object.fromEntries(luna.map(g => [g.gameId, 'finished'])) as StatusSnapshot;
+    expect(nextAdmissible(luna, snapshot)).toBeNull();
   });
-  it('respects two-per-model concurrency counting only active (not settled) games', () => {
+  it('counts only active (not settled) games', () => {
     const snapshot: StatusSnapshot = { 'P01-W': 'live', 'P01-B': 'preparing', 'P02-W': 'finished' };
-    expect(activeCountFor('luna', snapshot)).toBe(2);
-    expect(activeCountFor('sonnet', snapshot)).toBe(0);
+    expect(activeCount(luna, snapshot)).toBe(2);
+    expect(activeCount(sonnet, snapshot)).toBe(0);
   });
-  it('admissionTrace interleaves models per tick, each draining its own pair-then-leg priority', () => {
-    // One admission per model per simulated tick: luna, sonnet, luna, sonnet, ...
-    const trace = admissionTrace();
+  it('skips held games and honours single-leg tickets and leg order', () => {
+    const games = buildSchedule([
+      { id: 'AS01', model: 'astra', blackCrystalHandicap: 6, toolTier: 'centaur', effort: 'high', legs: ['W'], hold: 'brief pending' },
+      { id: 'SO01', model: 'sol', blackCrystalHandicap: 5, toolTier: 'harnessed', effort: 'medium', legs: ['B', 'W'] },
+    ]).games;
+    expect(games.map(g => g.gameId)).toEqual(['AS01-W', 'SO01-B', 'SO01-W']);
+    expect(nextAdmissible(games, {})).toBe('SO01-B');
+    expect(nextAdmissible(games, { 'SO01-B': 'live' })).toBe('SO01-W');
+    expect(nextAdmissible(games, { 'SO01-B': 'live', 'SO01-W': 'live' })).toBeNull();
+  });
+  it('admissionTrace alternates families one game at a time', () => {
+    const trace = admissionTrace(buildSchedule(PILOT_TABLE));
     expect(trace.slice(0, 4)).toEqual(['P01-W', 'P02-W', 'P01-B', 'P02-B']);
     expect(trace).toHaveLength(16);
-    expect(trace.filter((_, i) => i % 2 === 0).every(id => id.startsWith('P0') && ['P01', 'P03', 'P05', 'P07'].includes(id.slice(0, 3)))).toBe(true);
   });
-  it('allSettled is false until every one of the 16 games is finished/failed/interrupted', () => {
+  it('allSettled is false until every game is finished/failed/interrupted', () => {
     const snapshot: StatusSnapshot = Object.fromEntries(ALL_GAME_IDS.map(id => [id, 'finished'])) as StatusSnapshot;
     expect(allSettled(snapshot)).toBe(true);
     snapshot['P08-B'] = 'live';
@@ -71,18 +78,54 @@ describe('admission ordering', () => {
 });
 
 describe('buildSchedule', () => {
-  it('produces 16 games whose llmSeat/engineSeat are always opposite', () => {
-    const schedule = buildSchedule();
+  it('produces 16 pilot games whose llmSeat/engineSeat are always opposite', () => {
+    const schedule = buildSchedule(PILOT_TABLE);
     expect(schedule.games).toHaveLength(16);
     for (const g of schedule.games) expect(g.llmSeat).not.toBe(g.engineSeat);
   });
+  it('carries a ticket\'s brief and clock onto its games', () => {
+    const [game] = buildSchedule([{ id: 'FB01', model: 'fable', blackCrystalHandicap: 6, toolTier: 'centaur', effort: 'high', legs: ['B'], brief: 'probe it', clock: '120/1800' }]).games;
+    expect(game).toMatchObject({ gameId: 'FB01-B', llmSeat: 'black', brief: 'probe it', timeControl: { delaySeconds: 120, bankSeconds: 1800 } });
+  });
 });
 
-describe('perModelCap ramp', () => {
-  it('stays at two without a ramp, and grows one per finished game up to four', async () => {
-    const { perModelCap } = await import('../../tools/llm-pilot/pilot');
-    expect(perModelCap(5, undefined)).toBe(2);
-    expect([0, 1, 2, 3].map(n => perModelCap(n, '2026-09-23T21:00:00Z'))).toEqual([2, 3, 4, 4]);
+describe('validateTickets', () => {
+  it('rejects ids with dashes, duplicates, unknown models, bad handicaps and bad legs', () => {
+    const ok = { id: 'LU01', model: 'luna', blackCrystalHandicap: 3, toolTier: 'bare', effort: 'low' } as const;
+    expect(() => validateTickets([ok])).not.toThrow();
+    expect(() => validateTickets([{ ...ok, id: 'LU-01' }])).toThrow(/letters/);
+    expect(() => validateTickets([ok, ok])).toThrow(/Duplicate/);
+    expect(() => validateTickets([{ ...ok, model: 'gpt-6-luna' as never }])).toThrow(/unknown model/);
+    expect(() => validateTickets([{ ...ok, blackCrystalHandicap: 99 }])).toThrow(/handicap/);
+    expect(() => validateTickets([{ ...ok, legs: [] }])).toThrow(/legs/);
+  });
+});
+
+describe('syncSchedule', () => {
+  const ticket = { id: 'LU01', model: 'luna', blackCrystalHandicap: 3, toolTier: 'bare', effort: 'low', brief: 'old' } as const;
+  it('freezes started games, updates pending ones, and records each change', () => {
+    const saved = buildSchedule([ticket]);
+    const states: Record<string, 'pending' | 'live'> = { 'LU01-W': 'live', 'LU01-B': 'pending' };
+    const { schedule, changes } = syncSchedule(saved, [{ ...ticket, brief: 'new' }], id => states[id] ?? 'pending');
+    expect(schedule.games.find(g => g.gameId === 'LU01-W')!.brief).toBe('old');
+    expect(schedule.games.find(g => g.gameId === 'LU01-B')!.brief).toBe('new');
+    expect(changes).toHaveLength(1);
+    expect(changes[0]).toMatch(/^changed LU01-B/);
+  });
+  it('drops removed pending games but never a started one', () => {
+    const saved = buildSchedule([ticket]);
+    const { schedule, changes } = syncSchedule(saved, [], id => (id === 'LU01-W' ? 'live' : 'pending'));
+    expect(schedule.games.map(g => g.gameId)).toEqual(['LU01-W']);
+    expect(changes).toEqual(['removed pending LU01-B']);
+  });
+});
+
+describe('display names for every wave-1 model', () => {
+  it('matches the owner\'s title-case table', () => {
+    expect(llmDisplayName('sol', 'medium')).toBe('Sol 6 Medium');
+    expect(llmDisplayName('opus', 'high')).toBe('Opus 5.5 High');
+    expect(llmDisplayName('astra', 'high')).toBe('Astra 6 High');
+    expect(llmDisplayName('fable', 'high')).toBe('Fable 5.1 High');
   });
 });
 

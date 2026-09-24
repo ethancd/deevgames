@@ -21,7 +21,7 @@
  */
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
-import { closeSync, existsSync, openSync, readFileSync, readdirSync, rmSync, statSync, appendFileSync } from 'node:fs';
+import { closeSync, existsSync, openSync, readFileSync, readSync, readdirSync, rmSync, statSync, appendFileSync } from 'node:fs';
 import { dirname, resolve, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { PlayerId } from '../../src/game/types';
@@ -31,14 +31,15 @@ import { observerUrl } from '../../src/online/invitations';
 import { PHASING_RULES_VERSION } from '../../server/rooms';
 import { readSlots, slotCount } from '../../lab/hard-ai/ladder/heavy';
 import { researchReadinessSchema } from '../engine-seat/contract';
-import { runAuthPreflight, readCodexRollout, type CodexRateLimits } from './auth';
+import { probeClaudeModel, probeCodexModel, runAuthPreflight, readCodexRollout, type CodexRateLimits } from './auth';
 import {
-  ALL_GAME_IDS, CAMPAIGN_DIR, ENGINE_DISPLAY_NAME, MAX_PLAYER_TURNS, MODEL_CLI_ID, perModelCap,
-  PILOT_TIME_CONTROL, PROTOCOL_ID, activeCountFor, admissionTrace, buildSchedule, ensureCampaignDirs,
-  ensureGameDirs, engineConfigPath, engineDir, engineStatePath, gameDir, llmDisplayName, loadOrInitSchedule,
-  nextAdmissible, pairById, parseGameId, pidsJsonPath, playerDir, progressMdPath, readJson, readStatus,
-  saveSchedule, seatSecretPath, snapshotDir, stopFilePath, writeFileAtomic, writeJson, writeStatus, memoryDir,
-  gameIsSettled, type GameId, type Schedule, type ScheduleGame, type StatusSnapshot,
+  CAMPAIGN_DIR, ENGINE_DISPLAY_NAME, FAMILY_CAP, MAX_LIVE_GAMES, MAX_PLAYER_TURNS, MODEL_CLI_ID, MODEL_FAMILY,
+  PILOT_TIME_CONTROL, PROTOCOL_ID, activeCount, admissionTrace, buildSchedule, defaultBrief, ensureCampaignDirs,
+  ensureGameDirs, engineConfigPath, engineDir, engineStatePath, gameDir, llmDisplayName, loadTickets,
+  nextAdmissible, pidsJsonPath, playerDir, progressMdPath, readJson, readStatus,
+  saveSchedule, scheduleJsonPath, seatSecretPath, snapshotDir, stopFilePath, syncSchedule, writeFileAtomic, writeJson,
+  writeStatus, memoryDir, gameIsSettled, type Family, type GameId, type ModelId, type Schedule, type ScheduleGame,
+  type StatusSnapshot, type TimeControl,
 } from './pilot';
 import { appendExperience, curatePlaybook, freezeSnapshot, type ExperienceRecord } from './publish';
 import { pidAlive, runPlayer, type PlayerResult, type RunPlayerArgs } from './players';
@@ -50,6 +51,9 @@ const PRODUCTION_CAMPAIGN_DIR = '/Users/ashkie/src/deevgames/outputs/muju-llm-op
 /** Stop admitting Luna games once the ChatGPT weekly window is this full (headroom before any
  * paid-credit fallback could engage). */
 const GPT_MAX_USED_PERCENT = Number(process.env.MUJU_PILOT_GPT_MAX_USED_PERCENT ?? 70);
+/** Hold Claude admissions once either Claude subscription window is this full (owner: keep headroom,
+ * the 7-day window is shared with all of the account's other use). */
+const CLAUDE_MAX_UTILIZATION = Number(process.env.MUJU_CLAUDE_MAX_UTILIZATION ?? 0.85);
 const PREFLIGHT_MAX_AGE_MS = 12 * 60 * 60 * 1000;
 
 // ---------------------------------------------------------------------------
@@ -136,29 +140,40 @@ function readHttpSamples(id: GameId): HttpSample[] {
   }).filter((s): s is HttpSample => s !== null && typeof s.status === 'number' && Date.parse(s.at) >= since);
 }
 function currentSiteHealth(): { ok: boolean; detail: string } {
-  return siteHealthOk(ALL_GAME_IDS.flatMap(readHttpSamples).sort((a, b) => a.at.localeCompare(b.at)));
+  return siteHealthOk(scheduleIds().flatMap(readHttpSamples).sort((a, b) => a.at.localeCompare(b.at)));
 }
 /** Latest ChatGPT-subscription usage signal: the newest rate_limits among finished Luna phases
  * (from Codex's session rollout) or the preflight baseline. Blocks new Luna admissions when the
  * weekly window is >= GPT_MAX_USED_PERCENT, a limit was reached, or the credits balance moved
  * (i.e. something may have been billed to paid credits). */
+/** Games of the current schedule served by one CLI family. */
+function familyIds(family: Family): GameId[] {
+  return loadOrSyncSchedule().games.filter(g => MODEL_FAMILY[g.model] === family).map(g => g.gameId);
+}
 export function gptQuotaDecision(latest: CodexRateLimits | undefined, baseline: CodexRateLimits | undefined, maxUsed = GPT_MAX_USED_PERCENT): { ok: boolean; detail: string } {
   if (!latest) return { ok: true, detail: 'no ChatGPT usage signal yet' };
   const used = latest.primary?.used_percent ?? 0, secondary = latest.secondary?.used_percent ?? 0;
   if (latest.rate_limit_reached_type) return { ok: false, detail: `Codex rate limit reached (${latest.rate_limit_reached_type})` };
   if (Math.max(used, secondary) >= maxUsed) return { ok: false, detail: `ChatGPT window ${Math.max(used, secondary)}% used (cap ${maxUsed}%); queued until reset` };
   const before = baseline?.credits?.balance, after = latest.credits?.balance;
-  if (before !== undefined && after !== undefined && Number(after) < Number(before)) {
-    return { ok: false, detail: `Codex credits balance dropped ${before} -> ${after}: possible paid-credit use; Luna admission halted` };
+  if (before !== undefined && after !== undefined && Number(after) !== Number(before)) {
+    return { ok: false, detail: `Codex credits balance changed ${before} -> ${after}: possible paid-credit use; GPT admission halted` };
   }
   return { ok: true, detail: `ChatGPT window ${used}% used` };
 }
+/** Rollouts are whole-game logs; re-read them at most every 30s (the tick is 5s). */
+let gptQuotaCache: { at: number; value: { ok: boolean; detail: string } } | undefined;
 async function gptQuotaOk(): Promise<{ ok: boolean; detail: string }> {
+  if (gptQuotaCache && Date.now() - gptQuotaCache.at < 30_000) return gptQuotaCache.value;
+  const value = await gptQuotaUncached();
+  gptQuotaCache = { at: Date.now(), value };
+  return value;
+}
+async function gptQuotaUncached(): Promise<{ ok: boolean; detail: string }> {
   const preflight = readJson<{ codex?: { probe?: { rateLimits?: CodexRateLimits } } }>(join(CAMPAIGN_DIR, 'preflight.json'));
   const baseline = preflight?.codex?.probe?.rateLimits;
   let latest: { at: string; limits: CodexRateLimits } | undefined;
-  for (const id of ALL_GAME_IDS) {
-    if (pairById(parseGameId(id).pairId).model !== 'luna') continue;
+  for (const id of familyIds('codex')) {
     const state = readJson<{ sessionId?: string | null; phases?: Array<{ endedAt?: string; rateLimitInfo?: CodexRateLimits }> }>(`${playerDir(id)}/state.json`);
     // A live game's rollout is the freshest signal.
     if (state?.sessionId) {
@@ -172,12 +187,76 @@ async function gptQuotaOk(): Promise<{ ok: boolean; detail: string }> {
   return gptQuotaDecision(latest?.limits ?? baseline, baseline);
 }
 
+/** Claude subscription signal from the stream's `rate_limit_event` (`rate_limit_info`). */
+export interface ClaudeRateLimitInfo {
+  status?: string; rateLimitType?: string; isUsingOverage?: boolean; overageStatus?: string;
+  unifiedWindows?: Record<string, { utilization?: number; resetsAt?: number }>;
+}
+/** Holds Claude admissions when any window is at/over the cap, the status is anything but
+ * allowed/allowed_warning, or overage is in use (the org disables overage, so that would be new). */
+export function claudeQuotaDecision(latest: ClaudeRateLimitInfo | undefined, maxUtilization = CLAUDE_MAX_UTILIZATION): { ok: boolean; detail: string } {
+  if (!latest) return { ok: true, detail: 'no Claude usage signal yet' };
+  if (latest.isUsingOverage) return { ok: false, detail: 'Claude reports overage in use; Claude admission halted' };
+  if (latest.status && latest.status !== 'allowed' && latest.status !== 'allowed_warning') return { ok: false, detail: `Claude status ${latest.status} (${latest.rateLimitType ?? '?'})` };
+  const windows = Object.entries(latest.unifiedWindows ?? {});
+  const full = windows.find(([, w]) => (w.utilization ?? 0) >= maxUtilization);
+  const summary = windows.map(([name, w]) => `${name} ${Math.round((w.utilization ?? 0) * 100)}%`).join(', ') || latest.status || 'unknown';
+  if (full) return { ok: false, detail: `Claude ${full[0]} window ${Math.round((full[1].utilization ?? 0) * 100)}% used (cap ${Math.round(maxUtilization * 100)}%); queued until reset` };
+  return { ok: true, detail: `Claude ${summary}` };
+}
+/** The newest `rate_limit_event` across Claude players' transcripts (tail of each file only). */
+function latestClaudeRateLimit(): ClaudeRateLimitInfo | undefined {
+  let latest: { at: number; info: ClaudeRateLimitInfo } | undefined;
+  for (const id of familyIds('claude')) {
+    const dir = playerDir(id);
+    if (!existsSync(dir)) continue;
+    for (const name of readdirSync(dir).filter(n => n.startsWith('transcript.') && n.endsWith('.jsonl'))) {
+      const file = join(dir, name);
+      const mtime = statSync(file).mtimeMs;
+      if (latest && mtime <= latest.at) continue;
+      const text = tailText(file, 256 * 1024);
+      const lines = text.split('\n').filter(line => line.includes('"rate_limit_event"'));
+      const last = lines.at(-1);
+      if (!last) continue;
+      try { latest = { at: mtime, info: (JSON.parse(last) as { rate_limit_info: ClaudeRateLimitInfo }).rate_limit_info }; } catch { /* partial line */ }
+    }
+  }
+  return latest?.info;
+}
+function tailText(file: string, bytes: number): string {
+  const size = statSync(file).size;
+  const fd = openSync(file, 'r');
+  try {
+    const length = Math.min(size, bytes);
+    const buffer = Buffer.alloc(length);
+    readSync(fd, buffer, 0, length, size - length);
+    return buffer.toString('utf8');
+  } finally { closeSync(fd); }
+}
+function claudeQuotaOk(): { ok: boolean; detail: string } { return claudeQuotaDecision(latestClaudeRateLimit()); }
+
+// ---------------------------------------------------------------------------
+// Network outage record: every failed room read lands in network.jsonl, so a clock-decided result
+// near an outage can be labelled `interrupted` instead of counted.
+// ---------------------------------------------------------------------------
+const networkLogPath = () => join(CAMPAIGN_DIR, 'network.jsonl');
+function logNetworkFailure(gameId: GameId | undefined, error: unknown): void {
+  appendFileSync(networkLogPath(), `${JSON.stringify({ at: new Date().toISOString(), gameId, error: error instanceof Error ? error.message : String(error) })}\n`);
+}
+/** Network failures seen in [fromMs, toMs]. */
+export function outageEventsBetween(lines: Array<{ at: string }>, fromMs: number, toMs: number): number {
+  return lines.filter(line => { const t = Date.parse(line.at); return t >= fromMs && t <= toMs; }).length;
+}
+
 // ---------------------------------------------------------------------------
 // Room / seat setup
 // ---------------------------------------------------------------------------
+/** Pilot seeds used the bare game id; later campaigns salt with their dir name so reused ids differ. */
+const CAMPAIGN_SEED_SALT = basename(CAMPAIGN_DIR) === 'pilot' ? '' : `:${basename(CAMPAIGN_DIR)}`;
 function seedFor(id: GameId, salt = ''): number {
-  return createHash('sha256').update(`${id}${salt}`).digest().readUInt32BE(0);
+  return createHash('sha256').update(`${id}${CAMPAIGN_SEED_SALT}${salt}`).digest().readUInt32BE(0);
 }
+function clockOf(game: ScheduleGame): TimeControl { return game.timeControl ?? PILOT_TIME_CONTROL; }
 interface PilotRoomAdmission extends RoomAdmission { credentials: { roomId: string; player: PlayerId; token: string } }
 /** Creates the room as the ENGINE's seat (issued credentials; `mode: "pinned"` never joins) and
  * joins the player's seat here, before either process starts (the second join starts the clocks). */
@@ -185,10 +264,10 @@ async function createPilotRoom(game: ScheduleGame): Promise<PilotRoomAdmission> 
   const admission = await roomRequest<RoomAdmission>(SERVER_URL, '', {
     name: ENGINE_DISPLAY_NAME, side: game.engineSeat,
     matchPolicy: { version: 1 as const, toolTier: game.toolTier, protocolId: PROTOCOL_ID },
-    blackCrystalHandicap: game.blackCrystalHandicap, timeControl: PILOT_TIME_CONTROL,
+    blackCrystalHandicap: game.blackCrystalHandicap, timeControl: clockOf(game),
   });
-  if (admission.room.timeControl?.delaySeconds !== PILOT_TIME_CONTROL.delaySeconds ||
-      admission.room.timeControl?.bankSeconds !== PILOT_TIME_CONTROL.bankSeconds) {
+  if (admission.room.timeControl?.delaySeconds !== clockOf(game).delaySeconds ||
+      admission.room.timeControl?.bankSeconds !== clockOf(game).bankSeconds) {
     throw new Error(`Room ${admission.room.id} did not accept the pilot's custom time control; got ${JSON.stringify(admission.room.timeControl)}.`);
   }
   return admission as PilotRoomAdmission;
@@ -200,16 +279,23 @@ export function buildEngineConfig(game: ScheduleGame, roomId: string, credential
     mode: 'pinned', serverUrl: SERVER_URL, roomId, seed: seedFor(game.gameId, salt), stateFile: engineStatePath(game.gameId),
     credentials: { roomId, player: credentials.player, token: credentials.token },
     expectedMatchPolicy: { version: 1, toolTier: game.toolTier, protocolId: PROTOCOL_ID },
-    expectedTimeControl: PILOT_TIME_CONTROL, expectedHandicap: game.blackCrystalHandicap,
+    expectedTimeControl: clockOf(game), expectedHandicap: game.blackCrystalHandicap,
     ...engineReadinessClaim(),
   };
 }
 
+/** Room creation failed (nothing exists on the server): the game goes back to pending. */
+class RoomNotCreated extends Error { constructor(public cause: unknown) { super(`room not created: ${cause instanceof Error ? cause.message : String(cause)}`); } }
+function briefFor(game: ScheduleGame): string { return game.brief ?? defaultBrief(game); }
 interface Prep { roomId: string; watchUrl: string; snapshotVersion: number; enginePlayer: PlayerId; llmPlayer: PlayerId; preparedAt: string }
 async function prepareGame(game: ScheduleGame, snapshotVersion: number): Promise<Prep> {
   ensureGameDirs(game.gameId);
   writeStatus(game.gameId, 'preparing', 'creating room');
-  const created = await createPilotRoom(game);
+  // The ticket's exact setup is on disk before any room exists (legibility: the schedule may change mid-wave).
+  writeJson(`${gameDir(game.gameId)}/ticket.json`, { ...game, brief: briefFor(game), ticket: loadTickets().find(t => t.id === game.pairId) ?? null, writtenAt: new Date().toISOString() });
+  let created: PilotRoomAdmission;
+  try { created = await createPilotRoom(game); }
+  catch (error) { throw new RoomNotCreated(error); }
   const roomId = created.room.id;
   // Recorded before anything else can fail, so an interrupted preparation names its room.
   writeJson(`${gameDir(game.gameId)}/prep.partial.json`, { roomId, watchUrl: watchUrlFor(created.room), createdAt: new Date().toISOString() });
@@ -226,9 +312,11 @@ async function prepareGame(game: ScheduleGame, snapshotVersion: number): Promise
     gameId: game.gameId, pairId: game.pairId, model: game.model, cliModel: MODEL_CLI_ID[game.model], effort: game.effort,
     toolTier: game.toolTier, blackCrystalHandicap: game.blackCrystalHandicap, llmSeat: game.llmSeat, engineSeat: game.engineSeat,
     displayName: llmDisplayName(game.model, game.effort), roomId, watchUrl: prep.watchUrl, snapshotVersion,
+    brief: briefFor(game), ticketNote: loadTickets().find(t => t.id === game.pairId)?.note ?? null,
+    heavySlots: slotCount(), campaign: basename(CAMPAIGN_DIR),
     engine: { name: ENGINE_DISPLAY_NAME, profile: 'desktop', targetMs: 55_000, deadlineMs: 60_000, rulesId: PHASING_RULES_VERSION,
       sourceSha256: engineSourceSha256(), seed: seedFor(game.gameId, isSmoke() ? `smoke-${roomId}` : '') },
-    timeControl: PILOT_TIME_CONTROL, protocolId: PROTOCOL_ID, startedAt: prep.preparedAt,
+    timeControl: clockOf(game), protocolId: PROTOCOL_ID, startedAt: prep.preparedAt,
   });
   return prep;
 }
@@ -281,9 +369,16 @@ async function superviseEngine(gameId: GameId, isOver: () => Promise<boolean>): 
     }
     untrackPid('engine-seat', gameId);
     if (stopping || retiredEngines.has(gameId)) return { gaveUp: false };
-    let over = false;
-    try { over = await isOver(); } catch { /* unknown: fall through to respawn policy */ }
+    let over = false, known = true;
+    try { over = await isOver(); } catch (error) { known = false; logNetworkFailure(gameId, error); }
     if (over || exitCode === 0) return { gaveUp: false };
+    if (!known) {
+      // Room unreadable (network outage): a pause, not a crash. Wait and respawn without spending
+      // the restart budget; the engine re-reads the room from its journal when the network returns.
+      appendFileSync(`${engineDir(gameId)}/spawn.log`, `[dispatch] engine seat exited ${exitCode}; room unreadable, respawning in 60s (outage wait, budget untouched)\n`);
+      await new Promise(resolve => setTimeout(resolve, 60_000));
+      continue;
+    }
     if (++restarts > ENGINE_RESTART_BUDGET) {
       appendFileSync(`${engineDir(gameId)}/spawn.log`, `[dispatch] engine seat exited ${exitCode}; restart budget (${ENGINE_RESTART_BUDGET}) spent\n`);
       return { gaveUp: true };
@@ -307,15 +402,27 @@ async function readSeatRoom(gameId: GameId): Promise<RoomSnapshot> {
   let lastError: unknown;
   for (let attempt = 0; attempt < 5; attempt++) {
     try { return await roomRequest<RoomSnapshot>(SERVER_URL, `/${seat.roomId}`, undefined, seat.seatToken); }
-    catch (error) { lastError = error; await new Promise(resolve => setTimeout(resolve, Math.min(1000 * 2 ** attempt, 10_000))); }
+    catch (error) { lastError = error; logNetworkFailure(gameId, error); await new Promise(resolve => setTimeout(resolve, Math.min(1000 * 2 ** attempt, 10_000))); }
   }
   throw lastError;
+}
+/** Keeps reading through a network outage (capped 60s backoff, up to 6h): used where giving up
+ * would lose a real result, e.g. recording a finished game. */
+async function readSeatRoomPatiently(gameId: GameId): Promise<RoomSnapshot> {
+  const since = Date.now();
+  for (;;) {
+    try { return await readSeatRoom(gameId); }
+    catch (error) {
+      if (stopping || Date.now() - since > 6 * 60 * 60 * 1000) throw error;
+      await new Promise(resolve => setTimeout(resolve, 60_000));
+    }
+  }
 }
 /** A manifest's `result` is wider than a published `ExperienceRecord['result']`: `engine-failure`
  * and `provider-failure` mark a game whose outcome the frozen Hard engine (or the player's own
  * CLI harness) did not fairly decide, so it must never be counted as a real win/loss/draw and
  * must never reach the shared playbook (see `finishGame`). */
-export type ManifestResult = ExperienceRecord['result'] | 'engine-failure' | 'provider-failure';
+export type ManifestResult = ExperienceRecord['result'] | 'engine-failure' | 'provider-failure' | 'interrupted';
 export function resultFromRoom(room: RoomSnapshot, llmSeat: PlayerId): ExperienceRecord['result'] {
   if (room.state.phase !== 'victory') return 'truncated';
   if (room.state.winner === null) return 'draw';
@@ -375,9 +482,18 @@ async function fetchFullHistory(roomId: string): Promise<{ total: number; entrie
 export function turnsFromHistory(entries: HistoryEntryLite[], seat: PlayerId): number {
   return new Set(entries.filter(e => e.player === seat).map(e => e.turnNumber)).size;
 }
+/** A clock-decided game (either side timed out) with network failures logged during the losing
+ * turn's possible span (delay + starting bank, before the room's final update) is an outage casualty,
+ * not a result. */
+export function timeoutDuringOutage(room: RoomSnapshot, clock: TimeControl, networkLines: Array<{ at: string }>): boolean {
+  if (room.state.victoryReason !== 'timeout') return false;
+  const endedAt = Date.parse(room.updatedAt ?? '');
+  if (!Number.isFinite(endedAt)) return false;
+  return outageEventsBetween(networkLines, endedAt - (clock.delaySeconds + clock.bankSeconds) * 1000, endedAt + 60_000) > 0;
+}
 async function finishGame(game: ScheduleGame, player: PlayerResult, engineGaveUp: boolean): Promise<void> {
   const id = game.gameId;
-  const room = await readSeatRoom(id);
+  const room = await readSeatRoomPatiently(id);
   const history = await fetchFullHistory(room.id).catch(() => undefined);
   publishRedactedEngineLog(id);
   const actions = jsonl<{ revision: number; requestId: string }>(`${gameDir(id)}/actions.jsonl`);
@@ -404,7 +520,8 @@ async function finishGame(game: ScheduleGame, player: PlayerResult, engineGaveUp
   };
   const terminal = room.state.phase !== 'playing';
   const rawResult = terminal ? resultFromRoom(room, game.llmSeat) : 'invalid';
-  const result: ManifestResult = terminal ? classifyResult(rawResult, room, game, engineGaveUp, player) : 'invalid';
+  const outage = terminal && timeoutDuringOutage(room, clockOf(game), jsonl<{ at: string }>(networkLogPath()));
+  const result: ManifestResult = !terminal ? 'invalid' : outage ? 'interrupted' : classifyResult(rawResult, room, game, engineGaveUp, player);
   const manifest = {
     ...readJson<Record<string, unknown>>(`${gameDir(id)}/manifest.json`),
     revision: room.revision, turnNumber: room.state.turn.turnNumber, llmTurns: turns, result,
@@ -415,13 +532,14 @@ async function finishGame(game: ScheduleGame, player: PlayerResult, engineGaveUp
   writeJson(`${gameDir(id)}/manifest.json`, manifest);
   if (player.reflectionText) writeFileAtomic(`${gameDir(id)}/reflection.md`, player.reflectionText);
   const quotaHalt = readJson<{ at: string; detail: string }>(`${playerDir(id)}/quota-halt.json`);
-  if (quotaHalt) { writeStatus(id, 'interrupted', `provider interruption (Luna quota, billing-safety stop): ${quotaHalt.detail}`); return; }
+  if (quotaHalt) { writeStatus(id, 'interrupted', `provider interruption (GPT quota, billing-safety stop): ${quotaHalt.detail}`); return; }
   if (!terminal) { writeStatus(id, 'failed', `player ended with the room still playing (${player.detail ?? 'no detail'})`); return; }
+  if (outage) { writeStatus(id, 'interrupted', `clock-decided (${rawResult}) during a logged network outage; not a result (see network.jsonl)`); return; }
   // A genuine terminal result stands even when the reflection failed; it is simply not published.
   if (player.outcome === 'failed' || !player.reflectionText) { writeStatus(id, 'finished', `result ${result}; reflection not published: ${player.detail ?? 'none'}`); return; }
   // engine-failure / provider-failure are not a fair sporting outcome (the frozen engine or the
   // harness broke, not "lost"/"won" the game) — never let them into the shared playbook.
-  if (result === 'engine-failure' || result === 'provider-failure') {
+  if (result === 'engine-failure' || result === 'provider-failure' || result === 'interrupted') {
     writeStatus(id, 'finished', `result ${result}: not published (see SPEC.md launch gate / crossCheck; playerDetail: ${player.detail ?? 'none'})`);
     return;
   }
@@ -441,22 +559,27 @@ async function finishGame(game: ScheduleGame, player: PlayerResult, engineGaveUp
 // Progress
 // ---------------------------------------------------------------------------
 function fmtElapsed(ms: number): string { const m = Math.round(ms / 60000); return m >= 60 ? `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}` : `${m}m`; }
-export function formatProgress(schedule: Schedule, gameIds: readonly GameId[] = ALL_GAME_IDS): string {
+export function formatProgress(schedule: Schedule, gameIds: readonly GameId[] = schedule.games.map(g => g.gameId)): string {
   const rows = schedule.games.filter(g => gameIds.includes(g.gameId)).map(g => {
     const status = readStatus(g.gameId);
     const manifest = readJson<{ watchUrl?: string; result?: string; llmTurns?: number; turnNumber?: number; startedAt?: string; finishedAt?: string }>(`${gameDir(g.gameId)}/manifest.json`);
     const turns = manifest?.turnNumber ?? '-';
     const elapsed = manifest?.startedAt ? fmtElapsed(Date.parse(manifest.finishedAt ?? new Date().toISOString()) - Date.parse(manifest.startedAt)) : '-';
-    return `| ${g.gameId} | ${llmDisplayName(g.model, g.effort)} | ${g.toolTier} | ${g.blackCrystalHandicap} | ${g.llmSeat} | ${status.state} | ${manifest?.watchUrl ?? '-'} | ${manifest?.result ?? '-'} | ${turns} | ${elapsed} |`;
+    const clock = g.timeControl ? `${g.timeControl.delaySeconds}/${g.timeControl.bankSeconds}` : '-';
+    const state = g.hold && status.state === 'pending' ? `held (${g.hold})` : status.state;
+    return `| ${g.gameId} | ${llmDisplayName(g.model, g.effort)} | ${g.toolTier} | ${g.blackCrystalHandicap} | ${g.llmSeat} | ${clock} | ${state} | ${manifest?.watchUrl ?? '-'} | ${manifest?.result ?? '-'} | ${turns} | ${elapsed} |`;
   });
+  const states = schedule.games.filter(g => gameIds.includes(g.gameId)).map(g => readStatus(g.gameId).state);
+  const count = (s: string) => states.filter(x => x === s).length;
   return [
-    `# Pilot progress${isSmoke() ? ' (SMOKE)' : ''} — updated ${new Date().toISOString()}`, '',
-    '| Game | Player | Tier | Black +crystals | LLM seat | State | Watch | Result | Turn | Elapsed |',
-    '|---|---|---|---:|---|---|---|---|---:|---:|', ...rows, '',
+    `# ${basename(CAMPAIGN_DIR)} progress${isSmoke() ? ' (SMOKE)' : ''} — updated ${new Date().toISOString()}`, '',
+    `${states.length} games: ${count('live') + count('preparing')} live, ${count('pending')} pending, ${count('finished')} finished, ${count('interrupted')} interrupted, ${count('failed')} failed.`, '',
+    '| Game | Player | Tier | Black +crystals | LLM seat | Clock | State | Watch | Result | Turn | Elapsed |',
+    '|---|---|---|---:|---|---|---|---|---|---:|---:|', ...rows, '',
     `Stop admitting: \`touch ${stopFilePath()}\` · Hard stop: \`node --import tsx tools/llm-pilot/dispatch.ts --kill\` · Resume: \`node --import tsx tools/llm-pilot/dispatch.ts --resume\` (from muju/)`, '',
   ].join('\n');
 }
-function refreshProgress(): void { writeFileAtomic(progressMdPath(), formatProgress(loadOrInitSchedule(), scopeIds())); }
+function refreshProgress(): void { writeFileAtomic(progressMdPath(), formatProgress(loadOrSyncSchedule(), scopeIds())); }
 
 // ---------------------------------------------------------------------------
 // Smoke mode (never part of the 16): its own campaign dir, one game, launch gate bypassed.
@@ -464,9 +587,29 @@ function refreshProgress(): void { writeFileAtomic(progressMdPath(), formatProgr
 const argv = process.argv.slice(2);
 const argValue = (flag: string) => { const i = argv.indexOf(flag); return i >= 0 ? argv[i + 1] : undefined; };
 function isSmoke(): boolean { return argv.includes('--smoke'); }
+/** The live schedule: saved schedule.json merged with the current tickets (wave.json) each tick. */
+let scheduleCache: Schedule | undefined;
+function loadOrSyncSchedule(): Schedule {
+  if (!scheduleCache) {
+    const saved = readJson<Schedule>(scheduleJsonPath());
+    scheduleCache = saved ?? buildSchedule();
+  }
+  return scheduleCache;
+}
+function resyncSchedule(): Schedule {
+  const saved = readJson<Schedule>(scheduleJsonPath());
+  const { schedule, changes } = syncSchedule(saved, loadTickets(), id => readStatus(id).state);
+  if (changes.length || !saved) {
+    saveSchedule(schedule);
+    if (changes.length) appendFileSync(join(CAMPAIGN_DIR, 'schedule-changes.log'), changes.map(c => `${new Date().toISOString()} ${c}\n`).join(''));
+  }
+  scheduleCache = schedule;
+  return schedule;
+}
+function scheduleIds(): GameId[] { return loadOrSyncSchedule().games.map(g => g.gameId); }
 function scopeIds(): readonly GameId[] {
   const only = argValue('--only');
-  return only ? only.split(',') as GameId[] : ALL_GAME_IDS;
+  return only ? only.split(',') as GameId[] : scheduleIds();
 }
 function smokeBrief(turns: number): string {
   return `SMOKE TEST of the pilot harness (not a rated game; this instruction overrides "do not resign"). `
@@ -525,8 +668,7 @@ async function runGame(game: ScheduleGame, reattach: boolean): Promise<void> {
     const playerArgs: RunPlayerArgs = {
       gameDir: gameDir(id), gameId: id, model: game.model, effort: game.effort, tier: game.toolTier, seat: game.llmSeat,
       snapshotDir: snapshotDir(prep.snapshotVersion), handicap: game.blackCrystalHandicap,
-      brief: isSmoke() ? smokeBrief(smokeTurns)
-        : `Pair ${game.pairId}: you play ${game.llmSeat} with the ${game.toolTier} tool tier at ${game.effort} effort; Black starts with ${game.blackCrystalHandicap} extra crystals. Play to win.`,
+      brief: isSmoke() ? smokeBrief(smokeTurns) : briefFor(game),
       isGameOver: isOver,
       onSpawn: pid => trackPid({ gameId: id, pid, role: 'player', startedAt: new Date().toISOString() }),
     };
@@ -542,7 +684,12 @@ async function runGame(game: ScheduleGame, reattach: boolean): Promise<void> {
     const { gaveUp: engineGaveUp } = await engine;
     await finishGame(game, player, engineGaveUp);
   } catch (error) {
-    if (!stopping) writeStatus(id, reattach ? 'interrupted' : 'failed', error instanceof Error ? error.message : String(error));
+    if (error instanceof RoomNotCreated) {
+      // Nothing exists on the server yet (e.g. the network is down): back to the queue, not a failure.
+      logNetworkFailure(id, error.cause);
+      if (!stopping) writeStatus(id, 'pending', `retry: ${error.message}`);
+      appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} ${id} back to pending: ${error.message}\n`);
+    } else if (!stopping) writeStatus(id, reattach ? 'interrupted' : 'failed', error instanceof Error ? error.message : String(error));
   } finally {
     if (!stopping) refreshProgress();
   }
@@ -561,61 +708,65 @@ async function launchGateStatus(): Promise<{ ok: boolean; detail: string }> {
   return gateCache;
 }
 
-/** Games whose Luna player was killed mid-game because the ChatGPT-subscription quota tripwire
+/** Games whose GPT player was killed mid-game because the ChatGPT-subscription quota tripwire
  * fired while it was already running (never resumed automatically — a billing-safety stop, not a
  * transient failure). Checked every tick, independent of admission, since the owner's requirement
  * ("no paid-credit fallback") covers the whole game including its reflection, not just admission. */
-const haltedLuna = new Set<GameId>();
-async function enforceLunaQuota(schedule: Schedule): Promise<void> {
+const haltedGpt = new Set<GameId>();
+async function enforceGptQuota(schedule: Schedule): Promise<void> {
   const quota = await gptQuotaOk();
   if (quota.ok) return;
   for (const record of readPids().filter(r => r.role === 'player' && r.gameId)) {
     const id = record.gameId!;
     const game = schedule.games.find(g => g.gameId === id);
-    if (!game || game.model !== 'luna' || haltedLuna.has(id)) continue;
-    haltedLuna.add(id);
+    if (!game || MODEL_FAMILY[game.model] !== 'codex' || haltedGpt.has(id)) continue;
+    haltedGpt.add(id);
     ensureGameDirs(id);
     writeJson(`${playerDir(id)}/quota-halt.json`, { at: new Date().toISOString(), detail: quota.detail });
     signalGroup(record.pid);
-    appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} Luna game ${id} halted mid-game (provider interruption, billing-safety stop): ${quota.detail}\n`);
+    appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} GPT game ${id} halted mid-game (provider interruption, billing-safety stop): ${quota.detail}\n`);
   }
 }
-async function tick(schedule: Schedule): Promise<void> {
+/** Admission hold reasons already logged, so a standing hold is written once, not every tick. */
+const loggedHolds = new Map<string, string>();
+function logHold(key: string, detail: string): void {
+  if (loggedHolds.get(key) === detail) return;
+  loggedHolds.set(key, detail);
+  appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} ${key} held: ${detail}\n`);
+}
+async function tick(): Promise<void> {
+  const schedule = resyncSchedule();
   if (existsSync(stopFilePath())) return;
   const ids = scopeIds();
-  const snapshot: StatusSnapshot = Object.fromEntries(ALL_GAME_IDS.map(id => [id, ids.includes(id) ? readStatus(id).state : 'finished'])) as StatusSnapshot;
+  const games = schedule.games.filter(g => ids.includes(g.gameId));
+  const snapshot: StatusSnapshot = Object.fromEntries(games.map(g => [g.gameId, readStatus(g.gameId).state])) as StatusSnapshot;
   const gate = await launchGateStatus();
   if (!gate.ok) { writeFileAtomic(join(CAMPAIGN_DIR, 'launch-gate.txt'), `${new Date().toISOString()} CLOSED: ${gate.detail}\n`); return; }
   const health = currentSiteHealth();
   if (!health.ok) { appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} site degraded, not admitting: ${health.detail}\n`); return; }
-  await enforceLunaQuota(schedule);
-  for (const model of ['luna', 'sonnet'] as const) {
-    if (model === 'luna') {
-      const quota = await gptQuotaOk();
-      if (!quota.ok) { appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} Luna held: ${quota.detail}\n`); continue; }
-    }
-    const cap = perModelCap(finishedSinceRamp(model, schedule));
-    while (activeCountFor(model, snapshot) < cap) {
-      const id = nextAdmissible(model, snapshot);
-      if (!id) break;
-      const game = schedule.games.find(g => g.gameId === id)!;
-      // Review findings (blocker: isolation; major: no compute cap): tool-builder players get
-      // Bash/workspace-write shell access with no real sandbox (same-user file permissions do not
-      // stop them reading the campaign's secrets or the engine source) AND no CPU/heavy-slot cap
-      // on whatever they run there. Neither is implemented; hold P07/P08 out of the 16 until both
-      // are, per the findings' own "at minimum" floor. MUJU_PILOT_ALLOW_TOOL_BUILDER=1 is the
-      // explicit, deliberate override once both exist (never set by default).
+  await enforceGptQuota(schedule);
+  const quota: Record<Family, { ok: boolean; detail: string }> = { codex: await gptQuotaOk(), claude: claudeQuotaOk() };
+  for (const family of ['codex', 'claude'] as const) if (!quota[family].ok) logHold(family, quota[family].detail); else loggedHolds.delete(family);
+  const familyGames = (family: Family) => games.filter(g => MODEL_FAMILY[g.model] === family);
+  // Families alternate one admission at a time so neither fills the global cap first.
+  for (let progress = true; progress;) {
+    progress = false;
+    for (const family of ['codex', 'claude'] as const) {
+      if (activeCount(games, snapshot) >= MAX_LIVE_GAMES) return;
+      if (!quota[family].ok || activeCount(familyGames(family), snapshot) >= FAMILY_CAP) continue;
+      const id = nextAdmissible(familyGames(family), snapshot);
+      if (!id) continue;
+      const game = games.find(g => g.gameId === id)!;
+      // Tool-builder is admitted only with the explicit override (sandboxed helpers verified).
       if (game.toolTier === 'tool-builder' && process.env.MUJU_PILOT_ALLOW_TOOL_BUILDER !== '1') {
-        if (readStatus(id).detail !== 'tool-builder-held') {
-          appendFileSync(join(CAMPAIGN_DIR, 'admission.log'),
-            `${new Date().toISOString()} ${id} NOT admitted: tool-builder tier has no verified sandbox isolation `
-            + '(secrets/engine-source readable same-user); set MUJU_PILOT_ALLOW_TOOL_BUILDER=1 once fixed.\n');
-          writeStatus(id, 'pending', 'tool-builder-held');
-        }
-        break; // held, not admitted; stop this model's admission loop for this tick (queue order preserved)
+        logHold(id, 'tool-builder tier needs MUJU_PILOT_ALLOW_TOOL_BUILDER=1');
+        snapshot[id] = 'finished'; // skip it for this tick only
+        progress = true;
+        continue;
       }
       snapshot[id] = 'preparing';
-      appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} admit ${id}\n`);
+      progress = true;
+      appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} admit ${id} (${game.model}/${game.effort}/${game.toolTier}, h${game.blackCrystalHandicap}, LLM ${game.llmSeat})\n`);
       inflight.set(id, runGame(game, false).finally(() => inflight.delete(id)));
     }
   }
@@ -637,9 +788,28 @@ async function preflight(): Promise<void> {
   const probeWorkspace = '/tmp/muju-llm-pilot/preflight';
   const { mkdirSync } = await import('node:fs');
   mkdirSync(probeWorkspace, { recursive: true });
-  const result = await runAuthPreflight({ claudeModel: MODEL_CLI_ID.sonnet, codexModel: MODEL_CLI_ID.luna, codexEffort: 'low', probeWorkspace });
-  const record = { at: new Date().toISOString(), claude: { authMethod: result.claude.authMethod, probe: result.claude.probe }, codex: result.codex };
   ensureCampaignDirs();
+  const models = [...new Set<ModelId>(['luna', 'sonnet', ...loadTickets().map(t => t.model)])];
+  const codexModels = models.filter(m => MODEL_FAMILY[m] === 'codex'), claudeModels = models.filter(m => MODEL_FAMILY[m] === 'claude');
+  // Luna first: its probe's rate limits are the credits baseline every other Codex probe is checked against.
+  const result = await runAuthPreflight({ claudeModel: MODEL_CLI_ID.sonnet, codexModel: MODEL_CLI_ID.luna, codexEffort: 'low', probeWorkspace });
+  const baselineCredits = result.codex.probe.rateLimits?.credits?.balance;
+  const probes: Record<string, unknown> = { [MODEL_CLI_ID.luna]: result.codex.probe, [MODEL_CLI_ID.sonnet]: result.claude.probe };
+  for (const model of codexModels.filter(m => m !== 'luna')) {
+    const probe = await probeCodexModel(MODEL_CLI_ID[model], 'low', probeWorkspace);
+    const after = probe.rateLimits?.credits?.balance;
+    probes[MODEL_CLI_ID[model]] = { ...probe, creditsBefore: baselineCredits, creditsAfter: after };
+    if (!probe.available) throw new Error(`Codex model ${MODEL_CLI_ID[model]} unavailable: ${probe.error}`);
+    if (baselineCredits === undefined || after === undefined || Number(after) !== Number(baselineCredits)) {
+      throw new Error(`Codex credits balance ${baselineCredits} -> ${after} around the ${MODEL_CLI_ID[model]} probe: possible paid-credit use; refusing GPT work.`);
+    }
+  }
+  for (const model of claudeModels.filter(m => m !== 'sonnet')) {
+    const probe = await probeClaudeModel(MODEL_CLI_ID[model], probeWorkspace);
+    probes[MODEL_CLI_ID[model]] = probe;
+    if (!probe.available) throw new Error(`Claude model ${MODEL_CLI_ID[model]} unavailable: ${probe.error}`);
+  }
+  const record = { at: new Date().toISOString(), claude: { authMethod: result.claude.authMethod, probe: result.claude.probe }, codex: result.codex, probes };
   writeJson(join(CAMPAIGN_DIR, 'preflight.json'), record);
   console.log(JSON.stringify(record, null, 2));
 }
@@ -653,12 +823,12 @@ async function runLoop(): Promise<void> {
   process.once('SIGINT', () => { stopping = true; process.exit(0); });
   if (isSmoke()) assertSmokeDir();
   await ensurePreflight();
-  const schedule = loadOrInitSchedule();
+  const schedule = resyncSchedule();
   if (isSmoke()) {
     const handicap = argValue('--handicap');
     for (const g of schedule.games) if (handicap !== undefined && scopeIds().includes(g.gameId)) g.blackCrystalHandicap = Number(handicap);
+    saveSchedule(schedule);
   }
-  saveSchedule(schedule);
   // Re-attach whatever a previous dispatcher left in flight. Never re-join a seat.
   for (const id of scopeIds()) {
     const status = readStatus(id);
@@ -673,7 +843,8 @@ async function runLoop(): Promise<void> {
   }
   const sampler = setInterval(sampleHeavySlots, 2000);
   for (;;) {
-    await tick(schedule);
+    try { await tick(); }
+    catch (error) { appendFileSync(join(CAMPAIGN_DIR, 'admission.log'), `${new Date().toISOString()} tick error (will retry): ${error instanceof Error ? error.message : String(error)}\n`); }
     refreshProgress();
     const settled = scopeIds().every(id => gameIsSettled(readStatus(id).state));
     if (inflight.size === 0 && (settled || existsSync(stopFilePath()))) break;
@@ -704,7 +875,7 @@ async function status(): Promise<void> {
   refreshProgress();
   const gate = await launchGateStatus();
   console.log(`Launch gate: ${gate.ok ? 'OPEN' : 'CLOSED'} — ${gate.detail}`);
-  console.log(`Site health: ${currentSiteHealth().detail}; GPT quota: ${(await gptQuotaOk()).detail}`);
+  console.log(`Site health: ${currentSiteHealth().detail}; GPT quota: ${(await gptQuotaOk()).detail}; Claude quota: ${claudeQuotaOk().detail}`);
   const held = readSlots().filter(s => s.record && !s.stale);
   console.log(`Heavy slots: ${held.length}/${slotCount()} held${held.length ? ` (${held.map(s => s.record!.label).join(', ')})` : ''}`);
   const live = readPids().filter(r => pidAlive(r.pid));
@@ -713,10 +884,13 @@ async function status(): Promise<void> {
 }
 function dryRun(): void {
   const schedule = buildSchedule();
-  console.log('Schedule (16 games):');
-  for (const g of schedule.games) console.log(`  ${g.gameId}  model=${g.model} tier=${g.toolTier} effort=${g.effort} handicap=${g.blackCrystalHandicap} llmSeat=${g.llmSeat}`);
-  console.log('\nAdmission order (2-per-model concurrency, started-pair-remaining-leg priority):');
-  for (const id of admissionTrace()) console.log(`  ${id}`);
+  console.log(`Schedule (${schedule.games.length} games) from ${existsSync(join(CAMPAIGN_DIR, 'wave.json')) ? 'wave.json' : 'the pilot table'}:`);
+  for (const g of schedule.games) {
+    console.log(`  ${g.gameId}  ${llmDisplayName(g.model, g.effort)} tier=${g.toolTier} handicap=${g.blackCrystalHandicap} llmSeat=${g.llmSeat} clock=${g.timeControl?.delaySeconds}/${g.timeControl?.bankSeconds}${g.hold ? ` HOLD(${g.hold})` : ''}`);
+    console.log(`      brief: ${briefFor(g)}`);
+  }
+  console.log(`\nAdmission order (families alternate; started pair's remaining leg first; caps ${MAX_LIVE_GAMES} live / ${FAMILY_CAP} per family):`);
+  for (const id of admissionTrace(schedule)) console.log(`  ${id}`);
   console.log('\nNo network calls or processes were started (--dry-run).');
 }
 
@@ -728,14 +902,4 @@ async function main(): Promise<void> {
   return runLoop(); // plain run and --resume both re-attach in-flight games first
 }
 const invokedDirectly = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
-if (invokedDirectly) main().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });/** Games of this model whose status turned terminal after MUJU_PILOT_RAMP_FROM (see perModelCap). */
-function finishedSinceRamp(model: string, schedule: Schedule): number {
-  const from = process.env.MUJU_PILOT_RAMP_FROM;
-  if (!from) return 0;
-  const since = Date.parse(from);
-  return schedule.games.filter(g => g.model === model).filter(g => {
-    const status = readStatus(g.gameId) as { state: string; updatedAt?: string };
-    return ['finished', 'failed', 'interrupted'].includes(status.state) && Date.parse(status.updatedAt ?? '') > since;
-  }).length;
-}
-
+if (invokedDirectly) main().catch(error => { console.error(error instanceof Error ? error.message : error); process.exitCode = 1; });

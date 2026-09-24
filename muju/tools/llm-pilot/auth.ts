@@ -127,16 +127,21 @@ export interface CodexRateLimits {
 /** Reads `~/.codex/sessions/**\/rollout-*-<threadId>.jsonl` (Codex's own session log) for the
  * model(s) that actually served the thread and the last observed subscription rate limits.
  * `codex exec --json` exposes neither; the rollout is the only local record of both. */
+/** threadId -> rollout path (a session's rollout file never moves once created). */
+const rolloutFiles = new Map<string, string>();
 export async function readCodexRollout(threadId: string): Promise<{ models: string[]; rateLimits?: CodexRateLimits; file: string } | undefined> {
   const root = path.join(process.env.CODEX_HOME ?? path.join(homedir(), '.codex'), 'sessions');
   const { readdir } = await import('node:fs/promises');
-  let file: string | undefined;
-  try {
-    for (const entry of await readdir(root, { recursive: true })) {
-      if (entry.endsWith(`${threadId}.jsonl`)) { file = path.join(root, entry); break; }
-    }
-  } catch { return undefined; }
-  if (!file) return undefined;
+  let file = rolloutFiles.get(threadId);
+  if (!file) {
+    try {
+      for (const entry of await readdir(root, { recursive: true })) {
+        if (entry.endsWith(`${threadId}.jsonl`)) { file = path.join(root, entry); break; }
+      }
+    } catch { return undefined; }
+    if (!file) return undefined;
+    rolloutFiles.set(threadId, file);
+  }
   const models = new Set<string>();
   let rateLimits: CodexRateLimits | undefined;
   for (const line of (await readFile(file, 'utf8')).split('\n')) {

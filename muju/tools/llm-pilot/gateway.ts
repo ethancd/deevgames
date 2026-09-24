@@ -56,6 +56,8 @@ export type GatewayLog = (event: Record<string, unknown>) => void;
 // ---------------------------------------------------------------------------
 // Throttled, logged HTTP client (~2 req/s; retries 429/5xx with backoff).
 // ---------------------------------------------------------------------------
+/** Transport-failure retries per request (1s, 2s, 4s ... capped 30s: about 2.5 minutes). */
+const TRANSPORT_RETRIES = 9;
 export function createHttpClient(serverUrl: string, logHttp: GatewayLog, minIntervalMs = 500) {
   let nextAt = 0;
   async function request<T>(path: string, body?: unknown, token?: string, signal?: AbortSignal, timeoutMs = 10000, attempt = 0): Promise<T> {
@@ -73,7 +75,12 @@ export function createHttpClient(serverUrl: string, logHttp: GatewayLog, minInte
     } catch (error) {
       logHttp({ at: new Date().toISOString(), method, path, attempt, latencyMs: Date.now() - startedAt,
         error: error instanceof Error ? error.message : 'Request failed.' });
-      throw error;
+      // A transport failure (network loss, DNS, reset) is retried for ~2.5 min so a short outage
+      // looks like a slow tool call, not an error the model gives up on. Plays are safe to repeat:
+      // the requestId is deterministic and the server treats an identical retry as idempotent.
+      if (signal?.aborted || attempt >= TRANSPORT_RETRIES) throw error;
+      await delay(Math.min(30_000, 1000 * 2 ** attempt));
+      return request<T>(path, body, token, signal, timeoutMs, attempt + 1);
     }
     const latencyMs = Date.now() - startedAt;
     logHttp({ at: new Date().toISOString(), method, path, attempt, status: response.status, latencyMs });

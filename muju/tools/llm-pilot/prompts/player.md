@@ -45,11 +45,20 @@ no general shell: author helper files with `Write` (or, on Codex,
 `muju_write_file`), then run them with `muju_run_helper` (`{command, args}`,
 e.g. `{"command": "python3", "args": ["helper.py"]}`). Every run is
 sandboxed — no network, no read or write access to anything outside your
-workspace — and capped at 60 CPU seconds, sharing the same 2-slot compute
-queue the engine itself uses, so a run may sit and wait for a slot rather
-than starting immediately. Budget accordingly: don't launch a helper you
-expect to need more than that, and don't fire off several at once expecting
-them to run in parallel. This is the whole point of your tier; use it.
+workspace — and capped at 60 CPU seconds, sharing the compute queue the
+engine itself uses, so a run may sit and wait for a slot rather than starting
+immediately. Don't launch a helper you expect to need more than that, and
+don't fire off several at once expecting them to run in parallel.
+
+Building tools is the point of this tier, and no earlier tool-builder player
+ever ran one. So: **before your third turn, write and run at least one small
+helper** — for example a threat/exchange scanner that takes the board from
+`muju_observe` (saved to a workspace file) and lists, for each of your units,
+which enemy units could attack it next turn and what each trade would cost
+both sides. Keep it small (tens of lines), fix it if it's wrong, extend it
+when a position calls for more (e.g. an economy tracker for mined totals and
+the kill clock). Use it to inform real moves; you are still playing to win,
+so don't let tool-building run you out of clock.
 
 **Ending the game:** the game ends when `muju_play` or `muju_wait_for_change`
 returns a terminal `result` (a winner, a draw, or your own timeout/loss).
