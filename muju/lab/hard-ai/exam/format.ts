@@ -45,6 +45,23 @@
  * refuses a file whose rows disagree with its name, and the runner takes one
  * stratum per invocation so a sealed case cannot be swept up by a dev run.
  *
+ * **4. A plan case asks for a KIND OF TURN, not a key** (STRATEGOS Workflow 1,
+ * plan W1.13, 2026-09-24). Wave 1's LLM-vs-Hard losses were plan failures —
+ * no contact while losing the kill clock, no promotion with idle crystals, every
+ * placement square filled — and no single end key says "made contact". So
+ * `kind: 'plan'` carries a `PlanWitness`: a PREDICATE over the engine's turn,
+ * decided by the canonical rules alone (`witness.ts evaluatePlan` replays the
+ * turn through `isLegalAction`/`applyAction`), plus an author's reason for
+ * choosing that predicate at that position. The two halves have different
+ * strength and the format keeps both visible: whether the turn satisfies the
+ * predicate is a fact; that the predicate is the right plan there is a labelled
+ * judgment (`by: 'author'`, `reason`, `cites`). The runner therefore reports a
+ * third tally that is never added to the exact or judgment ones, and a case may
+ * record that the author EXPECTS the engine to fail it (`expected: 'fail'`), so
+ * a known gap is scored as known rather than hidden. A plan case also pins the
+ * clock and mined totals it was chosen for (`at`), and `loadCaseState` refuses a
+ * recipe that no longer reproduces them, exactly as it refuses a drifted digest.
+ *
  * RULES ARE PROCESS-GLOBAL. `setElementGraph`, `setUpkeepVariant` and
  * `setCombatHandicap` are module-level in `src/game`, so every consumer must
  * install a case's `rules` block around whatever it does with the position.
@@ -57,8 +74,10 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import type { GameState, PlayerId } from '../../../src/game/types';
+import type { GameState, PlayerId, Position } from '../../../src/game/types';
 import { setElementGraph } from '../../../src/game/elements';
+import { INACTIVITY_LIMIT, minedTotal } from '../../../src/game/inactivity';
+import { BOARD_SIZE } from '../../../src/game/board';
 import { setUpkeepVariant } from '../../../src/game/upkeep';
 import { setCombatHandicap, resetCombatHandicap } from '../../../src/game/combat';
 import {
@@ -166,7 +185,35 @@ export interface LossSource {
   openingId?: string;
 }
 
-export type ExamSource = AuthoredSource | LossSource;
+/**
+ * A position taken from an ONLINE game (an LLM-vs-Hard room) through its
+ * verified lab replay (`analyze/from-room.ts`). Unlike `LossSource` it does not
+ * presume the engine lost: wave 1's SN05-W final ply is a case exactly because
+ * Hard WON it by holding.
+ */
+export interface RoomSource {
+  kind: 'room';
+  /** The results directory the replay lives in, repo-relative (`lab/results/llm-wave-1`). */
+  run: string;
+  /** The campaign's game id (`SN05-W`), which is also the replay's file id. */
+  gameId: string;
+  /** The production room (32 hex). */
+  roomId: string;
+  /** The room revision AFTER which this position stands, with the engine to move. */
+  revision: number;
+  /** The revision of the engine's own recorded reply (always `revision + 1`). */
+  replyRevision: number;
+  /** Ply index of the position in the replay (the turn's first ply). */
+  ply: number;
+  turnNumber: number;
+  /** Index among the seat's own turns. */
+  seatTurnIndex: number;
+  /** How the online game ended, from the replay's `meta`. */
+  outcome: { winner: PlayerId | null; winType: string };
+  openingId: string;
+}
+
+export type ExamSource = AuthoredSource | LossSource | RoomSource;
 
 // ---------------------------------------------------------------------------
 // Positions
@@ -247,9 +294,105 @@ export interface JudgmentWitness {
   adviserWork?: number;
 }
 
-export type ExamWitness = ExactWitness | JudgmentWitness;
+/**
+ * The plan predicates (STRATEGOS W1.13). Each is a fact about ONE turn of the
+ * side to move, checked by replaying that turn from the case position through
+ * the canonical rules (`witness.ts evaluatePlan`); none of them reads the
+ * engine under test. `PLAN_RULES` is the definition, word for word what the
+ * checker implements.
+ */
+export type PlanPredicate = 'damaging-attack' | 'no-clock-reset' | 'spawn-area-open' | 'promotion-made' | 'contact-in-n';
 
-export type ExamKind = 'exact' | 'judgment';
+export const PLAN_RULES: Record<PlanPredicate, string> = {
+  'damaging-attack':
+    'the turn contains an ATTACK by one of the side\'s units whose attack power against its defender (`src/game/combat.ts calculateAttackPower`: ' +
+    'base attack, element modifier and combat handicap, clamped at 0) is greater than 0 at the moment it is made. With `target`, the defender ' +
+    'must be the enemy unit that stood on that square at the root, followed by unit id. The attack need not kill: damage heals at the hand-off, ' +
+    'so this is the contract\'s contact predicate, not a kill claim (`kind: "exact", claim: "kill"` is the set\'s kill predicate)',
+  'no-clock-reset':
+    'the turn contains no kill: no ATTACK removes its defender from the board. A kill is the only event that resets the kill clock ' +
+    '(`src/game/inactivity.ts`: "only an attack that removes a unit resets it"), so the turn leaves the clock counting. An upkeep release or a ' +
+    'disrupted summon removes a unit without resetting it and is not a kill',
+  'spawn-area-open':
+    'at the turn\'s end position (the first position with the other side on move, after the hand-off has resolved that side\'s arrivals) ' +
+    '`src/game/summoning.ts getPurchasePositions(end, side)` is non-empty: some empty square lies in the rectangle between the side\'s start ' +
+    'corner and one of its units, no enemy unit stands in that rectangle, and no pending summon of the side is on it. Those are exactly the ' +
+    'squares `isLegalAction` would accept for BUY_UNIT in the side\'s Prepare phase',
+  'promotion-made':
+    'the turn contains a PROMOTE_UNIT of one of the side\'s units that the canonical rules accept (`isLegalAction`, then `applyAction` changes the state)',
+  'contact-in-n':
+    '`n` counts plies — one seat\'s whole turn, the unit the kill clock counts — and is 1 or 3. CONTACT means a damaging strike (as in ' +
+    'damaging-attack) or a unit of the side standing orthogonally adjacent to an enemy unit it could damage (attack power > 0). n = 1: the turn ' +
+    'makes a damaging strike or its end position holds such an adjacency. n = 3: the n = 1 test, or, after the opponent plays the PASSIVE ' +
+    'scripted reply (phase ends only, `src/game/legality.ts phaseEndAction`, which pays the default upkeep), the side has a WITNESSED damaging ' +
+    'strike in its next turn: one unit\'s shortest approach (`src/game/movement.ts findAttackApproach`) played as one MOVE and then the ATTACK, ' +
+    'replayed through the canonical rules. The grade is "witnessed against a passive reply" (STRATEGOS Part A item 1), never "forced"; a strike ' +
+    'that needs a second unit to clear the path first is not searched, so a FAIL means "no single-unit strike line", not a proof that none exists',
+};
+
+export const PLAN_PREDICATES = Object.keys(PLAN_RULES) as PlanPredicate[];
+
+/**
+ * The plies `contact-in-n` accepts. CHOICE (plan W1.13): 1 is the engine's own
+ * turn; 3 adds the opponent's passive reply and the side's next turn, the
+ * shortest horizon over which "build contact" differs from "strike now".
+ * Anything longer needs a policy for the side's OWN intermediate turn, which is
+ * a plan, not a check. Falsifier: a wave-1 case whose right answer is contact
+ * reachable only in two own turns — none of the cases-p4 positions is one.
+ */
+export const CONTACT_PLIES: readonly number[] = [1, 3];
+
+/** What the position was when the author chose the predicate. Recomputed from
+ * the reconstructed state by `loadCaseState`, which refuses a drift. */
+export interface PlanReading {
+  /** `state.inactivityPlies` at the root: kill-free plies already counted. */
+  clock: number;
+  /** `INACTIVITY_LIMIT - clock`: plies left before the clock decides, this one included. */
+  pliesLeft: number;
+  /** `src/game/inactivity.ts minedTotal` per side (Black's handicap folded in). */
+  mined: { white: number; black: number };
+  /** The side's bank at the root (before this turn's mining). */
+  bank: number;
+}
+
+/** Hard's own reply in the online game the case came from. */
+export interface PlayedTurn {
+  /** Room revision of the reply (`RoomSource.replyRevision`). */
+  revision: number;
+  /** The reply, square-based, exactly as the replay records it. */
+  line: OpeningAction[];
+  /** Whether the reply satisfies the predicate (verified by the builder and the test). */
+  holds: boolean;
+}
+
+export interface PlanWitness {
+  label: 'plan';
+  predicate: PlanPredicate;
+  /** `contact-in-n` only: one of `CONTACT_PLIES`. */
+  n?: number;
+  /** The side whose turn is judged; always the case's `sideToMove`. */
+  side: PlayerId;
+  /** `damaging-attack` only: the root square of the one enemy unit the attack must hit. */
+  target?: Position;
+  at: PlanReading;
+  /**
+   * What the AUTHOR expects of the engine at the time of writing. `fail`
+   * records a known gap (SO01-B's home defence is outside Workflow 1) so the
+   * runner can report it as expected instead of hiding it; the pass/fail itself
+   * is still computed, never assumed.
+   */
+  expected: 'pass' | 'fail';
+  /** Why this predicate is the right plan here. An OPINION, labelled as one. */
+  reason: string;
+  /** Where the evidence is written down (`DIGEST.md`, `engine-evidence.md`, ...). */
+  cites: string[];
+  played?: PlayedTurn;
+  by: 'author';
+}
+
+export type ExamWitness = ExactWitness | JudgmentWitness | PlanWitness;
+
+export type ExamKind = 'exact' | 'judgment' | 'plan';
 
 // ---------------------------------------------------------------------------
 // The case
@@ -404,6 +547,14 @@ interface RawWitness {
   classification?: unknown;
   swingCc?: unknown;
   adviserWork?: unknown;
+  predicate?: unknown;
+  n?: unknown;
+  side?: unknown;
+  target?: unknown;
+  at?: unknown;
+  expected?: unknown;
+  cites?: unknown;
+  played?: unknown;
 }
 
 function validatePosition(raw: unknown, where: string): ExamPosition {
@@ -461,6 +612,8 @@ function validateWitness(raw: unknown, kind: ExamKind, where: string): ExamWitne
     };
   }
 
+  if (kind === 'plan') return validatePlanWitness(w, where);
+
   if (w.by !== 'adviser' && w.by !== 'author') throw new ExamFormatError(`${where}.witness.by: ${JSON.stringify(w.by)} is neither "adviser" nor "author"`);
   return {
     label: 'judgment',
@@ -474,6 +627,63 @@ function validateWitness(raw: unknown, kind: ExamKind, where: string): ExamWitne
   };
 }
 
+function isSquare(v: unknown): v is Position {
+  const p = v as Position;
+  return p !== null && typeof p === 'object' && Number.isInteger(p.x) && Number.isInteger(p.y) && p.x >= 0 && p.x < BOARD_SIZE && p.y >= 0 && p.y < BOARD_SIZE;
+}
+
+function isCount(v: unknown): v is number {
+  return typeof v === 'number' && Number.isInteger(v) && v >= 0;
+}
+
+function validatePlanWitness(w: RawWitness, where: string): PlanWitness {
+  const at = `${where}.witness`;
+  if (!PLAN_PREDICATES.includes(w.predicate as PlanPredicate)) {
+    throw new ExamFormatError(`${at}.predicate: ${JSON.stringify(w.predicate)} is not one of ${PLAN_PREDICATES.join(', ')}`);
+  }
+  const predicate = w.predicate as PlanPredicate;
+  if (w.side !== 'white' && w.side !== 'black') throw new ExamFormatError(`${at}.side: expected "white" or "black"`);
+  if (predicate === 'contact-in-n') {
+    if (typeof w.n !== 'number' || !CONTACT_PLIES.includes(w.n)) throw new ExamFormatError(`${at}.n: contact-in-n needs n in {${CONTACT_PLIES.join(', ')}}, got ${JSON.stringify(w.n)}`);
+  } else if (w.n !== undefined) {
+    throw new ExamFormatError(`${at}.n: only contact-in-n takes a ply count`);
+  }
+  if (w.target !== undefined) {
+    if (predicate !== 'damaging-attack') throw new ExamFormatError(`${at}.target: only damaging-attack names a target`);
+    if (!isSquare(w.target)) throw new ExamFormatError(`${at}.target: expected a board square {x, y}`);
+  }
+  const r = w.at as Partial<PlanReading> | undefined;
+  if (r === undefined || r === null || !isCount(r.clock) || !isCount(r.pliesLeft) || !isCount(r.bank) || r.mined === undefined || !isCount(r.mined.white) || !isCount(r.mined.black)) {
+    throw new ExamFormatError(`${at}.at: expected { clock, pliesLeft, mined: { white, black }, bank } as non-negative integers`);
+  }
+  if (w.expected !== 'pass' && w.expected !== 'fail') throw new ExamFormatError(`${at}.expected: expected "pass" or "fail"`);
+  if (!Array.isArray(w.cites) || w.cites.length === 0 || w.cites.some(c => typeof c !== 'string' || c.length === 0)) {
+    throw new ExamFormatError(`${at}.cites: a plan case must cite where its evidence is written down`);
+  }
+  // The predicate is a fact the rules decide; the CHOICE of predicate is not,
+  // so it is always an author's and always says why.
+  if (w.by !== 'author') throw new ExamFormatError(`${at}.by: a plan witness is an author's choice of predicate, so by must be "author"`);
+  let played: PlayedTurn | undefined;
+  if (w.played !== undefined) {
+    const p = w.played as Partial<PlayedTurn>;
+    if (!isCount(p.revision) || !Array.isArray(p.line) || typeof p.holds !== 'boolean') throw new ExamFormatError(`${at}.played: expected { revision, line, holds }`);
+    played = { revision: p.revision, line: p.line as OpeningAction[], holds: p.holds };
+  }
+  return {
+    label: 'plan',
+    predicate,
+    ...(predicate === 'contact-in-n' ? { n: w.n as number } : {}),
+    side: w.side,
+    ...(w.target !== undefined ? { target: { x: (w.target as Position).x, y: (w.target as Position).y } } : {}),
+    at: { clock: r.clock, pliesLeft: r.pliesLeft, mined: { white: r.mined.white, black: r.mined.black }, bank: r.bank },
+    expected: w.expected,
+    reason: requireString(w.reason, `${at}.reason`),
+    cites: w.cites as string[],
+    ...(played !== undefined ? { played } : {}),
+    by: 'author',
+  };
+}
+
 /** Pure shape validation: no engine, no replay. `loadCaseState` does the rest. */
 export function validateCaseShape(raw: unknown, where: string): ExamCase {
   const c = raw as Partial<ExamCase>;
@@ -482,8 +692,19 @@ export function validateCaseShape(raw: unknown, where: string): ExamCase {
   const id = requireString(c.id, `${where}.id`);
   const at = `${where} (${id})`;
   if (typeof c.version !== 'number' || !Number.isInteger(c.version) || c.version < 1) throw new ExamFormatError(`${at}.version: expected a positive integer`);
-  if (c.source === undefined || (c.source.kind !== 'authored' && c.source.kind !== 'loss')) throw new ExamFormatError(`${at}.source.kind: expected "authored" or "loss"`);
-  if (c.source.kind === 'loss') {
+  if (c.source === undefined || (c.source.kind !== 'authored' && c.source.kind !== 'loss' && c.source.kind !== 'room')) {
+    throw new ExamFormatError(`${at}.source.kind: expected "authored", "loss" or "room"`);
+  }
+  if (c.source.kind === 'room') {
+    requireString(c.source.run, `${at}.source.run`);
+    requireString(c.source.gameId, `${at}.source.gameId`);
+    // RULE (server room ids, `analyze/from-room.ts fetchRoomBundle`): 32 lower-case hex digits.
+    if (typeof c.source.roomId !== 'string' || !/^[0-9a-f]{32}$/.test(c.source.roomId)) throw new ExamFormatError(`${at}.source.roomId: expected 32 lower-case hex digits`);
+    if (!isCount(c.source.revision) || c.source.replyRevision !== c.source.revision + 1) {
+      throw new ExamFormatError(`${at}.source: revision ${String(c.source.revision)} and replyRevision ${String(c.source.replyRevision)} must be consecutive`);
+    }
+    if (typeof c.source.ply !== 'number') throw new ExamFormatError(`${at}.source.ply: expected a number`);
+  } else if (c.source.kind === 'loss') {
     requireString(c.source.run, `${at}.source.run`);
     requireString(c.source.pairId, `${at}.source.pairId`);
     requireString(c.source.orientation, `${at}.source.orientation`);
@@ -492,8 +713,11 @@ export function validateCaseShape(raw: unknown, where: string): ExamCase {
     requireString(c.source.from, `${at}.source.from`);
   }
   if (!EXAM_DEMANDS.includes(c.demand as ExamDemand)) throw new ExamFormatError(`${at}.demand: ${JSON.stringify(c.demand)} is not a EPIC-PLAN §1 row (${EXAM_DEMANDS.join(', ')})`);
-  if (c.kind !== 'exact' && c.kind !== 'judgment') throw new ExamFormatError(`${at}.kind: expected "exact" or "judgment"`);
+  if (c.kind !== 'exact' && c.kind !== 'judgment' && c.kind !== 'plan') throw new ExamFormatError(`${at}.kind: expected "exact", "judgment" or "plan"`);
   if (c.sideToMove !== 'white' && c.sideToMove !== 'black') throw new ExamFormatError(`${at}.sideToMove: expected "white" or "black"`);
+  if (c.kind === 'plan' && (c.witness as { side?: unknown } | undefined)?.side !== c.sideToMove) {
+    throw new ExamFormatError(`${at}.witness.side: a plan predicate judges the side to move (${c.sideToMove}), not ${JSON.stringify((c.witness as { side?: unknown } | undefined)?.side)}`);
+  }
   if (!EXAM_STRATA.includes(c.stratum as ExamStratum)) throw new ExamFormatError(`${at}.stratum: ${JSON.stringify(c.stratum)} is not one of ${EXAM_STRATA.join(', ')}`);
   if (!Array.isArray(c.tags)) throw new ExamFormatError(`${at}.tags: expected an array`);
   return {
@@ -557,7 +781,29 @@ export function loadCaseState(c: ExamCase): GameState {
   if (c.stateDigest !== undefined && c.stateDigest !== digest) {
     throw new ExamFormatError(`${c.id}: the position reconstructs to digest ${digest}, not the recorded ${c.stateDigest}; the case has drifted and must be re-authored, not repaired`);
   }
+  if (c.witness.label === 'plan') {
+    const got = planReading(state, c.sideToMove);
+    const want = c.witness.at;
+    if (got.clock !== want.clock || got.pliesLeft !== want.pliesLeft || got.mined.white !== want.mined.white || got.mined.black !== want.mined.black || got.bank !== want.bank) {
+      throw new ExamFormatError(`${c.id}: the position reads ${JSON.stringify(got)}, not the recorded ${JSON.stringify(want)}; the plan was chosen for a different position`);
+    }
+  }
   return state;
+}
+
+/**
+ * The clock and economy a plan case pins (`PlanWitness.at`). `pliesLeft` is
+ * `INACTIVITY_LIMIT - clock` at a fresh root: the plies, this one included,
+ * whose hand-offs still count before the clock decides on mined totals.
+ */
+export function planReading(state: GameState, side: PlayerId): PlanReading {
+  const clock = state.inactivityPlies ?? 0;
+  return {
+    clock,
+    pliesLeft: INACTIVITY_LIMIT - clock,
+    mined: { white: minedTotal(state, 'white'), black: minedTotal(state, 'black') },
+    bank: state.players[side].resources,
+  };
 }
 
 /** The digest a case's `stateDigest` is written in: Phasing's for a Phasing case. */
@@ -576,6 +822,9 @@ export function loadCase(raw: unknown, where: string): { case: ExamCase; state: 
 // ---------------------------------------------------------------------------
 
 export const CASES_DIR = path.resolve(import.meta.dirname, 'cases');
+
+/** STRATEGOS W1.13's wave-1 plan-level set, Phasing (`muju-phasing-4`) only. */
+export const CASES_P4_DIR = path.resolve(import.meta.dirname, 'cases-p4');
 
 export function stratumFile(stratum: ExamStratum, dir: string = CASES_DIR): string {
   return path.join(dir, `${stratum}.jsonl`);

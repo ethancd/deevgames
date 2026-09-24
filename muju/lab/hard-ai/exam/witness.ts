@@ -35,14 +35,19 @@
  * 'judgment'` exists to keep separate, and EPIC-PLAN E3 warns against turning
  * "every strategic preference into a universal invariant".
  */
-import type { GameState, PlayerId } from '../../../src/game/types';
-import { isLegalAction } from '../../../src/game/legality';
+import type { GameState, PlayerId, Position, Unit } from '../../../src/game/types';
+import { isLegalAction, phaseEndAction } from '../../../src/game/legality';
+import { getAdjacentPositions, getUnitAt, getUnitById } from '../../../src/game/board';
+import { calculateAttackPower } from '../../../src/game/combat';
+import { findAttackApproach } from '../../../src/game/movement';
+import { getPurchasePositions } from '../../../src/game/summoning';
 import { generateAllActions } from '../../../src/ai/moves';
 import { applyAction } from '../../../src/ai/simulate';
+import type { AIAction } from '../../../src/ai/types';
 import { Replica, allocState } from '../../../src/ai/hard/core/state';
 import { kposHex } from '../../../src/ai/hard/verify/perft';
 import { resolveOpeningAction, type OpeningAction } from '../ladder/openings';
-import type { ExactClaim, ExactWitness, ExamCase } from './format';
+import type { ExactClaim, ExactWitness, ExamCase, PlanWitness } from './format';
 
 /**
  * Canonical calls one enumeration may spend. `suites/run.ts` allows 3,000,000
@@ -293,4 +298,284 @@ export function keysSatisfying(root: GameState, claim: ExactClaim, mover: Player
 export function verifyCaseWitness(c: ExamCase, state: GameState, budget = DEFAULT_ENUM_BUDGET): WitnessCheck {
   if (c.witness.label !== 'exact') throw new Error(`${c.id}: verifyCaseWitness is for exact cases; this one is a judgment`);
   return verifyExactWitness(c.witness, state, c.sideToMove, c.id, budget);
+}
+
+// ---------------------------------------------------------------------------
+// Plan witnesses (STRATEGOS W1.13)
+// ---------------------------------------------------------------------------
+//
+// A plan witness is a PREDICATE over one turn (`format.ts PLAN_RULES`). The
+// turn — the engine's `RootResult.actions`, or an authored square-based line —
+// is replayed from the case position through `isLegalAction`/`applyAction`
+// exactly as `replayLine` does, and the facts the predicates read are collected
+// on the way: every ATTACK with the power the canonical combat code gives it
+// and whether it removed its defender, every accepted PROMOTE_UNIT, and the
+// end position the hand-off leaves. Nothing here reads the engine under test.
+// A turn that does not replay (an illegal or refused action, or a line that
+// stops before the hand-off) satisfies no predicate and says why.
+//
+// Must be called with the case's rules globals installed (`withExamRules` or
+// `installExamRules`): attack power reads the combat handicap, mining and
+// upkeep read the upkeep variant.
+
+/**
+ * The most phase-end actions a PASSIVE turn can take before the hand-off.
+ * DERIVED (`src/game/legality.ts phaseEndAction`, `src/game/turn.ts`): a
+ * Phasing turn made only of phase ends is END_ACTION_PHASE, at most one
+ * PAY_UPKEEP (the default keep-set, when upkeep is pending), END_PLACE_PHASE.
+ * More than that means the rules changed under this checker, which throws.
+ */
+export const PASSIVE_REPLY_MAX_ACTIONS = 3;
+
+/** One ATTACK the replayed turn made, as the canonical rules resolved it. */
+export interface PlanAttack {
+  attacker: string;
+  from: string;
+  defender: string;
+  at: string;
+  /** `calculateAttackPower` at the moment of the attack. */
+  power: number;
+  killed: boolean;
+  /** The defender is the witness's `target` unit (false when there is no target). */
+  onTarget: boolean;
+}
+
+/** What the replayed turn did, read off the canonical states. */
+export interface PlanFacts {
+  attacks: PlanAttack[];
+  /** `fire_1->fire_2@D1` per accepted promotion. */
+  promotions: string[];
+  /** ATTACKs that removed their defender. */
+  kills: number;
+  /** `inactivityPlies` of the end position; null when the turn did not replay. */
+  clockAfter: number | null;
+  /** `getPurchasePositions(end, side).length`; null when the turn did not replay. */
+  spawnSquaresAfter: number | null;
+  /** How contact was established (contact-in-n), or null. */
+  contact: string | null;
+}
+
+export interface PlanCheck {
+  /** The turn replayed legally to the hand-off (or to the end of the game). */
+  replayed: boolean;
+  /** The predicate holds. Always false when `replayed` is false. */
+  holds: boolean;
+  /** The canonical rules ended the game inside the turn with the side as winner. */
+  wonOutright: boolean;
+  endKey: string | null;
+  end: GameState | null;
+  /** One sentence: the facts the verdict rests on. */
+  evidence: string;
+  /** The turn in square notation, for a reader of the artifact. */
+  line: string;
+  facts: PlanFacts;
+}
+
+/** A turn to judge: engine actions (ids of THIS process's root) or a square-based line. */
+export type PlanTurn = { actions: readonly AIAction[] } | { line: readonly OpeningAction[] };
+
+/** `A1`-style square: file = x, rank = y + 1 (`analyze/from-room.ts parseSquare`). */
+export function squareName(p: Position): string {
+  return `${String.fromCharCode(65 + p.x)}${p.y + 1}`;
+}
+
+function describeAction(state: GameState, a: AIAction): string {
+  const u = 'unitId' in a ? getUnitById(state.board, a.unitId) : null;
+  const at = u === null ? '?' : squareName(u.position);
+  switch (a.type) {
+    case 'MOVE': return `MV ${at}-${squareName(a.to)}`;
+    case 'ATTACK': return `ATK ${at}x${squareName(a.targetPosition)}`;
+    case 'PROMOTE_UNIT': return `PROMO ${at}`;
+    case 'BUY_UNIT': return `BUY ${a.definitionId}@${squareName(a.position)}`;
+    case 'PAY_UPKEEP': return `UPKEEP keep ${a.keepUnitIds.length}`;
+    case 'END_ACTION_PHASE': return 'EA';
+    case 'END_PLACE_PHASE': return 'EP';
+    case 'RESIGN': return 'RESIGN';
+  }
+}
+
+function turnOver(state: GameState, side: PlayerId, turnNumber: number): boolean {
+  return state.phase !== 'playing' || state.turn.currentPlayer !== side || state.turn.turnNumber !== turnNumber;
+}
+
+/** A standing threat at `state`: a unit of `side` orthogonally adjacent to an enemy it could damage. */
+function adjacencyContact(state: GameState, side: PlayerId): string | null {
+  for (const u of state.board.units) {
+    if (u.owner !== side) continue;
+    for (const p of getAdjacentPositions(u.position)) {
+      const v = getUnitAt(state.board, p);
+      if (v === null || v.owner === side) continue;
+      const power = calculateAttackPower(u, v);
+      if (power > 0) return `${u.definitionId}@${squareName(u.position)} stands adjacent to ${v.definitionId}@${squareName(v.position)} (power ${power})`;
+    }
+  }
+  return null;
+}
+
+/**
+ * After the opponent's PASSIVE reply (phase ends only), is there a replayable
+ * single-unit damaging strike in `side`'s next turn? Returns the line in words,
+ * or null. `witnessed` grade only: see `PLAN_RULES['contact-in-n']`.
+ */
+export function strikeAfterPassiveReply(end: GameState, side: PlayerId): string | null {
+  let s = end;
+  let taken = 0;
+  while (s.phase === 'playing' && s.turn.currentPlayer !== side) {
+    if (++taken > PASSIVE_REPLY_MAX_ACTIONS) throw new Error(`passive reply: ${taken} phase ends without handing back to ${side}; the turn structure changed`);
+    const a = phaseEndAction(s);
+    if (!isLegalAction(s, a, s.turn.currentPlayer)) throw new Error(`passive reply: the rules' own phase end ${a.type} is illegal`);
+    const next = applyAction(s, a);
+    if (next === s) throw new Error(`passive reply: the simulator refused the rules' own phase end ${a.type}`);
+    s = next;
+  }
+  if (s.phase !== 'playing') return null;
+  const own = s.board.units.filter(u => u.owner === side);
+  const enemies = s.board.units.filter(u => u.owner !== side);
+  for (const u of own) {
+    for (const v of enemies) {
+      const power = calculateAttackPower(u, v);
+      if (power <= 0) continue;
+      const path = findAttackApproach(u, v, s.board, s.turn.actionsRemaining);
+      if (path === null) continue;
+      let t = s;
+      if (path.length > 0) {
+        const move: AIAction = { type: 'MOVE', unitId: u.id, to: path[path.length - 1] };
+        if (!isLegalAction(t, move, side)) continue;
+        const moved = applyAction(t, move);
+        if (moved === t) continue;
+        t = moved;
+      }
+      const strike: AIAction = { type: 'ATTACK', unitId: u.id, targetPosition: v.position };
+      if (!isLegalAction(t, strike, side)) continue;
+      if (applyAction(t, strike) === t) continue;
+      const via = path.length > 0 ? ` via ${squareName(path[path.length - 1])}` : '';
+      return `after a passive reply ${u.definitionId}@${squareName(u.position)}${via} strikes ${v.definitionId}@${squareName(v.position)} (power ${power}) next turn`;
+    }
+  }
+  return null;
+}
+
+function formatAttack(a: PlanAttack): string {
+  return `${a.attacker}@${a.from} x ${a.defender}@${a.at} power ${a.power}${a.killed ? ', kill' : ''}`;
+}
+
+/**
+ * Replays `turn` from `root` and decides `witness`'s predicate for the side to
+ * move. Throws only on a MALFORMED witness (a `target` square with no enemy
+ * unit on it, or a side that is not to move); a turn that does not replay is a
+ * failed check with a reason.
+ */
+export function evaluatePlan(witness: PlanWitness, root: GameState, turn: PlanTurn, where: string): PlanCheck {
+  const side = witness.side;
+  if (root.turn.currentPlayer !== side) throw new Error(`${where}: the plan judges ${side}, but ${root.turn.currentPlayer} is to move`);
+  let targetId: string | null = null;
+  if (witness.target !== undefined) {
+    const t = getUnitAt(root.board, witness.target);
+    if (t === null || t.owner === side) throw new Error(`${where}: no enemy unit stands on the target square ${squareName(witness.target)}`);
+    targetId = t.id;
+  }
+  const facts: PlanFacts = { attacks: [], promotions: [], kills: 0, clockAfter: null, spawnSquaresAfter: null, contact: null };
+  const words: string[] = [];
+  const failed = (reason: string): PlanCheck => ({
+    replayed: false, holds: false, wonOutright: false, endKey: null, end: null, evidence: reason, line: words.join(' · '), facts,
+  });
+
+  const turnNumber = root.turn.turnNumber;
+  const count = 'actions' in turn ? turn.actions.length : turn.line.length;
+  let state = root;
+  for (let i = 0; i < count; i++) {
+    if (turnOver(state, side, turnNumber)) return failed(`${where}: action ${i} follows the end of the turn`);
+    let action: AIAction;
+    try {
+      action = 'actions' in turn ? turn.actions[i] : resolveOpeningAction(state, turn.line[i], `${where} action ${i}`);
+    } catch (err) {
+      return failed(err instanceof Error ? err.message : String(err));
+    }
+    if (!isLegalAction(state, action, state.turn.currentPlayer)) return failed(`${where}: action ${i} (${action.type}) is illegal for ${state.turn.currentPlayer}`);
+    words.push(describeAction(state, action));
+    let attack: (PlanAttack & { defenderId: string }) | null = null;
+    let promoted: Unit | null = null;
+    if (action.type === 'ATTACK') {
+      const attacker = getUnitById(state.board, action.unitId);
+      const defender = getUnitAt(state.board, action.targetPosition);
+      if (attacker === null || defender === null) return failed(`${where}: action ${i} names an empty square`);
+      attack = {
+        attacker: attacker.definitionId, from: squareName(attacker.position), defender: defender.definitionId, at: squareName(defender.position),
+        power: calculateAttackPower(attacker, defender), killed: false, onTarget: defender.id === targetId, defenderId: defender.id,
+      };
+    } else if (action.type === 'PROMOTE_UNIT') {
+      promoted = getUnitById(state.board, action.unitId);
+    }
+    const next = applyAction(state, action);
+    if (next === state) return failed(`${where}: action ${i} (${action.type}) was refused by the simulator`);
+    if (attack !== null) {
+      const { defenderId, ...record } = attack;
+      record.killed = getUnitById(next.board, defenderId) === null;
+      if (record.killed) facts.kills++;
+      facts.attacks.push(record);
+      words[words.length - 1] += ` p${record.power}${record.killed ? ' kill' : ''}`;
+    }
+    if (promoted !== null) {
+      const after = getUnitById(next.board, promoted.id);
+      facts.promotions.push(`${promoted.definitionId}->${after?.definitionId ?? '?'}@${squareName(promoted.position)}`);
+    }
+    state = next;
+  }
+  if (!turnOver(state, side, turnNumber)) return failed(`${where}: the turn does not reach the hand-off`);
+
+  const end = state;
+  facts.clockAfter = end.inactivityPlies ?? 0;
+  facts.spawnSquaresAfter = getPurchasePositions(end, side).length;
+  const wonOutright = end.phase === 'victory' && end.winner === side;
+  const endKey = kposHex(REPLICA.pack(end, SCRATCH));
+
+  let holds: boolean;
+  let evidence: string;
+  switch (witness.predicate) {
+    case 'damaging-attack': {
+      const hits = facts.attacks.filter(a => a.power > 0 && (targetId === null || a.onTarget));
+      holds = hits.length > 0;
+      const scope = witness.target === undefined ? '' : ` on the target at ${squareName(witness.target)}`;
+      evidence = holds
+        ? `damaging attack${scope}: ${formatAttack(hits[0])}`
+        : facts.attacks.length === 0
+          ? `no attack in the turn`
+          : `no damaging attack${scope}; attacks made: ${facts.attacks.map(formatAttack).join('; ')}`;
+      break;
+    }
+    case 'no-clock-reset': {
+      holds = facts.kills === 0;
+      evidence = holds
+        ? `no kill; the clock reads ${facts.clockAfter} after the hand-off${end.phase !== 'playing' ? ` and the game is over (${end.victoryReason}, winner ${String(end.winner)})` : ''}`
+        : `the turn kills (${facts.attacks.filter(a => a.killed).map(formatAttack).join('; ')}), which resets the clock`;
+      break;
+    }
+    case 'spawn-area-open': {
+      holds = facts.spawnSquaresAfter > 0;
+      evidence = `${facts.spawnSquaresAfter} legal spawn square(s) for ${side} after the turn`;
+      break;
+    }
+    case 'promotion-made': {
+      holds = facts.promotions.length > 0;
+      evidence = holds ? `promoted ${facts.promotions.join(', ')}` : 'no promotion in the turn';
+      break;
+    }
+    case 'contact-in-n': {
+      // `n` is one of CONTACT_PLIES (1 or 3). Anything past 1 reaches beyond the
+      // side's own ply: the opponent's passive reply, then the side's next turn.
+      const plies = witness.n ?? 1;
+      const lookAhead = plies > 1;
+      const strike = facts.attacks.find(a => a.power > 0);
+      facts.contact = strike !== undefined
+        ? `strike this turn: ${formatAttack(strike)}`
+        : adjacencyContact(end, side) ?? (lookAhead ? strikeAfterPassiveReply(end, side) : null);
+      holds = facts.contact !== null;
+      const horizon = `${plies} ${plies === 1 ? 'ply' : 'plies'}`;
+      evidence = holds
+        ? `contact within ${horizon}: ${facts.contact}`
+        : `no contact within ${horizon}: no damaging strike this turn, no adjacency after it${lookAhead ? ', no single-unit strike line after a passive reply' : ''}`;
+      break;
+    }
+  }
+  return { replayed: true, holds, wonOutright, endKey, end, evidence, line: words.join(' · '), facts };
 }

@@ -50,6 +50,21 @@
  * EDITED: `dev.jsonl` still carries the four rows, and the runner says what they
  * are worth. `--no-dead-check` turns the proof off and reports `not-checked`.
  *
+ * PLAN CASES ARE A THIRD TALLY (STRATEGOS W1.13, 2026-09-24). A `kind: 'plan'`
+ * case asks for a kind of turn — a damaging attack, no clock reset, an open
+ * spawn square, a promotion, contact within n plies — and `witness.ts
+ * evaluatePlan` decides it by replaying the engine's own actions through the
+ * canonical rules. The verdict is a fact; the choice of predicate is an
+ * author's judgment. So plan rows are counted in `plan`, apart from both other
+ * tallies, and a row passes when the predicate holds OR the turn wins the game
+ * outright (the same canonical adjudication as the exact arm, counted in
+ * `plan.wonOutrightAdjudications`). A case may carry `expected: 'fail'`, a gap
+ * the author recorded on purpose; `plan.unexpected` names every row whose
+ * outcome differs from its expectation, in either direction. Each row carries
+ * the position's clock and mined totals (`at`), the predicate, the engine's
+ * turn in square notation and the evidence sentence, so the artifact reads
+ * without the case file.
+ *
  * THIS IS NOT A GATE. Nothing here has a pass bar, and no MILESTONES.md row
  * reads it. It is a development instrument: `--stratum val` and
  * `--stratum sealed` exist so the strata rule can be honoured mechanically, not
@@ -74,7 +89,7 @@ import type { AIAction } from '../../../src/ai/types';
 import { HardEngine } from '../../../src/ai/hard/engine';
 import type { RootResult } from '../../../src/ai/hard/search/root';
 import { hardConfigHash, hardEnginePatch } from '../bots/hard';
-import { deadPosition, enumerateTurnEnds } from './witness';
+import { deadPosition, enumerateTurnEnds, evaluatePlan } from './witness';
 import { resolvedConfigHash } from '../ladder/identity';
 import { acquireHeavySlot } from '../ladder/heavy';
 import {
@@ -88,7 +103,9 @@ import {
   normalizeKey,
   restoreShippedRules,
   type ExamCase,
+  type ExamKind,
   type ExamStratum,
+  type PlanReading,
 } from './format';
 
 const HERE = path.resolve(import.meta.dirname);
@@ -254,11 +271,23 @@ export type DeadProof =
 
 export interface ExamCaseResult {
   id: string;
-  kind: 'exact' | 'judgment';
+  kind: ExamKind;
   demand: string;
   claim: string | null;
-  /** Exact cases only: did the engine land inside the canonical witness? */
+  /** Exact cases: did the engine land inside the canonical witness? Plan
+   * cases: did its turn satisfy the predicate (or win outright)? */
   passed: boolean | null;
+  /** Plan cases only: the predicate, with its ply count for contact-in-n. */
+  predicate: string | null;
+  /** Plan cases only: what the author expected, and whether the row matched it. */
+  expected: 'pass' | 'fail' | null;
+  asExpected: boolean | null;
+  /** Plan cases only: the position's clock and economy, from the case. */
+  at: PlanReading | null;
+  /** Plan cases only: the engine's turn in square notation. */
+  line: string | null;
+  /** Plan cases only: the facts the verdict rests on. */
+  evidence: string | null;
   /** Judgment cases only: did the engine agree with the preference? `null` when
    * the row was adjudicated instead of compared (see `outcome`). */
   matched: boolean | null;
@@ -307,9 +336,35 @@ export interface ExamRunResult {
     wonCases: string[];
     deadCases: string[];
   };
+  /**
+   * STRATEGOS W1.13. `passed` counts rows whose turn satisfied the predicate or
+   * won outright; `unexpected` names the rows whose outcome differs from the
+   * case's `expected`. Never added to `exact` or `judgment`.
+   */
+  plan: {
+    cases: number;
+    passed: number;
+    failed: number;
+    passRate: number | null;
+    expectedFail: number;
+    asExpected: number;
+    unexpected: string[];
+    wonOutrightAdjudications: number;
+    /** Rows whose engine actions did not replay to the hand-off. */
+    unreplayed: string[];
+  };
   byDemand: Record<
     string,
-    { exactCases: number; exactPassed: number; judgmentCases: number; judgmentMatched: number; judgmentWon: number; judgmentDead: number }
+    {
+      exactCases: number;
+      exactPassed: number;
+      judgmentCases: number;
+      judgmentMatched: number;
+      judgmentWon: number;
+      judgmentDead: number;
+      planCases: number;
+      planPassed: number;
+    }
   >;
   results: ExamCaseResult[];
   errors: { id: string; message: string }[];
@@ -386,12 +441,16 @@ export async function runExam(cases: readonly ExamCase[], args: ExamArgs, opts: 
     // same process-global rules block the search does, so it runs INSIDE the
     // install (see `format.ts`'s header) and its verdict is carried out.
     let deadProof: DeadProof = 'not-checked';
+    // A plan predicate reads attack power and upkeep, i.e. the same rules
+    // globals, so it too is decided inside the install.
+    let plan: ReturnType<typeof evaluatePlan> | null = null;
     installExamRules(c);
     try {
       result = await factory(profile).searchTurn(state, { work: args.work });
       endKey = result.endKey === '' ? null : normalizeKey(result.endKey, `${c.id}: engine end key`);
       if (result.actions.length > 0) won = wonOutright(state, result.actions, c.sideToMove);
       if (c.kind === 'judgment' && !won && args.deadCheck) deadProof = proveDead(state);
+      if (c.witness.label === 'plan') plan = evaluatePlan(c.witness, state, { actions: result.actions }, `${c.id}: engine turn`);
     } catch (err) {
       errors.push({ id: c.id, message: `search failed: ${err instanceof Error ? err.message : String(err)}` });
       continue;
@@ -405,6 +464,12 @@ export async function runExam(cases: readonly ExamCase[], args: ExamArgs, opts: 
       demand: c.demand,
       claim: c.witness.label === 'exact' ? c.witness.claim : null,
       passed: null,
+      predicate: c.witness.label === 'plan' ? (c.witness.predicate === 'contact-in-n' ? `contact-in-${c.witness.n}` : c.witness.predicate) : null,
+      expected: c.witness.label === 'plan' ? c.witness.expected : null,
+      asExpected: null,
+      at: c.witness.label === 'plan' ? c.witness.at : null,
+      line: plan?.line ?? null,
+      evidence: plan?.evidence ?? null,
       matched: null,
       outcome: null,
       deadProof: null,
@@ -419,7 +484,14 @@ export async function runExam(cases: readonly ExamCase[], args: ExamArgs, opts: 
       note: null,
     };
 
-    if (c.witness.label === 'exact') {
+    if (c.witness.label === 'plan') {
+      const holds = plan?.holds === true;
+      row.passed = holds || won;
+      row.asExpected = (row.passed ? 'pass' : 'fail') === c.witness.expected;
+      if (!holds && won) row.note = 'the predicate does not hold but the turn wins the game outright (canonical adjudication)';
+      else if (plan !== null && !plan.replayed) row.note = `the engine's actions do not replay to the hand-off: ${plan.evidence}`;
+      else if (!row.asExpected) row.note = `UNEXPECTED: the author expected ${c.witness.expected}`;
+    } else if (c.witness.label === 'exact') {
       const inWitness = endKey !== null && c.witness.endKeys.includes(endKey);
       const inAvoid = endKey !== null && c.witness.avoidKeys.includes(endKey);
       row.passed = (inWitness && !inAvoid) || won;
@@ -458,6 +530,8 @@ export async function runExam(cases: readonly ExamCase[], args: ExamArgs, opts: 
 
   const exactRows = results.filter(r => r.kind === 'exact');
   const judgmentRows = results.filter(r => r.kind === 'judgment');
+  const planRows = results.filter(r => r.kind === 'plan');
+  const planPassed = planRows.filter(r => r.passed === true).length;
   const exactPassed = exactRows.filter(r => r.passed === true).length;
   const judgmentMatched = judgmentRows.filter(r => r.outcome === 'matched').length;
   const judgmentWonRows = judgmentRows.filter(r => r.outcome === 'won');
@@ -465,10 +539,13 @@ export async function runExam(cases: readonly ExamCase[], args: ExamArgs, opts: 
 
   const byDemand: ExamRunResult['byDemand'] = {};
   for (const r of results) {
-    const e = (byDemand[r.demand] ??= { exactCases: 0, exactPassed: 0, judgmentCases: 0, judgmentMatched: 0, judgmentWon: 0, judgmentDead: 0 });
+    const e = (byDemand[r.demand] ??= { exactCases: 0, exactPassed: 0, judgmentCases: 0, judgmentMatched: 0, judgmentWon: 0, judgmentDead: 0, planCases: 0, planPassed: 0 });
     if (r.kind === 'exact') {
       e.exactCases++;
       if (r.passed === true) e.exactPassed++;
+    } else if (r.kind === 'plan') {
+      e.planCases++;
+      if (r.passed === true) e.planPassed++;
     } else {
       e.judgmentCases++;
       if (r.outcome === 'matched') e.judgmentMatched++;
@@ -504,6 +581,17 @@ export async function runExam(cases: readonly ExamCase[], args: ExamArgs, opts: 
       matchRate: judgmentRows.length === 0 ? null : judgmentMatched / judgmentRows.length,
       wonCases: judgmentWonRows.map(r => r.id).sort(),
       deadCases: judgmentDeadRows.map(r => r.id).sort(),
+    },
+    plan: {
+      cases: planRows.length,
+      passed: planPassed,
+      failed: planRows.length - planPassed,
+      passRate: planRows.length === 0 ? null : planPassed / planRows.length,
+      expectedFail: planRows.filter(r => r.expected === 'fail').length,
+      asExpected: planRows.filter(r => r.asExpected === true).length,
+      unexpected: planRows.filter(r => r.asExpected === false).map(r => r.id),
+      wonOutrightAdjudications: planRows.filter(r => r.note !== null && r.note.startsWith('the predicate does not hold but the turn wins')).length,
+      unreplayed: planRows.filter(r => r.note !== null && r.note.startsWith("the engine's actions do not replay")).map(r => r.id),
     },
     byDemand,
     results,
@@ -552,16 +640,36 @@ export function renderMarkdown(run: ExamRunResult): string {
   lines.push('agreement with an adviser\'s or an author\'s preference; disagreement is a disagreement,');
   lines.push('not a defect.');
   lines.push('');
+  if (run.plan.cases > 0) {
+    lines.push('## Plan cases (canonical predicate, authored choice)');
+    lines.push('');
+    lines.push(`${run.plan.passed}/${run.plan.cases} passed (${pct(run.plan.passRate)}); ${run.plan.asExpected}/${run.plan.cases} as the author expected (${run.plan.expectedFail} expected to fail).`);
+    lines.push(`${run.plan.wonOutrightAdjudications} passed by the "a win is never a miss" adjudication; ${run.plan.unreplayed.length} engine turn(s) did not replay.`);
+    if (run.plan.unexpected.length > 0) lines.push(`Unexpected outcomes: ${run.plan.unexpected.map(id => `\`${id}\``).join(', ')}.`);
+    lines.push('');
+    lines.push('| case | clock (plies left) | mined W–B | predicate | expected | result | engine turn | evidence |');
+    lines.push('| --- | ---: | ---: | --- | --- | --- | --- | --- |');
+    for (const r of run.results.filter(x => x.kind === 'plan')) {
+      const at = r.at === null ? '' : `${r.at.clock} (${r.at.pliesLeft})`;
+      const mined = r.at === null ? '' : `${r.at.mined.white}–${r.at.mined.black}`;
+      const result = `${r.passed ? 'PASS' : 'FAIL'}${r.asExpected === false ? ' (unexpected)' : ''}`;
+      lines.push(`| \`${r.id}\` | ${at} | ${mined} | ${r.predicate ?? ''} | ${r.expected ?? ''} | ${result} | ${(r.line ?? '').replace(/\|/g, '/')} | ${(r.evidence ?? '').replace(/\|/g, '/')} |`);
+    }
+    lines.push('');
+    lines.push('**A plan pass is never added to the exact or judgment tallies.** The predicate is decided by the canonical');
+    lines.push('rules; that it is the right plan at that position is the author\'s stated judgment (see each case\'s `reason`).');
+    lines.push('');
+  }
   lines.push('## By Muju demand (EPIC-PLAN §1)');
   lines.push('');
-  lines.push('| demand | exact passed/cases | judgment matched/cases | §1 row |');
-  lines.push('| --- | ---: | ---: | --- |');
+  lines.push('| demand | exact passed/cases | judgment matched/cases | plan passed/cases | §1 row |');
+  lines.push('| --- | ---: | ---: | ---: | --- |');
   for (const [demand, e] of Object.entries(run.byDemand)) {
     const parts: string[] = [];
     if (e.judgmentWon > 0) parts.push(`${e.judgmentWon} won`);
     if (e.judgmentDead > 0) parts.push(`${e.judgmentDead} dead`);
     const adjudicated = parts.length > 0 ? ` (+${parts.join(', ')})` : '';
-    lines.push(`| \`${demand}\` | ${e.exactPassed}/${e.exactCases} | ${e.judgmentMatched}/${e.judgmentCases}${adjudicated} | ${DEMAND_ROWS[demand as keyof typeof DEMAND_ROWS] ?? ''} |`);
+    lines.push(`| \`${demand}\` | ${e.exactPassed}/${e.exactCases} | ${e.judgmentMatched}/${e.judgmentCases}${adjudicated} | ${e.planPassed}/${e.planCases} | ${DEMAND_ROWS[demand as keyof typeof DEMAND_ROWS] ?? ''} |`);
   }
   lines.push('');
   const misses = run.results.filter(r => r.kind === 'exact' && r.passed === false);
@@ -585,6 +693,17 @@ export function renderMarkdown(run: ExamRunResult): string {
   return lines.join('\n');
 }
 
+/**
+ * Where a run writes when `--out` is not given. The historical set keeps its
+ * E1 path; any other `--cases-dir` (e.g. `cases-p4`) gets its own directory and
+ * a file per engine and budget, so a run of one set never overwrites another's.
+ */
+export function defaultOutFor(args: Pick<ExamArgs, 'stratum' | 'casesDir' | 'engine' | 'work'>): string {
+  if (path.resolve(args.casesDir) === path.resolve(CASES_DIR)) return path.resolve(REPO_ROOT, `lab/results/hard-ai-e1/exam/${args.stratum}.json`);
+  const set = path.basename(path.resolve(args.casesDir));
+  return path.resolve(REPO_ROOT, `lab/results/exam-${set}/${args.stratum}-${profileOf(args.engine)}-fixed${args.work}.json`);
+}
+
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const cases = selectCases(loadStratum(args.stratum, args.casesDir), args);
@@ -600,7 +719,7 @@ async function main(): Promise<void> {
   } finally {
     release?.();
   }
-  const out = args.out ?? path.resolve(REPO_ROOT, `lab/results/hard-ai-e1/exam/${args.stratum}.json`);
+  const out = args.out ?? defaultOutFor(args);
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, JSON.stringify(run, null, 1) + '\n');
   const md = args.md ?? out.replace(/\.json$/i, '.md');
@@ -612,6 +731,15 @@ async function main(): Promise<void> {
     `  judgment ${run.judgment.matched}/${run.judgment.cases} matched, ${run.judgment.unmatched} unmatched, ` +
       `${run.judgment.won} won outright, ${run.judgment.dead} dead (NOT a pass; never summed with the line above)`,
   );
+  if (run.plan.cases > 0) {
+    console.log(
+      `  plan     ${run.plan.passed}/${run.plan.cases} passed, ${run.plan.asExpected}/${run.plan.cases} as expected` +
+        `${run.plan.unexpected.length > 0 ? ` (unexpected: ${run.plan.unexpected.join(', ')})` : ''} (NOT summed with either line above)`,
+    );
+    for (const r of run.results.filter(x => x.kind === 'plan')) {
+      console.log(`    ${r.passed ? 'PASS' : 'FAIL'} ${r.id} [${r.predicate}, expected ${r.expected}] ${r.evidence ?? ''}`);
+    }
+  }
   if (run.errors.length > 0) console.log(`  errors   ${run.errors.length}`);
   console.log(`  ${(run.wallMs / 1000).toFixed(1)} s; ${path.relative(REPO_ROOT, out)}`);
 }

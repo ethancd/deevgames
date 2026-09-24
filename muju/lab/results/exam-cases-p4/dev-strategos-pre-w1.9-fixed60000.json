@@ -1,0 +1,347 @@
+{
+ "schema": "muju-exam-run-v1",
+ "at": "2026-09-24T20:44:52.489Z",
+ "engine": "hard@strategos",
+ "work": 60000,
+ "configHash": "hard:strategos:fixed:60000#776b2ad070b4447ad1ff9c8cfcfd540d935d6c3a09c12adc6c98791cd4cb925e",
+ "stratum": "dev",
+ "stratumRule": "development — may be inspected, debugged against and tuned against",
+ "casesDir": "lab/hard-ai/exam/cases-p4",
+ "exact": {
+  "cases": 0,
+  "passed": 0,
+  "failed": 0,
+  "passRate": null,
+  "wonOutrightAdjudications": 0,
+  "incompleteWitnesses": 0
+ },
+ "judgment": {
+  "cases": 0,
+  "matched": 0,
+  "unmatched": 0,
+  "won": 0,
+  "dead": 0,
+  "comparable": 0,
+  "matchRate": null,
+  "wonCases": [],
+  "deadCases": []
+ },
+ "plan": {
+  "cases": 8,
+  "passed": 3,
+  "failed": 5,
+  "passRate": 0.375,
+  "expectedFail": 1,
+  "asExpected": 4,
+  "unexpected": [
+   "wave1-AS01-W-t3",
+   "wave1-OP01-W-t1",
+   "wave1-OP01-W-t2",
+   "wave1-OP02-W-t6"
+  ],
+  "wonOutrightAdjudications": 0,
+  "unreplayed": []
+ },
+ "byDemand": {
+  "quiet-clock": {
+   "exactCases": 0,
+   "exactPassed": 0,
+   "judgmentCases": 0,
+   "judgmentMatched": 0,
+   "judgmentWon": 0,
+   "judgmentDead": 0,
+   "planCases": 4,
+   "planPassed": 2
+  },
+  "home-and-spawn": {
+   "exactCases": 0,
+   "exactPassed": 0,
+   "judgmentCases": 0,
+   "judgmentMatched": 0,
+   "judgmentWon": 0,
+   "judgmentDead": 0,
+   "planCases": 2,
+   "planPassed": 0
+  },
+  "immediate-action": {
+   "exactCases": 0,
+   "exactPassed": 0,
+   "judgmentCases": 0,
+   "judgmentMatched": 0,
+   "judgmentWon": 0,
+   "judgmentDead": 0,
+   "planCases": 2,
+   "planPassed": 1
+  }
+ },
+ "results": [
+  {
+   "id": "wave1-AS01-W-t3",
+   "kind": "plan",
+   "demand": "quiet-clock",
+   "claim": null,
+   "passed": false,
+   "predicate": "damaging-attack",
+   "expected": "pass",
+   "asExpected": false,
+   "at": {
+    "clock": 5,
+    "pliesLeft": 5,
+    "mined": {
+     "white": 30,
+     "black": 13
+    },
+    "bank": 0
+   },
+   "line": "EA · EP",
+   "evidence": "no attack in the turn",
+   "matched": null,
+   "outcome": null,
+   "deadProof": null,
+   "endKey": "1994e1f8d858c57e",
+   "source": "search",
+   "fallback": null,
+   "depth": 1,
+   "work": 60182,
+   "wonOutright": false,
+   "witnessComplete": null,
+   "ms": 637,
+   "note": "UNEXPECTED: the author expected pass"
+  },
+  {
+   "id": "wave1-OP01-W-t1",
+   "kind": "plan",
+   "demand": "home-and-spawn",
+   "claim": null,
+   "passed": false,
+   "predicate": "spawn-area-open",
+   "expected": "pass",
+   "asExpected": false,
+   "at": {
+    "clock": 1,
+    "pliesLeft": 9,
+    "mined": {
+     "white": 6,
+     "black": 9
+    },
+    "bank": 9
+   },
+   "line": "MV J9-J10 · MV I9-J9 · MV J9-J8 · MV I10-I9 · EA · BUY plant_1@J9 · BUY plant_1@I10 · EP",
+   "evidence": "0 legal spawn square(s) for black after the turn",
+   "matched": null,
+   "outcome": null,
+   "deadProof": null,
+   "endKey": "51cda769db7668a5",
+   "source": "search",
+   "fallback": null,
+   "depth": 1,
+   "work": 60184,
+   "wonOutright": false,
+   "witnessComplete": null,
+   "ms": 415,
+   "note": "UNEXPECTED: the author expected pass"
+  },
+  {
+   "id": "wave1-OP01-W-t2",
+   "kind": "plan",
+   "demand": "quiet-clock",
+   "claim": null,
+   "passed": false,
+   "predicate": "contact-in-3",
+   "expected": "pass",
+   "asExpected": false,
+   "at": {
+    "clock": 3,
+    "pliesLeft": 7,
+    "mined": {
+     "white": 14,
+     "black": 15
+    },
+    "bank": 7
+   },
+   "line": "EA · EP",
+   "evidence": "no contact within 3 plies: no damaging strike this turn, no adjacency after it, no single-unit strike line after a passive reply",
+   "matched": null,
+   "outcome": null,
+   "deadProof": null,
+   "endKey": "ca8167507cc13e1d",
+   "source": "search",
+   "fallback": null,
+   "depth": 1,
+   "work": 60202,
+   "wonOutright": false,
+   "witnessComplete": null,
+   "ms": 509,
+   "note": "UNEXPECTED: the author expected pass"
+  },
+  {
+   "id": "wave1-SO02-B-t37",
+   "kind": "plan",
+   "demand": "quiet-clock",
+   "claim": null,
+   "passed": true,
+   "predicate": "damaging-attack",
+   "expected": "pass",
+   "asExpected": true,
+   "at": {
+    "clock": 4,
+    "pliesLeft": 6,
+    "mined": {
+     "white": 250,
+     "black": 248
+    },
+    "bank": 0
+   },
+   "line": "ATK E10xD10 p1 · MV B3-C3 · EA · UPKEEP keep 32 · EP",
+   "evidence": "damaging attack: plant_1@E10 x water_3@D10 power 1",
+   "matched": null,
+   "outcome": null,
+   "deadProof": null,
+   "endKey": "e9355f6c9255f581",
+   "source": "search",
+   "fallback": null,
+   "depth": 2,
+   "work": 60378,
+   "wonOutright": false,
+   "witnessComplete": null,
+   "ms": 1156,
+   "note": null
+  },
+  {
+   "id": "wave1-FB01-B-t18",
+   "kind": "plan",
+   "demand": "immediate-action",
+   "claim": null,
+   "passed": true,
+   "predicate": "promotion-made",
+   "expected": "pass",
+   "asExpected": true,
+   "at": {
+    "clock": 0,
+    "pliesLeft": 10,
+    "mined": {
+     "white": 164,
+     "black": 230
+    },
+    "bank": 16
+   },
+   "line": "MV D6-I9 · EA · BUY lightning_1@E3 · BUY lightning_1@E4 · BUY lightning_1@E5 · BUY lightning_1@D6 · PROMO B1 · EP",
+   "evidence": "promoted metal_1->metal_2@B1",
+   "matched": null,
+   "outcome": null,
+   "deadProof": null,
+   "endKey": "87e2f388df03c95b",
+   "source": "search",
+   "fallback": null,
+   "depth": 1,
+   "work": 60051,
+   "wonOutright": false,
+   "witnessComplete": null,
+   "ms": 996,
+   "note": null
+  },
+  {
+   "id": "wave1-SN05-W-t5",
+   "kind": "plan",
+   "demand": "quiet-clock",
+   "claim": null,
+   "passed": true,
+   "predicate": "no-clock-reset",
+   "expected": "pass",
+   "asExpected": true,
+   "at": {
+    "clock": 9,
+    "pliesLeft": 1,
+    "mined": {
+     "white": 34,
+     "black": 73
+    },
+    "bank": 7
+   },
+   "line": "EA · EP",
+   "evidence": "no kill; the clock reads 10 after the hand-off and the game is over (kill-clock, winner black)",
+   "matched": null,
+   "outcome": null,
+   "deadProof": null,
+   "endKey": "6ac9887aabae6dbf",
+   "source": "mate",
+   "fallback": null,
+   "depth": 1,
+   "work": 3112,
+   "wonOutright": true,
+   "witnessComplete": null,
+   "ms": 23,
+   "note": null
+  },
+  {
+   "id": "wave1-OP02-W-t6",
+   "kind": "plan",
+   "demand": "immediate-action",
+   "claim": null,
+   "passed": false,
+   "predicate": "promotion-made",
+   "expected": "pass",
+   "asExpected": false,
+   "at": {
+    "clock": 0,
+    "pliesLeft": 10,
+    "mined": {
+     "white": 57,
+     "black": 82
+    },
+    "bank": 32
+   },
+   "line": "MV I5-E3 · EA · BUY plant_1@I4 · BUY plant_1@I5 · BUY plant_1@I7 · BUY plant_1@I8 · EP",
+   "evidence": "no promotion in the turn",
+   "matched": null,
+   "outcome": null,
+   "deadProof": null,
+   "endKey": "11bf85fe5d25d8f0",
+   "source": "search",
+   "fallback": null,
+   "depth": 1,
+   "work": 29169,
+   "wonOutright": false,
+   "witnessComplete": null,
+   "ms": 560,
+   "note": "UNEXPECTED: the author expected pass"
+  },
+  {
+   "id": "wave1-SO01-B-t11",
+   "kind": "plan",
+   "demand": "home-and-spawn",
+   "claim": null,
+   "passed": false,
+   "predicate": "damaging-attack",
+   "expected": "fail",
+   "asExpected": true,
+   "at": {
+    "clock": 0,
+    "pliesLeft": 10,
+    "mined": {
+     "white": 80,
+     "black": 104
+    },
+    "bank": 22
+   },
+   "line": "MV B5-D5 · MV B4-A4 · MV B2-A2 · EA · BUY shadow_1@C1 · BUY shadow_1@B2 · BUY shadow_1@B3 · BUY shadow_1@B4 · EP",
+   "evidence": "no attack in the turn",
+   "matched": null,
+   "outcome": null,
+   "deadProof": null,
+   "endKey": "0bef236ab5a7c0ad",
+   "source": "search",
+   "fallback": null,
+   "depth": 1,
+   "work": 29532,
+   "wonOutright": false,
+   "witnessComplete": null,
+   "ms": 537,
+   "note": null
+  }
+ ],
+ "errors": [],
+ "wallMs": 4835,
+ "host": "The-Work-Box.local",
+ "node": "v24.11.1"
+}

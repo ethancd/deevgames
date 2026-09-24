@@ -51,7 +51,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import type { GameState, PlayerId } from '../../../src/game/types';
+import type { GameState, PlayerId, Position } from '../../../src/game/types';
 import { applyAction } from '../../../src/ai/simulate';
 import { MATE_PLY_CC, WIN_CC } from '../../../src/ai/hard/types';
 import {
@@ -71,6 +71,7 @@ import {
   installExamRules,
   loadCaseState,
   normalizeKey,
+  planReading,
   readCases,
   restoreShippedRules,
   stratumFile,
@@ -79,8 +80,10 @@ import {
   type ExamCase,
   type ExamDemand,
   type ExamStratum,
+  type PlanPredicate,
+  type PlanWitness,
 } from './format';
-import { DEFAULT_ENUM_BUDGET, claimHolds, enumerateTurnEnds, replayLine } from './witness';
+import { DEFAULT_ENUM_BUDGET, claimHolds, enumerateTurnEnds, evaluatePlan, replayLine, type PlanCheck } from './witness';
 
 const HERE = path.resolve(import.meta.dirname);
 const REPO_ROOT = path.resolve(HERE, '../../..');
@@ -388,6 +391,134 @@ export function extractCase(analysis: AnalysisResult, replay: LoadedReplay, opts
 }
 
 // ---------------------------------------------------------------------------
+// Plan cases (STRATEGOS W1.13)
+// ---------------------------------------------------------------------------
+
+/**
+ * One plan case to cut from a verified online-room replay. Everything the
+ * author decides is here; everything the rules decide (the recipe, the digest,
+ * the clock and mined totals, whether Hard's own reply satisfied the
+ * predicate) is computed by `extractPlanCase`.
+ */
+export interface PlanCaseSpec {
+  id: string;
+  /** The engine seat's turn NUMBER the case is taken at. */
+  turn: number;
+  /** Room revision AFTER which the position stands; the engine's reply is `revision + 1`. */
+  revision: number;
+  roomId: string;
+  /** Results directory of the replay, repo-relative (`lab/results/llm-wave-1`). */
+  run: string;
+  predicate: PlanPredicate;
+  n?: number;
+  target?: Position;
+  expected: 'pass' | 'fail';
+  reason: string;
+  cites: string[];
+  demand: ExamDemand;
+  stratum: ExamStratum;
+  tags: string[];
+  rationale: string;
+}
+
+export interface PlanExtraction {
+  case: ExamCase;
+  /** The predicate on the engine's own recorded reply, replayed from the rebuilt case position. */
+  played: PlanCheck;
+}
+
+/**
+ * Builds one `kind: 'plan'` case from a replay the way `extractCase` builds a
+ * loss case: the position is a RECIPE (the opening plus every ply before the
+ * turn, square-based), stamped with the Phasing digest, and re-materialised
+ * before anything is returned — `loadCaseState` also re-reads the clock and
+ * mined totals the witness pins. The engine seat's own reply is recorded
+ * square-based as `witness.played` together with whether it satisfies the
+ * predicate, decided by `witness.ts evaluatePlan` on the rebuilt position.
+ *
+ * It needs no analysis artifact: the predicate is the author's, not an
+ * adviser's.
+ */
+export function extractPlanCase(replay: LoadedReplay, spec: PlanCaseSpec): PlanExtraction {
+  const side = hardSeat(replay.meta);
+  if (side === null) throw new Error(`${replay.fileId}: no hard@ seat in this replay`);
+  const recon = reconstruct(replay);
+  const target = recon.bySide[side].find(t => t.turnNumber === spec.turn);
+  if (target === undefined) throw new Error(`${replay.fileId}: the reconstruction has no ${side} turn ${spec.turn}`);
+  if (target.terminal && spec.predicate !== 'no-clock-reset') {
+    // The final turn is a case only where the plan IS the ending (SN05-W's Hold).
+    throw new Error(`${spec.id}: ${side} turn ${spec.turn} ended the game; only a no-clock-reset case may be taken there`);
+  }
+
+  const rules = rulesFromReplay(replay);
+  const setup: NonNullable<ExamCase['setup']> = {
+    actionsPerTurn: replay.options.actionsPerTurn as number | undefined,
+    resourceLayout: replay.options.resourceLayout === undefined ? undefined : [...replay.options.resourceLayout],
+    ...(replay.ruleset === 'phasing' ? { ruleset: 'phasing' as const } : {}),
+  };
+  const openingActions = replay.opening.actions ?? [];
+  const before = withMatchRules(replay.options, () => recipeActionsBefore(recon.turns, target, replay.fileId));
+  const line = withMatchRules(replay.options, () => linePlayed(target, `${spec.id}: played line`));
+
+  const witness: PlanWitness = {
+    label: 'plan',
+    predicate: spec.predicate,
+    ...(spec.n !== undefined ? { n: spec.n } : {}),
+    side,
+    ...(spec.target !== undefined ? { target: { ...spec.target } } : {}),
+    at: planReading(target.startState, side),
+    expected: spec.expected,
+    reason: spec.reason,
+    cites: [...spec.cites],
+    by: 'author',
+  };
+
+  const draft: ExamCase = {
+    schema: EXAM_SCHEMA,
+    id: spec.id,
+    version: 1,
+    source: {
+      kind: 'room',
+      run: spec.run,
+      gameId: replay.fileId,
+      roomId: spec.roomId,
+      revision: spec.revision,
+      replyRevision: spec.revision + 1,
+      ply: target.startPly,
+      turnNumber: target.turnNumber,
+      seatTurnIndex: target.seatTurnIndex,
+      outcome: { winner: replay.meta.winner, winType: String(replay.meta.winType) },
+      openingId: replay.opening.id,
+    },
+    demand: spec.demand,
+    kind: 'plan',
+    rules,
+    setup: setup.actionsPerTurn === undefined && setup.resourceLayout === undefined && setup.ruleset === undefined ? undefined : setup,
+    position: { kind: 'recipe', openingId: replay.opening.id, openingPlies: openingActions.length, actions: [...openingActions, ...before] },
+    sideToMove: side,
+    witness,
+    stratum: spec.stratum,
+    tags: [...spec.tags],
+    stateDigest: caseDigest({ setup }, target.startState),
+    rationale: spec.rationale,
+  };
+
+  // The recipe must reproduce the position — digest AND reading — or there is no case.
+  const checked = validateCaseShape(draft, `${spec.id} (plan extractor output)`);
+  const rebuilt = loadCaseState(checked);
+  let played: PlanCheck;
+  installExamRules(checked);
+  try {
+    played = evaluatePlan(witness, rebuilt, { line }, `${spec.id}: played reply`);
+  } finally {
+    restoreShippedRules();
+  }
+  if (!played.replayed) throw new Error(`${spec.id}: the engine's recorded reply does not replay from the rebuilt position: ${played.evidence}`);
+  const withPlayed: ExamCase = { ...checked, witness: { ...witness, played: { revision: spec.revision + 1, line, holds: played.holds } } };
+  return { case: validateCaseShape(withPlayed, `${spec.id} (plan extractor output)`), played };
+}
+
+// ---------------------------------------------------------------------------
 // CLI
 // ---------------------------------------------------------------------------
 
@@ -530,7 +661,7 @@ function emit(analysis: AnalysisResult, args: Args): void {
   console.log(`${c.id}: ${c.kind} case, demand ${c.demand}, stratum ${c.stratum} (opening ${c.source.kind === 'loss' ? c.source.openingId : '-'}, ${String(analysis.schema)})`);
   if (extraction.exactAttempt !== null) console.log(`  exact upgrade refused: ${extraction.exactAttempt}`);
   if (c.witness.label === 'exact') console.log(`  witness: ${c.witness.endKeys.length} canonically winning end position(s), complete=${c.witness.complete}`);
-  else console.log(`  preference: ${c.witness.preferredKeys.join(', ')} (${c.witness.classification ?? 'no class'}, swing ${c.witness.swingCc ?? '?'} cc)`);
+  else if (c.witness.label === 'judgment') console.log(`  preference: ${c.witness.preferredKeys.join(', ')} (${c.witness.classification ?? 'no class'}, swing ${c.witness.swingCc ?? '?'} cc)`);
 
   if (args.dryRun) {
     console.log(`  ${JSON.stringify(c).slice(0, 240)} ...`);
