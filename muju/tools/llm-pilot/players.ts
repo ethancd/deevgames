@@ -20,7 +20,7 @@ import { closeSync, existsSync, openSync, readFileSync, statSync } from 'node:fs
 import { mkdir, readFile, writeFile, appendFile, rm } from 'node:fs/promises';
 import path from 'node:path';
 import os from 'node:os';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { CODEX_BIN, readCodexRollout, stripApiKeys } from './auth';
 import { sumHelperCpuSeconds } from './sandbox';
@@ -93,6 +93,18 @@ export const PLACEHOLDER_TOKEN = 'gateway-supplies-the-real-seat-token-0000';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_GATEWAY_PATH = path.join(HERE, 'gateway.ts');
 const DEFAULT_REFLECTION_TEMPLATE = path.resolve(HERE, '../../../outputs/muju-llm-opponent-campaign-2026-09-23/reflection-template.md');
+const sha256 = (text: string | Buffer) => createHash('sha256').update(text).digest('hex');
+/** Hashes of the prompt inputs a game is played with, recorded in manifest.json so a digest can split
+ * games by prompt version mechanically (wave 1 had to rebuild its v1/v2 split from start times). */
+export function promptInputHashes(reflectionTemplatePath = DEFAULT_REFLECTION_TEMPLATE): Record<string, string | null> {
+  const hashFile = (file: string) => { try { return sha256(readFileSync(file)); } catch { return null; } };
+  return {
+    playerPromptSha256: hashFile(path.join(HERE, 'prompts', 'player.md')),
+    reflectionPromptSha256: hashFile(path.join(HERE, 'prompts', 'reflection.md')),
+    reflectionTemplateSha256: hashFile(reflectionTemplatePath),
+    continuePromptSha256: sha256(CONTINUE_PROMPT),
+  };
+}
 /** Absolute ESM loader URL: the gateway is launched from the player's workspace (outside the repo),
  * where a bare `--import tsx` would not resolve. */
 const TSX_LOADER = import.meta.resolve('tsx');

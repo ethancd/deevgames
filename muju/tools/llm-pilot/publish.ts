@@ -155,6 +155,8 @@ export function playbookVersion(): number {
   const match = readFileSync(playbookPath(), 'utf8').match(/^version:\s*(\d+)/m);
   return match ? Number(match[1]) : 0;
 }
+/** Served-playbook budget. Wave 1's reached ~11k words (v47); the players who read it paid in clock. */
+export const PLAYBOOK_WORD_TARGET = 3000;
 const CURATOR_PROMPT_PREAMBLE = `You are curating the shared strategy playbook for a Muju LLM-vs-Hard-engine pilot.
 Read the JSON experience records below (one per line, most recent last). Produce an updated
 playbook: concise, evidence-linked (cite gameId and revision numbers from the records — never
@@ -166,14 +168,20 @@ The engine changed during the campaign. Records without "engineSourceSha256" (al
 whose purchase menu was almost only fire_1; later records name the engine they ran. Keep the playbook's
 "Read this first: the engine changed" section (update it, don't drop it), and label every claim about Hard's own
 behaviour with the engine it was observed on, keeping old-engine and current-engine evidence apart. Claims about
-the rules, the tools, or the LLM's own mistakes don't depend on the engine.`;
+the rules, the tools, or the LLM's own mistakes don't depend on the engine.
+LENGTH: keep the playbook under ${PLAYBOOK_WORD_TARGET} words. Players read it at the start of a timed game, and every
+word costs them clock for the rest of it. The full evidence stays in the experience records you are given each
+time, so distil rather than accumulate: keep the rules primer verbatim, keep the engine-change section, and keep
+the claims a player can act on, each with its strongest citations and any live counterexample (cite it briefly;
+don't drop it). Don't keep per-game detail sections, complete game lists, running totals for every game, or lists
+of record inconsistencies.`;
 /**
  * Curates memory/playbook.md from experiences.jsonl via a Claude subscription
  * call (never the OpenAI API, per SPEC.md). `dryRun` composes the prompt and
  * returns it without spawning the CLI or touching the playbook — used by
  * `--curate --dry-run` and by tests.
  */
-export async function curatePlaybook(opts: { dryRun?: boolean } = {}): Promise<{ prompt: string; nextVersion: number; wrote: boolean }> {
+export async function curatePlaybook(opts: { dryRun?: boolean } = {}): Promise<{ prompt: string; nextVersion: number; wrote: boolean; words?: number }> {
   const compose = () => {
     // Read under the lock (see below): two games finishing together must not curate from the same stale state.
     const currentVersion = playbookVersion();
@@ -199,7 +207,7 @@ export async function curatePlaybook(opts: { dryRun?: boolean } = {}): Promise<{
       cpSync(playbookPath(), join(memoryDir(), 'playbook.history', `v${currentVersion}.md`));
     }
     writeFileSync(playbookPath(), `${body}\n`, { mode: 0o644 });
-    return { prompt, nextVersion, wrote: true };
+    return { prompt, nextVersion, wrote: true, words: body.split(/\s+/).length };
   });
 }
 

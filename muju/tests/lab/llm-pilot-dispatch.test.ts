@@ -177,3 +177,44 @@ describe('gptQuotaDecision credits tripwire', () => {
     expect(gptQuotaDecision(at('1030.00'), at('1022.85')).ok).toBe(false);
   });
 });
+
+describe('clock telemetry (operator-only progress column and alerts)', () => {
+  const room = (revision: number, llmBankMs: number, engineBankMs: number, completedTurns: number, totalElapsedMs: number, running: 'white' | 'black' | null = 'black') => ({
+    revision, timeControl: { delaySeconds: 60, bankSeconds: 1800 },
+    clock: { serverNowMs: 1_000_000, runningPlayer: running, turnStartedAtMs: 1_000_000 - 90_000, deadlineAtMs: null, delayRemainingMs: 0,
+      bankRemainingMs: { white: llmBankMs, black: engineBankMs } },
+    clockPressure: { players: {
+      white: { completedTurns, totalElapsedMs, meanElapsedMs: completedTurns ? totalElapsedMs / completedTurns : null },
+      black: { completedTurns, totalElapsedMs: 0, meanElapsedMs: 0 } } },
+  }) as never;
+  it('tracks bank and the slowest turn exactly when one turn completes between samples, approximately otherwise', async () => {
+    const { foldClockSample, formatClockCell } = await import('../../tools/llm-pilot/dispatch');
+    const first = foldClockSample(undefined, room(4, 1_700_000, 1_790_000, 2, 100_000), 'white', 'black', 't1')!;
+    expect(first.llm).toMatchObject({ bankRemainingS: 1700, slowestTurnS: 50, slowestTurnExact: false, runningTurnS: null });
+    const second = foldClockSample(first, room(6, 1_500_000, 1_780_000, 3, 400_000, 'white'), 'white', 'black', 't2')!;
+    expect(second.llm).toMatchObject({ slowestTurnS: 300, slowestTurnExact: true, runningTurnS: 90 });
+    expect(second.alerts).toEqual([]);
+    expect(formatClockCell(second)).toBe('1500s (83%) · slowest 300s');
+    expect(formatClockCell(undefined)).toBe('-');
+  });
+  it('raises each alert once: LLM bank under 30%, engine bank under 60%', async () => {
+    const { foldClockSample, formatClockCell } = await import('../../tools/llm-pilot/dispatch');
+    const low = foldClockSample(undefined, room(20, 500_000, 1_000_000, 8, 2_000_000), 'white', 'black', 't1')!;
+    expect(low.alerts.map(a => a.split(' ')[0])).toEqual(['llm-bank-low:', 'engine-bank-low:']);
+    const again = foldClockSample(low, room(22, 400_000, 900_000, 9, 2_100_000), 'white', 'black', 't2')!;
+    expect(again.alerts).toHaveLength(2);
+    expect(formatClockCell(again).startsWith('⚠ ')).toBe(true);
+  });
+});
+
+describe('experiment inputs recorded in manifest.json', () => {
+  it('hashes prompts, brief and memory snapshot, and names the harness commit', async () => {
+    const { experimentInputs } = await import('../../tools/llm-pilot/dispatch');
+    const inputs = experimentInputs('a brief', 999) as Record<string, unknown>;
+    for (const key of ['playerPromptSha256', 'reflectionPromptSha256', 'continuePromptSha256', 'briefSha256', 'memorySnapshotSha256']) {
+      expect(inputs[key]).toMatch(/^[0-9a-f]{64}$/);
+    }
+    expect(inputs.briefSha256).not.toBe((experimentInputs('another brief', 999) as Record<string, unknown>).briefSha256);
+    expect((inputs.harness as { commit: string | null }).commit).toMatch(/^[0-9a-f]{40}$/);
+  });
+});

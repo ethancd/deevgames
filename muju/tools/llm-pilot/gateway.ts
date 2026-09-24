@@ -172,7 +172,7 @@ export async function resolveMatchScope(config: SeatConfig, backend: RoomBackend
 // pilot_memory: passive read-only access to the pair's frozen memory snapshot.
 // ---------------------------------------------------------------------------
 // Only the snapshot's version name is returned, never its absolute path (the campaign dir sits under the repo tree).
-interface PilotMemory { available: boolean; snapshot?: string; playbook?: string; experiences?: unknown[] }
+interface PilotMemory { available: boolean; snapshot?: string; playbook?: string; experiences?: Record<string, unknown>[]; olderExperiences?: number }
 function findSnapshotDir(gameDir: string): string | undefined {
   const pilotDir = process.env.MUJU_PILOT_DIR ?? resolve(gameDir, '..', '..');
   let version: number | undefined;
@@ -191,6 +191,10 @@ function findSnapshotDir(gameDir: string): string | undefined {
   const dir = join(snapshotsDir, `v${version}`);
   return existsSync(dir) ? dir : undefined;
 }
+/** Experience records served in full; older ones are distilled into the playbook. Wave 1 served every
+ * record (~170 KB by the end), the largest single input in slow players' context. */
+export const PILOT_MEMORY_RECENT_EXPERIENCES = 6;
+const SERVED_EXPERIENCE_FIELDS = ['gameId', 'model', 'effort', 'toolTier', 'llmSeat', 'handicap', 'result', 'turns', 'engineSourceSha256', 'facts', 'reflection'];
 export function readPilotMemory(gameDir: string): PilotMemory {
   const snapshotDir = findSnapshotDir(gameDir);
   if (!snapshotDir) return { available: false };
@@ -200,14 +204,16 @@ export function readPilotMemory(gameDir: string): PilotMemory {
   const experiences = existsSync(experiencesPath)
     ? readFileSync(experiencesPath, 'utf8').split('\n').filter(Boolean).map(line => { try { return JSON.parse(line); } catch { return null; } }).filter(entry => entry !== null)
     : [];
-  return { available: true, snapshot: basename(snapshotDir), playbook, experiences };
+  const recent = experiences.slice(-PILOT_MEMORY_RECENT_EXPERIENCES).map(entry =>
+    Object.fromEntries(SERVED_EXPERIENCE_FIELDS.filter(key => key in entry).map(key => [key, entry[key]])));
+  return { available: true, snapshot: basename(snapshotDir), playbook, experiences: recent, olderExperiences: experiences.length - recent.length };
 }
 export function attachPilotMemoryTool(server: McpServer, gameDir: string): void {
-  server.registerTool('pilot_memory', { description: 'Read-only: this pair’s shared strategy playbook and recent evidence-linked reflections, frozen before this game started. Read once before playing. No live advice, and this tool never changes as the game progresses.',
+  server.registerTool('pilot_memory', { description: `Read-only: this pair’s shared strategy playbook and the ${PILOT_MEMORY_RECENT_EXPERIENCES} most recent evidence-linked reflections (older ones are distilled into the playbook), frozen before this game started. Read once before playing. No live advice, and this tool never changes as the game progresses.`,
     annotations: { readOnlyHint: true, destructiveHint: false, openWorldHint: false } },
     async () => {
       const memory = readPilotMemory(gameDir);
-      return { content: [{ type: 'text' as const, text: JSON.stringify(memory) }], structuredContent: { ...memory } };
+      return { content: [{ type: 'text' as const, text: JSON.stringify(memory) }] };
     });
 }
 
@@ -285,13 +291,25 @@ function readGameDirArg(argv: string[]): string {
   if (index === -1 || !argv[index + 1]) throw new Error('Usage: node --import tsx tools/llm-pilot/gateway.ts --game-dir <dir> (or MUJU_PILOT_GAME_DIR env)');
   return resolve(argv[index + 1]);
 }
+/** Drops `structuredContent` from outgoing tool results that also carry text content. The server's
+ * tools put the same JSON in both (server/mcp.ts `output`) and declare no output schema, and Codex
+ * hands both copies to the model: wave 1's LU05-B read every muju_play/analyze result twice. The
+ * text copy is complete, so this halves the players' tool payloads without changing any fact. */
+export function stripDuplicateStructuredContent(message: unknown): unknown {
+  const result = (message as { result?: { content?: unknown[]; structuredContent?: unknown } } | null)?.result;
+  if (result && Array.isArray(result.content) && result.content.length > 0 && 'structuredContent' in result) delete result.structuredContent;
+  return message;
+}
 async function main() {
   const gameDir = readGameDirArg(process.argv.slice(2));
   const seatPath = join(gameDir, 'secrets', 'seat.json');
   if (!existsSync(seatPath)) throw new Error(`No seat file at ${seatPath}.`);
   const config = seatConfigSchema.parse(JSON.parse(readFileSync(seatPath, 'utf8')));
   const server = await createGatewayServer(config, { gameDir });
-  await server.connect(new StdioServerTransport());
+  const transport = new StdioServerTransport();
+  const send = transport.send.bind(transport);
+  transport.send = message => send(stripDuplicateStructuredContent(message) as typeof message);
+  await server.connect(transport);
 }
 const isMain = process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) main().catch(error => { console.error(error instanceof Error ? error.message : 'Gateway failed.'); process.exitCode = 1; });
