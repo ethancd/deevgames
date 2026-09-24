@@ -1,7 +1,8 @@
 /**
  * `node --import tsx lab/hard-ai/oracles/canonical-check.ts --fixtures <names>
  *  --corpus <file> --corpus-positions <n> --max-own-units <n> [--shards <n>]
- *  [--node-budget <n>] [--out <path>]` (DESIGN §5.3/§5.4, MILESTONES.md M11).
+ *  [--node-budget <n>] [--out <path>] [--prune-zero-damage]`
+ *  (DESIGN §5.3/§5.4, MILESTONES.md M11).
  *
  * The F1 gate. `gen/actionsearch.ts` collapses the action phase with three
  * rules — C0 promotions by slot, C1 footprint independence, C2 the within-turn
@@ -41,6 +42,17 @@
  * `--shards N` runs the work list in N child processes of this same file
  * (`--shard-index`/`--shard-count`, disjoint strides of one deterministic
  * list) and merges their partial artifacts, exactly as `ladder/shard.ts` does.
+ *
+ * **`--prune-zero-damage`** (STRATEGOS W1.7, plan
+ * `~/.claude/plans/can-you-respond-to-piped-book.md` B.2 step W1.7) turns
+ * `gen/actionsearch.ts SearchFix.pruneZeroDamage` ON for `canon` and
+ * `canon+TT` only — `naive` stays the unpruned ground truth — so
+ * `endSetMismatch`/`ttEndSetMismatch` become exactly the prune's own
+ * soundness test: a zero-power ATTACK dropped from the candidate set must
+ * never remove a reachable end position. Because `authored`/`canonical`
+ * carry no zero-power pair, the flag pulls in the `zero-damage` fixture set
+ * (`positions/zero-damage.jsonl`, `positions/generate-zero-damage.ts` has the
+ * recipe) unless the caller names its own `--fixtures`.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -66,6 +78,10 @@ const FIXTURE_FILES: Readonly<Record<string, string>> = {
   authored: 'authored.jsonl',
   canonical: 'canonical-fixtures.jsonl',
   openings: 'openings.jsonl',
+  /** STRATEGOS W1.7: zero-power attacker/defender pairs (`generate-zero-damage.ts`
+   * has the recipe), plus one paired position whose power is 1 so the same run
+   * proves the prune does NOT also drop chip damage. */
+  'zero-damage': 'zero-damage.jsonl',
 };
 
 /** Unbounded widening: larger than any node's action list (`4 + 128 * 104`). */
@@ -90,6 +106,8 @@ interface Args {
   shardIndex: number;
   shardCount: number;
   out: string;
+  /** STRATEGOS W1.7 (`SearchFix.pruneZeroDamage`). See `CanonicalChecker`. */
+  pruneZeroDamage: boolean;
 }
 
 function parseArgs(argv: string[]): Args {
@@ -103,11 +121,15 @@ function parseArgs(argv: string[]): Args {
     shardIndex: -1,
     shardCount: 1,
     out: DEFAULT_OUT,
+    pruneZeroDamage: false,
   };
+  let fixturesGiven = false;
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--fixtures') args.fixtures = argv[++i].split(',').map(s => s.trim()).filter(s => s.length > 0);
-    else if (a === '--corpus') args.corpus = argv[++i];
+    if (a === '--fixtures') {
+      args.fixtures = argv[++i].split(',').map(s => s.trim()).filter(s => s.length > 0);
+      fixturesGiven = true;
+    } else if (a === '--corpus') args.corpus = argv[++i];
     else if (a === '--corpus-positions') args.corpusPositions = Number(argv[++i]);
     else if (a === '--max-own-units') args.maxOwnUnits = Number(argv[++i]);
     else if (a === '--node-budget') args.nodeBudget = Number(argv[++i]);
@@ -115,7 +137,14 @@ function parseArgs(argv: string[]): Args {
     else if (a === '--shard-index') args.shardIndex = Number(argv[++i]);
     else if (a === '--shard-count') args.shardCount = Number(argv[++i]);
     else if (a === '--out') args.out = path.resolve(REPO_ROOT, argv[++i]);
+    else if (a === '--prune-zero-damage') args.pruneZeroDamage = true;
     else throw new Error(`oracles/canonical-check: unrecognised argument "${a}"`);
+  }
+  // `--prune-zero-damage` with the default fixtures would silently prove
+  // nothing (`authored`/`canonical` carry no zero-power pair), so the flag
+  // pulls in `zero-damage` unless the caller named its own `--fixtures`.
+  if (args.pruneZeroDamage && !fixturesGiven && !args.fixtures.includes('zero-damage')) {
+    args.fixtures = [...args.fixtures, 'zero-damage'];
   }
   for (const name of args.fixtures) {
     if (!(name in FIXTURE_FILES)) {
@@ -260,7 +289,16 @@ class CanonicalChecker {
   private readonly ttSearch: ActionSearch;
   private readonly shippedTtSearch: ActionSearch;
 
-  constructor(private readonly nodeBudget: number) {
+  /**
+   * `pruneZeroDamage` (STRATEGOS W1.7, `SearchFix.pruneZeroDamage`): turns the
+   * prune ON for `canonSearch`/`ttSearch`/`shippedTtSearch` only.
+   * `naiveSearch` NEVER gets it — it stays the ground truth `enumerateAll`
+   * enumeration DESIGN §5.3 already defines it as (see this file's module
+   * doc), so comparing its end-position set against the pruned searches'
+   * is the soundness test itself: identical sets on every fixture means the
+   * prune never drops a reachable position, only a redundant branch.
+   */
+  constructor(private readonly nodeBudget: number, pruneZeroDamage: boolean = false) {
     const widths = new Int32Array([UNBOUNDED_WIDTH, UNBOUNDED_WIDTH, UNBOUNDED_WIDTH, UNBOUNDED_WIDTH]);
     // `keep: 0` — the gate reads end-position SETS off the observer, and the
     // pool never has to hold a turn.
@@ -268,6 +306,11 @@ class CanonicalChecker {
     this.canonSearch = new ActionSearch(this.rep, { widths, keep: 0, ttBits: 0 }, this.pool, this.sc);
     this.ttSearch = new ActionSearch(this.rep, { widths, keep: 0, ttBits: MEASURE_TT_BITS }, this.pool, this.sc);
     this.shippedTtSearch = new ActionSearch(this.rep, { widths, keep: 0, ttBits: SHIPPED_TT_BITS }, this.pool, this.sc);
+    if (pruneZeroDamage) {
+      this.canonSearch.setPruneZeroDamage(true);
+      this.ttSearch.setPruneZeroDamage(true);
+      this.shippedTtSearch.setPruneZeroDamage(true);
+    }
   }
 
   /**
@@ -424,7 +467,7 @@ function shardOutPath(out: string, index: number): string {
 
 function runShard(args: Args): Partial {
   const items = buildWorkList(args);
-  const checker = new CanonicalChecker(args.nodeBudget);
+  const checker = new CanonicalChecker(args.nodeBudget, args.pruneZeroDamage);
   const acc = newPartial();
   for (let i = 0; i < items.length; i++) {
     if (args.shardCount > 1 && i % args.shardCount !== args.shardIndex) continue;
@@ -465,6 +508,7 @@ function spawnShard(args: Args, index: number, count: number): Promise<void> {
     '--shard-index', String(index),
     '--shard-count', String(count),
     '--out', path.relative(REPO_ROOT, shardOutPath(args.out, index)),
+    ...(args.pruneZeroDamage ? ['--prune-zero-damage'] : []),
   ];
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, cliArgs, { cwd: REPO_ROOT, stdio: ['ignore', 'ignore', 'pipe'] });
@@ -518,6 +562,7 @@ function summarise(args: Args, merged: Partial): Record<string, unknown> {
     budgetHistogram: merged.budgetHistogram,
     mismatches: merged.mismatches,
     fixtureSets: args.fixtures,
+    pruneZeroDamage: args.pruneZeroDamage,
     corpus: args.corpus,
     corpusPositionsRequested: args.corpusPositions,
     maxOwnUnits: args.maxOwnUnits,

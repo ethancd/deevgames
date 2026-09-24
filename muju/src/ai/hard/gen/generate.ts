@@ -370,6 +370,27 @@ export class TurnGenerator {
   }
 
   /**
+   * Installs (or clears) STRATEGOS W1.7's zero-damage attack prune
+   * (`HardConfig.searchFix.pruneZeroDamage`, plan B.2 step W1.7), forwarded to
+   * both `gen/actionsearch.ts ActionSearch`es this generator drives — the beam
+   * `search` and the recall instrument's `referenceSearch` — so a search run
+   * through `generate`/`generateReference` skips a zero-power ATTACK exactly
+   * as `ActionSearch.setPruneZeroDamage`'s doc proves sound. `false` — never
+   * called — is the champion, byte-identical: no profile but `hard@strategos`
+   * turns this on.
+   *
+   * NOT a `GenConfig` field, for the reason `setTrace`/`setRescueCap` are not
+   * one: `HardConfig` is serialised into the engine identity hash
+   * `tests/lab/ablate.test.ts` pins, and the generator configs are part of
+   * it. The flag lives on `HardConfig.searchFix`, which no shipped profile
+   * writes; `engine.ts` reads it and wires all three generators it owns.
+   */
+  setPruneZeroDamage(on: boolean): void {
+    this.search.setPruneZeroDamage(on);
+    this.referenceSearch.setPruneZeroDamage(on);
+  }
+
+  /**
    * Installs (or clears) E2.2's stage trace, which records at each shortlist
    * whether a nominated target turn was still present (`gen/trace.ts`). Pure
    * instrumentation: with a trace installed the emitted list, its order, its
