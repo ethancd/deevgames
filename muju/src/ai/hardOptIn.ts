@@ -55,7 +55,10 @@
  * — spread order does not matter because `deviceProfilePatch` only ever sets
  * table fields (`K`, `gen`, `time`, …) and `strategosPatch` only ever sets
  * `searchFix`/`evalFix`; the two never touch the same key
- * (`tests/hooks/ai-hard-engine-profile.test.tsx`).
+ * (`tests/ai/hard-engine-profile.test.ts` pins the disjointness, and that the
+ * browser's strategos engine resolves to the very configuration the seat and
+ * the ladder build for `hard@strategos`; `tests/hooks/ai-hard-engine-profile.test.tsx`
+ * pins what reaches the wire).
  *
  * WHAT THE ENGINE DOES WITH IT. The allowance reaches `HardEngine.searchTurn`
  * as `targetMs` (and, since A11, as `deadlineMs`), and an explicit `targetMs`

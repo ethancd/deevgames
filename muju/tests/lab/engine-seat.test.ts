@@ -188,6 +188,86 @@ describe('profile selection and search telemetry', () => {
     expect(event.clock).toBe(0);
     expect(event.minedTotals).toEqual([0, 0]);
   });
+  /**
+   * STRATEGOS W1.14 review. The two cases above run on the initial position,
+   * where the clock is 0 and both mined totals are 0 — so reporting
+   * `[black, white]`, dropping Black's handicap, or hard-coding `clock: 0`
+   * all passed them (each mutation was tried). These positions differ from
+   * it, and from each other, in ONE fact at a time, and the expected numbers
+   * are written out by hand from `src/game/inactivity.ts`'s rule (mined total
+   * = resourcesGained, plus the handicap for Black only), not recomputed with
+   * the function under test.
+   */
+  it.each([
+    // [label, white gained, black gained, handicap, clock, expected minedTotals]
+    ['asymmetric totals, no handicap', 7, 3, 0, 5, [7, 3]],
+    ['the same position with a Black handicap of 2', 7, 3, 2, 5, [7, 5]],
+    ['the same position one ply later on the clock', 7, 3, 2, 6, [7, 5]],
+  ] as const)('reports the root clock and [white, black] mined totals with the handicap on Black only: %s', async (_label, white, black, handicap, clock, expected) => {
+    const base = fixture(), logs: Record<string, unknown>[] = [];
+    const state: GameState = { ...base.state, inactivityPlies: clock, blackCrystalHandicap: handicap,
+      players: { white: { ...base.state.players.white, resourcesGained: white }, black: { ...base.state.players.black, resourcesGained: black } } };
+    const room = { ...base.room, state };
+    const transport = { read: vi.fn().mockResolvedValue(room), wait: vi.fn(), play: vi.fn().mockResolvedValue(base.finish) };
+    await runSeat({ journal: base.journal, transport, createEngine: () => ({ searchTurn: async () => resultFor(state) }), save: vi.fn(), log: e => logs.push(e) });
+    const event = logs.find(e => e.event === 'search')!;
+    expect(event.verified).toBe(true);
+    expect(event.clock).toBe(clock);
+    expect(event.minedTotals).toEqual(expected);
+  });
+  /**
+   * The DEFAULT engine factory — the one `main.ts` actually runs — builds from
+   * the configured profile. The construction test above calls
+   * `hardEnginePatch` itself, so a runner that ignored `profile` and kept
+   * building `'desktop'` passed it (tried). Here the real `HardEngine` is
+   * constructed by `runSeat`; only its `searchTurn` is replaced, so no 55 s
+   * search runs, and the configuration it was built with is read back.
+   */
+  it('builds the default engine from the configured profile, then the journal, then desktop', async () => {
+    const built: { searchFix?: unknown; evalFix?: unknown }[] = [];
+    const search = vi.spyOn(HardEngine.prototype, 'searchTurn').mockImplementation(async function (this: HardEngine, state: GameState) {
+      built.push({ searchFix: this.config.searchFix, evalFix: this.config.evalFix });
+      return resultFor(state);
+    });
+    try {
+      const run = async (profile: string | undefined, journalProfile: string | undefined) => {
+        const { room, journal, finish } = fixture();
+        if (journalProfile !== undefined) journal.profile = journalProfile;
+        const transport = { read: vi.fn().mockResolvedValue(room), wait: vi.fn(), play: vi.fn().mockResolvedValue(finish) };
+        await runSeat({ journal, transport, save: vi.fn(), log: vi.fn(), ...(profile === undefined ? {} : { profile }) });
+      };
+      await run('strategos', undefined);
+      await run(undefined, 'strategos');
+      await run(undefined, undefined);
+      await run('desktop', undefined);
+    } finally { search.mockRestore(); }
+    const strategos = hardEnginePatch('strategos');
+    expect(built).toEqual([
+      { searchFix: strategos.searchFix, evalFix: strategos.evalFix },
+      { searchFix: strategos.searchFix, evalFix: strategos.evalFix },
+      { searchFix: undefined, evalFix: undefined },
+      { searchFix: undefined, evalFix: undefined },
+    ]);
+  });
+  it('records a non-default profile in the journal and refuses to resume it under another', async () => {
+    const { config, room } = pinnedFixture();
+    const transport = () => ({ read: vi.fn().mockResolvedValue(room), inspect: vi.fn(), join: vi.fn() });
+    // Desktop writes NO key: the journal is byte-for-byte what it was before
+    // the field existed, which is also what every older journal looks like.
+    const desktopJournal = await initializeSeat(config, vi.fn(), transport());
+    expect('profile' in desktopJournal).toBe(false);
+    const strategosConfig = seatConfigSchema.parse({ ...config, profile: 'strategos' });
+    const strategosJournal = seatJournalSchema.parse(JSON.parse(JSON.stringify(await initializeSeat(strategosConfig, vi.fn(), transport()))));
+    expect(strategosJournal.profile).toBe('strategos');
+    expect(() => assertSeatConfiguration(strategosJournal, strategosConfig)).not.toThrow();
+    expect(() => assertSeatConfiguration(desktopJournal, config)).not.toThrow();
+    // A crash-and-resume must not change engines mid-game, in either direction.
+    expect(() => assertSeatConfiguration(strategosJournal, config)).toThrow(/engine profile/);
+    expect(() => assertSeatConfiguration(desktopJournal, strategosConfig)).toThrow(/engine profile/);
+    // A documentary suffix names the same engine but a different label: refused, the safe side.
+    expect(() => assertSeatConfiguration(desktopJournal, seatConfigSchema.parse({ ...config, profile: 'desktop-400k' }))).toThrow(/engine profile/);
+    expect(() => seatJournalSchema.parse({ ...strategosJournal, profile: '' })).toThrow();
+  });
 });
 
 it('long-polls, searches under the deadline, durably saves before submission, and retries the identical batch', async () => {

@@ -12,7 +12,9 @@
  * one; `tests/hooks/ai-hard-engine-profile.test.tsx` pins what reaches the wire.
  */
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
-import { DESKTOP, strategosPatch } from '../../src/ai/hard/config';
+import { DESKTOP, deviceProfilePatch, strategosPatch } from '../../src/ai/hard/config';
+import { HardEngine } from '../../src/ai/hard/engine';
+import { hardEnginePatch } from '../../lab/hard-ai/bots/hard';
 import {
   HARD_AI_LOG_PREFIX, HARD_ENGINE_QUERY_PARAM, HARD_ENGINE_STORAGE_KEY, resolveHardEngineProfile,
 } from '../../src/ai/hardOptIn';
@@ -41,6 +43,33 @@ it('sets exactly the six strategos flags, and no weights key', () => {
   expect('gen' in patch).toBe(false);
   // DESKTOP itself is untouched by the patch's existence.
   expect(DESKTOP.searchFix).toBeUndefined();
+});
+
+/**
+ * STRATEGOS W1.14 review. `?hardEngine=strategos` in the browser, the engine
+ * seat's `profile: "strategos"` and the ladder's `hard@strategos` must be ONE
+ * engine, or a wave-2 game played in the browser measures something the ladder
+ * rows never did. The browser path posts `strategosPatch()` alone and the
+ * worker's `new HardEngine(patch)` merges it onto `DESKTOP` and substitutes
+ * `DEFAULT_WEIGHTS` itself; the seat and the ladder go through
+ * `hardEnginePatch('strategos')`. The two resolved configurations are
+ * compared whole, weights included — a patch that dropped a key, or reached
+ * the engine with the placeholder vector, fails here.
+ */
+it('builds the same engine configuration in the browser as the seat and the ladder build for hard@strategos', () => {
+  const browser = new HardEngine(strategosPatch()).config;
+  const seat = new HardEngine(hardEnginePatch('strategos')).config;
+  expect(browser.weights.version).not.toBe(0);
+  expect(browser).toEqual(seat);
+  // And the default is still the default: no patch on the wire is hard@desktop.
+  expect(new HardEngine(undefined).config).toEqual(new HardEngine(hardEnginePatch('desktop')).config);
+});
+
+it("shares no top-level key with the phone device patch, so useAI's merge order cannot matter", () => {
+  const device = Object.keys(deviceProfilePatch('phone')!);
+  const engine = Object.keys(strategosPatch());
+  expect(device.length).toBeGreaterThan(0);
+  expect(engine.filter(key => device.includes(key))).toEqual([]);
 });
 
 /* ------------------------------ 2. the rule -------------------------------- */

@@ -44,11 +44,22 @@ export type SeatConfig = z.infer<typeof seatConfigSchema>;
  * resuming a Standard seat's journal into a Phasing-only seat would be a
  * cross-ruleset resume, which is exactly the confusion the rules revision was
  * put inside every identity to prevent. Such a run is restarted, not migrated.
+ *
+ * STRATEGOS W1.14 added the OPTIONAL `profile` key without a version bump: a
+ * version-3 journal written before it has no key and reads as `'desktop'`,
+ * which is what it ran; a journal that does carry it is refused by an older
+ * runner's `.strict()`, which is the safe direction (it cannot silently run
+ * the wrong engine).
  */
 export const seatJournalSchema = z.object({ version: z.literal(3), seed: z.number().int().min(0).max(0xffffffff),
   admission: z.enum(['issued', 'join']), contract: seatContractSchema,
   connection: z.object({ serverUrl: z.string().transform(normalizeServer), ...credentialsSchema.shape }).strict(),
   pending: actionRequestSchema.optional(),
+  // STRATEGOS W1.14 review: the engine profile is part of the seat's identity
+  // (`journalProfile` below). Optional so every journal written before the
+  // field existed still parses — and means `'desktop'`, the only engine such a
+  // run could have built.
+  profile: z.string().min(1).optional(),
 }).strict().superRefine((journal, context) => {
   if (journal.contract.mode === 'pinned' && journal.admission !== 'issued') context.addIssue({ code: 'custom', message: 'Pinned seats require issued credentials.' });
 });
@@ -64,12 +75,33 @@ export function contractFor(config: SeatConfig): SeatContract {
   return config.mode === 'phasing-smoke' ? { mode: config.mode, ...readiness } : { mode: config.mode,
     expectedMatchPolicy: { ...config.expectedMatchPolicy }, expectedTimeControl: { ...config.expectedTimeControl }, expectedHandicap: config.expectedHandicap, ...readiness };
 }
+/**
+ * THE ENGINE PROFILE IS PART OF THE SEAT'S IDENTITY (STRATEGOS W1.14 review).
+ * A run started as `hard@desktop` that crashes and is resumed with
+ * `profile: "strategos"` in its config (or the reverse) would switch engines
+ * mid-game, silently: the `start` line would name the new profile, but nothing
+ * would refuse it. So the journal records the profile and
+ * `assertSeatConfiguration` compares it like the seed and the contract.
+ *
+ * `'desktop'` is written as an ABSENT key, never as `profile: "desktop"`, for
+ * the same reason `useAI.ts` omits `hard` on a desktop request: a desktop
+ * seat's journal stays byte-for-byte the journal it wrote before the field
+ * existed, and an absent key is exactly what every pre-W1.14 journal carries.
+ * The comparison is on the LABEL, so `desktop-400k` (documentary suffix, same
+ * engine) does not resume a `desktop` run either — refusing is the safe side.
+ */
+export function journalProfile(profile: string): Pick<SeatJournal, 'profile'> {
+  return profile === 'desktop' ? {} : { profile };
+}
 export function assertSeatConfiguration(journal: SeatJournal, config: SeatConfig): void {
   journal = seatJournalSchema.parse(journal);
   config = seatConfigSchema.parse(config);
   const admission = config.credentials ? 'issued' : 'join';
   if (journal.connection.serverUrl !== config.serverUrl || journal.connection.roomId !== config.roomId || journal.seed !== config.seed || journal.admission !== admission ||
       JSON.stringify(journal.contract) !== JSON.stringify(contractFor(config))) throw new Error('Stored seat identity or expected contract differs from the configuration.');
+  if ((journal.profile ?? 'desktop') !== config.profile) {
+    throw new Error(`Stored engine profile "${journal.profile ?? 'desktop'}" differs from the configuration's "${config.profile}"; a resumed seat cannot change engines mid-game.`);
+  }
   if (config.credentials && (journal.connection.player !== config.credentials.player || journal.connection.token !== config.credentials.token)) {
     throw new Error('Stored issued credentials differ from the configuration.');
   }
@@ -92,7 +124,7 @@ export async function initializeSeat(config: SeatConfig, reserve: () => void, tr
     assertSeatRoom(room, expected);
     assertAuthenticatedSeat(room, connection.player);
     reserve();
-    return { version: 3, admission: 'issued', connection, seed: config.seed, contract };
+    return { version: 3, admission: 'issued', connection, seed: config.seed, contract, ...journalProfile(config.profile) };
   }
   assertSeatRoom(await transport.inspect(config.serverUrl, config.roomId), expected);
   reserve();
@@ -102,5 +134,5 @@ export async function initializeSeat(config: SeatConfig, reserve: () => void, tr
   if (credentials.roomId !== config.roomId) throw new Error('Joined credentials belong to a different room.');
   assertSeatRoom(admission.room, expected);
   assertAuthenticatedSeat(admission.room, credentials.player);
-  return { version: 3, admission: 'join', connection: { ...credentials, serverUrl: config.serverUrl }, seed: config.seed, contract };
+  return { version: 3, admission: 'join', connection: { ...credentials, serverUrl: config.serverUrl }, seed: config.seed, contract, ...journalProfile(config.profile) };
 }

@@ -4,6 +4,7 @@ import { resolve, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { withHeavySlot } from '../../lab/hard-ai/ladder/heavy';
 import { ENGINE_ALLOWANCE_MS, runSeat, type SeatJournal } from './runner';
+import { SEARCH_TELEMETRY_VERSION } from './contract';
 import { assertSeatConfiguration, initializeSeat, seatConfigSchema, seatJournalSchema } from './config';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
@@ -53,7 +54,7 @@ async function main() {
       // profile (`config.profile`, `seatConfigSchema`'s default is still
       // `'desktop'`), so the start line always names the engine this run
       // actually builds.
-      profile: config.profile, allowanceMs: ENGINE_ALLOWANCE_MS, source: sourceIdentity(), resumed });
+      profile: config.profile, searchTelemetryVersion: SEARCH_TELEMETRY_VERSION, allowanceMs: ENGINE_ALLOWANCE_MS, source: sourceIdentity(), resumed });
     const controller = new AbortController();
     process.once('SIGINT', () => controller.abort()); process.once('SIGTERM', () => controller.abort());
     await runSeat({ journal, save, log, signal: controller.signal, profile: config.profile });

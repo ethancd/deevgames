@@ -3,7 +3,7 @@ import { MAX_BLACK_CRYSTAL_HANDICAP } from '../../src/game/rules';
 import type { PlayerId } from '../../src/game/types';
 import type { RoomSnapshot } from '../../src/online/types';
 import type { Centi } from '../../src/ai/hard/types';
-import type { RootSource } from '../../src/ai/hard/search/root';
+import type { RootResult, RootSource } from '../../src/ai/hard/search/root';
 import type { StrategyChronicle } from '../../src/ai/hard/strategy/types';
 
 /**
@@ -92,13 +92,23 @@ export function assertSeatRoom(room: RoomSnapshot, expected?: { roomId: string; 
 }
 
 /**
- * VERSION 1 of the seat's `event: 'search'` telemetry line (`runner.ts`,
- * appended to `<stateFile>.jsonl`), STRATEGOS W1.14 (plan
- * `~/.claude/plans/can-you-respond-to-piped-book.md`, B.2 step W1.14). Before
- * this the line was an ad hoc `Record<string, unknown>` with no declared
- * shape at all; this is the first time it is typed, so "version 1" names what
- * ships today rather than a change from something earlier. Bump the version
- * (and say what moved) the next time a field is added, renamed or dropped.
+ * The version of `SearchTelemetryEvent` below. `main.ts` writes it on every
+ * `start` line (`searchTelemetryVersion`), next to the `profile` and the
+ * source hashes, so a reader of a `.jsonl` knows which shape the `search`
+ * lines that follow have without guessing from their keys. Bump it (and say
+ * what moved) the next time a field is added, renamed or dropped.
+ * DERIVED (plan B.2 W1.14: "version the contract"): 1 is the first declared
+ * shape — before W1.14 the line was an ad hoc `Record<string, unknown>`.
+ */
+export const SEARCH_TELEMETRY_VERSION = 1;
+
+/**
+ * VERSION 1 (`SEARCH_TELEMETRY_VERSION`) of the seat's `event: 'search'`
+ * telemetry line (`runner.ts`, appended to `<stateFile>.jsonl`), STRATEGOS
+ * W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`, B.2 step
+ * W1.14). Before this the line was an ad hoc `Record<string, unknown>` with no
+ * declared shape at all; this is the first time it is typed, so "version 1"
+ * names what ships today rather than a change from something earlier.
  *
  * FIXED KEYS, NEVER OMITTED. `scoreCc`, `clock` and `minedTotals` are cheap
  * facts about the searched position that exist on every search, strategos or
@@ -130,10 +140,13 @@ export interface SearchTelemetryEvent {
   rung: number;
   work: number;
   source: RootSource;
-  stopReason: 'complete' | 'work' | 'abort';
+  stopReason: RootResult['stats']['stopReason'];
+  /** `verify.ts classifyFallback(result)`. */
   fallback: string | null;
   verified: boolean;
-  /** `RootResult.scoreCc`: the root's own evaluation of the turn it returned. */
+  /** `RootResult.scoreCc`: the root's own evaluation of the turn it returned,
+   * in centi-crystals from the SEAT's point of view (the side to move at the
+   * root). Read it next to `source`/`fallback`: an unsearched root reports 0. */
   scoreCc: Centi;
   /** The root position's inactivity (kill) clock: `state.inactivityPlies ?? 0`
    * (`src/game/inactivity.ts`), 0 … `INACTIVITY_LIMIT - 1`. */

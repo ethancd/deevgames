@@ -83,15 +83,9 @@ it('merges the strategos patch onto the wire on ?hardEngine=strategos', async ()
   window.history.replaceState({}, '', `/muju/?${HARD_ENGINE_QUERY_PARAM}=strategos`);
   const options = await playTurns('hard');
   expect(options.length).toBeGreaterThanOrEqual(2);
-  const patch = strategosPatch();
-  for (const opts of options) {
-    expect(opts!.engine).toBe('hard');
-    expect(opts!.hard!.searchFix).toEqual(patch.searchFix);
-    expect(opts!.hard!.evalFix).toEqual(patch.evalFix);
-    // No device tables were asked for, so nothing else rides along.
-    expect('K' in opts!.hard!).toBe(false);
-    expect('weights' in opts!.hard!).toBe(false);
-  }
+  // The whole request, not just the two blocks: no device tables were asked
+  // for and no weights may ride along, so the patch IS `strategosPatch()`.
+  for (const opts of options) expect(opts).toStrictEqual({ engine: 'hard', hard: strategosPatch() });
 });
 
 it('merges onto the device patch rather than replacing it, in either order of precedence', async () => {

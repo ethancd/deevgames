@@ -42,6 +42,10 @@ export interface SeatJournal {
   contract: SeatContract;
   /** Kept on disk until an identical request is acknowledged. */
   pending?: ActionRequest;
+  /** STRATEGOS W1.14 review: the `hardConfigFor` label this run was started
+   * with; absent means `'desktop'` (`config.ts journalProfile`). Checked on
+   * every resume by `assertSeatConfiguration`. */
+  profile?: string;
 }
 export interface SeatTransport {
   read(connection: RoomConnection, signal?: AbortSignal): Promise<RoomSnapshot>;
@@ -59,10 +63,12 @@ export interface SeatOptions {
   /**
    * STRATEGOS W1.14: which `hardConfigFor`/`hardEnginePatch` label
    * (`lab/hard-ai/bots/hard.ts`) the DEFAULT engine factory below builds from.
-   * Ignored when `createEngine` is supplied (every test in this file supplies
-   * its own stub). Unset means `'desktop'` — byte for byte the only engine
-   * this seat ever built before this option existed, and still its default
-   * with no configuration change at all.
+   * Ignored when `createEngine` is supplied. Unset falls back to the
+   * journal's own `profile` and then to `'desktop'` — byte for byte the only
+   * engine this seat ever built before this option existed, and still its
+   * default with no configuration change at all. `main.ts` passes the
+   * configured profile, which `assertSeatConfiguration` has already checked
+   * against the journal on a resume.
    */
   profile?: string;
   /** Injected so a test exercises the backoff without waiting for it. */
@@ -108,7 +114,7 @@ export async function runSeat(options: SeatOptions): Promise<void> {
     return current;
   };
   let engine: SeatEngine | undefined;
-  const makeEngine = options.createEngine ?? (seed => { const e = new HardEngine(hardEnginePatch(options.profile ?? 'desktop')); e.setSeed(seed); return e; });
+  const makeEngine = options.createEngine ?? (seed => { const e = new HardEngine(hardEnginePatch(options.profile ?? journal.profile ?? 'desktop')); e.setSeed(seed); return e; });
   let room = await readAuthenticatedRoom();
   log({ event: 'room-contract-verified', mode: expected.contract.mode, roomId: room.id, ruleset: room.state.ruleset ?? 'standard',
     matchPolicy: room.matchPolicy ?? null, timeControl: room.timeControl ?? null, handicap: room.state.blackCrystalHandicap ?? null });
