@@ -63,6 +63,7 @@ import type { TurnGenerator } from '../gen/generate';
 import { probeBook } from '../book/probe';
 import { verifyTurn, type ReplayCheck } from '../verify/replay';
 import type { HardConfig } from '../config';
+import { getKillClockPolicy, setKillClockPolicy } from '../eval/evaluate';
 import { WorkClass } from './time';
 import {
   PROVER_FULL,
@@ -367,6 +368,42 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
       fallback: err instanceof PackError ? 'pack-error' : 'engine-error',
     };
   }
+
+  // STRATEGOS W1.2 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+  // B.2 step W1.2, "the leak fix"; B.1b's code fact). `hard@desktop` — and
+  // every other profile that leaves `SearchFix.killClockPolicy` absent — takes
+  // NONE of this branch, so `eval/evaluate.ts`'s legacy `killClockRootClock`
+  // module slot is read exactly as it is today: written only by `engine.ts`'s
+  // wall-clock pack and `calibrate`, starting at `INACTIVITY_LIMIT − 1`, and
+  // never saved or restored, so a wall-clock search's root clock can still
+  // leak into a later FIXED-WORK search in the same process. That is
+  // `hard@desktop`'s pinned behaviour, not a bug this step is allowed to fix.
+  //
+  // `hard@strategos` sets `killClockPolicy: 'ledger'`, and for THIS search
+  // only: the previous policy (whatever it was — `null`, or another
+  // strategos search's, should one ever nest, which it cannot: this function
+  // is synchronous end to end) is saved, a fresh policy scoped to the packed
+  // root's own clock is installed, the search runs, and the saved policy is
+  // restored in a `finally` — so a THROW out of `searchRootFromPacked` still
+  // restores it. `engine.ts` skips both legacy-slot writes for a `'ledger'`
+  // profile, so no strategos search, fixed-work or wall-clock, can leak into
+  // the next search of either profile. `reading` stays `null` here; W1.6 is
+  // what computes one under `EvalFix.clockLedger` and threads it through.
+  if (opts.config.searchFix?.killClockPolicy === 'ledger') {
+    const savedPolicy = getKillClockPolicy();
+    setKillClockPolicy({ rootClock: p.clock, reading: null });
+    try {
+      return searchRootFromPacked(engine, state, opts, p);
+    } finally {
+      setKillClockPolicy(savedPolicy);
+    }
+  }
+  return searchRootFromPacked(engine, state, opts, p);
+}
+
+function searchRootFromPacked(engine: RootEngine, state: GameState, opts: RootOptions, p: PackedState): RootResult {
+  const s = engine.ctx;
+  const stats = s.stats;
 
   if (p.result !== Result.ONGOING) {
     return { actions: [], scoreCc: 0, depth: 0, work: 0, stats, source: 'fallback', endKey: keyHex(p.kposHi, p.kposLo) };

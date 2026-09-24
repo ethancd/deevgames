@@ -71,7 +71,15 @@ function layerOf(fileRelToHard: string): Layer | null {
   // aliases and interfaces that import only `types.ts`), so every layer may
   // name its types the way every layer may name `types.ts`'s. The rest of
   // `strategy/` is its own layer, reachable only from `search` and `engine`.
-  if (fileRelToHard === path.join('strategy', 'types.ts')) return 'types';
+  //
+  // STRATEGOS W1.2 fix (same date): `listFiles` hands a SCANNED file its
+  // extension-bearing path (`strategy/types.ts`), but `resolveRelative`
+  // strips the extension off an IMPORT TARGET (`strategy/types`). Only the
+  // first form used to match, so `eval/evaluate.ts`'s `import type
+  // { KillClockPolicy } from '../strategy/types'` classified its target as the
+  // ordinary `strategy` layer and failed, contrary to the rule above. Both
+  // forms name the same file; no other path's classification changes.
+  if (fileRelToHard === path.join('strategy', 'types.ts') || fileRelToHard === path.join('strategy', 'types')) return 'types';
   const top = fileRelToHard.split(path.sep)[0];
   if (['core', 'tables', 'gen', 'tactics', 'eval', 'strategy', 'search', 'book', 'verify'].includes(top)) return top as Layer;
   return null; // e.g. a stray file directly under src/ai/hard/ that isn't types/config/engine
