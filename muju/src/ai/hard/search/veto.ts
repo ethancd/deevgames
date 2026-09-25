@@ -104,12 +104,15 @@ import {
  * the share is a third), and four runs lose a completed depth to the reserve
  * (vf-mate@40,000 3 → 2, pf-tooFarToReach@40,000 4 → 3, W6-c6-far@60,000 2 →
  * 1, pf-trailingNoContact@60,000 2 → 1); re-searches otherwise cost
- * 514-11,217 units, and the plan was played on 50 of the 57. Falsifier: a
- * posture root whose re-search still exceeds the reserve at a rung from
- * 25,000 to 60,000 — W6-c6-far@40,000 already is one, so this share is a
- * standing choice pending the coordinator's decision, not a measured fit —
- * or a ladder row where the depth the reserve costs outweighs the vetoes it
- * buys.)
+ * 514-11,217 units, and the plan was played on 50 of the 57. A posture root
+ * whose re-search still exceeds the reserve at a rung from 25,000 to 60,000
+ * already exists — W6-c6-far@40,000 — and no share up to a quarter covers it
+ * (11,731 units at a third, 10,133 at a quarter). DECIDED (coordinator,
+ * 2026-09-24): keep the share at a fifth rather than raise it further, and
+ * accept `unresolved` on such a root — its fallback is the search's own best
+ * move, so no plan is ever played unchecked and no veto is ever claimed
+ * without a proof. A ladder row where the depth the reserve costs outweighs
+ * the vetoes it buys remains open (`docs/hard-ai/design/DEVIATIONS.md`).)
  */
 export const VETO_RESERVE_SHARE = 5;
 
