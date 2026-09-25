@@ -587,7 +587,15 @@ function searchRootInner(engine: RootEngine, state: GameState, opts: RootOptions
   const ownProbe = arm !== null && s.probe === null;
   if (ownProbe) s.probe = new RootProbe(s.turns[0].length, false);
   try {
-    const result = searchRootFromPacked(engine, state, opts, p, arm);
+    let result = searchRootFromPacked(engine, state, opts, p, arm);
+    // The private instrument observes only, so the result must not carry its
+    // marker either: the salvage path (`result.best === null`) tags
+    // `candidateSource: 'generator-list'` whenever ANY probe is installed,
+    // and on an unexposed search that key belongs to no caller.
+    if (ownProbe && result.candidateSource !== undefined) {
+      result = { ...result };
+      delete result.candidateSource;
+    }
     if (planSet === null && !vetoOn) return result;
     const strategy = chronicle(reading, planSet === null ? null : planSet(), result, arm === null ? null : arm.outcome);
     return { ...result, strategy };

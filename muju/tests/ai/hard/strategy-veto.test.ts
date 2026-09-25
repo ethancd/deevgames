@@ -27,6 +27,12 @@
  *     injected or its Act makes an attack with nonzero power; a Hold
  *     candidate iff it is injected, or kills nothing and leaves the enemy's
  *     killETA above the plies left;
+ *   - the RE-SEARCH against an oracle: every `pvs` call it makes is recorded
+ *     (a module mock), so its depth (completed depth − 1, floored at 1), its
+ *     full window and the reply it names (the first reaching the opponent's
+ *     best recorded value, not merely the first searched) are checked on
+ *     every posture root; a consistent tactical best is the plan move with
+ *     nothing re-searched;
  *   - the RESERVE: deepening leaves it (the meter's limit is lowered and put
  *     back, even when deepening throws), a posture-free root takes none (its
  *     move, score, depth and work equal the veto-off search's), and the
@@ -42,7 +48,7 @@ import type { GameState } from '../../../src/game/types';
 import { strategosPatch, type HardConfig } from '../../../src/ai/hard/config';
 import { HardEngine } from '../../../src/ai/hard/engine';
 import { installStrategyWitness, type RootResult } from '../../../src/ai/hard/search/root';
-import { PROVER_FULL, buildSearchTables, generateAt, makeTurn } from '../../../src/ai/hard/search/pvs';
+import { INF, PROVER_FULL, buildSearchTables, generateAt, makeTurn } from '../../../src/ai/hard/search/pvs';
 import { VETO_RESERVE_SHARE, comparePicks, reserveFor, type RankedPick } from '../../../src/ai/hard/search/veto';
 import { WorkMeter } from '../../../src/ai/hard/search/time';
 import { TurnFlag, type Turn } from '../../../src/ai/hard/gen/turn';
@@ -50,7 +56,7 @@ import { clockReading, type ClockReading } from '../../../src/ai/hard/strategy/c
 import { clockPliesLeft, killEta } from '../../../src/ai/hard/strategy/killeta';
 import { holdEssentialSlots } from '../../../src/ai/hard/strategy/hold';
 import { newPlanScratch } from '../../../src/ai/hard/strategy/plan';
-import { actLength, planConsistency, terminalLossThreshold, vetoVerdict, type VetoEvidence } from '../../../src/ai/hard/strategy/veto';
+import { actLength, deadEssentials, planConsistency, terminalLossThreshold, vetoVerdict, type VetoEvidence } from '../../../src/ai/hard/strategy/veto';
 import type { StrategyChronicle } from '../../../src/ai/hard/strategy/types';
 import { verifyTurn } from '../../../src/ai/hard/verify/replay';
 import { Replica, allocState, copyState, newUndo } from '../../../src/ai/hard/core/state';
@@ -64,22 +70,40 @@ import { ESSENTIAL_CELL, VETO_FIXTURES, essentialOrNot, mateOrMaterial } from '.
 
 vi.setConfig({ testTimeout: 180_000 });
 
-/** Mock hook (the strategy-plans test's pattern): `iterativeDeepening` throws
- * on request, AFTER `search/root.ts` has lowered the meter's limit. */
-const hooks = vi.hoisted(() => ({ throwOnIterate: false }));
+/** Mock hooks (the strategy-plans test's pattern): `iterativeDeepening`
+ * throws on request, AFTER `search/root.ts` has lowered the meter's limit, or
+ * returns no move (the watchdog's "no completed or partial answer" case); and
+ * every EXTERNAL call of `pvs` is recorded. `pvs` recurses and `rootIteration`
+ * calls it through `pvs.ts`'s own binding, which the mock does not replace, so
+ * the only calls recorded are `search/veto.ts`'s re-search's — one or two per
+ * ply-1 reply, in reply order. */
+const hooks = vi.hoisted(() => ({
+  throwOnIterate: false,
+  noBest: false,
+  pvsCalls: null as null | Array<{ depth: number; alpha: number; beta: number; ply: number; sig: number; score: number }>,
+}));
 vi.mock('../../../src/ai/hard/search/pvs', async importOriginal => {
   const actual = await importOriginal<typeof import('../../../src/ai/hard/search/pvs')>();
   return {
     ...actual,
     iterativeDeepening: (...args: Parameters<typeof actual.iterativeDeepening>) => {
       if (hooks.throwOnIterate) throw new Error('injected for strategy-veto.test.ts');
-      return actual.iterativeDeepening(...args);
+      const r = actual.iterativeDeepening(...args);
+      return hooks.noBest ? { ...r, best: null } : r;
+    },
+    pvs: (...args: Parameters<typeof actual.pvs>) => {
+      const score = actual.pvs(...args);
+      const [, , depth, alpha, beta, ply, sig] = args;
+      hooks.pvsCalls?.push({ depth, alpha, beta, ply, sig, score });
+      return score;
     },
   };
 });
 
 afterEach(() => {
   hooks.throwOnIterate = false;
+  hooks.noBest = false;
+  hooks.pvsCalls = null;
   setKillClockPolicy(null);
 });
 
@@ -517,6 +541,122 @@ describe('essentialOrNot: four crystals of lead decide whether the plant the Hol
 // the reserve
 // ---------------------------------------------------------------------------
 
+/** The ply-1 replies to the plan candidate `planKey` exactly as the
+ * re-search generates them (`walkLine`'s walk), by end key → `Turn.sig`. */
+function replySigs(state: GameState, planKey: string): Map<string, number> {
+  const { s, p } = rootList(state);
+  const plan = s.turns[0].find(turn => keyOf(turn) === planKey) as Turn;
+  p.proverMode = PROVER_FULL;
+  expect(makeTurn(s, p, plan, s.keep[0])).toBe(plan.count);
+  const n1 = generateAt(s, p, buildSearchTables(s, p, 1), 1);
+  return new Map(s.turns[1].slice(0, n1).map(turn => [keyOf(turn), turn.sig] as const));
+}
+
+describe('the re-search', () => {
+  it('is one full-window search at depth − 1, and the contract is read off its PRINCIPAL reply', async () => {
+    // Oracle: the recorded `pvs` calls (mock above) give every non-terminal
+    // reply's final value; the reply the Chronicle names must be the first
+    // one attaining the opponent's best of them, and the re-searched score
+    // must be minus that best. Reading the FIRST reply instead of the best
+    // one (or the wrong depth, or a null window) fails here.
+    let named = 0;
+    let notFirst = 0;
+    for (const [name, build] of SWEEP) {
+      const state = build();
+      hooks.pvsCalls = [];
+      const r = await new HardEngine(strategosPatch()).searchTurn(state, { work: SEARCH_WORK });
+      const calls = hooks.pvsCalls;
+      hooks.pvsCalls = null;
+      const q = research(r);
+      if (q === undefined) {
+        expect(calls, name).toEqual([]);
+        continue;
+      }
+      const childDepth = q.result.childDepth as number;
+      expect(childDepth, name).toBe(Math.max(1, r.depth - 1));
+      // The opponent's node is searched on a FULL window (its beta is +INF),
+      // so every child call is either the full window below it or a PVS
+      // scout one centimo wide.
+      for (const c of calls) {
+        expect(c.ply, name).toBe(2);
+        expect(c.depth, name).toBe(childDepth - 1);
+        expect(c.alpha === -INF || c.alpha === c.beta - 1, `${name} window ${c.alpha},${c.beta}`).toBe(true);
+      }
+      if (q.outcome === 'unresolved' || q.result.replyKey === null) continue;
+      // Final value per reply (a re-search overrides its scout), reply order kept.
+      const order: number[] = [];
+      const value = new Map<number, number>();
+      for (const c of calls) {
+        if (!value.has(c.sig)) order.push(c.sig);
+        value.set(c.sig, -c.score);
+      }
+      const sigs = replySigs(state, q.result.endKey);
+      const namedSig = sigs.get(q.result.replyKey);
+      expect(namedSig, `${name}: the named reply is a ply-1 reply`).toBeDefined();
+      if (value.has(namedSig as number)) {
+        let bestSig = order[0];
+        for (const sig of order) if ((value.get(sig) as number) > (value.get(bestSig) as number)) bestSig = sig;
+        expect(namedSig, name).toBe(bestSig);
+        expect(q.result.scoreCc, name).toBe(-(value.get(bestSig) as number));
+        if (bestSig !== order[0]) notFirst++;
+      } else {
+        // The named reply ended the game (no `pvs` call): it must beat every
+        // searched one, and the canonical engine must agree the game is over.
+        for (const v of value.values()) expect(-q.result.scoreCc, name).toBeGreaterThanOrEqual(v);
+        expect(walkLine(state, q.result.endKey, q.result.replyKey).afterReply.result, name).not.toBe(Result.ONGOING);
+      }
+      named++;
+    }
+    expect(named).toBeGreaterThanOrEqual(4);
+    // Not vacuous against "read the first reply": on some roots the best
+    // reply is not the first one searched.
+    expect(notFirst).toBeGreaterThan(0);
+  });
+
+  it('a tactical best that is itself plan-consistent is the plan move: nothing is re-searched', async () => {
+    for (const [fixture, why] of [
+      ['contactThisTurn', 'damaging-attack'],
+      ['trailingNoContact', 'injected'],
+    ] as const) {
+      const r = await strategos(PLAN_FIXTURES.find(([n]) => n === fixture)![1]());
+      const st = r.strategy;
+      const classify = st.queries.find(x => x.name === 'veto.classify') as { result: { tacticalBest: string; checked: number } };
+      expect(classify.result.tacticalBest, fixture).toBe(why);
+      expect(classify.result.checked, fixture).toBe(1);
+      expect(research(r), fixture).toBeUndefined();
+      expect(st.veto, fixture).toBeUndefined();
+      const label = why === 'injected' ? st.injected.find(i => i.endKey === r.endKey)?.label : `${st.posture}:${why}`;
+      expect(label, fixture).toBeDefined();
+      expect(st.chosen, fixture).toEqual({ endKey: r.endKey, source: 'plan', scoreCc: r.scoreCc, planLabel: label });
+    }
+  });
+
+  it('deadEssentials: a dead slot and a slot reused by a later arrival are both lost', () => {
+    const p = allocState();
+    p.sq[1] = 10;
+    p.ord[1] = 5;
+    p.sq[3] = 20;
+    p.ord[3] = 9;
+    const rootOrd = p.ord.slice();
+    expect(deadEssentials(p, [1, 2, 3], rootOrd)).toEqual([2]);
+    rootOrd[3] = 7; // slot 3 held a different unit at the root
+    expect(deadEssentials(p, [1, 2, 3], rootOrd)).toEqual([2, 3]);
+    expect(deadEssentials(p, [1], rootOrd)).toEqual([]);
+  });
+
+  it('the private root instrument leaves no marker on an unexposed result', async () => {
+    hooks.noBest = true;
+    const a = await new HardEngine(strategosPatch()).searchTurn(mateOrMaterial(true), { work: SEARCH_WORK });
+    const b = await new HardEngine(strategosPatch()).searchTurn(mateOrMaterial(true), { work: SEARCH_WORK, expose: true });
+    hooks.noBest = false;
+    expect(a.depth).toBe(0);
+    expect(a.strategy?.posture).toBe('force-contact');
+    expect('candidateSource' in a).toBe(false);
+    expect(b.candidateSource).toBe('generator-list');
+    expect(a.actions).toEqual(b.actions);
+  });
+});
+
 describe('the pick', () => {
   it('ranks searched before unsearched, then score, then injected lines, then generator order', () => {
     const picks: RankedPick[] = [
@@ -707,8 +847,16 @@ describe('flag absent', () => {
     delete searchFix.strategyPlans;
     const r = await new HardEngine({ ...patch, searchFix }).searchTurn(essentialOrNot(30), { work: SEARCH_WORK });
     expect(r.strategy?.injected).toEqual([]);
-    expect(r.strategy?.queries.some(q => q.name === 'veto.classify')).toBe(true);
-    expect(r.strategy?.chosen).not.toBeNull();
+    const classify = r.strategy?.queries.find(q => q.name === 'veto.classify') as { outcome: string; result: { tacticalBest: string; consistent: number } };
+    // Without the injected pass nothing is consistent here: the Black fire
+    // next to the plant keeps the enemy killETA inside the plies left after
+    // every kill-free turn. So there is nothing to re-search and the tactical
+    // best (the free kill) is played as the search's, with no veto claimed.
+    expect(classify.result).toMatchObject({ tacticalBest: 'contains-kill', consistent: 0 });
+    expect(classify.outcome).toBe('refuted');
+    expect(research(r)).toBeUndefined();
+    expect(r.strategy?.veto).toBeUndefined();
+    expect(r.strategy?.chosen).toEqual({ endKey: r.endKey, source: 'search', scoreCc: r.scoreCc });
   });
 });
 
