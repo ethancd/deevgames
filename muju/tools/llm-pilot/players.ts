@@ -43,8 +43,9 @@ export function clockVars(gameDir: string): { delaySeconds: string; bankSeconds:
   return { delaySeconds: String(clock.delaySeconds), bankSeconds: String(clock.bankSeconds),
     bankTenthSeconds: String(bankTenth), turnCapSeconds: String(clock.delaySeconds + bankTenth) };
 }
-/** Identity fields the reflection template asks for, from manifest.json (no secrets). */
-function identityVars(gameDir: string): { engineIdentity: string; snapshotVersion: string } {
+/** Identity fields the reflection template asks for, from manifest.json (no secrets). Exported for
+ * tests: the engine identity follows the manifest's real `engine.name`/`engine.profile` (STRATEGOS W1.14). */
+export function identityVars(gameDir: string): { engineIdentity: string; snapshotVersion: string } {
   try {
     const manifest = JSON.parse(readFileSync(path.join(gameDir, 'manifest.json'), 'utf8'));
     const engine = manifest.engine ?? {};

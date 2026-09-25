@@ -212,3 +212,22 @@ describe('player prompt (wave 2 harness fixes)', () => {
     expect(at('**2. The kill clock')).toBeLessThan(at('BRIEF-TEXT'));
   });
 });
+
+describe('reflection engine identity (STRATEGOS W1.14)', () => {
+  it('names the profile the manifest records: desktop as before, strategos when the game ran strategos', async () => {
+    const { mkdtempSync, writeFileSync } = await import('node:fs');
+    const { tmpdir } = await import('node:os');
+    const { join } = await import('node:path');
+    const { identityVars } = await import('../../tools/llm-pilot/players');
+    const engine = { targetMs: 55_000, deadlineMs: 60_000, rulesId: 'muju-phasing-4', sourceSha256: 'a'.repeat(64), seed: 1 };
+    const identityOf = (block: Record<string, unknown>) => {
+      const gameDir = mkdtempSync(join(tmpdir(), 'pilot-identity-'));
+      writeFileSync(join(gameDir, 'manifest.json'), JSON.stringify({ snapshotVersion: 3, engine: block }));
+      return identityVars(gameDir).engineIdentity;
+    };
+    expect(identityOf({ name: 'Hard', profile: 'desktop', ...engine }))
+      .toBe(`Hard desktop 55000ms target / 60000ms deadline, rules muju-phasing-4, source ${'a'.repeat(12)}`);
+    expect(identityOf({ name: 'Hard (strategos)', profile: 'strategos', ...engine }))
+      .toBe(`Hard (strategos) strategos 55000ms target / 60000ms deadline, rules muju-phasing-4, source ${'a'.repeat(12)}`);
+  });
+});

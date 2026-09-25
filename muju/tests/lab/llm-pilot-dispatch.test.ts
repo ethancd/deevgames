@@ -6,7 +6,7 @@ import { join } from 'node:path';
 
 process.env.MUJU_PILOT_CAMPAIGN_DIR = mkdtempSync(join(tmpdir(), 'muju-llm-pilot-dispatch-'));
 
-const { productionRulesId, assertProductionRulesGate, buildEngineConfig, engineManifestBlock, siteHealthOk } = await import('../../tools/llm-pilot/dispatch');
+const { productionRulesId, assertProductionRulesGate, buildEngineConfig, engineManifestBlock, experienceEngineIdentity, siteHealthOk } = await import('../../tools/llm-pilot/dispatch');
 const { PHASING_RULES_VERSION } = await import('../../server/rooms');
 const { llmSeatFor, engineSeatFor, gameId } = await import('../../tools/llm-pilot/pilot');
 
@@ -58,10 +58,16 @@ describe('buildEngineConfig engine profile (STRATEGOS W1.14)', () => {
   it('a desktop game (no engineProfile) writes no "profile" key: byte-identical to every config before this feature', () => {
     const config = buildEngineConfig(baseGame, 'a'.repeat(32), { player: 'black', token: 'x'.repeat(32) }) as Record<string, unknown>;
     expect('profile' in config).toBe(false);
+    // The pre-W1.14 key set, in order (JSON.stringify order is what lands on disk).
+    expect(Object.keys(config)).toEqual(['mode', 'serverUrl', 'roomId', 'seed', 'stateFile', 'credentials', 'expectedMatchPolicy',
+      'expectedTimeControl', 'expectedHandicap', 'researchReadiness']);
   });
-  it('a strategos game writes profile "strategos"', () => {
-    const config = buildEngineConfig({ ...baseGame, engineProfile: 'strategos' }, 'a'.repeat(32), { player: 'black', token: 'x'.repeat(32) }) as Record<string, unknown>;
+  it('a strategos game writes profile "strategos" and differs from the desktop config in nothing else', () => {
+    const credentials = { player: 'black' as const, token: 'x'.repeat(32) };
+    const config = buildEngineConfig({ ...baseGame, engineProfile: 'strategos' }, 'a'.repeat(32), credentials) as Record<string, unknown>;
     expect(config.profile).toBe('strategos');
+    const { profile: _profile, ...rest } = config;
+    expect(JSON.stringify(rest)).toBe(JSON.stringify(buildEngineConfig(baseGame, 'a'.repeat(32), credentials)));
   });
 });
 
@@ -70,15 +76,26 @@ describe('engineManifestBlock (manifest.json engine identity, STRATEGOS W1.14)',
     effort: 'low' as const, blackCrystalHandicap: 2, llmSeat: llmSeatFor('W'), engineSeat: engineSeatFor('W') };
   it('a desktop game (no engineProfile) records name "Hard" and profile "desktop", matching every manifest before this feature', () => {
     const engine = engineManifestBlock(baseGame, 123);
-    expect(engine.name).toBe('Hard');
-    expect(engine.profile).toBe('desktop');
-    expect(engine.rulesId).toBe(PHASING_RULES_VERSION);
-    expect(engine.seed).toBe(123);
+    // The pre-W1.14 inline literal, field for field and in order.
+    expect(JSON.stringify(engine)).toBe(JSON.stringify({ name: 'Hard', profile: 'desktop', targetMs: 55_000, deadlineMs: 60_000,
+      rulesId: PHASING_RULES_VERSION, sourceSha256: engine.sourceSha256, seed: 123 }));
+    expect(engine.sourceSha256).toMatch(/^[a-f0-9]{64}$/);
   });
   it('a strategos game records the real profile and a legibly-suffixed name, not a silently swapped "Hard"', () => {
     const engine = engineManifestBlock({ ...baseGame, engineProfile: 'strategos' }, 123);
     expect(engine.profile).toBe('strategos');
     expect(engine.name).toBe('Hard (strategos)');
+  });
+});
+
+describe('experienceEngineIdentity (the published record, STRATEGOS W1.14 review)', () => {
+  it('a desktop manifest yields only engineSourceSha256, as every record before this feature did', () => {
+    expect(experienceEngineIdentity({ name: 'Hard', profile: 'desktop', sourceSha256: 'c'.repeat(64) })).toEqual({ engineSourceSha256: 'c'.repeat(64) });
+    expect(Object.keys(experienceEngineIdentity({ sourceSha256: 'c'.repeat(64) }))).toEqual(['engineSourceSha256']);
+  });
+  it('a strategos manifest also carries engineProfile, since strategos shares desktop\'s source hash', () => {
+    expect(experienceEngineIdentity({ name: 'Hard (strategos)', profile: 'strategos', sourceSha256: 'c'.repeat(64) }))
+      .toEqual({ engineSourceSha256: 'c'.repeat(64), engineProfile: 'strategos' });
   });
 });
 

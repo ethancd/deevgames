@@ -49,6 +49,10 @@ export interface ExperienceRecord {
   /** Engine source hash the game ran against. Absent on pilot records, which all ran the
    * fire-only purchase menu (source 98ac82cfe61c…); see the playbook's engine-change section. */
   engineSourceSha256?: string;
+  /** STRATEGOS W1.14: the game's engine profile (manifest `engine.profile`) when it was not `desktop`
+   * — e.g. `strategos`, which runs from the same source (same `engineSourceSha256`) with different
+   * settings. Absent means desktop, so every desktop record is byte-identical to before. */
+  engineProfile?: string;
   /** Compact numbers computed mechanically from the room history (facts.ts#summarizeFacts). */
   facts?: FactsSummary;
 }
@@ -172,6 +176,8 @@ whose purchase menu was almost only fire_1; later records name the engine they r
 "Read this first: the engine changed" section (update it, don't drop it), and label every claim about Hard's own
 behaviour with the engine it was observed on, keeping old-engine and current-engine evidence apart. Claims about
 the rules, the tools, or the LLM's own mistakes don't depend on the engine.
+A record with "engineProfile" (for example "strategos") played a different Hard profile from the default desktop one,
+even when its engineSourceSha256 matches; keep its evidence about Hard apart and labelled with that profile too.
 LENGTH: keep the playbook under ${PLAYBOOK_WORD_TARGET} words. Players read it at the start of a timed game, and every
 word costs them clock for the rest of it. The full evidence stays in the experience records you are given each
 time, so distil rather than accumulate: keep the rules primer verbatim, keep the engine-change section, and keep

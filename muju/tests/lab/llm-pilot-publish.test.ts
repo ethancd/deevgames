@@ -72,6 +72,7 @@ describe('publish.ts', () => {
     expect(result.wrote).toBe(false);
     expect(result.nextVersion).toBe(1); // no playbook yet -> version 0 -> next 1
     expect(result.prompt).toContain('Write version: 1');
+    expect(result.prompt).toContain('A record with "engineProfile"'); // STRATEGOS W1.14: kept apart from desktop evidence
     expect(playbookVersion()).toBe(0); // untouched
   });
 

@@ -191,6 +191,20 @@ describe('pilot_memory', () => {
     expect(memory.experiences![0]).toEqual({ gameId: 'G3', result: 'loss', reflection: 'r3' });
     expect(memory.olderExperiences).toBe(3);
   });
+  it('serves a record\'s engineProfile (STRATEGOS W1.14) and adds nothing to a desktop record', () => {
+    const gameDir = tmpGameDir();
+    writeFileSync(join(gameDir, 'manifest.json'), JSON.stringify({ snapshotVersion: 5 }));
+    const snapshotDir = join(gameDir, '..', '..', 'memory', 'snapshots', 'v5');
+    mkdirSync(snapshotDir, { recursive: true });
+    writeFileSync(join(snapshotDir, 'experiences.jsonl'), [
+      { gameId: 'D1-W', engineSourceSha256: 'a'.repeat(64), reflection: 'desktop' },
+      { gameId: 'S1-W', engineSourceSha256: 'a'.repeat(64), engineProfile: 'strategos', reflection: 'strategos' },
+    ].map(record => JSON.stringify(record)).join('\n'));
+    expect(readPilotMemory(gameDir).experiences).toEqual([
+      { gameId: 'D1-W', engineSourceSha256: 'a'.repeat(64), reflection: 'desktop' },
+      { gameId: 'S1-W', engineSourceSha256: 'a'.repeat(64), engineProfile: 'strategos', reflection: 'strategos' },
+    ]);
+  });
   it('reports unavailable rather than fabricating memory when no snapshot exists', () => {
     const gameDir = tmpGameDir();
     expect(readPilotMemory(gameDir)).toEqual({ available: false });

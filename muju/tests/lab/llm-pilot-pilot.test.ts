@@ -205,3 +205,23 @@ describe('engineDisplayNameFor (the room\'s own registered name for the engine s
     expect(engineDisplayNameFor('strategos')).toBe('Hard (strategos)');
   });
 });
+
+// STRATEGOS W1.14 review: holes the first pass left open.
+describe('engine profile edge cases (STRATEGOS W1.14 review)', () => {
+  const base = { id: 'ST04', model: 'sonnet', blackCrystalHandicap: 3, toolTier: 'bare', effort: 'low' } as const;
+  it('refuses an empty or non-string label, as the seat\'s own z.string().min(1) does (hardConfigFor alone would read "" as lab)', () => {
+    expect(() => validateEngineProfile('')).toThrow(/non-empty string/);
+    expect(() => validateEngineProfile(5)).toThrow(/non-empty string/);
+    expect(() => validateEngineProfile(null)).toThrow(/non-empty string/);
+    expect(() => validateTickets([{ ...base, engineProfile: '' }])).toThrow(/Ticket ST04.*non-empty string/);
+  });
+  it('refuses at load a label whose room name would pass the server\'s 40-character limit (else the room create fails and retries forever)', () => {
+    const long = `strategos-${'9'.repeat(40)}k`; // a documentary suffix, so hardConfigFor itself accepts it
+    expect(() => validateEngineProfile(long)).toThrow(/40-character/);
+  });
+  it('a ticket\'s explicit "desktop" opts out of a non-desktop wave default', () => {
+    const [game] = gamesForTicket({ ...base, legs: ['W'], engineProfile: 'desktop' }, 'strategos');
+    expect(game.engineProfile).toBeUndefined();
+    expect(engineDisplayNameFor(game.engineProfile)).toBe('Hard');
+  });
+});

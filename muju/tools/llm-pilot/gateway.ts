@@ -194,7 +194,7 @@ function findSnapshotDir(gameDir: string): string | undefined {
 /** Experience records served in full; older ones are distilled into the playbook. Wave 1 served every
  * record (~170 KB by the end), the largest single input in slow players' context. */
 export const PILOT_MEMORY_RECENT_EXPERIENCES = 6;
-const SERVED_EXPERIENCE_FIELDS = ['gameId', 'model', 'effort', 'toolTier', 'llmSeat', 'handicap', 'result', 'turns', 'engineSourceSha256', 'facts', 'reflection'];
+const SERVED_EXPERIENCE_FIELDS = ['gameId', 'model', 'effort', 'toolTier', 'llmSeat', 'handicap', 'result', 'turns', 'engineSourceSha256', 'engineProfile', 'facts', 'reflection'];
 export function readPilotMemory(gameDir: string): PilotMemory {
   const snapshotDir = findSnapshotDir(gameDir);
   if (!snapshotDir) return { available: false };

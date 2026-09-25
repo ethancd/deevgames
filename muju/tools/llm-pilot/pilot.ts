@@ -72,6 +72,17 @@ export const PILOT_TABLE: readonly Pair[] = [
 const MODELS: readonly ModelId[] = ['sonnet', 'luna', 'sol', 'astra', 'opus', 'fable'];
 const TIERS: readonly ToolTier[] = ['bare', 'harnessed', 'centaur', 'tool-builder'];
 const EFFORTS: readonly Effort[] = ['low', 'medium', 'high', 'max'];
+/** The engine seat's existing in-game name (unchanged by this pilot). */
+export const ENGINE_DISPLAY_NAME = 'Hard';
+/** The engine seat's in-room name for a game's resolved profile: bare "Hard" for `desktop`
+ * (byte-identical to every game before STRATEGOS W1.14), else a legible suffix ("Hard (strategos)")
+ * so the LLM's opponent is never silently swapped for a different engine under the same name —
+ * an explorable-conditions campaign records what it varied, including the opponent's own identity. */
+export function engineDisplayNameFor(profile?: string): string {
+  const name = !profile || profile === 'desktop' ? ENGINE_DISPLAY_NAME : `${ENGINE_DISPLAY_NAME} (${profile})`;
+  if (name.length > 40) throw new Error(`Engine display name "${name}" exceeds the room's 40-character name limit.`);
+  return name;
+}
 /**
  * The SAME rules `tools/engine-seat/config.ts`'s `profile` field enforces on the live seat:
  * `hardConfigFor` must accept the label, and `hard@env` is refused even though `hardConfigFor`
@@ -81,13 +92,23 @@ const EFFORTS: readonly Effort[] = ['low', 'medium', 'high', 'max'];
  * created (`validateTickets`, `waveEngineDefault`), so a bad ticket/wave default fails on
  * `--dry-run` or the first tick, not mid-game.
  */
-export function validateEngineProfile(profile: string): void {
+export function validateEngineProfile(profile: unknown): asserts profile is string {
+  // The seat's own field is `z.string().min(1)`: an empty or non-string label is refused there, so it is
+  // refused here too — never read as "no profile" (an empty string would otherwise fall through to
+  // desktop, or hide a wave default, while `hardConfigFor('')` itself accepts it as `lab`).
+  if (typeof profile !== 'string' || profile.length === 0) {
+    throw new Error(`Engine profile ${JSON.stringify(profile)} must be a non-empty string (a hardConfigFor label such as "strategos").`);
+  }
   try { hardConfigFor(profile); }
   catch (error) { throw new Error(`Engine profile "${profile}": ${error instanceof Error ? error.message : 'unknown label.'}`); }
   if (profile.replace(/-(?:\d+(?:k|m)|units)$/i, '') === ENV_WEIGHTS_LABEL) {
     throw new Error(`Engine profile "${profile}" is refused: hard@env's weights come from MUJU_HARD_WEIGHTS, `
       + 'a file path nothing in the schedule/manifest records; use a named profile (desktop, strategos, midrange, phone, …) instead.');
   }
+  // The room's name is built from the label (`engineDisplayNameFor`); a name over the server's limit
+  // must fail here, not in `createPilotRoom`, where a throw reads as "room not created" and the game
+  // would go back to pending and be retried every tick.
+  engineDisplayNameFor(profile);
 }
 /** Throws on anything the runner could not play exactly as written (never coerces). */
 export function validateTickets(tickets: readonly Pair[]): void {
@@ -128,8 +149,15 @@ export function loadTickets(): Pair[] {
  * Validated the same way a ticket's own field is (see `validateEngineProfile`). Undefined when the
  * wave sets none (or there is no wave.json), which leaves every ticket's own resolution unchanged. */
 export function waveEngineDefault(): string | undefined {
-  const profile = readWaveFile()?.engine?.profile;
-  if (profile !== undefined) validateEngineProfile(profile);
+  const engine: unknown = readWaveFile()?.engine;
+  if (engine === undefined) return undefined;
+  // `"engine": "strategos"` (or any non-object) must not read as "no default" and run desktop silently.
+  if (typeof engine !== 'object' || engine === null || Array.isArray(engine)) {
+    throw new Error(`wave.json "engine" must be an object such as { "profile": "strategos" }, got ${JSON.stringify(engine)}.`);
+  }
+  const profile = (engine as { profile?: unknown }).profile;
+  if (profile === undefined) return undefined;
+  validateEngineProfile(profile);
   return profile;
 }
 export function pairById(id: PairId): Pair {
@@ -168,17 +196,6 @@ function titleCase(effort: Effort): string { return effort.charAt(0).toUpperCase
 export function llmDisplayName(model: ModelId, effort: Effort): string {
   const name = `${MODEL_DISPLAY[model]} ${titleCase(effort)}`;
   if (name.length > 40) throw new Error(`Display name "${name}" exceeds the room's 40-character name limit.`);
-  return name;
-}
-/** The engine seat's existing in-game name (unchanged by this pilot). */
-export const ENGINE_DISPLAY_NAME = 'Hard';
-/** The engine seat's in-room name for a game's resolved profile: bare "Hard" for `desktop`
- * (byte-identical to every game before STRATEGOS W1.14), else a legible suffix ("Hard (strategos)")
- * so the LLM's opponent is never silently swapped for a different engine under the same name —
- * an explorable-conditions campaign records what it varied, including the opponent's own identity. */
-export function engineDisplayNameFor(profile?: string): string {
-  const name = !profile || profile === 'desktop' ? ENGINE_DISPLAY_NAME : `${ENGINE_DISPLAY_NAME} (${profile})`;
-  if (name.length > 40) throw new Error(`Engine display name "${name}" exceeds the room's 40-character name limit.`);
   return name;
 }
 

@@ -321,11 +321,23 @@ export function engineManifestBlock(game: ScheduleGame, seed: number): {
     targetMs: 55_000, deadlineMs: 60_000, rulesId: PHASING_RULES_VERSION, sourceSha256: engineSourceSha256(), seed };
 }
 
+type ManifestEngine = Partial<ReturnType<typeof engineManifestBlock>>;
+/** A published experience record's engine identity, from the game's manifest `engine` block. A
+ * non-desktop profile shares desktop's source hash, so `engineProfile` must travel with the record or
+ * the shared memory would pool hard@strategos evidence with hard@desktop's; it is absent for desktop,
+ * so a desktop record stays byte-identical to every record before STRATEGOS W1.14. */
+export function experienceEngineIdentity(engine: ManifestEngine | undefined): Pick<ExperienceRecord, 'engineSourceSha256' | 'engineProfile'> {
+  return { engineSourceSha256: engine?.sourceSha256 ?? engineSourceSha256(),
+    ...(engine?.profile && engine.profile !== 'desktop' ? { engineProfile: engine.profile } : {}) };
+}
+
 /** Room creation failed (nothing exists on the server): the game goes back to pending. */
 class RoomNotCreated extends Error { constructor(public cause: unknown) { super(`room not created: ${cause instanceof Error ? cause.message : String(cause)}`); } }
 function briefFor(game: ScheduleGame): string { return game.brief ?? defaultBrief(game); }
 interface Prep { roomId: string; watchUrl: string; snapshotVersion: number; enginePlayer: PlayerId; llmPlayer: PlayerId; preparedAt: string }
-async function prepareGame(game: ScheduleGame, snapshotVersion: number): Promise<Prep> {
+/** Exported for tests only (`tests/lab/llm-pilot-engine-profile.test.ts` drives it against a stubbed
+ * server): the one place a game's room name, engine-seat config and manifest are written. */
+export async function prepareGame(game: ScheduleGame, snapshotVersion: number): Promise<Prep> {
   ensureGameDirs(game.gameId);
   writeStatus(game.gameId, 'preparing', 'creating room');
   // The ticket's exact setup is on disk before any room exists (legibility: the schedule may change mid-wave).
@@ -586,7 +598,7 @@ async function finishGame(game: ScheduleGame, player: PlayerResult, engineGaveUp
     citedRevisions: player.citedRevisions, finalRevision: room.revision, reflection: player.reflectionText,
     writtenAt: new Date().toISOString(), ...(isSmoke() ? { label: 'SMOKE' } : {}),
     facts: await factsSummaryFor(gameDir(id)),
-    engineSourceSha256: (readJson<{ engine?: { sourceSha256?: string } }>(`${gameDir(id)}/manifest.json`)?.engine?.sourceSha256) ?? engineSourceSha256(),
+    ...experienceEngineIdentity(readJson<{ engine?: ManifestEngine }>(`${gameDir(id)}/manifest.json`)?.engine),
   });
   let curation = 'playbook curated';
   try {
