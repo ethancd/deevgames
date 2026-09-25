@@ -3,6 +3,9 @@ import type { GameState, PlayerId } from '../game/types';
 import { getActionsPerTurn, isActionsPerTurn, isBlackCrystalHandicap, isRuleset } from '../game/rules';
 import { startHistory, type LocalGameHistory } from '../game/analysis';
 import { DEFAULT_AI_PACE, isAIPace, type AIPace } from '../ai/turnTime';
+import type { Variant } from '../game/types';
+import { isMicro } from '../game/rules';
+import { MICRO_ACTIONS_PER_TURN, MICRO_BOARD_SIZE, MICRO_CATALOGUE, MICRO_RULES_REVISION } from '../game/micro';
 
 // v7: explicit ruleset and public pending summons. v5/v6 saves remain readable as Standard.
 // v8 (rules revision `muju-phasing-2`, 2026-09-19): the inactivity draw is twenty
@@ -47,6 +50,15 @@ export const PHASING_1_DRAW_LIMIT = 10;
 const READABLE_SCHEMA_VERSIONS: readonly number[] = [5, 6, 7, TWENTY_PLY_CLOCK_SCHEMA, 9, KILL_CLOCK_SCHEMA, SCHEMA_VERSION];
 
 const STORAGE_KEY = 'elemental-tactics-save';
+
+/**
+ * MICRO MUJU keeps its own slot and schema so a Micro game can never overwrite,
+ * or be resumed as, a Prime save (and vice versa). Schema 1 = `micro-muju-1`.
+ * Every entry point below takes an optional `variant`; omitted means Prime.
+ */
+export const MICRO_STORAGE_KEY = 'muju-micro-save';
+export const MICRO_SCHEMA_VERSION = 1;
+const storageKey = (variant?: Variant) => variant === 'micro' ? MICRO_STORAGE_KEY : STORAGE_KEY;
 /**
  * Where a retired-rules save is kept. Written once, by `loadGameState`, with the
  * bytes it found under `STORAGE_KEY`; never written again while it is occupied,
@@ -63,23 +75,27 @@ export interface PersistedState {
    * existed, and — being a preference rather than part of the position — never
    * a reason to reject a save, so it stays out of `validateGameState`. */
   aiPace?: Record<PlayerId, AIPace>;
+  /** Micro saves only: the variant and rules revision the game was played under. */
+  variant?: Variant;
+  rulesRevision?: string;
 }
 
 /**
  * Save game state to localStorage
  */
-export function saveGameState(state: GameState, history?: LocalGameHistory, aiPace = keptAIPace()): void {
+export function saveGameState(state: GameState, history?: LocalGameHistory, aiPace = isMicro(state) ? undefined : keptAIPace()): void {
+  const key = storageKey(state.variant);
   try {
     const persisted: PersistedState = {
-      schemaVersion: SCHEMA_VERSION,
+      schemaVersion: isMicro(state) ? MICRO_SCHEMA_VERSION : SCHEMA_VERSION,
       timestamp: Date.now(),
       state,
       history,
-      aiPace,
+      ...(isMicro(state) ? { variant: 'micro' as const, rulesRevision: MICRO_RULES_REVISION } : { aiPace }),
     };
     // Keep the latest position resumable even when a long score fills storage.
     for (;;) {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(persisted)); break; }
+      try { localStorage.setItem(key, JSON.stringify(persisted)); break; }
       catch (error) {
         if (!persisted.history || persisted.history.frames.length <= 1) throw error;
         persisted.history = { complete: false, frames: persisted.history.frames.slice(Math.ceil(persisted.history.frames.length / 2)) };
@@ -92,13 +108,14 @@ export function saveGameState(state: GameState, history?: LocalGameHistory, aiPa
 }
 
 /** Older saves can still be analyzed from their first available position. */
-export function loadGameHistory(): LocalGameHistory | null {
-  const state = loadGameState();
+export function loadGameHistory(variant?: Variant): LocalGameHistory | null {
+  const state = loadGameState(variant);
   if (!state) return null;
+  const valid = variant === 'micro' ? validateMicroState : (frame: unknown) => validateGameState(frame);
   try {
-    const history = (JSON.parse(localStorage.getItem(STORAGE_KEY)!) as PersistedState).history;
+    const history = (JSON.parse(localStorage.getItem(storageKey(variant))!) as PersistedState).history;
     if (history && typeof history.complete === 'boolean' && Array.isArray(history.frames) && history.frames.length &&
-      history.frames.every(frame => frame && typeof frame.label === 'string' && typeof frame.turn === 'string' && validateGameState(frame.state))) return history;
+      history.frames.every(frame => frame && typeof frame.label === 'string' && typeof frame.turn === 'string' && valid(frame.state))) return history;
   } catch { /* The current saved position remains useful without its score. */ }
   return startHistory(state, false);
 }
@@ -107,7 +124,8 @@ export function loadGameHistory(): LocalGameHistory | null {
  * Load game state from localStorage
  * Returns null if no valid save exists or schema version mismatches
  */
-export function loadGameState(): GameState | null {
+export function loadGameState(variant?: Variant): GameState | null {
+  if (variant === 'micro') return loadMicroGameState();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
@@ -173,6 +191,50 @@ export function loadGameState(): GameState | null {
     clearGameState();
     return null;
   }
+}
+
+/** Micro's slot holds only `micro-muju-1` games. Anything else there is not a
+ * game this build can play, so it is cleared from THAT slot only; Prime's save
+ * is never read, written or cleared on Micro's behalf. */
+function loadMicroGameState(): GameState | null {
+  try {
+    const raw = localStorage.getItem(MICRO_STORAGE_KEY);
+    if (!raw) return null;
+    const persisted: PersistedState = JSON.parse(raw);
+    if (persisted.schemaVersion !== MICRO_SCHEMA_VERSION || persisted.variant !== 'micro' ||
+      persisted.rulesRevision !== MICRO_RULES_REVISION || !validateMicroState(persisted.state)) {
+      console.log('Unreadable MICRO MUJU save, starting fresh game');
+      clearGameState('micro');
+      return null;
+    }
+    return persisted.state;
+  } catch (e) {
+    console.warn('Failed to load MICRO MUJU game state:', e);
+    clearGameState('micro');
+    return null;
+  }
+}
+
+/** A resumable `micro-muju-1` position: 6×6, two actions, only the three
+ * Micro pieces on the board or phasing in, no clock. */
+function validateMicroState(state: unknown): state is GameState {
+  if (!state || typeof state !== 'object') return false;
+  const s = state as GameState;
+  const onBoard = (p: unknown) => !!p && typeof p === 'object' && Number.isInteger((p as any).x) && Number.isInteger((p as any).y) &&
+    (p as any).x >= 0 && (p as any).x < MICRO_BOARD_SIZE && (p as any).y >= 0 && (p as any).y < MICRO_BOARD_SIZE;
+  if (s.variant !== 'micro' || s.rulesRevision !== MICRO_RULES_REVISION || s.ruleset !== 'phasing' ||
+    s.actionsPerTurn !== MICRO_ACTIONS_PER_TURN || s.inactivityRule !== 'off') return false;
+  if (!s.phase || !s.board || !s.players?.white || !s.players?.black || !s.turn) return false;
+  if (!['white', 'black'].includes(s.turn.currentPlayer) || !['place', 'action'].includes(s.turn.phase) ||
+    !Number.isInteger(s.turn.actionsRemaining) || s.turn.actionsRemaining < 0 || s.turn.actionsRemaining > MICRO_ACTIONS_PER_TURN) return false;
+  if (!Array.isArray(s.board.cells) || s.board.cells.length !== MICRO_BOARD_SIZE ||
+    s.board.cells.some((row, y) => !Array.isArray(row) || row.length !== MICRO_BOARD_SIZE ||
+      row.some((cell, x) => !cell || cell.position?.x !== x || cell.position?.y !== y || !Number.isInteger(cell.resourceLayers) || cell.resourceLayers < 0))) return false;
+  if (!Array.isArray(s.board.units) || s.board.units.some(u => !u || typeof u.id !== 'string' || !['white', 'black'].includes(u.owner) ||
+    !MICRO_CATALOGUE.includes(u.definitionId) || !onBoard(u.position))) return false;
+  if (!Array.isArray(s.pendingSummons) || s.pendingSummons.some(p => !p || typeof p.id !== 'string' || !['white', 'black'].includes(p.owner) ||
+    !MICRO_CATALOGUE.includes(p.definitionId) || !Number.isInteger(p.cost) || p.cost < 0 || !onBoard(p.position))) return false;
+  return true;
 }
 
 /**
@@ -270,9 +332,9 @@ export function saveAIPace(aiPace: Record<PlayerId, AIPace>): void {
 /**
  * Clear saved game state
  */
-export function clearGameState(): void {
+export function clearGameState(variant?: Variant): void {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(storageKey(variant));
   } catch (e) {
     console.warn('Failed to clear game state:', e);
   }
@@ -291,6 +353,8 @@ function validateGameState(state: unknown, legacy = false): state is GameState {
   if (s.actionsPerTurn !== undefined && !(isActionsPerTurn(s.actionsPerTurn) || (legacy && s.actionsPerTurn === 6))) return false;
 
   if (s.ruleset !== undefined && !isRuleset(s.ruleset)) return false;
+  // A variant game is never a Prime save, whichever slot it turned up in.
+  if (s.variant !== undefined) return false;
   if (s.pendingSummons !== undefined && (!Array.isArray(s.pendingSummons) || s.pendingSummons.some((p: any) =>
     !p || typeof p.id !== 'string' || !['white', 'black'].includes(p.owner) ||
     !['fire_1','lightning_1','water_1','shadow_1','plant_1','metal_1'].includes(p.definitionId) ||

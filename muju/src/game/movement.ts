@@ -1,6 +1,6 @@
 import type { BoardState, Position, Unit } from './types';
 import {
-  BOARD_SIZE,
+  boardSize,
   getAdjacentPositions,
   isValidPosition,
   isOccupied,
@@ -69,7 +69,7 @@ export function findAttackApproach(unit: Unit, target: Unit, board: BoardState, 
   if (actions < 1 || !canAttack(unit) || target.owner === unit.owner || unit.attackedThisTurn?.includes(target.id)) return null;
   const speed = getUnitDefinition(unit.definitionId).speed;
   let shortest: Position[] | null = null;
-  for (const destination of getAdjacentPositions(target.position)) {
+  for (const destination of getAdjacentPositions(target.position, boardSize(board))) {
     if (destination.x === unit.position.x && destination.y === unit.position.y) return [];
     if (isOccupied(board, destination)) continue;
     const path = findPath(unit.position, destination, board, (actions - 1) * speed);
@@ -124,7 +124,7 @@ export function findPath(
     ];
 
     for (const neighbor of neighbors) {
-      if (!isValidPosition(neighbor)) continue;
+      if (!isValidPosition(neighbor, boardSize(board))) continue;
 
       const key = posKey(neighbor);
       if (visited.has(key)) continue;
@@ -198,18 +198,18 @@ export function getMovementRange(
  * Turn flags are ignored because enemy inspection previews a fresh turn.
  */
 export function getAttackFrontier(unit: Unit, board: BoardState, moveActions = 3): Position[] {
-  const key = (p: Position) => p.y * BOARD_SIZE + p.x;
+  const size = boardSize(board), key = (p: Position) => p.y * size + p.x;
   const origins = [unit.position, ...getMovementRange(
     unit.position, getUnitDefinition(unit.definitionId).speed, moveActions, board
   ).map(p => p.position)];
   const area = new Map<number, Position>([[key(unit.position), unit.position]]);
   for (const origin of origins) {
-    for (const target of getAdjacentPositions(origin)) area.set(key(target), target);
+    for (const target of getAdjacentPositions(origin, size)) area.set(key(target), target);
   }
   const friendly = new Set(board.units.filter(u => u.owner === unit.owner).map(u => key(u.position)));
   return [...area.values()].filter(p => !friendly.has(key(p)) && (
-    p.x === 0 || p.y === 0 || p.x === BOARD_SIZE - 1 || p.y === BOARD_SIZE - 1 ||
-    getAdjacentPositions(p).some(neighbor => !area.has(key(neighbor)))
+    p.x === 0 || p.y === 0 || p.x === size - 1 || p.y === size - 1 ||
+    getAdjacentPositions(p, size).some(neighbor => !area.has(key(neighbor)))
   ));
 }
 
@@ -235,26 +235,28 @@ export function getMoveCost(
   board: BoardState
 ): number | null {
   if (speed <= 0) return null;
-  const distance = distancesFrom(startPosition, board).distances[targetPosition.y * 10 + targetPosition.x];
+  const distance = distancesFrom(startPosition, board).distances[targetPosition.y * boardSize(board) + targetPosition.x];
   return distance > 0 ? Math.ceil(distance / speed) : null;
 }
 
 
 // Immutable board identity scopes derived data. Weak keys let old game/search
-// positions be collected; the 100-entry FIFO preserves up/down/left/right order.
+// positions be collected; the BFS FIFO preserves up/down/left/right order.
+// Cells are indexed y * size + x for the board's own size (Prime 10, Micro 6).
 const movementCache = new WeakMap<BoardState, Map<number, { distances: Int16Array; order: number[] }>>();
 function distancesFrom(start: Position, board: BoardState) {
   let cache = movementCache.get(board);
   if (!cache) { cache = new Map(); movementCache.set(board, cache); }
-  const origin = start.y * 10 + start.x;
+  const size = boardSize(board), cells = size * size;
+  const origin = start.y * size + start.x;
   const cached = cache.get(origin); if (cached) return cached;
-  const occupied = new Uint8Array(100);
-  for (const u of board.units) occupied[u.position.y * 10 + u.position.x] = 1;
-  const distances = new Int16Array(100).fill(-1), queue = new Int16Array(100), order: number[] = [];
+  const occupied = new Uint8Array(cells);
+  for (const u of board.units) occupied[u.position.y * size + u.position.x] = 1;
+  const distances = new Int16Array(cells).fill(-1), queue = new Int16Array(cells), order: number[] = [];
   let head = 0, tail = 1; queue[0] = origin; distances[origin] = 0;
   while (head < tail) {
-    const p = queue[head++], x = p % 10, y = Math.floor(p / 10);
-    for (const n of [y > 0 ? p - 10 : -1, y < 9 ? p + 10 : -1, x > 0 ? p - 1 : -1, x < 9 ? p + 1 : -1]) {
+    const p = queue[head++], x = p % size, y = Math.floor(p / size);
+    for (const n of [y > 0 ? p - size : -1, y < size - 1 ? p + size : -1, x > 0 ? p - 1 : -1, x < size - 1 ? p + 1 : -1]) {
       if (n < 0 || occupied[n] || distances[n] >= 0) continue;
       distances[n] = distances[p] + 1; queue[tail++] = n; order.push(n);
     }
@@ -263,5 +265,6 @@ function distancesFrom(start: Position, board: BoardState) {
 }
 function reachable(start: Position, maximum: number, board: BoardState) {
   const { distances, order } = distancesFrom(start, board);
-  return order.filter(n => distances[n] <= maximum).map(n => ({ position: { x: n % 10, y: Math.floor(n / 10) }, distance: distances[n] }));
+  const size = boardSize(board);
+  return order.filter(n => distances[n] <= maximum).map(n => ({ position: { x: n % size, y: Math.floor(n / size) }, distance: distances[n] }));
 }

@@ -1,6 +1,7 @@
 import type { GameState, PlayerId, Position } from './types';
 import { isValidSpawnPosition, getAllSpawnPositions } from './spawning';
 import { createUnitFromDefinition } from './building';
+import { MICRO_CATALOGUE } from './micro';
 
 export function hasPendingSummon(state: GameState, player: PlayerId, position: Position): boolean {
   return (state.pendingSummons ?? []).some(s => s.owner === player && s.position.x === position.x && s.position.y === position.y);
@@ -16,7 +17,9 @@ export function getPurchasePositions(state: GameState, player: PlayerId): Positi
 export function resolveSummons(state: GameState, player: PlayerId): GameState {
   const pending = state.pendingSummons ?? [];
   const own = pending.filter(s => s.owner === player);
-  const summoned = own.filter(s => isValidSpawnPosition(s.position, player, state.board));
+  // Micro: only its three pieces may arrive; anything else refunds like a disruption.
+  const summoned = own.filter(s => isValidSpawnPosition(s.position, player, state.board) &&
+    (state.variant !== 'micro' || MICRO_CATALOGUE.includes(s.definitionId)));
   const disrupted = own.filter(s => !summoned.includes(s));
   return { ...state,
     pendingSummons: pending.filter(s => s.owner !== player),

@@ -70,7 +70,9 @@ export async function roomRequest<T>(serverUrl: string, path: string, body?: unk
 }
 /** No `ruleset` on the wire since 2026-09-21: the server creates Phasing rooms
  * and refuses an explicit `'standard'` (`server/schema.ts`). */
-export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 4, timeControl?: TimeControl | TimeControlPreset | null, blackCrystalHandicap = 0) => roomRequest<RoomAdmission>(serverUrl, '', { name, side, actionsPerTurn, timeControl, ...(blackCrystalHandicap > 0 ? { blackCrystalHandicap } : {}) });
+export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 4, timeControl?: TimeControl | TimeControlPreset | null, blackCrystalHandicap = 0, variant?: import('../game/types').Variant) =>
+  roomRequest<RoomAdmission>(serverUrl, '', variant === 'micro' ? { name, side, timeControl, variant }
+    : { name, side, actionsPerTurn, timeControl, ...(blackCrystalHandicap > 0 ? { blackCrystalHandicap } : {}) });
 export const listActiveRooms = (serverUrl: string, signal?: AbortSignal) => roomRequest<{ rooms: ActiveRoom[] }>(serverUrl, '', undefined, undefined, signal);
 export const listArchivedRooms = (serverUrl: string, before?: string, signal?: AbortSignal) => roomRequest<RoomArchive>(serverUrl, `/archived${before ? `?before=${before}` : ''}`, undefined, undefined, signal);
 export const joinRoom = (serverUrl: string, roomId: string, name: string, inviteCode: string) => roomRequest<RoomAdmission>(serverUrl, `/${roomId}/join`, { name, inviteCode });

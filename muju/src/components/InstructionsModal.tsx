@@ -8,6 +8,7 @@ import { BOARD_SIZE } from '../game/board';
 import { INITIAL_MAP_RESOURCES, UNEQUAL_ROUTES_MAP } from '../game/resourceMap';
 import { INACTIVITY_LIMIT } from '../game/inactivity';
 import { UPKEEP_BY_TIER } from '../game/upkeep';
+import { MICRO_PAGES } from './MicroRules';
 
 const hi = getUnitDefinition('fire_1');
 const hono = getUnitDefinition('fire_2');
@@ -91,9 +92,9 @@ const getPages = (actionsPerTurn: ActionsPerTurn) => [
 
 /** `phasing` is accepted and ignored: `GameScreen` still passes it and every
  * live game is Phasing, so there is nothing left for it to select. */
-export function InstructionsModal({isOpen,onClose,actionsPerTurn=DEFAULT_ACTIONS_PER_TURN}: {isOpen:boolean;onClose:()=>void;actionsPerTurn?:ActionsPerTurn;phasing?:boolean}) {
+export function InstructionsModal({isOpen,onClose,actionsPerTurn=DEFAULT_ACTIONS_PER_TURN,micro=false}: {isOpen:boolean;onClose:()=>void;actionsPerTurn?:ActionsPerTurn;phasing?:boolean;micro?:boolean}) {
   const [page,setPage]=useState(0);
-  const pages=getPages(actionsPerTurn);
+  const pages=micro?MICRO_PAGES:getPages(actionsPerTurn);
   if(!isOpen)return null;
   return <PlayDialog title="How to play" onClose={onClose}>
     <div className="help-body"><h3>{pages[page].title}</h3><div className="tutorial-copy">{pages[page].content}</div></div>

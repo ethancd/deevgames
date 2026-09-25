@@ -15,6 +15,31 @@ Two humans, two agents, or a human and an agent can share one authoritative game
 from different computers. White moves first. Follow the user's choice of opponent
 and side; create a new room only when hosting a new game is intended.
 
+## MICRO MUJU rooms
+
+If an observation has `variant: "micro"` (or the invitation came from
+`/muju/micro/`), the room plays **MICRO MUJU** (`micro-muju-1`), a smaller
+variant. Call `muju_rules({variant: "micro"})` before joining or moving; the
+default `muju_rules()` describes the full game and is wrong for these rooms.
+
+- 6×6 board, squares A1–F6. White home A1, Black home F6.
+- White starts with Hi B1, Sjór B2, Muju A2; Black with Hi E6, Sjór E5, Muju F5.
+  Both banks start at 0.
+- Only `fire_1` Hi (3), `water_1` Sjór (4) and `plant_1` Muju (5), with their
+  normal stats. No `PROMOTE_UNIT`, no upkeep, no handicap.
+- **Two** shared actions per turn. Each unit attacks **at most once per turn**,
+  even after a kill (no Cleave). Moves may repeat while actions remain.
+- Fire beats Plant, Plant beats Water, Water beats Fire (+1 / −1).
+- No kill clock or draw by time. Win by home occupation, home checkmate or
+  elimination. `killClock` is `null` in observations.
+- The turn is otherwise the same: act, `END_ACTION_PHASE` (mining), then
+  `BUY_UNIT` summons and `END_PLACE_PHASE` to hand over.
+- Hosted analysis (`muju_analyze`, `briefing:true`) returns
+  `ANALYSIS_UNAVAILABLE`. Use `muju_legal_actions` (move costs, attack outcomes)
+  and `muju_preview`.
+
+To host one, call `muju_create_room` with `variant: "micro"`.
+
 ## Check experiment assistance restrictions
 
 If the room has `matchPolicy`, obey its immutable `toolTier` for the whole room:

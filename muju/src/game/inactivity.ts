@@ -1,5 +1,8 @@
 import type { GameState, PlayerId } from './types';
 
+/** The lab switch, or MICRO MUJU, which has no kill clock at all. */
+const clockOff = (state: GameState): boolean => state.inactivityRule === 'off' || state.variant === 'micro';
+
 /** Rules revision `muju-phasing-3` (2026-09-22): the KILL CLOCK. Ten kill-free
  * plies end the game, and the higher mined total wins (a tie is a draw). The
  * counter, its trigger (only an attack that removes a unit resets it) and its
@@ -38,7 +41,7 @@ export function killClockCountAfterTurn(state: GameState): number {
  * counted ply (or the hand-off itself ends the game), so the invader's next
  * turn start is not guaranteed and no checkmate may be awarded. */
 export function killClockForbidsCheckmate(state: GameState, limit: number = INACTIVITY_LIMIT): boolean {
-  if (state.inactivityRule === 'off') return false;
+  if (clockOff(state)) return false;
   return killClockCountAfterTurn(state) >= limit - 1;
 }
 
@@ -46,7 +49,7 @@ export function killClockForbidsCheckmate(state: GameState, limit: number = INAC
  * `limit`/`verdict` default to the live rule and exist so a historical replay or
  * a legacy save can pin the revision it was recorded under. */
 export function resolveInactivityDraw(state: GameState, limit: number = INACTIVITY_LIMIT, verdict: InactivityVerdict = 'mined-total'): GameState {
-  if (state.phase !== 'playing' || state.inactivityRule === 'off' || (state.inactivityPlies ?? 0) < limit) return state;
+  if (state.phase !== 'playing' || clockOff(state) || (state.inactivityPlies ?? 0) < limit) return state;
   const ended = { ...state, phase: 'victory' as const, upkeepPending: false, selectedUnit: null, validMoves: [], validAttacks: [] };
   if (verdict === 'draw') return { ...ended, winner: null, victoryReason: 'inactivity' };
   const white = minedTotal(state, 'white'), black = minedTotal(state, 'black');
