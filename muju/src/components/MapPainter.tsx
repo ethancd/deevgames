@@ -4,22 +4,35 @@ import { CellReserve } from './CellReserve';
 import './MapPainter.css';
 
 const STORAGE_KEY = 'muju:painter:v1';
-const SIZE = 10;
+const MIN_SIZE = 4, MAX_SIZE = 10;
+const SIZES = Array.from({ length: MAX_SIZE - MIN_SIZE + 1 }, (_, i) => MIN_SIZE + i);
 const HISTORY_LIMIT = 200;
 const paintAmount = (event: { shiftKey: boolean; metaKey: boolean }) => event.metaKey ? 10 : event.shiftKey ? 2 : 1;
 
 function loadDraft(): number[] {
   try {
     const saved: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? 'null');
-    if (Array.isArray(saved) && saved.length === SIZE * SIZE &&
+    if (Array.isArray(saved) && SIZES.some(size => saved.length === size * size) &&
       saved.every(value => Number.isInteger(value) && value >= 0 && value <= MAX_RESOURCE_RESERVE)) return saved;
   } catch { /* Start with the default map if storage is unavailable or the draft is invalid. */ }
   return [...UNEQUAL_ROUTES_MAP];
 }
 
+const sizeOf = (map: number[]) => Math.round(Math.sqrt(map.length));
+
+// Keeps the squares both sizes share, anchored at A1; new squares start empty.
+function resizeMap(map: number[], size: number): number[] {
+  const old = sizeOf(map);
+  return Array.from({ length: size * size }, (_, i) => {
+    const x = i % size, y = Math.floor(i / size);
+    return x < old && y < old ? map[y * old + x] : 0;
+  });
+}
+
 function formatMap(map: number[]): string {
-  return `[\n${Array.from({ length: SIZE }, (_, y) =>
-    `  ${map.slice(y * SIZE, (y + 1) * SIZE).join(', ')}`).join(',\n')}\n]`;
+  const size = sizeOf(map);
+  return `[\n${Array.from({ length: size }, (_, y) =>
+    `  ${map.slice(y * size, (y + 1) * size).join(', ')}`).join(',\n')}\n]`;
 }
 
 export function MapPainter() {
@@ -33,6 +46,9 @@ export function MapPainter() {
   const cells = useRef<(HTMLButtonElement | null)[]>([]);
   const copyField = useRef<HTMLTextAreaElement>(null);
   const { map, past, future } = history;
+  const boardSize = sizeOf(map);
+  const lastColumn = String.fromCharCode(64 + boardSize);
+  const lineStyle = { gridTemplateColumns: `repeat(${boardSize}, 1fr)` };
 
   useEffect(() => {
     const title = document.title;
@@ -53,13 +69,13 @@ export function MapPainter() {
     setNotice('');
     setHistory(current => {
       const next = update(current.map);
-      if (next.every((value, index) => value === current.map[index])) return current;
+      if (next.length === current.map.length && next.every((value, index) => value === current.map[index])) return current;
       return { past: [...current.past, current.map].slice(-HISTORY_LIMIT), map: next, future: [] };
     });
   };
   const paint = (index: number, amount: number) => change(current => {
     const next = Math.max(0, Math.min(MAX_RESOURCE_RESERVE, current[index] + amount));
-    const opposite = SIZE * SIZE - 1 - index;
+    const opposite = boardSize * boardSize - 1 - index;
     return current.map((value, i) => i === index || (lockSymmetry && i === opposite) ? next : value);
   });
   const undo = () => {
@@ -111,19 +127,23 @@ export function MapPainter() {
         <output className="painter-total" aria-label="Total crystals"><strong>{map.reduce((sum, value) => sum + value, 0)}</strong> crystals</output>
       </div>
       <p className="painter-instructions" id="painter-instructions">Click <b>+1</b> <span>·</span> Right-click <b>−1</b> <span>·</span> Shift <b>±2</b> <span>·</span> ⌘ <b>±10</b></p>
-      <label className="painter-symmetry" title="Edits set the opposite square to the same crystal count (A1 ↔ J10).">
+      <div className="painter-size" role="group" aria-label="Board size">
+        {SIZES.map(size => <button type="button" key={size} aria-pressed={size === boardSize}
+          onClick={() => { change(current => resizeMap(current, size)); setActiveCell(0); }}>{size}×{size}</button>)}
+      </div>
+      <label className="painter-symmetry" title={`Edits set the opposite square to the same crystal count (A1 ↔ ${lastColumn}${boardSize}).`}>
         <input type="checkbox" checked={lockSymmetry} onChange={event => setLockSymmetry(event.target.checked)} />
         Lock 180° rotational symmetry
       </label>
       <div className="painter-board-frame">
-        <div className="painter-column-labels" aria-hidden="true">{'ABCDEFGHIJ'.split('').map(letter => <span key={letter}>{letter}</span>)}</div>
-        <div className="painter-row-labels" aria-hidden="true">{Array.from({ length: SIZE }, (_, y) => <span key={y}>{y + 1}</span>)}</div>
+        <div className="painter-column-labels" aria-hidden="true" style={lineStyle}>{'ABCDEFGHIJ'.slice(0, boardSize).split('').map(letter => <span key={letter}>{letter}</span>)}</div>
+        <div className="painter-row-labels" aria-hidden="true" style={{ gridTemplateRows: `repeat(${boardSize}, 1fr)` }}>{Array.from({ length: boardSize }, (_, y) => <span key={y}>{y + 1}</span>)}</div>
         <div className={`battle-board painter-board${showResources ? ' painter-reserves' : ''}`} role="group" aria-label="Starting crystals" aria-describedby="painter-instructions painter-keyboard">
-          <div className="battle-grid">
+          <div className="battle-grid" style={{ ...lineStyle, gridTemplateRows: `repeat(${boardSize}, minmax(0, 1fr))` }}>
             {map.map((value, index) => {
-              const x = index % SIZE, y = Math.floor(index / SIZE);
+              const x = index % boardSize, y = Math.floor(index / boardSize);
               const coordinate = `${String.fromCharCode(65 + x)}${y + 1}`;
-              const home = index === 0 ? 'white' : index === 99 ? 'black' : null;
+              const home = index === 0 ? 'white' : index === boardSize * boardSize - 1 ? 'black' : null;
               return <div className="board-square" key={index}>
                 <button type="button" className={`board-cell painter-cell reserve-${value}`}
                   ref={node => { cells.current[index] = node; }}
@@ -140,10 +160,10 @@ export function MapPainter() {
                       const direction = ['Backspace', 'Delete', '-'].includes(event.key) ? -1 : 1;
                       paint(index, direction * (event.shiftKey ? 2 : 1));
                     }
-                    const destination = event.key === 'ArrowLeft' ? y * SIZE + Math.max(0, x - 1) :
-                      event.key === 'ArrowRight' ? y * SIZE + Math.min(SIZE - 1, x + 1) :
-                      event.key === 'ArrowUp' ? Math.max(0, y - 1) * SIZE + x :
-                      event.key === 'ArrowDown' ? Math.min(SIZE - 1, y + 1) * SIZE + x : null;
+                    const destination = event.key === 'ArrowLeft' ? y * boardSize + Math.max(0, x - 1) :
+                      event.key === 'ArrowRight' ? y * boardSize + Math.min(boardSize - 1, x + 1) :
+                      event.key === 'ArrowUp' ? Math.max(0, y - 1) * boardSize + x :
+                      event.key === 'ArrowDown' ? Math.min(boardSize - 1, y + 1) * boardSize + x : null;
                     if (destination !== null) { event.preventDefault(); cells.current[destination]?.focus(); }
                   }}>
                   <CellReserve cell={{ position: { x, y }, resourceLayers: value }} visible={showResources} />
@@ -157,7 +177,7 @@ export function MapPainter() {
       </div>
       <div className="painter-map-actions">
         <button type="button" onClick={() => change(() => [...UNEQUAL_ROUTES_MAP])}>Reset to default</button>
-        <button type="button" onClick={() => change(() => Array(SIZE * SIZE).fill(0))}>Clear map</button>
+        <button type="button" onClick={() => change(current => Array(current.length).fill(0))}>Clear map</button>
         <span>0–{MAX_RESOURCE_RESERVE} per square</span>
       </div>
     </section>
@@ -169,11 +189,11 @@ export function MapPainter() {
       </div>
       <p className="painter-save-status" role="status" aria-label="Draft status">{notice || (saved ? 'Draft saved on this device.' : 'Draft could not be saved. Copy or download to keep it.')}</p>
       {showCopy && <div className="painter-copy-fallback">
-        <label htmlFor="painter-map-json">Map JSON · columns A–J, rows 1–10</label>
+        <label htmlFor="painter-map-json">Map JSON · columns A–{lastColumn}, rows 1–{boardSize}</label>
         <textarea id="painter-map-json" ref={copyField} readOnly value={formatMap(map)} rows={12} />
         <button type="button" onClick={() => setShowCopy(false)}>Close</button>
       </div>}
-      <p>Starts from {RESOURCE_MAP_NAME}. Export your layout to share it. Painting edits this draft only.</p>
+      <p>Starts from {RESOURCE_MAP_NAME} (10×10); reset returns to it. Resizing keeps the squares from A1. Export your layout to share it. Painting edits this draft only.</p>
       <p id="painter-keyboard">Keyboard: arrow keys to navigate, Enter to add, Delete to remove. Shift doubles either.</p>
     </footer>
   </main>;
