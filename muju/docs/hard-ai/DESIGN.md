@@ -1824,64 +1824,102 @@ The cone's cost is a deliberate budget, and `top1Share` is now the number that h
   specification; the shipped evaluator still implements M9's pair count until
   an arm carrying B3 is retained under M20/E6.
 
-### 2026-09-24 — strategos: a strategic planning layer for the kill clock (W1)
+### 2026-09-24 — strategos: a clock-aware `hard@strategos` profile (STRATEGOS W1)
 
-**What changes.** The `hard@strategos` profile (§6.3, `strategosPatch` in `config.ts`) adds a strategic
-layer that projects the kill-clock outcome and chooses between Hold (protect a lead) and ForceContact
-(force an attack when behind), plus two eval fixes (clock terminal score under a typed reading,
-exhaustive promotion enumeration), a zero-damage attack prune, a per-search clock-policy module slot,
-telemetry extensions, ClockHeist scripted opponent, a plan-level exam kind, Phasing determinism corpus,
-and ladder rows R0–R3 (preregistered in amendment A8). Desktop bytes (`5de7ae20…`) unchanged.
+**What changes.** A new, opt-in profile, `hard@strategos`: `hard@desktop` plus six optional keys that
+`config.ts strategosPatch()` sets — `SearchFix.pruneZeroDamage`, `.strategyPlans`, `.strategyVeto`,
+`.killClockPolicy: 'ledger'`, and `EvalFix.clockLedger`, `.promoteExhaustive`. It carries no `weights` key.
+It is reached by name only: the ladder's `hard@strategos` (`lab/hard-ai/bots/hard.ts
+hardConfigFor('strategos')`), the engine seat's `profile` field, and the browser's `?hardEngine=strategos`
+(`src/ai/hardOptIn.ts`). The rest of this document still describes `hard@desktop`; this addendum records
+what the six keys change. Plan: `~/.claude/plans/can-you-respond-to-piped-book.md`, Part B. Change record:
+`docs/changes/2026-09-24-strategos-w1.md`.
 
-New modules under `src/ai/hard/strategy/` (pure functions of the packed root, no cross-turn memory):
-`ledger.ts` projects the stay-put mined interval `[L, U]` per side over the r = 10 − clock remaining
-plies (§1.8), exact under stated assumptions (no unit death, no relocation, rent paid, pending arrivals
-land); `killeta.ts` computes a lower bound on plies until either side can kill any enemy (empty-board
-distances, damage assembly, affordable buys/promotions); `clock.ts` compares the intervals and killETA
-against r to decide a verdict (`proven-win/loss` when disjoint AND both killETA > r plus home/elimination
-gates, `bounded` when disjoint but a gate fails, `open` when overlapping) and selects posture (Hold on
-win, ForceContact on loss, none on open). Each strategic fact is a `Claim<T>` (value, guarantee,
-evidence, assumptions) so the decision rule compares like with like. ForceContact candidates (approach
-cheapest target, buy fastest affordable class, promote above threshold) and Hold candidates (retreat,
-break cleaves, pass) are FORCED-injected (survive width truncation) with a declared contract (permitted
-loss, essential survivors, deadline, end predicate); the tactical search rolls them out against two
-scripted replies. At the root, after iterative deepening, a veto rule plays the best plan-consistent
-candidate unless the searched score is terminal-scale worse (mate, proven clock loss) or an essential
-unit dies. Material loss is not a veto. `RootResult.strategy` records reading, posture, injected
-candidates, chosen, veto — the Chronicle.
+1. **A strategic layer**, `src/ai/hard/strategy/`: pure functions of the packed root, with no cross-turn
+   memory, reachable only from `search` and `engine` (`lab/hard-ai/deps.ts`). `ledger.ts clockLedger` gives
+   each side's mined total at the clock's end as an interval `[L, U]` over the `r` plies left
+   (`r = INACTIVITY_LIMIT − clock`, or `INACTIVITY_LIMIT + 1` on a root whose turn has already killed). `L` is
+   exact under stated assumptions: no unit dies, nothing relocates, is bought or promoted, no pending arrival
+   is cancelled, and rent is settled in `defaultKeep`'s order. `U` is a sound upper bound. `killeta.ts
+   killEta` is a lower bound on the plies until a side can kill any enemy unit (empty-board distances,
+   damage assembly, affordable buys and promotions). It can prove a kill impossible, never possible.
+   `clock.ts clockReading` reads the verdict. `proven-win` needs `L_side > U_opp` (strictly; a tie is a
+   draw), both `killEta` above `r`, no home victory or upkeep elimination possible first, and a winning floor
+   that rests on no arrival the loser can cancel. `bounded-win` is the disjoint interval with any other gate
+   failing; `open` is overlap. Losses mirror wins. Posture is Hold on a proven or bounded win, ForceContact
+   on a proven or bounded loss, none on open. Each fact is a `Claim<T>` (`value`, `status`, `evidence`,
+   `assumptions`; `strategy/types.ts`).
+2. **A per-search kill-clock policy** (`killClockPolicy: 'ledger'`). `search/root.ts searchRootInner` saves
+   `eval/evaluate.ts getKillClockPolicy()`, installs `{ rootClock, reading }` for this one search and
+   restores the saved policy in a `finally`. `engine.ts` skips its writes to desktop's legacy
+   `killClockRootClock` slot under this policy, so a strategos search neither reads nor writes that slot.
+   The reading is computed once per root, before the work meter is reset (about 0.3 ms per root).
+3. **Clock scoring** (`EvalFix.clockLedger`; §5.11.1's terminals). `eval/evaluate.ts decidedCc` scores a
+   kill-clock terminal at full terminal scale when the root reading is proven, or when both the root's
+   hand-offs and the terminal's own ply are within `KILL_CLOCK_FORCED_HANDOFFS` (2). Otherwise a `bounded-*`
+   reading scores `BOUNDED_CLOCK_CC` (`WIN_CC / 8`, CHOICE), and an `open` one scores desktop's flat
+   `KILL_CLOCK_SOFT_CC`. `DrawPressure` (`eval/features.ts`) stops being sign-only. It becomes a cheap
+   per-node stay-put projection of the mined-total margin at the clock's end (`gained[]` plus
+   `projectedIncome` times the side's mining events left; never the bank, never `U`), times clock² / 100,
+   clamped to the feature's ±100. Its weight stays −8 (§8), so the term is at most 800 cc. Invariant 16 (the
+   −200 penalty for sitting on a lead, `eval/invariants.ts`) is off.
+4. **Two generator fixes.** `pruneZeroDamage`: `gen/actionsearch.ts dfs` drops an ATTACK whose power is 0
+   against a target with effective defence above 0, before `orderTop`'s width cut, in all three generators.
+   Chip damage survives. On Phasing positions the canonical end-position sets are unchanged
+   (`oracles/canonical-check.ts`). `promoteExhaustive`: `gen/promote.ts bestMission` offers a promotion no
+   mission claims as `Mission.ANY` (benefit 0), `planPromotions` widens to `MAX_SLOTS`, and
+   `gen/generate.ts buildCombos` pins one bare promotion-only combo per promotion. It is wired to the root
+   generator only.
+5. **Telemetry.** `RootResult.strategy` (the Chronicle, `StrategyChronicle`) is declared. The engine seat's
+   `search` events gain `scoreCc`, `clock`, `minedTotals` and `strategy` (`tools/engine-seat/runner.ts`).
 
-Eval under `EvalFix.clockLedger`: a kill-clock terminal is WIN_CC/8 (BOUNDED_CLOCK_CC, CHOICE) when the
-root reading is `bounded` or `open` and the terminal is beyond the forced hand-offs (WIN_CC when
-`proven` or within forced hand-offs); DrawPressure becomes clamp(projected margin, ±100) × clock²/100
-(−8 per clock², antisymmetric); invariant 16 (sit-on-lead penalty) off. Zero-damage attacks pruned
-before width cut under `SearchFix.pruneZeroDamage` (canonical end-set equality). Exhaustive promotions
-under `EvalFix.promoteExhaustive`: every legal promotion is pinned and injected bare into combos (recall
-check). `killClockRootClock` (module slot, §5.11.1) saved/set/restored inside `searchRootInner` to
-prevent cross-search leakage on the fixed-work path.
+> **PENDING W1.9/W1.10 — not in this tree.** `strategyPlans` and `strategyVeto` are set by
+> `strategosPatch()`, but no code reads them yet. Nothing below is in this tree.
+>
+> - **W1.9, plan injection** (reviewed as `8de5da41` + `45cec478` on `claude/sg-plans`; lands with the W1.9
+>   merge). `strategy/contact.ts` builds ForceContact lines: an approach toward the cheapest target, the
+>   approach plus the fastest affordable buy nearest the enemy, and the approach plus a promotion across a
+>   one-shot threshold. `strategy/hold.ts` builds Hold lines: pass, a combined retreat of exposed units, and a
+>   Cleave-chain break. `gen/generate.ts setStrategyWitness` forces them into the ply-0 candidate list as
+>   complete turns flagged `FORCED|STRATEGY`. `search/order.ts` gives them an ordering bonus at ply 0. Each
+>   line carries a `PlanContract`: permitted loss, essential slots, deadline and end predicate. ForceContact
+>   lines are rolled out against two scripted replies (continue, evade) and graded `witnessed`,
+>   `not-ruled-out` or `unknown`, never `forced`. W1.9 fills `RootResult.strategy` (reading, posture, injected
+>   plans, queries, chosen). The root still plays the search's own best candidate.
+> - **W1.10, the veto** (being built in another lane). Per plan B.1 and step W1.10: after
+>   `iterativeDeepening`, `search/root.ts` plays the best plan-consistent candidate. That candidate is
+>   re-searched full-window at `depth − 1`, charged to a reserved share of the meter. It is refused only if
+>   its searched score is terminal-scale worse than the tactical best (mate, or a proven clock loss), or an
+>   essential slot dies in the opponent's first reply. Material loss is never a veto reason. The reason is
+>   recorded in `RootResult.strategy.veto`. DEVIATIONS.md's PENDING entry tracks it.
 
-`lab/hard-ai/bots/clockheist.ts` scripted opponent: drone, expand to flank, free kills only when behind,
-retreat and pass when ahead at clock ≥ 3. Frozen before A8 rows. Exam kind `'plan'` with plan-level
-witnesses (damaging-attack, no-clock-reset, spawn-area-open, promotion-made, contact-in-n) evaluated in
-`exam/witness.ts`; wave-1 cases AS01-W, FB01-B, OP01-W, OP02-W, SN05-W, SO01-B, SO02-B at
-`lab/hard-ai/exam/cases-p4/dev.jsonl`. Engine-seat telemetry gains `scoreCc`, `clock`, `minedTotals[2]`,
-`strategy`; profile selector `?hardEngine=strategos` (browser), `profile` (seat). Phasing determinism
-corpus `positions/p4-determinism.jsonl` + gate `tests/lab/determinism-phasing.test.ts`.
+**Why.** Wave 1 (34 LLM-vs-Hard games, 2026-09-24) showed `hard@desktop` losing 6 of 7 games on the kill
+clock. It never plans contact when behind, and it reads the current mined lead rather than the projected
+one. Its eval cannot express "who wins the clock at ply ten": that is a computed projection, not a linear
+feature. The p3 retune could not have found this. Its ladder opponents (Rush, Balanced, Expand, AIEngineV2)
+almost never reach the clock (0 clock games in Stage A, 2/288 in B, 2/256 in C). So the strategic layer
+computes the projection where it can, says how sure it is, and acts on it: Hold a lead it is winning,
+ForceContact when it is losing. Three choices follow from earlier failures:
+- An `open` reading keeps the flat soft score. Paying `WIN_CC / 8` for a deep, unverified clock-out would
+  bring back the 2026-09-22 kill-clock failure one flag later.
+- `DrawPressure` never reads the bank or `U`. `U` grows with cash, and rewarding cash rewards hoarding, the
+  failure the 2026-09-20 repair handoff documents.
+- Invariant 16 is off because it penalises the very Hold posture that wins the clock.
 
-**Why.** Wave 1 (34 LLM-vs-Hard games, 2026-09-24) showed desktop losing 6 of 7 games on the kill
-clock: it never plans contact when behind, reads the current mined total rather than the projected one,
-and its eval cannot express "who wins the clock at ply ten" because that is a computed projection, not a
-linear feature. The p3 retune could not have found this: its ladder opponents (Rush, Balanced, Expand,
-AIEngineV2) reach the clock in 4 of 546 p3 Stage A/B/C games, so the development process was measuring a
-different failure mode. The strategic layer closes the gap by projecting exactly who wins if both sides
-pass and then forcing contact when that projection is a loss. ClockHeist is a weak detector of the
-wave-1 failure (verified in p1-dev calibration); R1's bar is non-regression only, not strength. Rows
-R2/R3 (strategos vs aiv2-hard-turn, strategos vs desktop) run after wave 2.
+The zero-damage prune and exhaustive promotions are the plan's cheap exact fixes. Pruning zero-power
+attacks leaves the reachable end-position set unchanged (checked by `canonical-check`, not proved in
+general), and a promotion no mission claimed was never offered at all. Every strategic
+fact is a typed `Claim`, and `AnalysisQuery` is declared, so Workflow 2 (beliefs and value of information,
+plan Part C, not executed) can attach likelihoods without changing the objects. The `ClockHeist` scripted
+opponent (`lab/harness/bots/clockheist.ts`, frozen at `4c10bd55`) exists so the ladder can see the failure.
+Amendment A8 states before any row that it is a weak detector: it reproduces the wave-1 failure only in
+kill-free games. R1's bar is therefore a non-regression check, not evidence of the fix.
 
-**What did NOT change.** Desktop config hash, rules (`muju-phasing-4`), weights philosophy (no hand-tuned
-clock thresholds), the generator's cone or search depth. Every new knob is an optional key on
-`SearchFix`/`EvalFix`; the shipped `hard@desktop` config is byte-identical. Strategic layer runs only
-when `strategyPlans` flag is set; exhaustive promotions and zero-damage prune are similarly gated.
-Default browser profile stays `desktop` until wave 2 results. Workflow 2 (beliefs, VOI, goal catalogue,
-postures, war room) is not executed; Workflow 1 prepares for it by making every strategic fact a typed
-`Claim` and every search an `AnalysisQuery`, so likelihoods can be attached later without changing the
-objects.
+**What did NOT change.** `hard@desktop`'s resolved configuration and hash (`DESKTOP_WALL3000_HASH`,
+`5de7ae20…`, pinned in `tests/lab/ablate.test.ts`). Every new key is optional and absent on every shipped
+profile (`tests/lab/strategos-identity.test.ts`). `DEFAULT_WEIGHTS`, including `DrawPressure`'s −8. §8's
+`K`, `widths` and `maxDepth`, which both profiles share; under strategos the prune and exhaustive promotions
+change only which candidates fill them. The rules (`muju-phasing-4`) and the canonical engine
+(`src/game/**`). The default Hard profile, which stays `hard@desktop` until wave 2 says otherwise. Desktop's
+own cross-search leak of `killClockRootClock` is kept, because fixing it would move desktop's bytes
+(DEVIATIONS.md).
