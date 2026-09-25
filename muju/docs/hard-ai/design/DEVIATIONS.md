@@ -2420,3 +2420,69 @@ either; an engine that wins, or that is not given a choice, is not marked down f
 `MAX_FAILURES` was 40 against a 175-case run, so a red gate listed the first 40 by suite name and hid the
 rest — the artifact said `homeMate: 46` without naming four of the ten misses. It is 200 now. The
 failures array is diagnostic; nothing reads it as a criterion.
+
+## Strategos W1
+
+### 2026-09-24: the veto rule may override the tactical search score
+
+DESIGN has no veto rule at the root. The tactical search's best turn is what plays. Strategos W1
+(`SearchFix.strategyVeto`, `search/root.ts`) introduces a veto: after iterative deepening completes, the
+search picks the best PLAN-CONSISTENT candidate (one whose turn passes the active strategic plan's
+contract: permitted loss, essential survivors, deadline, end predicate). That candidate is re-searched at
+`depth − 1` in a full-window pass; the result plays unless (a) the searched score is terminal-scale worse
+than the tactical best (mate, or proven clock loss when the tactical best is not a proven loss), OR (b)
+an essential unit dies in the opponent's best reply. Material loss alone is not a veto.
+
+Why: the strategic plan (Hold or ForceContact) is the computed answer to "who wins the clock if both
+sides pass"; the tactical search measures one-ply consequences, not ten-ply clock projections. A
+ForceContact turn that loses material to force the opponent out of a clock-winning sit-and-pass line is
+correct if it flips the projected verdict, and the veto rule enforces that: score difference is not
+enough, the tactical refutation must be terminal-scale. The re-search at `depth − 1` limits the veto's
+work cost to one candidate and verifies the plan-consistent turn against the opponent's actual reply
+rather than a heuristic guess.
+
+Contract check: the plan is satisfied if the re-searched turn (a) meets its end predicate (damaging
+attack made, enemy killETA increased, etc.), (b) loses no more than the declared permitted loss, and (c)
+keeps every essential unit alive in the opponent's reply. The contract is the plan's claim; the tactical
+search's job is to falsify it.
+
+Desktop unchanged: the veto runs only when `SearchFix.strategyVeto` is set. Every other search path
+(phone, midrange, the generator's own self-play) plays the tactical best as always.
+
+### 2026-09-24: the zero-damage attack prune shifts the beam slightly before the width cut
+
+DESIGN §5.4 scores all candidates, applies reflexes (rescue, donate), then truncates to width. The
+zero-damage prune (`SearchFix.pruneZeroDamage`, `gen/actionsearch.ts`) drops ATTACK actions with
+`power === 0` during DFS enumeration, before scoring. Chip damage (`power > 0` but `power < effectiveDef`)
+survives; only literal zero-power attacks are pruned. This shifts which candidates survive the width cut:
+the dropped attacks never reach the beam, so another candidate (the next-best after the width cut under
+the old code) takes the freed slot. The canonical end-position set is identical (proved by
+`oracles/canonical-check.ts` with `--prune-zero-damage` on a Phasing fixture corpus), but the ROUTE to
+each end differs.
+
+Cost savings: measured as negligible (~1 % node reduction on a small corpus). The prune is a correctness
+fix (zero-power attacks can never be the best action) that happens to let the beam explore one additional
+meaningful candidate per width-constrained ply.
+
+Desktop unchanged: the prune runs only when `SearchFix.pruneZeroDamage` is set.
+
+### 2026-09-24: `killClockRootClock` saved and restored per search to prevent cross-search leakage
+
+DESIGN §5.11.1 defines `killClockRootClock` as the root position's clock value, set once per root search,
+used to scale kill-clock terminal scores. The module slot lives in `eval/evaluate.ts` and is written by
+`search/root.ts searchRootInner`. On the wall-clock path this is correct; on the fixed-work path (two
+searches with different work budgets may run back-to-back in the same process), the second search would
+inherit the first search's clock value if the slot is not reset.
+
+Desktop runs only wall-clock searches in production (one game = one process via the ladder harness,
+`lab/hard-ai/ladder/worker.ts`), so cross-search leakage cannot occur and the slot's value is correct.
+Strategos runs fixed-work searches in tests and local tools (exam, ablation, canonical-check), where two
+searches in the same process would leak.
+
+Fix: `searchRootInner` saves the slot's incoming value, sets it from `rootState.inactivityPlies`, and
+restores the saved value in a `finally` block before returning. This makes each search self-contained.
+The signature of `terminalScore` is pinned by `tests/ai/hard/interfaces.test.ts:962` and cannot take a
+clock parameter, so the module slot stays but its lifetime is now bounded to one search.
+
+Desktop unchanged: the save/restore runs only when the strategos clock-ledger eval fix is active
+(`EvalFix.clockLedger`). Desktop's slot is set once per game and never restored, as before.
