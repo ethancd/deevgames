@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { MusicButton } from '../music/MusicPlayer';
-import type { GameConfig, PlayerId } from '../game/types';
+import type { GameConfig, PlayerId, Variant } from '../game/types';
+import { MICRO_TITLE } from '../game/micro';
+import { isMicro } from '../game/rules';
 import { INACTIVITY_LIMIT } from '../game/inactivity';
 import { GameView } from '../components/GameScreen';
 import { OnlineError, analysisUrl, createRoom, invitationUrl, joinRoom, loadConnection, normalizeServer, observerUrl, parseSeatCredentials, readRoom, resolveInvitationLink, resolveObserverConnection, restoreSeat, saveConnection } from './client';
@@ -25,6 +27,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   const [name, setName] = useState('Player');
   const [side, setSide] = useState<PlayerId>('white');
   const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
+  const [variant, setVariant] = useState<Variant | undefined>(() => new URLSearchParams(window.location.search).get('variant') === 'micro' ? 'micro' : undefined);
   const [timeChoice, setTimeChoice] = useState<TimeControlPreset | 'untimed' | 'custom'>('untimed');
   const [delaySeconds, setDelaySeconds] = useState('30');
   const [bankMinutes, setBankMinutes] = useState('10');
@@ -92,7 +95,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
           || custom.delaySeconds < 0 || custom.delaySeconds > 600 || !Number.isFinite(custom.bankSeconds) || custom.bankSeconds < 1 || custom.bankSeconds > 14400)) {
           throw new Error('Use 0–600 whole seconds per turn and a bank of 1 second to 240 minutes per player.');
         }
-        result = await createRoom(url, name, side, 4, timeChoice === 'untimed' ? null : timeChoice === 'custom' ? custom : timeChoice, blackCrystalHandicap);
+        result = await createRoom(url, name, side, 4, timeChoice === 'untimed' ? null : timeChoice === 'custom' ? custom : timeChoice, blackCrystalHandicap, variant);
       }
       else {
         const { serverUrl, roomId, inviteCode } = await resolveInvitationLink(invitation);
@@ -145,9 +148,13 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
     <p>Host a room and invite a friend or an LLM. Active rooms are listed above for anyone to watch.</p>
     {!showJoinFirst && nameField}
     <section aria-label="Host a game"><h3>Host a game</h3>
+      <label>Game<select value={variant ?? 'prime'} onChange={e => setVariant(e.target.value === 'micro' ? 'micro' : undefined)}>
+        <option value="prime">Muju Hono Irumbu · 10×10</option><option value="micro">{MICRO_TITLE} · 6×6</option>
+      </select></label>
       <label>Your side<select value={side} onChange={e => setSide(e.target.value as PlayerId)}><option value="white">White · first turn</option><option value="black">Black · second turn</option></select></label>
-      <p className="online-help">4 shared actions per turn · {INACTIVITY_LIMIT} kill-free turns end the game on the higher mined total.</p>
-      <BlackCrystalHandicap value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} />
+      {variant === 'micro' ? <p className="online-help">{MICRO_TITLE}: 6×6 · Hi, Sjór and Muju only · 2 shared actions · one attack per piece per turn · no promotions, upkeep or clock.</p>
+        : <><p className="online-help">4 shared actions per turn · {INACTIVITY_LIMIT} kill-free turns end the game on the higher mined total.</p>
+        <BlackCrystalHandicap value={blackCrystalHandicap} onChange={setBlackCrystalHandicap} /></>}
       <label>Time control<select value={timeChoice} onChange={e => setTimeChoice(e.target.value as typeof timeChoice)}>
         <option value="untimed">Untimed</option>
         {Object.entries(TIME_CONTROL_PRESETS).map(([key, preset]) => <option key={key} value={key}>{preset.label} · {preset.delaySeconds}s / {preset.bankSeconds / 60}min · {preset.duration}</option>)}
@@ -199,11 +206,15 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
   const roomDetails = <div className="online-banner room-details">
     <strong>{connection.player ? `Online · You are ${connection.player}` : 'Online · Observer'}</strong>
     <span role="status">{!connected ? 'Reconnecting…' : !room.ready ? 'Waiting for opponent' : busy ? 'Confirming move…' : connection.player ? 'Room connected' : 'Watching live · Read only'}</span>
-    {!room.ready && <span>{rulesetLabel(room.state)} rules</span>}
+    {!room.ready && <span>{isMicro(room.state) ? MICRO_TITLE : `${rulesetLabel(room.state)} rules`}</span>}
     {(room.state.blackCrystalHandicap ?? 0) > 0 && <span>Black crystal handicap · {room.state.blackCrystalHandicap} starting crystals</span>}
     <RoomClocks room={room} />
     {!room.archivedAt && link && <details open={!room.ready}><summary>Private invitation · {room.invitedPlayer ?? 'opponent'} seat</summary><label>Invite your opponent<input readOnly value={link} onFocus={e => e.target.select()} /></label>
       <button onClick={() => { void navigator.clipboard?.writeText(link).then(() => setCopied(true)).catch(() => setCopied(false)); }}>{copied ? 'Copied' : 'Copy invitation'}</button><p>Reuse this link to move control of the invited seat to another browser. Keep it private.</p></details>}
+    {!room.archivedAt && link && inviteCode && <details open={!room.ready && isMicro(room.state)}><summary>Invite an LLM</summary>
+      <p>Paste this into an LLM agent that can call MCP tools or make HTTP requests. It contains the private invitation for the {room.invitedPlayer ?? 'other'} seat.</p>
+      <textarea aria-label="LLM invitation prompt" readOnly value={llmPrompt(connection.serverUrl, room, inviteCode, link)} onFocus={e => e.target.select()} />
+      <button onClick={() => void copy(llmPrompt(connection.serverUrl, room, inviteCode, link), 'LLM prompt')}>Copy LLM prompt</button></details>}
     {error && <p role="alert">{error}{retry && <button onClick={retry}>Retry same move</button>}</p>}
     {notice && <p role="alert">{notice}</p>}
     <details><summary>Share watch link</summary>
@@ -233,4 +244,21 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
     names, banner, analysisUrl: analysisUrl(connection), historyOpen: showHistory, onToggleHistory: () => setShowHistory(value => !value) }} />
     {showRoomDetails && <PlayDialog title="Room details" onClose={() => setShowRoomDetails(false)}>{roomDetails}</PlayDialog>}
     {showHistory && <RoomHistory connection={connection} revision={room.revision} names={names} onClose={() => setShowHistory(false)} />}</>;
+}
+
+/** A self-contained brief that lets an MCP-capable agent take the invited seat. */
+function llmPrompt(serverUrl: string, room: RoomSnapshot, inviteCode: string, link: string): string {
+  const micro = isMicro(room.state), game = micro ? MICRO_TITLE : 'Muju Hono Irumbu', seat = room.invitedPlayer ?? 'black';
+  return [`Let's play ${game}. You are ${seat === 'white' ? 'White (you move first)' : 'Black (White moves first)'}.`,
+    '',
+    `MCP server (streamable HTTP): ${serverUrl}/mcp`,
+    `If you cannot add an MCP server, POST JSON-RPC "tools/call" requests to that URL (Accept: application/json, text/event-stream).`,
+    `Skill file with the full workflow: ${serverUrl}/SKILL.md`,
+    '',
+    `1. Call muju_rules${micro ? ' with {"variant": "micro"}' : ''} and read it carefully.`,
+    `2. Join: muju_join_room with {"roomId": "${room.id}", "inviteCode": "${inviteCode}", "name": "<your name>"}. Keep the returned token private.`,
+    '3. On your turn: muju_observe, muju_legal_actions, optionally muju_preview, then muju_play with the current revision and a new requestId. End every turn with END_ACTION_PHASE, any summons, then END_PLACE_PHASE.',
+    '4. Between turns: muju_wait_for_change with afterRevision set to the latest revision; act only when room.activePlayer is your seat. Stop when the game is over.',
+    ...(micro ? ['', 'MICRO MUJU: 6×6 board A1–F6, only fire_1/water_1/plant_1, 2 actions per turn, each unit attacks at most once per turn, no promotions, upkeep or kill clock. Hosted analysis is unavailable; use legal actions and preview.'] : []),
+    '', `Invitation link (same seat): ${link}`].join('\n');
 }

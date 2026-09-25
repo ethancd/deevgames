@@ -34,18 +34,33 @@ elimination.
   (no clock) and `turn.ts` (no upkeep review).
 - Home checkmate uses the canonical TypeScript prover (`homeCheckmate.ts`) through
   the canonical transition, so rescues are Micro's own legal two-action lines. No
-  AI, WASM or MCP code runs for Micro.
+  AI or WASM code runs for Micro.
 - Saves: `localStorage['muju-micro-save']`, schema 1, stamped with the variant and
   rules revision and validated strictly (6×6, two actions, Micro pieces only).
   Prime's `elemental-tactics-save` is never read, written or cleared by Micro, and
   Prime's loader refuses any state carrying a `variant`.
 
+## Online and LLM play
+
+Micro rooms are ordinary multiplayer rooms stamped `rulesVersion: micro-muju-1`
+(`server/rooms.ts` `LIVE_RULES_VERSIONS`); the startup retirement sweep, lobby
+list and `read()` allow-list accept them, and a room's revision must match its
+state's `variant`. Create one from `/muju/micro/` → Play online (or the lobby's
+Game selector, or `muju_create_room` with `variant: "micro"`). Room details
+offer a copyable **Invite an LLM** prompt with the MCP URL, rules call and join
+arguments.
+
+For agents: `muju_rules({variant: "micro"})` (also `muju://rules/micro`), and
+the MICRO MUJU section of `public/skills/muju-hono-irumbu/SKILL.md`. Observations
+carry `variant`, `rulesVersion`, 6×6 coordinates and `killClock: null`. Legal
+actions, preview, undo, clocks, staging, waits and history work unchanged.
+Hosted analysis (`muju_analyze`, briefings, automatic headlines) is Prime-only
+and returns `ANALYSIS_UNAVAILABLE` (`server/matchPolicy.ts`).
+
 ## Not included
 
-AI opponents, online rooms, MCP, Academy, analysis screen and position reports.
-Rooms and the server rules payload remain Prime-only. The Node host serves
-`/muju/micro/` as a static page only.
+AI opponents and Academy. Local Micro games have no analysis screen or position
+reports; online Micro rooms can be reviewed on the analysis board.
 
-Tests: `tests/game/micro.test.ts` (rules and persistence). Verification for the
-first release was a browser smoke check on desktop and phone, not engine or
-balance validation.
+Tests: `tests/game/micro.test.ts` (rules and persistence) and
+`tests/server/micro-rooms.test.ts` (rooms, restart, rules oracle, analysis gate).

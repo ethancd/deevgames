@@ -2,7 +2,6 @@ import type { GameState, PlayerId, Position, Unit } from './types';
 import { addUnit, createEmptyBoard, createUnit, getStartCorner } from './board';
 import { getAttackCount } from './combat';
 import { isMicro } from './rules';
-import MICRO_MAP_SOURCE from './maps/micro-muju-default.json';
 
 /**
  * MICRO MUJU, rules revision `micro-muju-1` (2026-09-24): a subtractive variant
@@ -24,8 +23,18 @@ export const MICRO_BOARD_SIZE = 6;
 export const MICRO_ACTIONS_PER_TURN = 2 as const;
 export const MICRO_CATALOGUE: readonly string[] = Object.freeze(['fire_1', 'water_1', 'plant_1']);
 
-/** Row-major, index = y * 6 + x; the first six values are A1–F1. */
-export const MICRO_MAP: readonly number[] = Object.freeze([...MICRO_MAP_SOURCE]);
+/** Row-major, index = y * 6 + x; the first six values are A1–F1. The checked-in
+ * source of record is `maps/micro-muju-default.json`; it is mirrored here as a
+ * literal (not a JSON import, which some Node loaders reject without an import
+ * attribute) and `tests/game/micro.test.ts` pins the two equal. */
+export const MICRO_MAP: readonly number[] = Object.freeze([
+  4, 4, 0, 0, 8, 8,
+  4, 4, 0, 0, 8, 8,
+  0, 0, 4, 4, 0, 0,
+  0, 0, 4, 4, 0, 0,
+  8, 8, 0, 0, 4, 4,
+  8, 8, 0, 0, 4, 4,
+]);
 if (MICRO_MAP.length !== MICRO_BOARD_SIZE * MICRO_BOARD_SIZE || MICRO_MAP.some(n => !Number.isInteger(n) || n < 0)) {
   throw new Error('Invalid MICRO MUJU map');
 }

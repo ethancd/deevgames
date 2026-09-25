@@ -916,7 +916,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         {(whiteAI.warning || blackAI.warning) && <small role="status">AI is using its backup engine.</small>}
         <header className="game-header">
           <a href="https://deevgames.pages.dev/" aria-label="Back to Deev Games">← Games</a>
-          {micro ? <h1>{MICRO_TITLE} <small className="ruleset-badge">Pass &amp; play</small></h1>
+          {micro ? <h1>{MICRO_TITLE} <small className="ruleset-badge">{online ? 'Online' : analysis ? 'Analysis' : 'Pass & play'}</small></h1>
             : <h1>Muju Hono Irumbu <small className="ruleset-badge">{rulesetLabel(state)}</small></h1>}
           <div className="game-header-actions"><MusicButton /><button disabled={showReplay} onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button></div>
         </header>

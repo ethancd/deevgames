@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { createMicroGameState, MICRO_MAP, MICRO_RULES_REVISION } from '../../src/game/micro';
 import { createInitialGameState, getUnitAt } from '../../src/game/board';
 import { applyAction } from '../../src/ai/simulate';
@@ -15,6 +17,11 @@ const withUnits = (state: GameState, units: Unit[]): GameState => ({ ...state, b
 const endTurn = (s: GameState) => applyAction(applyAction(s, { type: 'END_ACTION_PHASE' }), { type: 'END_PLACE_PHASE' });
 
 describe('MICRO MUJU (micro-muju-1)', () => {
+  it('mirrors the checked-in map file exactly', () => {
+    const source = JSON.parse(readFileSync(join(process.cwd(), 'src/game/maps/micro-muju-default.json'), 'utf8'));
+    expect([...MICRO_MAP]).toEqual(source);
+  });
+
   it('starts on the exact 6×6 map with the agreed opening, empty banks and two actions', () => {
     const s = createMicroGameState();
     expect(s.variant).toBe('micro');

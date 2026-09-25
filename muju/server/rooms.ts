@@ -6,7 +6,8 @@ import { DatabaseSync } from 'node:sqlite';
 import { ZodError } from 'zod';
 import { setTimeout as delay } from 'node:timers/promises';
 import { createInitialGameState } from '../src/game/board';
-import { getActionsPerTurn, isActionsPerTurn, isPhasing } from '../src/game/rules';
+import { getActionsPerTurn, isActionsPerTurn, isMicro, isPhasing } from '../src/game/rules';
+import { MICRO_ACTIONS_PER_TURN, MICRO_RULES_REVISION, createMicroGameState } from '../src/game/micro';
 import { automaticUpkeepUndo } from '../src/game/turn';
 import { isLegalAction } from '../src/game/legality';
 import { applyAction } from '../src/ai/simulate';
@@ -60,6 +61,14 @@ export const UPGRADABLE_RULES_VERSION = 'muju-phasing-3';
  * can name it; never creatable, never accepted by `read()`.
  */
 export const RETIRED_STANDARD_VERSION = 'muju-online-6';
+/**
+ * MICRO MUJU rooms (`src/game/micro.ts`, `docs/MICRO_MUJU.md`) are a separate,
+ * additive variant, stamped with their own revision and never reinterpreted as
+ * Prime (or vice versa). A room's revision and its state's `variant` must agree.
+ */
+export const MICRO_ROOM_RULES_VERSION = MICRO_RULES_REVISION;
+/** Every revision a room can be created, listed or opened under. */
+export const LIVE_RULES_VERSIONS: readonly string[] = [PHASING_RULES_VERSION, MICRO_ROOM_RULES_VERSION];
 export const ROOM_IDLE_MS = 24 * 60 * 60 * 1000;
 const digest = (value: string) => createHash('sha256').update(value).digest('hex');
 const secret = () => randomBytes(32).toString('hex');
@@ -167,7 +176,7 @@ export class RoomStore {
     const now = Date.now();
     const retired = this.db.prepare(`UPDATE rooms SET archived_at = MIN(COALESCE(idle_at, ?), ?),
       deadline_at = NULL, stage_at = NULL, idle_at = NULL
-      WHERE archived_at IS NULL AND json_extract(data, '$.rulesVersion') IS NOT ?`).run(now, now, PHASING_RULES_VERSION);
+      WHERE archived_at IS NULL AND COALESCE(json_extract(data, '$.rulesVersion'), '') NOT IN (?, ?)`).run(now, now, ...LIVE_RULES_VERSIONS);
     if (Number(retired.changes) > 0) {
       console.log(`Muju rooms: archived ${retired.changes} unarchived room(s) on retired rules revisions.`);
     }
@@ -290,10 +299,13 @@ export class RoomStore {
     // used to be upgraded in place here; under one ruleset that would rewrite a
     // Standard game as a Phasing-version room, which is the reinterpretation this
     // retirement exists to prevent. Those rows take the 409 instead.
-    if (room.rulesVersion !== PHASING_RULES_VERSION || !isActionsPerTurn(getActionsPerTurn(room.state))) {
+    const micro = room.rulesVersion === MICRO_ROOM_RULES_VERSION;
+    const playable = micro ? isMicro(room.state) && room.state.actionsPerTurn === MICRO_ACTIONS_PER_TURN
+      : room.rulesVersion === PHASING_RULES_VERSION && room.state.variant === undefined && isActionsPerTurn(getActionsPerTurn(room.state));
+    if (!playable) {
       throw new RoomError(409, 'RULES_CHANGED', 'This room uses older rules. Create a new room.');
     }
-    room.state.actionsPerTurn = getActionsPerTurn(room.state);
+    if (!micro) room.state.actionsPerTurn = getActionsPerTurn(room.state);
     this.initializeLifecycle(room);
     return room;
   }
@@ -345,13 +357,16 @@ export class RoomStore {
       json_extract(data, '$.state.turn.turnNumber') AS turnNumber,
       json_extract(data, '$.state.turn.currentPlayer') AS currentPlayer,
       COALESCE(json_extract(data, '$.state.ruleset'), 'standard') AS ruleset,
+      json_extract(data, '$.state.variant') AS variant,
       json_extract(data, '$.updatedAt') AS updatedAt
       FROM rooms WHERE archived_at IS NULL AND json_extract(data, '$.state.phase') = 'playing'
-      AND json_extract(data, '$.rulesVersion') = ? AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) = 4
-      ORDER BY ready DESC, updatedAt DESC, id`).all(PHASING_RULES_VERSION);
+      AND ((json_extract(data, '$.rulesVersion') = ? AND COALESCE(json_extract(data, '$.state.actionsPerTurn'), 4) = 4)
+        OR json_extract(data, '$.rulesVersion') = ?)
+      ORDER BY ready DESC, updatedAt DESC, id`).all(PHASING_RULES_VERSION, MICRO_ROOM_RULES_VERSION);
     return rows.map(row => ({ id: row.id as string, ready: row.ready === 1,
       seats: JSON.parse(row.seats as string), turnNumber: row.turnNumber as number,
-      ruleset: row.ruleset as 'standard' | 'phasing', currentPlayer: row.currentPlayer as PlayerId, updatedAt: row.updatedAt as string }));
+      ruleset: row.ruleset as 'standard' | 'phasing', ...(row.variant === 'micro' ? { variant: 'micro' as const } : {}),
+      currentPlayer: row.currentPlayer as PlayerId, updatedAt: row.updatedAt as string }));
   }
   listArchived(before?: string, limit = 20): RoomArchive {
     if (before !== undefined) roomIdSchema.parse(before);
@@ -365,6 +380,7 @@ export class RoomStore {
       json_extract(data, '$.state.turn.currentPlayer') AS currentPlayer,
       COALESCE(json_extract(data, '$.state.ruleset'), 'standard') AS ruleset,
       json_extract(data, '$.rulesVersion') AS rulesVersion,
+      json_extract(data, '$.state.variant') AS variant,
       json_extract(data, '$.updatedAt') AS updatedAt,
       json_extract(data, '$.state.winner') AS winner, json_extract(data, '$.state.victoryReason') AS reason
       FROM rooms WHERE archived_at IS NOT NULL ${cursor ? 'AND (archived_at, id) < (?, ?)' : ''}
@@ -374,7 +390,8 @@ export class RoomStore {
     // lobby needs to know it can never be opened, so the flag rides on the summary.
     return { rooms: page.map(row => ({ id: row.id as string, ready: row.ready === 1, seats: JSON.parse(row.seats as string),
       turnNumber: row.turnNumber as number, currentPlayer: row.currentPlayer as PlayerId, ruleset: row.ruleset as 'standard' | 'phasing',
-      retiredRules: row.rulesVersion !== PHASING_RULES_VERSION,
+      retiredRules: !LIVE_RULES_VERSIONS.includes(row.rulesVersion as string),
+      ...(row.variant === 'micro' ? { variant: 'micro' as const } : {}),
       updatedAt: row.updatedAt as string, archivedAt: new Date(row.archived_at as number).toISOString(),
       winner: row.winner as PlayerId | null, reason: row.reason as GameState['victoryReason'] })),
       nextCursor: rows.length > limit ? page.at(-1)!.id as string : null };
@@ -461,7 +478,15 @@ export class RoomStore {
       : { changed: true, ...metadata, room };
   }
   create(input: unknown): RoomAdmission {
-    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap, matchPolicy } = createSchema.parse(input);
+    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap, matchPolicy, variant } = createSchema.parse(input);
+    const micro = variant === 'micro';
+    // Micro is exactly its own opening: two actions, empty banks.
+    if (micro && (blackCrystalHandicap > 0 || (actionsPerTurn !== undefined && actionsPerTurn !== MICRO_ACTIONS_PER_TURN))) {
+      throw new RoomError(400, 'INVALID_MICRO_SETUP', 'MICRO MUJU rooms always use two actions per turn and no crystal handicap. Omit actionsPerTurn and blackCrystalHandicap.');
+    }
+    if (!micro && actionsPerTurn !== undefined && actionsPerTurn !== 4) {
+      throw new RoomError(400, 'INVALID_ACTIONS_PER_TURN', 'Muju Hono Irumbu rooms use four actions per turn.');
+    }
     this.settleDue();
     return this.transaction(() => {
       const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms WHERE archived_at IS NULL').get()!.count as number;
@@ -474,9 +499,9 @@ export class RoomStore {
         || this.db.prepare('SELECT 1 FROM room_watch_links WHERE code = ?').get(inviteCode));
       this.db.prepare('INSERT INTO room_invitations (code_hash, room_id) VALUES (?, ?)').run(digest(inviteCode), id);
       const room: StoredRoom = { ...(matchPolicy ? { matchPolicy } : {}), id, revision: 0, ready: false, seats: { white: null, black: null },
-        state: createInitialGameState(undefined, actionsPerTurn, blackCrystalHandicap, 'phasing'), canUndo: false, undoHistory: [], updatedAt: new Date(Date.now()).toISOString(), history: [],
+        state: micro ? createMicroGameState() : createInitialGameState(undefined, 4, blackCrystalHandicap, 'phasing'), canUndo: false, undoHistory: [], updatedAt: new Date(Date.now()).toISOString(), history: [],
         moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
-        rulesVersion: PHASING_RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
+        rulesVersion: micro ? MICRO_ROOM_RULES_VERSION : PHASING_RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
       room.createdAt = room.lastMoveAt = room.updatedAt;
       room.invitedPlayer = side === 'white' ? 'black' : 'white';
       room.seats[side] = name;
@@ -722,6 +747,7 @@ export class RoomStore {
         continue;
       }
       if (action.type === 'SET_UPKEEP_REVIEW') {
+        if (isMicro(state)) throw new RoomError(422, 'ILLEGAL_ACTION', 'MICRO MUJU has no upkeep to review.');
         if (actions.length !== 1 || state.phase !== 'playing') throw new RoomError(422, 'ILLEGAL_ACTION', 'Send upkeep preference changes alone during an active game.');
         state = { ...state, reviewUpkeep: { ...state.reviewUpkeep, [player]: action.enabled } };
         continue;
