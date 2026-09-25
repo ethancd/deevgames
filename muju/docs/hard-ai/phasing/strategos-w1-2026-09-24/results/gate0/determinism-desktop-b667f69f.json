@@ -1,0 +1,36 @@
+{
+  "engine": "hard@desktop",
+  "workUnits": [
+    60000
+  ],
+  "positions": 24,
+  "positionsFile": "lab/hard-ai/positions/p4-determinism.jsonl",
+  "seeds": [
+    1
+  ],
+  "shards": 12,
+  "decisions": 24,
+  "runs": 4,
+  "wasmAbsent": true,
+  "identical": true,
+  "mismatches": [],
+  "at": "2026-09-25T06:54:24.395Z",
+  "determinism": {
+    "engine": "hard@desktop",
+    "workUnits": [
+      60000
+    ],
+    "positions": 24,
+    "positionsFile": "lab/hard-ai/positions/p4-determinism.jsonl",
+    "seeds": [
+      1
+    ],
+    "shards": 12,
+    "decisions": 24,
+    "runs": 4,
+    "wasmAbsent": true,
+    "identical": true,
+    "mismatches": [],
+    "at": "2026-09-25T06:54:24.395Z"
+  }
+}

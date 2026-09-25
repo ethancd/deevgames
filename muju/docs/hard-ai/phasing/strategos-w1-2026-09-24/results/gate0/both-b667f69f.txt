@@ -1,0 +1,6 @@
+commit b667f69f
+perft --check exit 0
+perft --check --engine replica exit 0
+fuzz exit 0
+determinism hard@desktop exit 0
+determinism hard@strategos exit 0
