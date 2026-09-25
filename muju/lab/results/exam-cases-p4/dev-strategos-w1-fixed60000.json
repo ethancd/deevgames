@@ -1,9 +1,9 @@
 {
  "schema": "muju-exam-run-v1",
- "at": "2026-09-25T06:59:56.344Z",
- "engine": "hard@desktop",
+ "at": "2026-09-25T07:00:05.723Z",
+ "engine": "hard@strategos",
  "work": 60000,
- "configHash": "hard:desktop:fixed:60000#65cfe232abf7c45287697b9fe87921d929871aa1da1358f07944ee6eb13d1826",
+ "configHash": "hard:strategos:fixed:60000#776b2ad070b4447ad1ff9c8cfcfd540d935d6c3a09c12adc6c98791cd4cb925e",
  "stratum": "dev",
  "stratumRule": "development — may be inspected, debugged against and tuned against",
  "casesDir": "lab/hard-ai/exam/cases-p4",
@@ -28,13 +28,12 @@
  },
  "plan": {
   "cases": 8,
-  "passed": 3,
-  "failed": 5,
-  "passRate": 0.375,
+  "passed": 4,
+  "failed": 4,
+  "passRate": 0.5,
   "expectedFail": 1,
-  "asExpected": 4,
+  "asExpected": 5,
   "unexpected": [
-   "wave1-AS01-W-t3",
    "wave1-OP01-W-t1",
    "wave1-OP01-W-t2",
    "wave1-OP02-W-t6"
@@ -51,7 +50,7 @@
    "judgmentWon": 0,
    "judgmentDead": 0,
    "planCases": 4,
-   "planPassed": 2
+   "planPassed": 3
   },
   "home-and-spawn": {
    "exactCases": 0,
@@ -80,10 +79,10 @@
    "kind": "plan",
    "demand": "quiet-clock",
    "claim": null,
-   "passed": false,
+   "passed": true,
    "predicate": "damaging-attack",
    "expected": "pass",
-   "asExpected": false,
+   "asExpected": true,
    "at": {
     "clock": 5,
     "pliesLeft": 5,
@@ -93,20 +92,20 @@
     },
     "bank": 0
    },
-   "line": "MV J8-I8 · MV I8-I9 · MV G6-F4 · MV F4-E2 · EA · BUY fire_1@F4 · BUY fire_1@E5 · EP",
-   "evidence": "no attack in the turn",
+   "line": "MV G6-D1 · ATK D1xC1 p2 · EA · EP",
+   "evidence": "damaging attack: lightning_1@D1 x plant_1@C1 power 2",
    "matched": null,
    "outcome": null,
    "deadProof": null,
-   "endKey": "7503dc0eae085858",
+   "endKey": "2572528fce5d9977",
    "source": "search",
    "fallback": null,
    "depth": 1,
-   "work": 60170,
+   "work": 26014,
    "wonOutright": false,
    "witnessComplete": null,
-   "ms": 1210,
-   "note": "UNEXPECTED: the author expected pass"
+   "ms": 672,
+   "note": null
   },
   {
    "id": "wave1-OP01-W-t1",
@@ -135,10 +134,10 @@
    "source": "search",
    "fallback": null,
    "depth": 1,
-   "work": 60181,
+   "work": 60184,
    "wonOutright": false,
    "witnessComplete": null,
-   "ms": 819,
+   "ms": 800,
    "note": "UNEXPECTED: the author expected pass"
   },
   {
@@ -167,11 +166,11 @@
    "endKey": "ca8167507cc13e1d",
    "source": "search",
    "fallback": null,
-   "depth": 2,
-   "work": 60213,
+   "depth": 1,
+   "work": 60202,
    "wonOutright": false,
    "witnessComplete": null,
-   "ms": 934,
+   "ms": 956,
    "note": "UNEXPECTED: the author expected pass"
   },
   {
@@ -201,10 +200,10 @@
    "source": "search",
    "fallback": null,
    "depth": 2,
-   "work": 60362,
+   "work": 60378,
    "wonOutright": false,
    "witnessComplete": null,
-   "ms": 2259,
+   "ms": 2380,
    "note": null
   },
   {
@@ -234,10 +233,10 @@
    "source": "search",
    "fallback": null,
    "depth": 1,
-   "work": 60343,
+   "work": 60051,
    "wonOutright": false,
    "witnessComplete": null,
-   "ms": 1987,
+   "ms": 1951,
    "note": null
   },
   {
@@ -267,10 +266,10 @@
    "source": "mate",
    "fallback": null,
    "depth": 1,
-   "work": 1922,
+   "work": 3182,
    "wonOutright": true,
    "witnessComplete": null,
-   "ms": 45,
+   "ms": 39,
    "note": null
   },
   {
@@ -300,10 +299,10 @@
    "source": "search",
    "fallback": null,
    "depth": 1,
-   "work": 60443,
+   "work": 29169,
    "wonOutright": false,
    "witnessComplete": null,
-   "ms": 1830,
+   "ms": 1207,
    "note": "UNEXPECTED: the author expected pass"
   },
   {
@@ -333,15 +332,15 @@
    "source": "search",
    "fallback": null,
    "depth": 1,
-   "work": 27378,
+   "work": 29532,
    "wonOutright": false,
    "witnessComplete": null,
-   "ms": 910,
+   "ms": 908,
    "note": null
   }
  ],
  "errors": [],
- "wallMs": 9998,
+ "wallMs": 8916,
  "host": "The-Work-Box.local",
  "node": "v24.11.1"
 }

@@ -1,9 +1,9 @@
-# Muju examination set — dev stratum, hard@desktop
+# Muju examination set — dev stratum, hard@strategos
 
-- run at 2026-09-25T06:59:56.344Z on The-Work-Box.local (node v24.11.1)
-- work: fixed 60000 units; config `hard:desktop:fixed:60000#65cfe232abf7c45287697b9fe87921d929871aa1da1358f07944ee6eb13d1826`
+- run at 2026-09-25T07:00:05.723Z on The-Work-Box.local (node v24.11.1)
+- work: fixed 60000 units; config `hard:strategos:fixed:60000#776b2ad070b4447ad1ff9c8cfcfd540d935d6c3a09c12adc6c98791cd4cb925e`
 - cases from `lab/hard-ai/exam/cases-p4`; stratum rule: development — may be inspected, debugged against and tuned against
-- wall 10.0 s for 8 cases
+- wall 8.9 s for 8 cases
 
 ## Exact cases (canonical witness)
 
@@ -23,13 +23,13 @@ not a defect.
 
 ## Plan cases (canonical predicate, authored choice)
 
-3/8 passed (37.5%); 4/8 as the author expected (1 expected to fail).
+4/8 passed (50.0%); 5/8 as the author expected (1 expected to fail).
 0 passed by the "a win is never a miss" adjudication; 0 engine turn(s) did not replay.
-Unexpected outcomes: `wave1-AS01-W-t3`, `wave1-OP01-W-t1`, `wave1-OP01-W-t2`, `wave1-OP02-W-t6`.
+Unexpected outcomes: `wave1-OP01-W-t1`, `wave1-OP01-W-t2`, `wave1-OP02-W-t6`.
 
 | case | clock (plies left) | mined W–B | predicate | expected | result | engine turn | evidence |
 | --- | ---: | ---: | --- | --- | --- | --- | --- |
-| `wave1-AS01-W-t3` | 5 (5) | 30–13 | damaging-attack | pass | FAIL (unexpected) | MV J8-I8 · MV I8-I9 · MV G6-F4 · MV F4-E2 · EA · BUY fire_1@F4 · BUY fire_1@E5 · EP | no attack in the turn |
+| `wave1-AS01-W-t3` | 5 (5) | 30–13 | damaging-attack | pass | PASS | MV G6-D1 · ATK D1xC1 p2 · EA · EP | damaging attack: lightning_1@D1 x plant_1@C1 power 2 |
 | `wave1-OP01-W-t1` | 1 (9) | 6–9 | spawn-area-open | pass | FAIL (unexpected) | MV J9-J10 · MV I9-J9 · MV J9-J8 · MV I10-I9 · EA · BUY plant_1@J9 · BUY plant_1@I10 · EP | 0 legal spawn square(s) for black after the turn |
 | `wave1-OP01-W-t2` | 3 (7) | 14–15 | contact-in-3 | pass | FAIL (unexpected) | EA · EP | no contact within 3 plies: no damaging strike this turn, no adjacency after it, no single-unit strike line after a passive reply |
 | `wave1-SO02-B-t37` | 4 (6) | 250–248 | damaging-attack | pass | PASS | ATK E10xD10 p1 · MV B3-C3 · EA · UPKEEP keep 32 · EP | damaging attack: plant_1@E10 x water_3@D10 power 1 |
@@ -45,7 +45,7 @@ rules; that it is the right plan at that position is the author's stated judgmen
 
 | demand | exact passed/cases | judgment matched/cases | plan passed/cases | §1 row |
 | --- | ---: | ---: | ---: | --- |
-| `quiet-clock` | 0/0 | 0/0 | 2/4 | Ten turns without a kill cause a draw — seek a draw when losing and avoid accidental draws when winning |
+| `quiet-clock` | 0/0 | 0/0 | 3/4 | Ten turns without a kill cause a draw — seek a draw when losing and avoid accidental draws when winning |
 | `home-and-spawn` | 0/0 | 0/0 | 0/2 | Home occupation and spawn geometry — defend, invade, block spawning and recognize races |
 | `immediate-action` | 0/0 | 0/0 | 1/2 | Immediate action after purchasing/promoting — see summon-and-strike, combined purchases/promotions and multiple promotions |
 
