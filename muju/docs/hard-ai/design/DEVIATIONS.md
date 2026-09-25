@@ -2564,29 +2564,78 @@ matched only the extension-bearing SCANNED-file path (the literal string `'strat
 (`'strategy/types'`). At the W1.2 review `hard:deps` scanned 48 files with 0 violations; only the two literal
 strings above change classification.
 
-### 2026-09-24 (PENDING W1.9/W1.10): the veto overrides the search's own best candidate
+### 2026-09-24: the root plays a plan candidate over the search's own best (W1.9 injection, W1.10 veto)
 
-In this tree `search/root.ts` installs no strategy witness and runs no veto pass. `RootResult.strategy` is
-declared (W1.0b) but no real search populates it. `hard@strategos` already sets `SearchFix.strategyPlans` and
-`strategyVeto` (`config.ts strategosPatch()`); nothing reads either flag yet.
+Every other profile plays the root's highest-scored searched candidate. `hard@strategos` does not, on a root
+whose clock reading has a posture. Two steps, both merged from `claude/sg-plans` as `3cc81726`:
 
-W1.9 (plan injection) is reviewed on `claude/sg-plans` (`8de5da41`, review `45cec478`) and lands with the W1.9
-merge. There, `strategy/contact.ts` and `strategy/hold.ts` build ForceContact and Hold lines, and
-`gen/generate.ts setStrategyWitness` forces them into the ply-0 candidate list as complete turns flagged
-`FORCED|STRATEGY` (`gen/turn.ts TurnFlag.STRATEGY = 16384`). Each line carries a `PlanContract`. ForceContact:
-deadline `r − 1`, end predicate `damaging-attack`, no essential slots, a declared permitted loss. Hold: deadline
-`r`, end predicate `enemy-killeta-exceeds-r`, permitted loss zero, essential slots = the units whose stay-put
-share the clock win needs. W1.9 fills `RootResult.strategy` with the reading, posture, injected plans, queries
-and `chosen`; it leaves `veto` unset. W1.9 adds candidates and a ply-0 ordering bonus (`search/order.ts
-ORDER_STRATEGY`), but the root still plays the search's own best-scored candidate.
+- **W1.9, plan injection** (`SearchFix.strategyPlans`; `8de5da41`, review `45cec478`). `strategy/contact.ts`
+  and `strategy/hold.ts` build ForceContact and Hold lines; `gen/generate.ts setStrategyWitness` forces them
+  into the ply-0 candidate list as complete turns flagged `FORCED|STRATEGY` (`gen/turn.ts TurnFlag.STRATEGY
+  = 16384`), which the `K` cut never displaces, and `search/order.ts ORDER_STRATEGY` (+1,000,000) orders them
+  after the TT move, the home-corner answers and a denial of four or more spawn anchors. Each line carries a
+  `PlanContract`. ForceContact: deadline `r − 1`, end predicate `damaging-attack`, no essential slots, a
+  permitted loss of one body and, in crystals, the line's Prepare spend plus our costliest unit's price
+  (CHOICE; no veto clause reads it). Hold: deadline `r`, end
+  predicate `enemy-killeta-exceeds-r`, permitted loss zero, essential slots = the units whose stay-put share
+  the clock win needs. The plan layer's work is charged to the meter (rollouts capped at `limit / 16`;
+  full-prover calls at `WORK_PROVER = 40`, DERIVED). Injection alone changes the candidate set and ordering;
+  the root still plays the best-scored candidate.
+- **W1.10, the veto** (`SearchFix.strategyVeto`; `c9484d3f`, review `820aad80`, coordinator `3561e239`).
+  Iterative deepening runs on the rung less a reserve (`search/veto.ts VETO_RESERVE_SHARE`), then the root
+  plays the tactical best if it is plan-consistent (`strategy/veto.ts planConsistency`), and otherwise
+  re-searches the best consistent candidate full-window at child depth `max(1, depth − 1)` and plays it unless
+  `vetoVerdict` refuses it. Reasons: `mate` / `proven-clock-loss` (a decided loss the tactical best avoids),
+  `forgone-win` (the tactical best is a decided win and the plan line is not), `essential-lost` (a
+  contract's essential slot dead after the opponent's best reply). The threshold is terminal scale
+  (`WIN_CC − maxPly · MATE_PLY_CC`, DERIVED); `BOUNDED_CLOCK_CC` is not a proof. Ordinary material loss is
+  never a veto reason (plan Part A item 2: the search's job is to falsify the plan's CONTRACT, not to
+  protect material), so the essential-slot clause cannot fire on a ForceContact line, whose essential set is
+  empty. A re-search cut for budget or refused by the replica is `unresolved` and the tactical best is played.
 
-W1.10 (the veto) is being built in a separate lane. Per plan B.1/B.2 step W1.10, after `iterativeDeepening`
-completes, `search/root.ts` will pick the best PLAN-CONSISTENT root candidate instead of the search's own
-top-scored one. It re-searches that one candidate full-window at `depth − 1`, charged to the meter from a
-reserved share (CHOICE). It plays the plan candidate UNLESS its searched score is terminal-scale worse than the
-tactical best (a proof: mate, or a proven clock loss) or an essential slot dies in the opponent's first reply.
-Ordinary material loss is never a veto reason (Part A item 2: the search's job is to falsify the plan's
-CONTRACT, not to protect material). So W1.10's essential-slot clause cannot fire on a ForceContact line, whose
-essential set is empty. This is a genuine deviation from "the root plays its highest-scored searched
-candidate", the rule every other profile keeps, scoped to `SearchFix.strategyVeto`, `hard@strategos` only.
-This entry will be replaced with the shipped mechanism, its commit(s) and what review found once W1.10 lands.
+Scoped to `hard@strategos`; with both flags absent the result is byte-identical to `c054136b` (pinned in
+`tests/ai/hard/strategy-plans.test.ts` and `strategy-veto.test.ts`). What review found:
+
+- W1.9 (`45cec478`): no defect in the injection; 26 of 26 flag-absent digests recomputed from a `c054136b`
+  archive. A `witnessed` grade was a claim, not a line — rollouts now record their actions and a test replays
+  every witness. Six mutations the tests missed are now caught.
+- W1.10 (`820aad80`): five mutations survived (essentials read off the first reply instead of the principal
+  one; a plan-consistent tactical best recorded as `search`; child depth pinned to 1; `deadEssentials`
+  ignoring slot reuse by `ord`) — now caught by a `pvs`-call oracle. A private `RootProbe` leaked
+  `candidateSource` onto an unexposed result on the salvage path — dropped.
+
+### 2026-09-24: the veto's reserve is a fifth of the rung, and one measured root still needs more
+
+`VETO_RESERVE_SHARE` is a CHOICE, and the value W1.10 shipped failed its own measurement. The W1.10 review ran
+57 posture root×rung runs: rungs 25,000, 40,000 and 60,000, over the W1.9 and W1.10 fixtures, the p4 corpus's
+posture roots and the authored W1–W6 wave roots. At an eighth, three re-searches were cut for budget, and
+each time the plan was then not played: W3-c6-mixed@25,000 (3,093 units), W6-c6-far@40,000 (5,028 against a
+5,000 reserve), W6-c6-far@60,000 (8,486 against 7,500). The coordinator raised the share to a fifth
+(`3561e239`). On the same 57 runs, one re-search is still cut: W6-c6-far@40,000, 8,045 units against 8,000.
+Four runs now lose a completed depth to the reserve (one did at an eighth): vf-mate@40,000 3 → 2,
+pf-tooFarToReach@40,000 4 → 3, W6-c6-far@60,000 2 → 1, pf-trailingNoContact@60,000 2 → 1. The plan is played
+on 50 of the 57 (48 at an eighth). W6-c6-far@40,000's re-search of `approach:u2->g7` costs 11,731 units with
+a third reserved, 29% of the rung, so the label's falsifier ("a posture root whose re-search still exceeds
+the reserve at 25,000–60,000") already fires. Left for the coordinator: a larger share, a per-root cap, or
+accepting `unresolved` there. `hard@desktop` takes no reserve: it is armed only under
+`searchFix.strategyVeto`, and only on a posture root.
+
+### 2026-09-24: known W1 limitation — under Hold, the only contract veto is a dead essential slot
+
+Plan Part A item 2: "The search's job is to falsify the contract." Hold's contract is "no enemy kill before
+the clock ends" (`enemy-killeta-exceeds-r`) with zero permitted loss, but in W1.10's veto only one clause of
+it can refuse a Hold line: an essential slot dead after the opponent's best reply. Two gaps follow:
+
+- A best reply that kills a NON-essential unit does not veto, although any kill resets the clock the Hold is
+  winning (`core/state.ts makeEndPlace`). Essential slots are only the units whose stay-put share the clock
+  lead needs, and there are none whenever the lead survives the loss of any one unit (`holdEssentialSlots`).
+- Injected Hold lines are plan-consistent at once (`planConsistency` returns `injected`), so they skip the
+  enemy-`killEta` check a non-injected Hold candidate must pass. `hold:pass` is always injected, and graded
+  `unknown` whenever the enemy's `killEta` after passing does not exceed the plies left.
+
+Example, `p4-det-018` (bounded win, `r = 2`), at 25,000 and 60,000 alike: the root plays `hold:pass`, graded
+`unknown`, re-searched at −4,492 against the tactical best's +3,138. A `forced` `hold:retreat(u0->c2)` was
+also injected, but `hold:pass` ranked first on the last completed iteration's score (+1,685). Neither line has
+an essential slot, so no reply could veto it, and a 7,630-centimo gap short of terminal scale is not a veto
+by design. Not changed in Workflow 1. Open for Workflow 2: should a reply that kills any unit (the clock
+reset) falsify a Hold, and should injected Hold lines face the same `killEta` test as other candidates?

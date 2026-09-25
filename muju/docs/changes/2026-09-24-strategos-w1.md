@@ -12,7 +12,7 @@ opponents (Rush, Balanced, Expand, AIEngineV2) essentially never reach the clock
 stated assumptions, holds a real lead, and forces contact when it is losing the clock, with a tactical
 contract check (falsify the plan, not protect material) instead of a material-loss veto, a `ClockHeist`
 scripted opponent so the ladder can see the failure, and per-search telemetry. The contact and hold lines and
-the contract check are W1.9 and W1.10; neither is merged at this record (rows below). Plan:
+the contract check are W1.9 and W1.10, merged together from `claude/sg-plans` as `3cc81726` (rows below). Plan:
 `~/.claude/plans/can-you-respond-to-piped-book.md`, Part B (steps W1.1–W1.15). `hard@desktop` is untouched
 throughout: its resolved configuration and hash (`tests/lab/ablate.test.ts DESKTOP_WALL3000_HASH`,
 `5de7ae20…`) do not move.
@@ -22,7 +22,8 @@ throughout: its resolved configuration and hash (`tests/lab/ablate.test.ts DESKT
 `sg-seat`, `sg-clockheist2`), merged in sequence into `claude/strategos-w1`. Two shared foundation commits
 framed the waves: `a4d9b48e` (W1.0) before the first and `a54e9885` (W1.0b) between the two. A coordinator
 integration pass (`c054136b`) followed, then a third ClockHeist lane (`claude/sg-clockheist3`, merged as
-`68f95a91`, which froze the bot) and amendment A8 (`6d5db91b`). Every implementer commit was independently reviewed and, where the
+`68f95a91`, which froze the bot), amendment A8 (`6d5db91b`), Gate 0 and row R0 (`d3c36188`), the W1.9/W1.10
+lane (`claude/sg-plans`, merged as `3cc81726`) and a second coordinator pass on the veto (below). Every implementer commit was independently reviewed and, where the
 review found a defect, fixed in a review commit on top — see each step's row below and
 `docs/hard-ai/design/DEVIATIONS.md`'s new STRATEGOS W1 section for the deviations the campaign produced.
 
@@ -40,8 +41,8 @@ review found a defect, fixed in a review commit on top — see each step's row b
 | W1.6 | `49696ded`, review `825b0133` | Eval under `EvalFix.clockLedger`: `decidedCc`, the projected-margin `DrawPressure` | **Major.** The flagged branch decided "within the forced hand-offs" from the root's hand-off count alone, so a clock-out that follows a KILL (10+ turns deep, inside `maxDepth`) was scored full terminal scale — fixed to require both the root's count and the terminal's own `ply` ≤ 2 (the plan's literal `ply ≤ 2`). Doc/label fixes; a pinned whole-feature-vector-and-score digest replaced a test that could pass with the code wrong. |
 | W1.7 | `5c88e23d`, review `e91e47e5` | Zero-damage attack prune, `SearchFix.pruneZeroDamage` | **Major.** The skip ran AFTER `orderTop`'s width cut, so a pruned candidate's beam slot went empty instead of to the next real one (shipped widths explored 5 root candidates instead of 6) — fixed by pruning before the cut (see DEVIATIONS, "the beam shift"). Also: `isZeroPowerAttack` relied on an invariant (every defence ≥ 1) that a `pack`-accepted edge state broke, which would have dropped a real kill (113 of 336 end positions lost) — fixed by also requiring `effectiveDef > 0`. |
 | W1.8 | `49a7876a`, review `b636d46d` | Exhaustive promotions, `EvalFix.promoteExhaustive`; `Mission.ANY`; `buildCombos` promotion pin | **Major.** Tests passed with the code wrong: reverting the beam-widening change, or removing the engine wiring for any of the three generators, still passed all 10 tests — fixed with an 11-promotable-unit fixture and behavioural wiring tests. Found (not fixed here; recorded in DEVIATIONS): `TurnGenerator.prepareTables` never receives the engine's real `EvalFix`, so the 2026-09-21 strength knobs R2/R3 are dead in any real search. Also fixed: the `buildCombos` pin loop double-ran FORTIFY candidates `expand()` already runs FORCED. |
-| W1.9 | **PENDING W1.9 merge**: `8de5da41`, review `45cec478` on `claude/sg-plans` | Plan injection: `strategy/contact.ts` (ForceContact), `strategy/hold.ts` (Hold), `strategy/plan.ts`; `gen/generate.ts setStrategyWitness`; `gen/turn.ts TurnFlag.STRATEGY`; `search/order.ts ORDER_STRATEGY`; `RootResult.strategy` filled except `veto` | Reviewed, lands with the W1.9 merge. The review found flag-absent output byte-identical (26 of 26 digests recomputed from a `c054136b` archive). It made a `witnessed` ForceContact grade replayable (the rollout records its own actions), charged full-prover calls in rollouts, and added tests for mutations the suite missed. See DEVIATIONS.md's PENDING entry. |
-| W1.10 | **PENDING W1.10** | The plan-consistency veto; `RootResult.strategy.veto` | Being built in a separate lane. `RootResult.strategy` is declared (W1.0b); no real search in this tree populates it. |
+| W1.9 | `8de5da41`, review `45cec478`; merged `3cc81726` | Plan injection under `SearchFix.strategyPlans`. `strategy/contact.ts` (ForceContact, on a clock-loss reading): an approach toward the cheapest target (the `killEta`-minimising move, offered only if no worse than passing on the same post-turn convention), that approach plus the fastest affordable buy on the legal spawn square nearest the enemy, and that approach plus a promotion across a one-shot threshold; each rolled out for up to `r − 1` plies against two scripted replies (continue mining; evade the strike ball, then mine) and graded `witnessed` (both), `not-ruled-out` (one) or `unknown`, never `forced`; contract: deadline `r − 1`, `damaging-attack`, no essential slots. `strategy/hold.ts` (Hold, on a clock-win reading): pass, a combined retreat of every exposed killable unit, a Cleave-chain break; `forced` exactly when the enemy's `killEta` after the line exceeds the plies left (the no-kill clause only); essential slots are the units whose stay-put share the clock win needs (ties count as losses); permitted loss zero. `strategy/plan.ts`: the `PlanLine` record, caller-owned scratch with its own Replica, work units. `gen/generate.ts setStrategyWitness`/`playStrategyTurn` make each line a complete turn flagged `FORCED\|STRATEGY` (`gen/turn.ts TurnFlag.STRATEGY = 16384`) at ply 0 only; `search/order.ts ORDER_STRATEGY` (+1,000,000 at ply 0); `search/root.ts installStrategyWitness` charges the plan work to the meter (rollouts capped at `limit/16`) and fills `RootResult.strategy` | Flag-absent output byte-identical (26 of 26 digests recomputed from a `c054136b` archive). A `witnessed` ForceContact grade now records its rollout's actions, so it is a replayable line, not only a claim (Part A item 1); a test replays every witness at the root's full prover and requires the damaging attack at exactly the claimed ply, never past the deadline. Full-prover calls in rollouts are charged (`WORK_PROVER = 40`, DERIVED). Tests added for six mutations the suite missed (a rollout past the deadline, an in-line hit graded past the deadline, no rollout cap, an essential share ignoring the cell's reserve, Hold using the root's `r` instead of the plies left after the line, a buy square not nearest the enemy). Doc fixes: Hold's forced clause is "no enemy kill in the plies the clock has left", which our own kill can extend; the essential-slot share is approximate when rent releases units; `permittedLoss` crystals carry a CHOICE label. |
+| W1.10 | `c9484d3f`, review `820aad80`; merged `3cc81726`; coordinator (below) | The plan-consistency veto under `SearchFix.strategyVeto`, and the Chronicle. `strategy/veto.ts` (pure): `planConsistency` (ForceContact: an injected line or any candidate whose Act makes an attack with power > 0; Hold: an injected line, or any candidate that kills nothing — generator flag and board count — and leaves the enemy's `killEta` above the plies left) and `vetoVerdict` (veto only on a terminal-scale gap, `terminalLossThreshold = WIN_CC − maxPly · MATE_PLY_CC`, DERIVED, or an essential slot dead after the opponent's best reply; material never). `search/veto.ts`: deepening runs on the rung less a reserve (`WorkMeter.setLimit`), topped back up to `used + reserve`; if the tactical best is not plan-consistent, the best consistent candidate (last completed iteration's score via `RootProbe.completedScore`, then injected lines, then generator order) is re-searched full-window at `max(1, depth − 1)` over every ply-1 reply; a truncated or refused re-search is `unresolved` and the tactical best is played. `search/root.ts` arms the veto only on a posture root and records `chosen`, `veto` and the `veto.classify`/`veto.research` queries | Five mutations survived the implementer's tests (essentials read off the FIRST reply instead of the principal one; a plan-consistent tactical best recorded as `source: 'search'`; the re-search's child depth pinned to 1; `deadEssentials` ignoring slot reuse by `ord`) — all now caught by an oracle that records every external `pvs` call of the re-search and checks its depth, window and named reply on every posture root. A private `RootProbe` leaked `candidateSource: 'generator-list'` onto an unexposed strategos result on the salvage path — dropped. The review also measured the reserve (57 posture root×rung runs): three re-searches cut for budget at an eighth, the finding that led to coordinator decision 7. Full suite 237 files, 3,349 passed, 17 skipped; `hard:determinism` for `hard@strategos` identical on the p4 corpus (48 decisions); `hard@desktop` byte-identical to `c054136b` on 42 roots. |
 | W1.11 | `6c99447a`, review `c7c8b3b2` | Phasing determinism corpus (`positions/p4-determinism.jsonl`) + Gate 0 for desktop | **Major ×2.** Three of four "contact" rows were mid-turn snapshots taken just before a bot's ATTACK (`actionsRemaining` 1, 1 and 3), not the fresh Act root the strategos reading is designed around — regenerated as real fresh-turn contact positions at clocks 6, 2, 9 and 8. The test's `hard@desktop` CLI check ran `--positions 3`, the first 3 rows (all opening roots at clock 1), so it never touched a late-clock or contact row — fixed with an explicit high-clock/contact subset. Also fixed on the shared `determinism.ts` path: a short repetition was compared only on the rows it returned, so a missing/misaligned decision silently passed. |
 | W1.12 | `082913bc`, review `56708048`; follow-up `e203c09c`, review `c6bb8a8e` | `ClockHeist` scripted bot (drone, expand, free kills only when behind, retreat/pass when ahead) | **Major ×2** (first review). The "ahead → retreat and pass" lock also blocked buying in the Place phase, and "ahead" was read right after ClockHeist's own income and before the opponent's — so from ply 3 of any kill-free game it froze its own economy (bank 10→19→27 unspent, lost the clock 38-52 vs Hard-25k). Fixed: the lock applies to the Action phase only. The strike-area formula (`speed+1`) was documented as an over-approximation but is not one (the engine's strike area is `speed×3+1`, `tables/threat.ts`) — now `speed×(actions−1)+1` on the empty board, a sound bound. **Follow-up finding (not resolved):** the Action-phase-only fix has NO measured effect on real games — an exact ladder replay reproduces all 96 calibration games identically before and after. The real cause is spawn-square clogging (ClockHeist's units sit on its own rich home spawn cells and neither branch moves one off a still-paying cell, so the Place phase has no legal buy square), left as an open coordinator item — see below. |
 | W1.12 final | `ae294099`, review `1d74f543`; fix `9fdf6b95`, re-review `4c10bd55`; merged `68f95a91` | Spawn declogging (`declogScore`/`wouldOpenSpawnRoom`/`spawnRoom`): a unit on a paying cell may step to another paying cell when safe, when spawn room is tight, and when replaying the move proves it widens the buyable area. ClockHeist frozen at `4c10bd55` for A8 | Turns 1–4 buys rose from 1.0–2.0 to 4.42–7.17, but the clock outcome did not flip: `hard@desktop` still won 133 of 144 p1-dev calibration games. The review (`1d74f543`) found the clog persists after turn 4 (82 of 180 Place phases had no buy square while ClockHeist held at least 3 crystals) and that desktop's early raids, not the income ratio, decide most games. The fix round (`9fdf6b95`: defensive kill, blocker-aware reach, `metal_1` gate) was reverted by the re-review (`4c10bd55`): the defensive kill threw away won clocks, blocker-aware reach is unsound (a lethal hit unlocks another attack), and the gate had no measured effect. The frozen bot's decisions equal `ae294099`'s. |
@@ -49,6 +50,7 @@ review found a defect, fixed in a review commit on top — see each step's row b
 | W1.14 | `45b72c21`, review `861e886c` | Master side: engine-seat profile selector + search telemetry; browser `?hardEngine=strategos`. The pilot-branch half is **PENDING** (plan B.1a) | **Major ×2.** Telemetry/profile tests passed with FOUR different wrong runners (minedTotals swapped, handicap dropped, clock hard-coded to 0, wrong profile patch used) — fixed with paired one-fact-change cases and a spy on the real default engine factory. The engine profile was not part of the seat's resume identity, so a crash-and-resume could silently switch engines mid-game — fixed via `journal.profile` + `assertSeatConfiguration`. Also: `SEARCH_TELEMETRY_VERSION` existed only in a comment, not as code — now an exported constant written on every `start` line. |
 | W1.15 | `464f94c3`, review `8e1470b6` (this record, DEVIATIONS.md, `docs/ENGINE-SEAT-MATCH-2026-09-19.md`); A8 `6d5db91b`; DESIGN.md §9 addendum | Release docs; amendment A8 and `lab/hard-ai/ladder/paired-diff.ts` (A8's paired R1-minus-R0 difference, committed before R1) | Docs lane reviewed against `c054136b`. A8 reviewed by a Fable pass. The §9 addendum and DEVIATIONS/change-record drafts in `41172a24` (origin unknown, made after the 2026-09-24 crash, not by a campaign agent) were fact-checked and reconciled into this record in the merge of `claude/sg-docs`; the addendum awaits a Fable pass after W1.10. |
 | coordinator | `c054136b` | Integration decisions across W1.6/W1.8/W1.14 (below); the `ClockVerdict` doc (`strategy/types.ts`) and the `EvalFix.clockLedger` doc (`config.ts`) brought in line with the code, as the W1.5/W1.6 review asked | — |
+| coordinator (W1.10) | `3561e239` | The veto's reserve raised from an eighth to a fifth of the rung, re-measured (decision 7); the `forgone-win` veto reason (decision 8); Hold's contract veto documented as a W1 limitation (decision 9) | — |
 
 ## Coordinator decisions
 
@@ -93,8 +95,52 @@ review found a defect, fixed in a review commit on top — see each step's row b
    20260977–20260979, 20260991) were played by earlier versions of the bot and are not read. A8 therefore
    states before any row that ClockHeist is a weak detector of the wave-1 failure: it reproduces that failure
    only in the few games where nobody kills, and R1's bar is a non-regression check, not evidence of the fix.
+7. **The veto's reserve is a fifth of the rung, not an eighth** (`search/veto.ts VETO_RESERVE_SHARE = 5`,
+   CHOICE). W1.10 shipped an eighth, and the W1.10 review's measurement failed it: 57 posture root×rung runs
+   (rungs 25,000, 40,000 and 60,000 over the W1.9 and W1.10 fixtures, the p4 corpus's five posture roots and
+   the six authored W1–W6 wave roots) had three re-searches cut for budget, after which the plan was not
+   played — W3-c6-mixed@25,000 (3,093 units), W6-c6-far@40,000 (5,028 against a 5,000 reserve) and
+   W6-c6-far@60,000 (8,486 against 7,500), about 13–14% of the rung. Re-measured at a fifth on the same 57
+   runs (`3561e239`):
 
-## Tests and instruments added (on this branch, before W1.9/W1.10)
+   | | an eighth (W1.10 review) | a fifth (`3561e239`) |
+   |---|---|---|
+   | re-searches cut for budget (`unresolved`) | 3 | 1: W6-c6-far@40,000, 8,045 units against 8,000, after 7 of 19 replies |
+   | runs where deepening lost a completed depth to the reserve | 1: pf-trailingNoContact@60,000, 2 → 1 | 4: vf-mate@40,000 3 → 2, pf-tooFarToReach@40,000 4 → 3, W6-c6-far@60,000 2 → 1, pf-trailingNoContact@60,000 2 → 1 |
+   | runs that played a plan candidate | 48 | 50 |
+   | resolved re-search cost | 514–6,619 units | 514–11,217 units |
+
+   Depth is compared with the same profile with `strategyVeto` removed. Every veto the fixtures expect still
+   fires (vf-mate `mate`, vf-essential `essential-lost`, at all three rungs). The falsifier the label names —
+   a posture root whose re-search still exceeds the reserve at a rung from 25,000 to 60,000 — already fires
+   once: W6-c6-far@40,000's re-search of `approach:u2->g7` costs 11,731 units when a third of the rung is
+   reserved (29% of the rung; 13,078 at a half), so no share up to a quarter covers it (the W1.10 review saw it
+   cut at a quarter too, at 10,133 units). Open for the coordinator (below). Desktop is untouched: the reserve
+   is taken only when `searchFix.strategyVeto` is set and the root's reading has a posture.
+8. **`forgone-win` is its own veto reason.** When the tactical best is a decided win and the plan line is
+   not, `vetoVerdict` used to report `mate`, with `detail` saying which side. It now reports `forgone-win`
+   (`StrategyChronicle.veto.reason` gains the value). `mate` keeps meaning a plan line that walks into a
+   decided loss, and it wins over `forgone-win` when both hold.
+9. **Under Hold, the only contract veto is a dead essential slot** — recorded as a known W1 limitation and an
+   open Workflow 2 question, not changed. A best reply that kills a NON-essential unit, and so resets the
+   clock the Hold is winning, does not veto the plan; and an injected Hold line is plan-consistent without the
+   enemy-`killEta` check a non-injected candidate must pass. Example: on `p4-det-018` (bounded win, `r = 2`)
+   the root plays `hold:pass`, graded `unknown` and re-searched at −4,492 against the tactical best's +3,138,
+   over a `forced` `hold:retreat(u0->c2)`; neither line has an essential slot. Part A item 2 says the search's
+   job is to falsify the contract; here the re-search has no clause of the Hold contract to falsify it with.
+   See `DEVIATIONS.md`.
+
+## Master PRs #39–#41 on this branch
+
+The W1.10 lane merged `origin/master` to satisfy the freshness hook (`c04365a6`), so master PRs #39–#41 reached
+`claude/strategos-w1` with the W1.9/W1.10 merge (`3cc81726`): #39 (crystal painter board sizes 4×4 to
+10×10), #40 (MICRO MUJU, a 6×6 pass-and-play variant, `micro-muju-1`) and #41 (MICRO MUJU online: rooms, MCP
+tools). They generalise board size under `src/game`; the Muju rules revision (`muju-phasing-4`) is unchanged.
+The W1.10 review measured `hard@desktop`'s fixed-work results byte-identical to `c054136b` on 42 roots after
+the merge. R0 ran at `6d5db91b`, before it; R1 will run on the merge candidate, which includes it. A8 forbids
+re-running R0, so the paired R1-minus-R0 comparison stands on that byte-identity evidence.
+
+## Tests and instruments added
 
 - New tests: `tests/lab/strategos-identity.test.ts`, `tests/ai/hard/kill-clock-policy.test.ts`,
   `strategy-ledger.test.ts`, `strategy-killeta.test.ts`, `strategy-clock.test.ts`, `strategos-eval.test.ts`,
@@ -103,8 +149,11 @@ review found a defect, fixed in a review commit on top — see each step's row b
   `clockheist.test.ts`, `paired-diff.test.ts`, `tests/ai/hard-engine-profile.test.ts` and
   `tests/hooks/ai-hard-engine-profile.test.tsx`. Extended: `kill-clock-terminal-score.test.ts`,
   `tests/lab/engine-seat.test.ts`, `tests/ai/worker-turn.test.ts`, `tests/lab/phasing-evidence.test.ts`.
-- `tests/ai/hard/strategy-plans.test.ts` lands with the W1.9 merge; the veto's test (plan W1.10) and
-  `tests/lab/exam-p4.test.ts` (W1.13) do not exist yet.
+- W1.9/W1.10: `tests/ai/hard/strategy-plans.test.ts` (with `strategy-plans-fixture.ts`) and
+  `tests/ai/hard/strategy-veto.test.ts` (with `strategy-veto-fixture.ts`: paired one-fact roots,
+  `mateOrMaterial` and `essentialOrNot`, whose vetoes are confirmed by the canonical engine); extended:
+  `tests/ai/hard/interfaces.test.ts` (the pinned `TurnFlag` list gains `STRATEGY`).
+  `tests/lab/exam-p4.test.ts` (W1.13) does not exist yet.
 - Oracles: `lab/hard-ai/oracles/clock-ledger.ts` (random legal playouts that stop at the first kill never
   end the window above `U`) and `lab/hard-ai/oracles/killeta.ts` (no witnessed kill earlier than the bound).
 - Positions: `lab/hard-ai/positions/p4-determinism.jsonl` (W1.11) and `zero-damage.jsonl` (W1.7), each with
@@ -120,8 +169,10 @@ review found a defect, fixed in a review commit on top — see each step's row b
   ladder's `hard@strategos`, the seat's `profile` config field and the browser's `?hardEngine=strategos`
   opt-in (W1.14).
 - `DEFAULT_WEIGHTS` — untouched; `strategosPatch()` carries no `weights` key of its own.
-- The rules revision (`muju-phasing-4`) and the canonical engine (`src/game/**`) — untouched throughout; every
-  strategy module reads a packed root and writes nothing back to the canonical state.
+- The rules revision (`muju-phasing-4`) — unchanged. The canonical engine (`src/game/**`) — no campaign commit
+  touches it; every strategy module reads a packed root and writes nothing back to the canonical state. Its
+  only changes on this branch are master's board-size generalisation (PRs #39–#41), which arrived through
+  the W1.9/W1.10 merge (see "Master PRs #39–#41 on this branch").
 - The 2026-09-21 strength knobs (`StrengthKnobs`) — unchanged in shape. The bug that makes R2/R3 dead in real
   search is pre-existing; W1.8 found it and its review confirmed it (see DEVIATIONS.md).
 
@@ -133,9 +184,14 @@ threshold → Strike), then the goal catalogue one family at a time, and cross-t
 pure function of room history. Workflow 1's `Claim`/`AnalysisQuery`/Chronicle types (W1.0, W1.0b) exist to
 give Workflow 2 typed facts to attach likelihoods to.
 
+**For Workflow 2, from Workflow 1's veto:** under Hold, should a best reply that kills a non-essential unit
+(and so resets the clock) falsify the contract, and should an injected Hold line pass the same enemy-`killEta`
+check as any other candidate? Coordinator decision 9; `DEVIATIONS.md`.
+
 **Inside Workflow 1, still open:**
-- W1.9 (plan injection) — reviewed on `claude/sg-plans`, lands with the W1.9 merge. W1.10 (the veto) — being
-  built in another lane as of this record.
+- The veto's reserve (coordinator decision 7): its falsifier already fires on W6-c6-far@40,000, whose
+  re-search needs 29% of the rung. A larger share, a per-root cap on the re-search, or accepting
+  `unresolved` on such roots — a coordinator decision, ideally informed by R1's `veto.research` outcomes.
 - W1.13 (wave-1 exam cases) and the pilot-branch half of W1.14 — pending; plan B.2 runs both on the pilot
   branch after the master merge.
 - `TurnGenerator.prepareTables`'s dead `EvalFix` read (W1.8 review finding) — stamp the real `evalFix` onto
@@ -151,14 +207,18 @@ give Workflow 2 typed facts to attach likelihoods to.
   "Claude Opus 5.5 (1M context)" line; each lane's own review commit uses the correct trailer and was not
   rewritten to fix the implementer commit (no rebase).
 
-## Placeholders (coordinator to fill)
+## Evidence recorded, and what is still owed
 
 - **Gate 0 results.** W1.11 ran Gate 0 for `hard@desktop` only (`6c99447a`, `c7c8b3b2`), all exit 0:
   `hard:perft --check` on both engines, `hard:fuzz --actions 20000 --seed 7101` (0 divergences), and
   `hard:determinism --positions-file lab/hard-ai/positions/p4-determinism.jsonl` (24/24 identical at work
   25000; 48/48 at 25000,400000). A8 requires Gate 0 again for `hard@desktop` at the commit R0 runs on, and
-  for both profiles at the Workflow 1 merge candidate before R1. The `hard@strategos` checks (plan B.3 item
-  3) are pending W1.9/W1.10.
+  for both profiles at the Workflow 1 merge candidate before R1. **Done for `hard@desktop` at `6d5db91b`**
+  (`d3c36188`; logs under `docs/hard-ai/phasing/strategos-w1-2026-09-24/results/gate0/`): `hard:perft
+  --check`, `hard:perft --check --engine replica`, `hard:fuzz --actions 20000 --seed 7101` and
+  `hard:determinism` over `p4-determinism.jsonl`, all exit 0. Still owed: both profiles at the merge
+  candidate before R1 (plan B.3 item 3 for `hard@strategos`). The W1.10 review and this coordinator pass ran
+  `hard:determinism --engine hard@strategos --work 25000,60000` over the p4 corpus: identical, 48 decisions.
 - **Rows R0–R3.** Preregistered in amendment A8 (`6d5db91b`) before any is played; all at `muju-phasing-4`,
   seat-mirrored, `p1-val.jsonl` (32 openings):
   - R0: `hard@desktop` vs `ClockHeist`, fixed:60000, handicaps 0,4,8,12,16,20, 192 pairs, seed 20260983.
@@ -172,8 +232,30 @@ give Workflow 2 typed facts to attach likelihoods to.
     Informational.
 
   The plan's seed 20260980 was consumed by a ClockHeist review smoke on `p1-val`, so R0/R1 moved to
-  20260983; the six handicaps replace the plan's `--handicaps 0 --pairs 32` (A8 gives the reasons). No row
-  result is recorded here.
+  20260983; the six handicaps replace the plan's `--handicaps 0 --pairs 32` (A8 gives the reasons).
+
+  **R0 result** (`d3c36188`, at `6d5db91b`; `docs/hard-ai/phasing/strategos-w1-2026-09-24/results/R0-desktop-vs-ClockHeist/`):
+  complete, 192/192 pairs, 384/384 games, no illegal actions, replica divergences or engine fallbacks.
+  `hard@desktop` scored 364-3-17 (W-D-L), score 0.952, Elo 518 [448, 630]. All 17 losses are kill-free
+  kill-clock losses (no first blood; 10 as White, 7 as Black), the wave-1 failure mode; per handicap 0/4/8/12/16/20
+  the losses are 1/2/2/4/4/4. The run was interrupted by a machine crash before its first game finished and
+  resumed in place (`--resume`, same row and seed). The summary flags duplicate openings: 141 (A as White) and
+  103 (B as White) distinct games of 192 pairs. R1 and the paired difference are not yet run.
+- **W1.10 smoke** (the W1.10 lane's own check on its tree before `c9484d3f`, an eighth reserved; a scratch
+  table, not committed).
+  `hard@desktop` and `hard@strategos` at fixed work 60,000 on the 24 p4 corpus roots and the six authored
+  W1–W6 wave roots. 22 roots read `open` (no posture): strategos played desktop's move on 11 and a different one
+  on the other 11 (the prune, exhaustive promotions and clock eval act there too). On the eight posture roots:
+  - Hold, four corpus roots (all `bounded-win`), played `hold:pass`. On `p4-det-015` desktop approached (distance
+    14 → 11) and on `p4-det-018` it walked away (3 → 9); on `p4-det-019` and `p4-det-022` desktop passed too.
+  - ForceContact, `p4-det-023`: the same attack as desktop, as a plan-consistent tactical best.
+  - ForceContact, W3-c6-mixed and W4-c7-fire: plan approach lines (`approach:u1->h6`, `approach:u1->g7`)
+    closing to distance 3 and 1, where desktop closed to 7 and 5.
+  - ForceContact, W6-c6-far: desktop's move, recorded as the search's, because the re-search came back
+    `unresolved` (the finding behind coordinator decision 7). At a fifth (`3561e239`) the same root plays
+    `approach:u2->g7` at 60,000.
+
+  No veto fired on any of the 30 roots. Completed depth was equal on 26 roots, one lower on 3 and one higher on 1.
 - **Deploy evidence.** None yet. Plan B.3 items 5–7: `npm test` and `e2e/ai-worker.spec.ts`, a Watch-AI
   browser smoke with `?hardEngine=strategos`, an engine-seat smoke with `profile: 'strategos'`, then deploy
   per standing permission (Render, Pages) with the default profile still `desktop`.

@@ -328,11 +328,11 @@ the searched position that exist on every search, desktop or strategos;
   an explicit `null` rather than an omitted key for the same reason
   `fallback` already is a fixed key valued `null`: a downstream reader of the
   seat's `.jsonl` can assume every `search` event carries the same key set
-  and never has to branch on `'strategy' in event`. `RootResult.strategy`
-  itself is not yet populated by any real search in this tree (W1.9/W1.10
-  land it; see `docs/hard-ai/design/DEVIATIONS.md`'s PENDING entry), so today
-  every `hard@strategos` seat run also logs `strategy: null` — this is
-  expected, not a defect in the telemetry.
+  and never has to branch on `'strategy' in event`. Since W1.9/W1.10 (merged
+  as `3cc81726`) a `hard@strategos` search fills `RootResult.strategy` — the
+  reading, posture, injected plans, `chosen`, any `veto` and the queries (see
+  `docs/hard-ai/design/DEVIATIONS.md`, "the root plays a plan candidate over
+  the search's own best") — so its seat events carry the Chronicle.
 
 Nothing about the events a `hard@desktop` seat already logged is removed or
 renamed; `depth`/`work`/`stopReason`/`fallback`/`verified` and the rest are

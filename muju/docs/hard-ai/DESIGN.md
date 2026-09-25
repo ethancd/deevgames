@@ -1870,28 +1870,53 @@ what the six keys change. Plan: `~/.claude/plans/can-you-respond-to-piped-book.m
    mission claims as `Mission.ANY` (benefit 0), `planPromotions` widens to `MAX_SLOTS`, and
    `gen/generate.ts buildCombos` pins one bare promotion-only combo per promotion. It is wired to the root
    generator only.
-5. **Telemetry.** `RootResult.strategy` (the Chronicle, `StrategyChronicle`) is declared. The engine seat's
-   `search` events gain `scoreCc`, `clock`, `minedTotals` and `strategy` (`tools/engine-seat/runner.ts`).
-
-> **PENDING W1.9/W1.10 — not in this tree.** `strategyPlans` and `strategyVeto` are set by
-> `strategosPatch()`, but no code reads them yet. Nothing below is in this tree.
->
-> - **W1.9, plan injection** (reviewed as `8de5da41` + `45cec478` on `claude/sg-plans`; lands with the W1.9
->   merge). `strategy/contact.ts` builds ForceContact lines: an approach toward the cheapest target, the
->   approach plus the fastest affordable buy nearest the enemy, and the approach plus a promotion across a
->   one-shot threshold. `strategy/hold.ts` builds Hold lines: pass, a combined retreat of exposed units, and a
->   Cleave-chain break. `gen/generate.ts setStrategyWitness` forces them into the ply-0 candidate list as
->   complete turns flagged `FORCED|STRATEGY`. `search/order.ts` gives them an ordering bonus at ply 0. Each
->   line carries a `PlanContract`: permitted loss, essential slots, deadline and end predicate. ForceContact
->   lines are rolled out against two scripted replies (continue, evade) and graded `witnessed`,
->   `not-ruled-out` or `unknown`, never `forced`. W1.9 fills `RootResult.strategy` (reading, posture, injected
->   plans, queries, chosen). The root still plays the search's own best candidate.
-> - **W1.10, the veto** (being built in another lane). Per plan B.1 and step W1.10: after
->   `iterativeDeepening`, `search/root.ts` plays the best plan-consistent candidate. That candidate is
->   re-searched full-window at `depth − 1`, charged to a reserved share of the meter. It is refused only if
->   its searched score is terminal-scale worse than the tactical best (mate, or a proven clock loss), or an
->   essential slot dies in the opponent's first reply. Material loss is never a veto reason. The reason is
->   recorded in `RootResult.strategy.veto`. DEVIATIONS.md's PENDING entry tracks it.
+5. **Telemetry.** `RootResult.strategy` (the Chronicle, `StrategyChronicle`) records, for every strategos
+   root search, the reading, the posture, each injected plan with its contract, feasibility and queries,
+   what the root played (`chosen`: `source` `plan` or `search`, with the plan label) and, when a plan was
+   refused, the `veto`. The engine seat's `search` events gain `scoreCc`, `clock`, `minedTotals` and
+   `strategy` (`tools/engine-seat/runner.ts`).
+6. **Plan injection** (`SearchFix.strategyPlans`; W1.9, `8de5da41` + review `45cec478`). On a posture root,
+   `search/root.ts installStrategyWitness` installs `gen/generate.ts setStrategyWitness` on the root
+   generator, which forces the plan lines into the ply-0 candidate list as complete turns (Act,
+   `END_ACTION`, `PAY_UPKEEP`, Prepare, `END_PLACE`; `playStrategyTurn`) flagged `FORCED|STRATEGY`, so the
+   `K` cut never displaces them. `search/order.ts` adds `ORDER_STRATEGY` (+1,000,000) at ply 0.
+   - ForceContact (`strategy/contact.ts`): an approach toward the cheapest target (the move that minimises
+     our `killEta`, offered only if no worse than passing), that approach plus the fastest affordable buy
+     on the legal spawn square nearest the enemy, and that approach plus a promotion across a one-shot
+     threshold. Each line is rolled out for up to `r − 1` plies against two scripted replies (keep mining;
+     evade our strike ball, then mine) and graded `witnessed` (both reach a damaging attack by the deadline;
+     the rollout's actions are recorded, so the witness replays), `not-ruled-out` (one) or `unknown`, never
+     `forced`. Contract: deadline `r − 1`, end predicate `damaging-attack`, no essential slots.
+   - Hold (`strategy/hold.ts`): pass, a combined retreat of every exposed unit the enemy can kill next turn,
+     and a Cleave-chain break. A line is `forced` exactly when the enemy's `killEta` on the position it
+     reaches exceeds the plies left there. That forces "no enemy kill in the plies the clock has left" and
+     nothing more: our own kill resets the clock and so extends those plies. Contract: permitted loss zero, end predicate
+     `enemy-killeta-exceeds-r`, essential slots = the units whose stay-put share the clock win needs (ties
+     count as losses; approximate when rent releases units).
+   The plan layer's work (replays, `killEta`, rollouts capped at `limit / 16`) is charged to the work meter.
+   Flag absent, the candidate set and result are byte-identical to `c054136b`.
+7. **The plan-consistency veto** (`SearchFix.strategyVeto`; W1.10, `c9484d3f` + review `820aad80`,
+   coordinator `3561e239`). On a posture root, iterative deepening runs on the rung less a reserve of a fifth
+   (`search/veto.ts VETO_RESERVE_SHARE = 5`, CHOICE; topped back up to `used + reserve` if deepening
+   overshot). Then:
+   - If the tactical best (the last completed depth's move) is plan-consistent, it is played as the plan's
+     move. Plan-consistent (`strategy/veto.ts planConsistency`): ForceContact, an injected line or any
+     candidate whose Act makes an attack with power > 0; Hold, an injected line, or any candidate that kills
+     nothing and leaves the enemy's `killEta` above the plies left (Part A item 2's suppressed free kill).
+   - Otherwise the best consistent candidate (by the last completed iteration's score, then injected lines,
+     then generator order) is re-searched full-window: its turn, then every opponent reply at child depth
+     `max(1, depth − 1)`. It is played unless `vetoVerdict` refuses it: a re-searched score terminal-scale
+     worse than the tactical best's (`terminalLossThreshold = WIN_CC − maxPly · MATE_PLY_CC`, DERIVED; a
+     bounded clock-out is not terminal) — `mate` or `proven-clock-loss` for a decided loss the tactical best
+     avoids, `forgone-win` for a decided win the plan line passes up — or an essential slot of its contract
+     dead after the opponent's best reply (`essential-lost`). Material is never a reason.
+   - A re-search the meter or watchdog cut, or whose own turn the replica refused, proves nothing: the
+     tactical best is played and the query is recorded `unresolved`.
+   Every step is an `AnalysisQuery` in the Chronicle (`veto.classify`, `veto.research`). A posture-free
+   root takes no reserve. Flag absent, nothing changes; `hard@desktop` is byte-identical to `c054136b`.
+   Known limits (DEVIATIONS.md): under Hold the only contract veto is a dead essential slot, and an
+   injected Hold line skips the `killEta` check; at a fifth, one measured root (W6-c6-far at 40,000) still
+   needs more than the reserve.
 
 **Why.** Wave 1 (34 LLM-vs-Hard games, 2026-09-24) showed `hard@desktop` losing 6 of 7 games on the kill
 clock. It never plans contact when behind, and it reads the current mined lead rather than the projected
@@ -1919,7 +1944,8 @@ kill-free games. R1's bar is therefore a non-regression check, not evidence of t
 `5de7ae20…`, pinned in `tests/lab/ablate.test.ts`). Every new key is optional and absent on every shipped
 profile (`tests/lab/strategos-identity.test.ts`). `DEFAULT_WEIGHTS`, including `DrawPressure`'s −8. §8's
 `K`, `widths` and `maxDepth`, which both profiles share; under strategos the prune and exhaustive promotions
-change only which candidates fill them. The rules (`muju-phasing-4`) and the canonical engine
-(`src/game/**`). The default Hard profile, which stays `hard@desktop` until wave 2 says otherwise. Desktop's
-own cross-search leak of `killClockRootClock` is kept, because fixing it would move desktop's bytes
+change only which candidates fill them, and plan lines join the root list as forced candidates beyond them.
+The rules (`muju-phasing-4`). The canonical engine (`src/game/**`), apart from master's board-size
+generalisation (PRs #39–#41), which reached this branch through the W1.9/W1.10 merge. The default Hard
+profile, which stays `hard@desktop` until wave 2 says otherwise. Desktop's own cross-search leak of `killClockRootClock` is kept, because fixing it would move desktop's bytes
 (DEVIATIONS.md).
