@@ -247,3 +247,100 @@ phase-ending fallback or live game is launched by the tests in this change.
 
 No production deployment, real LLM match, Phasing engine match, opening import
 controller or strength claim is included in this preparation.
+
+## Engine profile selector and search telemetry (STRATEGOS W1.14, 2026-09-24 addendum)
+
+Adds a `profile` field to the seat's config and journal, and a declared shape
+for the `search` telemetry line the seat already wrote ad hoc. Plan
+`~/.claude/plans/can-you-respond-to-piped-book.md`, B.2 step W1.14. Change
+record `docs/changes/2026-09-24-strategos-w1.md`. Read `tools/engine-seat/config.ts`,
+`contract.ts` and `runner.ts` for the exact code; this section names what
+changed and why.
+
+**Config: `profile`.** `SeatConfig.profile` is a string, default `'desktop'`,
+checked at config-parse time (before any room is read, joined or reserved)
+against `lab/hard-ai/bots/hard.ts hardConfigFor` — an unknown label (a typo,
+a retired arm name) is refused HERE rather than surfacing as a first-turn
+engine-construction failure deep inside a live room. `runner.ts`'s default
+`createEngine` builds `new HardEngine(hardEnginePatch(options.profile ??
+journal.profile ?? 'desktop'))`, so a seat with no `profile` key anywhere
+still builds exactly the `hard@desktop` engine it always built.
+
+`profile: 'strategos'` is accepted like any other label `hardConfigFor`
+resolves (`lab`, `midrange`, `phone`, `ablate:<arm>`, …); it is not a special
+case in the config schema. What IS special-cased: **`env` (and `env` with a
+documentary suffix, such as `env-400k`) is REFUSED**, even though
+`hardConfigFor` itself accepts it. Reason: `hard@env`'s weight vector comes
+from a `MUJU_HARD_WEIGHTS` file path that the seat's `start` telemetry line
+never records (only the string `"env"` does), and that file is read lazily —
+not at config-parse time, but inside `runner.ts`'s `makeEngine`, which is not
+called until this seat's FIRST search after joining a live room. A missing or
+malformed file would therefore fail minutes into a match, with no record on
+disk of which weights a resumed or replayed run actually used. The refusal
+strips the same documentary suffix `hardConfigFor` itself normalises
+(`-<n>k`, `-<n>m` or `-units`, e.g. `-400k`) before comparing, so `env-400k` is
+refused for the identical reason `env` bare is, not treated as a separate,
+allowed label. Use a named profile (`desktop`, `strategos`, `midrange`,
+`phone`, …) instead.
+
+**Journal: the profile is part of resume identity.** Before this change, an
+engine seat's journal recorded nothing about which engine it was built from —
+a run started under `profile: 'strategos'` could crash and be resumed with
+`profile: 'desktop'` (or the reverse), silently switching engines mid-game.
+`SeatJournal.profile` (version 3, added WITHOUT a version bump: it is
+optional) now travels with the journal, and `assertSeatConfiguration` refuses
+a resume whose `(journal.profile ?? 'desktop')` disagrees with the
+configuration's `profile`, the same way it already refuses a changed seed,
+server, room or contract. `'desktop'` is written as an ABSENT key, never as
+`profile: "desktop"` — `journalProfile()` returns `{}` for it — so every
+journal a desktop-profile seat wrote before this change, and every desktop
+journal written after it, is byte-for-byte identical; only a non-desktop
+profile adds the key at all. A version-2 (Standard-only) journal is still
+unconditionally refused, unrelated to this field.
+
+**Search telemetry: a declared, versioned shape.** Before this change the
+seat's `event: 'search'` line (appended to `<stateFile>.jsonl`) was an ad hoc
+`Record<string, unknown>` with no shape a reader could rely on. `contract.ts`
+now declares `SearchTelemetryEvent` and an exported
+`SEARCH_TELEMETRY_VERSION = 1` (this is the FIRST declared shape — "version
+1" names what ships today, not a change from an earlier declared version).
+`main.ts` writes `searchTelemetryVersion` on every `start` line, next to
+`profile` and the source hashes, so a reader of a `.jsonl` file knows which
+`search`-line shape follows without guessing from its keys.
+
+Four fields are new on every `search` line and — the CHOICE `contract.ts`
+records — NEVER OMITTED. `scoreCc`, `clock` and `minedTotals` are facts about
+the searched position that exist on every search, desktop or strategos;
+`strategy` is `null` on a `hard@desktop` seat:
+
+- `scoreCc: Centi` — `RootResult.scoreCc`, the root's own evaluation of the
+  turn it returned, in centi-crystals from the seat's (side-to-move) point of
+  view. Read it next to `source`/`fallback`: an unsearched root reports 0.
+- `clock: number` — the root position's inactivity (kill) clock,
+  `state.inactivityPlies ?? 0` (`src/game/inactivity.ts`), `0 …
+  INACTIVITY_LIMIT − 1`.
+- `minedTotals: [number, number]` — `[white, black]` mined totals at the
+  root (`src/game/inactivity.ts minedTotal`), Black's handicap folded in
+  exactly as the kill clock's own verdict reads it.
+- `strategy: StrategyChronicle | null` — `RootResult.strategy` when the
+  search computed one (a profile with `searchFix.strategyPlans` and/or
+  `.strategyVeto` set — `hard@strategos` today), `null` otherwise. Carried as
+  an explicit `null` rather than an omitted key for the same reason
+  `fallback` already is a fixed key valued `null`: a downstream reader of the
+  seat's `.jsonl` can assume every `search` event carries the same key set
+  and never has to branch on `'strategy' in event`. Since W1.9/W1.10 (merged
+  as `3cc81726`) a `hard@strategos` search fills `RootResult.strategy` — the
+  reading, posture, injected plans, `chosen`, any `veto` and the queries (see
+  `docs/hard-ai/design/DEVIATIONS.md`, "the root plays a plan candidate over
+  the search's own best") — so its seat events carry the Chronicle.
+
+Nothing about the events a `hard@desktop` seat already logged is removed or
+renamed; `depth`/`work`/`stopReason`/`fallback`/`verified` and the rest are
+unchanged. A `hard@desktop` seat's `search` events simply gain these four
+always-present keys.
+
+**Not done here.** A live engine-seat smoke run with `profile: 'strategos'`
+against a scripted room, and the `?hardEngine=strategos` browser smoke
+(`e2e/ai-worker.spec.ts`, Watch-AI) plan B.3 items 5–6 call for — both are
+recorded as open in `docs/changes/2026-09-24-strategos-w1.md`. This
+preparation change does not authorize or run either.

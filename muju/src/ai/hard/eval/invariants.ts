@@ -263,7 +263,19 @@ export function invariantBits(p: PackedState, t: NodeTables, side: Side, sc: Scr
   // it, so this remains a cheap proxy for the same idea; a future tuning pass
   // may switch it to `gained[]` directly. The 300 cc lead and the
   // `killNow.count === 0` clause are unrelated to the clock and untouched.
-  if (p.drawRuleOn === 1 && p.clock >= INACTIVITY_WARNING && leadCc(p, side) >= 300 && killNow.count === 0) bits |= bit(16);
+  //
+  // STRATEGOS W1.6 (`config.ts EvalFix.clockLedger`, OFF by default): this
+  // invariant is gated OFF entirely under the flag. It penalises exactly the
+  // posture `strategy/clock.ts`'s `Hold` (bit `hold` on a `*-win` verdict)
+  // deliberately chooses on purpose — sitting on a mined-total lead while the
+  // clock runs is the WINNING plan there, not a wasted one, so a −200 penalty
+  // for doing it would fight the strategic layer's own veto (Part A item 2:
+  // tactics check the campaign's CONTRACT, not penalise the plan for
+  // executing it). Absent the flag this line is untouched, byte for byte.
+  if (
+    (t.evalFix === null || t.evalFix.clockLedger !== true) &&
+    p.drawRuleOn === 1 && p.clock >= INACTIVITY_WARNING && leadCc(p, side) >= 300 && killNow.count === 0
+  ) bits |= bit(16);
 
   // --- 17: structural zero ------------------------------------------------
   // Pending commitments do not block movement. Once arrived, a snapshot alone

@@ -19,7 +19,7 @@ import {
 import { bbHas, bbNext, type Scratch } from '../core/bits';
 import { BOARD, CORNER, RECT } from '../core/tables';
 import { type Catalog } from '../core/catalog';
-import { AKind, paA, paB, paMake, type KeepSetTable } from '../core/action';
+import { AKind, newKeepSetTable, paA, paB, paKind, paMake, type KeepSetTable } from '../core/action';
 import { ACTIONS_PER_TURN, Replica, newUndo, type Undo } from '../core/state';
 import { moveCost } from '../core/movement';
 import { HOME_RACE_LINE_LEN, homeRaceAvailable } from '../tables/home';
@@ -84,6 +84,151 @@ export function newGenStats(): GenStats {
  * existed only for that adoption is gone. Added by M14; see DEVIATIONS.
  */
 export type RescueWitness = (p: PackedState, invader: Side, out: Int32Array) => number;
+
+/**
+ * STRATEGOS W1.9 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.9, and B.1b's "`injectLine` forces an Act line only"): one plan
+ * line the root's strategic layer wants in the ROOT candidate list, as plain
+ * packed actions so `gen` never has to import `strategy` (DESIGN §2 layering,
+ * `lab/hard-ai/deps.ts`). `strategy/contact.ts` and `strategy/hold.ts` build
+ * them; `search/root.ts installStrategyWitness` hands them over through
+ * `TurnGenerator.setStrategyWitness`, exactly the way `installRescueWitness`
+ * hands over injection 4's prover witness.
+ *
+ * A line is NOT a turn: it names what the plan chooses (its Act moves and
+ * attacks, and what it buys or promotes) and leaves the rules' own boundary
+ * actions to `playStrategyTurn`, which makes it a complete turn.
+ */
+export interface StrategyLine {
+  /** Packed Act actions (`MOVE`/`ATTACK`) from the root, in order; may be empty. */
+  readonly act: Int32Array;
+  /** Packed Prepare actions (`BUY`/`PROMOTE`), played after `END_ACTION` and
+   * any `PAY_UPKEEP` the rules require; may be empty (a bare Prepare). */
+  readonly prep: Int32Array;
+}
+
+/**
+ * The strategic layer's source of plan lines, installed on the ROOT generator
+ * only (`search/root.ts installStrategyWitness`) and asked by `inject()` once
+ * per root generation, at an Act root (`p.phase === 1`, no upkeep pending) —
+ * the only root where a line has an Act to choose. `t` is the root's own
+ * `NodeTables` (the same object every other injection reads) and `meter` the
+ * generation's work sink, so the source can charge what it computed to the
+ * search meter the way injection 4 charges its prover call.
+ */
+export type StrategyWitness = (p: PackedState, t: NodeTables, meter: WorkSink) => readonly StrategyLine[];
+
+/** `playStrategyTurn`'s result. */
+export interface StrategyTurn {
+  /** Actions written to the caller's buffer and applied to `p`, or -1 when
+   * the line was illegal somewhere (nothing is then left applied). */
+  count: number;
+  /** The `PAY_UPKEEP` choice the turn carries, when it pays upkeep. */
+  keepMask: Uint32Array | undefined;
+  /** `PURCHASE` when a `BUY` was played, `PROMOTION` when a `PROMOTE` was. */
+  flags: number;
+}
+
+export function newStrategyTurn(): StrategyTurn {
+  return { count: -1, keepMask: undefined, flags: 0 };
+}
+
+/**
+ * The `PAY_UPKEEP` choice a plan line's turn pays with, as a one-entry table
+ * owning its mask: the first entry of `genKeepSets`' ranked list that
+ * `rep.isLegal` accepts, or `null` when none does (or no bill is pending).
+ * `completePrepare` gives a forced Act prefix's bare completion the same
+ * first ranked set; exported so the strategic layer's own rollouts settle
+ * rent by the same rule. `t` is passed through to `genKeepSets`, whose
+ * ranking is table-free (`gen/upkeep.ts` header) and does not read it.
+ */
+export function firstLegalKeepSet(rep: Replica, p: PackedState, t: NodeTables, keep: KeepSetTable): KeepSetTable | null {
+  const words = MAX_SLOTS >>> 5;
+  const sets = genKeepSets(p, t, keep);
+  const pay = paMake(AKind.PAY_UPKEEP, 0);
+  for (let i = 0; i < sets; i++) {
+    const choice: KeepSetTable = { masks: keep.masks.slice(i * words, (i + 1) * words), count: 1 };
+    if (rep.isLegal(p, pay, choice)) return choice;
+  }
+  return null;
+}
+
+/**
+ * Plays one plan line as a COMPLETE turn on `p` (B.1b: a buy or promotion
+ * must be injected as `END_ACTION → PAY_UPKEEP → BUY/PROMOTE → END_PLACE`, not
+ * through `injectLine`, whose Prepare is the forced bare completion): the
+ * line's Act actions, `END_ACTION`, the `PAY_UPKEEP` the rules require when
+ * the bill is pending (`genKeepSets`' first LEGAL ranked keep set — the
+ * choice `completePrepare` gives every forced Act prefix's bare completion,
+ * so a plan line that buys nothing reaches the same end position as the
+ * ordinary injection and the dedupe merges them), the line's Prepare actions,
+ * and `END_PLACE`. Every action is checked with `rep.isLegal` before it is
+ * made; the first illegal one unmakes everything and reports `count: -1`.
+ * An action that ends the game ends the turn there (the same rule
+ * `injectLine` applies).
+ *
+ * On success `p` is left AFTER the turn and the caller unmakes `out.count`
+ * actions from `undo`. Shared by `TurnGenerator.injectStrategy` (which records
+ * the turn) and the strategic layer (which needs the same end position for
+ * its contract checks), so the two can never disagree about what a line
+ * plays. Only `MOVE`/`ATTACK` are accepted in `act` and only `BUY`/`PROMOTE`
+ * in `prep`: a line may not smuggle a boundary action past the rules.
+ */
+export function playStrategyTurn(
+  rep: Replica,
+  p: PackedState,
+  t: NodeTables,
+  line: StrategyLine,
+  undo: Undo,
+  keep: KeepSetTable,
+  actions: Int32Array,
+  out: StrategyTurn,
+): void {
+  out.count = -1;
+  out.keepMask = undefined;
+  out.flags = 0;
+  if (p.result !== Result.ONGOING || p.phase !== 1 || p.upkeepPending === 1) return;
+  const side = p.side;
+  const capacity = actions.length < MAX_TURN_ACTIONS ? actions.length : MAX_TURN_ACTIONS;
+  let n = 0;
+  let flags = 0;
+  let keepMask: Uint32Array | undefined;
+  const done = (): boolean => p.result !== Result.ONGOING || p.side !== side;
+  // Read through closures: every `make` below moves these fields, which a
+  // narrowed `p.phase`/`p.upkeepPending` read in this body would not see.
+  const billPending = (): boolean => p.upkeepPending === 1;
+  const inPrepare = (): boolean => p.phase === 0;
+  const apply = (a: number, choice?: KeepSetTable): boolean => {
+    if (n >= capacity || !rep.isLegal(p, a, choice)) return false;
+    actions[n++] = a;
+    rep.make(p, a, undo, choice);
+    return true;
+  };
+  let ok = true;
+  for (let i = 0; i < line.act.length && ok && !done(); i++) {
+    const kind = paKind(line.act[i]);
+    ok = (kind === AKind.MOVE || kind === AKind.ATTACK) && apply(line.act[i]);
+  }
+  if (ok && !done()) ok = apply(paMake(AKind.END_ACTION));
+  if (ok && !done() && billPending()) {
+    const choice = firstLegalKeepSet(rep, p, t, keep);
+    ok = choice !== null && apply(paMake(AKind.PAY_UPKEEP, 0), choice);
+    if (ok && choice !== null) keepMask = choice.masks;
+  }
+  for (let i = 0; i < line.prep.length && ok && !done(); i++) {
+    const kind = paKind(line.prep[i]);
+    ok = (kind === AKind.BUY || kind === AKind.PROMOTE) && apply(line.prep[i]);
+    if (ok) flags |= kind === AKind.BUY ? TurnFlag.PURCHASE : TurnFlag.PROMOTION;
+  }
+  if (ok && !done() && inPrepare()) ok = apply(paMake(AKind.END_PLACE));
+  if (!ok) {
+    for (let i = 0; i < n; i++) rep.unmake(p, undo);
+    return;
+  }
+  out.count = n;
+  out.keepMask = keepMask;
+  out.flags = flags;
+}
 
 /** `WorkClass.PROVER` (DESIGN §4.16), spelled here so `gen` need not import
  * `search` — the convention `gen/actionsearch.ts` uses for `WorkClass.TURN`. */
@@ -330,6 +475,22 @@ export class TurnGenerator {
   private rescueCap: RescueCap | null = null;
   /** E2.2's opt-in stage trace; `null` in every search. See `gen/trace.ts`. */
   private trace: GenTrace | null = null;
+  /**
+   * STRATEGOS W1.8's `EvalFix.promoteExhaustive`; `false` on every profile but
+   * `hard@strategos`. See `setPromoteExhaustive` for why this is a field with
+   * a setter rather than a `NodeTables.evalFix` read.
+   */
+  private promoteExhaustive = false;
+  /**
+   * STRATEGOS W1.9's plan-line source (`setStrategyWitness`); `null` — no
+   * source — on every profile but `hard@strategos`, and on every generator
+   * but the root one even there.
+   */
+  private strategy: StrategyWitness | null = null;
+  /** `playStrategyTurn`'s keep-set scratch and result: the generator's own,
+   * so a plan line never rewrites the node's keep table `ctx.keep`. */
+  private readonly strategyKeep: KeepSetTable = newKeepSetTable();
+  private readonly strategyTurn: StrategyTurn = newStrategyTurn();
 
   constructor(rep: Replica, cfg: GenConfig, pool: TurnPool, sc: Scratch) {
     this.rep = rep;
@@ -367,6 +528,109 @@ export class TurnGenerator {
    */
   setRescueCap(cap: RescueCap | null): void {
     this.rescueCap = cap;
+  }
+
+  /**
+   * Installs (or clears) STRATEGOS W1.7's zero-damage attack prune
+   * (`HardConfig.searchFix.pruneZeroDamage`, plan B.2 step W1.7), forwarded to
+   * both `gen/actionsearch.ts ActionSearch`es this generator drives — the beam
+   * `search` and the recall instrument's `referenceSearch` — so a search run
+   * through `generate`/`generateReference` skips a zero-power ATTACK exactly
+   * as `ActionSearch.setPruneZeroDamage`'s doc proves sound. `false` — never
+   * called — is the champion, byte-identical: no profile but `hard@strategos`
+   * turns this on.
+   *
+   * NOT a `GenConfig` field, for the reason `setTrace`/`setRescueCap` are not
+   * one: `HardConfig` is serialised into the engine identity hash
+   * `tests/lab/ablate.test.ts` pins, and the generator configs are part of
+   * it. The flag lives on `HardConfig.searchFix`, which no shipped profile
+   * writes; `engine.ts` reads it and wires all three generators it owns.
+   */
+  setPruneZeroDamage(on: boolean): void {
+    this.search.setPruneZeroDamage(on);
+    this.referenceSearch.setPruneZeroDamage(on);
+  }
+
+  /**
+   * Installs (or clears) STRATEGOS W1.8's exhaustive-promotion flag
+   * (`HardConfig.evalFix.promoteExhaustive`, plan
+   * `~/.claude/plans/can-you-respond-to-piped-book.md` B.2 step W1.8). `true`
+   * makes the MAIN `expand()` call to `gen/promote.ts planPromotions` pass
+   * `exhaustive: true` (every `canPromote` slot becomes a candidate, up to
+   * `MAX_SLOTS`, instead of the ordinary `cfg.maxPromotions`-wide beam that
+   * only slots with a claimed mission compete for) and makes `buildCombos`
+   * pin one bare promotion-only combo per non-FORTIFY candidate (FORTIFY's
+   * bare combos `expand()` already runs itself, FORCED, before
+   * `buildCombos`), so the widened list survives buildCombos' own
+   * `maxPlans`-wide score prune (plan B.1b). The `forcedOnly` branch of
+   * `expand()` (the `if (forcedOnly)` block) is NOT wired to this flag and
+   * stays exactly as it is today: it only ever widens FORTIFY's
+   * already-unbounded beam, which this flag does not touch.
+   *
+   * The flag reshapes the combo list, it does not only extend it: the widened
+   * candidate list also enters `buildCombos`' ordinary `(purchase plan) ×
+   * (promotion)` product, where a `Mission.ANY` pairing whose combined score
+   * beats a missioned pairing can displace it from that product's beam. What it
+   * guarantees is that every candidate's BARE promotion is generated.
+   *
+   * WHY A SETTER, NOT `t.evalFix` (`NodeTables`) — the pattern
+   * `gen/promote.ts bestMission`/`orderingRentPv` already use for the
+   * 2026-09-21 strength knobs, and the plan's first-choice wiring. That
+   * pattern is a dead read here: `expand()` rebuilds the generator's OWN
+   * `this.prepareTables` for the post-Act Prepare position and reassigns
+   * `ctx.t` to it (`buildTables(p, this.sc, ctx.ply, 2, this.prepareTables)`,
+   * `ctx.t = t;`, just above `planPromotions`'s two call sites) BEFORE
+   * `planPromotions` is ever called — so the `t` that reaches it is never the
+   * per-ply `NodeTables` `engine.ts`'s constructor stamps `evalFix` onto (that
+   * stamping, `t.evalFix = evalFix`, runs only over the constructor's per-ply
+   * `tables: NodeTables[]` array); `this.prepareTables` comes from a bare
+   * `allocTables()` (`evalFix: null`, `tables/context.ts allocTables`) that
+   * nothing ever restamps. So `t.evalFix` reads inside `bestMission` answer
+   * correctly only in `tests/ai/hard/promote.test.ts`'s isolated unit calls,
+   * which build their own `t` and set `.evalFix` on it directly — never
+   * inside a real `TurnGenerator.generate()`, and so never inside a real
+   * search. `promoteExhaustive` must actually fire in `hard@strategos`
+   * search, so it takes the setter path `setRescueCap` above already
+   * established instead of a `GenConfig`/`HardConfig.gen` field, for the same
+   * identity-hash reason `setRescueCap` gives.
+   *
+   * ROOT GENERATOR ONLY, coordinator decision (2026-09-24): `engine.ts` reads
+   * `config.evalFix?.promoteExhaustive` and wires it to the ROOT generator
+   * (`gen`) alone — `genInterior` and `genQuiesce` never call this setter, so
+   * their `promoteExhaustive` stays `false` on every profile, `hard@strategos`
+   * included. Unlike `setRescueCap`/`setPruneZeroDamage`, which arm all three
+   * generators, W1.8's proof obligation is ROOT recall (every legal promotion
+   * reaches the root candidate list), and a lane review measured wiring all
+   * three costing search depth (nodes ratio 0.88 vs root-only's 0.95 at fixed
+   * work 80,000, 49 positions) for no measured promotion-choice benefit — see
+   * `engine.ts`'s wiring comment for the numbers.
+   *
+   * `false` — every profile but `hard@strategos`, and every generator but the
+   * root one even under `hard@strategos` — leaves `planPromotions` and
+   * `buildCombos` byte-identical to today.
+   */
+  setPromoteExhaustive(on: boolean): void {
+    this.promoteExhaustive = on;
+  }
+
+  /**
+   * Installs (or clears) STRATEGOS W1.9's plan-line source (plan B.2 step
+   * W1.9). `search/root.ts installStrategyWitness` installs it on the ROOT
+   * generator for exactly one search, and only when
+   * `HardConfig.searchFix.strategyPlans` is on, then clears it in the same
+   * `finally` that restores the kill-clock policy. `inject()` asks it only at
+   * ply 0 and never on the lab's reference path, so an interior or
+   * quiescence node is untouched even if a caller installed it there.
+   *
+   * `null` — never installed — is the champion, byte-identical: `inject()`
+   * pays one null test and nothing else moves.
+   *
+   * NOT a `GenConfig` field, for the reason `setRescueCap` is not one: the
+   * generator configs are part of the engine identity hash
+   * `tests/lab/ablate.test.ts` pins.
+   */
+  setStrategyWitness(source: StrategyWitness | null): void {
+    this.strategy = source;
   }
 
   /**
@@ -521,6 +785,12 @@ export class TurnGenerator {
     if (forcedOnly) {
       // A forced Act prefix retains its bare completion and every eligible
       // fortification suffix, not unrelated ordinary purchase combinations.
+      // STRATEGOS W1.8 (plan B.1b): NOT wired to `promoteExhaustive` — this
+      // branch already emits every legal FORTIFY unconditionally (`max: 0`
+      // still returns the full `out.length` FORTIFY beam, see
+      // `planPromotions`'s `fortifying` bypass), and it deliberately does not
+      // widen to other missions or to unmissioned slots, so it is unchanged
+      // whatever `promoteExhaustive` says.
       this.plans[0].count = 0; this.plans[0].flags = 0;
       const n = planPromotions(p, t, 0, this.promos);
       let plans = includeBare ? 1 : 0;
@@ -535,7 +805,11 @@ export class TurnGenerator {
     }
     const purchaseCfg = ctx.reference ? this.referencePurchase : this.cfg.purchase;
     const planCount = planPurchases(p, t, purchaseCfg, this.sc, ctx.ply, this.plans);
-    const promoCount = planPromotions(p, t, this.cfg.maxPromotions, this.promos);
+    // STRATEGOS W1.8: `this.promoteExhaustive` (`setPromoteExhaustive`) is the
+    // ONLY place this branch reads the flag; `buildCombos` below reads the
+    // same field directly (it is a method on this class) rather than taking
+    // it as a parameter, to keep both call sites' signatures unchanged.
+    const promoCount = planPromotions(p, t, this.cfg.maxPromotions, this.promos, this.promoteExhaustive);
     for (let i = 0; i < promoCount; i++) {
       if (this.promos[i].mission === Mission.FORTIFY) {
         this.runCombo(ctx, prefixLen, { purchase: 0, promo: i, promo2: -1, scoreCc: 0 }, -1);
@@ -698,6 +972,49 @@ export class TurnGenerator {
       combo.promo = -1;
       combo.promo2 = -1;
       combo.scoreCc = this.plans[i].scoreCc;
+    }
+    // STRATEGOS W1.8 (`promoteExhaustive`, plan B.1b): pin one bare
+    // promotion-only combo — `(purchase: 0 [the empty plan, `planPurchases`'s
+    // own invariant], promo: j, promo2: -1)` — per promotion candidate, the
+    // same way the home-race loop just above pins purchase plans. Without
+    // this, `planPromotions`'s widened list (every `canPromote` slot, plan
+    // W1.8) still loses to this method's OWN `maxPlans`-wide score prune
+    // above: a promotion `bestMission` left unclaimed scores
+    // `0 + Δmaterial − cost·CC − rent`, which is `−rent` under the shipped
+    // price list (`gen/promote.ts` header: the middle terms cancel), so it is
+    // exactly the kind of candidate that beam would drop first.
+    //
+    // FORTIFY candidates are skipped: `expand()` has already run every
+    // FORTIFY candidate's bare combo itself, FORCED, before calling here, so
+    // pinning it again would only re-run a turn `offerForced` then dedupes.
+    //
+    // Capacity (DERIVED from the constructor's sizing): `this.combos.length`
+    // is `max(maxPlacePlans, REFERENCE_PLACE_PLANS) + max(purchase.maxPlans,
+    // REFERENCE_PLACE_PLANS) + 1` (401 on every shipped profile), and on the
+    // search path `n` here is at most `maxPlacePlans` + `purchase.maxPlans`
+    // home-race pins, so `n + promoCount ≤ 24 + 32 + MAX_SLOTS = 184` on
+    // DESKTOP's root — the `n < this.combos.length` guard can drop a pin only
+    // on the lab's reference path, whose prune is `REFERENCE_PLACE_PLANS` wide.
+    //
+    // Pinning only GUARANTEES the combo reaches `buildCombos`' return list —
+    // the root's own `K`-candidate cut (`GenConfig.K`) still competes it on
+    // within-turn score like everything else, and a meter that runs out
+    // mid-menu still stops the `runCombo` loop in `expand()` (plan B.1b: "do
+    // not try to beat the root K cut; measure and report recall after it").
+    if (this.promoteExhaustive) {
+      for (let j = 0; j < promoCount && n < this.combos.length; j++) {
+        if (this.promos[j].mission === Mission.FORTIFY) continue;
+        let present = false;
+        for (let k = 0; k < n && !present; k++) {
+          if (this.combos[k].purchase === 0 && this.combos[k].promo === j) present = true;
+        }
+        if (present) continue;
+        const combo = this.combos[n++];
+        combo.purchase = 0;
+        combo.promo = j;
+        combo.promo2 = -1;
+        combo.scoreCc = this.promos[j].scoreCc;
+      }
     }
     // Descending score over `[pinnedEnd, n)`; the empty plan and the pinned
     // plans keep their places ahead of it, so a meter that runs out mid-menu
@@ -1019,7 +1336,9 @@ export class TurnGenerator {
     tr.planCount = planCount;
     tr.planLimit = planLimit;
     tr.promoCount = promoCount;
-    tr.promoLimit = this.cfg.maxPromotions;
+    // Under W1.8's `promoteExhaustive` `planPromotions` is capped at
+    // `MAX_SLOTS`, not `cfg.maxPromotions`; record the cap that applied.
+    tr.promoLimit = this.promoteExhaustive ? MAX_SLOTS : this.cfg.maxPromotions;
     tr.comboCount = comboCount;
     tr.comboLimit = comboLimit;
     tr.planCutoffCc = planCount > 0 ? this.plans[planCount - 1].scoreCc : 0;
@@ -1092,6 +1411,41 @@ export class TurnGenerator {
     this.injectRetreat(ctx, cat, side);
     this.injectDenial(ctx, cat, side);
     this.injectDisrupt(ctx, side);
+    this.injectStrategy(ctx);
+  }
+
+  /**
+   * STRATEGOS W1.9: every plan line the installed source asks for, as a
+   * complete turn (`playStrategyTurn`), flagged `STRATEGY | FORCED` so the
+   * width cut can never drop it (`offerForced`) and the search never prunes
+   * or reduces it (`search/pvs.ts NO_PRUNE_FLAGS`/`NO_REDUCE_FLAGS` carry
+   * `FORCED`). ROOT ONLY: `ctx.ply === 0` and never the reference generator.
+   * Runs last, after every tactical injection, so a plan line that reaches a
+   * position another injection already listed (a Hold pass is injection 1's
+   * pass line, for instance) MERGES its flags into that candidate instead of
+   * adding a duplicate — `offerForced`'s dedupe.
+   *
+   * An illegal line is dropped whole (`count: -1`); the source is the
+   * strategic layer's, which replays every line on its own copy before it
+   * offers it, so a drop here would be a disagreement between the two.
+   */
+  private injectStrategy(ctx: Ctx): void {
+    const source = this.strategy;
+    if (source === null || ctx.ply !== 0 || ctx.reference) return;
+    const { p } = ctx;
+    const lines = source(p, ctx.t, ctx.meter);
+    const top = this.undo.top;
+    const res = this.strategyTurn;
+    for (let i = 0; i < lines.length; i++) {
+      playStrategyTurn(this.rep, p, ctx.t, lines[i], this.undo, this.strategyKeep, this.prefix, res);
+      if (res.count < 0) continue;
+      const oldMask = this.currentKeepMask;
+      this.currentKeepMask = res.keepMask;
+      this.recordPrefixTerminal(ctx, res.count, TurnFlag.STRATEGY | TurnFlag.FORCED | res.flags);
+      this.currentKeepMask = oldMask;
+      for (let k = 0; k < res.count; k++) this.rep.unmake(p, this.undo);
+      this.undo.top = top;
+    }
   }
 
 

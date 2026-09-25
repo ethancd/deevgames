@@ -1,0 +1,39 @@
+{
+  "base": {
+    "dir": "docs/hard-ai/phasing/strategos-w1-2026-09-24/results/R0-desktop-vs-ClockHeist",
+    "a": "hard@desktop",
+    "b": "ClockHeist",
+    "seed": 20260983,
+    "distinctGames": {
+      "A-white": 141,
+      "B-white": 103,
+      "ofPairs": 192,
+      "source": "game-row",
+      "duplicates": true
+    }
+  },
+  "test": {
+    "dir": "docs/hard-ai/phasing/strategos-w1-2026-09-24/results/R1-strategos-vs-ClockHeist",
+    "a": "hard@strategos",
+    "b": "ClockHeist",
+    "seed": 20260983,
+    "distinctGames": {
+      "A-white": 141,
+      "B-white": 91,
+      "ofPairs": 192,
+      "source": "game-row",
+      "duplicates": true
+    }
+  },
+  "pairedDiff": {
+    "n": 192,
+    "mean": 0.0026041666666666665,
+    "sd": 0.19142204018727546,
+    "lo": -0.02447263710891629,
+    "hi": 0.029680970442249627,
+    "negative": 13,
+    "zero": 164,
+    "positive": 15,
+    "regressionFlag": false
+  }
+}

@@ -813,8 +813,8 @@ describe('DESIGN §4 declaration tests', () => {
     expect([
       TurnFlag.KILL, TurnFlag.CLEAVE_CHAIN, TurnFlag.HOME_ENTRY, TurnFlag.HOME_RESCUE, TurnFlag.SPAWN_DENY,
       TurnFlag.PURCHASE, TurnFlag.PROMOTION, TurnFlag.RETREAT, TurnFlag.QUIET, TurnFlag.FORCED,
-      TurnFlag.BOOK, TurnFlag.HOME_RACE, TurnFlag.HOME_FORTIFY, TurnFlag.DISRUPT,
-    ]).toEqual([1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192]);
+      TurnFlag.BOOK, TurnFlag.HOME_RACE, TurnFlag.HOME_FORTIFY, TurnFlag.DISRUPT, TurnFlag.STRATEGY,
+    ]).toEqual([1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384]);
     expect(TACTICAL_FLAGS).toBe(
       TurnFlag.KILL | TurnFlag.CLEAVE_CHAIN | TurnFlag.HOME_ENTRY | TurnFlag.HOME_RESCUE |
         TurnFlag.HOME_FORTIFY,

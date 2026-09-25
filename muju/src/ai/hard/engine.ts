@@ -299,6 +299,41 @@ export class HardEngine {
       genInterior.setRescueCap(this.rescueCap);
       genQuiesce.setRescueCap(this.rescueCap);
     }
+    // STRATEGOS W1.7 (`SearchFix.pruneZeroDamage`, plan B.2 step W1.7): wired
+    // to all three generators, the same as the rescue cap above, so the fix
+    // reaches quiescence and interior nodes exactly like the root. Absent on
+    // every profile but `hard@strategos` (`config.ts strategosPatch`); when
+    // absent this `if` never calls the setter, so `gen/actionsearch.ts dfs`
+    // runs exactly as it does today (see that flag's own doc comment).
+    if (config.searchFix?.pruneZeroDamage === true) {
+      gen.setPruneZeroDamage(true);
+      genInterior.setPruneZeroDamage(true);
+      genQuiesce.setPruneZeroDamage(true);
+    }
+    // STRATEGOS W1.8 (`EvalFix.promoteExhaustive`, off on every profile but
+    // `hard@strategos`): read straight off `config.evalFix`, the way
+    // `rescueCap` above reads `config.searchFix`. `gen/generate.ts
+    // setPromoteExhaustive` explains why this cannot instead ride
+    // `NodeTables.evalFix`, the way `gen/promote.ts`'s `strength.*` knobs do:
+    // that plumbing never reaches `planPromotions` from inside a real
+    // `TurnGenerator.generate()` call.
+    //
+    // ROOT GENERATOR ONLY (`gen`), coordinator decision (2026-09-24;
+    // supersedes wiring all three the same way `rescueCap`/`pruneZeroDamage`
+    // above do). CHOICE: the plan's proof obligation for W1.8 is ROOT
+    // recall — every legal promotion reaches the ROOT candidate list
+    // (`tests/ai/hard/prepare-recall.test.ts`), not that the interior search
+    // sees them too. A lane review measured wiring all three at fixed work
+    // 80,000 over 49 positions: nodes ratio 0.88 against root-only's 0.95 (a
+    // 12% search-depth tax from `genInterior`/`genQuiesce` re-running the
+    // widened promotion beam at every interior node), losing 6 more depth
+    // plies of the 82 measured (13 lost vs 6), with no measured
+    // promotion-choice benefit from the interior widening. Falsifier: the R1
+    // ladder row (plan A8) or wave 2 showing a promotion-choice regression
+    // that root-only wiring would have caught.
+    if (config.evalFix?.promoteExhaustive === true) {
+      gen.setPromoteExhaustive(true);
+    }
 
     const tables: NodeTables[] = [];
     const keep: KeepSetTable[] = [];
@@ -517,7 +552,15 @@ export class HardEngine {
       let packed: PackedState;
       try {
         packed = ctx.rep.pack(state, this.rootState);
-        setKillClockRootClock(packed.clock);
+        // STRATEGOS W1.2 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+        // B.1b). The legacy module slot is desktop's, leak and all; a profile
+        // with `searchFix.killClockPolicy: 'ledger'` (hard@strategos) scopes
+        // its root clock per search in `search/root.ts searchRootInner` and
+        // never reads this slot, so it must not WRITE it either: otherwise a
+        // wall-clock strategos search would hand its root clock to a later
+        // fixed-work desktop search in the same process. Absent key (every
+        // shipped profile): the call below runs exactly as before.
+        if (this.config.searchFix?.killClockPolicy !== 'ledger') setKillClockRootClock(packed.clock);
       } catch (err) {
         ctx.stats.elapsedMs = now() - enteredAt;
         return {
@@ -811,7 +854,9 @@ export class HardEngine {
     const ctx = this.ctx;
     const state = createInitialGameState(undefined, 4, 0, 'phasing');
     const p = ctx.rep.pack(state, allocState());
-    setKillClockRootClock(p.clock);
+    // STRATEGOS W1.2: as on the wall-clock pack above, a `'ledger'` profile
+    // leaves desktop's legacy slot alone.
+    if (this.config.searchFix?.killClockPolicy !== 'ledger') setKillClockRootClock(p.clock);
     p.proverMode = 2;
     const meter = new WorkMeter(0x7fffffff);
     const startedAt = now();

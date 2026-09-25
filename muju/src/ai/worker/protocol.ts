@@ -48,6 +48,17 @@ export interface SearchRequest extends Identity {
    * builds and `hard@desktop`'s configuration identity are byte-for-byte what
    * they were. A patch that names `weights` is honoured verbatim, which is why
    * the device patch deliberately omits that key (see `hardPatch`).
+   *
+   * STRATEGOS W1.14 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+   * B.1b) adds a SECOND, independent patch on this same field: `?hardEngine=strategos`
+   * resolves `resolveHardEngineProfile()` and sends `strategosPatch()`
+   * (`src/ai/hard/config.ts`) — `searchFix`/`evalFix` only, no tables, no
+   * `weights` — merged with whatever the device patch above already
+   * contributed (`useAI.ts`). `'desktop'` (absent, or any other value)
+   * contributes nothing, so this is additive over everything this comment
+   * already promises. See `src/ai/hardOptIn.ts`'s ENGINE PROFILE note for why
+   * it is a separate axis from the device profile rather than a third value
+   * of it.
    */
   hard?: Partial<HardConfig>;
 }

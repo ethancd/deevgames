@@ -1,0 +1,5 @@
+commit 6d5db91b
+perft --check exit 0
+perft --check --engine replica exit 0
+fuzz --actions 20000 --seed 7101 exit 0
+determinism hard@desktop exit 0

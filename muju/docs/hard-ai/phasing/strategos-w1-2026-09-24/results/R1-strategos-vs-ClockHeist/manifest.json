@@ -1,0 +1,1750 @@
+{
+  "schema": "muju-ladder-manifest-v1",
+  "status": "complete",
+  "a": "hard@strategos",
+  "b": "ClockHeist",
+  "aConfigHash": "hard:strategos:fixed:60000#776b2ad070b4447ad1ff9c8cfcfd540d935d6c3a09c12adc6c98791cd4cb925e",
+  "bConfigHash": "scripted:ClockHeist",
+  "aResolvedConfig": {
+    "rulesVersion": "muju-phasing-4",
+    "engine": "hard",
+    "config": {
+      "maxDepth": 12,
+      "aspirationCc": 200,
+      "lmrRank1": 6,
+      "lmrRank2": 12,
+      "futilityMarginCc": 200,
+      "useLmr": false,
+      "useAspiration": false,
+      "useFutility": false,
+      "useExtensions": false,
+      "quiesce": {
+        "maxPly": 4,
+        "deltaMarginCc": 300,
+        "maxCandidates": 8
+      },
+      "gen": {
+        "K": 24,
+        "maxPlacePlans": 24,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 209,
+          "maxPlans": 32,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "genInterior": {
+        "K": 16,
+        "maxPlacePlans": 12,
+        "action": {
+          "widths": {
+            "0": 6,
+            "1": 4,
+            "2": 3,
+            "3": 2
+          },
+          "keep": 4,
+          "ttBits": 18
+        },
+        "purchase": {
+          "maxBodies": 4,
+          "maxMultisets": 209,
+          "maxPlans": 32,
+          "squares": 8,
+          "keepPerMultiset": 3,
+          "weights": {
+            "mineCc": 1,
+            "safeCc": 100,
+            "blockCc": 200,
+            "strikeCc": 300,
+            "anchorCc": 20,
+            "zeroSpawnCc": 400,
+            "liquidityCc": 50,
+            "homeRaceCc": 5000
+          }
+        },
+        "maxPromotions": 8,
+        "reference": false
+      },
+      "ttBits": 19,
+      "dfpn": {
+        "maxTurns": 3,
+        "nodeBudget": 4000,
+        "epsilonQ2": 5,
+        "ttBits": 17
+      },
+      "useDfpn": false,
+      "time": {
+        "minMs": 2000,
+        "maxMs": 6000,
+        "baseMs": 3000,
+        "abortFactor": 3
+      },
+      "profile": {
+        "unitsPerMs": 200,
+        "samples": 0
+      },
+      "ttBitsMacro": 19,
+      "ttBitsTurn": 18,
+      "K": 24,
+      "kInterior": 16,
+      "weights": {
+        "w": {
+          "0": 100,
+          "1": 0,
+          "2": 100,
+          "3": 25,
+          "4": -4000,
+          "5": 0,
+          "6": 0,
+          "7": 30,
+          "8": 8,
+          "9": -800,
+          "10": 25,
+          "11": 90,
+          "12": -60,
+          "13": -400,
+          "14": -180,
+          "15": 220,
+          "16": 90,
+          "17": -20,
+          "18": -8,
+          "19": 40,
+          "20": 0,
+          "21": 0,
+          "22": 0,
+          "23": 100,
+          "24": 0,
+          "25": 0,
+          "26": 0,
+          "27": 0,
+          "28": -50,
+          "29": 0,
+          "30": -25,
+          "31": -10,
+          "32": 20,
+          "33": 35,
+          "34": -40,
+          "35": -120,
+          "36": -150,
+          "37": 300,
+          "38": -800,
+          "39": -300,
+          "40": -250,
+          "41": -100,
+          "42": 0,
+          "43": -120,
+          "44": -600,
+          "45": -150,
+          "46": -150,
+          "47": -400,
+          "48": 0,
+          "49": -40,
+          "50": -200,
+          "51": -200,
+          "52": 0,
+          "53": -200,
+          "54": 0,
+          "55": 0,
+          "56": -150,
+          "57": -250,
+          "58": 1,
+          "59": 0,
+          "60": 0,
+          "61": 0
+        },
+        "material": {
+          "0": 300,
+          "1": 700,
+          "2": 1500,
+          "3": 300,
+          "4": 700,
+          "5": 1500,
+          "6": 400,
+          "7": 800,
+          "8": 1600,
+          "9": 400,
+          "10": 800,
+          "11": 1600,
+          "12": 500,
+          "13": 900,
+          "14": 1700,
+          "15": 500,
+          "16": 900,
+          "17": 1700
+        },
+        "version": 2,
+        "featureSchema": "muju-phasing-eval-1",
+        "label": "phasing-hand-priors-v1"
+      },
+      "book": {
+        "size": 0,
+        "handicap": 0,
+        "mapHash": 0,
+        "weightsVersion": 0,
+        "formatVersion": 3,
+        "weightsKey": "",
+        "mapKey": "",
+        "rulesKey": ""
+      },
+      "searchFix": {
+        "pruneZeroDamage": true,
+        "strategyPlans": true,
+        "strategyVeto": true,
+        "killClockPolicy": "ledger"
+      },
+      "evalFix": {
+        "clockLedger": true,
+        "promoteExhaustive": true
+      }
+    },
+    "budget": {
+      "mode": "fixed",
+      "fixedWork": 60000,
+      "turnMs": null,
+      "allocation": "per-decision-work-units",
+      "shippedTurnBudgetMs": null,
+      "overridesPresetTimeLimit": false
+    },
+    "lifecycle": {
+      "engine": "one-per-game-seat",
+      "seed": "once-at-construction",
+      "setDifficultyPerDecision": false,
+      "searchesPerTurn": "one"
+    },
+    "resign": false
+  },
+  "bResolvedConfig": {
+    "rulesVersion": "muju-phasing-4",
+    "engine": "scripted",
+    "bot": "ClockHeist"
+  },
+  "work": "fixed:60000",
+  "seed": 20260983,
+  "pairs": 192,
+  "shards": 4,
+  "handicaps": [
+    0,
+    4,
+    8,
+    12,
+    16,
+    20
+  ],
+  "legality": "as-shipped",
+  "sprt": null,
+  "openings": {
+    "path": "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "sha256": "cbd427dfd2ee88d7f9ef1722267c254568c973df7d4aa9c32dfba36acab35119",
+    "ids": [
+      "p1-g6-s82",
+      "p1-g3-s125",
+      "p1-g4-s80",
+      "p1-g7-s90",
+      "p1-g7-s415",
+      "p1-g7-s87",
+      "p1-g8-s51",
+      "p1-g7-s367",
+      "p1-g7-s255",
+      "p1-g5-s16",
+      "p1-g6-s10",
+      "p1-g7-s247",
+      "p1-g7-s207",
+      "p1-g4-s60",
+      "p1-g3-s150",
+      "p1-g7-s30",
+      "p1-g3-s175",
+      "p1-g6-s335",
+      "p1-g6-s45",
+      "p1-g5-s205",
+      "p1-g6-s102",
+      "p1-g7-s515",
+      "p1-g6-s375",
+      "p1-g6-s470",
+      "p1-g7-s495",
+      "p1-g8-s455",
+      "p1-g7-s47",
+      "p1-g7-s227",
+      "p1-g6-s250",
+      "p1-g4-s225",
+      "p1-g7-s275",
+      "p1-g7-s6"
+    ],
+    "count": 32,
+    "skip": null,
+    "selectedIds": null,
+    "used": [
+      "p1-g6-s82",
+      "p1-g3-s125",
+      "p1-g4-s80",
+      "p1-g7-s90",
+      "p1-g7-s415",
+      "p1-g7-s87",
+      "p1-g8-s51",
+      "p1-g7-s367",
+      "p1-g7-s255",
+      "p1-g5-s16",
+      "p1-g6-s10",
+      "p1-g7-s247",
+      "p1-g7-s207",
+      "p1-g4-s60",
+      "p1-g3-s150",
+      "p1-g7-s30",
+      "p1-g3-s175",
+      "p1-g6-s335",
+      "p1-g6-s45",
+      "p1-g5-s205",
+      "p1-g6-s102",
+      "p1-g7-s515",
+      "p1-g6-s375",
+      "p1-g6-s470",
+      "p1-g7-s495",
+      "p1-g8-s455",
+      "p1-g7-s47",
+      "p1-g7-s227",
+      "p1-g6-s250",
+      "p1-g4-s225",
+      "p1-g7-s275",
+      "p1-g7-s6"
+    ]
+  },
+  "openingsIndependent": true,
+  "independenceWarning": null,
+  "overrunTolerance": {
+    "spec": "max(10ms,1%)",
+    "ms": 10,
+    "pct": 1,
+    "frozen": true
+  },
+  "replays": false,
+  "resume": false,
+  "schedule": [
+    {
+      "pairId": "p1-g6-s82:0:0",
+      "pairIndex": 0,
+      "openingId": "p1-g6-s82",
+      "handicap": 0,
+      "seed": 3559662069
+    },
+    {
+      "pairId": "p1-g6-s82:4:1",
+      "pairIndex": 1,
+      "openingId": "p1-g6-s82",
+      "handicap": 4,
+      "seed": 2576681392
+    },
+    {
+      "pairId": "p1-g6-s82:8:2",
+      "pairIndex": 2,
+      "openingId": "p1-g6-s82",
+      "handicap": 8,
+      "seed": 1162005767
+    },
+    {
+      "pairId": "p1-g6-s82:12:3",
+      "pairIndex": 3,
+      "openingId": "p1-g6-s82",
+      "handicap": 12,
+      "seed": 2070314160
+    },
+    {
+      "pairId": "p1-g6-s82:16:4",
+      "pairIndex": 4,
+      "openingId": "p1-g6-s82",
+      "handicap": 16,
+      "seed": 2788208001
+    },
+    {
+      "pairId": "p1-g6-s82:20:5",
+      "pairIndex": 5,
+      "openingId": "p1-g6-s82",
+      "handicap": 20,
+      "seed": 2524751260
+    },
+    {
+      "pairId": "p1-g3-s125:0:6",
+      "pairIndex": 6,
+      "openingId": "p1-g3-s125",
+      "handicap": 0,
+      "seed": 185983136
+    },
+    {
+      "pairId": "p1-g3-s125:4:7",
+      "pairIndex": 7,
+      "openingId": "p1-g3-s125",
+      "handicap": 4,
+      "seed": 1648972810
+    },
+    {
+      "pairId": "p1-g3-s125:8:8",
+      "pairIndex": 8,
+      "openingId": "p1-g3-s125",
+      "handicap": 8,
+      "seed": 1990061300
+    },
+    {
+      "pairId": "p1-g3-s125:12:9",
+      "pairIndex": 9,
+      "openingId": "p1-g3-s125",
+      "handicap": 12,
+      "seed": 1372300466
+    },
+    {
+      "pairId": "p1-g3-s125:16:10",
+      "pairIndex": 10,
+      "openingId": "p1-g3-s125",
+      "handicap": 16,
+      "seed": 2308224665
+    },
+    {
+      "pairId": "p1-g3-s125:20:11",
+      "pairIndex": 11,
+      "openingId": "p1-g3-s125",
+      "handicap": 20,
+      "seed": 1987936545
+    },
+    {
+      "pairId": "p1-g4-s80:0:12",
+      "pairIndex": 12,
+      "openingId": "p1-g4-s80",
+      "handicap": 0,
+      "seed": 2141041269
+    },
+    {
+      "pairId": "p1-g4-s80:4:13",
+      "pairIndex": 13,
+      "openingId": "p1-g4-s80",
+      "handicap": 4,
+      "seed": 4288619292
+    },
+    {
+      "pairId": "p1-g4-s80:8:14",
+      "pairIndex": 14,
+      "openingId": "p1-g4-s80",
+      "handicap": 8,
+      "seed": 3483090079
+    },
+    {
+      "pairId": "p1-g4-s80:12:15",
+      "pairIndex": 15,
+      "openingId": "p1-g4-s80",
+      "handicap": 12,
+      "seed": 1381147371
+    },
+    {
+      "pairId": "p1-g4-s80:16:16",
+      "pairIndex": 16,
+      "openingId": "p1-g4-s80",
+      "handicap": 16,
+      "seed": 1170528562
+    },
+    {
+      "pairId": "p1-g4-s80:20:17",
+      "pairIndex": 17,
+      "openingId": "p1-g4-s80",
+      "handicap": 20,
+      "seed": 3562978181
+    },
+    {
+      "pairId": "p1-g7-s90:0:18",
+      "pairIndex": 18,
+      "openingId": "p1-g7-s90",
+      "handicap": 0,
+      "seed": 1888051918
+    },
+    {
+      "pairId": "p1-g7-s90:4:19",
+      "pairIndex": 19,
+      "openingId": "p1-g7-s90",
+      "handicap": 4,
+      "seed": 4224449799
+    },
+    {
+      "pairId": "p1-g7-s90:8:20",
+      "pairIndex": 20,
+      "openingId": "p1-g7-s90",
+      "handicap": 8,
+      "seed": 3052536670
+    },
+    {
+      "pairId": "p1-g7-s90:12:21",
+      "pairIndex": 21,
+      "openingId": "p1-g7-s90",
+      "handicap": 12,
+      "seed": 556401386
+    },
+    {
+      "pairId": "p1-g7-s90:16:22",
+      "pairIndex": 22,
+      "openingId": "p1-g7-s90",
+      "handicap": 16,
+      "seed": 1342662619
+    },
+    {
+      "pairId": "p1-g7-s90:20:23",
+      "pairIndex": 23,
+      "openingId": "p1-g7-s90",
+      "handicap": 20,
+      "seed": 1676661287
+    },
+    {
+      "pairId": "p1-g7-s415:0:24",
+      "pairIndex": 24,
+      "openingId": "p1-g7-s415",
+      "handicap": 0,
+      "seed": 194055744
+    },
+    {
+      "pairId": "p1-g7-s415:4:25",
+      "pairIndex": 25,
+      "openingId": "p1-g7-s415",
+      "handicap": 4,
+      "seed": 2880179839
+    },
+    {
+      "pairId": "p1-g7-s415:8:26",
+      "pairIndex": 26,
+      "openingId": "p1-g7-s415",
+      "handicap": 8,
+      "seed": 1572796369
+    },
+    {
+      "pairId": "p1-g7-s415:12:27",
+      "pairIndex": 27,
+      "openingId": "p1-g7-s415",
+      "handicap": 12,
+      "seed": 1193300866
+    },
+    {
+      "pairId": "p1-g7-s415:16:28",
+      "pairIndex": 28,
+      "openingId": "p1-g7-s415",
+      "handicap": 16,
+      "seed": 3408688324
+    },
+    {
+      "pairId": "p1-g7-s415:20:29",
+      "pairIndex": 29,
+      "openingId": "p1-g7-s415",
+      "handicap": 20,
+      "seed": 1741969491
+    },
+    {
+      "pairId": "p1-g7-s87:0:30",
+      "pairIndex": 30,
+      "openingId": "p1-g7-s87",
+      "handicap": 0,
+      "seed": 4026275244
+    },
+    {
+      "pairId": "p1-g7-s87:4:31",
+      "pairIndex": 31,
+      "openingId": "p1-g7-s87",
+      "handicap": 4,
+      "seed": 2858179776
+    },
+    {
+      "pairId": "p1-g7-s87:8:32",
+      "pairIndex": 32,
+      "openingId": "p1-g7-s87",
+      "handicap": 8,
+      "seed": 991709469
+    },
+    {
+      "pairId": "p1-g7-s87:12:33",
+      "pairIndex": 33,
+      "openingId": "p1-g7-s87",
+      "handicap": 12,
+      "seed": 1295443205
+    },
+    {
+      "pairId": "p1-g7-s87:16:34",
+      "pairIndex": 34,
+      "openingId": "p1-g7-s87",
+      "handicap": 16,
+      "seed": 1746350309
+    },
+    {
+      "pairId": "p1-g7-s87:20:35",
+      "pairIndex": 35,
+      "openingId": "p1-g7-s87",
+      "handicap": 20,
+      "seed": 178657741
+    },
+    {
+      "pairId": "p1-g8-s51:0:36",
+      "pairIndex": 36,
+      "openingId": "p1-g8-s51",
+      "handicap": 0,
+      "seed": 476855010
+    },
+    {
+      "pairId": "p1-g8-s51:4:37",
+      "pairIndex": 37,
+      "openingId": "p1-g8-s51",
+      "handicap": 4,
+      "seed": 882787636
+    },
+    {
+      "pairId": "p1-g8-s51:8:38",
+      "pairIndex": 38,
+      "openingId": "p1-g8-s51",
+      "handicap": 8,
+      "seed": 653673910
+    },
+    {
+      "pairId": "p1-g8-s51:12:39",
+      "pairIndex": 39,
+      "openingId": "p1-g8-s51",
+      "handicap": 12,
+      "seed": 2583060052
+    },
+    {
+      "pairId": "p1-g8-s51:16:40",
+      "pairIndex": 40,
+      "openingId": "p1-g8-s51",
+      "handicap": 16,
+      "seed": 286756153
+    },
+    {
+      "pairId": "p1-g8-s51:20:41",
+      "pairIndex": 41,
+      "openingId": "p1-g8-s51",
+      "handicap": 20,
+      "seed": 2782405101
+    },
+    {
+      "pairId": "p1-g7-s367:0:42",
+      "pairIndex": 42,
+      "openingId": "p1-g7-s367",
+      "handicap": 0,
+      "seed": 3044901275
+    },
+    {
+      "pairId": "p1-g7-s367:4:43",
+      "pairIndex": 43,
+      "openingId": "p1-g7-s367",
+      "handicap": 4,
+      "seed": 2172031310
+    },
+    {
+      "pairId": "p1-g7-s367:8:44",
+      "pairIndex": 44,
+      "openingId": "p1-g7-s367",
+      "handicap": 8,
+      "seed": 1034790609
+    },
+    {
+      "pairId": "p1-g7-s367:12:45",
+      "pairIndex": 45,
+      "openingId": "p1-g7-s367",
+      "handicap": 12,
+      "seed": 2837094363
+    },
+    {
+      "pairId": "p1-g7-s367:16:46",
+      "pairIndex": 46,
+      "openingId": "p1-g7-s367",
+      "handicap": 16,
+      "seed": 672270371
+    },
+    {
+      "pairId": "p1-g7-s367:20:47",
+      "pairIndex": 47,
+      "openingId": "p1-g7-s367",
+      "handicap": 20,
+      "seed": 2310071500
+    },
+    {
+      "pairId": "p1-g7-s255:0:48",
+      "pairIndex": 48,
+      "openingId": "p1-g7-s255",
+      "handicap": 0,
+      "seed": 2237269009
+    },
+    {
+      "pairId": "p1-g7-s255:4:49",
+      "pairIndex": 49,
+      "openingId": "p1-g7-s255",
+      "handicap": 4,
+      "seed": 610327372
+    },
+    {
+      "pairId": "p1-g7-s255:8:50",
+      "pairIndex": 50,
+      "openingId": "p1-g7-s255",
+      "handicap": 8,
+      "seed": 961514010
+    },
+    {
+      "pairId": "p1-g7-s255:12:51",
+      "pairIndex": 51,
+      "openingId": "p1-g7-s255",
+      "handicap": 12,
+      "seed": 3570077750
+    },
+    {
+      "pairId": "p1-g7-s255:16:52",
+      "pairIndex": 52,
+      "openingId": "p1-g7-s255",
+      "handicap": 16,
+      "seed": 1295274560
+    },
+    {
+      "pairId": "p1-g7-s255:20:53",
+      "pairIndex": 53,
+      "openingId": "p1-g7-s255",
+      "handicap": 20,
+      "seed": 1858341408
+    },
+    {
+      "pairId": "p1-g5-s16:0:54",
+      "pairIndex": 54,
+      "openingId": "p1-g5-s16",
+      "handicap": 0,
+      "seed": 2058052658
+    },
+    {
+      "pairId": "p1-g5-s16:4:55",
+      "pairIndex": 55,
+      "openingId": "p1-g5-s16",
+      "handicap": 4,
+      "seed": 4270853560
+    },
+    {
+      "pairId": "p1-g5-s16:8:56",
+      "pairIndex": 56,
+      "openingId": "p1-g5-s16",
+      "handicap": 8,
+      "seed": 611178803
+    },
+    {
+      "pairId": "p1-g5-s16:12:57",
+      "pairIndex": 57,
+      "openingId": "p1-g5-s16",
+      "handicap": 12,
+      "seed": 3256911555
+    },
+    {
+      "pairId": "p1-g5-s16:16:58",
+      "pairIndex": 58,
+      "openingId": "p1-g5-s16",
+      "handicap": 16,
+      "seed": 1747221319
+    },
+    {
+      "pairId": "p1-g5-s16:20:59",
+      "pairIndex": 59,
+      "openingId": "p1-g5-s16",
+      "handicap": 20,
+      "seed": 1875605796
+    },
+    {
+      "pairId": "p1-g6-s10:0:60",
+      "pairIndex": 60,
+      "openingId": "p1-g6-s10",
+      "handicap": 0,
+      "seed": 368156498
+    },
+    {
+      "pairId": "p1-g6-s10:4:61",
+      "pairIndex": 61,
+      "openingId": "p1-g6-s10",
+      "handicap": 4,
+      "seed": 3079772479
+    },
+    {
+      "pairId": "p1-g6-s10:8:62",
+      "pairIndex": 62,
+      "openingId": "p1-g6-s10",
+      "handicap": 8,
+      "seed": 1082551636
+    },
+    {
+      "pairId": "p1-g6-s10:12:63",
+      "pairIndex": 63,
+      "openingId": "p1-g6-s10",
+      "handicap": 12,
+      "seed": 301027925
+    },
+    {
+      "pairId": "p1-g6-s10:16:64",
+      "pairIndex": 64,
+      "openingId": "p1-g6-s10",
+      "handicap": 16,
+      "seed": 291074609
+    },
+    {
+      "pairId": "p1-g6-s10:20:65",
+      "pairIndex": 65,
+      "openingId": "p1-g6-s10",
+      "handicap": 20,
+      "seed": 3619116349
+    },
+    {
+      "pairId": "p1-g7-s247:0:66",
+      "pairIndex": 66,
+      "openingId": "p1-g7-s247",
+      "handicap": 0,
+      "seed": 2355253409
+    },
+    {
+      "pairId": "p1-g7-s247:4:67",
+      "pairIndex": 67,
+      "openingId": "p1-g7-s247",
+      "handicap": 4,
+      "seed": 139699011
+    },
+    {
+      "pairId": "p1-g7-s247:8:68",
+      "pairIndex": 68,
+      "openingId": "p1-g7-s247",
+      "handicap": 8,
+      "seed": 3898918131
+    },
+    {
+      "pairId": "p1-g7-s247:12:69",
+      "pairIndex": 69,
+      "openingId": "p1-g7-s247",
+      "handicap": 12,
+      "seed": 3617065457
+    },
+    {
+      "pairId": "p1-g7-s247:16:70",
+      "pairIndex": 70,
+      "openingId": "p1-g7-s247",
+      "handicap": 16,
+      "seed": 2513376335
+    },
+    {
+      "pairId": "p1-g7-s247:20:71",
+      "pairIndex": 71,
+      "openingId": "p1-g7-s247",
+      "handicap": 20,
+      "seed": 594502664
+    },
+    {
+      "pairId": "p1-g7-s207:0:72",
+      "pairIndex": 72,
+      "openingId": "p1-g7-s207",
+      "handicap": 0,
+      "seed": 2087818610
+    },
+    {
+      "pairId": "p1-g7-s207:4:73",
+      "pairIndex": 73,
+      "openingId": "p1-g7-s207",
+      "handicap": 4,
+      "seed": 942786639
+    },
+    {
+      "pairId": "p1-g7-s207:8:74",
+      "pairIndex": 74,
+      "openingId": "p1-g7-s207",
+      "handicap": 8,
+      "seed": 403432674
+    },
+    {
+      "pairId": "p1-g7-s207:12:75",
+      "pairIndex": 75,
+      "openingId": "p1-g7-s207",
+      "handicap": 12,
+      "seed": 3179802991
+    },
+    {
+      "pairId": "p1-g7-s207:16:76",
+      "pairIndex": 76,
+      "openingId": "p1-g7-s207",
+      "handicap": 16,
+      "seed": 2851194835
+    },
+    {
+      "pairId": "p1-g7-s207:20:77",
+      "pairIndex": 77,
+      "openingId": "p1-g7-s207",
+      "handicap": 20,
+      "seed": 603771873
+    },
+    {
+      "pairId": "p1-g4-s60:0:78",
+      "pairIndex": 78,
+      "openingId": "p1-g4-s60",
+      "handicap": 0,
+      "seed": 1157330107
+    },
+    {
+      "pairId": "p1-g4-s60:4:79",
+      "pairIndex": 79,
+      "openingId": "p1-g4-s60",
+      "handicap": 4,
+      "seed": 3421907466
+    },
+    {
+      "pairId": "p1-g4-s60:8:80",
+      "pairIndex": 80,
+      "openingId": "p1-g4-s60",
+      "handicap": 8,
+      "seed": 844000595
+    },
+    {
+      "pairId": "p1-g4-s60:12:81",
+      "pairIndex": 81,
+      "openingId": "p1-g4-s60",
+      "handicap": 12,
+      "seed": 2485710781
+    },
+    {
+      "pairId": "p1-g4-s60:16:82",
+      "pairIndex": 82,
+      "openingId": "p1-g4-s60",
+      "handicap": 16,
+      "seed": 3796300949
+    },
+    {
+      "pairId": "p1-g4-s60:20:83",
+      "pairIndex": 83,
+      "openingId": "p1-g4-s60",
+      "handicap": 20,
+      "seed": 1055880219
+    },
+    {
+      "pairId": "p1-g3-s150:0:84",
+      "pairIndex": 84,
+      "openingId": "p1-g3-s150",
+      "handicap": 0,
+      "seed": 4060464705
+    },
+    {
+      "pairId": "p1-g3-s150:4:85",
+      "pairIndex": 85,
+      "openingId": "p1-g3-s150",
+      "handicap": 4,
+      "seed": 3552652214
+    },
+    {
+      "pairId": "p1-g3-s150:8:86",
+      "pairIndex": 86,
+      "openingId": "p1-g3-s150",
+      "handicap": 8,
+      "seed": 104490189
+    },
+    {
+      "pairId": "p1-g3-s150:12:87",
+      "pairIndex": 87,
+      "openingId": "p1-g3-s150",
+      "handicap": 12,
+      "seed": 2815480633
+    },
+    {
+      "pairId": "p1-g3-s150:16:88",
+      "pairIndex": 88,
+      "openingId": "p1-g3-s150",
+      "handicap": 16,
+      "seed": 4029276657
+    },
+    {
+      "pairId": "p1-g3-s150:20:89",
+      "pairIndex": 89,
+      "openingId": "p1-g3-s150",
+      "handicap": 20,
+      "seed": 2001249130
+    },
+    {
+      "pairId": "p1-g7-s30:0:90",
+      "pairIndex": 90,
+      "openingId": "p1-g7-s30",
+      "handicap": 0,
+      "seed": 557092796
+    },
+    {
+      "pairId": "p1-g7-s30:4:91",
+      "pairIndex": 91,
+      "openingId": "p1-g7-s30",
+      "handicap": 4,
+      "seed": 216885437
+    },
+    {
+      "pairId": "p1-g7-s30:8:92",
+      "pairIndex": 92,
+      "openingId": "p1-g7-s30",
+      "handicap": 8,
+      "seed": 2559654841
+    },
+    {
+      "pairId": "p1-g7-s30:12:93",
+      "pairIndex": 93,
+      "openingId": "p1-g7-s30",
+      "handicap": 12,
+      "seed": 610818858
+    },
+    {
+      "pairId": "p1-g7-s30:16:94",
+      "pairIndex": 94,
+      "openingId": "p1-g7-s30",
+      "handicap": 16,
+      "seed": 1655356923
+    },
+    {
+      "pairId": "p1-g7-s30:20:95",
+      "pairIndex": 95,
+      "openingId": "p1-g7-s30",
+      "handicap": 20,
+      "seed": 3144590640
+    },
+    {
+      "pairId": "p1-g3-s175:0:96",
+      "pairIndex": 96,
+      "openingId": "p1-g3-s175",
+      "handicap": 0,
+      "seed": 4286456829
+    },
+    {
+      "pairId": "p1-g3-s175:4:97",
+      "pairIndex": 97,
+      "openingId": "p1-g3-s175",
+      "handicap": 4,
+      "seed": 1257692981
+    },
+    {
+      "pairId": "p1-g3-s175:8:98",
+      "pairIndex": 98,
+      "openingId": "p1-g3-s175",
+      "handicap": 8,
+      "seed": 1767296981
+    },
+    {
+      "pairId": "p1-g3-s175:12:99",
+      "pairIndex": 99,
+      "openingId": "p1-g3-s175",
+      "handicap": 12,
+      "seed": 787273410
+    },
+    {
+      "pairId": "p1-g3-s175:16:100",
+      "pairIndex": 100,
+      "openingId": "p1-g3-s175",
+      "handicap": 16,
+      "seed": 58088637
+    },
+    {
+      "pairId": "p1-g3-s175:20:101",
+      "pairIndex": 101,
+      "openingId": "p1-g3-s175",
+      "handicap": 20,
+      "seed": 1065379338
+    },
+    {
+      "pairId": "p1-g6-s335:0:102",
+      "pairIndex": 102,
+      "openingId": "p1-g6-s335",
+      "handicap": 0,
+      "seed": 3294610828
+    },
+    {
+      "pairId": "p1-g6-s335:4:103",
+      "pairIndex": 103,
+      "openingId": "p1-g6-s335",
+      "handicap": 4,
+      "seed": 2009663846
+    },
+    {
+      "pairId": "p1-g6-s335:8:104",
+      "pairIndex": 104,
+      "openingId": "p1-g6-s335",
+      "handicap": 8,
+      "seed": 1172927952
+    },
+    {
+      "pairId": "p1-g6-s335:12:105",
+      "pairIndex": 105,
+      "openingId": "p1-g6-s335",
+      "handicap": 12,
+      "seed": 1989361407
+    },
+    {
+      "pairId": "p1-g6-s335:16:106",
+      "pairIndex": 106,
+      "openingId": "p1-g6-s335",
+      "handicap": 16,
+      "seed": 989064753
+    },
+    {
+      "pairId": "p1-g6-s335:20:107",
+      "pairIndex": 107,
+      "openingId": "p1-g6-s335",
+      "handicap": 20,
+      "seed": 651480117
+    },
+    {
+      "pairId": "p1-g6-s45:0:108",
+      "pairIndex": 108,
+      "openingId": "p1-g6-s45",
+      "handicap": 0,
+      "seed": 1470468053
+    },
+    {
+      "pairId": "p1-g6-s45:4:109",
+      "pairIndex": 109,
+      "openingId": "p1-g6-s45",
+      "handicap": 4,
+      "seed": 2922652591
+    },
+    {
+      "pairId": "p1-g6-s45:8:110",
+      "pairIndex": 110,
+      "openingId": "p1-g6-s45",
+      "handicap": 8,
+      "seed": 3016014584
+    },
+    {
+      "pairId": "p1-g6-s45:12:111",
+      "pairIndex": 111,
+      "openingId": "p1-g6-s45",
+      "handicap": 12,
+      "seed": 2603656009
+    },
+    {
+      "pairId": "p1-g6-s45:16:112",
+      "pairIndex": 112,
+      "openingId": "p1-g6-s45",
+      "handicap": 16,
+      "seed": 234760246
+    },
+    {
+      "pairId": "p1-g6-s45:20:113",
+      "pairIndex": 113,
+      "openingId": "p1-g6-s45",
+      "handicap": 20,
+      "seed": 2266536936
+    },
+    {
+      "pairId": "p1-g5-s205:0:114",
+      "pairIndex": 114,
+      "openingId": "p1-g5-s205",
+      "handicap": 0,
+      "seed": 3859412913
+    },
+    {
+      "pairId": "p1-g5-s205:4:115",
+      "pairIndex": 115,
+      "openingId": "p1-g5-s205",
+      "handicap": 4,
+      "seed": 228874926
+    },
+    {
+      "pairId": "p1-g5-s205:8:116",
+      "pairIndex": 116,
+      "openingId": "p1-g5-s205",
+      "handicap": 8,
+      "seed": 2550348820
+    },
+    {
+      "pairId": "p1-g5-s205:12:117",
+      "pairIndex": 117,
+      "openingId": "p1-g5-s205",
+      "handicap": 12,
+      "seed": 3553425500
+    },
+    {
+      "pairId": "p1-g5-s205:16:118",
+      "pairIndex": 118,
+      "openingId": "p1-g5-s205",
+      "handicap": 16,
+      "seed": 649621152
+    },
+    {
+      "pairId": "p1-g5-s205:20:119",
+      "pairIndex": 119,
+      "openingId": "p1-g5-s205",
+      "handicap": 20,
+      "seed": 363520890
+    },
+    {
+      "pairId": "p1-g6-s102:0:120",
+      "pairIndex": 120,
+      "openingId": "p1-g6-s102",
+      "handicap": 0,
+      "seed": 3867119149
+    },
+    {
+      "pairId": "p1-g6-s102:4:121",
+      "pairIndex": 121,
+      "openingId": "p1-g6-s102",
+      "handicap": 4,
+      "seed": 103198560
+    },
+    {
+      "pairId": "p1-g6-s102:8:122",
+      "pairIndex": 122,
+      "openingId": "p1-g6-s102",
+      "handicap": 8,
+      "seed": 890246967
+    },
+    {
+      "pairId": "p1-g6-s102:12:123",
+      "pairIndex": 123,
+      "openingId": "p1-g6-s102",
+      "handicap": 12,
+      "seed": 2476350433
+    },
+    {
+      "pairId": "p1-g6-s102:16:124",
+      "pairIndex": 124,
+      "openingId": "p1-g6-s102",
+      "handicap": 16,
+      "seed": 3137196786
+    },
+    {
+      "pairId": "p1-g6-s102:20:125",
+      "pairIndex": 125,
+      "openingId": "p1-g6-s102",
+      "handicap": 20,
+      "seed": 3006056457
+    },
+    {
+      "pairId": "p1-g7-s515:0:126",
+      "pairIndex": 126,
+      "openingId": "p1-g7-s515",
+      "handicap": 0,
+      "seed": 2307480267
+    },
+    {
+      "pairId": "p1-g7-s515:4:127",
+      "pairIndex": 127,
+      "openingId": "p1-g7-s515",
+      "handicap": 4,
+      "seed": 2653385447
+    },
+    {
+      "pairId": "p1-g7-s515:8:128",
+      "pairIndex": 128,
+      "openingId": "p1-g7-s515",
+      "handicap": 8,
+      "seed": 513335077
+    },
+    {
+      "pairId": "p1-g7-s515:12:129",
+      "pairIndex": 129,
+      "openingId": "p1-g7-s515",
+      "handicap": 12,
+      "seed": 406966681
+    },
+    {
+      "pairId": "p1-g7-s515:16:130",
+      "pairIndex": 130,
+      "openingId": "p1-g7-s515",
+      "handicap": 16,
+      "seed": 3684888261
+    },
+    {
+      "pairId": "p1-g7-s515:20:131",
+      "pairIndex": 131,
+      "openingId": "p1-g7-s515",
+      "handicap": 20,
+      "seed": 3020421252
+    },
+    {
+      "pairId": "p1-g6-s375:0:132",
+      "pairIndex": 132,
+      "openingId": "p1-g6-s375",
+      "handicap": 0,
+      "seed": 482418804
+    },
+    {
+      "pairId": "p1-g6-s375:4:133",
+      "pairIndex": 133,
+      "openingId": "p1-g6-s375",
+      "handicap": 4,
+      "seed": 1160928197
+    },
+    {
+      "pairId": "p1-g6-s375:8:134",
+      "pairIndex": 134,
+      "openingId": "p1-g6-s375",
+      "handicap": 8,
+      "seed": 1455113946
+    },
+    {
+      "pairId": "p1-g6-s375:12:135",
+      "pairIndex": 135,
+      "openingId": "p1-g6-s375",
+      "handicap": 12,
+      "seed": 913566328
+    },
+    {
+      "pairId": "p1-g6-s375:16:136",
+      "pairIndex": 136,
+      "openingId": "p1-g6-s375",
+      "handicap": 16,
+      "seed": 2088886292
+    },
+    {
+      "pairId": "p1-g6-s375:20:137",
+      "pairIndex": 137,
+      "openingId": "p1-g6-s375",
+      "handicap": 20,
+      "seed": 4003558670
+    },
+    {
+      "pairId": "p1-g6-s470:0:138",
+      "pairIndex": 138,
+      "openingId": "p1-g6-s470",
+      "handicap": 0,
+      "seed": 4129991417
+    },
+    {
+      "pairId": "p1-g6-s470:4:139",
+      "pairIndex": 139,
+      "openingId": "p1-g6-s470",
+      "handicap": 4,
+      "seed": 1259401324
+    },
+    {
+      "pairId": "p1-g6-s470:8:140",
+      "pairIndex": 140,
+      "openingId": "p1-g6-s470",
+      "handicap": 8,
+      "seed": 3689245503
+    },
+    {
+      "pairId": "p1-g6-s470:12:141",
+      "pairIndex": 141,
+      "openingId": "p1-g6-s470",
+      "handicap": 12,
+      "seed": 4136716579
+    },
+    {
+      "pairId": "p1-g6-s470:16:142",
+      "pairIndex": 142,
+      "openingId": "p1-g6-s470",
+      "handicap": 16,
+      "seed": 1008378391
+    },
+    {
+      "pairId": "p1-g6-s470:20:143",
+      "pairIndex": 143,
+      "openingId": "p1-g6-s470",
+      "handicap": 20,
+      "seed": 1885698695
+    },
+    {
+      "pairId": "p1-g7-s495:0:144",
+      "pairIndex": 144,
+      "openingId": "p1-g7-s495",
+      "handicap": 0,
+      "seed": 864184333
+    },
+    {
+      "pairId": "p1-g7-s495:4:145",
+      "pairIndex": 145,
+      "openingId": "p1-g7-s495",
+      "handicap": 4,
+      "seed": 957008440
+    },
+    {
+      "pairId": "p1-g7-s495:8:146",
+      "pairIndex": 146,
+      "openingId": "p1-g7-s495",
+      "handicap": 8,
+      "seed": 2235468748
+    },
+    {
+      "pairId": "p1-g7-s495:12:147",
+      "pairIndex": 147,
+      "openingId": "p1-g7-s495",
+      "handicap": 12,
+      "seed": 106074293
+    },
+    {
+      "pairId": "p1-g7-s495:16:148",
+      "pairIndex": 148,
+      "openingId": "p1-g7-s495",
+      "handicap": 16,
+      "seed": 590264254
+    },
+    {
+      "pairId": "p1-g7-s495:20:149",
+      "pairIndex": 149,
+      "openingId": "p1-g7-s495",
+      "handicap": 20,
+      "seed": 2479558694
+    },
+    {
+      "pairId": "p1-g8-s455:0:150",
+      "pairIndex": 150,
+      "openingId": "p1-g8-s455",
+      "handicap": 0,
+      "seed": 2278192063
+    },
+    {
+      "pairId": "p1-g8-s455:4:151",
+      "pairIndex": 151,
+      "openingId": "p1-g8-s455",
+      "handicap": 4,
+      "seed": 1855289955
+    },
+    {
+      "pairId": "p1-g8-s455:8:152",
+      "pairIndex": 152,
+      "openingId": "p1-g8-s455",
+      "handicap": 8,
+      "seed": 1934026590
+    },
+    {
+      "pairId": "p1-g8-s455:12:153",
+      "pairIndex": 153,
+      "openingId": "p1-g8-s455",
+      "handicap": 12,
+      "seed": 2373103028
+    },
+    {
+      "pairId": "p1-g8-s455:16:154",
+      "pairIndex": 154,
+      "openingId": "p1-g8-s455",
+      "handicap": 16,
+      "seed": 3874478876
+    },
+    {
+      "pairId": "p1-g8-s455:20:155",
+      "pairIndex": 155,
+      "openingId": "p1-g8-s455",
+      "handicap": 20,
+      "seed": 1527895295
+    },
+    {
+      "pairId": "p1-g7-s47:0:156",
+      "pairIndex": 156,
+      "openingId": "p1-g7-s47",
+      "handicap": 0,
+      "seed": 1647144376
+    },
+    {
+      "pairId": "p1-g7-s47:4:157",
+      "pairIndex": 157,
+      "openingId": "p1-g7-s47",
+      "handicap": 4,
+      "seed": 465670835
+    },
+    {
+      "pairId": "p1-g7-s47:8:158",
+      "pairIndex": 158,
+      "openingId": "p1-g7-s47",
+      "handicap": 8,
+      "seed": 2793022602
+    },
+    {
+      "pairId": "p1-g7-s47:12:159",
+      "pairIndex": 159,
+      "openingId": "p1-g7-s47",
+      "handicap": 12,
+      "seed": 2879339308
+    },
+    {
+      "pairId": "p1-g7-s47:16:160",
+      "pairIndex": 160,
+      "openingId": "p1-g7-s47",
+      "handicap": 16,
+      "seed": 3065909963
+    },
+    {
+      "pairId": "p1-g7-s47:20:161",
+      "pairIndex": 161,
+      "openingId": "p1-g7-s47",
+      "handicap": 20,
+      "seed": 3984218131
+    },
+    {
+      "pairId": "p1-g7-s227:0:162",
+      "pairIndex": 162,
+      "openingId": "p1-g7-s227",
+      "handicap": 0,
+      "seed": 1213267532
+    },
+    {
+      "pairId": "p1-g7-s227:4:163",
+      "pairIndex": 163,
+      "openingId": "p1-g7-s227",
+      "handicap": 4,
+      "seed": 706645661
+    },
+    {
+      "pairId": "p1-g7-s227:8:164",
+      "pairIndex": 164,
+      "openingId": "p1-g7-s227",
+      "handicap": 8,
+      "seed": 4007024470
+    },
+    {
+      "pairId": "p1-g7-s227:12:165",
+      "pairIndex": 165,
+      "openingId": "p1-g7-s227",
+      "handicap": 12,
+      "seed": 893114439
+    },
+    {
+      "pairId": "p1-g7-s227:16:166",
+      "pairIndex": 166,
+      "openingId": "p1-g7-s227",
+      "handicap": 16,
+      "seed": 1568523854
+    },
+    {
+      "pairId": "p1-g7-s227:20:167",
+      "pairIndex": 167,
+      "openingId": "p1-g7-s227",
+      "handicap": 20,
+      "seed": 2335388280
+    },
+    {
+      "pairId": "p1-g6-s250:0:168",
+      "pairIndex": 168,
+      "openingId": "p1-g6-s250",
+      "handicap": 0,
+      "seed": 2081930020
+    },
+    {
+      "pairId": "p1-g6-s250:4:169",
+      "pairIndex": 169,
+      "openingId": "p1-g6-s250",
+      "handicap": 4,
+      "seed": 3585205703
+    },
+    {
+      "pairId": "p1-g6-s250:8:170",
+      "pairIndex": 170,
+      "openingId": "p1-g6-s250",
+      "handicap": 8,
+      "seed": 682590059
+    },
+    {
+      "pairId": "p1-g6-s250:12:171",
+      "pairIndex": 171,
+      "openingId": "p1-g6-s250",
+      "handicap": 12,
+      "seed": 284377005
+    },
+    {
+      "pairId": "p1-g6-s250:16:172",
+      "pairIndex": 172,
+      "openingId": "p1-g6-s250",
+      "handicap": 16,
+      "seed": 57261752
+    },
+    {
+      "pairId": "p1-g6-s250:20:173",
+      "pairIndex": 173,
+      "openingId": "p1-g6-s250",
+      "handicap": 20,
+      "seed": 1348840698
+    },
+    {
+      "pairId": "p1-g4-s225:0:174",
+      "pairIndex": 174,
+      "openingId": "p1-g4-s225",
+      "handicap": 0,
+      "seed": 191942468
+    },
+    {
+      "pairId": "p1-g4-s225:4:175",
+      "pairIndex": 175,
+      "openingId": "p1-g4-s225",
+      "handicap": 4,
+      "seed": 283193386
+    },
+    {
+      "pairId": "p1-g4-s225:8:176",
+      "pairIndex": 176,
+      "openingId": "p1-g4-s225",
+      "handicap": 8,
+      "seed": 1343301357
+    },
+    {
+      "pairId": "p1-g4-s225:12:177",
+      "pairIndex": 177,
+      "openingId": "p1-g4-s225",
+      "handicap": 12,
+      "seed": 2222632045
+    },
+    {
+      "pairId": "p1-g4-s225:16:178",
+      "pairIndex": 178,
+      "openingId": "p1-g4-s225",
+      "handicap": 16,
+      "seed": 1288467141
+    },
+    {
+      "pairId": "p1-g4-s225:20:179",
+      "pairIndex": 179,
+      "openingId": "p1-g4-s225",
+      "handicap": 20,
+      "seed": 2060637765
+    },
+    {
+      "pairId": "p1-g7-s275:0:180",
+      "pairIndex": 180,
+      "openingId": "p1-g7-s275",
+      "handicap": 0,
+      "seed": 3263703676
+    },
+    {
+      "pairId": "p1-g7-s275:4:181",
+      "pairIndex": 181,
+      "openingId": "p1-g7-s275",
+      "handicap": 4,
+      "seed": 86097555
+    },
+    {
+      "pairId": "p1-g7-s275:8:182",
+      "pairIndex": 182,
+      "openingId": "p1-g7-s275",
+      "handicap": 8,
+      "seed": 2892187894
+    },
+    {
+      "pairId": "p1-g7-s275:12:183",
+      "pairIndex": 183,
+      "openingId": "p1-g7-s275",
+      "handicap": 12,
+      "seed": 781458506
+    },
+    {
+      "pairId": "p1-g7-s275:16:184",
+      "pairIndex": 184,
+      "openingId": "p1-g7-s275",
+      "handicap": 16,
+      "seed": 2423892816
+    },
+    {
+      "pairId": "p1-g7-s275:20:185",
+      "pairIndex": 185,
+      "openingId": "p1-g7-s275",
+      "handicap": 20,
+      "seed": 2756586368
+    },
+    {
+      "pairId": "p1-g7-s6:0:186",
+      "pairIndex": 186,
+      "openingId": "p1-g7-s6",
+      "handicap": 0,
+      "seed": 104669322
+    },
+    {
+      "pairId": "p1-g7-s6:4:187",
+      "pairIndex": 187,
+      "openingId": "p1-g7-s6",
+      "handicap": 4,
+      "seed": 1985375267
+    },
+    {
+      "pairId": "p1-g7-s6:8:188",
+      "pairIndex": 188,
+      "openingId": "p1-g7-s6",
+      "handicap": 8,
+      "seed": 2100772282
+    },
+    {
+      "pairId": "p1-g7-s6:12:189",
+      "pairIndex": 189,
+      "openingId": "p1-g7-s6",
+      "handicap": 12,
+      "seed": 2189145425
+    },
+    {
+      "pairId": "p1-g7-s6:16:190",
+      "pairIndex": 190,
+      "openingId": "p1-g7-s6",
+      "handicap": 16,
+      "seed": 2117698393
+    },
+    {
+      "pairId": "p1-g7-s6:20:191",
+      "pairIndex": 191,
+      "openingId": "p1-g7-s6",
+      "handicap": 20,
+      "seed": 3250338407
+    }
+  ],
+  "resumedPairIds": [],
+  "sprtStop": null,
+  "rules": {
+    "rulesVersion": "muju-phasing-4",
+    "elementGraph": "double-thick",
+    "upkeep": "shipped",
+    "inactivityRule": "on"
+  },
+  "argv": [
+    "--a",
+    "hard@strategos",
+    "--b",
+    "ClockHeist",
+    "--work",
+    "fixed:60000",
+    "--handicaps",
+    "0,4,8,12,16,20",
+    "--pairs",
+    "192",
+    "--seed",
+    "20260983",
+    "--shards",
+    "4",
+    "--openings",
+    "lab/hard-ai/ladder/openings/p1-val.jsonl",
+    "--replays",
+    "off",
+    "--out",
+    "docs/hard-ai/phasing/strategos-w1-2026-09-24/results/R1-strategos-vs-ClockHeist"
+  ],
+  "git": "b667f69fa9e371af3052720addcf37f58fae03f6",
+  "gitDirty": true,
+  "baseline": {
+    "ai": "2cfd1a23c79e18784d172680e7dce59cf278ef67a96b63ca25027b463eaf7258",
+    "game": "1812de7c6c2d48dd07ae3f0ffe49a8b6d8ac42aefa55dfa86739fd978c8d29e7",
+    "wasm": "4ab1728df1a92f2097cf8265dd16a16574358964155c8a61149c9b6401bb612d",
+    "deps": "b17ce8cae69cdede37f74f14139e1afee7f9eb6e17676c391239a8ff985cbf45"
+  },
+  "wasmSha256": "4ab1728df1a92f2097cf8265dd16a16574358964155c8a61149c9b6401bb612d",
+  "node": "v24.11.1",
+  "device": "Apple M2 Max x12 (darwin/arm64)",
+  "cpuCount": 12,
+  "loadavg": [
+    15.81689453125,
+    8.44287109375,
+    8.212890625
+  ],
+  "at": "2026-09-25T06:54:32.368Z",
+  "finishedAt": "2026-09-25T07:01:25.242Z",
+  "wallMs": 413017,
+  "counts": {
+    "scheduledPairs": 192,
+    "completedPairs": 192,
+    "games": 384,
+    "failures": 0,
+    "resumedPairs": 0
+  },
+  "voided": false,
+  "voidReason": null,
+  "error": null
+}
