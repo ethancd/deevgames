@@ -46,6 +46,10 @@ export function MicroMuju() {
             <div className={`text-sm font-normal ${resumable ? 'text-gray-400' : 'text-amber-100'}`}>White (Player 1) moves first</div>
           </button>
         </div>
+        <a href="/muju/?online=1&variant=micro" className="block w-full p-4 rounded-lg border-2 border-cyan-700 hover:border-cyan-400 text-left">
+          <div className="font-semibold">Play online</div>
+          <div className="text-sm text-gray-400">Host a room for a friend or an LLM on another device</div>
+        </a>
         <section aria-label="Rules" className="space-y-3 text-sm text-gray-300">
           <MicroRulesSummary />
           <MicroPieceTable />
