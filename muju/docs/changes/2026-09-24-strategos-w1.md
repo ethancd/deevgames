@@ -46,7 +46,7 @@ review found a defect, fixed in a review commit on top — see each step's row b
 | W1.11 | `6c99447a`, review `c7c8b3b2` | Phasing determinism corpus (`positions/p4-determinism.jsonl`) + Gate 0 for desktop | **Major ×2.** Three of four "contact" rows were mid-turn snapshots taken just before a bot's ATTACK (`actionsRemaining` 1, 1 and 3), not the fresh Act root the strategos reading is designed around — regenerated as real fresh-turn contact positions at clocks 6, 2, 9 and 8. The test's `hard@desktop` CLI check ran `--positions 3`, the first 3 rows (all opening roots at clock 1), so it never touched a late-clock or contact row — fixed with an explicit high-clock/contact subset. Also fixed on the shared `determinism.ts` path: a short repetition was compared only on the rows it returned, so a missing/misaligned decision silently passed. |
 | W1.12 | `082913bc`, review `56708048`; follow-up `e203c09c`, review `c6bb8a8e` | `ClockHeist` scripted bot (drone, expand, free kills only when behind, retreat/pass when ahead) | **Major ×2** (first review). The "ahead → retreat and pass" lock also blocked buying in the Place phase, and "ahead" was read right after ClockHeist's own income and before the opponent's — so from ply 3 of any kill-free game it froze its own economy (bank 10→19→27 unspent, lost the clock 38-52 vs Hard-25k). Fixed: the lock applies to the Action phase only. The strike-area formula (`speed+1`) was documented as an over-approximation but is not one (the engine's strike area is `speed×3+1`, `tables/threat.ts`) — now `speed×(actions−1)+1` on the empty board, a sound bound. **Follow-up finding (not resolved):** the Action-phase-only fix has NO measured effect on real games — an exact ladder replay reproduces all 96 calibration games identically before and after. The real cause is spawn-square clogging (ClockHeist's units sit on its own rich home spawn cells and neither branch moves one off a still-paying cell, so the Place phase has no legal buy square), left as an open coordinator item — see below. |
 | W1.12 final | `ae294099`, review `1d74f543`; fix `9fdf6b95`, re-review `4c10bd55`; merged `68f95a91` | Spawn declogging (`declogScore`/`wouldOpenSpawnRoom`/`spawnRoom`): a unit on a paying cell may step to another paying cell when safe, when spawn room is tight, and when replaying the move proves it widens the buyable area. ClockHeist frozen at `4c10bd55` for A8 | Turns 1–4 buys rose from 1.0–2.0 to 4.42–7.17, but the clock outcome did not flip: `hard@desktop` still won 133 of 144 p1-dev calibration games. The review (`1d74f543`) found the clog persists after turn 4 (82 of 180 Place phases had no buy square while ClockHeist held at least 3 crystals) and that desktop's early raids, not the income ratio, decide most games. The fix round (`9fdf6b95`: defensive kill, blocker-aware reach, `metal_1` gate) was reverted by the re-review (`4c10bd55`): the defensive kill threw away won clocks, blocker-aware reach is unsound (a lethal hit unlocks another attack), and the gate had no measured effect. The frozen bot's decisions equal `ae294099`'s. |
-| W1.13 | **PENDING** (not in `c054136b`) | Wave-1 exam cases (`ExamKind 'plan'`, `PlanWitness`) | Plan B.2 runs it on the pilot branch (`~/src/deevgames-llm-pilot`) after master is merged into `claude/muju-llm-pilot`. |
+| W1.13 | `6d480661` (`~/src/deevgames-sg-exam`) | Wave-1 exam cases (`ExamKind 'plan'`, `PlanWitness`) re-run on `lab/hard-ai/exam/cases-p4` dev stratum, fixed work 60000, after merging `claude/strategos-w1` | `hard@desktop`: 3/8 passed, 4/8 as expected. `hard@strategos` pre-W1.9: 3/8, 4/8 as expected. Final `hard@strategos`: 4/8 passed, 5/8 as expected — `AS01-W-t3` now passes (injected force-contact line played as the plan, no veto; wave 1's headline failure there was a full pass at 13 v 30, clock 5). Still failing, Workflow 2 material: `OP01-W-t1` (spawn jam), `OP01-W-t2` (full pass at clock 3, 14-15; likely `open` with no posture — the exam record carries no `claim`/chronicle field), `OP02-W-t6` (no promotion), `SO01-B-t11` (expected fail). |
 | W1.14 | `45b72c21`, review `861e886c` | Master side: engine-seat profile selector + search telemetry; browser `?hardEngine=strategos`. The pilot-branch half is **PENDING** (plan B.1a) | **Major ×2.** Telemetry/profile tests passed with FOUR different wrong runners (minedTotals swapped, handicap dropped, clock hard-coded to 0, wrong profile patch used) — fixed with paired one-fact-change cases and a spy on the real default engine factory. The engine profile was not part of the seat's resume identity, so a crash-and-resume could silently switch engines mid-game — fixed via `journal.profile` + `assertSeatConfiguration`. Also: `SEARCH_TELEMETRY_VERSION` existed only in a comment, not as code — now an exported constant written on every `start` line. |
 | W1.15 | `464f94c3`, review `8e1470b6` (this record, DEVIATIONS.md, `docs/ENGINE-SEAT-MATCH-2026-09-19.md`); A8 `6d5db91b`; DESIGN.md §9 addendum | Release docs; amendment A8 and `lab/hard-ai/ladder/paired-diff.ts` (A8's paired R1-minus-R0 difference, committed before R1) | Docs lane reviewed against `c054136b`. A8 reviewed by a Fable pass. The §9 addendum and DEVIATIONS/change-record drafts in `41172a24` (origin unknown, made after the 2026-09-24 crash, not by a campaign agent) were fact-checked and reconciled into this record in the merge of `claude/sg-docs`; the addendum awaits a Fable pass after W1.10. |
 | coordinator | `c054136b` | Integration decisions across W1.6/W1.8/W1.14 (below); the `ClockVerdict` doc (`strategy/types.ts`) and the `EvalFix.clockLedger` doc (`config.ts`) brought in line with the code, as the W1.5/W1.6 review asked | — |
@@ -188,12 +188,16 @@ give Workflow 2 typed facts to attach likelihoods to.
 (and so resets the clock) falsify the contract, and should an injected Hold line pass the same enemy-`killEta`
 check as any other candidate? Coordinator decision 9; `DEVIATIONS.md`.
 
+**Decided since this record's draft:**
+- The veto's reserve (coordinator decision 7). Its falsifier already fires on W6-c6-far@40,000, whose
+  re-search needs 29% of the rung, and no share up to a quarter covers it. Decided: the coordinator keeps
+  the reserve at a fifth and accepts `unresolved` on such rare roots, whose fallback is the search's own
+  best move — not a larger share or a per-root cap. See `DEVIATIONS.md` and `search/veto.ts
+  VETO_RESERVE_SHARE`'s doc.
+
 **Inside Workflow 1, still open:**
-- The veto's reserve (coordinator decision 7): its falsifier already fires on W6-c6-far@40,000, whose
-  re-search needs 29% of the rung. A larger share, a per-root cap on the re-search, or accepting
-  `unresolved` on such roots — a coordinator decision, ideally informed by R1's `veto.research` outcomes.
-- W1.13 (wave-1 exam cases) and the pilot-branch half of W1.14 — pending; plan B.2 runs both on the pilot
-  branch after the master merge.
+- The pilot-branch half of W1.14 (plan B.1a) — pending. W1.13 (wave-1 exam cases) itself is done: it ran on
+  the pilot branch after the master merge (`~/src/deevgames-sg-exam` `6d480661`; results above).
 - `TurnGenerator.prepareTables`'s dead `EvalFix` read (W1.8 review finding) — stamp the real `evalFix` onto
   it, or pass it through explicitly, so the 2026-09-21 strength knobs mean something in real search.
 - ClockHeist's remaining spawn clog (W1.12 final review, `1d74f543`) — `ae294099` opened the spawn rectangle
@@ -216,8 +220,11 @@ check as any other candidate? Coordinator decision 9; `DEVIATIONS.md`.
   for both profiles at the Workflow 1 merge candidate before R1. **Done for `hard@desktop` at `6d5db91b`**
   (`d3c36188`; logs under `docs/hard-ai/phasing/strategos-w1-2026-09-24/results/gate0/`): `hard:perft
   --check`, `hard:perft --check --engine replica`, `hard:fuzz --actions 20000 --seed 7101` and
-  `hard:determinism` over `p4-determinism.jsonl`, all exit 0. Still owed: both profiles at the merge
-  candidate before R1 (plan B.3 item 3 for `hard@strategos`). The W1.10 review and this coordinator pass ran
+  `hard:determinism` over `p4-determinism.jsonl`, all exit 0. **Done for both profiles at the merge
+  candidate, `b667f69f`** (`docs/hard-ai/phasing/strategos-w1-2026-09-24/results/gate0/both-b667f69f.txt`,
+  and the per-check logs beside it): `hard:perft --check`, `hard:perft --check --engine replica`, `hard:fuzz
+  --actions 20000 --seed 7101`, and `hard:determinism` over `p4-determinism.jsonl` for both `hard@desktop`
+  and `hard@strategos` — every check exits 0. The W1.10 review and this coordinator pass also ran
   `hard:determinism --engine hard@strategos --work 25000,60000` over the p4 corpus: identical, 48 decisions.
 - **Rows R0–R3.** Preregistered in amendment A8 (`6d5db91b`) before any is played; all at `muju-phasing-4`,
   seat-mirrored, `p1-val.jsonl` (32 openings):
@@ -240,7 +247,66 @@ check as any other candidate? Coordinator decision 9; `DEVIATIONS.md`.
   kill-clock losses (no first blood; 10 as White, 7 as Black), the wave-1 failure mode; per handicap 0/4/8/12/16/20
   the losses are 1/2/2/4/4/4. The run was interrupted by a machine crash before its first game finished and
   resumed in place (`--resume`, same row and seed). The summary flags duplicate openings: 141 (A as White) and
-  103 (B as White) distinct games of 192 pairs. R1 and the paired difference are not yet run.
+  103 (B as White) distinct games of 192 pairs.
+
+  **R1 result** (`docs/hard-ai/phasing/strategos-w1-2026-09-24/results/R1-strategos-vs-ClockHeist/`, on the
+  Workflow 1 merge candidate): complete, 192/192 pairs, 384/384 games, no illegal actions, replica
+  divergences or engine fallbacks. `hard@strategos` scored 365-3-16 (W-D-L), score 0.954, Elo 528 [458, 641],
+  LOS 100.0% — **the bar (score > 0.5, LOS ≥ 95%) is met.** The summary flags duplicate openings: 141 (A as
+  White) and 91 (B as White) distinct games of 192 pairs.
+
+  **Paired R1-minus-R0 difference** (`lab/hard-ai/ladder/paired-diff.ts`;
+  `docs/hard-ai/phasing/strategos-w1-2026-09-24/results/R1-vs-R0-paired-diff.json`): mean +0.0026, 95%
+  interval [-0.0245, +0.0297], 13 pairs worse / 164 unchanged / 15 better of 192 — **no regression flag**
+  (the interval does not lie below 0).
+
+  **Read-outs.**
+  - All 16 R1 losses are kill-free kill-clock losses, the wave-1 failure mode: 9 as White (R0: 10) and 7 as
+    Black (R0: 7) — the same shape as R0, one fewer loss overall.
+  - As Black, `ClockHeist` drew first blood exactly once against `hard@strategos` (of 192 A-black games),
+    against 12 times for `hard@desktop`. Kill-free Black wins: 119 for strategos, 104 for desktop.
+  - Interpretation, per A8 (a weak detector: it reproduces the wave-1 failure only in kill-free games): Hold
+    is visible in these numbers (first blood against strategos as Black nearly vanishes, and kill-free Black
+    wins rise 104→119), while ForceContact barely moves this detector (the White-loss count falls by only
+    one, 10→9). The exam (below) and wave 2 carry that test.
+
+- **Exam re-run** (W1.13 set, `lab/hard-ai/exam/cases-p4` dev stratum, fixed work 60000; run on the pilot
+  branch after merging `claude/strategos-w1`, `~/src/deevgames-sg-exam` `6d480661`), per engine:
+  - `hard@desktop`: 3/8 passed, 4/8 as expected.
+  - `hard@strategos` pre-W1.9: 3/8 passed, 4/8 as expected.
+  - Final `hard@strategos`: 4/8 passed, 5/8 as expected. `AS01-W-t3` now passes: the injected force-contact
+    line (approach `u7->d1`, then the hit at `c1`) is played as the plan, with no veto. Wave 1's headline
+    failure there was a full pass at 13 v 30 with the clock at 5.
+
+    Still failing, named here as Workflow 2 material:
+    - `OP01-W-t1`: spawn jam (0 legal spawn squares for black after the turn).
+    - `OP01-W-t2`: a full pass at clock 3, mined 14–15; likely an `open` reading with no posture — the
+      exam's own record for this case has no `claim`/chronicle field to confirm it from (`source: "search"`,
+      no strategy witness exposed), so this is stated as likely, not verified.
+    - `OP02-W-t6`: no promotion made in the turn.
+    - `SO01-B-t11`: expected fail (the author's own stated expectation for this case).
+
+## Content DAG walk
+
+`python3 tools/muju-content-dag.py plan --kind ai` (this campaign, master checkout worktree at
+`b667f69f`/`0f0cf7d2`):
+
+| Node | Disposition | Evidence |
+|---|---|---|
+| wasm-tactics | Verified unchanged | 0-diff on assembly/tactics.ts, src/ai/wasm/, asconfig.json; ai:wasm prebuild clean |
+| ai-search | Changed (narrow) | Only src/ai/worker/protocol.ts (+11); worker-turn.test.ts + ai-worker.spec.ts 7/7 green |
+| hard-ai | Changed | the campaign core; hard-ai.spec.ts 12/12, fallbacks/divergence 0 in the no-fault path; smoke confirms the strategos patch and zero diagnostic counters |
+| ai-strength | Changed | Gate 0 both profiles; R0 and R1 under A8 (above); R2/R3 owed after wave 2 |
+| mcp-tools | Verified unchanged (this campaign) | server/mcp.ts, observation.ts, analysis diffs all from master 14ad6b3d (Micro Muju) |
+| agent-guides | Verified unchanged (this campaign) | SKILL.md diff solely from 14ad6b3d |
+| balance-analysis | Verified unchanged | 0 diff in lab/solver, current-static |
+| game-validation | Changed | Full suite at `b667f69f`: 238 files. The only 4 failures were ladder-runner timeouts while R1 held both heavy slots; that file passes 106/106 on its own. Online e2e 85/85, ai-worker e2e 7/7, hard-ai e2e 12/12, build ok, server:types ok. The browser smoke passed: `?hardEngine=strategos` sends exactly the six-flag `strategosPatch` with zero fallbacks, divergences or console errors, and plain desktop sends no hard key at all. |
+| static-package | Owed at deploy | bash build-all.sh + tools/smoke-site.cjs on a fresh _site |
+| static-deploy | Owed at deploy | The GitHub workflow cannot publish (no credentials; `CONTENT_DAG.md`). Previous releases published Pages with a local `npx wrangler pages deploy _site --project-name deevgames` from the main checkout; that route will be used at deploy. Evidence pending. |
+| server-package | Changed via the client bundle; deploys on merge | `muju/Dockerfile` runs `npm run build` and copies `dist`; `server/http.ts` serves `distPath` at `/muju/`, so the Render host's own image build carries the browser bundle change — nothing separate to package. |
+| server-deploy | Changed via the client bundle; deploys on merge | Same route: the Render service builds the Dockerfile image from `master` on merge; there is no separate server-only deploy step. |
+| release-verification | Owed at deploy | completion record after deploy |
+
 - **W1.10 smoke** (the W1.10 lane's own check on its tree before `c9484d3f`, an eighth reserved; a scratch
   table, not committed).
   `hard@desktop` and `hard@strategos` at fixed work 60,000 on the 24 p4 corpus roots and the six authored
@@ -259,4 +325,9 @@ check as any other candidate? Coordinator decision 9; `DEVIATIONS.md`.
 - **Deploy evidence.** None yet. Plan B.3 items 5–7: `npm test` and `e2e/ai-worker.spec.ts`, a Watch-AI
   browser smoke with `?hardEngine=strategos`, an engine-seat smoke with `profile: 'strategos'`, then deploy
   per standing permission (Render, Pages) with the default profile still `desktop`.
-- **DAG walk.** No run of `python3 tools/muju-content-dag.py plan --kind ai` is logged for this campaign; it is owed before release (plan B.3 item 7).
+- **DAG walk.** Run for this campaign (table above): `wasm-tactics`, `mcp-tools`, `agent-guides` and
+  `balance-analysis` verified unchanged; `ai-search`, `hard-ai`, `ai-strength` and `game-validation`
+  changed, with evidence recorded there; `server-package`/`server-deploy` changed only via the browser
+  bundle the Render image already carries on merge (`muju/Dockerfile` + `server/http.ts`), nothing separate
+  to deploy. `static-package`, `static-deploy` and `release-verification` remain owed at deploy (plan B.3
+  item 7).

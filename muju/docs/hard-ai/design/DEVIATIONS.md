@@ -2615,9 +2615,12 @@ each time the plan was then not played: W3-c6-mixed@25,000 (3,093 units), W6-c6-
 Four runs now lose a completed depth to the reserve (one did at an eighth): vf-mate@40,000 3 → 2,
 pf-tooFarToReach@40,000 4 → 3, W6-c6-far@60,000 2 → 1, pf-trailingNoContact@60,000 2 → 1. The plan is played
 on 50 of the 57 (48 at an eighth). W6-c6-far@40,000's re-search of `approach:u2->g7` costs 11,731 units with
-a third reserved, 29% of the rung, so the label's falsifier ("a posture root whose re-search still exceeds
-the reserve at 25,000–60,000") already fires. Left for the coordinator: a larger share, a per-root cap, or
-accepting `unresolved` there. `hard@desktop` takes no reserve: it is armed only under
+a third reserved, 29% of the rung (11,731 units; 10,133 at a quarter), so the label's falsifier ("a posture
+root whose re-search still exceeds the reserve at 25,000–60,000") already fires, and no share up to a
+quarter covers it. Decided by the coordinator: keep the share at a fifth rather than raise it further or add
+a per-root cap, and accept `unresolved` on such roots — the fallback there is the search's own best move, so
+no plan is ever played unchecked and no veto is ever claimed without a proof. `hard@desktop` takes no
+reserve: it is armed only under
 `searchFix.strategyVeto`, and only on a posture root.
 
 ### 2026-09-24: known W1 limitation — under Hold, the only contract veto is a dead essential slot

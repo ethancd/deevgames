@@ -333,8 +333,8 @@ export interface SearchFix {
    * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: `engine.ts` never calls the
    * `gen/generate.ts` setter this flag wires, so `dfs` enumerates zero-power
    * attacks exactly as it does today and the emitted `Turn` list is
-   * unchanged. Only `hard@strategos` (`strategosPatch()` below) sets it; W1.1
-   * only declares the key — the pruning code lands in W1.7.
+   * unchanged. Only `hard@strategos` (`strategosPatch()` below) sets it; the
+   * pruning code is W1.7's, in `gen/actionsearch.ts`'s `dfs` loop.
    */
   pruneZeroDamage?: boolean;
 
@@ -630,8 +630,9 @@ export interface EvalFix {
    * the feature and invariant vectors this flag would change are byte-for-byte
    * unchanged on a corpus with the flag absent
    * (`tests/ai/hard/strategos-eval.test.ts`, W1.6). Only `hard@strategos`
-   * sets it; the scoring code lands in W1.6. (See `promoteExhaustive` below,
-   * a separate flag, for the coordinator's root-only wiring decision.)
+   * sets it; the scoring code is W1.6's, in `eval/evaluate.ts decidedCc` and
+   * `eval/features.ts`'s `DrawPressure`. (See `promoteExhaustive` below, a
+   * separate flag, for the coordinator's root-only wiring decision.)
    */
   clockLedger?: boolean;
 
@@ -663,7 +664,8 @@ export interface EvalFix {
    * −1 for every unclaimed promotion and `planPromotions`/`buildCombos` are
    * unchanged, so `oracles/canonical-check.ts` sees the identical combo set.
    * Only `hard@strategos` sets it, on `gen` alone; the exhaustive-promotion
-   * code lands in W1.8.
+   * code is W1.8's, in `gen/promote.ts bestMission` and `gen/generate.ts
+   * buildCombos`.
    */
   promoteExhaustive?: boolean;
 }
