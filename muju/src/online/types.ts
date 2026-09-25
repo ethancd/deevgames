@@ -8,6 +8,8 @@ export type RoomAction = AIAction | { type: 'SET_UPKEEP_REVIEW'; enabled: boolea
 /** Public lobby metadata, without board snapshots or seat credentials. */
 export interface ActiveRoom {
   ruleset?: import('../game/types').Ruleset;
+  /** `micro` for MICRO MUJU rooms; absent for Muju Hono Irumbu. */
+  variant?: import('../game/types').Variant;
   id: string;
   ready: boolean;
   seats: Record<PlayerId, string | null>;

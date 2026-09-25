@@ -5,7 +5,8 @@ interface VictoryScreenProps {
   winner: PlayerId | null;
   reason?: VictoryReason;
   onPlayAgain: () => void;
-  analysisUrl: string;
+  /** Omitted where no analysis screen exists for the game (MICRO MUJU). */
+  analysisUrl?: string;
   onViewHistory?: () => void;
   playerNames?: { white: string; black: string };
   perspectivePlayer?: PlayerId | null;
@@ -44,9 +45,9 @@ export function VictoryScreen({ winner, reason, onPlayAgain, analysisUrl, onView
                 : 'Your forces have been eliminated.')}
         </p>
 
-        <a href={analysisUrl} className="block mb-4 px-6 py-3 bg-cyan-700 hover:bg-cyan-800 text-white font-medium rounded-lg transition-colors">
+        {analysisUrl && <a href={analysisUrl} className="block mb-4 px-6 py-3 bg-cyan-700 hover:bg-cyan-800 text-white font-medium rounded-lg transition-colors">
           Analyze this game
-        </a>
+        </a>}
         <button
           onClick={onPlayAgain}
           className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"

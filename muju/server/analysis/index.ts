@@ -244,7 +244,8 @@ export class AnalysisService {
   }
   headline(room: RoomSnapshot, player = room.state.turn.currentPlayer): Result {
     if (!allowsMatchCapability(room, 'analysis')) return { roomId: room.id, revision: room.revision,
-      supported: false, stateKind: 'current', reason: 'MATCH_TOOL_RESTRICTED', toolTier: room.matchPolicy!.toolTier, sections: {}, next: [] };
+      supported: false, stateKind: 'current', ...(room.state.variant === 'micro'
+        ? { reason: 'ANALYSIS_UNAVAILABLE', variant: 'micro' } : { reason: 'MATCH_TOOL_RESTRICTED', toolTier: room.matchPolicy!.toolTier }), sections: {}, next: [] };
     const key = `headline:${room.id}:${room.revision}:${player}:${hash([room.state, room.ready])}`;
     const cached = this.get(key); if (cached) return cached;
     const budget = new WorkBudget(160, 15), s = room.state, forecast = economyForecast(s);

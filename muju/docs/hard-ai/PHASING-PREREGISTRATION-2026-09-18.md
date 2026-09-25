@@ -502,3 +502,155 @@ amendment's "What is void" section states explicitly. The `2026095x`/`2026096x` 
 and the `7101`–`7606` post-release series are both unchanged; this amendment adds the `2026097x`
 Gate 2 series above and reuses `20260955` for the p3 scripted reference, matching p1's and p2's own
 reuse of that seed for their scripted references.
+
+### A8 — 2026-09-24: rules revision `muju-phasing-4`, and the STRATEGOS Workflow 1 rows
+
+**What this amendment does.** It does two things, before any row it names is played.
+1. It names `muju-phasing-4` (Cleave without a tier cap, 2026-09-23,
+   `docs/hard-ai/PHASING-4-UNLIMITED-CLEAVE-2026-09-23.md`) as the revision every row below is
+   measured under. That record already says every `muju-phasing-3` strength, ladder and suite record
+   is valid only for its own revision and that no strength claim exists at `muju-phasing-4`; this
+   amendment adopts that statement into the preregistration, as A4 and A7 did for their revisions.
+2. It preregisters four comparative rows for `hard@strategos`, the STRATEGOS Workflow 1 engine
+   (plan `~/.claude/plans/can-you-respond-to-piped-book.md`; change record
+   `docs/changes/2026-09-24-strategos-w1.md`, written with the merge), and the frozen scripted
+   opponent `ClockHeist`.
+
+**What this amendment does NOT do.** It runs no p4 scripted reference and freezes no Gate 1 bands.
+Gate 1 still refuses at `muju-phasing-4` and stays owed, together with a re-authored suite bundle
+and any retune, exactly as the phasing-4 record lists them. None of the rows below is a Gate 1
+adoption or a strength claim for the shipped default: the default Hard profile stays
+`hard@desktop`, and A6's condition that no player-facing copy may claim a strength result ahead of
+a real Gate 2 row stands unchanged.
+
+**What remains valid.** The opening books `p1-dev`, `p1-val` and the sealed book, by the same
+argument A7 gives (every opening ends at Black's first Act root with a clock of exactly 1). The
+ladder still replays every opening through the shipped legality check under the live revision,
+once per handicap the run uses, before any game is played, and aborts the run if one fails. A3's
+budget and sharding mechanics, A5's per-search calibration rule and A6's waiver stand as written.
+`AMENDMENT` in `lab/ai/gate1-report.ts` stays `'A3'`; a row's `rulesAmendment` for
+`muju-phasing-4` is `A8`. The sealed book is not opened by this amendment or by any row below.
+
+**The engines.**
+- `hard@desktop`: the shipped profile. Its configuration is byte-identical through the whole
+  STRATEGOS campaign (hash pinned as `DESKTOP_WALL3000_HASH = '5de7ae20…'` in
+  `tests/lab/ablate.test.ts`; at `fixed:60000` the ladder resolves it to
+  `hard:desktop:fixed:60000#65cfe232…`, the value in the calibration manifest, which R0's and R3's
+  manifests must show unchanged), and every Workflow 1 change sits behind a flag the profile does
+  not set (`tests/lab/strategos-identity.test.ts`, plus each step's flag-absent tests). Its
+  `src/ai/**` hash still changes with every commit and is recorded per row, as Fixed definitions
+  require.
+- `hard@strategos`: `hard@desktop` plus exactly the six flags of `src/ai/hard/config.ts
+  strategosPatch()` (pinned by `tests/lab/strategos-identity.test.ts`); same weights. Its
+  configuration hash and engine source hash are whatever the merge commit resolves, recorded in
+  each row's manifest.
+- `ClockHeist`: the scripted bot in `lab/harness/bots/clockheist.ts`, frozen at commit `4c10bd55`
+  (merged into the campaign branch as `68f95a91`); sha256 of that file at that commit
+  `a5b257abd83ef77b685af8f8348b05e0088932a9c802d6a7466f44596f377733`. Its ladder identity is its
+  name (`scripted:ClockHeist`), and the ladder's identity hashes cover `src/ai/**` and
+  `src/game/**`, not `lab/**`, so a change to the bot would not change a row's identity hash.
+  Hence the rule: any change to its decisions ships as `ClockHeist-v2`; a row played on a tree
+  whose copy of that file has a different hash was not played against `ClockHeist` and is reported
+  under whatever name the tree carries; rows against different names are never pooled.
+
+**Why ClockHeist is a weak detector, stated before the rows are played.** ClockHeist exists so the
+ladder can see wave 1's failure: Hard trailing on the kill clock and never planning contact.
+Calibration shows it reproduces that failure only in the few games where nobody kills. The
+calibration is scratch, not evidence: `p1-dev` only, `hard@desktop` at `fixed:60000`,
+seat-mirrored. Its last round (seed 20260976; the first 12 `p1-dev` openings, each once per
+handicap 0, 4, 8, 12, 16, 20; 72 pairs, 144 games; 0 illegal actions, divergences or fallbacks)
+was played on an uncommitted working copy of the bot at git `18669c3b`, whose decisions
+`ae294099` then committed and `4c10bd55` kept: with comments stripped, the file is identical at
+the two commits. So it is the frozen bot's round, on the commit record rather than on a hash (see
+"The engines"). Earlier rounds (seeds 20260977–20260979 and 20260991) were played by earlier
+versions of the bot and are not read here. In the last round:
+- `hard@desktop` won 133 of 144. All 11 losses were kill-free games lost on the clock (8 as White,
+  3 as Black).
+- Desktop played White in 72 games, trailing by the handicap in the 60 that had one; 58 of them
+  had a kill, and desktop drew first blood in 57, never later than turn 5. That is an early raid,
+  not the multi-turn contact wave 1 showed Hard failing to plan. The wave-1 pattern appears only in
+  the other 14 desktop-as-White games, which had no kill at all: ClockHeist won 8 of them on the
+  clock, desktop 6. Five of the 14 were at handicap 0 (desktop 2–3); the other nine were spread
+  over handicaps 4–20.
+- Desktop played Black in 72 games; 42 had no kill, and desktop, holding the handicap lead, won 39
+  of them on the clock.
+- Over all 144 games, 81 of desktop's 133 wins followed its own first blood and 45 had no kill.
+So a high `hard@desktop` score in R0 says little about the wave-1 failure, and R1's bar below is a
+non-regression check, not evidence of the fix. The one read-out aimed at the failure itself is the
+kill-free games (below). The diagnostic evidence for the fix is the wave-1 exam set
+(`lab/hard-ai/exam/cases-p4/dev.jsonl`, W1.13, authored in the pilot worktree after the merge),
+which Part A item 6 of the plan classifies as a regression corpus rather than held-out data, and
+LLM wave 2, which is held out. Neither is gated here.
+
+**Rows.** All at `muju-phasing-4`, seat-mirrored, `p1-val.jsonl` (all 32 openings, sha256
+`cbd427df…`), at most 4 concurrent shards (`MUJU_HEAVY_SLOTS=4`), load recorded. Timing must be
+valid in the ladder's frozen sense (`docs/hard-ai/e0/AMENDMENTS-DECIDED.md` A14: overrun tolerance
+max(10 ms, 1% of the allowance); an overrun rate above 5% for either arm voids the row); a
+fixed-work row has no allowance, so this binds R2 only. Any illegal action, divergence or fallback
+voids the row. `fixed:60000` is the ladder's per-decision work budget, the value A7's Stage A and
+G2-3 used and the calibration used; it is a choice, not an A5 per-search calibration, which binds
+Gate 1 rows and none of these.
+
+| Row | A | B | Work | Handicaps | Pairs | Seed | Bar |
+|---|---|---|---|---|---|---|---|
+| R0 | `hard@desktop` | `ClockHeist` | fixed:60000 | 0,4,8,12,16,20 | 192 | 20260983 | informational: the baseline for R1 |
+| R1 | `hard@strategos` | `ClockHeist` | fixed:60000 | 0,4,8,12,16,20 | 192 | 20260983 | score > 0.5 with LOS ≥ 95% (`elo.json` `los`, as A7's G2-3) |
+| R2 | `hard@strategos` | `aiv2-hard-turn` | wall:6000 | 0 | 32 | 20260981 | Elo lower bound > 0 (LOS ≥ 97.5%), as A7's G2-1 |
+| R3 | `hard@strategos` | `hard@desktop` | fixed:60000 | 0 | 32 | 20260982 | informational |
+
+- **Schedule.** `--pairs 192 --handicaps 0,4,8,12,16,20 --openings p1-val.jsonl`: pair index i
+  plays opening ⌊i/6⌋ at the handicap in list position i mod 6 (`lab/hard-ai/ladder/pairing.ts
+  buildPairs`: handicaps cycle fastest), so 192 pairs cover all 32 openings once per handicap. The
+  plan's B.3 item 4 wrote R0 and R1 as `--handicaps 0 --pairs 32`; the six handicaps are this
+  amendment's change, made on the calibration above and before any `p1-val` row, for two reasons:
+  the handicap is what puts the Hard seat behind on the clock as White, wave 1's condition, and it
+  roughly triples the kill-free sample (extrapolating the calibration's 5 of 12 at handicap 0 and
+  14 of 72 over six handicaps: about 13 kill-free desktop-as-White games at handicap 0 alone,
+  about 37 over six). R0 and R1 share seed 20260983, so they play the identical pair schedule
+  (`pairId` for `pairId`) and are compared pair by pair.
+- **Read-outs reported for R0 and R1** (not gated): score and Elo; `winType` counts by seat and
+  handicap; kill-clock losses by seat; first-blood side and turn; the Hard seat's record in games
+  with no kill at all (`firstBlood` null), by seat and handicap; `distinctGames` per orientation as
+  the ladder prints it; and, for R1, the paired score difference against R0. That difference is
+  fixed here: for each of the 192 `pairId`s, d = (R1 `scoreA` − R0 `scoreA`) / 2 from the two rows'
+  `pairs.jsonl`, in [−1, 1]; report the mean d̄, the counts of pairs with d < 0, d = 0 and d > 0,
+  and the two-sided 95% interval d̄ ± 1.96 · s / √192, with s the sample standard deviation of d
+  (n − 1), the same normal approximation `lab/hard-ai/ladder/elo.ts` uses. It is computed over all
+  192 pairs, only when both rows are complete (192 of 192 pairs), by a script committed before R1
+  is played. Pairs that replay the same game at two handicaps (the calibration showed some) make
+  this interval narrower than the information supports; that can only raise the flag below, never
+  hide it, so it is accepted and `distinctGames` is printed beside it. A paired R1-minus-R0
+  difference whose 95% interval lies entirely below 0 (d̄ + 1.96 · s / √192 < 0) is a **regression
+  flag**. Neither the flag nor a failed R1 bar blocks merging Workflow 1, since `hard@strategos`
+  is opt-in and the default stays `hard@desktop`; either blocks proposing `hard@strategos` as a
+  default.
+- **Order.** R0 may be played once this amendment is committed and the Gate 0 checks below pass
+  for `hard@desktop` at the commit R0 runs on: neither `hard@desktop` nor `ClockHeist` can change
+  again without a new name or hash. R1 is played on the Workflow 1 merge candidate, after the Gate
+  0 checks pass for both profiles at that commit. R2 and R3 are played after LLM wave 2, on the
+  `hard@strategos` identity of wave 2's last game; if that identity differs from R1's, R2 and R3
+  say so and are not pooled with R1.
+- **No reruns.** A row that fails its bar, raises the flag or is voided is reported as such. A
+  further attempt after any engine or bot change is a new row at the next unused seed in the
+  `2026098x` series, reported beside the first, never in its place; a voided row's seed is not
+  reused either.
+- **Gate 0 checks, before any row.** `hard:perft --check`, `hard:perft --check --engine replica`,
+  `hard:fuzz --actions 20000 --seed 7101`, and `hard:determinism` over
+  `lab/hard-ai/positions/p4-determinism.jsonl` (W1.11) for each profile the row uses, each exit 0:
+  the same checks the phasing-4 record ran (Gate 0 items 1, 2 and determinism), with item 6
+  enforced per game by the void rule above. Item 7's suites stay owed and informational under A6,
+  as the phasing-4 record lists them.
+
+**Seeds.** This amendment opens the `2026098x` series. 20260980, the plan's R0/R1 seed, is
+already consumed: the ClockHeist review lane played a ladder smoke with it (`ClockHeist` at commit
+`56708048`, an earlier version, vs `hard@desktop`, `fixed:60000`, the first four `p1-val` openings
+at handicap 0, 8 games, ClockHeist 0–0–8), whose first pair is the same (opening, handicap, pair
+seed) triple R0 would have opened with. By this file's own practice (A2, A5) a consumed seed is
+not reused, so R0 and R1 take the next unused integer after the plan's R2 and R3 seeds, 20260983;
+R2 keeps 20260981 and R3 keeps 20260982. Those 8 games are the only `p1-val` games any version of
+ClockHeist has played; the calibration proper (seeds 20260976–20260979 and 20260991) was on
+`p1-dev` only, and 20260991 is consumed too. 20260976, 20260977 and 20260978 also name A7's G2-2
+to G2-4, played under `muju-phasing-3` on `p1-val`; nothing is pooled across experiments. The
+sealed book was not touched by any of this.
+
+**Amendments A1–A7 stand as written.**

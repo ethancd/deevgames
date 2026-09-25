@@ -178,6 +178,19 @@ export class WorkMeter {
     return this.byClass[cls] * WORK_COST[cls];
   }
 
+  /**
+   * Moves the budget WITHOUT touching what was spent (STRATEGOS W1.10,
+   * `search/veto.ts`): the root lowers the limit by the veto's reserve for
+   * iterative deepening and puts it back for the re-search, so deepening
+   * stops early enough to leave the reserve on both the fixed-work and the
+   * wall-funded path. Additive; nothing but a `searchFix.strategyVeto` search
+   * calls it.
+   */
+  setLimit(limit: number): void {
+    if (!Number.isFinite(limit) || limit < 0) throw new RangeError(`WorkMeter: bad limit ${limit}`);
+    this.limitUnits = Math.floor(limit);
+  }
+
   /** Re-arms the meter for a fresh search. Additive to DESIGN §4.16 so one
    * `HardEngine` can serve many turns without reallocating. */
   reset(limit: number = this.limitUnits): void {

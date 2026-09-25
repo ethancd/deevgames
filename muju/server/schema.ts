@@ -44,7 +44,9 @@ export const matchPolicySchema = z.object({ version: z.literal(1), toolTier: z.e
 export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 'black']).default('white'),
   matchPolicy: matchPolicySchema.optional()
     .describe('Immutable room-wide experiment tier. Only centaur permits hosted analysis; bare also disables legal actions, preview, undo and staging. Omit for ordinary rooms.'),
-  actionsPerTurn: z.literal(4).default(4),
+  variant: z.literal('micro').optional()
+    .describe('Omit for Muju Hono Irumbu. "micro" creates a MICRO MUJU room (rules revision micro-muju-1): 6×6 board A1–F6, only Hi/Sjór/Muju, two shared actions, one attack per unit per turn (no Cleave), no promotion, upkeep, handicap or kill clock. Read muju_rules with variant "micro" first.'),
+  actionsPerTurn: z.union([z.literal(4), z.literal(2)]).optional().describe('Omit. Muju Hono Irumbu uses 4; MICRO MUJU uses 2.'),
   ruleset: z.literal('phasing').default('phasing').describe('Deprecated, omit. Phasing is the only ruleset; Standard was retired on 2026-09-21 and cannot be created. Phasing: actions, mining, upkeep, then promotions and public committed summons; summons resolve at next own turn start or refund if disrupted.'),
   blackCrystalHandicap: z.number().int().min(0).max(MAX_BLACK_CRYSTAL_HANDICAP).default(0)
     .describe('Creation only. Grant Black 1–20 starting crystals. Omit or use 0 for no handicap. White still moves first. Both players start with actions regardless of handicap.'),

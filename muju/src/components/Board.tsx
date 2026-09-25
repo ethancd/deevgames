@@ -1,7 +1,8 @@
+import type { CSSProperties } from 'react';
 import type { BoardState, Position, PendingSummon } from '../game/types';
 import { UnitArtwork } from './UnitArtwork';
 import type { MovementRangePosition } from '../game/movement';
-import { BOARD_SIZE, getUnitAt } from '../game/board';
+import { boardSize, getUnitAt } from '../game/board';
 import { getUnitDefinition } from '../game/units';
 import { isPendingSummonDoomed } from '../utils/pendingSummon';
 import { Cell } from './Cell';
@@ -81,14 +82,15 @@ export function Board({
   };
 
   const previewUnit = previewUnitPosition ? board.units.find(u => u.id === selectedUnit) : undefined;
+  const size = boardSize(board);
 
   return (
-    <div className="battle-board coordinate-board">
+    <div className={`battle-board coordinate-board board-size-${size}`} style={{ '--board-size': size } as CSSProperties}>
       <div className="board-column-labels" aria-hidden="true">
-        {Array.from({ length: BOARD_SIZE }, (_, x) => <span key={x}>{String.fromCharCode(65 + x)}</span>)}
+        {Array.from({ length: size }, (_, x) => <span key={x}>{String.fromCharCode(65 + x)}</span>)}
       </div>
       <div className="board-row-labels" aria-hidden="true">
-        {Array.from({ length: BOARD_SIZE }, (_, y) => <span key={y}>{y + 1}</span>)}
+        {Array.from({ length: size }, (_, y) => <span key={y}>{y + 1}</span>)}
       </div>
       <div className="battle-grid">
         {board.cells.map((row, y) =>
@@ -105,7 +107,7 @@ export function Board({
             return (
               <div key={`${x}-${y}`} className="board-square">
                 <Cell
-                  cell={cell}
+                  cell={cell} boardSize={size}
                   isValidMove={isValidMove(pos)}
                   isValidAttack={isValidAttack(pos)}
                   isValidSpawn={isValidSpawn(pos)}

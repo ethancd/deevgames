@@ -4,11 +4,12 @@ interface CellProps {
   cell: CellType; isValidMove: boolean; isValidAttack: boolean; isValidSpawn: boolean; isSelected: boolean;
   isInvalidSpawn?: boolean; isPendingMove?: boolean; movementRangeActions?: number; isAttackFrontier?: boolean;
   isPreview?: boolean; showResources?: boolean; moveCost?: number; unitLabel?: string; previewLabel?: string;
-  pendingLabel?: string; isKoTarget?: boolean; isKoThreat?: boolean;
+  pendingLabel?: string; isKoTarget?: boolean; isKoThreat?: boolean; boardSize?: number;
   onClick: (position: Position) => void;
 }
-export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, isInvalidSpawn, isPendingMove, movementRangeActions, isAttackFrontier, isPreview, showResources, moveCost, unitLabel, previewLabel, pendingLabel, isKoTarget, isKoThreat, onClick }: CellProps) {
-  const home = cell.position.x === 0 && cell.position.y === 0 ? 'white' : cell.position.x === 9 && cell.position.y === 9 ? 'black' : null;
+export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, isInvalidSpawn, isPendingMove, movementRangeActions, isAttackFrontier, isPreview, showResources, moveCost, unitLabel, previewLabel, pendingLabel, isKoTarget, isKoThreat, boardSize = 10, onClick }: CellProps) {
+  const last = boardSize - 1;
+  const home = cell.position.x === 0 && cell.position.y === 0 ? 'white' : cell.position.x === last && cell.position.y === last ? 'black' : null;
   const reach = movementRangeActions !== undefined;
   const coord = `${String.fromCharCode(65 + cell.position.x)}${cell.position.y + 1}`;
   const crystalDescription = describeCrystals(cell);

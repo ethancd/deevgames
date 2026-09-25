@@ -339,34 +339,48 @@ export interface SearchFix {
   pruneZeroDamage?: boolean;
 
   /**
-   * STRATEGOS W1.9 (plan B.2 step W1.9). ON means `search/root.ts` installs
-   * `gen/generate.ts`'s `setStrategyWitness` callback before the root search,
-   * so `inject()` forces one complete ForceContact or Hold turn line
-   * (`strategy/contact.ts`, `strategy/hold.ts`) into the ply-0 candidate set
-   * through `injectLine`, flagged `FORCED|STRATEGY` (`gen/turn.ts
-   * TurnFlag.STRATEGY`), the same way `setRescueWitness` already forces a
-   * home-defence line in.
+   * STRATEGOS W1.9 (plan B.2 step W1.9). ON means `search/root.ts
+   * installStrategyWitness` installs `gen/generate.ts`'s
+   * `setStrategyWitness` source on the ROOT generator for each search, so
+   * `inject()` forces the root's plan lines — ForceContact
+   * (`strategy/contact.ts`: approach, approach + buy, approach + promote) on
+   * a clock-loss reading, Hold (`strategy/hold.ts`: pass, retreat, break a
+   * Cleave chain) on a clock-win reading, none on an open one — into the
+   * ply-0 candidate set as COMPLETE turns (`playStrategyTurn`: Act,
+   * `END_ACTION`, `PAY_UPKEEP`, Prepare, `END_PLACE`), flagged
+   * `FORCED|STRATEGY` (`gen/turn.ts TurnFlag.STRATEGY`), the same way
+   * `setRescueWitness` forces a home-defence line in; `search/order.ts`
+   * orders them right after the TT move, the home-corner answers and a
+   * denial of four or more spawn anchors (`ORDER_STRATEGY`), the plan
+   * layer's work is charged to the meter, and
+   * the result carries `RootResult.strategy` (the Chronicle).
    *
-   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: no witness is installed,
-   * `inject()` runs exactly as today and the root's candidate set is
-   * unchanged. Only `hard@strategos` sets it; the injection code lands in
-   * W1.9.
+   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: no source is installed,
+   * `inject()` runs exactly as today, the ordering bonus is never read and
+   * the root's candidate set, scores and result are unchanged
+   * (`tests/ai/hard/strategy-plans.test.ts` pins them against `c054136b`).
+   * Only `hard@strategos` sets it.
    */
   strategyPlans?: boolean;
 
   /**
-   * STRATEGOS W1.10 (plan B.2 step W1.10). ON means `search/root.ts`, after
-   * `iterativeDeepening` completes, applies the plan-consistency veto: it
-   * picks the best PLAN-CONSISTENT candidate unless the searched score is
-   * terminal-scale worse than the tactical best (a proof — mate or a proven
-   * clock loss) or the contract's essential unit is lost in the first reply.
-   * Ordinary material loss is never a veto reason. The chosen candidate, the
-   * reading and the veto reason (if any) are recorded on the new, optional
+   * STRATEGOS W1.10 (plan B.2 step W1.10, `search/veto.ts`,
+   * `strategy/veto.ts`). ON means that on a root whose clock reading has a
+   * posture, `search/root.ts` runs iterative deepening on the rung less a
+   * reserved share (`search/veto.ts VETO_RESERVE_SHARE`) and then plays the
+   * best PLAN-CONSISTENT candidate — ForceContact: an injected line or any
+   * damaging attack; Hold: an injected line or any kill-free candidate after
+   * which the enemy's killETA exceeds the plies left — after a full-window
+   * re-search of it on the reserve, unless that score is terminal-scale worse
+   * than the tactical best (a proof — mate or a proven clock loss) or an
+   * essential slot of its contract is dead after the opponent's best reply.
+   * Ordinary material loss is never a veto reason. What was played, the
+   * veto reason (if any) and the queries are recorded on the optional
    * `RootResult.strategy` block.
    *
-   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: `iterativeDeepening`'s own best
-   * candidate is returned exactly as today and `RootResult.strategy` is never
-   * set. Only `hard@strategos` sets it; the veto code lands in W1.10.
+   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: no reserve is taken,
+   * `iterativeDeepening`'s own best candidate is returned exactly as today
+   * and `RootResult.strategy` is never set by it. Only `hard@strategos` sets it.
    */
   strategyVeto?: boolean;
 

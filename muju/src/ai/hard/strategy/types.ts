@@ -184,8 +184,15 @@ export interface InjectedPlan {
   endKey: string;
   /** Short human label, e.g. `approach:slot3->e5`, `buy:fire_1@c3`, `hold:pass`. */
   label: string;
-  /** `witnessed` when a rollout against the scripted replies achieved the
-   * end predicate; never `forced` in Workflow 1. */
+  /**
+   * ForceContact (`strategy/contact.ts`): `witnessed` when the rollouts
+   * against BOTH scripted replies achieved the end predicate by the deadline,
+   * `not-ruled-out` when one did, else `unknown`; never `forced`. Hold
+   * (`strategy/hold.ts`): `forced` when the enemy's killETA on the position
+   * the line reaches exceeds the plies left there — which forces the "no
+   * enemy kill in the plies the clock has left" clause, and only that clause
+   * (`strategy/hold.ts`, "what is and is not forced") — else `unknown`.
+   */
   feasibility: Feasibility;
   queries: readonly AnalysisQuery[];
 }
@@ -202,8 +209,12 @@ export interface StrategyChronicle {
   injected: readonly InjectedPlan[];
   /** What the root played: a plan candidate or the search's own best. */
   chosen: { endKey: string; source: 'plan' | 'search'; scoreCc: number; planLabel?: string } | null;
-  /** Present when the root refused the best plan-consistent candidate. */
-  veto?: { reason: 'mate' | 'proven-clock-loss' | 'essential-lost'; vetoedEndKey: string; detail: string };
+  /** Present when the root refused the best plan-consistent candidate.
+   * `mate` / `proven-clock-loss`: the plan line walks into a decided loss the
+   * tactical best avoids; `forgone-win`: the tactical best is a decided win
+   * and the plan line is not; `essential-lost`: a contract's essential slot
+   * is dead after the opponent's best reply (`strategy/veto.ts vetoVerdict`). */
+  veto?: { reason: 'mate' | 'proven-clock-loss' | 'forgone-win' | 'essential-lost'; vetoedEndKey: string; detail: string };
   /** Every strategic query this search ran, in order. */
   queries: readonly AnalysisQuery[];
 }
