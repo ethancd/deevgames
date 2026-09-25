@@ -301,11 +301,11 @@ check as any other candidate? Coordinator decision 9; `DEVIATIONS.md`.
 | agent-guides | Verified unchanged (this campaign) | SKILL.md diff solely from 14ad6b3d |
 | balance-analysis | Verified unchanged | 0 diff in lab/solver, current-static |
 | game-validation | Changed | Full suite at `b667f69f`: 238 files. The only 4 failures were ladder-runner timeouts while R1 held both heavy slots; that file passes 106/106 on its own. Online e2e 85/85, ai-worker e2e 7/7, hard-ai e2e 12/12, build ok, server:types ok. The browser smoke passed: `?hardEngine=strategos` sends exactly the six-flag `strategosPatch` with zero fallbacks, divergences or console errors, and plain desktop sends no hard key at all. |
-| static-package | Owed at deploy | bash build-all.sh + tools/smoke-site.cjs on a fresh _site |
-| static-deploy | Owed at deploy | The GitHub workflow cannot publish (no credentials; `CONTENT_DAG.md`). Previous releases published Pages with a local `npx wrangler pages deploy _site --project-name deevgames` from the main checkout; that route will be used at deploy. Evidence pending. |
-| server-package | Changed via the client bundle; deploys on merge | `muju/Dockerfile` runs `npm run build` and copies `dist`; `server/http.ts` serves `distPath` at `/muju/`, so the Render host's own image build carries the browser bundle change — nothing separate to package. |
-| server-deploy | Changed via the client bundle; deploys on merge | Same route: the Render service builds the Dockerfile image from `master` on merge; there is no separate server-only deploy step. |
-| release-verification | Owed at deploy | completion record after deploy |
+| static-package | Done | `bash build-all.sh` at `c0a8df60` in a clean detached worktree: exit 0, `tools/verify_site.py` passed; `tools/smoke-site.cjs` against the staged `_site` passed at 390px and 834px (hub, Muju board/save, Forge, Oracle, direct refresh). The Muju bundle `index-CSpF6YHV.js` carries the `hardEngine` opt-in. |
+| static-deploy | Done | Local `wrangler pages deploy _site --project-name deevgames --branch master` (the production branch; an earlier `--branch main` run only made the preview alias `main.deevgames.pages.dev`). Production deployment `32be5462`; `https://deevgames.pages.dev/muju/` serves `index-CSpF6YHV.js`. |
+| server-package | Done (via the client bundle) | `muju/Dockerfile` runs `npm run build` and copies `dist`; `server/http.ts` serves `distPath` at `/muju/`, so the Render host's own image build carries the browser bundle change — nothing separate to package. |
+| server-deploy | Done | Same route: the Render service builds the Dockerfile image from `master` on merge; there is no separate server-only deploy step. |
+| release-verification | Done | See **Deploy evidence** below. |
 
 - **W1.10 smoke** (the W1.10 lane's own check on its tree before `c9484d3f`, an eighth reserved; a scratch
   table, not committed).
@@ -322,12 +322,17 @@ check as any other candidate? Coordinator decision 9; `DEVIATIONS.md`.
     `approach:u2->g7` at 60,000.
 
   No veto fired on any of the 30 roots. Completed depth was equal on 26 roots, one lower on 3 and one higher on 1.
-- **Deploy evidence.** None yet. Plan B.3 items 5–7: `npm test` and `e2e/ai-worker.spec.ts`, a Watch-AI
-  browser smoke with `?hardEngine=strategos`, an engine-seat smoke with `profile: 'strategos'`, then deploy
-  per standing permission (Render, Pages) with the default profile still `desktop`.
+- **Deploy evidence** (2026-09-25). PR #42 merged as `c0a8df60`. The master CI run 36107577170
+  ("Deploy Games to Cloudflare Pages", build and test only) succeeded. Render redeployed from the merge:
+  `https://deevgames-muju.onrender.com/api/muju/health` returns `{"ok":true,"game":"Muju Hono Irumbu","protocol":1}`,
+  `/SKILL.md` 200, MCP `tools/list` lists all 15 `muju_*` tools, and `/muju/` (also `deevgames.ashkie.com/muju/`,
+  which Render serves) ships a bundle carrying the `hardEngine` opt-in. Pages production deployment `32be5462`
+  serves `index-CSpF6YHV.js` at `https://deevgames.pages.dev/muju/`. The default Hard profile is still `desktop`.
+  Plan B.3 items 5–6 ran before the merge (game-validation row above; the engine-seat smoke with
+  `profile: 'strategos'` ran on the pilot-side branch against a local room). The pilot branch
+  `claude/muju-llm-pilot` took master at `fe095ce7`, with the W1.13 exam set and the per-game engine profile knob.
 - **DAG walk.** Run for this campaign (table above): `wasm-tactics`, `mcp-tools`, `agent-guides` and
   `balance-analysis` verified unchanged; `ai-search`, `hard-ai`, `ai-strength` and `game-validation`
   changed, with evidence recorded there; `server-package`/`server-deploy` changed only via the browser
   bundle the Render image already carries on merge (`muju/Dockerfile` + `server/http.ts`), nothing separate
-  to deploy. `static-package`, `static-deploy` and `release-verification` remain owed at deploy (plan B.3
-  item 7).
+  to deploy. `static-package`, `static-deploy` and `release-verification` were completed at deploy (above).
