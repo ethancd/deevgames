@@ -84,10 +84,11 @@ review found a defect, fixed in a review commit on top — see each step's row b
    review (`c6bb8a8e`) found that the follow-up's Action-phase lock change has no measured effect, and that
    ClockHeist's flat economy comes from spawn-square clogging (its units sit on rich cells of its own spawn
    rectangle, so its Place phase has no legal buy square), not from Place-phase droning as the follow-up
-   diagnosed. `hard@desktop`-vs-`ClockHeist` calibration runs (fixed:60000, the first four `p1-dev` openings,
-   seeds 20260979 and 20260978, scratchpad `calib/r0-desktop{,-b}`) give, by handicap: **0 → 7/8**, **4 and 8
-   → 8/8**, **12 → 6/8** in the first batch and, combined across both batches at handicap 12, **4 losses in
-   the 12 games where desktop played White** (0 losses in the 12 desktop-Black games); **16 and 20 → desktop
+   diagnosed. `hard@desktop`-vs-`ClockHeist` calibration runs at fixed:60000 on `p1-dev` openings (first batch:
+   handicaps 0/4/8/12, 16 pairs, seed 20260979, the first four openings; second batch: handicaps 12/16/20,
+   24 pairs, seed 20260978, `--openings-skip 8`; scratchpad `calib/r0-desktop{,-b}`) give, by handicap:
+   **0 → 7/8**, **4 and 8 → 8/8**, **12 → 6/8** in the first batch and, combined across both batches at
+   handicap 12, **4 losses in the 12 games where desktop played White** (0 losses in the 12 desktop-Black games); **16 and 20 → desktop
    won every game, White seat included**. All five desktop losses were kill-clock losses at turn 5. These are
    calibration numbers, not a frozen A8 handicap choice — see Placeholders below.
 

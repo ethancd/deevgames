@@ -2438,7 +2438,7 @@ wall-clock `hard@desktop` search's root clock can leak into a later FIXED-WORK `
 same process. The W1.2 review measured what one leaked root clock does, with a wall-clock STRATEGOS search as
 the writer (before `bddfe903` stopped strategos writing the slot): after a 30 ms strategos search at clock 4,
 `hard@desktop`'s score on `leadAtClock(8)` (White ahead on mined total, two hand-offs from the clock-out)
-dropped from 998,000 to 200, and over 12 p1-dev openings × 8 turns, 1 of 96 golden rows moved.
+dropped from 998,000 to 200, and over 12 p1-dev openings × 8 turns, 1 of 96 comparison rows moved.
 Desktop-into-desktop is the same mechanism; `tests/ai/hard/kill-clock-policy.test.ts` documents it by its
 observable effect after a real desktop wall-clock search. This is `hard@desktop`'s pinned behaviour
 (`a5d198ba`: its bytes are pinned by `DESKTOP_WALL3000_HASH`) and this entry does not fix it — fixing it would
