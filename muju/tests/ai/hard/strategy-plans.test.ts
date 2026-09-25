@@ -26,10 +26,13 @@
  *     kill table where the plies left make that an exact test, and paired
  *     on the clock where the enemy's first possible kill falls one ply after
  *     it ends;
- *   - every WITNESS REPLAYED: each witnessed rollout's recorded actions are
- *     replayed at the root's full prover and must reach our damaging attack
- *     at exactly the claimed ply, never past the contract's deadline (roots
- *     on the deadline's edge included); the rollout budget is shown to bind;
+ *   - every ROLLOUT REPLAYED: each rollout's recorded actions are replayed
+ *     at the root's full prover; a witnessed one must reach our damaging
+ *     attack at exactly the claimed ply, never past the contract's deadline
+ *     (roots on the deadline's edge included), any other must contain none,
+ *     a zero-power attack never counts as contact, and the scripted replies
+ *     play their scripts (`continue` attacks only to kill, `evade` never);
+ *     the rollout budget is shown to bind;
  *   - POSTURE as a paired flip: the same board with the mined lead moved
  *     from one side to the other swaps ForceContact for Hold, and a tie
  *     injects nothing;
@@ -72,6 +75,7 @@ import { buildState, type UnitSpec } from './game-fixture';
 import { UNEQUAL_ROUTES_MAP } from '../../../src/game/resourceMap';
 import {
   CORPUS_POSTURE_IDS,
+  NO_RESERVES,
   PLAN_FIXTURES,
   contactThisTurn,
   evadeEscapes,
@@ -238,6 +242,34 @@ const DEADLINE_EDGES: ReadonlyArray<readonly [string, () => GameState]> = [
   ['contactThisTurnClock9', () => ({ ...contactThisTurn(), inactivityPlies: 9 })],
 ];
 
+/**
+ * `evadeEscapes` plus a contact that is NOT contact (review of W1.9): a White
+ * `plant_1` at (4,0) — listed first, so it holds White's lowest slot and the
+ * rollout policy meets it first — beside a Black `lightning_1` at (5,0).
+ * The plant hits the lightning for 0 (`combat.ts calculateAttackPower`
+ * clamps at 0), so that ATTACK is legal but is not a damaging attack
+ * (`PlanEndPredicate 'damaging-attack'`); a policy that counted it would
+ * witness contact with a hit that does nothing. The lightning hits the plant
+ * for 2, below its DEF 3, so the `continue` reply — which attacks only what
+ * it kills in one hit — must leave it alone. Every reserve is empty, so the
+ * lightning has no richer cell to walk to and stays put under `continue`.
+ */
+function zeroPowerNeighbours(): GameState {
+  const units: UnitSpec[] = [
+    { def: 'plant_1', owner: 'white', x: 4, y: 0 },
+    { def: 'water_1', owner: 'white', x: 2, y: 4 },
+    { def: 'plant_1', owner: 'white', x: 0, y: 0 },
+    { def: 'fire_1', owner: 'black', x: 6, y: 6 },
+    { def: 'plant_1', owner: 'black', x: 9, y: 9 },
+    { def: 'lightning_1', owner: 'black', x: 5, y: 0 },
+  ];
+  return withMined(
+    { units, reserves: NO_RESERVES, white: 0, black: 0, inactivityPlies: 6, turnNumber: 13, current: 'white' },
+    0,
+    30,
+  );
+}
+
 /** Does `turn`, played from `p`, make an ATTACK whose power (read before it
  * lands) is nonzero — i.e. a damaging attack? */
 function turnDamages(p: PackedState, turn: Turn): boolean {
@@ -314,6 +346,33 @@ describe('gen: TurnFlag.STRATEGY and playStrategyTurn', () => {
       expect([p.kposHi, p.kposLo]).toEqual(before);
       expect(p.side).toBe(W);
     }
+
+    // Boundary actions smuggled into a line are refused even where the rules
+    // would accept them (reviewer, W1.9): with no bill pending,
+    // END_ACTION → END_PLACE is a legal complete turn, but a line names only
+    // what the plan chooses and `playStrategyTurn` owns the boundaries.
+    const quiet = rep.pack(buildState({
+      units: [
+        { def: 'fire_1', owner: 'white', x: 2, y: 2 },
+        { def: 'plant_1', owner: 'black', x: 8, y: 8 },
+      ],
+      white: 12,
+    }), allocState());
+    const quietBefore = [quiet.kposHi, quiet.kposLo];
+    const end = paMake(AKind.END_ACTION);
+    const place = paMake(AKind.END_PLACE);
+    playStrategyTurn(rep, quiet, t, { act: new Int32Array(0), prep: new Int32Array(0) }, undo, keep, buf, out);
+    expect(Array.from(buf.subarray(0, out.count), paKind)).toEqual([AKind.END_ACTION, AKind.END_PLACE]); // the control
+    for (let i = 0; i < out.count; i++) rep.unmake(quiet, undo);
+    for (const b of [
+      { act: Int32Array.of(end, place), prep: new Int32Array(0) },
+      { act: new Int32Array(0), prep: Int32Array.of(place) },
+    ]) {
+      playStrategyTurn(rep, quiet, t, b, undo, keep, buf, out);
+      expect(out.count).toBe(-1);
+      expect([quiet.kposHi, quiet.kposLo]).toEqual(quietBefore);
+      expect(quiet.side).toBe(W);
+    }
   });
 
   it('the source is asked only at an Act ROOT: never at ply 1, never at a Prepare root', () => {
@@ -336,6 +395,22 @@ describe('gen: TurnFlag.STRATEGY and playStrategyTurn', () => {
       const tp = buildSearchTables(s, prep, 0);
       generateAt(s, prep, tp, 0);
       expect(calls).toBe(1);
+    } finally {
+      s.gen.setStrategyWitness(null);
+    }
+  });
+
+  it("installStrategyWitness answers only for the root it was installed for (reviewer, W1.9)", () => {
+    const g = rootGeneration(trailingNoContact());
+    expect(g.planSet?.lines.length).toBeGreaterThan(0); // the control
+    const s = g.s;
+    installStrategyWitness(s, g.p, g.reading);
+    try {
+      const source = (s.gen as unknown as { strategy: (p: PackedState, t: unknown, m: unknown) => readonly unknown[] }).strategy;
+      const other = s.rep.pack(evadeEscapes(), allocState()); // another Act root
+      expect(other.kposLo !== g.p.kposLo || other.kposHi !== g.p.kposHi).toBe(true);
+      expect(source(other, g.t, s.meter)).toEqual([]);
+      expect(source(g.p, g.t, s.meter).length).toBe(g.planSet?.lines.length);
     } finally {
       s.gen.setStrategyWitness(null);
     }
@@ -555,20 +630,30 @@ describe('ForceContact (strategy/contact.ts)', () => {
   });
 
   it("every witness is a replayable line: the recorded rollout replays at the root's full prover to our damaging attack at exactly the claimed ply, never past the deadline", () => {
+    // Every rollout is replayed, not only the witnesses: a refuted or
+    // unresolved one must contain no damaging attack of ours, and the scripted
+    // replies must have played exactly their scripts — `continue` attacks
+    // only a unit it removes in that hit, `evade` never attacks (reviewer,
+    // W1.9: neither was pinned; `zeroPowerNeighbours` exercises both).
     let replayed = 0;
     let inLine = 0;
-    for (const [name, build] of [...ALL_STATES, ...DEADLINE_EDGES]) {
+    let zeroSeen = 0;
+    for (const [name, build] of [...ALL_STATES, ...DEADLINE_EDGES, ['zeroPowerNeighbours', zeroPowerNeighbours] as const]) {
       const g = rootGeneration(build());
       const me = g.p.side as Side;
       for (const l of g.planSet?.lines ?? []) {
         if (l.contract.kind !== 'force-contact') continue;
         const turn = g.turns.find(t => keyOf(t) === l.endKey) as Turn;
         for (const q of l.queries) {
-          if (q.outcome !== 'witnessed') continue;
           const res = q.result as ContactRollout;
-          expect(res.ply, `${name} ${l.label} ${q.name}`).not.toBeNull();
-          expect(res.ply as number, `${name} ${l.label} ${q.name}`).toBeLessThanOrEqual(l.contract.deadlinePly);
-          if (res.ply === 1) {
+          const witnessed = q.outcome === 'witnessed';
+          if (witnessed) {
+            expect(res.ply, `${name} ${l.label} ${q.name}`).not.toBeNull();
+            expect(res.ply as number, `${name} ${l.label} ${q.name}`).toBeLessThanOrEqual(l.contract.deadlinePly);
+          } else {
+            expect(res.ply, `${name} ${l.label} ${q.name}`).toBeNull();
+          }
+          if (witnessed && res.ply === 1) {
             // Contact in the line itself: the recorded turn makes it.
             expect(turnDamages(g.p, turn), `${name} ${l.label}`).toBe(true);
             expect(res.actions).toEqual([]);
@@ -585,30 +670,50 @@ describe('ForceContact (strategy/contact.ts)', () => {
           let ply = 2;
           let hit = -1;
           for (let i = 0; i < res.actions.length; i++) {
-            expect(b.result, `${name} ${l.label}: the game ended before the witness`).toBe(Result.ONGOING);
+            expect(b.result, `${name} ${l.label}: the game ended inside the rollout`).toBe(Result.ONGOING);
             const a = res.actions[i];
             const keep = paKind(a) === AKind.PAY_UPKEEP ? (firstLegalKeepSet(rep, b, g.t, table) ?? undefined) : undefined;
             expect(rep.isLegal(b, a, keep), `${name} ${l.label} action ${i}`).toBe(true);
-            if (paKind(a) === AKind.ATTACK && b.side === me) {
-              const v = b.pieceAt[paB(a)];
-              if (cat.power[powerIndex(me, b.defId[paA(a)], b.defId[v])] > 0) {
+            let victim = -1;
+            if (paKind(a) === AKind.ATTACK) {
+              victim = b.pieceAt[paB(a)];
+              const power = cat.power[powerIndex(b.side as Side, b.defId[paA(a)], b.defId[victim])];
+              if (b.side === me && power > 0) {
                 hit = ply;
                 expect(i).toBe(res.actions.length - 1); // the first contact ends the witness
               }
+              if (b.side === me && power === 0) zeroSeen++;
+              if (b.side !== me) expect(res.reply, `${name} ${l.label}: evade attacked`).toBe('continue');
             }
             const mover = b.side;
             undo.top = 0;
             rep.resetUndoScratch();
             rep.make(b, a, undo, keep);
+            if (victim >= 0 && mover !== me) expect(b.sq[victim], `${name} ${l.label}: continue attacked without killing`).toBe(DEAD);
             if (b.side !== mover) ply++;
           }
-          expect(hit, `${name} ${l.label} ${q.name}`).toBe(res.ply);
-          replayed++;
+          expect(hit, `${name} ${l.label} ${q.name}`).toBe(witnessed ? res.ply : -1);
+          if (witnessed) replayed++;
         }
       }
     }
     expect(replayed).toBeGreaterThanOrEqual(3);
     expect(inLine).toBeGreaterThanOrEqual(3);
+    expect(zeroSeen).toBe(0);
+  });
+
+  it('a zero-power neighbour is not contact: the paired root still grades on real damage', () => {
+    // Control for `zeroPowerNeighbours`: it is a ForceContact root with lines,
+    // and its plant/lightning pair is adjacent and zero-power one way.
+    const g = rootGeneration(zeroPowerNeighbours());
+    expect(g.reading.posture).toBe('force-contact');
+    expect(g.planSet?.lines.length).toBeGreaterThan(0);
+    const plant = g.p.pieceAt[4]; // (4,0)
+    const bolt = g.p.pieceAt[5]; // (5,0)
+    expect(DEF_ID[g.p.defId[plant]]).toBe('plant_1');
+    expect(DEF_ID[g.p.defId[bolt]]).toBe('lightning_1');
+    expect(cat.power[powerIndex(W, g.p.defId[plant], g.p.defId[bolt])]).toBe(0);
+    expect(cat.power[powerIndex(B, g.p.defId[bolt], g.p.defId[plant])]).toBeGreaterThan(0);
   });
 
   it('the rollout budget binds: at a rung whose sixteenth the plan layer has spent before any rollout, every rollout is unresolved and no grade is claimed', () => {
