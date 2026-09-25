@@ -137,11 +137,16 @@ const ALL_STATES: ReadonlyArray<readonly [string, () => GameState]> = [
   ...CORPUS_POSTURE_IDS.map(id => [id, () => corpusState(id)] as const),
 ];
 
-/** `hard@strategos` with `strategyPlans` removed: the flag-absent twin. */
+/** `hard@strategos` with `strategyPlans` removed: the flag-absent twin. W1.10
+ * made `strategyVeto` live (`search/veto.ts`), and it too changes the root's
+ * budget and move on a posture root, so the twin drops it as well — at
+ * `c054136b`, where these digests were computed, it was declared and read by
+ * nothing. */
 function noPlans(): Partial<HardConfig> {
   const patch = strategosPatch();
   const searchFix = { ...patch.searchFix };
   delete searchFix.strategyPlans;
+  delete searchFix.strategyVeto;
   return { ...patch, searchFix };
 }
 

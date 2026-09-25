@@ -364,18 +364,23 @@ export interface SearchFix {
   strategyPlans?: boolean;
 
   /**
-   * STRATEGOS W1.10 (plan B.2 step W1.10). ON means `search/root.ts`, after
-   * `iterativeDeepening` completes, applies the plan-consistency veto: it
-   * picks the best PLAN-CONSISTENT candidate unless the searched score is
-   * terminal-scale worse than the tactical best (a proof — mate or a proven
-   * clock loss) or the contract's essential unit is lost in the first reply.
-   * Ordinary material loss is never a veto reason. The chosen candidate, the
-   * reading and the veto reason (if any) are recorded on the new, optional
+   * STRATEGOS W1.10 (plan B.2 step W1.10, `search/veto.ts`,
+   * `strategy/veto.ts`). ON means that on a root whose clock reading has a
+   * posture, `search/root.ts` runs iterative deepening on the rung less a
+   * reserved share (`search/veto.ts VETO_RESERVE_SHARE`) and then plays the
+   * best PLAN-CONSISTENT candidate — ForceContact: an injected line or any
+   * damaging attack; Hold: an injected line or any kill-free candidate after
+   * which the enemy's killETA exceeds the plies left — after a full-window
+   * re-search of it on the reserve, unless that score is terminal-scale worse
+   * than the tactical best (a proof — mate or a proven clock loss) or an
+   * essential slot of its contract is dead after the opponent's best reply.
+   * Ordinary material loss is never a veto reason. What was played, the
+   * veto reason (if any) and the queries are recorded on the optional
    * `RootResult.strategy` block.
    *
-   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: `iterativeDeepening`'s own best
-   * candidate is returned exactly as today and `RootResult.strategy` is never
-   * set. Only `hard@strategos` sets it; the veto code lands in W1.10.
+   * ABSENT MEANS THE CHAMPION, BYTE-IDENTICAL: no reserve is taken,
+   * `iterativeDeepening`'s own best candidate is returned exactly as today
+   * and `RootResult.strategy` is never set by it. Only `hard@strategos` sets it.
    */
   strategyVeto?: boolean;
 
