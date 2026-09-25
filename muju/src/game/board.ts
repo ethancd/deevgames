@@ -14,7 +14,13 @@ import { DEFAULT_ACTIONS_PER_TURN, isActionsPerTurn, isBlackCrystalHandicap, isR
 import { MAX_RESOURCE_RESERVE, UNEQUAL_ROUTES_MAP } from './resourceMap';
 import { STARTING_UNITS } from './units';
 
+/** Prime's board. Rules read a match's own size from `boardSize(board)`. */
 export const BOARD_SIZE = 10;
+
+/** Boards are square; MICRO MUJU is 6×6. */
+export function boardSize(board: Pick<BoardState, 'cells'>): number {
+  return board.cells.length;
+}
 // Uniform-board helper/legacy fallback; new games use their explicit resource map.
 export const INITIAL_RESOURCE_LAYERS = 10;
 export const MAX_ACTIONS_PER_TURN = DEFAULT_ACTIONS_PER_TURN;
@@ -30,14 +36,14 @@ export function createCell(x: number, y: number): Cell {
 }
 
 /**
- * Create an empty 10x10 board with all cells having full resources
+ * Create an empty square board (Prime: 10x10) with all cells having full resources
  */
-export function createEmptyBoard(): BoardState {
+export function createEmptyBoard(size: number = BOARD_SIZE): BoardState {
   const cells: Cell[][] = [];
 
-  for (let y = 0; y < BOARD_SIZE; y++) {
+  for (let y = 0; y < size; y++) {
     const row: Cell[] = [];
-    for (let x = 0; x < BOARD_SIZE; x++) {
+    for (let x = 0; x < size; x++) {
       row.push(createCell(x, y));
     }
     cells.push(row);
@@ -50,15 +56,15 @@ export function createEmptyBoard(): BoardState {
  * Get a cell at a position
  */
 export function getCell(board: BoardState, pos: Position): Cell | null {
-  if (!isValidPosition(pos)) return null;
+  if (!isValidPosition(pos, boardSize(board))) return null;
   return board.cells[pos.y][pos.x];
 }
 
 /**
  * Check if a position is within the board bounds
  */
-export function isValidPosition(pos: Position): boolean {
-  return pos.x >= 0 && pos.x < BOARD_SIZE && pos.y >= 0 && pos.y < BOARD_SIZE;
+export function isValidPosition(pos: Position, size: number = BOARD_SIZE): boolean {
+  return pos.x >= 0 && pos.x < size && pos.y >= 0 && pos.y < size;
 }
 
 /**
@@ -173,8 +179,8 @@ export function updateCell(
 /**
  * Get the starting corner for a player
  */
-export function getStartCorner(player: PlayerId): Position {
-  return player === 'white' ? { x: 0, y: 0 } : { x: 9, y: 9 };
+export function getStartCorner(player: PlayerId, size: number = BOARD_SIZE): Position {
+  return player === 'white' ? { x: 0, y: 0 } : { x: size - 1, y: size - 1 };
 }
 
 /**
@@ -314,7 +320,7 @@ export function isAdjacent(a: Position, b: Position): boolean {
 /**
  * Get all orthogonally adjacent positions
  */
-export function getAdjacentPositions(pos: Position): Position[] {
+export function getAdjacentPositions(pos: Position, size: number = BOARD_SIZE): Position[] {
   const deltas = [
     { x: 0, y: -1 }, // up
     { x: 0, y: 1 }, // down
@@ -324,5 +330,5 @@ export function getAdjacentPositions(pos: Position): Position[] {
 
   return deltas
     .map((d) => ({ x: pos.x + d.x, y: pos.y + d.y }))
-    .filter(isValidPosition);
+    .filter(p => isValidPosition(p, size));
 }

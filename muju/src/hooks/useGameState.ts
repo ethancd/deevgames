@@ -1,7 +1,8 @@
 import { emptyRecording, recordAction, rewindRecording, type ReplayRecording } from '../game/replay';
 import { useReducer, useCallback, useMemo, useState, useEffect } from 'react';
 import type { GameState, GameAction, GameConfig, Position } from '../game/types';
-import { getActionsPerTurn } from '../game/rules';
+import { getActionsPerTurn, isMicro } from '../game/rules';
+import { createMicroGameState, microAttackSpent } from '../game/micro';
 import { automaticUpkeepUndo } from '../game/turn';
 import type { AIAction } from '../ai/types';
 import { createInitialGameState, getUnitById } from '../game/board';
@@ -40,7 +41,7 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
       const validMoves = unit.canActThisTurn && state.turn.actionsRemaining > 0
         ? getValidMoves(unit, state.board)
         : [];
-      const validAttacks = unit.canActThisTurn && state.turn.actionsRemaining > 0
+      const validAttacks = unit.canActThisTurn && state.turn.actionsRemaining > 0 && !microAttackSpent(state, unit)
         ? getValidAttacks(unit, state.board)
         : [];
 
@@ -61,7 +62,7 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
       };
     }
 
-    case 'SET_UPKEEP_REVIEW': return {...state,reviewUpkeep:{...state.reviewUpkeep,[action.player]:action.enabled}};
+    case 'SET_UPKEEP_REVIEW': if (isMicro(state)) return state; return {...state,reviewUpkeep:{...state.reviewUpkeep,[action.player]:action.enabled}};
     case 'MOVE': {
       const next = applyAIAction(state, action);
       return next === state ? state : gameReducer(next, { type: 'SELECT_UNIT', unitId: action.unitId });
@@ -88,6 +89,7 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
     }
 
     case 'RESET_GAME': {
+      if (isMicro(state)) return createMicroGameState();
       return createInitialGameState(undefined, getActionsPerTurn(state), state.blackCrystalHandicap, state.ruleset);
     }
 
@@ -101,9 +103,16 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
   }
 }
 
-type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'blackCrystalHandicap' | 'newGame' | 'ruleset'>;
+type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'blackCrystalHandicap' | 'newGame' | 'ruleset' | 'variant'>;
 
 function getInitialSession(options: InitialGameOptions): ReplaySession {
+  if (options.variant === 'micro') {
+    // Micro reads and writes only its own save slot.
+    const saved = options.newGame ? null : loadGameHistory('micro');
+    const state = (saved && loadGameState('micro')) ?? createMicroGameState();
+    return { state, history: saved ?? startHistory(state, true), historyUndoLengths: [],
+      recording: emptyRecording(), undoLengths: [], turnStartUndo: null };
+  }
   const saved = options.newGame ? null : loadGameHistory();
   // Phasing is the only ruleset a new local game can be started under; a caller
   // that says nothing gets it rather than `board.ts`'s historical default.
@@ -246,9 +255,9 @@ export function useGameState(options: InitialGameOptions = {}) {
   }, []);
 
   const resetGame = useCallback(() => {
-    clearGameState();
+    clearGameState(state.variant);
     dispatchWithUndo({ type: 'RESET_GAME' });
-  }, [dispatchWithUndo]);
+  }, [dispatchWithUndo, state.variant]);
 
   const selectedUnitData = useMemo(() => {
     if (!state.selectedUnit) return null;

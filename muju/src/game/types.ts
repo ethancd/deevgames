@@ -1,8 +1,8 @@
 // === Position & Board ===
 
 export interface Position {
-  x: number; // 0-9
-  y: number; // 0-9
+  x: number; // 0 to board size - 1
+  y: number; // 0 to board size - 1
 }
 
 export type PlayerId = 'white' | 'black';
@@ -12,8 +12,11 @@ export type PlayerId = 'white' | 'black';
 export type GameMode = 'vs-ai' | 'pass-play' | 'ai-vs-ai' | 'online';
 
 export type ControlType = 'human' | 'ai' | 'remote';
-export type ActionsPerTurn = 4;
+/** Prime plays four shared actions; MICRO MUJU plays two. */
+export type ActionsPerTurn = 2 | 4;
 export type Ruleset = 'standard' | 'phasing';
+/** A subtractive variant layered on the Phasing turn. Absent means Prime. */
+export type Variant = 'micro';
 
 /** Public commitments, deliberately separate from board units and occupancy. */
 export interface PendingSummon {
@@ -26,6 +29,8 @@ export interface PendingSummon {
 
 export interface GameConfig {
   ruleset?: Ruleset;
+  /** `micro` starts or resumes MICRO MUJU (its own board, rules and save slot). */
+  variant?: Variant;
   actionsPerTurn?: ActionsPerTurn;
   /** Starting crystals granted to Black; omitted or 0 means no handicap. */
   blackCrystalHandicap?: number;
@@ -100,7 +105,7 @@ export interface Cell {
 export interface BoardState {
   /** Initial reserves for conservation checks and lab layouts. */
   initialResourceLayers?: readonly number[];
-  cells: Cell[][]; // 10x10 grid, indexed as cells[y][x]
+  cells: Cell[][]; // square grid (Prime 10x10, Micro 6x6), indexed as cells[y][x]
   units: Unit[];
 }
 
@@ -137,6 +142,10 @@ export interface IncomeTake { unitId: string; definitionId: string; position: Po
 export interface GameState {
   /** Missing in historical saves means Standard. Immutable for a match. */
   ruleset?: Ruleset;
+  /** Absent means Prime. Immutable for a match; see `game/micro.ts`. */
+  variant?: Variant;
+  /** Explicit rules revision for variants (`micro-muju-1`). Prime omits it. */
+  rulesRevision?: string;
   pendingSummons?: PendingSummon[];
   lastSummoning?: { player: PlayerId; turnNumber: number; summoned: PendingSummon[]; disrupted: PendingSummon[] };
   /** Four shared actions for every current-rule match. */
