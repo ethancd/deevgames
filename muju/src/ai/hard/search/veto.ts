@@ -85,22 +85,33 @@ import {
 
 /**
  * The veto's share of the rung: deepening runs on `work − ⌊work /
- * VETO_RESERVE_SHARE⌋`. CHOICE (why: the re-search is one candidate's child
- * at the completed depth, about what the root's FIRST, full-window candidate
- * costs in a completed iteration. Measured 2026-09-24 on the sixteen posture
- * roots of `tests/ai/hard/strategy-veto-fixture.ts`, the W1.9 fixtures and the
- * Phasing corpus, at the ladder's smallest rung (25,000) and A8's
- * fixed:60,000: re-searches cost 514-6,619 units, none cut for budget
- * (deepening often stops well short of its lowered limit, leaving more than
- * the eighth); below about 22,000 the Hold fixture's 2,191-unit re-search no
- * longer fits and is reported `unresolved`. The cost: one of the 32 searches
- * lost a completed depth (`trailingNoContact` at 60,000, depth 2 → 1, where
- * deepening had finished inside the last eighth). Falsifier: a posture root
- * at a ladder rung whose `veto.research` comes back `unresolved` for the
- * meter, or a ladder row where the depth the reserve costs outweighs the
- * vetoes it buys.)
+ * VETO_RESERVE_SHARE⌋`, and the reserve pays for the classification
+ * (`veto.classify`) and the re-search (`veto.research`). CHOICE (why: the
+ * re-search is one candidate's child at the completed depth, about what the
+ * root's FIRST, full-window candidate costs in a completed iteration, and on
+ * wave-1-like ForceContact roots that is a large share of a small rung.
+ * History: W1.10 shipped an eighth. Its own measurement (the 2026-09-24 W1.10
+ * review: 57 posture root×rung runs at 25,000 / 40,000 / 60,000 over the
+ * W1.9 and W1.10 fixtures, the Phasing corpus's posture roots and the
+ * authored W1-W6 wave roots) found three re-searches cut for budget, after
+ * which the plan was not played: W3-c6-mixed@25,000 (3,093 units),
+ * W6-c6-far@40,000 (5,028 against 5,000) and W6-c6-far@60,000 (8,486 against
+ * 7,500), about 13-14% of the rung; one run lost a completed depth. The
+ * coordinator raised the share to a fifth (20%). Re-measured 2026-09-24 on
+ * the same 57 runs: one re-search is still cut for budget,
+ * W6-c6-far@40,000 (8,045 units against 8,000 after 7 of its 19 replies;
+ * the same line's full re-search costs 11,731 units, 29% of that rung, when
+ * the share is a third), and four runs lose a completed depth to the reserve
+ * (vf-mate@40,000 3 → 2, pf-tooFarToReach@40,000 4 → 3, W6-c6-far@60,000 2 →
+ * 1, pf-trailingNoContact@60,000 2 → 1); re-searches otherwise cost
+ * 514-11,217 units, and the plan was played on 50 of the 57. Falsifier: a
+ * posture root whose re-search still exceeds the reserve at a rung from
+ * 25,000 to 60,000 — W6-c6-far@40,000 already is one, so this share is a
+ * standing choice pending the coordinator's decision, not a measured fit —
+ * or a ladder row where the depth the reserve costs outweighs the vetoes it
+ * buys.)
  */
-export const VETO_RESERVE_SHARE = 8;
+export const VETO_RESERVE_SHARE = 5;
 
 /** The reserve for a rung of `work` units. */
 export function reserveFor(work: number): number {
@@ -323,8 +334,9 @@ export function applyVeto(s: SearchContext, p: PackedState, result: SearchResult
 
   // The reserve is the veto's in full: deepening stops at its lowered limit
   // only at its next poll, and whatever it spent past that limit would
-  // otherwise come out of the reserve (measured: re-searches cut for budget
-  // at the 12,000- and 20,000-unit rungs on this file's fixtures). The root
+  // otherwise come out of the reserve (measured at the original eighth:
+  // re-searches cut for budget at the 12,000- and 20,000-unit rungs on this
+  // file's fixtures; at a fifth, the Hold fixture at 14,000). The root
   // puts the rung's own limit back afterwards (`search/root.ts`), so the
   // search's total can pass the rung by at most deepening's own overshoot,
   // which it could before the veto too.

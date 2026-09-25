@@ -209,8 +209,12 @@ export interface StrategyChronicle {
   injected: readonly InjectedPlan[];
   /** What the root played: a plan candidate or the search's own best. */
   chosen: { endKey: string; source: 'plan' | 'search'; scoreCc: number; planLabel?: string } | null;
-  /** Present when the root refused the best plan-consistent candidate. */
-  veto?: { reason: 'mate' | 'proven-clock-loss' | 'essential-lost'; vetoedEndKey: string; detail: string };
+  /** Present when the root refused the best plan-consistent candidate.
+   * `mate` / `proven-clock-loss`: the plan line walks into a decided loss the
+   * tactical best avoids; `forgone-win`: the tactical best is a decided win
+   * and the plan line is not; `essential-lost`: a contract's essential slot
+   * is dead after the opponent's best reply (`strategy/veto.ts vetoVerdict`). */
+  veto?: { reason: 'mate' | 'proven-clock-loss' | 'forgone-win' | 'essential-lost'; vetoedEndKey: string; detail: string };
   /** Every strategic query this search ran, in order. */
   queries: readonly AnalysisQuery[];
 }

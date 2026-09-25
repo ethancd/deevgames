@@ -258,7 +258,7 @@ describe('vetoVerdict: the decision rule', () => {
   it('the terminal boundary is exact: -threshold vetoes, one centimo above does not', () => {
     expect(vetoVerdict({ ...base, planScoreCc: -T })?.reason).toBe('mate');
     expect(vetoVerdict({ ...base, planScoreCc: -T + 1 })).toBeNull();
-    expect(vetoVerdict({ ...base, tacticalScoreCc: T })?.reason).toBe('mate');
+    expect(vetoVerdict({ ...base, tacticalScoreCc: T })?.reason).toBe('forgone-win');
     expect(vetoVerdict({ ...base, tacticalScoreCc: T - 1 })).toBeNull();
   });
 
@@ -268,11 +268,14 @@ describe('vetoVerdict: the decision rule', () => {
     expect(vetoVerdict({ ...base, planScoreCc: mate(4), tacticalScoreCc: mate(2) })).toBeNull();
   });
 
-  it('a forgone decided win is terminal-scale worse too (the mirror image), reported as mate', () => {
+  it('a forgone decided win is terminal-scale worse too (the mirror image), reported as forgone-win', () => {
     const v = vetoVerdict({ ...base, planScoreCc: -800, tacticalScoreCc: -mate(3) });
-    expect(v?.reason).toBe('mate');
+    expect(v?.reason).toBe('forgone-win');
     expect(v?.detail).toContain('decided win at ply 3');
     expect(vetoVerdict({ ...base, planScoreCc: -mate(5), tacticalScoreCc: -mate(3) })).toBeNull();
+    // A plan line that walks into a decided loss is 'mate' even when the
+    // tactical best also wins: the loss is the stronger fact.
+    expect(vetoVerdict({ ...base, planScoreCc: mate(2), tacticalScoreCc: -mate(3) })?.reason).toBe('mate');
   });
 
   it('the reason: observed from the terminal the re-search saw, else inferred from the proven clock ply', () => {
@@ -674,7 +677,8 @@ describe('the pick', () => {
   });
 
   it('an unresolved re-search proves nothing: the tactical best is played, with no veto', async () => {
-    // At 12,000 units the Hold root's re-search needs more than its reserve.
+    // At 12,000 units the Hold root's re-search (2,191 units) needs more than
+    // its 2,400-unit reserve leaves after the classification is charged.
     for (const w of [30, 34]) {
       const r = await new HardEngine(strategosPatch()).searchTurn(essentialOrNot(w), { work: 12_000 });
       const q = research(r)!;
@@ -690,9 +694,10 @@ describe('the pick', () => {
 
 describe('the reserve', () => {
   it('reserveFor is the documented share', () => {
-    expect(VETO_RESERVE_SHARE).toBe(8);
-    expect(reserveFor(SEARCH_WORK)).toBe(7_500);
-    expect(reserveFor(25_000)).toBe(3_125);
+    expect(VETO_RESERVE_SHARE).toBe(5);
+    expect(reserveFor(SEARCH_WORK)).toBe(12_000);
+    expect(reserveFor(40_000)).toBe(8_000);
+    expect(reserveFor(25_000)).toBe(5_000);
   });
 
   it('WorkMeter.setLimit moves the budget and keeps what was spent', () => {
@@ -729,10 +734,11 @@ describe('the reserve', () => {
   });
 
   it('the reserve is whole even when deepening overshot its lowered limit', async () => {
-    // At 22,000 units deepening's last node carries it past its lowered
-    // limit; without the veto's top-up the Hold root's re-search (2,191
-    // units, under the 2,750-unit reserve) is then cut for budget.
-    const work = 22_000;
+    // At 14,000 units deepening's last node carries it past its lowered
+    // limit; without the veto's top-up the Hold root's classification and
+    // re-search (2,191 units), under the 2,800-unit reserve, are then cut for
+    // budget.
+    const work = 14_000;
     for (const [w, reason] of [[30, 'essential-lost'], [34, undefined]] as const) {
       const engine = new HardEngine(strategosPatch());
       const r = await engine.searchTurn(essentialOrNot(w), { work });

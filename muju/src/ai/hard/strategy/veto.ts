@@ -24,9 +24,10 @@
  *      PROOF or a broken contract, never on material (Part A item 2):
  *      - `mate` / `proven-clock-loss` — the plan candidate's re-searched score
  *        is TERMINAL-SCALE worse than the tactical best's
- *        (`terminalLossThreshold`): a decided loss where the tactical best has
- *        none, or — the mirror image, reported as `mate` — no decided win
- *        where the tactical best has one;
+ *        (`terminalLossThreshold`): the plan line walks into a decided loss
+ *        where the tactical best has none;
+ *      - `forgone-win` — the mirror image, terminal-scale worse all the same:
+ *        the tactical best is a decided win and the plan line is not;
  *      - `essential-lost` — a slot of the contract's `essentialSlots` is dead
  *        after the opponent's best reply.
  *      A plan that merely loses a unit, crystals or eval centimes is played.
@@ -55,7 +56,7 @@ import { TurnFlag, type Turn } from '../gen/turn';
 import type { ClockReading } from './clock';
 import { clockPliesLeft } from './killeta';
 import { actDamages, forward, killEtaOn, type PlanScratch } from './plan';
-import type { ClockReadingCore } from './types';
+import type { ClockReadingCore, StrategyChronicle } from './types';
 
 /** Why a candidate is, or is not, plan-consistent (the first clause that
  * decided it). */
@@ -145,8 +146,11 @@ export function terminalLossThreshold(maxPly: number): Centi {
   return WIN_CC - maxPly * MATE_PLY_CC;
 }
 
-/** The veto's three reasons (`StrategyChronicle.veto.reason`). */
-export type VetoReason = 'mate' | 'proven-clock-loss' | 'essential-lost';
+/** The veto's four reasons (`StrategyChronicle.veto.reason`): `mate` and
+ * `proven-clock-loss` for a plan line that walks into a decided loss,
+ * `forgone-win` for one that passes up the tactical best's decided win,
+ * `essential-lost` for a broken contract. */
+export type VetoReason = NonNullable<StrategyChronicle['veto']>['reason'];
 
 /** What the re-search found (`search/veto.ts`). */
 export interface VetoEvidence {
@@ -192,14 +196,13 @@ export function vetoVerdict(e: VetoEvidence): { reason: VetoReason; detail: stri
   // The mirror image of the same proof: the tactical best DECIDES the game in
   // our favour inside the horizon and the plan line does not. Terminal-scale
   // worse all the same — a Hold that walks past a forced elimination, say —
-  // and the Chronicle's reason vocabulary has no separate word for a forgone
-  // win, so it is reported as `mate` and `detail` says which side of it.
+  // and reported as `forgone-win`, so `mate` keeps meaning a decided loss.
   const planWon = e.planScoreCc >= e.thresholdCc;
   const bestWon = e.tacticalScoreCc >= e.thresholdCc;
   if (bestWon && !planWon) {
     const ply = Math.round((WIN_CC - e.tacticalScoreCc) / MATE_PLY_CC);
     return {
-      reason: 'mate',
+      reason: 'forgone-win',
       detail: `the tactical best scores ${e.tacticalScoreCc} (a decided win at ply ${ply}) and the plan line ${e.planScoreCc}, not a win`,
     };
   }
