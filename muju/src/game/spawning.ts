@@ -1,5 +1,5 @@
 import type { BoardState, Position, Unit, PlayerId } from './types';
-import { isValidPosition, getUnitAt, getPlayerUnits, getStartCorner } from './board';
+import { boardSize, isValidPosition, getUnitAt, getPlayerUnits, getStartCorner } from './board';
 
 /**
  * Get the spawn rectangle defined by a player's start corner and an anchor unit.
@@ -53,7 +53,7 @@ export function isSpawnBlocked(
   player: PlayerId,
   board: BoardState
 ): boolean {
-  const startCorner = getStartCorner(player);
+  const startCorner = getStartCorner(player, boardSize(board));
   const rectangle = getSpawnRectangle(startCorner, anchor.position);
   return hasEnemyInRectangle(rectangle, board, player);
 }
@@ -67,7 +67,7 @@ export function getSpawnZone(
   player: PlayerId,
   board: BoardState
 ): Position[] {
-  const startCorner = getStartCorner(player);
+  const startCorner = getStartCorner(player, boardSize(board));
   const rectangle = getSpawnRectangle(startCorner, anchor.position);
 
   // Check if any enemies are in the rectangle
@@ -132,7 +132,7 @@ export function isValidSpawnPosition(
 
   // Check if any anchor creates a valid spawn zone containing this position
   const playerUnits = getPlayerUnits(board, player);
-  const startCorner = getStartCorner(player);
+  const startCorner = getStartCorner(player, boardSize(board));
 
   for (const anchor of playerUnits) {
     const rectangle = getSpawnRectangle(startCorner, anchor.position);
@@ -168,7 +168,7 @@ export function getSpawnInvalidReason(
 
   // Check each anchor's spawn rectangle
   const playerUnits = getPlayerUnits(board, player);
-  const startCorner = getStartCorner(player);
+  const startCorner = getStartCorner(player, boardSize(board));
 
   let inAnyRectangle = false;
 

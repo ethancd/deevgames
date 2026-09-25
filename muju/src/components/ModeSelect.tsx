@@ -154,6 +154,10 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
             <div className="font-semibold">Analysis board</div>
             <div className="text-sm text-gray-400">Control both sides, explore moves, or review a room</div>
           </a>
+          <a href="/muju/micro/" className="block w-full p-4 rounded-lg border-2 border-amber-700 hover:border-amber-400 text-left">
+            <div className="font-semibold">MICRO MUJU</div>
+            <div className="text-sm text-gray-400">6×6 pass &amp; play · three pieces, two actions, no clock</div>
+          </a>
         </div>
 
         {/* Side and difficulty selectors */}

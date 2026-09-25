@@ -47,13 +47,13 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .play-area { flex: 1; min-height: 0; display: grid; grid-template-rows: minmax(0,1fr) 26px var(--decision-height, 116px); gap: 3px; }
 .board-stage { min-height: 0; min-width: 0; display: flex; align-items: center; justify-content: center; container-type: size; padding: 2px; }
 .battle-board { width: min(100cqw, 100cqh, 650px); aspect-ratio: 1; padding: 4px; border-radius: 10px; background: #152b37; box-shadow: 0 4px 16px #0004; }
-.battle-grid { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(10,minmax(0,1fr)); grid-template-rows: repeat(10,minmax(0,1fr)); gap: 1px; border-radius: 6px; overflow: hidden; }
+.battle-grid { width: 100%; height: 100%; display: grid; grid-template-columns: repeat(var(--board-size, 10),minmax(0,1fr)); grid-template-rows: repeat(var(--board-size, 10),minmax(0,1fr)); gap: 1px; border-radius: 6px; overflow: hidden; }
 .battle-board.coordinate-board { position: relative; padding: 22px 4px 4px 22px; background: none; box-shadow: none; }
 .coordinate-board::before { content: ''; position: absolute; inset: 18px 0 0 18px; border-radius: 10px; background: #152b37; box-shadow: 0 4px 16px #0004; }
 .coordinate-board .battle-grid { position: relative; }
 .board-column-labels, .board-row-labels { position: absolute; display: grid; gap: 1px; color: #829da9; font-size: 10px; font-variant-numeric: tabular-nums; text-align: center; pointer-events: none; user-select: none; }
-.board-column-labels { top: 0; left: 22px; right: 4px; height: 18px; grid-template-columns: repeat(10, minmax(0, 1fr)); align-items: center; }
-.board-row-labels { top: 22px; bottom: 4px; left: 0; width: 18px; grid-template-rows: repeat(10, minmax(0, 1fr)); align-items: center; }
+.board-column-labels { top: 0; left: 22px; right: 4px; height: 18px; grid-template-columns: repeat(var(--board-size, 10), minmax(0, 1fr)); align-items: center; }
+.board-row-labels { top: 22px; bottom: 4px; left: 0; width: 18px; grid-template-rows: repeat(var(--board-size, 10), minmax(0, 1fr)); align-items: center; }
 .board-square { position: relative; min-width: 0; min-height: 0; }
 .board-square::after { content: ''; position: absolute; inset: 0; border: 1px solid #b5e5e4; pointer-events: none; z-index: 8; }
 .board-cell { width: 100%; height: 100%; position: relative; display: flex; align-items: center; justify-content: center; border: 0; color: #243c44; touch-action: manipulation; }
@@ -618,3 +618,13 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 @media (orientation: landscape) and (max-height: 600px) {
   .battle-board { height: min(100cqw, 100cqh, calc(100dvh - 32px)); flex: none; }
 }
+
+/* MICRO MUJU (`/muju/micro/`) */
+.micro-rules-summary { margin: 0; padding-left: 1.1rem; list-style: disc; display: grid; gap: .35rem; }
+.micro-piece-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.micro-piece-table th, .micro-piece-table td { padding: .3rem .35rem; border-bottom: 1px solid #ffffff14; text-align: center; }
+.micro-piece-table thead th { color: #9fb4c3; font-weight: 500; font-size: .8em; }
+.micro-piece-table tbody th { text-align: left; font-weight: 600; white-space: nowrap; }
+.micro-piece-name { display: flex; align-items: center; gap: .35em; }
+.micro-piece-name > :first-child { width: 1.8em; height: 1.8em; flex: none; }
+.micro-piece-table tbody th small { color: #9fb4c3; font-weight: 400; margin-left: .2em; }

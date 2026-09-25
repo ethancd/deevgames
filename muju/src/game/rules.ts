@@ -1,5 +1,8 @@
 import type { ActionsPerTurn, GameState, Ruleset } from './types';
 
+/** MICRO MUJU (rules revision `micro-muju-1`). Prime states never carry `variant`. */
+export const isMicro = (state: Pick<GameState, 'variant'>): boolean => state.variant === 'micro';
+
 export const isRuleset = (value: unknown): value is Ruleset => value === 'standard' || value === 'phasing';
 export const isPhasing = (state: Pick<GameState, 'ruleset'>): boolean => state.ruleset === 'phasing';
 export const rulesetLabel = (state: Pick<GameState, 'ruleset'>): string => isPhasing(state) ? 'Phasing' : 'Standard';
@@ -12,6 +15,7 @@ export function isBlackCrystalHandicap(value: unknown): value is number {
 
 export const DEFAULT_ACTIONS_PER_TURN: ActionsPerTurn = 4;
 
+/** Prime's budget. Micro's two-action budget is validated by `game/micro.ts`. */
 export function isActionsPerTurn(value: unknown): value is ActionsPerTurn {
   return value === 4;
 }
