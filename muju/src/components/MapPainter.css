@@ -17,6 +17,10 @@
 .painter-instructions { margin: 16px 0 12px; font-size: 12px; color: #a3bac9; text-align: center; }
 .painter-instructions b { color: #e8edf5; font-weight: 600; }
 .painter-instructions > span { margin: 0 7px; }
+.painter-size { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0 0 12px; }
+.painter-size button { border: 1px solid #39515f; border-radius: 7px; padding: 5px 9px; background: #1b2b38; color: #c1d4df; font-size: 12px; font-variant-numeric: tabular-nums; }
+.painter-size button:hover { border-color: #8fbabf; }
+.painter-size button[aria-pressed=true] { background: #334e63; border-color: #a2d5e5; color: #eefafa; }
 .painter-symmetry { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 12px; color: #c1d4df; font-size: 12px; cursor: pointer; }
 .painter-symmetry input { width: 16px; height: 16px; margin: 0; accent-color: #b5e5e4; }
 .painter-board-frame { display: grid; grid-template-columns: 18px minmax(0, 1fr); grid-template-rows: 18px auto; padding-right: 18px; }
@@ -49,4 +53,5 @@
   .painter-instructions > span { margin: 0 4px; }
   .painter-count { min-width: 18px; height: 18px; font-size: 10px; border-radius: 4px; }
   .painter-map-actions { gap: 12px; font-size: 11px; }
+  .painter-size button { padding: 5px 7px; font-size: 11px; }
 }

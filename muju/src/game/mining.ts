@@ -1,5 +1,5 @@
 import type { BoardState, Cell, GameState, IncomeTake, PlayerId, Unit } from './types';
-import { BOARD_SIZE, getCell } from './board';
+import { boardSize, getCell } from './board';
 import { getUnitDefinition } from './units';
 
 export function reserveTake(mining: number, reserve: number): number { return Math.min(mining, reserve); }
@@ -21,9 +21,10 @@ export function endOfTurnIncome(state: GameState, player: PlayerId): { state: Ga
     amount: unitEndOfTurnTake(u, getCell(state.board, u.position)!),
   }));
   const total = takes.reduce((sum, t) => sum + t.amount, 0);
-  const byCell = new Map(takes.map(t => [t.position.y * BOARD_SIZE + t.position.x, t.amount]));
+  const size = boardSize(state.board);
+  const byCell = new Map(takes.map(t => [t.position.y * size + t.position.x, t.amount]));
   const cells = state.board.cells.map(row => row.map(cell => {
-    const amount = byCell.get(cell.position.y * BOARD_SIZE + cell.position.x) ?? 0;
+    const amount = byCell.get(cell.position.y * size + cell.position.x) ?? 0;
     return amount ? { ...cell, resourceLayers: cell.resourceLayers - amount } : cell;
   }));
   const me = state.players[player];

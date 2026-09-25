@@ -75,6 +75,35 @@ test('painter keeps its draft after refresh, exports it, and leaves game saves a
   await page.screenshot({ path: testInfo.outputPath('painter-mobile.png'), fullPage: true });
 });
 
+test('painter resizes the board from 4×4 to 10×10 with undo and a saved draft', async ({ page }) => {
+  await page.goto('painter');
+  const board = page.getByRole('group', { name: 'Starting crystals' });
+  const size = (n: number) => page.getByRole('group', { name: 'Board size' }).getByRole('button', { name: `${n}×${n}` });
+  await expect(size(10)).toHaveAttribute('aria-pressed', 'true');
+  await size(4).click();
+  await expect(board.getByRole('button')).toHaveCount(16);
+  await expect(board.getByRole('button', { name: /^D4, .*black home$/ })).toBeVisible();
+  await expect(board.getByRole('button', { name: /^A1, 8 crystals/ })).toBeVisible();
+  await page.getByLabel('Lock 180° rotational symmetry').check();
+  await page.getByRole('button', { name: 'Clear map', exact: true }).click();
+  await expect(board.getByRole('button')).toHaveCount(16);
+  await board.getByRole('button', { name: /^B1,/ }).click();
+  await expect(board.getByRole('button', { name: /^C4, 1 crystal$/ })).toBeVisible();
+  await page.reload();
+  await expect(board.getByRole('button')).toHaveCount(16);
+  await expect(page.getByLabel('Total crystals')).toHaveText('2 crystals');
+  await size(7).click();
+  await expect(board.getByRole('button')).toHaveCount(49);
+  await expect(board.getByRole('button', { name: /^B1, 1 crystal$/ })).toBeVisible();
+  await expect(board.getByRole('button', { name: /^C4, 1 crystal$/ })).toBeVisible();
+  await expect(board.getByRole('button', { name: /^G7, 0 crystals, black home$/ })).toBeVisible();
+  await page.getByRole('button', { name: '↶ Undo', exact: true }).click();
+  await expect(board.getByRole('button')).toHaveCount(16);
+  await page.getByRole('button', { name: 'Reset to default', exact: true }).click();
+  await expect(board.getByRole('button')).toHaveCount(100);
+  await expect(page.getByLabel('Total crystals')).toHaveText('504 crystals');
+});
+
 test('painter stays usable when storage and clipboard are unavailable', async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(Storage.prototype, 'getItem', { value: () => { throw new Error('Storage disabled'); } });

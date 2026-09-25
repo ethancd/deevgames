@@ -286,6 +286,12 @@ class IterationBuffer {
     return out;
   }
 
+  /** The searched score of the candidate ending at `hi`/`lo`, or `null`. */
+  scoreOf(hi: number, lo: number): Centi | null {
+    const i = this.find(hi, lo);
+    return i >= 0 && this.searched[i] === 1 ? this.scoreCc[i] : null;
+  }
+
   /** Index of the candidate whose end position is `hi`/`lo`, or -1. */
   find(hi: number, lo: number): number {
     for (let i = 0; i < this.n; i++) {
@@ -387,6 +393,19 @@ export class RootProbe {
    * list) still owes the trace a row. */
   traceEmpty(depth: number): void {
     this.trace.push({ depth, n: 0, searched: 0, completed: true, cutoffAt: -1, truncated: false, work: 0 });
+  }
+
+  /**
+   * STRATEGOS W1.10 (`search/veto.ts`): the score the last COMPLETED
+   * iteration gave the candidate ending at `hi`/`lo`, or `null` when there is
+   * no completed iteration, the candidate is not in it, or it was never
+   * searched. A null-window candidate's score is a bound, as
+   * `RootCandidate.scoreCc` says; the veto only RANKS by it and re-searches
+   * the one it picks. Reads, never writes. The halves are compared as the
+   * signed 32-bit values the buffers store (`publish` does the same).
+   */
+  completedScore(hi: number, lo: number): Centi | null {
+    return this.hasDone ? this.done.scoreOf(hi | 0, lo | 0) : null;
   }
 
   /**

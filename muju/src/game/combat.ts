@@ -1,5 +1,5 @@
 import type { BoardState, Position, Unit, PlayerId } from './types';
-import { isAdjacent, getAdjacentPositions, getUnitAt, removeUnit } from './board';
+import { boardSize, isAdjacent, getAdjacentPositions, getUnitAt, removeUnit } from './board';
 import { getUnitDefinition } from './units';
 import { getAttackModifier } from './elements';
 
@@ -27,7 +27,7 @@ export function canAttack(unit: Unit): boolean {
 export function getValidAttacks(unit: Unit, board: BoardState): Position[] {
   if (!canAttack(unit)) return [];
 
-  const adjacentPositions = getAdjacentPositions(unit.position);
+  const adjacentPositions = getAdjacentPositions(unit.position, boardSize(board));
   const validTargets: Position[] = [];
   const alreadyAttacked = unit.attackedThisTurn ?? [];
 

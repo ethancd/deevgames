@@ -1,7 +1,9 @@
 import type { GameState, PlayerId } from '../src/game/types';
 import type { RoomAction, RoomSnapshot } from '../src/online/types';
 import { getUnitAt } from '../src/game/board';
-import { getActionsPerTurn, isPhasing } from '../src/game/rules';
+import { getActionsPerTurn, isMicro, isPhasing } from '../src/game/rules';
+import { MICRO_RULES_REVISION, MICRO_TITLE } from '../src/game/micro';
+import { boardSize } from '../src/game/board';
 import { INITIAL_MAP_RESOURCES, MAX_RESOURCE_RESERVE, RESOURCE_MAP_NAME, UNEQUAL_ROUTES_MAP } from '../src/game/resourceMap';
 import { getMovementRange, getMoveCost } from '../src/game/movement';
 import { calculateAttackPower, calculateDefense, getAttackCount, getValidAttacks } from '../src/game/combat';
@@ -19,6 +21,7 @@ import { assertMatchCapability } from './matchPolicy';
 import { analysisService } from './analysis';
 import { PHASING_RULES_VERSION } from './rooms';
 export { square, describeAction } from './notation';
+import { microRulesFrom } from './microRules';
 
 export function turnContext(s: GameState) {
   return { ruleset: s.ruleset ?? 'standard', turn: s.turn, upkeepPending: !!s.upkeepPending,
@@ -26,8 +29,11 @@ export function turnContext(s: GameState) {
 }
 
 export function observe(room: RoomSnapshot, perspective = room.state.turn.currentPlayer) {
-  const s = room.state, bare = room.matchPolicy?.toolTier === 'bare';
+  const s = room.state, bare = room.matchPolicy?.toolTier === 'bare', micro = isMicro(s);
+  const size = boardSize(s.board), lastColumn = String.fromCharCode(64 + size), blackHome = `${lastColumn}${size}`;
   return {
+    game: micro ? MICRO_TITLE : 'Muju Hono Irumbu',
+    ...(micro ? { variant: 'micro' as const, rulesVersion: MICRO_RULES_REVISION, rulesTool: 'muju_rules with variant "micro"' } : {}),
     ...(room.matchPolicy ? { matchPolicy: room.matchPolicy } : {}),
     roomId: room.id, revision: room.revision, ready: room.ready, seats: room.seats,
     canUndo: !bare && !!room.canUndo, archivedAt: room.archivedAt ?? null, lastMoveAt: room.lastMoveAt ?? null,
@@ -42,6 +48,7 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
     winner: s.winner, victoryReason: s.victoryReason ?? null,
     nextStep: room.archivedAt ? 'Room archived after 24 hours without a game action. Its history and positions remain available for review.' : !room.ready ? 'Invite the opponent, then wait for them to join.' : s.phase === 'victory' ? 'Game finished.'
       : s.upkeepPending ? 'Choose PAY_UPKEEP keepUnitIds; all tier 1 units must stay. Higher tiers omitted are released.'
+      : micro ? s.turn.phase === 'action' ? 'Take up to 2 shared actions (each unit attacks at most once this turn), then END_ACTION_PHASE to mine. This does not end your turn.' : 'BUY_UNIT (fire_1, water_1 or plant_1) commits public summons for your next turn. END_PLACE_PHASE hands over the turn and clock.'
       : isPhasing(s) ? s.turn.phase === 'action' ? 'Take actions, then END_ACTION_PHASE to mine and pay upkeep. This does not end your turn.' : 'Promote actual units or BUY_UNIT to commit public summons. END_PLACE_PHASE hands over the turn and clock.'
       : bare ? `${s.turn.currentPlayer} may submit actions using this revision.` : `${s.turn.currentPlayer} may act. Read legal actions, optionally preview, then play using this revision.`,
     players: Object.fromEntries((['white', 'black'] as const).map(player => [player, {
@@ -53,12 +60,13 @@ export function observe(room: RoomSnapshot, perspective = room.state.turn.curren
     // game on the higher mined total; a tie draws. The deprecated
     // `quietTurns`/`drawAtQuietTurns` aliases were removed 2026-09-24: agents read
     // `drawAtQuietTurns` as "ten quiet plies is a draw" and lost games on the clock.
-    killClock: { plies: s.inactivityPlies ?? 0, limit: INACTIVITY_LIMIT, warningAt: INACTIVITY_WARNING,
+    // MICRO MUJU has no kill clock: nothing ends the game but a win or resignation.
+    killClock: micro ? null : { plies: s.inactivityPlies ?? 0, limit: INACTIVITY_LIMIT, warningAt: INACTIVITY_WARNING,
       minedTotals: { white: minedTotal(s, 'white'), black: minedTotal(s, 'black') },
       leader: minedTotal(s, 'white') > minedTotal(s, 'black') ? 'white' as const
         : minedTotal(s, 'black') > minedTotal(s, 'white') ? 'black' as const : null },
     // Separate matrices avoid repeating 100 coordinate objects in every tool response.
-    coordinates: 'Columns A–J left to right; rows 1–10 top to bottom. White home A1; Black home J10. No perspective flipping.',
+    coordinates: `Columns A–${lastColumn} left to right; rows 1–${size} top to bottom. White home A1; Black home ${blackHome}. No perspective flipping.`,
     board: s.board.cells.map(row => row.map(c => {
       const u = getUnitAt(s.board, c.position);
       return u ? `${u.owner === 'white' ? 'W' : 'B'}:${u.definitionId}` : '.';
@@ -199,6 +207,7 @@ export const rules = {
  * function survives its two-branch past because `muju_rules` and its tests want
  * `endTurnAction` alongside the body.
  */
-export function rulesFor() {
+export function rulesFor(variant?: 'micro') {
+  if (variant === 'micro') return microRulesFrom(rules);
   return { ...rules, endTurnAction: 'END_PLACE_PHASE' as const };
 }

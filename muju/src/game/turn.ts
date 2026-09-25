@@ -1,5 +1,5 @@
 import { resolveInactivityDraw } from './inactivity';
-import { getActionsPerTurn, isPhasing } from './rules';
+import { getActionsPerTurn, isMicro, isPhasing } from './rules';
 import { resolveSummons, getPurchasePositions } from './summoning';
 import { upkeepDue, settleUpkeep } from './upkeep';
 import type {
@@ -108,7 +108,8 @@ export function endTurn(state: GameState): GameState {
     const pending: GameState = { ...income.state, upkeepPending: true,
       turn: { ...income.state.turn, phase: 'place', actionsRemaining: 0 },
       selectedUnit: null, validMoves: [], validAttacks: [] };
-    if (upkeepDue(pending, player) > pending.players[player].resources || pending.reviewUpkeep?.[player]) return pending;
+    // Micro fields only tier 1 (no rent) and has no upkeep decision to review.
+    if (upkeepDue(pending, player) > pending.players[player].resources || (pending.reviewUpkeep?.[player] && !isMicro(state))) return pending;
     return completeUpkeep(pending, pending.board.units.filter(u => u.owner === player).map(u => u.id));
   }
   return handOffTurn(income.state);

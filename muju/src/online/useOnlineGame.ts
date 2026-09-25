@@ -4,6 +4,7 @@ import type { AIAction } from '../ai/types';
 import { getUnitById } from '../game/board';
 import { getValidMoves } from '../game/movement';
 import { getValidAttacks } from '../game/combat';
+import { microAttackSpent } from '../game/micro';
 import { turnCue, useIncomingPlayback } from './incomingPlayback';
 import { OnlineError, playRoom, readRoom, waitRoom } from './client';
 import { useSoundEffects } from '../sound/SoundProvider';
@@ -106,7 +107,7 @@ export function useOnlineGame(initialConnection: OnlineConnection, initial: Room
     const u = selected ? getUnitById(s.board, selected) : null;
     return { ...s, selectedUnit: u?.id ?? null,
       validMoves: u && s.turn.phase === 'action' && u.canActThisTurn && s.turn.actionsRemaining > 0 ? getValidMoves(u, s.board) : [],
-      validAttacks: u && s.turn.phase === 'action' && u.canActThisTurn && s.turn.actionsRemaining > 0 ? getValidAttacks(u, s.board) : [] };
+      validAttacks: u && s.turn.phase === 'action' && u.canActThisTurn && s.turn.actionsRemaining > 0 && !microAttackSpent(s, u) ? getValidAttacks(u, s.board) : [] };
   }, [room, selected, incoming.frame]);
   const selectUnit = useCallback((id: string) => {
     const s = roomRef.current.state, u = getUnitById(s.board, id);

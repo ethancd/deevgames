@@ -19,7 +19,7 @@ import {
 import { bbHas, bbNext, type Scratch } from '../core/bits';
 import { BOARD, CORNER, RECT } from '../core/tables';
 import { type Catalog } from '../core/catalog';
-import { AKind, paA, paB, paMake, type KeepSetTable } from '../core/action';
+import { AKind, newKeepSetTable, paA, paB, paKind, paMake, type KeepSetTable } from '../core/action';
 import { ACTIONS_PER_TURN, Replica, newUndo, type Undo } from '../core/state';
 import { moveCost } from '../core/movement';
 import { HOME_RACE_LINE_LEN, homeRaceAvailable } from '../tables/home';
@@ -84,6 +84,151 @@ export function newGenStats(): GenStats {
  * existed only for that adoption is gone. Added by M14; see DEVIATIONS.
  */
 export type RescueWitness = (p: PackedState, invader: Side, out: Int32Array) => number;
+
+/**
+ * STRATEGOS W1.9 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+ * B.2 step W1.9, and B.1b's "`injectLine` forces an Act line only"): one plan
+ * line the root's strategic layer wants in the ROOT candidate list, as plain
+ * packed actions so `gen` never has to import `strategy` (DESIGN §2 layering,
+ * `lab/hard-ai/deps.ts`). `strategy/contact.ts` and `strategy/hold.ts` build
+ * them; `search/root.ts installStrategyWitness` hands them over through
+ * `TurnGenerator.setStrategyWitness`, exactly the way `installRescueWitness`
+ * hands over injection 4's prover witness.
+ *
+ * A line is NOT a turn: it names what the plan chooses (its Act moves and
+ * attacks, and what it buys or promotes) and leaves the rules' own boundary
+ * actions to `playStrategyTurn`, which makes it a complete turn.
+ */
+export interface StrategyLine {
+  /** Packed Act actions (`MOVE`/`ATTACK`) from the root, in order; may be empty. */
+  readonly act: Int32Array;
+  /** Packed Prepare actions (`BUY`/`PROMOTE`), played after `END_ACTION` and
+   * any `PAY_UPKEEP` the rules require; may be empty (a bare Prepare). */
+  readonly prep: Int32Array;
+}
+
+/**
+ * The strategic layer's source of plan lines, installed on the ROOT generator
+ * only (`search/root.ts installStrategyWitness`) and asked by `inject()` once
+ * per root generation, at an Act root (`p.phase === 1`, no upkeep pending) —
+ * the only root where a line has an Act to choose. `t` is the root's own
+ * `NodeTables` (the same object every other injection reads) and `meter` the
+ * generation's work sink, so the source can charge what it computed to the
+ * search meter the way injection 4 charges its prover call.
+ */
+export type StrategyWitness = (p: PackedState, t: NodeTables, meter: WorkSink) => readonly StrategyLine[];
+
+/** `playStrategyTurn`'s result. */
+export interface StrategyTurn {
+  /** Actions written to the caller's buffer and applied to `p`, or -1 when
+   * the line was illegal somewhere (nothing is then left applied). */
+  count: number;
+  /** The `PAY_UPKEEP` choice the turn carries, when it pays upkeep. */
+  keepMask: Uint32Array | undefined;
+  /** `PURCHASE` when a `BUY` was played, `PROMOTION` when a `PROMOTE` was. */
+  flags: number;
+}
+
+export function newStrategyTurn(): StrategyTurn {
+  return { count: -1, keepMask: undefined, flags: 0 };
+}
+
+/**
+ * The `PAY_UPKEEP` choice a plan line's turn pays with, as a one-entry table
+ * owning its mask: the first entry of `genKeepSets`' ranked list that
+ * `rep.isLegal` accepts, or `null` when none does (or no bill is pending).
+ * `completePrepare` gives a forced Act prefix's bare completion the same
+ * first ranked set; exported so the strategic layer's own rollouts settle
+ * rent by the same rule. `t` is passed through to `genKeepSets`, whose
+ * ranking is table-free (`gen/upkeep.ts` header) and does not read it.
+ */
+export function firstLegalKeepSet(rep: Replica, p: PackedState, t: NodeTables, keep: KeepSetTable): KeepSetTable | null {
+  const words = MAX_SLOTS >>> 5;
+  const sets = genKeepSets(p, t, keep);
+  const pay = paMake(AKind.PAY_UPKEEP, 0);
+  for (let i = 0; i < sets; i++) {
+    const choice: KeepSetTable = { masks: keep.masks.slice(i * words, (i + 1) * words), count: 1 };
+    if (rep.isLegal(p, pay, choice)) return choice;
+  }
+  return null;
+}
+
+/**
+ * Plays one plan line as a COMPLETE turn on `p` (B.1b: a buy or promotion
+ * must be injected as `END_ACTION → PAY_UPKEEP → BUY/PROMOTE → END_PLACE`, not
+ * through `injectLine`, whose Prepare is the forced bare completion): the
+ * line's Act actions, `END_ACTION`, the `PAY_UPKEEP` the rules require when
+ * the bill is pending (`genKeepSets`' first LEGAL ranked keep set — the
+ * choice `completePrepare` gives every forced Act prefix's bare completion,
+ * so a plan line that buys nothing reaches the same end position as the
+ * ordinary injection and the dedupe merges them), the line's Prepare actions,
+ * and `END_PLACE`. Every action is checked with `rep.isLegal` before it is
+ * made; the first illegal one unmakes everything and reports `count: -1`.
+ * An action that ends the game ends the turn there (the same rule
+ * `injectLine` applies).
+ *
+ * On success `p` is left AFTER the turn and the caller unmakes `out.count`
+ * actions from `undo`. Shared by `TurnGenerator.injectStrategy` (which records
+ * the turn) and the strategic layer (which needs the same end position for
+ * its contract checks), so the two can never disagree about what a line
+ * plays. Only `MOVE`/`ATTACK` are accepted in `act` and only `BUY`/`PROMOTE`
+ * in `prep`: a line may not smuggle a boundary action past the rules.
+ */
+export function playStrategyTurn(
+  rep: Replica,
+  p: PackedState,
+  t: NodeTables,
+  line: StrategyLine,
+  undo: Undo,
+  keep: KeepSetTable,
+  actions: Int32Array,
+  out: StrategyTurn,
+): void {
+  out.count = -1;
+  out.keepMask = undefined;
+  out.flags = 0;
+  if (p.result !== Result.ONGOING || p.phase !== 1 || p.upkeepPending === 1) return;
+  const side = p.side;
+  const capacity = actions.length < MAX_TURN_ACTIONS ? actions.length : MAX_TURN_ACTIONS;
+  let n = 0;
+  let flags = 0;
+  let keepMask: Uint32Array | undefined;
+  const done = (): boolean => p.result !== Result.ONGOING || p.side !== side;
+  // Read through closures: every `make` below moves these fields, which a
+  // narrowed `p.phase`/`p.upkeepPending` read in this body would not see.
+  const billPending = (): boolean => p.upkeepPending === 1;
+  const inPrepare = (): boolean => p.phase === 0;
+  const apply = (a: number, choice?: KeepSetTable): boolean => {
+    if (n >= capacity || !rep.isLegal(p, a, choice)) return false;
+    actions[n++] = a;
+    rep.make(p, a, undo, choice);
+    return true;
+  };
+  let ok = true;
+  for (let i = 0; i < line.act.length && ok && !done(); i++) {
+    const kind = paKind(line.act[i]);
+    ok = (kind === AKind.MOVE || kind === AKind.ATTACK) && apply(line.act[i]);
+  }
+  if (ok && !done()) ok = apply(paMake(AKind.END_ACTION));
+  if (ok && !done() && billPending()) {
+    const choice = firstLegalKeepSet(rep, p, t, keep);
+    ok = choice !== null && apply(paMake(AKind.PAY_UPKEEP, 0), choice);
+    if (ok && choice !== null) keepMask = choice.masks;
+  }
+  for (let i = 0; i < line.prep.length && ok && !done(); i++) {
+    const kind = paKind(line.prep[i]);
+    ok = (kind === AKind.BUY || kind === AKind.PROMOTE) && apply(line.prep[i]);
+    if (ok) flags |= kind === AKind.BUY ? TurnFlag.PURCHASE : TurnFlag.PROMOTION;
+  }
+  if (ok && !done() && inPrepare()) ok = apply(paMake(AKind.END_PLACE));
+  if (!ok) {
+    for (let i = 0; i < n; i++) rep.unmake(p, undo);
+    return;
+  }
+  out.count = n;
+  out.keepMask = keepMask;
+  out.flags = flags;
+}
 
 /** `WorkClass.PROVER` (DESIGN §4.16), spelled here so `gen` need not import
  * `search` — the convention `gen/actionsearch.ts` uses for `WorkClass.TURN`. */
@@ -336,6 +481,16 @@ export class TurnGenerator {
    * a setter rather than a `NodeTables.evalFix` read.
    */
   private promoteExhaustive = false;
+  /**
+   * STRATEGOS W1.9's plan-line source (`setStrategyWitness`); `null` — no
+   * source — on every profile but `hard@strategos`, and on every generator
+   * but the root one even there.
+   */
+  private strategy: StrategyWitness | null = null;
+  /** `playStrategyTurn`'s keep-set scratch and result: the generator's own,
+   * so a plan line never rewrites the node's keep table `ctx.keep`. */
+  private readonly strategyKeep: KeepSetTable = newKeepSetTable();
+  private readonly strategyTurn: StrategyTurn = newStrategyTurn();
 
   constructor(rep: Replica, cfg: GenConfig, pool: TurnPool, sc: Scratch) {
     this.rep = rep;
@@ -456,6 +611,26 @@ export class TurnGenerator {
    */
   setPromoteExhaustive(on: boolean): void {
     this.promoteExhaustive = on;
+  }
+
+  /**
+   * Installs (or clears) STRATEGOS W1.9's plan-line source (plan B.2 step
+   * W1.9). `search/root.ts installStrategyWitness` installs it on the ROOT
+   * generator for exactly one search, and only when
+   * `HardConfig.searchFix.strategyPlans` is on, then clears it in the same
+   * `finally` that restores the kill-clock policy. `inject()` asks it only at
+   * ply 0 and never on the lab's reference path, so an interior or
+   * quiescence node is untouched even if a caller installed it there.
+   *
+   * `null` — never installed — is the champion, byte-identical: `inject()`
+   * pays one null test and nothing else moves.
+   *
+   * NOT a `GenConfig` field, for the reason `setRescueCap` is not one: the
+   * generator configs are part of the engine identity hash
+   * `tests/lab/ablate.test.ts` pins.
+   */
+  setStrategyWitness(source: StrategyWitness | null): void {
+    this.strategy = source;
   }
 
   /**
@@ -1236,6 +1411,41 @@ export class TurnGenerator {
     this.injectRetreat(ctx, cat, side);
     this.injectDenial(ctx, cat, side);
     this.injectDisrupt(ctx, side);
+    this.injectStrategy(ctx);
+  }
+
+  /**
+   * STRATEGOS W1.9: every plan line the installed source asks for, as a
+   * complete turn (`playStrategyTurn`), flagged `STRATEGY | FORCED` so the
+   * width cut can never drop it (`offerForced`) and the search never prunes
+   * or reduces it (`search/pvs.ts NO_PRUNE_FLAGS`/`NO_REDUCE_FLAGS` carry
+   * `FORCED`). ROOT ONLY: `ctx.ply === 0` and never the reference generator.
+   * Runs last, after every tactical injection, so a plan line that reaches a
+   * position another injection already listed (a Hold pass is injection 1's
+   * pass line, for instance) MERGES its flags into that candidate instead of
+   * adding a duplicate — `offerForced`'s dedupe.
+   *
+   * An illegal line is dropped whole (`count: -1`); the source is the
+   * strategic layer's, which replays every line on its own copy before it
+   * offers it, so a drop here would be a disagreement between the two.
+   */
+  private injectStrategy(ctx: Ctx): void {
+    const source = this.strategy;
+    if (source === null || ctx.ply !== 0 || ctx.reference) return;
+    const { p } = ctx;
+    const lines = source(p, ctx.t, ctx.meter);
+    const top = this.undo.top;
+    const res = this.strategyTurn;
+    for (let i = 0; i < lines.length; i++) {
+      playStrategyTurn(this.rep, p, ctx.t, lines[i], this.undo, this.strategyKeep, this.prefix, res);
+      if (res.count < 0) continue;
+      const oldMask = this.currentKeepMask;
+      this.currentKeepMask = res.keepMask;
+      this.recordPrefixTerminal(ctx, res.count, TurnFlag.STRATEGY | TurnFlag.FORCED | res.flags);
+      this.currentKeepMask = oldMask;
+      for (let k = 0; k < res.count; k++) this.rep.unmake(p, this.undo);
+      this.undo.top = top;
+    }
   }
 
 

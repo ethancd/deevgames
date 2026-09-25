@@ -16,6 +16,11 @@ import { keepForTurn } from '../gen/turn';
  *   8 butterfly history
  *   9 the within-turn score of a quiet turn
  *
+ * STRATEGOS W1.9 adds one item, at the ROOT only and only under
+ * `HardConfig.searchFix.strategyPlans`: a `STRATEGY` plan line (a ForceContact
+ * or Hold line, `strategy/contact.ts`, `strategy/hold.ts`) takes
+ * `ORDER_STRATEGY` (+1,000,000), between item 2 and item 5.
+ *
  * THE SEE ANALOGUE (DESIGN §5.11.3 item 4, the F2/F3/F7/F10 loss class).
  * `hangCc = Σ` material of my units `u` with `killActions[u] ≤ 4` under
  * `killTable(them, {horizon: 'current', actionBudget: 4})`
@@ -98,6 +103,21 @@ export const ORDER_HOME_FORTIFY = 250_000;
 export const ORDER_CLEAVE = 250_000;
 export const ORDER_KILLER = 200_000;
 export const ORDER_COUNTER = 150_000;
+/**
+ * STRATEGOS W1.9: a ply-0 `STRATEGY` candidate's bonus, applied only when
+ * `HardConfig.searchFix.strategyPlans` is on. CHOICE (why: below the TT move
+ * (2,000,000), a home rescue (1,500,000) and a home entry (1,200,000), so the
+ * previous iteration's best still takes the full window first and a
+ * home-corner answer still precedes a plan; above every other bonus — a
+ * denial of three anchors, fortification, Cleave, killers, a kill's value per
+ * action (at most a 17-crystal tier-3 in one action, 170,000) and the SEE
+ * penalty of a line that walks into contact — so the plan lines are searched
+ * right after those, where aspiration and alpha are still loose; plan lines
+ * are `FORCED`, so `search/pvs.ts NO_REDUCE_FLAGS` already keeps them from
+ * reduction; falsifier: a fixed-work comparison on the Phasing corpus where
+ * the bonus costs completed depth against the same search without it).
+ */
+export const ORDER_STRATEGY = 1_000_000;
 
 /** History counters are halved once a bucket passes this, so the table ages
  * instead of saturating (DESIGN §5.11.3: "bounded by aging halving"). */
@@ -388,6 +408,10 @@ export function scoreTurns(
   // E4.2 lane 3. Read against the named value, never against truthiness, so a
   // future second policy cannot turn this one on by accident.
   const tieByEndKey = ply === 0 && s.cfg.searchFix?.tieBreak === 'end-key';
+  // STRATEGOS W1.9: plan lines exist only at the root and only under the flag;
+  // reading the flag (not just the bit) keeps every other profile's ordering
+  // arithmetic exactly what it was.
+  const strategyFirst = ply === 0 && s.cfg.searchFix?.strategyPlans === true;
   const ttEnd = !tieByEndKey && tt !== null && (tt.bound === Bound.EXACT || tt.bound === Bound.LOWER) ? tt.bestEndLo : -1;
 
   for (let i = 0; i < n; i++) {
@@ -412,6 +436,7 @@ export function scoreTurns(
       score += ORDER_SPAWN_DENY * (see.anchorsVoided > 0 ? see.anchorsVoided : 1);
     }
     if ((turn.flags & TurnFlag.HOME_FORTIFY) !== 0) score += ORDER_HOME_FORTIFY;
+    if (strategyFirst && (turn.flags & TurnFlag.STRATEGY) !== 0) score += ORDER_STRATEGY;
     if ((turn.flags & TurnFlag.CLEAVE_CHAIN) !== 0) score += ORDER_CLEAVE;
     if ((turn.sig >>> 0) === (killerA >>> 0) || (turn.sig >>> 0) === (killerB >>> 0)) score += ORDER_KILLER;
     if ((turn.sig >>> 0) === (counterSig >>> 0)) score += ORDER_COUNTER;

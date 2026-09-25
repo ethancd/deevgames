@@ -184,8 +184,15 @@ export interface InjectedPlan {
   endKey: string;
   /** Short human label, e.g. `approach:slot3->e5`, `buy:fire_1@c3`, `hold:pass`. */
   label: string;
-  /** `witnessed` when a rollout against the scripted replies achieved the
-   * end predicate; never `forced` in Workflow 1. */
+  /**
+   * ForceContact (`strategy/contact.ts`): `witnessed` when the rollouts
+   * against BOTH scripted replies achieved the end predicate by the deadline,
+   * `not-ruled-out` when one did, else `unknown`; never `forced`. Hold
+   * (`strategy/hold.ts`): `forced` when the enemy's killETA on the position
+   * the line reaches exceeds the plies left there — which forces the "no
+   * enemy kill in the plies the clock has left" clause, and only that clause
+   * (`strategy/hold.ts`, "what is and is not forced") — else `unknown`.
+   */
   feasibility: Feasibility;
   queries: readonly AnalysisQuery[];
 }

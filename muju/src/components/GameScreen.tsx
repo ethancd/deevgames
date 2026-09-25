@@ -27,8 +27,9 @@ import { formatCompactReport } from '../utils/compactReport';
 import { saveAIPace, loadGameHistory } from '../utils/persistence';
 import { PassDeviceOverlay } from './PassDeviceOverlay';
 import { InstructionsModal } from './InstructionsModal';
-import { getUnitAt, getUnitById, getCell, isOccupied, isValidPosition } from '../game/board';
-import { getActionsPerTurn, isPhasing, rulesetLabel } from '../game/rules';
+import { boardSize, getUnitAt, getUnitById, getCell, isOccupied, isValidPosition } from '../game/board';
+import { getActionsPerTurn, isMicro, isPhasing, rulesetLabel } from '../game/rules';
+import { MICRO_CATALOGUE, MICRO_MAP_RESOURCES, MICRO_TITLE, microAttackSpent, squareName } from '../game/micro';
 import { getUnitDefinition, UNIT_DEFINITIONS } from '../game/units';
 import { projectedIncome } from '../game/mining';
 import { canPromote } from '../game/promotion';
@@ -87,6 +88,9 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   } = game;
   const actionsPerTurn = getActionsPerTurn(state);
   const phasing = isPhasing(state);
+  /** MICRO MUJU: pass-and-play only; its limits live in the rules layer, these
+   * branches only keep the interface from offering what the rules refuse. */
+  const micro = isMicro(state);
   /** AI seats run in LOCAL games only: an online, observer or analysis board
    * leaves both `useAI` hooks and both turn triggers off. The ruleset is no
    * longer a term — Phasing is the only ruleset and the engine that plays it
@@ -123,7 +127,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     // still legal from there. Other board changes invalidate the route.
     setPreview(current => {
       const target = current ? getUnitAt(state.board, current.position) : null;
-      const path = selectedUnitData && target
+      const path = selectedUnitData && target && !microAttackSpent(state, selectedUnitData)
         ? findAttackApproach(selectedUnitData, target, state.board, state.turn.actionsRemaining) : null;
       return current && path?.length === 0 ? { position: current.position, path: [] } : null;
     });
@@ -255,8 +259,9 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   // it actually has left right now.
   const koTargets = useMemo(() => {
     if (inspectOnly || state.turn.phase !== 'action' || !selectedUnitData || selectedUnitData.owner !== state.turn.currentPlayer) return [];
+    if (microAttackSpent(state, selectedUnitData)) return [];
     return ownKoTargets(selectedUnitData, state.board, state.turn.actionsRemaining);
-  }, [inspectOnly, state.turn.phase, state.turn.currentPlayer, state.turn.actionsRemaining, selectedUnitData, state.board]);
+  }, [inspectOnly, state.turn.phase, state.turn.currentPlayer, state.turn.actionsRemaining, selectedUnitData, state.board, state.variant]);
 
   // Reverse KO: with an enemy inspected, every one of the opposing side's
   // units it could eliminate on its own coming turn (a fresh turn projection;
@@ -528,7 +533,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         selectUnit(unitId);
       }
     } else if (state.selectedUnit) {
-      const path = selectedUnitData
+      const path = selectedUnitData && !microAttackSpent(state, selectedUnitData)
         ? findAttackApproach(selectedUnitData, unit, state.board, state.turn.actionsRemaining)
         : null;
       if (path !== null) {
@@ -584,7 +589,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     if (showUnitShopInspection) {
       if (!plainKey) return;
       const shown = getUnitDefinition(shopSelectedId ?? 'fire_1'), guideKey = e.key.toLowerCase();
-      const guide = [...UNIT_DEFINITIONS].sort((a, b) => a.tier - b.tier || ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element));
+      const guide = [...UNIT_DEFINITIONS].filter(d => !micro || MICRO_CATALOGUE.includes(d.id)).sort((a, b) => a.tier - b.tier || ELEMENT_ORDER.indexOf(a.element) - ELEMENT_ORDER.indexOf(b.element));
       const element = ELEMENT_ORDER['asdfgh'.indexOf(guideKey)];
       const next = guideKey === 'tab' ? guide[(guide.findIndex(d => d.id === shown.id) + (e.shiftKey ? -1 : 1) + guide.length) % guide.length]
         : guideKey === 'u' ? null
@@ -700,9 +705,11 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     }
 
     // 1–6, or A S D F G H as in the unit guide, choose a tier-1 purchase by element.
-    const purchaseIndex = key.length === 1 ? Math.max('123456'.indexOf(key), 'asdfgh'.indexOf(key)) : -1;
+    // Micro: 1–3 or A S D choose Hi, Sjór, Muju.
+    const purchaseIndex = key.length === 1 ? micro ? Math.max('123'.indexOf(key), 'asd'.indexOf(key)) : Math.max('123456'.indexOf(key), 'asdfgh'.indexOf(key)) : -1;
     if (state.turn.phase === 'place' && purchaseIndex >= 0) {
-      const def = UNIT_DEFINITIONS.find(d => d.element === ELEMENT_ORDER[purchaseIndex] && d.tier === 1)!;
+      const def = micro ? getUnitDefinition(MICRO_CATALOGUE[purchaseIndex])
+        : UNIT_DEFINITIONS.find(d => d.element === ELEMENT_ORDER[purchaseIndex] && d.tier === 1)!;
       if (def.cost <= currentPlayerState.resources) { setSelectedPurchaseId(def.id); setSelectedPlaceUnitId(null); }
       e.preventDefault(); return;
     }
@@ -710,7 +717,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     // === Place phase shortcuts ===
     if (state.turn.phase === 'place') {
       // P: Promote the selected unit
-      if (key === 'p' && selectedPlaceUnitId) {
+      if (key === 'p' && selectedPlaceUnitId && !micro) {
         e.preventDefault();
         const unit = getUnitById(state.board, selectedPlaceUnitId);
         if (unit) {
@@ -756,7 +763,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
         // Check if the target is valid (not occupied and within board bounds)
         // For pending moves, we need to check if it would be valid from the pending position
-        if (isValidPosition(targetPos) && !isOccupied(state.board, targetPos)) {
+        if (isValidPosition(targetPos, boardSize(state.board)) && !isOccupied(state.board, targetPos)) {
           // Also check that the path doesn't loop back through the original position
           const isNotLoopingBack = !pendingMovePath.some(
             p => p.x === targetPos.x && p.y === targetPos.y
@@ -873,9 +880,11 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     else attackWith(state.selectedUnit, preview.position);
     setPreview(null);
   }
+  const lastSquare = boardSize(state.board) - 1;
+  const whiteHome = 'A1', blackHome = squareName({ x: lastSquare, y: lastSquare });
   const homeNotice = getHomeOccupier(state.board, state.turn.currentPlayer === 'white' ? 'black' : 'white')
-    ? `Clear ${state.turn.currentPlayer === 'white' ? 'A1' : 'J10'} this turn or lose`
-    : getHomeOccupier(state.board, state.turn.currentPlayer) ? `Hold ${state.turn.currentPlayer === 'white' ? 'J10' : 'A1'} until your next turn` : '';
+    ? `Clear ${state.turn.currentPlayer === 'white' ? whiteHome : blackHome} this turn or lose`
+    : getHomeOccupier(state.board, state.turn.currentPlayer) ? `Hold ${state.turn.currentPlayer === 'white' ? blackHome : whiteHome} until your next turn` : '';
   const canReplay = !online?.playingIncoming && (isCurrentPlayerHuman || observing) && !isThinking && state.phase === 'playing' && !showPassOverlay &&
     !showReplay && !!game.lastTurnReplay && game.lastTurnReplay.player !== state.turn.currentPlayer;
   const replayUnavailable = observing ? 'Watch the last completed turn.' : !game.lastTurnReplay ? 'Available after your opponent completes a turn.'
@@ -889,15 +898,15 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
     : online && !online.ready ? 'Share your invitation to bring in the other player.'
     : online?.busy ? 'Confirming your move…'
     : !interactive ? (isPaused ? 'Paused' : 'Opponent’s turn')
-    : state.turn.phase === 'place' ? phasing ? 'Commit a summon for next turn, or select a piece to promote. End turn when ready.' : 'Buy tier 1, or select a piece to promote.'
+    : state.turn.phase === 'place' ? micro ? 'Commit a summon for next turn, or End turn to hand over.' : phasing ? 'Commit a summon for next turn, or select a piece to promote. End turn when ready.' : 'Buy tier 1, or select a piece to promote.'
     : 'Select a unit. Tap a square to move, or an enemy to preview an attack.';
 
   return (
     <main className={`game-shell${phasing ? ' game-shell-phasing' : ''}${online ? ' game-shell-online' : ''}${observing ? ' game-shell-observer' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
-      {state.phase === 'victory' && !analysis && !online?.playingIncoming && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? '/muju/analysis?local=1'} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} minedTotals={{ white: whiteMined, black: blackMined }} />}
+      {state.phase === 'victory' && !analysis && !online?.playingIncoming && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? (micro ? undefined : '/muju/analysis?local=1')} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} minedTotals={{ white: whiteMined, black: blackMined }} />}
       {showPassOverlay && state.phase === 'playing' && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {choosingUpkeep && <UpkeepPanel state={state} onConfirm={payUpkeep} onUndo={canUndo ? undo : undefined} disabled={online?.busy} />}
-      <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} phasing={phasing} />
+      <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} phasing={phasing} micro={micro} />
       <aside className="game-overview" aria-label="Match overview">
         {online?.banner}
         {(whiteAI.error || blackAI.error) && <div role="alert">
@@ -907,7 +916,8 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         {(whiteAI.warning || blackAI.warning) && <small role="status">AI is using its backup engine.</small>}
         <header className="game-header">
           <a href="https://deevgames.pages.dev/" aria-label="Back to Deev Games">← Games</a>
-          <h1>Muju Hono Irumbu <small className="ruleset-badge">{rulesetLabel(state)}</small></h1>
+          {micro ? <h1>{MICRO_TITLE} <small className="ruleset-badge">{online ? 'Online' : analysis ? 'Analysis' : 'Pass & play'}</small></h1>
+            : <h1>Muju Hono Irumbu <small className="ruleset-badge">{rulesetLabel(state)}</small></h1>}
           <div className="game-header-actions"><MusicButton /><button disabled={showReplay} onClick={() => setShowMenu(true)} aria-label="Game menu">•••</button></div>
         </header>
         <section className="turn-strip" aria-label="Turn and phases">
@@ -923,13 +933,14 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
             const isActive = state.turn.currentPlayer === side;
             return (
               <div key={side} className={`player-card player-card-${side}${isActive ? ' player-card-active' : ''}`} aria-current={isActive ? 'true' : undefined}>
-                <strong><span className="vh-label">{side === 'white' ? 'White' : 'Black'}{isActive ? ' · active turn' : ''}: </span><i className={`player-dot ${side}`} aria-hidden="true" />{playerNames[side]} <b>◆ {sideState.resources}</b>{minedLeader === side && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
-                <small>Gained {sideState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[side]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, side)}</small><small className={isViewerSide && upkeepDue(state,side)>sideState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,side)} / turn</small>
+                <strong><span className="vh-label">{side === 'white' ? 'White' : 'Black'}{isActive ? ' · active turn' : ''}: </span><i className={`player-dot ${side}`} aria-hidden="true" />{playerNames[side]} <b>◆ {sideState.resources}</b>{minedLeader === side && !micro && <span className="mined-lead" title="Ahead on mined crystals" aria-label="ahead on mined crystals">▲</span>}</strong>
+                <small>Gained {sideState.resourcesGained}</small><small aria-label={`Projected mining for ${playerNames[side]}`} title="Projected mining at turn end from the current position">Mining +{projectedIncome(state, side)}</small>{!micro && <small className={isViewerSide && upkeepDue(state,side)>sideState.resources ? 'rent-warning' : ''}>Upkeep {upkeepDue(state,side)} / turn</small>}
               </div>
             );
           })}
         </section>
-        <div className="progress-clock"><span>{actionsPerTurn} actions / turn</span><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} turns without a kill</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>
+        {micro ? <div className="progress-clock"><span>{actionsPerTurn} actions / turn</span><span>One attack per piece</span><span>No clock</span></div>
+        : <div className="progress-clock"><span>{actionsPerTurn} actions / turn</span><span className={(state.inactivityPlies??0)>=INACTIVITY_WARNING ? 'rent-warning' : ''}>{state.inactivityPlies??0}/{INACTIVITY_LIMIT} turns without a kill</span>{state.lastUpkeep && (state.lastUpkeep.paid>0 || state.lastUpkeep.released.length>0) && <span>{playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid} · released {state.lastUpkeep.released.length}</span>}</div>}
       </aside>
       <div className={`play-area ${state.turn.phase === 'place' && (interactive || showReplay) ? 'is-placing' : ''}`}>
         <section className="board-stage" aria-label="Battlefield">
@@ -954,7 +965,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
         <section className="decision-panel" aria-label="Current choice">
           {analysis && state.upkeepPending && !analysis.reviewing ? <UpkeepPanel key={`${state.turn.turnNumber}-${state.turn.currentPlayer}`} state={state} onConfirm={payUpkeep} inline /> : playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} mode={replayMode} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />
           : online?.playingIncoming && !shownUnit ? <div className="selection-hint"><strong>Opponent’s move</strong><p role="status">{online.incomingFrame?.label}</p><small>{replayMode === 'fast' ? 'Fast · 0.3s' : 'Slow · 1s'} per action</small></div>
-          : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop phasing={phasing} resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
+          : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop phasing={phasing} micro={micro} resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
             selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
               <div className="preview-heading"><strong>Attack → {String.fromCharCode(65 + preview.position.x)}{preview.position.y + 1}</strong><span>{previewCost} action{previewCost !== 1 ? 's' : ''} · {state.turn.actionsRemaining - previewCost} left</span></div>
@@ -966,10 +977,10 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
               isPlacePhase={state.turn.phase === 'place' && interactive} isActionPhase={state.turn.phase === 'action' && interactive}
               resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView} inspectOnly={inspectOnly} showNextTier={observing}
               onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer} actionsRemaining={state.turn.actionsRemaining}
-              showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} />
+              showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} micro={micro} />
           : <div className={`selection-hint${showTurnTimer ? ' is-thinking' : ''}`}>
               {showTurnTimer && turnClock && <AIThinkingTimer budgetMs={turnClock.budgetMs} spentMs={turnClock.spentMs} searchingSince={turnClock.searchingSince} />}
-              <strong>{observing ? 'Watching live' : isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? 'Place & upgrade' : 'Your next move'}</strong>
+              <strong>{observing ? 'Watching live' : isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? micro ? 'Prepare' : 'Place & upgrade' : 'Your next move'}</strong>
               {/* SAY WHAT THE CLOCK MEANS. While a turn clock is running the
                   phase hint has nothing to do with the seat that is thinking,
                   and the engines legitimately move with part of the wedge left —
@@ -982,7 +993,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       </div>
       <footer className="play-footer">
         {phasing && <div className="summoning-slot" style={{ visibility: showReplay ? 'hidden' : undefined }}><SummoningStatus state={state} onInspect={handleSummonClick} /></div>}
-        <div className="income-status" role="status" data-testid="projected-income">{phasing && state.turn.phase === 'place' ? 'Mining collected. Upkeep precedes these promotions and summons.' : `Projected income this turn: +${projectedIncome(state, state.turn.currentPlayer)} ◆`}</div>
+        <div className="income-status" role="status" data-testid="projected-income">{micro && state.turn.phase === 'place' ? 'Mining collected. Commit summons, then End turn.' : phasing && state.turn.phase === 'place' ? 'Mining collected. Upkeep precedes these promotions and summons.' : `Projected income this turn: +${projectedIncome(state, state.turn.currentPlayer)} ◆`}</div>
         <div className="income-recap-slot">{state.lastIncome && <details className="income-recap"><summary>{playerNames[state.lastIncome.player]} collected {state.lastIncome.total} ◆ · turn {state.lastIncome.turnNumber}</summary>
           <ul>{state.lastIncome.takes.map(t => <li key={t.unitId}>{getUnitDefinition(t.definitionId).name} at {String.fromCharCode(65+t.position.x)}{t.position.y+1}: {t.amount}</li>)}</ul>
         </details>}</div>
@@ -996,7 +1007,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
           onStart={() => canReplay && game.lastTurnReplay && startReplay(game.lastTurnReplay)} />}
         <nav className="reference-bar" aria-label="Game references" inert={showReplay}>
           <button onClick={() => setShowUnitShopInspection(true)}>Units</button>
-          <button className="counter-key" aria-label="Element advantages and match stats" title="Each pair beats the next: +1 attack" onClick={() => setShowInsights(true)}>🔥⚡ → 🌿⚙ → 💧🌑 ↻ <span>+1</span>{showAIRecap ? ' •' : ''}</button>
+          <button className="counter-key" aria-label="Element advantages and match stats" title={micro ? 'Fire beats Plant beats Water beats Fire: +1 attack' : 'Each pair beats the next: +1 attack'} onClick={() => setShowInsights(true)}>{micro ? '🔥 → 🌿 → 💧 ↻ ' : '🔥⚡ → 🌿⚙ → 💧🌑 ↻ '}<span>+1</span>{showAIRecap ? ' •' : ''}</button>
           <button onClick={() => setShowInstructions(true)}>How to play</button>
           {online?.onToggleHistory && <button aria-label="Move history" aria-expanded={!!online.historyOpen} aria-controls="room-move-history" onClick={online.onToggleHistory}>History</button>}
           {config.mode === 'ai-vs-ai' && <button onClick={togglePause}>{isPaused ? 'Resume' : 'Pause'}</button>}
@@ -1004,25 +1015,25 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       </footer>
       {showVisualKey && <PlayDialog title="Read the board" onClose={() => setShowVisualKey(false)}><VisualKey /></PlayDialog>}
       {showMenu && <PlayDialog title="Game menu" onClose={() => setShowMenu(false)}>
-        <p>{analysis ? 'Analysis runs locally. You control both sides, and can go backward or forward through the timeline.' : observing ? 'You are observing this match. Reopen the watch link to follow it on any device.' : online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
-        <p>{phasing ? 'After actions, mining and affordable upkeep settle together. Undo Mine & prepare to revisit the action phase. Enable upkeep review to choose releases.' : 'Affordable upkeep is paid automatically. Undo back through your actions to refund it and choose which units to keep.'}</p>
-        {isCurrentPlayerHuman && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Always ask before paying upkeep (optional)</label>}
-        {!online && !analysis && <button title="Copies a compact text report. Shift-click for the full JSON." onClick={e => handleReportPosition(e.shiftKey)}>Report this position</button>}
+        <p>{analysis ? 'Analysis runs locally. You control both sides, and can go backward or forward through the timeline.' : observing ? 'You are observing this match. Reopen the watch link to follow it on any device.' : online ? 'This match is saved on the server. Keep this browser’s seat credential to reconnect. You can undo moves until you end your turn.' : micro ? `This ${MICRO_TITLE} match is saved on this device, separately from Muju Hono Irumbu. Every game uses the 6×6 map with ${MICRO_MAP_RESOURCES} crystals.` : `Your match is saved at phase changes on this device. New games use Unequal routes with ${INITIAL_MAP_RESOURCES} crystals.`}</p>
+        <p>{micro ? 'After actions, your pieces mine automatically. Undo Mine & prepare to revisit the action phase.' : phasing ? 'After actions, mining and affordable upkeep settle together. Undo Mine & prepare to revisit the action phase. Enable upkeep review to choose releases.' : 'Affordable upkeep is paid automatically. Undo back through your actions to refund it and choose which units to keep.'}</p>
+        {isCurrentPlayerHuman && !micro && <label><input type="checkbox" checked={!!state.reviewUpkeep?.[state.turn.currentPlayer]} onChange={e=>setUpkeepReview(state.turn.currentPlayer,e.target.checked)} /> Always ask before paying upkeep (optional)</label>}
+        {!online && !analysis && !micro && <button title="Copies a compact text report. Shift-click for the full JSON." onClick={e => handleReportPosition(e.shiftKey)}>Report this position</button>}
         {!online && !analysis && reportStatus && <p role="status">{reportStatus}</p>}
-        <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>Choose game mode</button>
+        <button onClick={() => { setShowMenu(false); handleBackToMenuClick(); }}>{micro ? `${MICRO_TITLE} menu` : 'Choose game mode'}</button>
         {analysis && <button onClick={() => { resetGame(); setShowMenu(false); }}>Reset analysis</button>}
         {!online && !analysis && <button onClick={() => { if (window.confirm('Start a new game? This replaces your saved match.')) { handlePlayAgain(); setShowMenu(false); } }}>New game</button>}
         {online && isCurrentPlayerHuman && <button onClick={() => { if (window.confirm('Resign this game? Your opponent will win.')) { game.resign(); setShowMenu(false); } }}>Resign</button>}
         <a href="https://ashkie.com/">Visit Ashkie.com ↗</a>
       </PlayDialog>}
       {showUnitShopInspection && <PlayDialog title="Unit guide" onClose={() => setShowUnitShopInspection(false)}>
-        <UnitShop phasing={phasing} resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board} selectedId={shopSelectedId} onSelectId={setShopSelectedId} inspectOnly />
+        <UnitShop phasing={phasing} micro={micro} resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board} selectedId={shopSelectedId} onSelectId={setShopSelectedId} inspectOnly />
       </PlayDialog>}
       {showInsights && <PlayDialog title="Elements & match stats" onClose={() => { setShowInsights(false); handleDismissRecap(); }}>
-        <ElementLegend />
+        {micro ? <p>🔥 Fire beats 🌿 Plant, 🌿 Plant beats 💧 Water, 💧 Water beats 🔥 Fire.</p> : <ElementLegend />}
         <p>Advantage adds 1 attack; disadvantage subtracts 1. Attack previews include this bonus.</p>
-        {state.lastUpkeep && <p>Last upkeep: {playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid}. Released: {state.lastUpkeep.released.map(u=>getUnitDefinition(u.definitionId).name).join(', ') || 'none'}.</p>}
-        <p>Both banks, reserves, purchases and promotions are public. {phasing ? 'After actions: mine, pay upkeep, then promote and commit summons. Arrivals resolve at your next turn start.' : 'Income arrives at turn end; upkeep is paid at the start of the next turn.'}</p>
+        {state.lastUpkeep && !micro && <p>Last upkeep: {playerNames[state.lastUpkeep.player]} paid {state.lastUpkeep.paid}. Released: {state.lastUpkeep.released.map(u=>getUnitDefinition(u.definitionId).name).join(', ') || 'none'}.</p>}
+        <p>Both banks, reserves, purchases and promotions are public. {micro ? 'After actions: mine, then commit summons. Arrivals resolve at your next turn start.' : phasing ? 'After actions: mine, pay upkeep, then promote and commit summons. Arrivals resolve at your next turn start.' : 'Income arrives at turn end; upkeep is paid at the start of the next turn.'}</p>
         {showAIRecap && <AIRecap actions={opponentAI.lastTurnActions} onDismiss={handleDismissRecap} />}
         {config.controls.white === 'ai' && <AIConsole title={config.mode === 'vs-ai' ? 'AI Console' : 'AI 1 Console'} debug={whiteAI.lastDebug} isThinking={whiteAI.isThinking} />}
         {config.controls.black === 'ai' && <AIConsole title="AI Console" debug={blackAI.lastDebug} isThinking={blackAI.isThinking} />}

@@ -34,6 +34,18 @@ export const TurnFlag = {
   HOME_RACE: 2048,
   HOME_FORTIFY: 4096,
   DISRUPT: 8192,
+  /**
+   * STRATEGOS W1.9 (plan `~/.claude/plans/can-you-respond-to-piped-book.md`,
+   * B.2 step W1.9): a ROOT candidate the strategic layer asked for — a
+   * ForceContact line (`strategy/contact.ts`) or a Hold line
+   * (`strategy/hold.ts`), injected through `gen/generate.ts
+   * setStrategyWitness` and always carried together with `FORCED`. Set only
+   * when `HardConfig.searchFix.strategyPlans` is on (`hard@strategos`); no
+   * other profile ever produces a turn with this bit. Not tactical: a plan
+   * line is ordered by `search/order.ts ORDER_STRATEGY` at the root, never
+   * extended by quiescence.
+   */
+  STRATEGY: 16384,
 } as const;
 export type TurnFlag = (typeof TurnFlag)[keyof typeof TurnFlag];
 
