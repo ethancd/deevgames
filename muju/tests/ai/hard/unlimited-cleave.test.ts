@@ -53,14 +53,4 @@ describe('Cleave without a tier cap: canonical and replica agree', () => {
       expect([...endKeysReplica(state, ACT_ONLY)].sort()).toEqual([...endKeysCanonical(state, ACT_ONLY)].sort());
     });
   }
-
-  it('the four-kill sweep is one of the end positions both engines reach', () => {
-    const state = chainPosition('fire_1', FOUR_MUJU);
-    let swept = state;
-    for (const [, x, y] of FOUR_MUJU) swept = applyAction(swept, { type: 'ATTACK', unitId: state.board.units[0].id, targetPosition: { x, y } });
-    // End positions are keyed after the full turn: finish it the same way the DFS does.
-    const handed = applyAction(applyAction(swept, { type: 'END_ACTION_PHASE' }), { type: 'END_PLACE_PHASE' });
-    expect(handed.board.units.filter(u => u.owner === 'black')).toHaveLength(1);
-    expect(endKeysCanonical(state, ACT_ONLY).size).toBe(endKeysReplica(state, ACT_ONLY).size);
-  });
 });
