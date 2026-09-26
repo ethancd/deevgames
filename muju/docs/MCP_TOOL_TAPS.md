@@ -114,3 +114,60 @@ turn that no longer exists; these are the additions.
 - Filtering tool output so hard that the board itself was hidden.
 - Ninety seconds per turn on a 30-second delay. Pre-compute candidates during
   the opponent's turn; the wait result already includes the briefing.
+
+## Classical turn loop (5–10 minutes per turn)
+
+Written after the 2026-09-26 game (White lost by elimination at 108–131 mined).
+Every step that the game skipped is marked with what it cost.
+
+**The tool calls are fixed, not judgment calls.** Each call costs under a second
+of server time; the risk on a long turn is skipping the one call that would have
+shown the losing line. Judgment goes into *reading* results: which topics or
+targets to add, whether to split a truncated analysis, which plan to pick.
+
+| When | Tools |
+|---|---|
+| Every turn, no skipping (10 tools, ~13 calls) | `muju_wait_for_change`, `muju_clock`, `muju_staged`, `muju_stage`, `muju_observe`, `muju_history`, `muju_legal_actions`, `muju_analyze` (×4), `muju_preview`, `muju_stage` or `muju_play` |
+| Once, before the game | `muju_rules`, `muju_time_awareness`, `muju_create_room` / `muju_join_room` |
+| Only when needed | `muju_cancel_stage` (a staged batch is wrong and not being replaced) |
+
+The Strategos Plate is read at fixed points too; each step names its section.
+
+0. **Opponent's turn (free time).** Loop `muju_wait_for_change({afterRevision,
+   briefing:true, player})`; draft candidates against the expected board.
+1. **Floor (~30 s).** `muju_clock`, `muju_staged`, then `muju_stage` the simplest
+   safe batch ending in `END_PLACE_PHASE` with `commitWhenRemainingMs` ≈ 90000.
+2. **Read and diff (~1 min).** `muju_observe({briefing:true})` and `muju_history`
+   for exactly what the last turn did (paths, damage, promotions, cancelled
+   summons). *Plate: "If they… → you"* — name their campaign, read your answer.
+3. **Pick the verdict channel (~1 min).** `muju_analyze(["economy","units","matchups"])`.
+   *Plate: three verdict channels, "First, read the clock"* — estimate Home,
+   Clock and Attrition ETAs and grade each proven/bounded/projected; HOLD if you
+   win the kill clock on projected mined totals, FORCE CONTACT if you lose it.
+   *Plate: Guiding Lights.*
+4. **Economy and territory (~1 min).** `muju_analyze(["economy","spawn","mobility"])`.
+   Any miner at `left` ≤ 3 gets its move to fresh cells planned this turn;
+   keep spawn count ≥ 2; list which unit supports each pending summon.
+   *Plate: Goal Codex I–III and the reserve map.* (Skipped 2026-09-26: the home
+   corner was mined out by turn 5 and income never recovered.)
+5. **Tactics (~2 min).** `muju_legal_actions`, then
+   `muju_analyze(["opportunities","exchange","reach"])` for kills including
+   stacked damage and Cleave. For every enemy pending summon, find its single
+   supporting unit or rectangle: kill it, stand on the square, or step inside.
+   *Plate: Combat Algebra, Element Cycle.* (Used 2026-09-26: six enemy summons
+   cancelled this way.)
+6. **Verify the whole turn (~2 min, never skipped).** `muju_preview` the full
+   batch; then `muju_analyze(["threats","survival","reply","checkmate"],
+   deep:true)` with the batch as `hypotheticalActions` and every own unit as a
+   target. Require `proven_impossible` for the home occupant, both home
+   neighbours and any unit worth more than a Hi. *Plate: Home Corner* — the home
+   has two open neighbours; never let one fall to a two-unit combo, and never
+   hold it with plant against fire. (Lost 2026-09-26: Irumbu 2 + Kagari 5 on a
+   defence-4 Sach'akuna at A1.)
+7. **Commit (~30 s).** Re-stage with a new `requestId` or `muju_play`; confirm with
+   `muju_staged` or the receipt and `muju_clock`. *Plate: Five Clocks* — note
+   which clock moves next turn, then return to step 0.
+
+Bank under about 3 minutes: collapse to steps 1 → 6 (threats only) → 7.
+Hard gates: never commit with a `proven_possible` on home or its neighbours, or a
+batch that does not end in `END_PLACE_PHASE`.
