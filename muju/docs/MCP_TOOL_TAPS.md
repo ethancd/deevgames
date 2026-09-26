@@ -131,7 +131,7 @@ targets to add, whether to split a truncated analysis, which plan to pick.
 | Once, before the game | `muju_rules`, `muju_time_awareness`, `muju_create_room` / `muju_join_room` |
 | Only when needed | `muju_cancel_stage` (a staged batch is wrong and not being replaced) |
 
-The Strategos Plate is read at fixed points too; each step names its section.
+The [Strategos Plate](STRATEGOS_PLATE.jpg) is read at fixed points too; each step names its section.
 
 0. **Opponent's turn (free time).** Loop `muju_wait_for_change({afterRevision,
    briefing:true, player})`; draft candidates against the expected board.
