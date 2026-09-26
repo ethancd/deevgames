@@ -200,6 +200,22 @@ describe('Claude quota admission (claude.ai subscription headroom)', () => {
     expect(claudeQuotaDecision({ status: 'rejected', unifiedWindows: windows(0.1, 0.1) }, 0.85).ok).toBe(false);
     expect(claudeQuotaDecision({ status: 'allowed', isUsingOverage: true }, 0.85).ok).toBe(false);
   });
+
+  it('stops holding on a window once its resetsAt has passed (the reading goes stale when Claude games stop)', async () => {
+    const { claudeQuotaDecision } = await import('../../tools/llm-pilot/dispatch');
+    const now = 1_790_600_000_000;
+    const past = now / 1000 - 60, future = now / 1000 + 60;
+    const reading = (sevenResets: number, status = 'allowed') => ({ status, unifiedWindows: {
+      five_hour: { utilization: 0.08, resetsAt: past }, seven_day: { utilization: 0.86, resetsAt: sevenResets } } });
+    expect(claudeQuotaDecision(reading(future), 0.85, now).ok).toBe(false);
+    expect(claudeQuotaDecision(reading(past), 0.85, now).ok).toBe(true);
+    // A non-allowed status holds while any window is live, and not once every window has reset.
+    expect(claudeQuotaDecision(reading(future, 'rejected'), 0.85, now).ok).toBe(false);
+    expect(claudeQuotaDecision(reading(past, 'rejected'), 0.85, now).ok).toBe(true);
+    // A window with no resetsAt never counts as reset; overage holds even on a stale reading.
+    expect(claudeQuotaDecision({ status: 'allowed', unifiedWindows: { seven_day: { utilization: 0.9 } } }, 0.85, now).ok).toBe(false);
+    expect(claudeQuotaDecision({ ...reading(past), isUsingOverage: true }, 0.85, now).ok).toBe(false);
+  });
 });
 
 describe('timeoutDuringOutage (outages are pauses, never results)', () => {

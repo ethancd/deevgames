@@ -213,12 +213,18 @@ export interface ClaudeRateLimitInfo {
   unifiedWindows?: Record<string, { utilization?: number; resetsAt?: number }>;
 }
 /** Holds Claude admissions when any window is at/over the cap, the status is anything but
- * allowed/allowed_warning, or overage is in use (the org disables overage, so that would be new). */
-export function claudeQuotaDecision(latest: ClaudeRateLimitInfo | undefined, maxUtilization = CLAUDE_MAX_UTILIZATION): { ok: boolean; detail: string } {
+ * allowed/allowed_warning, or overage is in use (the org disables overage, so that would be new).
+ * The reading comes from the newest player transcript, so once Claude games stop it goes stale: a
+ * window whose `resetsAt` (epoch seconds) has passed no longer binds, and a reading whose every
+ * window has reset no longer holds on its status either. Overage always holds. */
+export function claudeQuotaDecision(latest: ClaudeRateLimitInfo | undefined, maxUtilization = CLAUDE_MAX_UTILIZATION, nowMs = Date.now()): { ok: boolean; detail: string } {
   if (!latest) return { ok: true, detail: 'no Claude usage signal yet' };
   if (latest.isUsingOverage) return { ok: false, detail: 'Claude reports overage in use; Claude admission halted' };
-  if (latest.status && latest.status !== 'allowed' && latest.status !== 'allowed_warning') return { ok: false, detail: `Claude status ${latest.status} (${latest.rateLimitType ?? '?'})` };
-  const windows = Object.entries(latest.unifiedWindows ?? {});
+  const hasReset = (w: { resetsAt?: number }) => w.resetsAt !== undefined && w.resetsAt * 1000 <= nowMs;
+  const allWindows = Object.entries(latest.unifiedWindows ?? {});
+  const stale = allWindows.length > 0 && allWindows.every(([, w]) => hasReset(w));
+  if (!stale && latest.status && latest.status !== 'allowed' && latest.status !== 'allowed_warning') return { ok: false, detail: `Claude status ${latest.status} (${latest.rateLimitType ?? '?'})` };
+  const windows = allWindows.filter(([, w]) => !hasReset(w));
   const full = windows.find(([, w]) => (w.utilization ?? 0) >= maxUtilization);
   const summary = windows.map(([name, w]) => `${name} ${Math.round((w.utilization ?? 0) * 100)}%`).join(', ') || latest.status || 'unknown';
   if (full) return { ok: false, detail: `Claude ${full[0]} window ${Math.round((full[1].utilization ?? 0) * 100)}% used (cap ${Math.round(maxUtilization * 100)}%); queued until reset` };
