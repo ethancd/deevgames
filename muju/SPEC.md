@@ -147,12 +147,14 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   once subtracted spent actions and restarted the clock is history, and no
   stored artefact is reinterpreted under a ruleset it was not recorded with.
   Completed results remain final. See §1 "Stored artefacts by rules revision".
-- **Optional Black crystal handicap:** New games may grant Black any whole
-  number from 1 to 20 starting crystals (off/0 by default). White still starts
+- **Optional Black crystal handicap:** New games may grant Black 0.5, 1.5, 2.5, …, 19.5 starting crystals (off/0 by default). White still starts
   with 0. The handicap never changes the opening phase: both players begin their
   first turn in Act, Black included. The grant is separate from mined income,
   is awarded only at game creation, and persists in saves, online rooms and
-  rematches. Both sides retain four actions.
+  rematches with a current grant. Existing integer-grant games retain their
+  stored values; a local restart of a legacy integer-grant game uses Off.
+  This changes new-game setup only; stored play keeps its rules revision.
+  Both sides retain four actions.
 - **White moves first.** Every first turn begins in Act (§2); crystals are only
   ever spent in Prepare, at the end of a turn.
 

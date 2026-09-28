@@ -612,6 +612,12 @@ export class Replica {
 
   /** `GameState` -> `PackedState` (DESIGN §3.1). Throws `PackError`. */
   pack(state: GameState, out: PackedState = allocState()): PackedState {
+    // Integer packed banks/ledgers cannot represent half-crystal grants yet.
+    // Fail before truncation so the browser's existing canonical V2 fallback runs.
+    if (!Number.isInteger(state.blackCrystalHandicap ?? 0) ||
+        !Number.isInteger(state.players.white.resources) || !Number.isInteger(state.players.black.resources)) {
+      throw new PackError('pack: fractional crystal balances require the canonical V2 engine');
+    }
     if (state.phase === 'setup') throw new PackError('pack: phase "setup" has no packed representation');
     // The replica is PHASING ONLY (DESIGN M2 item A). A missing ruleset means
     // Standard (rules.ts:4), and a Standard position is NEVER reinterpreted:

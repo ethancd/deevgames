@@ -1,6 +1,6 @@
 import { LEGACY_INACTIVITY_LIMIT, resolveInactivityDraw } from '../game/inactivity';
 import type { GameState, PlayerId } from '../game/types';
-import { getActionsPerTurn, isActionsPerTurn, isBlackCrystalHandicap, isRuleset } from '../game/rules';
+import { getActionsPerTurn, isActionsPerTurn, isStoredBlackCrystalHandicap, isRuleset } from '../game/rules';
 import { startHistory, type LocalGameHistory } from '../game/analysis';
 import { DEFAULT_AI_PACE, isAIPace, type AIPace } from '../ai/turnTime';
 import type { Variant } from '../game/types';
@@ -361,7 +361,7 @@ function validateGameState(state: unknown, legacy = false): state is GameState {
     !Number.isInteger(p.cost) || p.cost < 0 || !p.position || !Number.isInteger(p.position.x) || !Number.isInteger(p.position.y) ||
     p.position.x < 0 || p.position.x > 9 || p.position.y < 0 || p.position.y > 9))) return false;
 
-  if (s.blackCrystalHandicap !== undefined && !isBlackCrystalHandicap(s.blackCrystalHandicap)) return false;
+  if (s.blackCrystalHandicap !== undefined && !isStoredBlackCrystalHandicap(s.blackCrystalHandicap)) return false;
 
   // Check board has cells and units
   const board = s.board as Record<string, unknown>;

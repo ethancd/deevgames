@@ -1,7 +1,7 @@
 import { emptyRecording, recordAction, rewindRecording, type ReplayRecording } from '../game/replay';
 import { useReducer, useCallback, useMemo, useState, useEffect } from 'react';
 import type { GameState, GameAction, GameConfig, Position } from '../game/types';
-import { getActionsPerTurn, isMicro } from '../game/rules';
+import { getActionsPerTurn, isMicro, isBlackCrystalHandicap } from '../game/rules';
 import { createMicroGameState, microAttackSpent } from '../game/micro';
 import { automaticUpkeepUndo } from '../game/turn';
 import type { AIAction } from '../ai/types';
@@ -90,7 +90,9 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
 
     case 'RESET_GAME': {
       if (isMicro(state)) return createMicroGameState();
-      return createInitialGameState(undefined, getActionsPerTurn(state), state.blackCrystalHandicap, state.ruleset);
+      // A restart is a new game: legacy integer grants return to Off.
+      const grant = state.blackCrystalHandicap ?? 0;
+      return createInitialGameState(undefined, getActionsPerTurn(state), isBlackCrystalHandicap(grant) ? grant : 0, state.ruleset);
     }
 
     case 'RESTORE_STATE': {
@@ -116,7 +118,9 @@ function getInitialSession(options: InitialGameOptions): ReplaySession {
   const saved = options.newGame ? null : loadGameHistory();
   // Phasing is the only ruleset a new local game can be started under; a caller
   // that says nothing gets it rather than `board.ts`'s historical default.
-  const state = (saved && loadGameState()) ?? createInitialGameState(undefined, options.actionsPerTurn, options.blackCrystalHandicap, options.ruleset ?? 'phasing');
+  const resumed = saved && loadGameState();
+  if (!resumed && !isBlackCrystalHandicap(options.blackCrystalHandicap ?? 0)) throw new Error('Invalid new-game Black crystal handicap');
+  const state = resumed || createInitialGameState(undefined, options.actionsPerTurn, options.blackCrystalHandicap, options.ruleset ?? 'phasing');
   return { state, history: saved ?? startHistory(state, true), historyUndoLengths: [],
     recording: emptyRecording(), undoLengths: [], turnStartUndo: null };
 }

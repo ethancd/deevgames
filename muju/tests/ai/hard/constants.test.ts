@@ -87,8 +87,8 @@ describe('R13 constants agreement (canonical engine)', () => {
     expect(Number(match![1])).toBe(20000);
   });
 
-  it('MAX_BLACK_CRYSTAL_HANDICAP === 20', () => {
-    expect(MAX_BLACK_CRYSTAL_HANDICAP).toBe(20);
+  it('MAX_BLACK_CRYSTAL_HANDICAP === 19.5', () => {
+    expect(MAX_BLACK_CRYSTAL_HANDICAP).toBe(19.5);
   });
 
   it('lab/solver/model.ts ACTIONS === 4', () => {

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 // Phasing opens every turn in the Act phase, whatever the handicap can afford,
 // so the granted crystals are read from Black's bank rather than from a place
 // phase that Standard used to skip when nothing was purchasable.
-for (const amount of [1, 2, 3, 20]) test(`local ${amount}-crystal handicap starts and resumes Black's opening`, async ({ page }) => {
+for (const amount of [0, 0.5, 2.5, 19.5]) test(`local ${amount}-crystal handicap starts and resumes Black's opening`, async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./');
   await page.getByRole('button', { name: 'Pass & Play' }).click();
@@ -24,7 +24,7 @@ for (const amount of [1, 2, 3, 20]) test(`local ${amount}-crystal handicap start
   await expect(black).toContainText(`Player 2 ◆ ${amount}`);
 });
 
-for (const amount of [2, 20]) test(`online ${amount}-crystal handicap reaches the authoritative room`, async ({ page, request }) => {
+for (const amount of [0.5, 19.5]) test(`online ${amount}-crystal handicap reaches the authoritative room`, async ({ page, request }) => {
   await page.goto('./?online=1');
   await page.getByRole('combobox', { name: 'Your side' }).selectOption('black');
   await page.getByRole('combobox', { name: 'Black crystal handicap' }).selectOption(String(amount));

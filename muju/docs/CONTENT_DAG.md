@@ -231,16 +231,16 @@ Academy lessons. The Academy recordings still teach the previous turn order and
 carry a course notice saying so; that notice is part of the consistency check,
 not an exception to it.
 
-**Current state (2026-09-18):** Cloudflare Pages publishing is paused, so the Render
-host is Muju's canonical and only live-updated release. Treat `static-deploy` as
-**blocked (no credentials)** rather than skipped: still build and smoke-test `_site`,
-record the block, and verify changed behavior on Render. The Pages hub stays up and
-links to Render; Muju links back to the hub with an absolute URL because the Render
-root redirects to `/muju/`.
+**Release access verified 2026-09-27:** GitHub Pages workflow publishing still
+lacks credentials, but the local Wrangler OAuth session can publish the existing
+`deevgames` Pages project, including `deevgames.ashkie.com`. Build and smoke-test
+`_site`, then deploy with Wrangler. Verify credentials on each release; a green
+GitHub workflow alone is still not deployment evidence. Render remains the
+canonical online/MCP host and serves the browser too.
 
 | Target | Package / release instructions | Required live evidence |
 |---|---|---|
-| Browser games: `https://deevgames.pages.dev/muju/` — **publishing paused; frozen copy, record as blocked** | Root `README.md`, `build-all.sh`, `.github/workflows/deploy.yml`; publish `_site` to Pages project `deevgames`. | Actual deployment step and source revision, fresh page/assets, changed piece/rule, AI worker, save/refresh and public skill copies. The workflow can succeed without publishing if credentials are missing. |
+| Browser games: `https://deevgames.pages.dev/muju/` | Root `README.md`, `build-all.sh`, `.github/workflows/deploy.yml`; publish `_site` to Pages project `deevgames`. | Actual deployment step and source revision, fresh page/assets, changed piece/rule, AI worker, save/refresh and public skill copies. The workflow can succeed without publishing if credentials are missing. |
 | Online game and MCP: `https://deevgames-muju.onrender.com` | `ONLINE.md`, `Dockerfile`, `compose.yaml`; inspect the current Render service configuration for its release route. | `/api/muju/health`, `/muju/`, `/SKILL.md`, tool discovery and current rules; changed-rule preview/play in a disposable room; persistent rooms survive restart. A Pages deployment does not deploy this host. |
 | Academy: `https://ashkie.com/muju-academy/` | Separate `ethancd/ashkie-pages` checkout and workflow; `academy/build-release.py`; website `./check`. Academy text sources are tracked here; the rendered audio and video the builder publishes are local-only and archived at `~/Archives/muju-media-2026-09-18/academy` (`MANIFEST.sha256`), so restore or re-render that media before packaging. | Current page/release manifest, exact media hashes, HTTP range seeking, historical redirects and retired assets; visual check of the live page. Copy the adapted `academy/verify-live.py` to website `tools/verify_muju_videos.py` and run it there, not in `deevgames`. |
 

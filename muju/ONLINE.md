@@ -47,14 +47,17 @@ use the updated Plant stats. Refresh an open browser after the release. See
 ## Black crystal handicap
 
 Local new-game setup and **Play online → Host a game** offer **Black crystal
-handicap**: Off, or any whole number from 1 to 20. Black starts with
+handicap**: Off, or 0.5, 1.5, 2.5, …, 19.5. Black starts with
 exactly that many crystals; White starts with 0 and moves first. The handicap
 never changes the opening phase: both players begin their first turn in Act, and
 crystals are first spent in that turn's Prepare. Both sides retain four actions.
 
 HTTP room creation and `muju_create_room` accept `blackCrystalHandicap`, for
-example `{ "name": "Host", "side": "white", "blackCrystalHandicap": 8 }`.
-Omit it or use 0 to disable; fractions and values outside 0–20 are rejected.
+example `{ "name": "Host", "side": "white", "blackCrystalHandicap": 8.5 }`.
+Omit it or use 0 to disable; nonzero integers, other fractions and values outside 0–19.5 are rejected.
+Existing rooms and saves retain their original grants; restarting a legacy
+integer-handicap local game starts with Off. Hard AI uses its canonical V2
+fallback for fractional grants until its packed representation is upgraded.
 The setting belongs to Black regardless of the host's seat, is fixed at creation,
 and appears in room state, MCP observations and `muju_rules`. Saves and room
 restarts retain it; the starting grant is separate from mined income.

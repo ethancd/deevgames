@@ -30,7 +30,7 @@ describe('MICRO MUJU rooms', () => {
 
   it('refuses a handicap or a different action budget, and keeps Prime at four', () => {
     const store = open();
-    expect(() => store.create({ name: 'Host', variant: 'micro', blackCrystalHandicap: 2 })).toThrow(/two actions per turn and no crystal handicap/);
+    expect(() => store.create({ name: 'Host', variant: 'micro', blackCrystalHandicap: 2.5 })).toThrow(/two actions per turn and no crystal handicap/);
     expect(() => store.create({ name: 'Host', variant: 'micro', actionsPerTurn: 4 })).toThrow(/two actions per turn/);
     expect(() => store.create({ name: 'Host', actionsPerTurn: 2 })).toThrow(/four actions/);
     expect(store.create({ name: 'Host' }).room.state.actionsPerTurn).toBe(4);

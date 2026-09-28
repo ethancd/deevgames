@@ -10,13 +10,11 @@ every difficulty. [Current rules](muju/SPEC.md).
 ===
 
 Play Muju at **https://deevgames-muju.onrender.com/muju/** — the Render host is Muju's
-canonical home and the only Muju release currently being updated. The games hub,
-FORGE and Oracle are at **https://deevgames.pages.dev**, also linked from
-**https://ashkie.com**; the hub's Muju card and Muju's own back-links cross between the
-two hosts with absolute URLs. Cloudflare Pages publishing is paused (no deploy
-credentials), so the Pages copy of `/muju/` is frozen and is not a release target.
-The custom domain **deevgames.ashkie.com** is registered with Pages and awaits its
-DNS CNAME to `deevgames.pages.dev` before the home-page link can switch to it.
+canonical online/MCP home. The games hub, FORGE, Oracle and browser Muju are at
+**https://deevgames.pages.dev** and **https://deevgames.ashkie.com**, also linked
+from **https://ashkie.com**. The hub's Muju card and Muju's own back-links cross
+between the hosts with absolute URLs. Local Wrangler OAuth publishing was
+verified on 2026-09-27; the GitHub workflow still lacks publishing credentials.
 The current release hosts Muju Hono Irumbu, FORGE, and Oracle of Delve plus the
 design portfolio. These are browser games; Oracle is a short combat prototype.
 

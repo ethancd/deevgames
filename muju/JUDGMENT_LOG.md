@@ -687,3 +687,17 @@ User-requested Metal ATK/DEF/SPD/MINE: 1/3/0/3, 1/4/1/4, 2/5/2/5; rename Inyan t
   high in evidence — reverting would void every `muju-phasing-4` measurement
   the same way this change voids `muju-phasing-3` ones, and upgraded rooms
   could not be restored to their old stamp.
+
+
+## 2026-09-27 — Half-crystal handicap setup
+
+Owner request: new-game handicap is Off (0), or 0.5, 1.5, …, 19.5.
+Browser setup and HTTP/MCP creation share those choices. Mining, prices and
+upkeep remain integral, so the half persists in Black's bank and mined total.
+Stored integer grants and recorded experiments are preserved, not rounded.
+A local restart creates a new game and disables a legacy integer grant.
+This is a setup-policy change, not reinterpretation of stored play; the current
+muju-phasing-4 transition revision remains unchanged. Hard's packed integer
+representation must reject fractional state and use the existing V2 fallback
+until the roadmap's native-half implementation passes parity checks.
+See docs/changes/2026-09-27-half-crystal-handicap.md for scope and follow-up DAG.

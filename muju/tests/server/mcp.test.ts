@@ -392,10 +392,10 @@ it.each([false, true])('discovers, creates and plays a crystal-handicap room thr
   const client = await clientFor(url, stdio);
   const discovery = await client.listTools();
   const schema = discovery.tools.find(t => t.name === 'muju_create_room')!.inputSchema;
-  expect(schema.properties!.blackCrystalHandicap).toMatchObject({ type: 'integer', minimum: 0, maximum: 20, default: 0 });
+  expect(schema.properties!.blackCrystalHandicap).toMatchObject({ type: 'number', enum: [0, ...Array.from({ length: 20 }, (_, i) => i + 0.5)], default: 0 });
   const liveRules = await call(client, 'muju_rules');
-  expect(liveRules.blackCrystalHandicap).toMatchObject({ default: 0, min: 1, max: 20 });
-  for (const amount of [1, 2, 3, 20]) {
+  expect(liveRules.blackCrystalHandicap).toMatchObject({ default: 0, min: 0.5, max: 19.5, step: 1 });
+  for (const amount of [0, 0.5, 1.5, 19.5]) {
     const host = await call(client, 'muju_create_room', { name: 'Handicap host', side: 'black', blackCrystalHandicap: amount });
     expect(host.room).toMatchObject({ blackCrystalHandicap: amount, players: { black: { resources: amount }, white: { resources: 0 } } });
     const guest = await call(client, 'muju_join_room', { roomId: host.credentials.roomId, inviteCode: host.invitation.inviteCode, name: 'White' });
@@ -405,7 +405,7 @@ it.each([false, true])('discovers, creates and plays a crystal-handicap room thr
     expect(turn.turn).toMatchObject({ currentPlayer: 'black', phase: 'action', actionsRemaining: 4 });
     expect(turn.players.black.resources).toBe(amount);
   }
-  for (const amount of [-1, 21, 1.5]) {
+  for (const amount of [-1, 20, 1, 2, 0.25, 20.5]) {
     const rejected = await client.callTool({ name: 'muju_create_room', arguments: { name: 'Invalid', blackCrystalHandicap: amount } });
     expect(rejected.isError).toBe(true);
   }
