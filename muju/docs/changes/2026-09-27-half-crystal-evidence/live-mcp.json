@@ -1,0 +1,44 @@
+{
+  "verifiedAt": "2026-09-28T04:35:43.125Z",
+  "host": "https://deevgames-muju.onrender.com",
+  "health": {
+    "ok": true,
+    "game": "Muju Hono Irumbu",
+    "protocol": 1
+  },
+  "roomId": "2107151838140a19c5fb97636f4b4b55",
+  "handicap": 9.5,
+  "blackBank": 9.5,
+  "mcpDiscovery": {
+    "type": "number",
+    "enum": [
+      0,
+      0.5,
+      1.5,
+      2.5,
+      3.5,
+      4.5,
+      5.5,
+      6.5,
+      7.5,
+      8.5,
+      9.5,
+      10.5,
+      11.5,
+      12.5,
+      13.5,
+      14.5,
+      15.5,
+      16.5,
+      17.5,
+      18.5,
+      19.5
+    ],
+    "default": 0,
+    "description": "Creation only. Grant Black 0.5, 1.5, …, 19.5 starting crystals. Omit or use 0 for no handicap. White still moves first. Both players start with actions regardless of handicap."
+  },
+  "previewSucceeded": true,
+  "playSucceeded": true,
+  "invalidWholeAndQuarterRejected": true,
+  "skillUpdated": true
+}

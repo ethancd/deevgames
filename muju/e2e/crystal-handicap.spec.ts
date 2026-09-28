@@ -51,3 +51,18 @@ for (const amount of [0.5, 19.5]) test(`online ${amount}-crystal handicap reache
       data: { expectedRevision: room.revision, requestId: `handicap-finish-${amount}`, actions: [{ type: 'RESIGN' }] } });
   }
 });
+
+test('Hard safely finishes its turn with a 9.5 grant using the canonical fallback', async ({ page }) => {
+  await page.goto('./?hardMs=1000');
+  await page.getByRole('button', { name: 'vs AI Play against the computer', exact: true }).click();
+  await page.getByRole('radio', { name: 'Black', exact: true }).check();
+  await page.getByLabel('AI Difficulty', { exact: true }).selectOption('hard');
+  await page.getByRole('combobox', { name: 'Black crystal handicap' }).selectOption('9.5');
+  await page.getByRole('button', { name: 'Start Game', exact: true }).click();
+  await expect(page.locator('.turn-strip')).toContainText('You · Turn 1', { timeout: 20000 });
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('elemental-tactics-save')!).state);
+  expect(saved.turn.currentPlayer).toBe('black');
+  expect(saved.players.black.resources).toBe(9.5);
+  expect(saved.blackCrystalHandicap).toBe(9.5);
+  expect(saved.lastIncome.player).toBe('white');
+});

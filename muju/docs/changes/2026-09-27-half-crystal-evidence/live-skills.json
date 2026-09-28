@@ -1,0 +1,17 @@
+[
+  {
+    "url": "https://deevgames.pages.dev/muju/skills/muju-hono-irumbu/SKILL.md",
+    "sha256": "22264d94ac57168137c338aecfa8abb45ae0970abecd036c5ca16263e97a53df",
+    "halfCrystalContract": true
+  },
+  {
+    "url": "https://deevgames.pages.dev/muju/skills/muju-hono-tanka/SKILL.md",
+    "sha256": "b1e032a17ee0e440c815d4a50c322b8872b771221280bccc4833b368399e6ffe",
+    "halfCrystalContract": true
+  },
+  {
+    "url": "https://deevgames-muju.onrender.com/SKILL.md",
+    "sha256": "22264d94ac57168137c338aecfa8abb45ae0970abecd036c5ca16263e97a53df",
+    "halfCrystalContract": true
+  }
+]

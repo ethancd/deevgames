@@ -1,0 +1,21 @@
+
+> elemental-tactics@0.1.0 pretest
+> npm run ai:wasm
+
+
+> elemental-tactics@0.1.0 ai:wasm
+> asc --config asconfig.json
+
+
+> elemental-tactics@0.1.0 test
+> vitest run --maxWorkers=4
+
+
+ RUN  v4.1.11 /Users/ethancd/src/deevgames/muju
+
+
+ Test Files  239 passed (239)
+      Tests  3388 passed | 17 skipped (3405)
+   Start at  23:29:41
+   Duration  751.82s (transform 12.38s, setup 12.47s, import 48.44s, tests 2396.56s, environment 37.04s)
+

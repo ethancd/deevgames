@@ -96,6 +96,8 @@ below; it does not mean the entire DAG has been updated.
 - Focused game/save/UI/server/MCP suite: 90 tests passed in 6 files.
 - Full online browser suite: 85 tests passed (mobile/desktop, AI worker,
   room lifecycle, half-grant local/online play and reload).
+- Additional final browser regression: all 7 handicap tests passed, including
+  real Hard AI completing its opening through V2 fallback at 9.5.
 - `build-all.sh`: all three games built; `verify_site.py` passed.
 - `tools/smoke-site.cjs`: passed at 390px and 834px (all three games and refresh).
 - DAG checker passed; all 14 planner tests passed.
@@ -104,5 +106,26 @@ below; it does not mean the entire DAG has been updated.
 - Cloudflare project verified: `deevgames`, with `deevgames.pages.dev` and
   `deevgames.ashkie.com`; local OAuth has Pages write access. Latest GitHub
   workflow 36249577884 skipped publication, so local publication is required.
-- Full suite and live publication evidence pending; see accompanying release
-  evidence after deployment.
+- Source release: `34a589af6c8437d3a77aae694bc43a053304859d`, pushed to master.
+- Pages production deployed via Wrangler: https://d9777b43.deevgames.pages.dev
+  (production alias https://deevgames.pages.dev). Live selector verified exact
+  21 choices including 9.5. The custom domain's `/muju/` follows Render's build;
+  after Render rollout its selector also verified the same half-crystal choices.
+- Render deployment `dep-dasush0u01pc73fe7ghg` serves the release commit.
+  Live MCP discovery advertises the exact enum; a disposable 9.5 room was
+  created, joined, previewed and played. Black retained exactly 9.5 after
+  White's turn. Invalid integer 9, quarter 0.25 and out-of-range values were
+  rejected. The current skill and rules payload describe 19.5 as maximum.
+  The disposable QA room was resigned. See `2026-09-27-half-crystal-evidence/live-mcp.json`.
+- Existing public room `942e8d33b1a14c7101f1738c5cf78e2c` retained identical
+  GameState and revision 58 across the Render restart (read-only comparison).
+- Academy deliberately not published; ordered roadmap above remains outstanding.
+- Full broad regression suite passed under Node 24.21.0: 239 files passed,
+  3,388 tests passed, 17 existing skips (751.82 seconds). The repository's
+  pre-existing Phasing quarantine remains excluded by its normal configuration.
+- Published Pages and Render current-skill SHA-256 matches; legacy skill alias
+  also states the current half-crystal range. See `live-skills.json`.
+- Final follow-up contains release evidence and one browser regression only;
+  production implementation is the source release above. No remaining blocker
+  for the requested browser/MCP deployment. Remaining DAG milestones are
+  deliberately planned, not claimed complete.
