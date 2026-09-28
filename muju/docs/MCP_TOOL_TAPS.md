@@ -7,6 +7,12 @@ agent that had every tool available and used almost none of them for judgment.
 Rules and schemas live in `muju_rules` and `public/skills/muju-hono-irumbu/SKILL.md`;
 this file is only about habits.
 
+The accompanying **Strategos Plate** is available as the
+[original 4096 × 6144 PNG](STRATEGOS-PLATE.PNG) or a
+[browser-sized JPEG](../public/guides/strategos-plate.jpg). The plate is labeled
+rules revision `muju-phasing-4`; use `muju_rules` for the current rules and exact
+tool schemas.
+
 A TAP is "if <trigger>, then <action>". Follow them mechanically. The engine's
 bounded search is cheaper and more reliable than hand arithmetic, and the two
 decisive blunders in the 2026-09-12 games (a Hi left in reach of a speed-1
@@ -131,7 +137,7 @@ targets to add, whether to split a truncated analysis, which plan to pick.
 | Once, before the game | `muju_rules`, `muju_time_awareness`, `muju_create_room` / `muju_join_room` |
 | Only when needed | `muju_cancel_stage` (a staged batch is wrong and not being replaced) |
 
-The Strategos Plate is read at fixed points too; each step names its section.
+The [Strategos Plate](STRATEGOS-PLATE.PNG) is read at fixed points too; each step names its section.
 
 0. **Opponent's turn (free time).** Loop `muju_wait_for_change({afterRevision,
    briefing:true, player})`; draft candidates against the expected board.
