@@ -149,8 +149,8 @@
     },
     {
       "id": "agent-guides", "title": "Published agent skills and MCP usage documentation", "depends_on": ["mcp-tools", "rules-docs"],
-      "paths": ["muju/public/skills/", "muju/server/skills.ts", "muju/docs/MCP_TOOL_TAPS.md", "muju/docs/ANALYSIS_TOOLS.md", "muju/ONLINE.md"],
-      "update": ["Update public Muju and time-awareness skill files, TAPs, analysis documentation and live tool examples. Vite copies public skills into dist; the production server serves those copies."],
+      "paths": ["muju/public/skills/", "muju/public/guides/", "muju/server/skills.ts", "muju/docs/MCP_TOOL_TAPS.md", "muju/docs/ANALYSIS_TOOLS.md", "muju/docs/STRATEGOS-PLATE.PNG", "muju/ONLINE.md"],
+      "update": ["Update public Muju and time-awareness skill files, TAPs, analysis documentation and live tool examples. Review the Strategos Plate's labeled rules revision and linked browser copy when rules change; preserve the supplied original. Vite copies public skills and guides into dist; the production server serves those copies."],
       "verify": ["Compare documentation to tool discovery and actual responses. Check both /SKILL.md on the Node host and the static /muju/skills/ copies after release."]
     },
     {

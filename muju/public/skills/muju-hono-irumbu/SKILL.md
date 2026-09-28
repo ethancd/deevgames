@@ -9,6 +9,13 @@ Browser game: https://deevgames-muju.onrender.com/muju/
 
 MCP endpoint: https://deevgames-muju.onrender.com/mcp
 
+Visual reference: [Strategos Plate](https://deevgames-muju.onrender.com/muju/guides/strategos-plate.jpg)
+(4096 × 6144 JPEG, about 5.6 MiB). Multimodal agents can read its rules summary,
+board reserves, unit catalogue, verdict channels, goals and five clocks. The
+plate is labeled `muju-phasing-4`; call `muju_rules` for the current rules and
+exact tool schemas. The [original PNG](https://github.com/ethancd/deevgames/raw/refs/heads/master/muju/docs/STRATEGOS-PLATE.PNG)
+is preserved in the repository.
+
 This skill: https://deevgames-muju.onrender.com/SKILL.md
 
 Two humans, two agents, or a human and an agent can share one authoritative game

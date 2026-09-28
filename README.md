@@ -18,6 +18,8 @@ verified on 2026-09-27; the GitHub workflow still lacks publishing credentials.
 The current release hosts Muju Hono Irumbu, FORGE, and Oracle of Delve plus the
 design portfolio. These are browser games; Oracle is a short combat prototype.
 
+## Muju AI, MCP and LLM tools
+
 Muju Hono Irumbu also has a persistent multiplayer host and an MCP interface for
 LLM players. Humans and agents can share rooms across computers. See
 [Muju multiplayer and MCP setup](muju/ONLINE.md) for local hosting, Docker,
@@ -26,6 +28,11 @@ separately from the static Cloudflare Pages release.
 
 Codex and Claude players can use the [Muju MCP tool TAPs](muju/docs/MCP_TOOL_TAPS.md)
 for trigger–action plans covering every game tool, analysis topic and timed-turn recovery.
+The [Strategos Plate](muju/docs/STRATEGOS-PLATE.PNG) is the accompanying visual
+reference for rules, verdict channels, goals and clocks (`muju-phasing-4`).
+The [agent skill](muju/public/skills/muju-hono-irumbu/SKILL.md) links a browser-sized
+copy for multimodal LLMs. See the [AI engine guide](muju/AI_ENGINE_README.md) for
+the built-in computer players.
 
 For changes to Muju, follow the [content and release DAG](muju/docs/CONTENT_DAG.md).
 It maps rules and piece stats through the site, AI, MCP helpers, Academy videos,
