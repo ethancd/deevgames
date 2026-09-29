@@ -38,6 +38,7 @@ test('soft dots show every reserve count over dimmed colors without a toggle', a
    expect(style.color).toBe(`rgb(${rgb.join(', ')})`);
    expect(style.overlay).toContain('rgba(16, 25, 37, 0.4)');
  }
+ await expect(page.getByTestId('cell-1-0').locator('.crystal-light')).toHaveAttribute('transform','translate(50 90)');
  const glow=await page.locator('.crystal-core').first().evaluate(e=>getComputedStyle(e).filter);
  expect(glow).toBe('drop-shadow(rgb(237, 246, 255) 0px 0px 1.5px)');
  await page.screenshot({path:info.outputPath('reserves-0-16-soft-dots.png')});

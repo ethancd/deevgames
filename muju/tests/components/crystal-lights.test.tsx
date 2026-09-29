@@ -8,13 +8,22 @@ afterEach(cleanup);
 const positions = (n: number) => crystalLightSlots(n).map(({ x, y }) => [x, y]);
 
 it('converges to midpoints at four and midpoints plus corners at eight', () => {
-  expect(positions(4)).toEqual([[50,10],[10,50],[50,90],[90,50]]);
-  expect(positions(8)).toEqual([[10,10],[10,90],[90,90],[90,10],...positions(4)]);
+  expect(positions(4)).toEqual([[50,10],[10,50],[90,50],[50,90]]);
+  expect(positions(8)).toEqual([[10,10],[10,90],[90,10],[90,90],...positions(4)]);
   expect(positions(16).slice(8)).toEqual(positions(8));
   expect(positions(8).slice(4)).toEqual(positions(4));
-  expect(positions(3)).toEqual([[10,50],[50,90],[90,50]]);
-  expect(positions(2)).toEqual([[50,90],[90,50]]);
-  expect(positions(1)).toEqual([[90,50]]);
+  expect(positions(3)).toEqual([[10,50],[90,50],[50,90]]);
+  expect(positions(2)).toEqual([[90,50],[50,90]]);
+  expect(positions(1)).toEqual([[50,90]]);
+});
+
+it('mines every extra-edge round top, left, right, bottom, then corners ending at the bottom', () => {
+  expect(positions(16).slice(0, 8)).toEqual([
+    [30,10],[10,70],[90,30],[70,90],
+    [70,10],[10,30],[90,70],[30,90],
+  ]);
+  expect(positions(9)).toEqual([[30,90],...positions(8)]);
+  expect(positions(5)).toEqual([[90,90],...positions(4)]);
 });
 
 it('removes one light at a time without moving survivors, for every reserve', () => {
