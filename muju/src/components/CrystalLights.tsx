@@ -1,11 +1,12 @@
 import './CrystalLights.css';
 
-// Inset from shared borders. Each group goes top → left → bottom → right.
-const MIDPOINTS = [[50, 10], [10, 50], [50, 90], [90, 50]] as const;
-const CORNERS = [[10, 10], [10, 90], [90, 90], [90, 10]] as const;
+// Inset from shared borders. Each edge group goes top → left → right → bottom.
+// Corners follow the same sweep: top-left → bottom-left → top-right → bottom-right.
+const MIDPOINTS = [[50, 10], [10, 50], [90, 50], [50, 90]] as const;
+const CORNERS = [[10, 10], [10, 90], [90, 10], [90, 90]] as const;
 const EXTRA_EDGES = [
-  [30, 10], [10, 70], [70, 90], [90, 30],
-  [70, 10], [10, 30], [30, 90], [90, 70],
+  [30, 10], [10, 70], [90, 30], [70, 90],
+  [70, 10], [10, 30], [90, 70], [30, 90],
 ] as const;
 // Mine the extra edge lights first, then corners, then midpoints. A depleted
 // 16 therefore looks exactly like a fresh 8 or 4, with no surviving dot moving.

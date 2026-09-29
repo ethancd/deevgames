@@ -242,7 +242,7 @@ Every board square has a thin muted outline and an inset white soft light per
 remaining crystal, with full glow. Four lights occupy the edge midpoints; eight
 add the corners; sixteen add two more along each edge. Mining removes the eight
 extra edge lights first, then the four corners, then the midpoints in
-top–left–bottom–right order. Surviving lights stay in place: a sixteen-crystal
+top–left–right–bottom order. Surviving lights stay in place: a sixteen-crystal
 square mined down to eight or four is indistinguishable from a fresh square of
 that amount. Reserve colors remain visible at 60% brightness under the lights;
 counts 11–16 blend from pale teal toward white. Empty squares have no lights.

@@ -10,7 +10,7 @@ export function VisualKey() {
   return <div className="visual-key">
     <section><h3>Phasing summons</h3><p>Dashed silhouettes show public pending summons. They are not occupants and do not block movement or take damage. They materialize at their owner’s next turn if still legal; otherwise their cost is refunded.</p></section>
     <section><h3>One reserve per square</h3>
-      <p>Each white light is one crystal remaining. Four lights mark the edge midpoints; eight add the corners; sixteen add two more on each edge. Mining removes the extra edge lights first, then corners, then midpoints in top–left–bottom–right order. At your turn end, each piece takes up to its Mining stat, up to the square’s reserve. Mining 0 takes nothing.</p>
+      <p>Each white light is one crystal remaining. Four lights mark the edge midpoints; eight add the corners; sixteen add two more on each edge. Mining removes the extra edge lights first, then corners, then midpoints in top–left–right–bottom order. At your turn end, each piece takes up to its Mining stat, up to the square’s reserve. Mining 0 takes nothing.</p>
       <div className="reserve-examples">{examples.map(reserve => <figure key={reserve}>
         <div className={`reserve-example board-cell crystal-surface reserve-${reserve}`}><CellReserve cell={{position:{x:0,y:0},resourceLayers:reserve}} /></div>
         <figcaption>{reserve} crystals</figcaption></figure>)}</div>
