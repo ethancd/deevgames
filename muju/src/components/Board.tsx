@@ -24,7 +24,6 @@ interface BoardProps {
   koThreats?: Position[]; // My units the inspected enemy could eliminate on its coming turn
   previewPosition?: Position;
   previewUnitPosition?: Position;
-  showResources?: boolean;
   actionsRemaining?: number;
   onCellClick: (position: Position) => void;
   onUnitClick: (unitId: string) => void;
@@ -48,7 +47,7 @@ export function Board({
   koThreats = [],
   onCellClick,
   onUnitClick, onSummonClick, selectedSummon,
-  previewPosition, previewUnitPosition, showResources = false, actionsRemaining = 4,
+  previewPosition, previewUnitPosition, actionsRemaining = 4,
 }: BoardProps) {
   const isValidMove = (pos: Position) =>
     validMoves.some((m) => m.x === pos.x && m.y === pos.y);
@@ -85,7 +84,7 @@ export function Board({
   const size = boardSize(board);
 
   return (
-    <div className={`battle-board coordinate-board board-size-${size}`} style={{ '--board-size': size } as CSSProperties}>
+    <div className={`battle-board crystal-board coordinate-board board-size-${size}`} style={{ '--board-size': size } as CSSProperties}>
       <div className="board-column-labels" aria-hidden="true">
         {Array.from({ length: size }, (_, x) => <span key={x}>{String.fromCharCode(65 + x)}</span>)}
       </div>
@@ -119,7 +118,6 @@ export function Board({
                   isKoTarget={isKoTarget(pos)}
                   isKoThreat={isKoThreat(pos)}
                   isPreview={(previewPosition?.x === x && previewPosition?.y === y) || (previewUnitPosition?.x === x && previewUnitPosition?.y === y)}
-                  showResources={showResources}
                   moveCost={getMovementRangeActions(pos) !== undefined ? actionsRemaining - getMovementRangeActions(pos)! : undefined}
                   previewLabel={previewUnit && previewUnitPosition?.x === x && previewUnitPosition?.y === y ? `${getUnitDefinition(previewUnit.definitionId).name} attack approach` : undefined}
                   unitLabel={unit ? `${unit.owner} ${getUnitDefinition(unit.definitionId).name}, ${getUnitDefinition(unit.definitionId).element}, tier ${getUnitDefinition(unit.definitionId).tier}` : undefined}
