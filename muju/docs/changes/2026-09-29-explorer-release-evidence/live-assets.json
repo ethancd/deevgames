@@ -1,0 +1,44 @@
+[
+  {
+    "base": "https://deevgames.pages.dev",
+    "assets": [
+      {
+        "path": "/muju/assets/index-CRr8AWe3.js",
+        "sha256": "5c500dbc59fa83c6fdef8c1e22a593b528ae980cb46e7e714f906c61f2d91eb8"
+      },
+      {
+        "path": "/muju/assets/index-BpWuKNxP.css",
+        "sha256": "03684473fff54caa1721c3213ab68e6128e4a6950030271fb7ed5c5a647e80ee"
+      }
+    ],
+    "publicSkillMatches": true
+  },
+  {
+    "base": "https://deevgames-muju.onrender.com",
+    "assets": [
+      {
+        "path": "/muju/assets/index-CgSOlD5g.js",
+        "sha256": "5c500dbc59fa83c6fdef8c1e22a593b528ae980cb46e7e714f906c61f2d91eb8"
+      },
+      {
+        "path": "/muju/assets/index-D3Sqykmz.css",
+        "sha256": "99de1ab4708e6ebab3bb38dd94fe258a109814805edf055fb286b2c8b77e5928"
+      }
+    ],
+    "publicSkillMatches": true
+  },
+  {
+    "base": "https://deevgames.ashkie.com",
+    "assets": [
+      {
+        "path": "/muju/assets/index-CgSOlD5g.js",
+        "sha256": "5c500dbc59fa83c6fdef8c1e22a593b528ae980cb46e7e714f906c61f2d91eb8"
+      },
+      {
+        "path": "/muju/assets/index-D3Sqykmz.css",
+        "sha256": "99de1ab4708e6ebab3bb38dd94fe258a109814805edf055fb286b2c8b77e5928"
+      }
+    ],
+    "publicSkillMatches": true
+  }
+]

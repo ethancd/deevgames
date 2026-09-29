@@ -1,0 +1,41 @@
+
+ RUN  v4.1.11 /Users/ethancd/src/deevgames/muju
+
+ ❯ tests/ai/hard/negamax-sign.test.ts (3 tests | 1 failed) 102006ms
+     × a shallow search prefers a kill to a quiet move, and a deep one finds the win 95279ms
+ ❯ tests/lab/suites-phasing-veto.test.ts (23 tests | 1 failed) 644518ms
+     × refuses the eight v1 disruption roots that mate inside the mover’s own Act 305571ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/lab/suites-phasing-veto.test.ts > author-time free-win veto > refuses the eight v1 disruption roots that mate inside the mover’s own Act
+Error: Test timed out in 240000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/lab/suites-phasing-veto.test.ts:78:3
+     76|   const [disruption] = buildNewFamilies();
+     77|
+     78|   it('refuses the eight v1 disruption roots that mate inside the mover…
+       |   ^
+     79|     const binding = disruption.positions[0].binding;
+     80|     withRules(binding, () => {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/ai/hard/negamax-sign.test.ts > the turn boundary is the only sign flip > a shallow search prefers a kill to a quiet move, and a deep one finds the win
+Error: Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/ai/hard/negamax-sign.test.ts:98:3
+     96|   }, 60_000); // explicit per-test budget; see the E0.5 timeout note a…
+     97|
+     98|   it('a shallow search prefers a kill to a quiet move, and a deep one …
+       |   ^
+     99|     const state = buildState({
+    100|       current: 'white',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 240 passed (242)
+      Tests  2 failed | 3423 passed | 17 skipped (3442)
+   Start at  10:14:18
+   Duration  787.57s (transform 17.59s, setup 18.10s, import 71.97s, tests 3790.86s, environment 50.19s)

@@ -1,0 +1,61 @@
+bash: warning: setlocale: LC_ALL: cannot change locale (C.UTF-8): Bad file descriptor
+Building muju...
+
+> elemental-tactics@0.1.0 prebuild
+> npm run ai:wasm
+
+
+> elemental-tactics@0.1.0 ai:wasm
+> asc --config asconfig.json
+
+
+> elemental-tactics@0.1.0 build
+> tsc && vite build
+
+vite v7.3.6 building client environment for production...
+transforming...
+✓ 118 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                      0.56 kB │ gzip:   0.36 kB
+dist/assets/tactics-BsuqNh3-.wasm    7.68 kB │ gzip:   3.52 kB
+dist/assets/entry-Bu-GDzMo.js       51.34 kB
+dist/assets/engine-CSW9Ts37.js     219.10 kB
+dist/assets/index-BpWuKNxP.css      82.98 kB │ gzip:  17.87 kB
+dist/assets/index-CRr8AWe3.js      434.37 kB │ gzip: 138.68 kB
+✓ built in 6.81s
+Building forge...
+
+> forge@1.0.0 build
+> tsc && vite build
+
+vite v7.3.0 building client environment for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 9 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+[vite:css][postcss] Gradient has outdated direction syntax. New syntax is like `closest-side at 0 0` instead of `0 0, closest-side`.
+
+✓ 54 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.81 kB │ gzip:  0.51 kB
+dist/assets/index-Ceg_56Ku.css   58.14 kB │ gzip:  9.83 kB
+dist/assets/index-oKVk9DCy.js   251.67 kB │ gzip: 74.10 kB
+✓ built in 1.78s
+Building oracle...
+
+> oracle-of-delve@0.1.0 build
+> tsc && vite build
+
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 36 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.96 kB │ gzip:  0.55 kB
+dist/assets/index-Cfhj-PBN.css   24.65 kB │ gzip:  5.15 kB
+dist/assets/index-B6GoX3Ll.js   202.56 kB │ gzip: 63.36 kB
+✓ built in 622ms
+Site verified: three games, portfolio, local links and asset sizes.
+Ready to publish: _site/

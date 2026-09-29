@@ -1,5 +1,8 @@
 # Mandatory half-crystal komi and advantage exhaustion explorer
 
+Deployment follow-up: [published and verified on 2026-09-29](2026-09-29-explorer-release.md).
+The dated preparation record below is preserved.
+
 Prepared locally on 2026-09-28; **not deployed**. Base commit:
 `6e4e18e3a34e9cc0acd6a63d93a469fb3228fafc`, plus the working-tree changes recorded
 here. Runtime rules remain `muju-phasing-4`: canonical scoring and old game

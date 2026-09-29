@@ -1,0 +1,102 @@
+== git state ==
+  branch: main @ 2bba03fa
+  OK   up to date with origin/main
+  dirty/untracked paths: 8 — attribute every one to a lane before staging (AGENTS.md §1)
+== offline manifest ==
+  OK   manifest fresh (7935 urls, 534 MB)
+== syntax ==
+  OK   offline-boot.js
+  OK   sw.js
+  OK   generators/hunt/hunt.js
+  OK   generators/cube/src/app.js
+  OK   generators/cube/src/cache.js
+  OK   generators/cube/src/classify.js
+  OK   generators/cube/src/digest.js
+  OK   generators/cube/src/facts.js
+  OK   generators/cube/src/galaxy-icons.js
+  OK   generators/cube/src/galaxy.js
+  OK   generators/cube/src/lbl.js
+  OK   generators/cube/src/net.js
+  OK   generators/cube/src/notation.js
+  OK   generators/cube/src/pack.js
+  OK   generators/cube/src/player.js
+  OK   generators/cube/src/pocket.js
+  OK   generators/cube/src/pointer.js
+  OK   generators/cube/src/reduce.js
+  OK   generators/cube/src/rescue.js
+  OK   generators/cube/src/sample.js
+  OK   generators/cube/src/scan.js
+  OK   generators/cube/src/scramble.js
+  OK   generators/cube/src/solver.js
+  OK   generators/cube/src/solvers.js
+  OK   generators/cube/src/state.js
+  OK   generators/cube/src/stats.js
+  OK   generators/cube/src/steady.js
+  OK   generators/cube/src/store.js
+  OK   generators/cube/src/timer.js
+  OK   generators/cube/src/tokens.js
+  OK   generators/cube/src/twophase.js
+  OK   generators/cube/src/view.js
+  OK   generators/cube/src/worker.js
+  OK   generators/cube/tests/autocapture-page.cjs
+  OK   generators/cube/tests/browser.cjs
+  OK   generators/cube/tests/cdp.cjs
+  OK   generators/cube/tests/classify.cjs
+  OK   generators/cube/tests/engine.cjs
+  OK   generators/cube/tests/fast.cjs
+  OK   generators/cube/tests/galaxy-page.cjs
+  OK   generators/cube/tests/learn.cjs
+  OK   generators/cube/tests/modes-page.cjs
+  OK   generators/cube/tests/modes.cjs
+  OK   generators/cube/tests/overnight.cjs
+  OK   generators/cube/tests/records-page.cjs
+  OK   generators/cube/tests/reduce.cjs
+  OK   generators/cube/tests/scan-page.cjs
+  OK   generators/cube/tests/solver-page.cjs
+  OK   generators/cube/tests/solver.cjs
+  OK   generators/cube/tests/steady.cjs
+  OK   generators/cube/tests/timer-page.cjs
+  OK   generators/cube/tests/timer.cjs
+  OK   generators/cube/tests/view.cjs
+  OK   generators/cube/tools/solve_overnight.mjs
+  OK   deploy
+  OK   new-page.sh
+  OK   check
+  OK   tools/verify_offline.sh
+  OK   generators/us-map/verify_deploy.sh
+  OK   generators/world-map/verify_deploy.sh
+  OK   generators/cube/verify_deploy.sh
+  OK   tools/build_muju_release.py
+  OK   tools/build_offline_manifest.py
+  OK   tools/import_music.py
+  OK   tools/music_test_server.py
+  OK   tools/qa_server.py
+  OK   tools/verify_muju_videos.py
+  OK   tools/verify_music.py
+  OK   generators/world-map/build.py
+  OK   generators/us-map/build.py
+  OK   generators/world-map/tools/atlas_matrix.py
+  OK   generators/hunt/build_hunt.py
+  OK   generators/hunt/test_catalog.py
+  OK   generators/hunt/verify_deploy.py
+  OK   generators/cube/build.py
+  OK   generators/cube/puzzle_galaxy.py
+  OK   generators/cube/tools/make_fake_cube_video.py
+  OK   generators/cube/tools/prepare_wca_records.py
+  OK   generators/cube/tests/test_build.py
+  OK   generators/cube/tests/test_patterns.py
+  OK   generators/cube/tests/test_records.py
+== json ==
+  OK   offline-manifest.json parses
+  OK   patch-notes.json parses
+  OK   app.webmanifest parses
+  OK   generators/cube/data/facts.json parses
+  OK   generators/cube/data/patterns.json parses
+  OK   generators/cube/data/puzzles.json parses
+  OK   generators/cube/data/records.json parses
+== research-data validator (baseline-aware) ==
+  WARN could not parse validator output: research validation requires jsonschema; run .venv/bin/pip install -r requirements-research.txt
+== atlas matrix freshness ==
+  WARN atlas matrix is STALE (older than e.g. maps/usa/missouri/config.json) — rerun tools/atlas_matrix.py after emitting
+
+check: no FAILs (read the WARNs; review your diff).

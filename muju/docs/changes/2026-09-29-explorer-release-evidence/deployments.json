@@ -1,0 +1,23 @@
+{
+  "gameCodeCommit": "216e6db4224915f04c0ddcfb4c09d58d76c83db7",
+  "pages": {
+    "project": "deevgames",
+    "deployment": "https://4cb962f2.deevgames.pages.dev",
+    "publicExplorer": "https://deevgames.pages.dev/muju/explorer/"
+  },
+  "render": {
+    "service": "srv-dahbp4ht0dsc73fdqn10",
+    "deployment": "dep-datti4m0tbcc738d6nug",
+    "commit": "216e6db4224915f04c0ddcfb4c09d58d76c83db7",
+    "diskMount": "/app/data",
+    "diskGB": 1,
+    "publicExplorer": "https://deevgames.ashkie.com/muju/explorer"
+  },
+  "academy": {
+    "commit": "5af9015d25d845d34e2148deb3530763d7dfef65",
+    "deployment": "https://b78a08ef.ashkie-pages.pages.dev",
+    "workflow": "https://github.com/ethancd/ashkie-pages/actions/runs/36589703612",
+    "manifestCount": 7935,
+    "manifestURLDelta": 0
+  }
+}

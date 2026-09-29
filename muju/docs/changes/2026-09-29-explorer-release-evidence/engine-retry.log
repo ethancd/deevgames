@@ -1,0 +1,8 @@
+
+ RUN  v4.1.11 /Users/ethancd/src/deevgames/muju
+
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  10:25:44
+   Duration  26.59s (transform 561ms, setup 83ms, import 653ms, tests 25.73s, environment 0ms)

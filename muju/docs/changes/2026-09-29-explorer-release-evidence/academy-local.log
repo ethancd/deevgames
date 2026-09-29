@@ -1,0 +1,37 @@
+PASS exact video, poster, transcript, and three seek ranges R01
+PASS exact video, poster, transcript, and three seek ranges R04
+PASS exact video, poster, transcript, and three seek ranges R03
+PASS exact video, poster, transcript, and three seek ranges R02
+PASS exact video, poster, transcript, and three seek ranges R05
+PASS exact video, poster, transcript, and three seek ranges R07
+PASS exact video, poster, transcript, and three seek ranges R06
+PASS exact video, poster, transcript, and three seek ranges R08
+PASS exact video, poster, transcript, and three seek ranges R09
+PASS exact video, poster, transcript, and three seek ranges R10
+PASS exact video, poster, transcript, and three seek ranges R11
+PASS exact video, poster, transcript, and three seek ranges R13
+PASS exact video, poster, transcript, and three seek ranges R12
+PASS exact video, poster, transcript, and three seek ranges R14
+PASS exact video, poster, transcript, and three seek ranges R15
+PASS exact video, poster, transcript, and three seek ranges R16
+Traceback (most recent call last):
+  File "/Users/ethancd/src/ashkie-pages/tools/verify_muju_videos.py", line 103, in <module>
+    with ThreadPoolExecutor(max_workers=4) as pool:removed=list(pool.map(retired,release['retiredStrategyAssets']))
+                                                           ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ~~~~~~~~~~~~~~~~~^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ~~~~~~~~~~^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py", line 456, in result
+    return self.__get_result()
+           ~~~~~~~~~~~~~~~~~^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/_base.py", line 401, in __get_result
+    raise self._exception
+  File "/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/concurrent/futures/thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/Users/ethancd/src/ashkie-pages/tools/verify_muju_videos.py", line 99, in retired
+    assert b'ftyp' not in body[:32] and url==base+'/muju-academy/',name
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: episode-17.870089656cee.mp4
