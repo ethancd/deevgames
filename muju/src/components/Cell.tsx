@@ -3,11 +3,11 @@ import type { Cell as CellType, Position } from '../game/types';
 interface CellProps {
   cell: CellType; isValidMove: boolean; isValidAttack: boolean; isValidSpawn: boolean; isSelected: boolean;
   isInvalidSpawn?: boolean; isPendingMove?: boolean; movementRangeActions?: number; isAttackFrontier?: boolean;
-  isPreview?: boolean; showResources?: boolean; moveCost?: number; unitLabel?: string; previewLabel?: string;
+  isPreview?: boolean; moveCost?: number; unitLabel?: string; previewLabel?: string;
   pendingLabel?: string; isKoTarget?: boolean; isKoThreat?: boolean; boardSize?: number;
   onClick: (position: Position) => void;
 }
-export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, isInvalidSpawn, isPendingMove, movementRangeActions, isAttackFrontier, isPreview, showResources, moveCost, unitLabel, previewLabel, pendingLabel, isKoTarget, isKoThreat, boardSize = 10, onClick }: CellProps) {
+export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, isInvalidSpawn, isPendingMove, movementRangeActions, isAttackFrontier, isPreview, moveCost, unitLabel, previewLabel, pendingLabel, isKoTarget, isKoThreat, boardSize = 10, onClick }: CellProps) {
   const last = boardSize - 1;
   const home = cell.position.x === 0 && cell.position.y === 0 ? 'white' : cell.position.x === last && cell.position.y === last ? 'black' : null;
   const reach = movementRangeActions !== undefined;
@@ -15,10 +15,10 @@ export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelecte
   const crystalDescription = describeCrystals(cell);
   const label = `${coord}${home ? `, ${home} home corner` : ''}${unitLabel ? `, ${unitLabel}` : ''}${pendingLabel ? `, ${pendingLabel}` : ''}, ${crystalDescription}${previewLabel ? `, preview: ${previewLabel}` : ''}${reach ? `, move costs ${moveCost} ${moveCost === 1 ? 'action' : 'actions'}` : ''}${isAttackFrontier ? ', attack frontier: up to 3 move actions and 1 attack' : ''}${isValidAttack ? ', attack target' : ''}${isKoTarget ? ', eliminates' : ''}${isKoThreat ? ', can be eliminated by selected enemy' : ''}${isValidSpawn ? ', available for placement' : ''}`;
   return <button type="button" tabIndex={unitLabel || pendingLabel ? 0 : -1} aria-label={label} title={pendingLabel || crystalDescription} aria-pressed={isSelected || isPreview}
-    className={`board-cell reserve-${cell.resourceLayers} ${isSelected ? 'selected' : ''} ${isValidAttack ? 'attack-target' : ''} ${isKoTarget ? 'ko-target' : ''} ${isKoThreat ? 'ko-threat' : ''} ${isValidSpawn ? 'spawn-target' : ''} ${isPendingMove ? 'path-cell' : ''} ${isPreview ? 'preview-cell' : ''}`}
+    className={`board-cell crystal-surface reserve-${cell.resourceLayers} ${isSelected ? 'selected' : ''} ${isValidAttack ? 'attack-target' : ''} ${isKoTarget ? 'ko-target' : ''} ${isKoThreat ? 'ko-threat' : ''} ${isValidSpawn ? 'spawn-target' : ''} ${isPendingMove ? 'path-cell' : ''} ${isPreview ? 'preview-cell' : ''}`}
     onClick={() => onClick(cell.position)} data-testid={`cell-${cell.position.x}-${cell.position.y}`}>
     {home && <span className={`home-marker home-${home}`} aria-hidden="true">⌂</span>}
-    <CellReserve cell={cell} visible={showResources} />
+    <CellReserve cell={cell} />
     {(reach || isValidMove) && !unitLabel && !isPreview && !isAttackFrontier && <span aria-hidden="true" className={`range-marker ${isValidMove ? 'near' : 'far'}`} />}
     {isValidSpawn && !unitLabel && <span aria-hidden="true" className="spawn-marker">＋</span>}
     {isPreview && !unitLabel && <span className="destination-marker" aria-hidden="true">◎</span>}

@@ -1,0 +1,11 @@
+.crystal-surface.board-cell {
+  /* 60% of the existing reserve palette over dark ground; lights stay at 100%. */
+  background: linear-gradient(rgb(16 25 37 / .4), rgb(16 25 37 / .4)), var(--seam-color, #192a38);
+}
+.crystal-lights { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 1; }
+.crystal-core { fill: #fff; filter: drop-shadow(0 0 1.5px rgb(237 246 255)); }
+.crystal-halo { fill: #e7f5ff; opacity: .16; }
+.crystal-aura { fill: #f2faff; opacity: .36; }
+.crystal-board .board-square::after { border-color: #556c79; }
+.crystal-board .home-marker { top: 22%; left: 22%; font-size: clamp(8px, 1vw, 11px); }
+.crystal-board .home-black { color: #d5e2ea; text-shadow: 0 1px 2px #000; }
