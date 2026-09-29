@@ -116,7 +116,6 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   const [showInstructions, setShowInstructions] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
-  const [showResources, setShowResources] = useState(false);
   const [showVisualKey, setShowVisualKey] = useState(false);
   const [showEnemyRange, setShowEnemyRange] = useState(false);
   const [preview, setPreview] = useState<{ position: Position; path: Position[] } | null>(null);
@@ -954,13 +953,12 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
             pendingMovePath={showReplay ? [] : previewPath} movementRange={showReplay ? [] : movementRange} attackFrontier={showReplay ? [] : attackFrontier}
             koTargets={showReplay ? [] : koTargets} koThreats={showReplay ? [] : koThreats}
             previewPosition={showReplay ? replayFrame?.position : online?.playingIncoming ? online.incomingFrame?.position : preview?.position} previewUnitPosition={showReplay ? undefined : previewLanding}
-            showResources={showResources} actionsRemaining={showingReach ? actionsPerTurn : state.turn.actionsRemaining}
+            actionsRemaining={showingReach ? actionsPerTurn : state.turn.actionsRemaining}
             selectedSummon={viewedSummon?.id} onSummonClick={handleSummonClick} onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
         </section>
         <div className="board-key">
           <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || (showingReach && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack · ☠ eliminates · ⚠ danger')}</span>
           <button disabled={showReplay} className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
-          <button aria-pressed={showResources} onClick={() => setShowResources(!showResources)}>◆ Reserves</button>
         </div>
         <section className="decision-panel" aria-label="Current choice">
           {analysis && state.upkeepPending && !analysis.reviewing ? <UpkeepPanel key={`${state.turn.turnNumber}-${state.turn.currentPlayer}`} state={state} onConfirm={payUpkeep} inline /> : playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} mode={replayMode} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />

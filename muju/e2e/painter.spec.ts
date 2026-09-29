@@ -11,8 +11,13 @@ test('painter handles clicks, Shift, bounds, keyboard and history on its direct 
   expect(response?.status()).toBe(200);
   const board = page.getByRole('group', { name: 'Starting crystals' });
   const square = (coord: string) => board.getByRole('button', { name: new RegExp(`^${coord},`) });
-  const value = async (coord: string, count: number) => expect(square(coord)).toHaveAccessibleName(new RegExp(`^${coord}, ${count} crystals?`));
+  const value = async (coord: string, count: number) => {
+    await expect(square(coord)).toHaveAccessibleName(new RegExp(`^${coord}, ${count} crystals?`));
+    await expect(square(coord).locator('.crystal-light')).toHaveCount(count);
+  };
   await expect(board.getByRole('button')).toHaveCount(100);
+  await expect(page.getByRole('button', { name: 'Reserves' })).toHaveCount(0);
+  await expect(board.locator('.crystal-lights')).toHaveCount(100);
   await expect(page.getByLabel('Total crystals')).toHaveText('504 crystals');
   await square('D1').click(); await value('D1', 1);
   await square('D1').click({ modifiers: ['Shift'] }); await value('D1', 3);

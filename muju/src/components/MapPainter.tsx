@@ -40,7 +40,6 @@ export function MapPainter() {
   const [saved, setSaved] = useState(true);
   const [notice, setNotice] = useState('');
   const [showCopy, setShowCopy] = useState(false);
-  const [showResources, setShowResources] = useState(false);
   const [lockSymmetry, setLockSymmetry] = useState(false);
   const [activeCell, setActiveCell] = useState(0);
   const cells = useRef<(HTMLButtonElement | null)[]>([]);
@@ -122,7 +121,6 @@ export function MapPainter() {
         <div className="painter-history">
           <button type="button" onClick={undo} disabled={!past.length} title="Undo (⌘/Ctrl Z)">↶ Undo</button>
           <button type="button" onClick={redo} disabled={!future.length} title="Redo (⌘/Ctrl Shift Z)">↷ Redo</button>
-          <button type="button" aria-pressed={showResources} onClick={() => setShowResources(value => !value)}>◆ Reserves</button>
         </div>
         <output className="painter-total" aria-label="Total crystals"><strong>{map.reduce((sum, value) => sum + value, 0)}</strong> crystals</output>
       </div>
@@ -138,14 +136,14 @@ export function MapPainter() {
       <div className="painter-board-frame">
         <div className="painter-column-labels" aria-hidden="true" style={lineStyle}>{'ABCDEFGHIJ'.slice(0, boardSize).split('').map(letter => <span key={letter}>{letter}</span>)}</div>
         <div className="painter-row-labels" aria-hidden="true" style={{ gridTemplateRows: `repeat(${boardSize}, 1fr)` }}>{Array.from({ length: boardSize }, (_, y) => <span key={y}>{y + 1}</span>)}</div>
-        <div className={`battle-board painter-board${showResources ? ' painter-reserves' : ''}`} role="group" aria-label="Starting crystals" aria-describedby="painter-instructions painter-keyboard">
+        <div className="battle-board crystal-board painter-board" role="group" aria-label="Starting crystals" aria-describedby="painter-instructions painter-keyboard">
           <div className="battle-grid" style={{ ...lineStyle, gridTemplateRows: `repeat(${boardSize}, minmax(0, 1fr))` }}>
             {map.map((value, index) => {
               const x = index % boardSize, y = Math.floor(index / boardSize);
               const coordinate = `${String.fromCharCode(65 + x)}${y + 1}`;
               const home = index === 0 ? 'white' : index === boardSize * boardSize - 1 ? 'black' : null;
               return <div className="board-square" key={index}>
-                <button type="button" className={`board-cell painter-cell reserve-${value}`}
+                <button type="button" className={`board-cell crystal-surface painter-cell reserve-${value}`}
                   ref={node => { cells.current[index] = node; }}
                   tabIndex={activeCell === index ? 0 : -1}
                   aria-label={`${coordinate}, ${value} crystal${value === 1 ? '' : 's'}${home ? `, ${home} home` : ''}`}
@@ -166,7 +164,7 @@ export function MapPainter() {
                       event.key === 'ArrowDown' ? Math.min(boardSize - 1, y + 1) * boardSize + x : null;
                     if (destination !== null) { event.preventDefault(); cells.current[destination]?.focus(); }
                   }}>
-                  <CellReserve cell={{ position: { x, y }, resourceLayers: value }} visible={showResources} />
+                  <CellReserve cell={{ position: { x, y }, resourceLayers: value }} />
                   {home && <span className={`home-marker home-${home}`} aria-hidden="true">⌂</span>}
                   <span className="painter-count" aria-hidden="true">{value}</span>
                 </button>

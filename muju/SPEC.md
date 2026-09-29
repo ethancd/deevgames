@@ -238,14 +238,16 @@ and keeps the target selected if an adjacent attack is still legal. The combined
 action is one local undo step and
 one atomic online request.
 
-Every board square has a thin outline in the bright ten-crystal color.
-Reserves are off by default. The Reserves toggle replaces square shading with two bottom-aligned stacks of
-crystal bricks on dark ground. Each crystal occupies one fixed-size slot in a
-2-column × 8-row grid, filling left then right at each level (3 = 2 left + 1 right).
-Every brick uses the original ten-crystal color with a slight outline. Zero is
-fully dark. Counts remain in accessible square labels and inspection text;
-hiding the stacks restores the reserve shading. Colors 0–10 are unchanged;
-11–16 blend from the ten-crystal pale teal toward neutral white at 16.
+Every board square has a thin muted outline and an inset white soft light per
+remaining crystal, with full glow. Four lights occupy the edge midpoints; eight
+add the corners; sixteen add two more along each edge. Mining removes the eight
+extra edge lights first, then the four corners, then the midpoints in
+top–left–bottom–right order. Surviving lights stay in place: a sixteen-crystal
+square mined down to eight or four is indistinguishable from a fresh square of
+that amount. Reserve colors remain visible at 60% brightness under the lights;
+counts 11–16 blend from pale teal toward white. Empty squares have no lights.
+Counts remain in accessible square labels and inspection text. There is no
+Reserves toggle; the game, replays, visual key and map painter share this display.
 
 Enemy inspection defaults **Show reach** on whenever an enemy is opened for
 inspection (including tapping an enemy the selected piece cannot attack). It can
