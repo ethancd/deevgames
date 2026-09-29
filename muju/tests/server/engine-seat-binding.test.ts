@@ -1,4 +1,8 @@
 // @vitest-environment node
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { seedLegacyZeroGrant } from './legacy-room-fixture';
 import { afterEach, expect, it, vi } from 'vitest';
 import type { Server } from 'node:http';
 import { RoomStore } from '../../server/rooms';
@@ -16,9 +20,13 @@ const READINESS = { phasingHardReadiness: PHASING_HARD_READINESS } as const;
 const cleanups: (() => Promise<void>)[] = [];
 afterEach(async () => { for (const close of cleanups.splice(0).reverse()) await close(); });
 async function setup() {
-  const store = new RoomStore();
+  const directory = mkdtempSync(join(tmpdir(), 'muju-legacy-binding-'));
+  const database = join(directory, 'rooms.sqlite');
+  cleanups.push(async () => rmSync(directory, { recursive: true, force: true }));
+  const store = new RoomStore(database);
   const policy = { version: 1 as const, toolTier: 'harnessed' as const, protocolId: 'binding-regression' };
   const white = store.create({ name: 'White', matchPolicy: policy, timeControl: 'classical', ruleset: 'phasing' });
+  seedLegacyZeroGrant(database, white.room.id);
   const black = store.join(white.room.id, { name: 'Black', inviteCode: white.inviteCode });
   const app = createApp(store, { publicUrl: 'http://localhost', matchRoomId: white.room.id });
   const listener: Server = await new Promise(resolve => { const server = app.listen(0, '127.0.0.1', () => resolve(server)); });

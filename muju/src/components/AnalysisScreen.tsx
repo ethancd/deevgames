@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { GameView } from './GameScreen';
+import { isBlackCrystalHandicap } from '../game/rules';
 import { createInitialGameState, getUnitById } from '../game/board';
 import { gameReducer } from '../hooks/useGameState';
 import { applyAction } from '../ai/simulate';
@@ -30,7 +31,7 @@ export function AnalysisScreen() {
   const retired = local && query.get('retired') === '1';
   const [localHistory] = useState(() => !local ? null : retired ? loadRetiredHistory() : loadGameHistory());
   const hasScore = !!roomId || local;
-  const [initial] = useState(() => createInitialGameState(undefined, undefined, 0, 'phasing'));
+  const [initial] = useState(() => createInitialGameState(undefined, undefined, 0.5, 'phasing'));
   const [frames, setFrames] = useState<Frame[]>([]), [cursor, setCursor] = useState(() => Math.max(0, (localHistory?.frames.length ?? 1) - 1));
   const [position, setPosition] = useState<GameState>(initial);
   const [variation, setVariation] = useState<Variation | null>(hasScore ? null : { frames: [localFrame(initial)], cursor: 0 });
@@ -130,7 +131,7 @@ export function AnalysisScreen() {
     resign: () => dispatch([{ type: 'RESIGN' }]), applyAIAction: useCallback((action: AIAction) => dispatch([action]), [dispatch]),
     // Always Phasing, never the reviewed position's ruleset: on `?retired=1` that would
     // hand the archived Standard game back as a fresh, fully playable Standard board.
-    resetGame: () => setVariation({ frames: [localFrame(createInitialGameState(undefined, undefined, state.blackCrystalHandicap, 'phasing'))], cursor: 0 }),
+    resetGame: () => setVariation({ frames: [localFrame(createInitialGameState(undefined, undefined, isBlackCrystalHandicap(state.blackCrystalHandicap) ? state.blackCrystalHandicap : 0.5, 'phasing'))], cursor: 0 }),
     undo: () => go(index - 1), canUndo: !!variation && index > 0,
     selectedUnitData: state.selectedUnit ? getUnitById(state.board, state.selectedUnit) : null,
     isPlayerTurn: true, canEndTurn: state.turn.phase === 'action',

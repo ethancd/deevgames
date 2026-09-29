@@ -64,7 +64,9 @@
     "hard:spsa": "node --import tsx lab/hard-ai/tune/spsa.ts",
     "hard:book": "node --import tsx lab/hard-ai/book/build.ts",
     "hard:suite:phasing": "node --import tsx lab/hard-ai/suites/phasing/run.ts",
-    "hard:suite:phasing:measure": "node --import tsx lab/hard-ai/suites/phasing/measure.ts"
+    "hard:suite:phasing:measure": "node --import tsx lab/hard-ai/suites/phasing/measure.ts",
+    "explorer:runner": "node --import tsx tools/explorer/runner.ts",
+    "explorer:types": "tsc -p tools/explorer/tsconfig.json"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",

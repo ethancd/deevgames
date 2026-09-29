@@ -1,5 +1,10 @@
 # Muju Academy · Metal revision
 
+Current setup override (2026-09-28): new Prime games always include Black's
+half-crystal komi, with total grants 0.5–18.5. Tied mined scores are now
+impossible. Current exports verify all 19 grants, and the builder includes a
+notice; the recorded lessons retain their original rules. See `STATUS.md`.
+
 Current names override (2026-09-22): the game retitled **Muju Hono Tanka → Muju Hono Irumbu**
 (ASCII `Hono` in the title; the piece card reads `Honō`), and ten pieces plus three element
 language labels (Water "Old Norse", Shadow "Turkish", Plant "Quechua", Metal "Tamil"/"South

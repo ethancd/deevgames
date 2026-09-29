@@ -150,7 +150,7 @@ the last completed turn. No token or invitation is required. MCP observers use
 
 ## Black crystal handicap
 
-When requested, pass `blackCrystalHandicap` as one of **0.5, 1.5, 2.5, …, 19.5**
+When requested, pass `blackCrystalHandicap` as one of **0.5, 1.5, 2.5, …, 18.5**
 when creating a room. For example,
 `muju_create_room({name:"Host", side:"white", blackCrystalHandicap:8.5})` gives
 Black exactly 8.5 starting crystals, regardless of which side the host controls.

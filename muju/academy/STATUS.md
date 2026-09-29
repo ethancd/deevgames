@@ -1,3 +1,21 @@
+# Mandatory half-crystal komi (2026-09-28) — notice prepared, not deployed
+
+New Prime games always grant Black 0.5 plus an integer from 0 through 18:
+0.5–18.5, default 0.5. Off and 19.5 are retired creation choices. Equal mined
+scores are impossible in these new games. Existing zero/integer/19.5 games and
+Academy source snapshots keep their historical values. The new explorer starts
+at 9.5 and records pressure/counterplay for a human handicap judgment.
+
+The current builder/verifier add a komi notice. The current rule exporter checks
+all 19 grants against integral mined-income differences and regenerates the
+verification report; catalogue, map and matchup matrices remain unchanged.
+R09/R10 recordings and copied
+lesson rules remain on their recorded versions; re-recording and the separate
+Academy publication remain outstanding. No speech, video or historical result
+was overwritten. See `../docs/changes/2026-09-28-explorer-implementation.md`.
+
+---
+
 # Cleave without a tier cap (2026-09-23, `muju-phasing-4`) — notice prepared, not deployed
 
 Rules change, not an Academy release. Cleave keeps its trigger — a killing blow unlocks

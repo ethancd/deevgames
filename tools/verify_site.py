@@ -23,6 +23,7 @@ errors = []
 required = ["index.html", "404.html", "portfolio/index.html",
             "docs/game-design-dossier.md"]
 required += [f"{game}/index.html" for game in ("muju", "forge", "oracle")]
+required += ["muju/explorer/index.html"]
 for name in required:
     if not (root / name).is_file():
         errors.append(f"Missing required page: {name}")

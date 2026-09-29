@@ -17,11 +17,11 @@ test('normal income-earning turns advance the kill clock and end it on mined tot
   expect(state.players.black.resourcesGained).toBeGreaterThan(0);
   // A fully symmetric opening with no attacks or purchases mines identically on
   // both sides (five turns each on the 180°-rotational map), so the kill clock
-  // ends the game in a tie rather than a decisive verdict.
+  // gives Black the win on the mandatory half-crystal komi.
   expect(state.players.white.resourcesGained).toBe(state.players.black.resourcesGained);
-  expect(state.victoryReason).toBe('kill-clock');expect(state.winner).toBeNull();
-  await expect(page.getByRole('heading',{name:'Draw by kill clock'})).toBeVisible();
-  await expect(page.getByText(`${INACTIVITY_LIMIT} consecutive player turns passed without a kill, and both sides' mined crystal totals are tied at ${state.players.white.resourcesGained}.`,{exact:true})).toBeVisible();
+  expect(state.victoryReason).toBe('kill-clock');expect(state.winner).toBe('black');
+  await expect(page.getByRole('heading',{name:'Player 2 Wins!'})).toBeVisible();
+  await expect(page.getByText(`Player 2 ended the kill clock ahead on mined crystals, ${state.players.black.resourcesGained + 0.5} to ${state.players.white.resourcesGained}.`,{exact:true})).toBeVisible();
 });
 
 test('four-action setup, undo, both turns, resume and a fresh game', async ({page}) => {

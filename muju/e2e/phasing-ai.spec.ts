@@ -85,7 +85,7 @@ test('Easy plays a complete Phasing turn against the owner', async ({ page }, in
   await page.screenshot({ path: info.outputPath('phasing-ai-easy-summon.png'), fullPage: true });
 });
 
-test('Hard plays a complete Phasing turn with no engine failure counted', async ({ page }, info) => {
+test('Hard completes a half-komi Phasing turn through its canonical fallback without truncating the bank', async ({ page }, info) => {
   test.setTimeout(180_000);
   await startPhasingVsAI(page, 'hard', 'quick');
   await playHumanPhasingTurn(page);
@@ -94,14 +94,16 @@ test('Hard plays a complete Phasing turn with no engine failure counted', async 
 
   const diag = await page.evaluate(() => (window as unknown as { __mujuHardDiag?: Record<string, number> }).__mujuHardDiag);
   expect(diag, 'the hard route must have installed its counters').toBeTruthy();
-  // The real HardEngine answered, and nothing fell back: no pack failure, no
-  // engine throw, no replica divergence, no action the canonical rules refused,
-  // and no worker error.
+  // The integer packed engine refuses half crystals before truncation. Its
+  // existing canonical fallback completes the turn with the exact bank.
   expect(diag!.hardTurns).toBeGreaterThan(0);
   expect({
     packError: diag!.packError, engineError: diag!.engineError, divergence: diag!.divergence,
     invalidSuffix: diag!.invalidSuffix, workerError: diag!.workerError,
     emptyPlan: diag!.emptyPlan, budgetExhausted: diag!.budgetExhausted,
-  }).toEqual({ packError: 0, engineError: 0, divergence: 0, invalidSuffix: 0, workerError: 0,
+  }).toEqual({ packError: 1, engineError: 0, divergence: 0, invalidSuffix: 0, workerError: 0,
     emptyPlan: 0, budgetExhausted: 0 });
+  const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('elemental-tactics-save')!).state);
+  expect(saved.blackCrystalHandicap).toBe(0.5);
+  expect(saved.players.black.resources % 1).toBe(0.5);
 });

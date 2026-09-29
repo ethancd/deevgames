@@ -1,0 +1,5 @@
+
+> elemental-tactics@0.1.0 balance:check
+> node --import tsx lab/solver/run.ts current --check
+
+{"variant":"current","distinctStatProfiles":18,"sameTierDominated":[],"noMissionWitness":[],"noSoleCheapestWitness":[],"elapsedSeconds":0.205}

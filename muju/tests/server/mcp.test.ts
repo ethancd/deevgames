@@ -392,10 +392,10 @@ it.each([false, true])('discovers, creates and plays a crystal-handicap room thr
   const client = await clientFor(url, stdio);
   const discovery = await client.listTools();
   const schema = discovery.tools.find(t => t.name === 'muju_create_room')!.inputSchema;
-  expect(schema.properties!.blackCrystalHandicap).toMatchObject({ type: 'number', enum: [0, ...Array.from({ length: 20 }, (_, i) => i + 0.5)], default: 0 });
+  expect(schema.properties!.blackCrystalHandicap).toMatchObject({ type: 'number', enum: [0, ...Array.from({ length: 19 }, (_, i) => i + 0.5)] });
   const liveRules = await call(client, 'muju_rules');
-  expect(liveRules.blackCrystalHandicap).toMatchObject({ default: 0, min: 0.5, max: 19.5, step: 1 });
-  for (const amount of [0, 0.5, 1.5, 19.5]) {
+  expect(liveRules.blackCrystalHandicap).toMatchObject({ default: 0.5, min: 0.5, max: 18.5, step: 1 });
+  for (const amount of [0.5, 1.5, 18.5]) {
     const host = await call(client, 'muju_create_room', { name: 'Handicap host', side: 'black', blackCrystalHandicap: amount });
     expect(host.room).toMatchObject({ blackCrystalHandicap: amount, players: { black: { resources: amount }, white: { resources: 0 } } });
     const guest = await call(client, 'muju_join_room', { roomId: host.credentials.roomId, inviteCode: host.invitation.inviteCode, name: 'White' });
@@ -405,7 +405,7 @@ it.each([false, true])('discovers, creates and plays a crystal-handicap room thr
     expect(turn.turn).toMatchObject({ currentPlayer: 'black', phase: 'action', actionsRemaining: 4 });
     expect(turn.players.black.resources).toBe(amount);
   }
-  for (const amount of [-1, 20, 1, 2, 0.25, 20.5]) {
+  for (const amount of [0, 19.5, -1, 20, 1, 2, 0.25, 20.5]) {
     const rejected = await client.callTool({ name: 'muju_create_room', arguments: { name: 'Invalid', blackCrystalHandicap: amount } });
     expect(rejected.isError).toBe(true);
   }
@@ -427,7 +427,7 @@ it.each([false, true])('plays, previews, analyzes and stages a complete Phasing 
   // An agent that still asks for the retired rule set gets a named error.
   const retired = await client.callTool({ name: 'muju_rules', arguments: { ruleset: 'standard' } });
   expect(retired.isError).toBe(true);
-  const hosted = await call(client, 'muju_create_room', { name: 'Phasing White', ruleset: 'phasing', timeControl: 'rapid', blackCrystalHandicap: 0 });
+  const hosted = await call(client, 'muju_create_room', { name: 'Phasing White', ruleset: 'phasing', timeControl: 'rapid', blackCrystalHandicap: 0.5 });
   const { roomId, token } = hosted.credentials;
   const guest = await call(client, 'muju_join_room', { roomId, name: 'Phasing Black', inviteCode: hosted.invitation.inviteCode });
   const observed = await call(client, 'muju_observe', { roomId, player: 'white', briefing: true });

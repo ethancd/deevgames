@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { MAX_BLACK_CRYSTAL_HANDICAP } from '../../src/game/rules';
+import { isStoredBlackCrystalHandicap } from '../../src/game/rules';
 import type { PlayerId } from '../../src/game/types';
 import type { RoomSnapshot } from '../../src/online/types';
 import type { Centi } from '../../src/ai/hard/types';
@@ -24,7 +24,7 @@ export const seatContractSchema = z.discriminatedUnion('mode', [
     expectedMatchPolicy: z.object({ version: z.literal(1), toolTier: z.enum(['bare', 'harnessed', 'centaur', 'tool-builder']),
       protocolId: z.string().min(1).max(100).regex(/^[a-zA-Z0-9._-]+$/) }).strict(),
     expectedTimeControl: z.object({ delaySeconds: z.number().int().min(0).max(600), bankSeconds: z.number().int().min(1).max(14400) }).strict(),
-    expectedHandicap: z.number().int().min(0).max(MAX_BLACK_CRYSTAL_HANDICAP),
+    expectedHandicap: z.number().refine(isStoredBlackCrystalHandicap, 'Unsupported stored handicap'),
     phasingHardReadiness: readiness,
   }).strict(),
 ]);
@@ -64,6 +64,9 @@ export function assertSeatRoom(room: RoomSnapshot, expected?: { roomId: string; 
   if (ruleset !== 'phasing') throw new Error(`Hard seat plays Phasing only; this room is "${ruleset}" and the Hard replica cannot pack it.`);
   if (contract?.phasingHardReadiness !== PHASING_HARD_READINESS) {
     throw new Error(`Phasing Hard seat is closed: the seat contract must declare phasingHardReadiness: "${PHASING_HARD_READINESS}" once the Hard engine has passed its Phasing release gates.`);
+  }
+  if (!Number.isInteger(room.state.blackCrystalHandicap ?? 0) || Object.values(room.state.players).some(p => !Number.isInteger(p.resources))) {
+    throw new Error('Hard seat cannot represent fractional komi yet. New Prime games require 0.5–18.5; use the subscription LLM explorer or browser V2 fallback.');
   }
   if (room.archivedAt) throw new Error('Archived rooms are read-only.');
   if (!expected) return;

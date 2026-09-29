@@ -42,7 +42,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   // the archive. A game played under the rules retired on 2026-09-21 is never
   // resumed, but it is still the player's game: offer it for review.
   const [retiredSave] = useState(loadRetiredSave);
-  const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
+  const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0.5);
   /** Which modes put an engine in a seat, for the difficulty/pace copy. */
   const aiMode = selectedMode === 'vs-ai' || selectedMode === 'ai-vs-ai';
 

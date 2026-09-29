@@ -90,9 +90,9 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
 
     case 'RESET_GAME': {
       if (isMicro(state)) return createMicroGameState();
-      // A restart is a new game: legacy integer grants return to Off.
+      // A restart is a new game: retired grants return to mandatory 0.5 komi.
       const grant = state.blackCrystalHandicap ?? 0;
-      return createInitialGameState(undefined, getActionsPerTurn(state), isBlackCrystalHandicap(grant) ? grant : 0, state.ruleset);
+      return createInitialGameState(undefined, getActionsPerTurn(state), isBlackCrystalHandicap(grant) ? grant : 0.5, state.ruleset);
     }
 
     case 'RESTORE_STATE': {
@@ -119,8 +119,8 @@ function getInitialSession(options: InitialGameOptions): ReplaySession {
   // Phasing is the only ruleset a new local game can be started under; a caller
   // that says nothing gets it rather than `board.ts`'s historical default.
   const resumed = saved && loadGameState();
-  if (!resumed && !isBlackCrystalHandicap(options.blackCrystalHandicap ?? 0)) throw new Error('Invalid new-game Black crystal handicap');
-  const state = resumed || createInitialGameState(undefined, options.actionsPerTurn, options.blackCrystalHandicap, options.ruleset ?? 'phasing');
+  if (!resumed && !isBlackCrystalHandicap(options.blackCrystalHandicap ?? 0.5)) throw new Error('Invalid new-game Black crystal handicap');
+  const state = resumed || createInitialGameState(undefined, options.actionsPerTurn, options.blackCrystalHandicap ?? 0.5, options.ruleset ?? 'phasing');
   return { state, history: saved ?? startHistory(state, true), historyUndoLengths: [],
     recording: emptyRecording(), undoLengths: [], turnStartUndo: null };
 }

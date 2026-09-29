@@ -6,7 +6,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { ZodError } from 'zod';
 import { setTimeout as delay } from 'node:timers/promises';
 import { createInitialGameState } from '../src/game/board';
-import { getActionsPerTurn, isActionsPerTurn, isMicro, isPhasing } from '../src/game/rules';
+import { getActionsPerTurn, isActionsPerTurn, isMicro, isPhasing, isBlackCrystalHandicap } from '../src/game/rules';
 import { MICRO_ACTIONS_PER_TURN, MICRO_RULES_REVISION, createMicroGameState } from '../src/game/micro';
 import { automaticUpkeepUndo } from '../src/game/turn';
 import { isLegalAction } from '../src/game/legality';
@@ -478,8 +478,10 @@ export class RoomStore {
       : { changed: true, ...metadata, room };
   }
   create(input: unknown): RoomAdmission {
-    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap, matchPolicy, variant } = createSchema.parse(input);
+    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap: requestedHandicap, matchPolicy, variant } = createSchema.parse(input);
     const micro = variant === 'micro';
+    const blackCrystalHandicap = requestedHandicap ?? (micro ? 0 : 0.5);
+    if (!micro && !isBlackCrystalHandicap(blackCrystalHandicap)) throw new RoomError(400, 'INVALID_HANDICAP', 'Black must start with 0.5, 1.5, …, 18.5 crystals, including komi.');
     // Micro is exactly its own opening: two actions, empty banks.
     if (micro && (blackCrystalHandicap > 0 || (actionsPerTurn !== undefined && actionsPerTurn !== MICRO_ACTIONS_PER_TURN))) {
       throw new RoomError(400, 'INVALID_MICRO_SETUP', 'MICRO MUJU rooms always use two actions per turn and no crystal handicap. Omit actionsPerTurn and blackCrystalHandicap.');

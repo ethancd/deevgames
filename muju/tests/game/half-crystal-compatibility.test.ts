@@ -19,7 +19,7 @@ it.each(BLACK_CRYSTAL_HANDICAPS)('preserves %s through save/load and resolves th
   expect(resolveKillClock(state).winner).toBe(amount === 0 ? null : 'black');
 });
 
-it('loads a legacy integer grant unchanged, but restarting uses Off', () => {
+it('loads a legacy integer grant unchanged, but restarting uses 0.5 komi', () => {
   const state = createInitialGameState(undefined, 4, 0, 'phasing');
   state.blackCrystalHandicap = 20;
   state.players.black.resources = 17;
@@ -27,11 +27,32 @@ it('loads a legacy integer grant unchanged, but restarting uses Off', () => {
   const saved = loadGameState()!;
   expect(saved.blackCrystalHandicap).toBe(20);
   expect(saved.players.black.resources).toBe(17);
-  expect(gameReducer(saved, { type: 'RESET_GAME' }).blackCrystalHandicap).toBe(0);
+  expect(gameReducer(saved, { type: 'RESET_GAME' }).blackCrystalHandicap).toBe(0.5);
 });
 
 it('refuses fractional packed state before an integer buffer can truncate the grant', () => {
   const state = createInitialGameState(undefined, 4, 0.5, 'phasing');
   expect(() => new Replica().pack(state)).toThrow(PackError);
   expect(() => new Replica().pack(state)).toThrow(/fractional/);
+});
+
+
+it.each([0, 19.5])('preserves retired %s grants when loading, but resets new games to 0.5', amount => {
+  const state = createInitialGameState(undefined, 4, amount, 'phasing');
+  state.players.black.resources = 4.5;
+  saveGameState(state);
+  const saved = loadGameState()!;
+  expect(saved.blackCrystalHandicap).toBe(amount);
+  expect(saved.players.black.resources).toBe(4.5);
+  expect(gameReducer(saved, { type: 'RESET_GAME' }).blackCrystalHandicap).toBe(0.5);
+});
+
+it.each(BLACK_CRYSTAL_HANDICAPS)('cannot tie on any integral mined-income difference with %s komi', amount => {
+  const state = createInitialGameState(undefined, 4, amount, 'phasing');
+  state.inactivityPlies = INACTIVITY_LIMIT;
+  for (let difference = -30; difference <= 30; difference++) {
+    state.players.white.resourcesGained = 50 + difference;
+    state.players.black.resourcesGained = 50;
+    expect(resolveKillClock(state).winner).not.toBeNull();
+  }
 });

@@ -7,6 +7,7 @@ import type { Server } from 'node:http';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { seedLegacyZeroGrant } from './legacy-room-fixture';
 import { RoomStore } from '../../server/rooms';
 import { createApp } from '../../server/http';
 import { AnalysisService } from '../../server/analysis';
@@ -14,7 +15,10 @@ import type { MatchPolicy, RoomAdmission } from '../../src/online/types';
 const cleanups: (() => unknown | Promise<unknown>)[] = [];
 afterEach(async () => { for (const close of cleanups.splice(0).reverse()) await close(); });
 async function setup(stdio = false) {
-  const store = new RoomStore();
+  const directory = mkdtempSync(join(tmpdir(), 'muju-policy-'));
+  const database = join(directory, 'rooms.sqlite');
+  cleanups.push(() => rmSync(directory, { recursive: true, force: true }));
+  const store = new RoomStore(database);
   const listener: Server = await new Promise(resolve => { const s = createApp(store, { publicUrl: 'http://localhost' }).listen(0, '127.0.0.1', () => resolve(s)); });
   const url = `http://127.0.0.1:${(listener.address() as { port: number }).port}`;
   cleanups.push(async () => { listener.closeAllConnections(); await new Promise<void>(r => listener.close(() => r())); store.close(); });
@@ -23,7 +27,7 @@ async function setup(stdio = false) {
     env: { ...Object.fromEntries(Object.entries(process.env).filter((e): e is [string, string] => e[1] !== undefined)), MUJU_SERVER_URL: url }, stderr: 'pipe' })
     : new StreamableHTTPClientTransport(new URL(`${url}/mcp`));
   await client.connect(transport); cleanups.push(() => client.close());
-  return { store, url, client };
+  return { store, url, client, database };
 }
 async function post(url: string, body: unknown, token?: string) {
   return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify(body) });
@@ -113,14 +117,15 @@ it('checks policy before cache hits and persists restrictions across database re
  * in-tree caller that really plays a turn — has to make the readiness claim
  * itself, in a test-only journal.
  */
-it('runs a complete verified Phasing macro turn over real HTTP with the issued private credential', async () => {
-  const { store, url } = await setup();
+it('runs a complete verified legacy zero-grant Phasing macro turn over real HTTP with the issued private credential', async () => {
+  const { store, url, database } = await setup();
   const { joinRoom } = await import('../../src/online/client');
   const { runSeat } = await import('../../tools/engine-seat/runner');
   const { PHASING_HARD_READINESS } = await import('../../tools/engine-seat/contract');
   const { HardEngine } = await import('../../src/ai/hard/engine');
   const { hardEnginePatch } = await import('../../lab/hard-ai/bots/hard');
   const host = store.create({ name: 'Human Black', side: 'black', ruleset: 'phasing' });
+  seedLegacyZeroGrant(database, host.room.id);
   const guest = await joinRoom(url, host.room.id, 'Engine', host.inviteCode!);
   const journal = { version: 3 as const, admission: 'issued' as const,
     contract: { mode: 'phasing-smoke' as const, phasingHardReadiness: PHASING_HARD_READINESS },

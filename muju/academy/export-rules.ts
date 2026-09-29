@@ -7,6 +7,7 @@ import {getMoveCost} from '../src/game/movement';
 import {getPromotionCost} from '../src/game/promotion';
 import {endTurn} from '../src/game/turn';
 import {INACTIVITY_LIMIT} from '../src/game/inactivity';
+import {BLACK_CRYSTAL_HANDICAPS} from '../src/game/rules';
 import {UNEQUAL_ROUTES_MAP} from '../src/game/resourceMap';
 import {unitEndOfTurnTake} from '../src/game/mining';
 import type {Unit} from '../src/game/types';
@@ -83,7 +84,16 @@ const tie=endTurn({...quiet,players:{...quiet.players,
 assert.equal(tie.victoryReason,'kill-clock');assert.equal(tie.winner,null);
 // R09's narration still says "ten quiet turns" and "always a draw"
 // (muju-phasing-1); it is stale until a v9 re-record — see academy/STATUS.md.
-demonstrations.push(`R09: the ${INACTIVITY_LIMIT}th kill-free ply ends the game on mined totals — the higher wins, counting Black's handicap; equal totals draw (R09 narration still says ten, always a draw).`);
+demonstrations.push(`R09: the ${INACTIVITY_LIMIT}th kill-free ply ends the game on mined totals — the higher wins, counting Black's handicap; equal totals draw only in historical games without half-crystal komi (R09 narration still says ten, always a draw).`);
+assert.deepEqual(BLACK_CRYSTAL_HANDICAPS, Array.from({length:19},(_,i)=>i+0.5));
+for (const grant of BLACK_CRYSTAL_HANDICAPS) {
+ for (let difference=-30;difference<=30;difference++) {
+  const scored=endTurn({...quiet,blackCrystalHandicap:grant,players:{...quiet.players,
+   white:{...quiet.players.white,resourcesGained:50+difference},black:{...quiet.players.black,resourcesGained:50}}});
+  assert.notEqual(scored.winner,null);
+ }
+}
+demonstrations.push('2026-09-28: every new Prime game grants Black 0.5 plus an integer from 0 through 18; all 19 grants avoid a tied mined score. Historical games and recorded lessons retain their original grants.');
 // 2026-09-22: display-name rename (owner decision, docs/changes/2026-09-22-rename-irumbu-BRIEF.md).
 // Hono->Honō, Kimubunga->Kimbunga, Sjor->Sjór, Aegirinn->Ægirinn, Göl->Loş, Sachita->Mallki,
 // Sachakuna->Sach'akuna, Yan->Poṉ, Mazask->Veḷḷi, Tanka->Irumbu; title Muju Hono Tanka->Muju Hono

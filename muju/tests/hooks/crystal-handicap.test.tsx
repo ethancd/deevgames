@@ -7,11 +7,11 @@ import type { GameConfig } from '../../src/game/types';
 
 afterEach(() => { cleanup(); localStorage.clear(); });
 
-it.each([0, 0.5, 2.5, 19.5])('starts and resumes a %i-crystal game without regranting or overriding it', amount => {
+it.each([0.5, 2.5, 9.5, 18.5])('starts and resumes a %i-crystal game without regranting or overriding it', amount => {
   let view = render(<App />);
   fireEvent.click(screen.getByRole('button', { name: /^Pass & Play/ }));
   const select = screen.getByRole('combobox', { name: 'Black crystal handicap' });
-  expect(select.querySelectorAll('option')).toHaveLength(21);
+  expect(select.querySelectorAll('option')).toHaveLength(19);
   fireEvent.change(select, { target: { value: String(amount) } });
   fireEvent.click(screen.getByRole('button', { name: 'Start Game' }));
   expect(loadGameState()?.players.black.resources).toBe(amount);

@@ -1,3 +1,4 @@
+import { ExplorerStore } from './explorer/store';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -11,14 +12,15 @@ const publicUrl = (process.env.PUBLIC_URL || process.env.RENDER_EXTERNAL_URL || 
 const databasePath = process.env.MUJU_DB_PATH ?? resolve(root, 'data/rooms.sqlite');
 mkdirSync(dirname(databasePath), { recursive: true, mode: 0o700 });
 const store = new RoomStore(databasePath, Number(process.env.MUJU_MAX_ROOMS ?? 10000));
-const app = createApp(store, { publicUrl, distPath: resolve(root, 'dist'),
+const explorer = new ExplorerStore(databasePath);
+const app = createApp(store, { publicUrl, explorer, distPath: resolve(root, 'dist'),
   matchRoomId: process.env.MUJU_MATCH_ROOM_ID,
   allowedOrigins: (process.env.MUJU_ALLOWED_ORIGINS ?? '').split(',').filter(Boolean) });
 const listener = app.listen(port, host, error => {
-  if (error) { console.error(`Could not start Muju: ${error.message}`); store.close(); process.exit(1); }
+  if (error) { console.error(`Could not start Muju: ${error.message}`); explorer.close(); store.close(); process.exit(1); }
   console.error(`Muju Hono Irumbu: ${publicUrl}/muju/ · MCP: ${publicUrl}/mcp`);
 });
 for (const signal of ['SIGINT', 'SIGTERM'] as const) process.on(signal, () => {
-  listener.close(() => { store.close(); process.exit(0); });
+  listener.close(() => { explorer.close(); store.close(); process.exit(0); });
   listener.closeIdleConnections();
 });

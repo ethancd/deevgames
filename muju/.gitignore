@@ -3,3 +3,6 @@
 /test-results/
 /playwright-report/
 /data/
+
+# Local subscription-runner connection tokens
+*.private.json

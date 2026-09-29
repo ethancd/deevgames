@@ -26,7 +26,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   const [server, setServer] = useState(defaultServer);
   const [name, setName] = useState('Player');
   const [side, setSide] = useState<PlayerId>('white');
-  const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0);
+  const [blackCrystalHandicap, setBlackCrystalHandicap] = useState(0.5);
   const [variant, setVariant] = useState<Variant | undefined>(() => new URLSearchParams(window.location.search).get('variant') === 'micro' ? 'micro' : undefined);
   const [timeChoice, setTimeChoice] = useState<TimeControlPreset | 'untimed' | 'custom'>('untimed');
   const [delaySeconds, setDelaySeconds] = useState('30');
@@ -135,6 +135,7 @@ export function OnlineLobby({ onBack }: { onBack: () => void }) {
   return <main className="online-lobby">
     <div className="music-lobby-nav"><button onClick={onBack}>← Game modes</button><MusicButton /></div>
     <h1>Muju Hono Irumbu</h1><h2>Play or watch together</h2>
+    <a href={`/muju/explorer?server=${encodeURIComponent(server)}`} className="block text-sky-300 underline">Advantage exhaustion explorer · two LLM players</a>
     {showJoinFirst && joinSection}
     <section aria-label="Active games">
       <ActiveGames key={server} server={server} busy={busy} onWatch={id => void submit('browse', id)} />

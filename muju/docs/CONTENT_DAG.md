@@ -48,7 +48,7 @@ python3 tools/muju-content-dag.py diagram
 ```
 
 Kinds are `piece-stats`, `rules`, `map-economy`, `ai`, `ai-strength`, `mcp`,
-`online`, `ui`, `academy`, and `release`. Repeat `--kind` or `--node` to combine changes.
+`online`, `ui`, `explorer`, `academy`, and `release`. Repeat `--kind` or `--node` to combine changes.
 Use `--kind rules` for new mechanics or uncertain rule scope. File paths are
 repository-relative even when running the script from another directory;
 absolute paths inside this checkout also work. Include deleted/renamed paths
@@ -84,7 +84,7 @@ paths are reported separately; current-static outputs are an explicit exception.
 ## Overview
 
 This condensed view groups nodes for readability. `diagram` emits the complete
-27-node graph directly from the JSON inventory.
+28-node graph directly from the JSON inventory.
 
 ```mermaid
 flowchart TD
@@ -101,6 +101,9 @@ flowchart TD
   ai --> strength
   engine --> server[Multiplayer host]
   saves --> server
+  server --> explorer[Advantage exhaustion controller and subscription runner]
+  ui --> explorer
+  explorer --> checks
   server --> mcp[MCP rules, previews and analysis]
   ai --> mcp
   mcp --> skills[Agent skills and tool guides]
@@ -172,6 +175,7 @@ flowchart TD
 | Agent guidance | `public/skills/`, `public/guides/`, `docs/MCP_TOOL_TAPS.md`, `docs/ANALYSIS_TOOLS.md`, `docs/STRATEGOS-PLATE.PNG`, `ONLINE.md` | Skills and visual guides are copied into browser `dist` and served by the Node host too. The Strategos Plate has its own labeled rules revision; preserve the supplied original. |
 | Hard engine | `src/ai/hard/`, `src/ai/hardOptIn.ts`, `docs/hard-ai/` | A complete second rules engine: `core/state.ts` mirrors transitions and turn boundaries, `tactics/prover.ts` mirrors home defense, and generator grammar, tables and weights encode turn timing and economy. `pack` must reject states it cannot represent. Importing the catalogue updates stats only. |
 | AI strength | `lab/hard-ai/`, `tests/ai/hard/`, `tests/lab/`, `docs/hard-ai/RELEASE-*.md` | Strength claims belong to one rules revision. After a rules change re-pin perft, fuzz and goldens, regenerate scripted-bot openings with a fresh sealed split, sanity-gate the baseline, and preregister the rule before the sealed row. Epic run records `docs/hard-ai/e0`–`e5` are historical evidence. |
+| Advantage explorer | `server/explorer/`, `src/explorer/`, `tools/explorer/`, `docs/EXPLORER.md` | Forks preserve state and budgets; forecasts are sealed until both submit; CLI subscriptions stay local. Branches are related exploratory evidence. |
 | Balance | `lab/solver/`, `lab/results/current-static/current.*` | Static value is not AI evaluation. Changed rules invalidate strategic conclusions, not the existence of old experimental records. |
 | Academy | `academy/README.md`, `STATUS.md`, active `production/R01`–`R16` | Current `episode.json` and render sources supersede old packets; copied catalogues, matrices, snapshots, narration and finished videos all need separate consideration. |
 | Public overview | Root `docs/game-design-dossier.md`, `portfolio/index.html`, `index.html` | The root dossier is copied into the static site; a correct SPEC does not update public summary prose. |

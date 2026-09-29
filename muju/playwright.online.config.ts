@@ -6,7 +6,7 @@ export default defineConfig({
   // cutover must not ship with no browser coverage of the AI path, and this is
   // the only config CI runs. They need no room — they play against the served
   // `dist` build in local storage — but they are the slowest cases here.
-  testMatch: ['room-lifecycle.spec.ts', 'sounds.spec.ts', 'phone-playback.spec.ts', 'phasing.spec.ts', 'crystal-handicap.spec.ts', 'online.spec.ts', 'lobby.spec.ts', 'pass-play.spec.ts', 'player-side.spec.ts', 'action-budget.spec.ts', 'replay.spec.ts', 'upkeep.spec.ts', 'home-checkmate.spec.ts', 'painter.spec.ts', 'history.spec.ts', 'analysis.spec.ts', 'ai-worker.spec.ts', 'phasing-ai.spec.ts', 'ai-timer.spec.ts'],
+  testMatch: ['explorer.spec.ts', 'room-lifecycle.spec.ts', 'sounds.spec.ts', 'phone-playback.spec.ts', 'phasing.spec.ts', 'crystal-handicap.spec.ts', 'online.spec.ts', 'lobby.spec.ts', 'pass-play.spec.ts', 'player-side.spec.ts', 'action-budget.spec.ts', 'replay.spec.ts', 'upkeep.spec.ts', 'home-checkmate.spec.ts', 'painter.spec.ts', 'history.spec.ts', 'analysis.spec.ts', 'ai-worker.spec.ts', 'phasing-ai.spec.ts', 'ai-timer.spec.ts'],
   workers: 2,
   use: {
     baseURL: 'http://127.0.0.1:8928/muju/',

@@ -38,6 +38,7 @@
     "ai-strength": ["ai-strength"],
     "mcp": ["mcp-tools"],
     "online": ["server-runtime"],
+    "explorer": ["advantage-explorer"],
     "ui": ["browser-ui"],
     "academy": ["academy-lessons"],
     "release": ["game-validation", "academy-package"]
@@ -186,7 +187,34 @@
       "verify": ["Require full decode, source-audio correlation, complete duration, quiet holds, loudness/peak checks, readable cards/boards and correct matrices. final-review.json must identify exact final video and timeline hashes; never mechanically assert that unseen frames were reviewed."]
     },
     {
-      "id": "game-validation", "title": "Game, AI, server, MCP and browser regression gates", "depends_on": ["rules-docs", "browser-ui", "persistence", "wasm-tactics", "ai-search", "hard-ai", "ai-strength", "server-runtime", "mcp-tools", "agent-guides", "balance-analysis"],
+      "id": "advantage-explorer",
+      "title": "Online advantage exhaustion experiments and subscription runner",
+      "depends_on": [
+        "server-runtime",
+        "browser-ui"
+      ],
+      "paths": [
+        "muju/server/explorer/",
+        "muju/src/explorer/",
+        "muju/tools/explorer/",
+        "muju/docs/EXPLORER.md"
+      ],
+      "update": [
+        "Keep canonical rule/setup identity, exact checkpoint restoration, independent forecasts, parent/child lineage, global ply/game/inference budgets and qualitative pressure evidence consistent. Pin supported CLI model IDs/effort and preserve subscription authentication without transferring provider credentials to the host. Never pool related branches as independent balance trials."
+      ],
+      "verify": [
+        "Test restart/idempotency, hidden assessments, stale worker rejection, branch divergence, exact restored economy/summons/kill clock, budget boundaries, CLI error/pause/cancellation and public exports. Run a real subscription adapter smoke when access exists; simulated players do not establish real-model strength."
+      ],
+      "commands": [
+        {
+          "cwd": "muju",
+          "run": "npm run explorer:types && npx vitest run tests/server/explorer.test.ts tests/server/explorer-runner.test.ts",
+          "effect": "Checks controller and local CLI orchestration without model credentials."
+        }
+      ]
+    },
+    {
+      "id": "game-validation", "title": "Game, AI, server, MCP and browser regression gates", "depends_on": ["rules-docs", "browser-ui", "persistence", "wasm-tactics", "ai-search", "hard-ai", "ai-strength", "server-runtime", "mcp-tools", "agent-guides", "balance-analysis", "advantage-explorer"],
       "paths": ["muju/tests/", "muju/e2e/", "muju/vitest.config.ts", "muju/playwright.config.ts", "muju/playwright.online.config.ts", "muju/playwright.hard.config.ts", "muju/server/tsconfig.json", "muju/tsconfig.json"],
       "update": ["Adapt meaningful changed-rule regression cases and fixtures. Retain explicit historical compatibility fixtures; do not replace every occurrence of an old number. Investigate failures against intended behavior."],
       "verify": ["Run targeted checks during iteration, then release gates. For general local browser tests first serve the built game at MUJU_BASE_URL (default http://127.0.0.1:8927/muju/); the online suite starts its own isolated host."],

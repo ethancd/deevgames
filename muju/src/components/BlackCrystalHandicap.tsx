@@ -9,14 +9,13 @@ export function BlackCrystalHandicap({ value, onChange }: { value: number; onCha
     <label htmlFor={id} className="block text-sm text-gray-400">Black crystal handicap</label>
     <select id={id} value={value} onChange={event => onChange(Number(event.target.value))}
       aria-describedby={`${id}-hint`} className="w-full bg-gray-800 border border-gray-700 rounded p-2">
-      <option value={0}>Off · No handicap</option>
-      {BLACK_CRYSTAL_HANDICAPS.slice(1).map(amount =>
+      {BLACK_CRYSTAL_HANDICAPS.map(amount =>
         <option key={amount} value={amount}>{amount} {amount === 1 ? 'crystal' : 'crystals'}</option>)}
     </select>
     <p id={`${id}-hint`} className="text-sm text-gray-400">
       {value > 0
         ? `Black starts with ${value} ${value === 1 ? 'crystal' : 'crystals'}. Both players begin with actions; spend after mining and upkeep. White still moves first.`
-        : 'Give Black 0.5, 1.5, …, 19.5 starting crystals. Both players begin with actions; spend after mining and upkeep. White still moves first.'}
+        : 'Black always starts with 0.5, 1.5, …, 18.5 crystals. Both players begin with actions; spend after mining and upkeep. White still moves first.'}
     </p>
   </div>;
 }

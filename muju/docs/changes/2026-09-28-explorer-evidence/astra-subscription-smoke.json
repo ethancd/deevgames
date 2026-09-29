@@ -1,0 +1,2142 @@
+{
+  "format": "muju-advantage-explorer-1",
+  "experiment": {
+    "id": "be08b80692c55d1e413779b64c4c48fd",
+    "version": 14,
+    "createdAt": "2026-09-28T14:17:41.815Z",
+    "updatedAt": "2026-09-28T14:19:26.293Z",
+    "rulesRevision": "muju-phasing-4",
+    "setupRevision": "mandatory-half-komi-1",
+    "sourceIdentity": {
+      "commit": null,
+      "sha256": "0b3ef3d716e1492c5c1ef496b78c0e6a3e38768f9a161d64212e4be6c7c072c6"
+    },
+    "config": {
+      "handicap": 9.5,
+      "maxGames": 1,
+      "maxPlies": 1,
+      "maxModelCalls": 16,
+      "terminalOnly": false,
+      "consensus": 0.9,
+      "confirmations": 2,
+      "retryThreshold": 0.33,
+      "players": {
+        "white": {
+          "provider": "codex",
+          "model": "gpt-6-astra",
+          "effort": "high"
+        },
+        "black": {
+          "provider": "codex",
+          "model": "gpt-6-astra",
+          "effort": "high"
+        }
+      }
+    },
+    "status": "complete",
+    "stopReason": "move-budget",
+    "plies": 1,
+    "modelCalls": 5,
+    "games": [
+      {
+        "id": "2c72e1982c1d3ec72ee86b723279e541",
+        "parentId": null,
+        "forkCheckpoint": null,
+        "forkReason": "",
+        "checkpoints": [
+          "963e951d1f7833100cfd90df8aa0edf7",
+          "dd54373cc5654fc90e5fdaa1ec9e2817"
+        ],
+        "turns": [
+          {
+            "checkpointId": "963e951d1f7833100cfd90df8aa0edf7",
+            "player": "white",
+            "actions": [
+              {
+                "type": "MOVE",
+                "unitId": "white_fire_1_1790605061807_pr8a3",
+                "to": {
+                  "x": 2,
+                  "y": 7
+                }
+              },
+              {
+                "type": "END_ACTION_PHASE"
+              },
+              {
+                "type": "BUY_UNIT",
+                "definitionId": "plant_1",
+                "position": {
+                  "x": 1,
+                  "y": 7
+                }
+              },
+              {
+                "type": "END_PLACE_PHASE"
+              }
+            ],
+            "resultHash": "55ccefea1eccbaf740181f7737f8b3a89ee294b12ea18ae7d1ed28e6064ac3e4",
+            "explanation": "Move Hi to C8, mine six crystals, and commit Muju to B8\u2019s 16-crystal deposit, retaining one crystal. Black cannot reach this spawn rectangle on its opening reply, so the commitment is protected against immediate disruption."
+          }
+        ],
+        "outcome": {
+          "kind": "budget",
+          "winner": null,
+          "reason": "Global player-turn limit reached."
+        }
+      }
+    ],
+    "checkpoints": [
+      {
+        "id": "963e951d1f7833100cfd90df8aa0edf7",
+        "state": {
+          "actionsPerTurn": 4,
+          "ruleset": "phasing",
+          "pendingSummons": [],
+          "blackCrystalHandicap": 9.5,
+          "phase": "playing",
+          "inactivityPlies": 0,
+          "progressThisTurn": false,
+          "board": {
+            "cells": [
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 0
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 0
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 0
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 0
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 0
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 0
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 0
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 0
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 0
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 1
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 1
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 1
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 1
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 1
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 1
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 1
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 1
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 1
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 2
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 2
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 2
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 2
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 2
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 2
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 2
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 2
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 2
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 2
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 3
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 4
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 4
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 4
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 5
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 5
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 5
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 6
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 7
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 7
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 7
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 7
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 7
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 7
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 7
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 7
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 7
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 7
+                  },
+                  "resourceLayers": 8
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 8
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 8
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 8
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 8
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 8
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 8
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 8
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 8
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 8
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 8
+                  },
+                  "resourceLayers": 8
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 9
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 9
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 9
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 9
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 9
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 9
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 9
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 9
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 9
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 9
+                  },
+                  "resourceLayers": 8
+                }
+              ]
+            ],
+            "units": [
+              {
+                "id": "white_fire_1_1790605061807_pr8a3",
+                "definitionId": "fire_1",
+                "owner": "white",
+                "position": {
+                  "x": 1,
+                  "y": 0
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false
+              },
+              {
+                "id": "white_water_1_1790605061807_pxi96",
+                "definitionId": "water_1",
+                "owner": "white",
+                "position": {
+                  "x": 1,
+                  "y": 1
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false
+              },
+              {
+                "id": "white_plant_1_1790605061807_w7ebp",
+                "definitionId": "plant_1",
+                "owner": "white",
+                "position": {
+                  "x": 0,
+                  "y": 1
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false
+              },
+              {
+                "id": "black_fire_1_1790605061807_2pvib",
+                "definitionId": "fire_1",
+                "owner": "black",
+                "position": {
+                  "x": 8,
+                  "y": 9
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false
+              },
+              {
+                "id": "black_water_1_1790605061807_ozikp",
+                "definitionId": "water_1",
+                "owner": "black",
+                "position": {
+                  "x": 8,
+                  "y": 8
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false
+              },
+              {
+                "id": "black_plant_1_1790605061807_u2ewh",
+                "definitionId": "plant_1",
+                "owner": "black",
+                "position": {
+                  "x": 9,
+                  "y": 8
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false
+              }
+            ],
+            "initialResourceLayers": [
+              8,
+              8,
+              8,
+              0,
+              0,
+              0,
+              4,
+              4,
+              4,
+              4,
+              8,
+              8,
+              4,
+              0,
+              0,
+              0,
+              4,
+              16,
+              16,
+              4,
+              8,
+              4,
+              4,
+              0,
+              0,
+              0,
+              4,
+              16,
+              16,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              8,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              8,
+              8,
+              8,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              8,
+              8,
+              8,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              8,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              16,
+              16,
+              4,
+              0,
+              0,
+              0,
+              4,
+              4,
+              8,
+              4,
+              16,
+              16,
+              4,
+              0,
+              0,
+              0,
+              4,
+              8,
+              8,
+              4,
+              4,
+              4,
+              4,
+              0,
+              0,
+              0,
+              8,
+              8,
+              8
+            ]
+          },
+          "players": {
+            "white": {
+              "id": "white",
+              "resources": 0,
+              "startCorner": {
+                "x": 0,
+                "y": 0
+              },
+              "resourcesGained": 0,
+              "resourcesUpkeep": 0
+            },
+            "black": {
+              "id": "black",
+              "resources": 9.5,
+              "startCorner": {
+                "x": 9,
+                "y": 9
+              },
+              "resourcesGained": 0,
+              "resourcesUpkeep": 0
+            }
+          },
+          "turn": {
+            "currentPlayer": "white",
+            "phase": "action",
+            "actionsRemaining": 4,
+            "turnNumber": 1
+          },
+          "winner": null,
+          "selectedUnit": null,
+          "validMoves": [],
+          "validAttacks": []
+        },
+        "hash": "c14f0710626f251b90901fbeb9f8f5ea950c5a813a0e78a20ef37d3eff3d693b",
+        "assessments": {
+          "white": {
+            "whiteWin": 0.24,
+            "pressure": "black-edge",
+            "counterplay": "White can use first-move initiative to extend spawn reach, contest rich deposits, and threaten kills that prevent an unfavorable kill-clock finish. Black must balance mining expansion against defending those threats.",
+            "explanation": "Black\u2019s 9.5 crystals count toward victory and fund earlier mining expansion, creating a substantial advantage in a quiet five-turn-per-side race. White has no immediate tactical threat to offset that lead, but mobile pressure and contested expansion offer meaningful choices for both sides. Black is favored, without White being strategically helpless."
+          },
+          "black": {
+            "whiteWin": 0.25,
+            "pressure": "black-edge",
+            "counterplay": "White can use first-move initiative to extend spawn territory, contest rich deposits, or threaten Black\u2019s home. Timely kills can prevent a favorable Black mining-clock finish.",
+            "explanation": "Black\u2019s 9.5 starting crystals provide both a scoring lead and funding for earlier mining expansion, making Black favored in eventual victory. White\u2019s initiative and public, delayed summons leave meaningful attacking and positional choices for both sides; this is not yet a forced or tactically dominated position."
+          }
+        }
+      },
+      {
+        "id": "dd54373cc5654fc90e5fdaa1ec9e2817",
+        "state": {
+          "actionsPerTurn": 4,
+          "ruleset": "phasing",
+          "pendingSummons": [
+            {
+              "id": "unit-white-1-0",
+              "owner": "white",
+              "definitionId": "plant_1",
+              "position": {
+                "x": 1,
+                "y": 7
+              },
+              "cost": 5
+            }
+          ],
+          "blackCrystalHandicap": 9.5,
+          "phase": "playing",
+          "inactivityPlies": 1,
+          "progressThisTurn": false,
+          "board": {
+            "cells": [
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 0
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 0
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 0
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 0
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 0
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 0
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 0
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 0
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 0
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 1
+                  },
+                  "resourceLayers": 5
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 1
+                  },
+                  "resourceLayers": 6
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 1
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 1
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 1
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 1
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 1
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 1
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 1
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 1
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 2
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 2
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 2
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 2
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 2
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 2
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 2
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 2
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 2
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 2
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 3
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 3
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 4
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 4
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 4
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 4
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 5
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 5
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 5
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 5
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 6
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 6
+                  },
+                  "resourceLayers": 4
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 7
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 7
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 7
+                  },
+                  "resourceLayers": 15
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 7
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 7
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 7
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 7
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 7
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 7
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 7
+                  },
+                  "resourceLayers": 8
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 8
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 8
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 8
+                  },
+                  "resourceLayers": 16
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 8
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 8
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 8
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 8
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 8
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 8
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 8
+                  },
+                  "resourceLayers": 8
+                }
+              ],
+              [
+                {
+                  "position": {
+                    "x": 0,
+                    "y": 9
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 1,
+                    "y": 9
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 2,
+                    "y": 9
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 3,
+                    "y": 9
+                  },
+                  "resourceLayers": 4
+                },
+                {
+                  "position": {
+                    "x": 4,
+                    "y": 9
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 5,
+                    "y": 9
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 6,
+                    "y": 9
+                  },
+                  "resourceLayers": 0
+                },
+                {
+                  "position": {
+                    "x": 7,
+                    "y": 9
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 8,
+                    "y": 9
+                  },
+                  "resourceLayers": 8
+                },
+                {
+                  "position": {
+                    "x": 9,
+                    "y": 9
+                  },
+                  "resourceLayers": 8
+                }
+              ]
+            ],
+            "units": [
+              {
+                "id": "white_fire_1_1790605061807_pr8a3",
+                "definitionId": "fire_1",
+                "owner": "white",
+                "position": {
+                  "x": 2,
+                  "y": 7
+                },
+                "hasMoved": true,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false
+              },
+              {
+                "id": "white_water_1_1790605061807_pxi96",
+                "definitionId": "water_1",
+                "owner": "white",
+                "position": {
+                  "x": 1,
+                  "y": 1
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false
+              },
+              {
+                "id": "white_plant_1_1790605061807_w7ebp",
+                "definitionId": "plant_1",
+                "owner": "white",
+                "position": {
+                  "x": 0,
+                  "y": 1
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false
+              },
+              {
+                "id": "black_fire_1_1790605061807_2pvib",
+                "definitionId": "fire_1",
+                "owner": "black",
+                "position": {
+                  "x": 8,
+                  "y": 9
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false,
+                "placedThisTurn": false,
+                "attackedThisTurn": []
+              },
+              {
+                "id": "black_water_1_1790605061807_ozikp",
+                "definitionId": "water_1",
+                "owner": "black",
+                "position": {
+                  "x": 8,
+                  "y": 8
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false,
+                "placedThisTurn": false,
+                "attackedThisTurn": []
+              },
+              {
+                "id": "black_plant_1_1790605061807_u2ewh",
+                "definitionId": "plant_1",
+                "owner": "black",
+                "position": {
+                  "x": 9,
+                  "y": 8
+                },
+                "hasMoved": false,
+                "hasAttacked": false,
+                "lastAttackKilled": false,
+                "canActThisTurn": true,
+                "damageTaken": 0,
+                "promotedThisPlacement": false,
+                "placedThisTurn": false,
+                "attackedThisTurn": []
+              }
+            ],
+            "initialResourceLayers": [
+              8,
+              8,
+              8,
+              0,
+              0,
+              0,
+              4,
+              4,
+              4,
+              4,
+              8,
+              8,
+              4,
+              0,
+              0,
+              0,
+              4,
+              16,
+              16,
+              4,
+              8,
+              4,
+              4,
+              0,
+              0,
+              0,
+              4,
+              16,
+              16,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              8,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              8,
+              8,
+              8,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              8,
+              8,
+              8,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              8,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              16,
+              16,
+              4,
+              0,
+              0,
+              0,
+              4,
+              4,
+              8,
+              4,
+              16,
+              16,
+              4,
+              0,
+              0,
+              0,
+              4,
+              8,
+              8,
+              4,
+              4,
+              4,
+              4,
+              0,
+              0,
+              0,
+              8,
+              8,
+              8
+            ]
+          },
+          "players": {
+            "white": {
+              "id": "white",
+              "resources": 1,
+              "startCorner": {
+                "x": 0,
+                "y": 0
+              },
+              "resourcesGained": 6,
+              "resourcesUpkeep": 0
+            },
+            "black": {
+              "id": "black",
+              "resources": 9.5,
+              "startCorner": {
+                "x": 9,
+                "y": 9
+              },
+              "resourcesGained": 0,
+              "resourcesUpkeep": 0
+            }
+          },
+          "turn": {
+            "currentPlayer": "black",
+            "phase": "action",
+            "actionsRemaining": 4,
+            "turnNumber": 1
+          },
+          "winner": null,
+          "selectedUnit": null,
+          "validMoves": [],
+          "validAttacks": [],
+          "lastIncome": {
+            "player": "white",
+            "turnNumber": 1,
+            "total": 6,
+            "takes": [
+              {
+                "unitId": "white_fire_1_1790605061807_pr8a3",
+                "definitionId": "fire_1",
+                "position": {
+                  "x": 2,
+                  "y": 7
+                },
+                "amount": 1
+              },
+              {
+                "unitId": "white_water_1_1790605061807_pxi96",
+                "definitionId": "water_1",
+                "position": {
+                  "x": 1,
+                  "y": 1
+                },
+                "amount": 2
+              },
+              {
+                "unitId": "white_plant_1_1790605061807_w7ebp",
+                "definitionId": "plant_1",
+                "position": {
+                  "x": 0,
+                  "y": 1
+                },
+                "amount": 3
+              }
+            ]
+          },
+          "upkeepPending": false,
+          "lastUpkeep": {
+            "player": "white",
+            "paid": 0,
+            "released": [],
+            "turnNumber": 1
+          },
+          "lastSummoning": {
+            "player": "black",
+            "turnNumber": 1,
+            "summoned": [],
+            "disrupted": []
+          }
+        },
+        "hash": "55ccefea1eccbaf740181f7737f8b3a89ee294b12ea18ae7d1ed28e6064ac3e4",
+        "assessments": {}
+      }
+    ],
+    "activeGameId": "2c72e1982c1d3ec72ee86b723279e541",
+    "runnerBusy": false,
+    "review": "",
+    "usage": [
+      {
+        "player": "white",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "inputTokens": 17258,
+        "outputTokens": 364,
+        "elapsedMs": 15909
+      },
+      {
+        "player": "black",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "inputTokens": 17256,
+        "outputTokens": 524,
+        "elapsedMs": 20682
+      },
+      {
+        "player": "white",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "inputTokens": 17542,
+        "outputTokens": 611,
+        "elapsedMs": 25510
+      },
+      {
+        "player": "white",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "inputTokens": 22008,
+        "outputTokens": 594,
+        "elapsedMs": 22222
+      },
+      {
+        "player": "white",
+        "provider": "codex",
+        "model": "gpt-6-astra",
+        "inputTokens": 28170,
+        "outputTokens": 495,
+        "elapsedMs": 20009
+      }
+    ]
+  }
+}

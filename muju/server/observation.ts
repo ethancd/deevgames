@@ -150,8 +150,8 @@ export const rules = {
     layout: Array.from({ length: 10 }, (_, row) => UNEQUAL_ROUTES_MAP.slice(row * 10, row * 10 + 10)),
     compatibility: 'This map applies to new games and restarts. Existing games retain their stored reserves; use the room observation for its actual map. The current unit catalogue applies to all games.' },
   blackCrystalHandicap: {
-    default: 0, min: 0.5, max: 19.5, step: 1,
-    setup: 'Optional creation-only starting crystals for Black: 0.5, 1.5, …, 19.5. Omit or use 0 for no handicap. White starts with 0 and moves first. This grant is separate from mined income and is not repeated on later turns.',
+    default: 0.5, min: 0.5, max: 18.5, step: 1,
+    setup: 'Mandatory creation-only starting crystals for Black, including 0.5 komi: 0.5, 1.5, …, 18.5. Omit for 0.5; zero is rejected. White starts with 0 and moves first. This grant is separate from mined income and is not repeated on later turns.',
     opening: 'Both players start in Act regardless of handicap. Normal purchase and promotion costs apply; both sides still have four actions.',
   },
   analysis: {

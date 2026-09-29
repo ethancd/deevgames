@@ -18,6 +18,9 @@ cp docs/game-design-dossier.md "$stage/docs/"
 for game in muju forge oracle; do
   cp -R "$game/dist" "$stage/$game"
 done
+# Give the explorer a real entry point on static hosts, including direct links.
+mkdir -p "$stage/muju/explorer"
+cp "$stage/muju/index.html" "$stage/muju/explorer/index.html"
 python3 tools/verify_site.py "$stage"
 
 # _site is generated exclusively by this script, and ignored by Git.

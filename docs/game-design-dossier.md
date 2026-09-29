@@ -133,7 +133,7 @@ unit may climb one tier per own turn, paying the cost difference. The exact
 18-unit catalogue is defined in `muju/src/game/units.ts`. The elemental triangle,
 Cleave, owner-turn healing, and upkeep remain; twenty player turns without an attack
 kill draw (raised from ten on 2026-09-19; only an attack that removes a unit resets
-the clock). Black may receive an optional 0.5, 1.5, …, 19.5 starting-crystal handicap. First-player rush strength under the combined rules remains
+the clock). Black always receives 0.5, 1.5, …, 18.5 starting crystals, including mandatory 0.5 komi; new games cannot tie on mined totals. First-player rush strength under the combined rules remains
 an open design question.
 
 Both banks are public. The AI uses public-state MCTS and beam/placement plans;

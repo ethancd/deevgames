@@ -1,3 +1,8 @@
+> Current setup amendment (2026-09-28): Prime always grants Black 0.5 komi plus
+> an integer from 0 through 18. New choices are 0.5–18.5, default 0.5.
+> The half breaks all equal mined-total scores; old games retain their grants.
+> The explorer defaults to 9.5. MICRO MUJU is unchanged.
+
 # Muju Hono Irumbu — Game Specification (Current Rules)
 
 This is the canonical rules specification for Muju Hono Irumbu as implemented.
@@ -22,7 +27,7 @@ See §4.2, `JUDGMENT_LOG.md` J-025 and
 
 **Retained from v3.3** (2026-09-22) — replaces the inactivity draw clock with
 the **kill clock**: ten kill-free plies end the game on **mined totals**
-(higher wins; a tie draws) instead of drawing outright at twenty. Black's
+(higher wins; preserved legacy games can still tie) instead of drawing outright at twenty. New Prime games always include Black’s 0.5 komi, so their mined totals cannot tie. Black's
 starting handicap counts toward Black's mined total. A predicted home
 checkmate (`#`) is no longer awarded when the kill clock would end the game at
 or before the invader's own next turn start (`c ≥ 9`); the game plays on
@@ -147,12 +152,12 @@ may be a human or an AI (`vs-ai`, `pass-play`, and `ai-vs-ai` modes).
   once subtracted spent actions and restarted the clock is history, and no
   stored artefact is reinterpreted under a ruleset it was not recorded with.
   Completed results remain final. See §1 "Stored artefacts by rules revision".
-- **Optional Black crystal handicap:** New games may grant Black 0.5, 1.5, 2.5, …, 19.5 starting crystals (off/0 by default). White still starts
+- **Mandatory Black crystal handicap with komi:** New games grant Black 0.5, 1.5, 2.5, …, 18.5 starting crystals (0.5 by default). Zero, 19.5 and 20.5 are not creation choices. White still starts
   with 0. The handicap never changes the opening phase: both players begin their
   first turn in Act, Black included. The grant is separate from mined income,
   is awarded only at game creation, and persists in saves, online rooms and
   rematches with a current grant. Existing integer-grant games retain their
-  stored values; a local restart of a legacy integer-grant game uses Off.
+  stored values, including old zero and 19.5 grants; a local restart with a retired grant uses 0.5.
   This changes new-game setup only; stored play keeps its rules revision.
   Both sides retain four actions.
 - **White moves first.** Every first turn begins in Act (§2); crystals are only

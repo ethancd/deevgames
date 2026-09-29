@@ -1,3 +1,4 @@
+import { Explorer } from './explorer/Explorer';
 import { useState } from 'react';
 import { GameScreen } from './components/GameScreen';
 import { ModeSelect } from './components/ModeSelect';
@@ -25,6 +26,7 @@ function GameApp() {
     setGameConfig(null);
   };
 
+  if (/^\/muju\/explorer\/?$/.test(window.location.pathname)) return <Explorer />;
   if (/^\/muju\/painter\/?$/.test(window.location.pathname)) return <MapPainter />;
   if (/^\/muju\/micro\/?$/.test(window.location.pathname)) return <MicroMuju />;
   if (/^\/muju\/analysis\/?$/.test(window.location.pathname)) return <AnalysisScreen />;

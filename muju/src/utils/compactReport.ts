@@ -150,7 +150,7 @@ export function parseCompactReport(text: string): ParsedCompactReport {
 
   const units: Unit[] = [], attacked: [Unit, Position[]][] = [];
   for (const player of ['white', 'black'] as const) {
-    const match = new RegExp(`^${player} (-?\\d+)c \\+(\\d+) -(\\d+)$`).exec(lines.find(l => l.startsWith(`${player} `)) ?? '');
+    const match = new RegExp(`^${player} (-?\\d+(?:\\.5)?)c \\+(\\d+) -(\\d+)$`).exec(lines.find(l => l.startsWith(`${player} `)) ?? '');
     if (!match) throw new Error(`Missing ${player} line`);
     state.players[player] = { ...state.players[player], resources: Number(match[1]), resourcesGained: Number(match[2]), resourcesUpkeep: Number(match[3]) };
   }

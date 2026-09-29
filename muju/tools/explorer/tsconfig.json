@@ -1,0 +1,1 @@
+{"extends":"../../server/tsconfig.json","compilerOptions":{"lib":["ES2023","DOM"]},"include":["./*.ts","../../server/explorer/**/*.ts"]}

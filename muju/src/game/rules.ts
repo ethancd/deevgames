@@ -7,17 +7,18 @@ export const isRuleset = (value: unknown): value is Ruleset => value === 'standa
 export const isPhasing = (state: Pick<GameState, 'ruleset'>): boolean => state.ruleset === 'phasing';
 export const rulesetLabel = (state: Pick<GameState, 'ruleset'>): string => isPhasing(state) ? 'Phasing' : 'Standard';
 
-export const MAX_BLACK_CRYSTAL_HANDICAP = 19.5;
+export const MAX_BLACK_CRYSTAL_HANDICAP = 18.5;
 
 /** New-game choices. A half crystal also breaks equal mined-total scores. */
-export const BLACK_CRYSTAL_HANDICAPS = [0, ...Array.from({ length: 20 }, (_, i) => i + 0.5)];
+export const DEFAULT_BLACK_CRYSTAL_HANDICAP = 0.5;
+export const BLACK_CRYSTAL_HANDICAPS = Array.from({ length: 19 }, (_, i) => i + 0.5);
 export function isBlackCrystalHandicap(value: unknown): value is number {
   return typeof value === 'number' && BLACK_CRYSTAL_HANDICAPS.includes(value);
 }
 
 /** Stored pre-change games keep their original grants; never round or regrant. */
 export function isStoredBlackCrystalHandicap(value: unknown): value is number {
-  return isBlackCrystalHandicap(value) || (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 20);
+  return typeof value === 'number' && ((Number.isInteger(value) && value >= 0 && value <= 20) || (value >= 0.5 && value <= 19.5 && Number.isInteger(value - 0.5)));
 }
 
 export const DEFAULT_ACTIONS_PER_TURN: ActionsPerTurn = 4;

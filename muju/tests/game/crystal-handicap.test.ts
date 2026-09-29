@@ -7,7 +7,7 @@ import { isBlackCrystalHandicap } from '../../src/game/rules';
 import { gameReducer } from '../../src/hooks/useGameState';
 
 describe('Black crystal handicap', () => {
-  it.each(Array.from({ length: 21 }, (_, i) => i === 0 ? 0 : i - 0.5))('starts with exactly %i crystals and uses the affordable opening phase', amount => {
+  it.each(Array.from({ length: 19 }, (_, i) => i + 0.5))('starts with exactly %i crystals and uses the affordable opening phase', amount => {
     const initial = createInitialGameState(undefined, undefined, amount);
     expect(initial.players.white.resources).toBe(0);
     expect(initial.players.black).toMatchObject({ resources: amount, resourcesGained: 0 });
@@ -24,20 +24,20 @@ describe('Black crystal handicap', () => {
   });
 
   it('spends the grant on purchases and promotions without spending actions; reset restores the grant', () => {
-    let state = applyAction(createInitialGameState(undefined, undefined, 19.5), { type: 'END_ACTION_PHASE' });
+    let state = applyAction(createInitialGameState(undefined, undefined, 18.5), { type: 'END_ACTION_PHASE' });
     const purchase = generatePlacePhaseActions(state, 'black').find(a => a.type === 'BUY_UNIT' && a.definitionId === 'fire_1')!;
     state = applyAction(state, purchase);
-    expect(state.players.black.resources).toBe(16.5);
+    expect(state.players.black.resources).toBe(15.5);
     const hi = state.board.units.find(u => u.owner === 'black' && u.definitionId === 'fire_1' && !u.placedThisTurn)!;
     state = applyAction(state, { type: 'PROMOTE_UNIT', unitId: hi.id });
-    expect(state.players.black.resources).toBe(12.5);
+    expect(state.players.black.resources).toBe(11.5);
     expect(state.board.units.find(u => u.id === hi.id)?.definitionId).toBe('fire_2');
     expect(state.turn.actionsRemaining).toBe(4);
     checkInvariants(state, 'spent grant');
-    expect(gameReducer(state, { type: 'RESET_GAME' })).toMatchObject({ blackCrystalHandicap: 19.5, players: { black: { resources: 19.5, resourcesGained: 0 } } });
+    expect(gameReducer(state, { type: 'RESET_GAME' })).toMatchObject({ blackCrystalHandicap: 18.5, players: { black: { resources: 18.5, resourcesGained: 0 } } });
   });
 
-  it.each([-1, 20, 1, 2, 0.25, 20.5, NaN, Infinity])('rejects invalid grant %s', amount => {
+  it.each([0, 19.5, -1, 20, 1, 2, 0.25, 20.5, NaN, Infinity])('rejects invalid grant %s', amount => {
     expect(isBlackCrystalHandicap(amount)).toBe(false);
   });
 });

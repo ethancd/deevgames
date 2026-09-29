@@ -1,0 +1,59 @@
+
+> elemental-tactics@0.1.0 test:online:e2e
+> playwright test --config playwright.online.config.ts e2e/action-budget.spec.ts e2e/explorer.spec.ts e2e/phasing-ai.spec.ts
+
+[WebServer] (node:64964) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] Muju Hono Irumbu: http://127.0.0.1:8928/muju/ · MCP: http://127.0.0.1:8928/mcp
+
+Running 9 tests using 2 workers
+
+(node:64970) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:64969) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 e2e/action-budget.spec.ts:4:1 › normal income-earning turns advance the kill clock and end it on mined totals (4.2s)
+  ✓  1 e2e/explorer.spec.ts:2:34 › explorer setup, independent forecasts, controls and reload at 1280px (5.4s)
+  ✓  3 e2e/action-budget.spec.ts:27:1 › four-action setup, undo, both turns, resume and a fresh game (1.7s)
+  ✘  4 e2e/explorer.spec.ts:2:34 › explorer setup, independent forecasts, controls and reload at 390px (4.7s)
+(node:65067) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  5 e2e/action-budget.spec.ts:56:48 › four-action AI plays correctly with a white human (5.1s)
+  ✓  6 e2e/phasing-ai.spec.ts:41:1 › vs-AI starts under Phasing with no opt-in and no ruleset control (2.0s)
+  ✓  7 e2e/action-budget.spec.ts:56:48 › four-action AI plays correctly with a black human (5.2s)
+  ✓  8 e2e/phasing-ai.spec.ts:62:1 › Easy plays a complete Phasing turn against the owner (12.0s)
+  ✓  9 e2e/phasing-ai.spec.ts:88:1 › Hard completes a half-komi Phasing turn through its canonical fallback without truncating the bank (13.6s)
+
+
+  1) e2e/explorer.spec.ts:2:34 › explorer setup, independent forecasts, controls and reload at 390px 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      30 |   const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Export evidence' }).click()]);
+      31 |   expect(download.suggestedFilename()).toContain(id);
+    > 32 |   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+         |                                                                                             ^
+      33 | });
+      34 |
+        at /Users/ethancd/src/deevgames/muju/e2e/explorer.spec.ts:32:93
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/explorer-explorer-setup-in-f63e0-ontrols-and-reload-at-390px/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/explorer-explorer-setup-in-f63e0-ontrols-and-reload-at-390px/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/explorer-explorer-setup-in-f63e0-ontrols-and-reload-at-390px/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/explorer-explorer-setup-in-f63e0-ontrols-and-reload-at-390px/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    e2e/explorer.spec.ts:2:34 › explorer setup, independent forecasts, controls and reload at 390px 
+  8 passed (42.2s)

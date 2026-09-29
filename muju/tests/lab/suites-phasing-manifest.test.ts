@@ -76,6 +76,7 @@ const V3_MANIFEST_SHA256 = 'da3589338557f74329c72fc8a231967a2f3a89656b1405f573a6
  * still has to be declared here rather than silently passing.
  */
 const KILL_CLOCK_ARTIFACT_EDITS: Record<string, string> = {
+  'package.json': '2026-09-28: adds explorer:runner and explorer:types scripts only; normalized package bytes are checked below.',
   // 2026-09-23, `muju-phasing-4` (Cleave without a tier cap,
   // `docs/changes/2026-09-23-unlimited-cleave-SPEC.md`): the first suite-source
   // edit after this bundle was committed, declared here as this list promises.
@@ -101,7 +102,11 @@ describe('committed Phasing v3 release bundle', () => {
     expect({ added, removed, changed: changed.sort() }).toEqual({
       added: [], removed: [], changed: Object.keys(KILL_CLOCK_ARTIFACT_EDITS).sort(),
     });
-    expect(current['package.json']).toBe(manifest.artifacts['package.json']);
+    const pkg = JSON.parse(readFileSync(join(MUJU_ROOT, 'package.json'), 'utf8'));
+    expect(pkg.scripts['explorer:runner']).toBe('node --import tsx tools/explorer/runner.ts');
+    expect(pkg.scripts['explorer:types']).toBe('tsc -p tools/explorer/tsconfig.json');
+    delete pkg.scripts['explorer:runner']; delete pkg.scripts['explorer:types'];
+    expect(sha256(Buffer.from(JSON.stringify(pkg, null, 2) + '\n'))).toBe(manifest.artifacts['package.json']);
   });
 
   // Un-skipped 2026-09-22 (p3 retune, lane S): `fixtures/v3-bundle` was

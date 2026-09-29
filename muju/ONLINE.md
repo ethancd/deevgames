@@ -47,16 +47,16 @@ use the updated Plant stats. Refresh an open browser after the release. See
 ## Black crystal handicap
 
 Local new-game setup and **Play online → Host a game** offer **Black crystal
-handicap**: Off, or 0.5, 1.5, 2.5, …, 19.5. Black starts with
+handicap**: 0.5, 1.5, 2.5, …, 18.5 (0.5 komi is always included). Black starts with
 exactly that many crystals; White starts with 0 and moves first. The handicap
 never changes the opening phase: both players begin their first turn in Act, and
 crystals are first spent in that turn's Prepare. Both sides retain four actions.
 
 HTTP room creation and `muju_create_room` accept `blackCrystalHandicap`, for
 example `{ "name": "Host", "side": "white", "blackCrystalHandicap": 8.5 }`.
-Omit it or use 0 to disable; nonzero integers, other fractions and values outside 0–19.5 are rejected.
+Omit it for 0.5; zero, nonzero integers, other fractions and values outside 0.5–18.5 are rejected.
 Existing rooms and saves retain their original grants; restarting a legacy
-integer-handicap local game starts with Off. Hard AI uses its canonical V2
+integer-handicap local game starts with 0.5. Hard AI uses its canonical V2
 fallback for fractional grants until its packed representation is upgraded.
 The setting belongs to Black regardless of the host's seat, is fixed at creation,
 and appears in room state, MCP observations and `muju_rules`. Saves and room
@@ -735,3 +735,18 @@ Online room snapshots carry `lastTurnReplay`, so the replay is also available af
 reconnecting. Recording begins with this version; past turns from older releases
 cannot be reconstructed. Local AI and pass-and-play replays last for the current
 browser game session.
+
+
+## Advantage exhaustion explorer
+
+Open `/muju/explorer`. Two local subscription CLI players run automatically
+against a durable experiment on the online host. Defaults: Black 9.5, five
+attempts, 100 new player-turns, Astra 6 / Opus 5.5 at high effort. Both forecasts
+are hidden until both commit; the loser can retry a different line at an earlier
+own turn. Export the branch tree and record a qualitative handicap judgment.
+
+See [runner setup and protocol](docs/EXPLORER.md). The host never receives Codex
+or Claude subscription credentials. Start the runner once on a signed-in local
+machine; it manages both seats and all forks. Pausing from the browser cancels
+in-flight thinking; resuming wakes the waiting runner. Authentication failures
+pause the experiment and require fixing the CLI login before restarting it.

@@ -1,3 +1,5 @@
+import { explorerRoutes } from './explorer/http';
+import type { ExplorerStore } from './explorer/store';
 import express from 'express';
 import { resolve } from 'node:path';
 import type { ErrorRequestHandler } from 'express';
@@ -9,7 +11,7 @@ import { createMcpServer } from './mcp';
 import { historyQuerySchema } from './schema';
 import { assertScopeRoom, matchHttpAllowed, matchScopeFor } from './matchScope';
 
-export function createApp(store: RoomStore, options: { publicUrl: string; distPath?: string; allowedOrigins?: string[]; rateLimit?: number; matchRoomId?: string }) {
+export function createApp(store: RoomStore, options: { publicUrl: string; distPath?: string; allowedOrigins?: string[]; rateLimit?: number; matchRoomId?: string; explorer?: ExplorerStore }) {
   const scope = options.matchRoomId === undefined ? undefined : matchScopeFor(store.get(options.matchRoomId));
   const app = express();
   app.disable('x-powered-by');
@@ -45,6 +47,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
     next();
   });
   app.use(express.json({ limit: '64kb' }));
+  if (options.explorer && !scope) explorerRoutes(app, options.explorer);
   app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Irumbu', protocol: 1, ...(scope ? { matchScope: scope } : {}) }));
   app.post('/api/muju/rooms', (req, res) => res.status(201).json(store.create(req.body)));
   app.get('/api/muju/rooms', (_req, res) => res.json({ rooms: store.listActive() }));
@@ -119,6 +122,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
     app.get('/', (_req, res) => res.redirect('/muju/'));
     app.get('/SKILL.md', (_req, res) => res.type('text/markdown').sendFile(resolve(options.distPath!, 'skills/muju-hono-irumbu/SKILL.md')));
     app.get('/muju/painter', (_req, res) => res.set('X-Robots-Tag', 'noindex, nofollow').sendFile(resolve(options.distPath!, 'index.html')));
+    app.get('/muju/explorer', (_req, res) => res.sendFile(resolve(options.distPath!, 'index.html')));
     app.get('/muju/analysis', (_req, res) => res.sendFile(resolve(options.distPath!, 'index.html')));
     // MICRO MUJU, the browser-only pass-and-play variant (`src/game/micro.ts`).
     app.get(['/muju/micro', '/muju/micro/'], (_req, res) => res.sendFile(resolve(options.distPath!, 'index.html')));

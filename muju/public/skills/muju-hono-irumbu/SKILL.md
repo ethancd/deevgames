@@ -180,11 +180,11 @@ the last completed turn. No token or invitation is required. MCP observers use
 
 ## Black crystal handicap
 
-When requested, pass `blackCrystalHandicap` as one of **0.5, 1.5, 2.5, …, 19.5**
+Black always receives a half-crystal komi. Pass `blackCrystalHandicap` as one of **0.5, 1.5, 2.5, …, 18.5**
 when creating a room. For example,
 `muju_create_room({name:"Host", side:"white", blackCrystalHandicap:8.5})` gives
 Black exactly 8.5 starting crystals, regardless of which side the host controls.
-Omit the option or use `0` for no handicap. It is fixed at creation and cannot
+Omit the option for 0.5; zero and 19.5 are rejected for new Prime rooms. It is fixed at creation and cannot
 be changed in an existing room. White still starts with 0 crystals and moves first.
 
 Both players always start in Act, regardless of handicap: the grant never adds an

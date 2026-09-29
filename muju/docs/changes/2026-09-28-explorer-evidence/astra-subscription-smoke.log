@@ -1,0 +1,12 @@
+
+> elemental-tactics@0.1.0 explorer:runner
+> node --import tsx tools/explorer/runner.ts --create --server http://127.0.0.1:8930 --config /tmp/muju-explorer-smoke-config.json --connection /tmp/muju-explorer-live-smoke.private.json
+
+Watch: http://127.0.0.1:8930/muju/explorer?experiment=be08b80692c55d1e413779b64c4c48fd
+Private runner connection saved at /tmp/muju-explorer-live-smoke.private.json. Keep it private.
+white · gpt-6-astra · assess · call 1
+black · gpt-6-astra · assess · call 1
+white · gpt-6-astra · turn · call 1
+white · gpt-6-astra · turn · call 2
+white · gpt-6-astra · turn · call 3
+Experiment complete: move-budget. 1 games, 1 new player-turns.

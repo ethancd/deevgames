@@ -701,3 +701,21 @@ muju-phasing-4 transition revision remains unchanged. Hard's packed integer
 representation must reject fractional state and use the existing V2 fallback
 until the roadmap's native-half implementation passes parity checks.
 See docs/changes/2026-09-27-half-crystal-handicap.md for scope and follow-up DAG.
+
+
+## 2026-09-28 — Mandatory half-crystal komi and advantage exhaustion
+
+Owner decision: Black's creation grant is always 0.5 plus an integer from 0
+through 18. Remove Off and 19.5; the half breaks mined-total ties. Default new
+ordinary games to 0.5. Preserve existing saves/rooms and historical experiments
+exactly; restarting a retired grant uses 0.5. MICRO MUJU remains handicap-free.
+This changes setup policy, not canonical transitions or the room rules revision.
+
+Build an online advantage exhaustion explorer with automatically managed local
+Codex/Claude Code subscription players, pinned to Astra 6 / Opus 5.5 at high
+effort. Default to 9.5, five attempts and 100 newly played player-turns. The loser
+can retry an earlier decision with a different full turn. Collect independent
+forecasts plus pressure/counterplay descriptions. Handicap sufficiency remains
+the owner's qualitative judgment about roughly even chances and whether a side
+felt dominated before decisive moves. Related branches are exploratory evidence,
+not independent samples of a win rate.
