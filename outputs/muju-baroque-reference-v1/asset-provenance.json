@@ -1,0 +1,74 @@
+[
+  {
+    "id": "fire_1",
+    "source_sha256": "14373dfd0b0da8e192c71fe2232de37ab1d0968c9bede7901500ca04dd2c0c89"
+  },
+  {
+    "id": "fire_2",
+    "source_sha256": "be09158f0a7c2c3bf9c15a1fdc66d18c06cc46b1e10f7cf22811733c249ffee4"
+  },
+  {
+    "id": "fire_3",
+    "source_sha256": "b93b1ac869e8ca8e26adaed6ca560d970a650b80522379b791b860e05513fce4"
+  },
+  {
+    "id": "lightning_1",
+    "source_sha256": "1eff9d825787922ff47e1d2801ef9c1badbeab0ad3312d7af60252d1aae7f073"
+  },
+  {
+    "id": "lightning_2",
+    "source_sha256": "1c68ca8b4ad09cfdae4500a4dcc901d7bee487491276c5c0748a9a3460c189eb"
+  },
+  {
+    "id": "lightning_3",
+    "source_sha256": "e93c4fc8c9a55bb4bbb7c51ae79babf9d2f437f2162603723718ff5bf734d261"
+  },
+  {
+    "id": "water_1",
+    "source_sha256": "e18c8f28c8ef3ea859d7af0f2ee02340fd4c6a2dd4bea9f73822d87d4f4c28d3"
+  },
+  {
+    "id": "water_2",
+    "source_sha256": "ae22baf68aed04d9dfc263ba7bd89d90cdf52a1a90ff8666000b65e3bcc31b39"
+  },
+  {
+    "id": "water_3",
+    "source_sha256": "d83f398d0fe08e7f1d88de1ed7c4e35125073939e473473c83e29d4d9b84dcdb"
+  },
+  {
+    "id": "shadow_1",
+    "source_sha256": "85a70462c8383a03a5116a87bf2d7b47c7c2697f6a3a83150de560b4c6a56745"
+  },
+  {
+    "id": "shadow_2",
+    "source_sha256": "9fc1632f6bbf601f8a851d915a4e216e41fb27123da1e5a0626d5eacdf8a314c"
+  },
+  {
+    "id": "shadow_3",
+    "source_sha256": "d5b88156fc961ca5efd13e7cacac54693c972d38c737ba3803385a874f9cbf6b"
+  },
+  {
+    "id": "plant_1",
+    "source_sha256": "001899735ef780e61fe2fc4f4887fbad9a46b4ce828bc306c209b480840db6d6"
+  },
+  {
+    "id": "plant_2",
+    "source_sha256": "7b9eae825aba7d33c8c50d19f4e6a9f4738c4cb8f69124c75e4b7ddde8292367"
+  },
+  {
+    "id": "plant_3",
+    "source_sha256": "b4cabc261164696506ee62b3452c792a0d6c13db85386321dd6eae11fd14aa51"
+  },
+  {
+    "id": "metal_1",
+    "source_sha256": "e5118836bee6b1c718520222ebebc34b559ad3a9848dd7ce3f6f669ae2489350"
+  },
+  {
+    "id": "metal_2",
+    "source_sha256": "5a6b9f30f0994283aa8da64300783ad9a252e57a412726ba0c385717e2c570ee"
+  },
+  {
+    "id": "metal_3",
+    "source_sha256": "c734908c7234f4a307a955c5bac032cbde294212619f48618080f74e3cf29744"
+  }
+]
