@@ -4,7 +4,7 @@ This folder holds three printable variants of one modular Muju tabletop set for 
 each with every part modelled. It contains parametric CAD, STEP/STL/3MF/GLB exports, assemblies
 for all 108 piece states, a BOM, fit coupons, digital validation and a local comparison gallery.
 
-**Status: digitally validated, physically untested, not sliced.** Read [`STATUS.md`](STATUS.md)
+**Status: digitally validated and sliced (Bambu Studio, H2C profile), physically untested.** Read [`STATUS.md`](STATUS.md)
 for what was and was not done.
 
 | Start here | |
@@ -19,6 +19,7 @@ for what was and was not done.
 | Research | [`research/research.md`](research/research.md) |
 | Concepts | [`concepts/README.md`](concepts/README.md) |
 | Digital checks | [`validation/digital-checks.md`](validation/digital-checks.md) |
+| Slicer checks | [`validation/slicer/slicer-checks.md`](validation/slicer/slicer-checks.md) |
 | Manifest | [`manifest.json`](manifest.json): part ids, quantities, dimensions, paths, source hashes |
 
 ## The three variants
@@ -57,7 +58,8 @@ python3 outputs/muju-physical-set-v1/cad/concepts.py        # vector concept boa
 python3 outputs/muju-physical-set-v1/cad/worstcase_drawing.py
 node    outputs/muju-physical-set-v1/cad/render.mjs         # renders of the exported GLBs (~25 min, SwiftShader)
 python3 outputs/muju-physical-set-v1/cad/gallery_content.py
-python3 outputs/muju-physical-set-v1/cad/package.py         # BOM, ZIPs, SHA256SUMS
+python3 outputs/muju-physical-set-v1/cad/slice_check.py     # slice every plate in Bambu Studio (macOS app path; ~4 min)
+python3 outputs/muju-physical-set-v1/cad/package.py         # BOM (with slicer totals), ZIPs, SHA256SUMS
 node    outputs/muju-physical-set-v1/cad/gallery_qa.mjs     # browser QA -> validation/gallery-qa/
 ```
 

@@ -149,7 +149,8 @@ def main():
                                "parts": [dict(part_ref(mp, f"{v}.glyph-{el}", el), matrix=L(T(0, -2, 0)), label="Loose glyph = pending summon")]})
         # resource states on an interior tile
         for val in (0, 4, 8, 16):
-            parts = [dict(part_ref(mp, f"{v}.tile-interior", "gray"), matrix=L(T()), label="Tile")]
+            tp = "interior-flat" if val == 0 else "interior"  # 0-crystal squares get the flat tile
+            parts = [dict(part_ref(mp, f"{v}.tile-{tp}", "gray"), matrix=L(T()), label="Flat tile (no studs)" if val == 0 else "Tile")]
             per = val // 4
             for (x, y) in PT.stud_positions(P):
                 for k in range(per):
@@ -184,7 +185,7 @@ def main():
         tiles, crystals = [], []
         for y in range(10):
             for x in range(10):
-                tt = PT.tile_type_at(x, y)
+                tt = PT.board_tile_part(x, y, rmap)
                 col = "ivory" if (x, y) == (0, 0) else "charcoal" if (x, y) == (9, 9) else "gray"
                 cx, cy = (x - 4.5) * pitch, (y - 4.5) * pitch
                 tiles.append({"xy": [x, y], "coord": f"{chr(65 + x)}{y + 1}", "type": tt, "color": col,

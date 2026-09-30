@@ -31,12 +31,17 @@ show the same sections as drawings.
 
 ## Tile subtypes (disclosed; the 100-tile total is unchanged)
 
-Tabs appear only where a neighbour exists, so the board edge is clean. That gives nine geometries:
+Tabs appear only where a neighbour exists, so the board edge is clean. The 18 squares that start with
+0 crystals in `resourceMap.ts` get **flat** tiles with no studs (user request, 2026-09-30), so the empty
+regions read as bare ground. That gives twelve geometries, placed by `board_tile_part()` from the map:
 
 | Type | Qty | Colour |
 |---|---:|---|
-| interior | 64 | gray |
-| edge-s / edge-n / edge-w / edge-e | 8 each | gray |
+| interior | 52 | gray |
+| interior-flat (no studs) | 12 | gray |
+| edge-s / edge-n | 5 each | gray |
+| edge-s-flat / edge-n-flat (no studs) | 3 each | gray |
+| edge-w / edge-e | 8 each | gray |
 | corner-sw (A1) | 1 | **ivory** home |
 | corner-ne (J10) | 1 | **charcoal** home |
 | corner-se, corner-nw | 1 each | gray |

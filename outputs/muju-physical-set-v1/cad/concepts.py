@@ -273,7 +273,7 @@ def tabletop(v, V, outlines, rmap):
         svg.text(ox - 18, oy - (y + 0.5) * 50 * s + 5, str(y + 1), 13, anchor="middle")
     for x in range(10):
         svg.text(ox + (x + 0.5) * 50 * s, oy + 20, chr(65 + x), 13, anchor="middle")
-    svg.text(ox + 450, oy + 44, "Ivory sits on the rank-1 side · A1 ivory home · J10 charcoal home · numbers = stack height", 13, anchor="middle")
+    svg.text(ox + 450, oy + 44, "Ivory sits on the rank-1 side · A1 ivory home · J10 charcoal home · numbers = stack height · empty squares = flat tiles, no studs", 13, anchor="middle")
     start = [("fire", 1, 0, "ivory"), ("water", 1, 1, "ivory"), ("plant", 0, 1, "ivory"), ("fire", 8, 9, "charcoal"), ("water", 8, 8, "charcoal"), ("plant", 9, 8, "charcoal")]
     for el, x, y, owner in start:
         cx, cy = ox + (x + 0.5) * 50 * s, oy - (y + 0.5) * 50 * s
@@ -301,7 +301,7 @@ def tabletop(v, V, outlines, rmap):
     return svg
 
 
-PROMPT = """Design study for a physically manufacturable FDM-printed Muju tabletop set, {lang}. Use the attached authentic Muju glyphs: red flame, yellow lightning bolt, blue droplet, purple crescent, green leaf, warm copper/orange-bronze anvil. Each colored glyph is a sturdy removable upright insert in an ivory or charcoal octagonal base. Promotions use visible additive layers: original base on a wider T2 pedestal, and both resting on a separate wider T3 pedestal. Show the complete three-layer T3 construction accurately. Square interlocking board tiles are medium gray except the ivory and charcoal home tiles. Each tile has four inset edge-midpoint studs supporting translucent cyan cubical resource stacks. Include loose glyphs lying flat for phasing. Show plausible printable thickness, gentle lead-in chamfers, robust joints, and realistic relative scale. Maintain the exact color roles and construction from the reference sheet. Composition: {comp}."""
+PROMPT = """Design study for a physically manufacturable FDM-printed Muju tabletop set, {lang}. Use the attached authentic Muju glyphs: red flame, yellow lightning bolt, blue droplet, purple crescent, green leaf, warm copper/orange-bronze anvil. Each colored glyph is a sturdy removable upright insert in an ivory or charcoal octagonal base. Promotions use visible additive layers: original base on a wider T2 pedestal, and both resting on a separate wider T3 pedestal. Show the complete three-layer T3 construction accurately. Square interlocking board tiles are medium gray except the ivory and charcoal home tiles. Each tile has four inset edge-midpoint studs supporting translucent cyan cubical resource stacks, except the 18 squares that start with no crystals, which are plain flat tiles with no studs. Include loose glyphs lying flat for phasing. Show plausible printable thickness, gentle lead-in chamfers, robust joints, and realistic relative scale. Maintain the exact color roles and construction from the reference sheet. Composition: {comp}."""
 LANG = {
     "facet": "crisp chamfered language: planar octagonal faces, 45-degree chamfered top edges on every layer, beveled glyph faces, minimal ornament, clean ledges between tiers",
     "pebble": "soft octagonal language: an unmistakable octagonal footprint with rounded vertical corners, quarter-round top edges, gently rounded glyph faces, quiet pedestal steps, tactile pebble-like surfaces",

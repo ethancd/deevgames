@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-30T16:35:32+00:00",
+ "generated": "2026-09-30T19:52:59+00:00",
  "scope": "Digital checks of exported files only. No slicer, no printer.",
  "files": {
   "shared.crystal": {
@@ -53,9 +53,9 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 32602,
-   "stl_volume_mm3": 14989.626,
-   "brep_volume_mm3": 14989.61,
+   "triangles": 34416,
+   "stl_volume_mm3": 15003.489,
+   "brep_volume_mm3": 15003.481,
    "volume_delta_pct": 0.0001,
    "bbox_mm": [
     60.0,
@@ -76,10 +76,10 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 1230,
-   "stl_volume_mm3": 1490.377,
-   "brep_volume_mm3": 1490.376,
-   "volume_delta_pct": 0.0001,
+   "triangles": 1452,
+   "stl_volume_mm3": 1492.932,
+   "brep_volume_mm3": 1492.929,
+   "volume_delta_pct": 0.0002,
    "bbox_mm": [
     22.0,
     18.5,
@@ -99,9 +99,9 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 10606,
-   "stl_volume_mm3": 6180.212,
-   "brep_volume_mm3": 6180.203,
+   "triangles": 11304,
+   "stl_volume_mm3": 6184.853,
+   "brep_volume_mm3": 6184.847,
    "volume_delta_pct": 0.0001,
    "bbox_mm": [
     78.0,
@@ -112,7 +112,7 @@
    "on_bed_z0": true,
    "degenerate_faces": 0,
    "min_z": -0.0,
-   "overhang_gt45_area_mm2": 703.43,
+   "overhang_gt45_area_mm2": 705.05,
    "overhang_max_z_mm": 1.79,
    "bed_contact_area_mm2": 1351.2,
    "ok": true
@@ -214,10 +214,10 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 8938,
-   "stl_volume_mm3": 2273.818,
-   "brep_volume_mm3": 2273.839,
-   "volume_delta_pct": -0.0009,
+   "triangles": 8742,
+   "stl_volume_mm3": 2277.173,
+   "brep_volume_mm3": 2277.196,
+   "volume_delta_pct": -0.001,
    "bbox_mm": [
     40.0,
     14.0,
@@ -329,9 +329,9 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 3138,
-   "stl_volume_mm3": 4617.36,
-   "brep_volume_mm3": 4617.443,
+   "triangles": 2666,
+   "stl_volume_mm3": 4621.05,
+   "brep_volume_mm3": 4621.134,
    "volume_delta_pct": -0.0018,
    "bbox_mm": [
     49.6,
@@ -352,9 +352,9 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 2024,
-   "stl_volume_mm3": 4069.848,
-   "brep_volume_mm3": 4069.773,
+   "triangles": 2592,
+   "stl_volume_mm3": 4072.546,
+   "brep_volume_mm3": 4072.468,
    "volume_delta_pct": 0.0019,
    "bbox_mm": [
     49.6,
@@ -375,10 +375,10 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 2846,
-   "stl_volume_mm3": 4060.11,
-   "brep_volume_mm3": 4060.026,
-   "volume_delta_pct": 0.0021,
+   "triangles": 3316,
+   "stl_volume_mm3": 4062.829,
+   "brep_volume_mm3": 4062.738,
+   "volume_delta_pct": 0.0022,
    "bbox_mm": [
     49.6,
     22.0,
@@ -398,9 +398,9 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 4278,
-   "stl_volume_mm3": 4050.35,
-   "brep_volume_mm3": 4050.257,
+   "triangles": 3940,
+   "stl_volume_mm3": 4052.988,
+   "brep_volume_mm3": 4052.895,
    "volume_delta_pct": 0.0023,
    "bbox_mm": [
     49.6,
@@ -623,15 +623,15 @@
    "bed_contact_area_mm2": 806.4,
    "ok": true
   },
-  "facet.tile-interior": {
+  "facet.tile-corner-sw": {
    "watertight": true,
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 8372,
-   "stl_volume_mm3": 9756.52,
-   "brep_volume_mm3": 9756.49,
-   "volume_delta_pct": 0.0003,
+   "triangles": 6248,
+   "stl_volume_mm3": 10343.978,
+   "brep_volume_mm3": 10344.211,
+   "volume_delta_pct": -0.0023,
    "bbox_mm": [
     58.9,
     58.9,
@@ -641,9 +641,9 @@
    "on_bed_z0": true,
    "degenerate_faces": 0,
    "min_z": -0.0,
-   "overhang_gt45_area_mm2": 12.18,
+   "overhang_gt45_area_mm2": 8.97,
    "overhang_max_z_mm": 0.37,
-   "bed_contact_area_mm2": 2346.5,
+   "bed_contact_area_mm2": 2503.7,
    "ok": true
   },
   "facet.tile-edge-s": {
@@ -669,42 +669,19 @@
    "bed_contact_area_mm2": 2425.1,
    "ok": true
   },
-  "facet.tile-edge-n": {
+  "facet.tile-edge-s-flat": {
    "watertight": true,
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 7278,
-   "stl_volume_mm3": 9490.43,
-   "brep_volume_mm3": 9490.296,
-   "volume_delta_pct": 0.0014,
-   "bbox_mm": [
-    58.9,
-    49.6,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 7.7,
-   "overhang_max_z_mm": 0.37,
-   "bed_contact_area_mm2": 2285.4,
-   "ok": true
-  },
-  "facet.tile-edge-w": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 7310,
-   "stl_volume_mm3": 10050.249,
-   "brep_volume_mm3": 10050.351,
-   "volume_delta_pct": -0.001,
+   "triangles": 3278,
+   "stl_volume_mm3": 10000.5,
+   "brep_volume_mm3": 10000.575,
+   "volume_delta_pct": -0.0008,
    "bbox_mm": [
     58.9,
     58.9,
-    5.6
+    4.0
    ],
    "bbox_matches_manifest": true,
    "on_bed_z0": true,
@@ -713,52 +690,6 @@
    "overhang_gt45_area_mm2": 10.58,
    "overhang_max_z_mm": 0.37,
    "bed_contact_area_mm2": 2425.1,
-   "ok": true
-  },
-  "facet.tile-edge-e": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 7278,
-   "stl_volume_mm3": 9490.43,
-   "brep_volume_mm3": 9490.296,
-   "volume_delta_pct": 0.0014,
-   "bbox_mm": [
-    49.6,
-    58.9,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 7.7,
-   "overhang_max_z_mm": 0.37,
-   "bed_contact_area_mm2": 2285.4,
-   "ok": true
-  },
-  "facet.tile-corner-sw": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 6248,
-   "stl_volume_mm3": 10343.978,
-   "brep_volume_mm3": 10344.211,
-   "volume_delta_pct": -0.0023,
-   "bbox_mm": [
-    58.9,
-    58.9,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 8.97,
-   "overhang_max_z_mm": 0.37,
-   "bed_contact_area_mm2": 2503.7,
    "ok": true
   },
   "facet.tile-corner-se": {
@@ -784,6 +715,98 @@
    "bed_contact_area_mm2": 2364.0,
    "ok": true
   },
+  "facet.tile-edge-w": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7310,
+   "stl_volume_mm3": 10050.249,
+   "brep_volume_mm3": 10050.351,
+   "volume_delta_pct": -0.001,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 10.58,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2425.1,
+   "ok": true
+  },
+  "facet.tile-interior": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 8372,
+   "stl_volume_mm3": 9756.52,
+   "brep_volume_mm3": 9756.49,
+   "volume_delta_pct": 0.0003,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 12.18,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2346.5,
+   "ok": true
+  },
+  "facet.tile-interior-flat": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 4340,
+   "stl_volume_mm3": 9706.771,
+   "brep_volume_mm3": 9706.715,
+   "volume_delta_pct": 0.0006,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 12.18,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2346.5,
+   "ok": true
+  },
+  "facet.tile-edge-e": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7278,
+   "stl_volume_mm3": 9490.43,
+   "brep_volume_mm3": 9490.296,
+   "volume_delta_pct": 0.0014,
+   "bbox_mm": [
+    49.6,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 7.7,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2285.4,
+   "ok": true
+  },
   "facet.tile-corner-nw": {
    "watertight": true,
    "winding_consistent": true,
@@ -805,6 +828,52 @@
    "overhang_gt45_area_mm2": 6.09,
    "overhang_max_z_mm": 0.37,
    "bed_contact_area_mm2": 2364.0,
+   "ok": true
+  },
+  "facet.tile-edge-n": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7278,
+   "stl_volume_mm3": 9490.43,
+   "brep_volume_mm3": 9490.296,
+   "volume_delta_pct": 0.0014,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 7.7,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2285.4,
+   "ok": true
+  },
+  "facet.tile-edge-n-flat": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 3246,
+   "stl_volume_mm3": 9440.681,
+   "brep_volume_mm3": 9440.521,
+   "volume_delta_pct": 0.0017,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 7.7,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2285.4,
    "ok": true
   },
   "facet.tile-corner-ne": {
@@ -973,8 +1042,8 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 8072,
-   "stl_volume_mm3": 3317.047,
+   "triangles": 8004,
+   "stl_volume_mm3": 3317.045,
    "brep_volume_mm3": 3317.282,
    "volume_delta_pct": -0.0071,
    "bbox_mm": [
@@ -996,7 +1065,7 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 10348,
+   "triangles": 10274,
    "stl_volume_mm3": 2587.471,
    "brep_volume_mm3": 2587.588,
    "volume_delta_pct": -0.0045,
@@ -1019,7 +1088,7 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 10296,
+   "triangles": 10252,
    "stl_volume_mm3": 3590.24,
    "brep_volume_mm3": 3590.364,
    "volume_delta_pct": -0.0035,
@@ -1037,127 +1106,12 @@
    "bed_contact_area_mm2": 804.9,
    "ok": true
   },
-  "pebble.tile-interior": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 56184,
-   "stl_volume_mm3": 9784.474,
-   "brep_volume_mm3": 9784.53,
-   "volume_delta_pct": -0.0006,
-   "bbox_mm": [
-    58.9,
-    58.9,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 13.52,
-   "overhang_max_z_mm": 0.37,
-   "bed_contact_area_mm2": 2342.7,
-   "ok": true
-  },
-  "pebble.tile-edge-s": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 48394,
-   "stl_volume_mm3": 10075.125,
-   "brep_volume_mm3": 10075.277,
-   "volume_delta_pct": -0.0015,
-   "bbox_mm": [
-    58.9,
-    58.9,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 11.91,
-   "overhang_max_z_mm": 0.37,
-   "bed_contact_area_mm2": 2421.3,
-   "ok": true
-  },
-  "pebble.tile-edge-n": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 42636,
-   "stl_volume_mm3": 9515.03,
-   "brep_volume_mm3": 9515.012,
-   "volume_delta_pct": 0.0002,
-   "bbox_mm": [
-    58.9,
-    49.6,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 9.03,
-   "overhang_max_z_mm": 0.37,
-   "bed_contact_area_mm2": 2281.6,
-   "ok": true
-  },
-  "pebble.tile-edge-w": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 48394,
-   "stl_volume_mm3": 10075.125,
-   "brep_volume_mm3": 10075.277,
-   "volume_delta_pct": -0.0015,
-   "bbox_mm": [
-    58.9,
-    58.9,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 11.91,
-   "overhang_max_z_mm": 0.37,
-   "bed_contact_area_mm2": 2421.3,
-   "ok": true
-  },
-  "pebble.tile-edge-e": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 42636,
-   "stl_volume_mm3": 9515.03,
-   "brep_volume_mm3": 9515.012,
-   "volume_delta_pct": 0.0002,
-   "bbox_mm": [
-    49.6,
-    58.9,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 9.03,
-   "overhang_max_z_mm": 0.37,
-   "bed_contact_area_mm2": 2281.6,
-   "ok": true
-  },
   "pebble.tile-corner-sw": {
    "watertight": true,
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 40604,
+   "triangles": 40596,
    "stl_volume_mm3": 10365.776,
    "brep_volume_mm3": 10366.025,
    "volume_delta_pct": -0.0024,
@@ -1175,12 +1129,58 @@
    "bed_contact_area_mm2": 2499.9,
    "ok": true
   },
+  "pebble.tile-edge-s": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 48390,
+   "stl_volume_mm3": 10075.125,
+   "brep_volume_mm3": 10075.277,
+   "volume_delta_pct": -0.0015,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 11.91,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2421.3,
+   "ok": true
+  },
+  "pebble.tile-edge-s-flat": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 44358,
+   "stl_volume_mm3": 10025.375,
+   "brep_volume_mm3": 10025.502,
+   "volume_delta_pct": -0.0013,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 11.91,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2421.3,
+   "ok": true
+  },
   "pebble.tile-corner-se": {
    "watertight": true,
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 34846,
+   "triangles": 34838,
    "stl_volume_mm3": 9805.681,
    "brep_volume_mm3": 9805.759,
    "volume_delta_pct": -0.0008,
@@ -1196,6 +1196,98 @@
    "overhang_gt45_area_mm2": 7.43,
    "overhang_max_z_mm": 0.37,
    "bed_contact_area_mm2": 2360.2,
+   "ok": true
+  },
+  "pebble.tile-edge-w": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 48386,
+   "stl_volume_mm3": 10075.125,
+   "brep_volume_mm3": 10075.277,
+   "volume_delta_pct": -0.0015,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 11.91,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2421.3,
+   "ok": true
+  },
+  "pebble.tile-interior": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 56176,
+   "stl_volume_mm3": 9784.474,
+   "brep_volume_mm3": 9784.53,
+   "volume_delta_pct": -0.0006,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 13.52,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2342.7,
+   "ok": true
+  },
+  "pebble.tile-interior-flat": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 52144,
+   "stl_volume_mm3": 9734.725,
+   "brep_volume_mm3": 9734.755,
+   "volume_delta_pct": -0.0003,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 13.52,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2342.7,
+   "ok": true
+  },
+  "pebble.tile-edge-e": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 42628,
+   "stl_volume_mm3": 9515.03,
+   "brep_volume_mm3": 9515.012,
+   "volume_delta_pct": 0.0002,
+   "bbox_mm": [
+    49.6,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 9.03,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2281.6,
    "ok": true
   },
   "pebble.tile-corner-nw": {
@@ -1203,7 +1295,7 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 34846,
+   "triangles": 34838,
    "stl_volume_mm3": 9805.681,
    "brep_volume_mm3": 9805.759,
    "volume_delta_pct": -0.0008,
@@ -1221,12 +1313,58 @@
    "bed_contact_area_mm2": 2360.2,
    "ok": true
   },
+  "pebble.tile-edge-n": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 42628,
+   "stl_volume_mm3": 9515.03,
+   "brep_volume_mm3": 9515.012,
+   "volume_delta_pct": 0.0002,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 9.03,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2281.6,
+   "ok": true
+  },
+  "pebble.tile-edge-n-flat": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 38596,
+   "stl_volume_mm3": 9465.281,
+   "brep_volume_mm3": 9465.236,
+   "volume_delta_pct": 0.0005,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 9.03,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2281.6,
+   "ok": true
+  },
   "pebble.tile-corner-ne": {
    "watertight": true,
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 29088,
+   "triangles": 29080,
    "stl_volume_mm3": 9245.586,
    "brep_volume_mm3": 9245.493,
    "volume_delta_pct": 0.001,
@@ -1451,15 +1589,15 @@
    "bed_contact_area_mm2": 806.4,
    "ok": true
   },
-  "turned.tile-interior": {
+  "turned.tile-corner-sw": {
    "watertight": true,
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 8046,
-   "stl_volume_mm3": 9718.458,
-   "brep_volume_mm3": 9718.463,
-   "volume_delta_pct": -0.0001,
+   "triangles": 6106,
+   "stl_volume_mm3": 10287.513,
+   "brep_volume_mm3": 10287.721,
+   "volume_delta_pct": -0.002,
    "bbox_mm": [
     58.9,
     58.9,
@@ -1469,9 +1607,9 @@
    "on_bed_z0": true,
    "degenerate_faces": 0,
    "min_z": -0.0,
-   "overhang_gt45_area_mm2": 26.88,
+   "overhang_gt45_area_mm2": 23.66,
    "overhang_max_z_mm": 4.0,
-   "bed_contact_area_mm2": 2346.5,
+   "bed_contact_area_mm2": 2503.7,
    "ok": true
   },
   "turned.tile-edge-s": {
@@ -1497,96 +1635,27 @@
    "bed_contact_area_mm2": 2425.1,
    "ok": true
   },
-  "turned.tile-edge-n": {
+  "turned.tile-edge-s-flat": {
    "watertight": true,
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 7052,
-   "stl_volume_mm3": 9448.807,
-   "brep_volume_mm3": 9448.72,
-   "volume_delta_pct": 0.0009,
+   "triangles": 3018,
+   "stl_volume_mm3": 9953.233,
+   "brep_volume_mm3": 9953.316,
+   "volume_delta_pct": -0.0008,
    "bbox_mm": [
     58.9,
-    49.6,
-    5.6
+    58.9,
+    4.0
    ],
    "bbox_matches_manifest": true,
    "on_bed_z0": true,
    "degenerate_faces": 0,
    "min_z": -0.0,
-   "overhang_gt45_area_mm2": 22.39,
-   "overhang_max_z_mm": 4.0,
-   "bed_contact_area_mm2": 2285.4,
-   "ok": true
-  },
-  "turned.tile-edge-w": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 7076,
-   "stl_volume_mm3": 10002.985,
-   "brep_volume_mm3": 10003.092,
-   "volume_delta_pct": -0.0011,
-   "bbox_mm": [
-    58.9,
-    58.9,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 25.27,
-   "overhang_max_z_mm": 4.0,
+   "overhang_gt45_area_mm2": 10.58,
+   "overhang_max_z_mm": 0.37,
    "bed_contact_area_mm2": 2425.1,
-   "ok": true
-  },
-  "turned.tile-edge-e": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 7052,
-   "stl_volume_mm3": 9448.807,
-   "brep_volume_mm3": 9448.72,
-   "volume_delta_pct": 0.0009,
-   "bbox_mm": [
-    49.6,
-    58.9,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 22.39,
-   "overhang_max_z_mm": 4.0,
-   "bed_contact_area_mm2": 2285.4,
-   "ok": true
-  },
-  "turned.tile-corner-sw": {
-   "watertight": true,
-   "winding_consistent": true,
-   "volume_positive": true,
-   "bodies": 1,
-   "triangles": 6106,
-   "stl_volume_mm3": 10287.513,
-   "brep_volume_mm3": 10287.721,
-   "volume_delta_pct": -0.002,
-   "bbox_mm": [
-    58.9,
-    58.9,
-    5.6
-   ],
-   "bbox_matches_manifest": true,
-   "on_bed_z0": true,
-   "degenerate_faces": 0,
-   "min_z": -0.0,
-   "overhang_gt45_area_mm2": 23.66,
-   "overhang_max_z_mm": 4.0,
-   "bed_contact_area_mm2": 2503.7,
    "ok": true
   },
   "turned.tile-corner-se": {
@@ -1612,6 +1681,98 @@
    "bed_contact_area_mm2": 2364.0,
    "ok": true
   },
+  "turned.tile-edge-w": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7076,
+   "stl_volume_mm3": 10002.985,
+   "brep_volume_mm3": 10003.092,
+   "volume_delta_pct": -0.0011,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 25.27,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2425.1,
+   "ok": true
+  },
+  "turned.tile-interior": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 8046,
+   "stl_volume_mm3": 9718.458,
+   "brep_volume_mm3": 9718.463,
+   "volume_delta_pct": -0.0001,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 26.88,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2346.5,
+   "ok": true
+  },
+  "turned.tile-interior-flat": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 3988,
+   "stl_volume_mm3": 9668.706,
+   "brep_volume_mm3": 9668.688,
+   "volume_delta_pct": 0.0002,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 12.18,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2346.5,
+   "ok": true
+  },
+  "turned.tile-edge-e": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7052,
+   "stl_volume_mm3": 9448.807,
+   "brep_volume_mm3": 9448.72,
+   "volume_delta_pct": 0.0009,
+   "bbox_mm": [
+    49.6,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 22.39,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2285.4,
+   "ok": true
+  },
   "turned.tile-corner-nw": {
    "watertight": true,
    "winding_consistent": true,
@@ -1633,6 +1794,52 @@
    "overhang_gt45_area_mm2": 20.79,
    "overhang_max_z_mm": 4.0,
    "bed_contact_area_mm2": 2364.0,
+   "ok": true
+  },
+  "turned.tile-edge-n": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7052,
+   "stl_volume_mm3": 9448.807,
+   "brep_volume_mm3": 9448.72,
+   "volume_delta_pct": 0.0009,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 22.39,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2285.4,
+   "ok": true
+  },
+  "turned.tile-edge-n-flat": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 2994,
+   "stl_volume_mm3": 9399.055,
+   "brep_volume_mm3": 9398.945,
+   "volume_delta_pct": 0.0012,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 7.7,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2285.4,
    "ok": true
   },
   "turned.tile-corner-ne": {
@@ -1745,7 +1952,7 @@
    "strict_read": true,
    "warnings": 0,
    "build_items": 16,
-   "mesh_objects": 1,
+   "mesh_objects": 4,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -1754,7 +1961,7 @@
    "strict_read": true,
    "warnings": 0,
    "build_items": 16,
-   "mesh_objects": 1,
+   "mesh_objects": 2,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -1780,8 +1987,8 @@
   "print/facet/plates/facet-gray-tiles-plate05.3mf": {
    "strict_read": true,
    "warnings": 0,
-   "build_items": 20,
-   "mesh_objects": 3,
+   "build_items": 16,
+   "mesh_objects": 2,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -1789,8 +1996,8 @@
   "print/facet/plates/facet-gray-tiles-plate06.3mf": {
    "strict_read": true,
    "warnings": 0,
-   "build_items": 14,
-   "mesh_objects": 4,
+   "build_items": 18,
+   "mesh_objects": 5,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -1889,7 +2096,7 @@
    "strict_read": true,
    "warnings": 0,
    "build_items": 16,
-   "mesh_objects": 1,
+   "mesh_objects": 4,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -1898,7 +2105,7 @@
    "strict_read": true,
    "warnings": 0,
    "build_items": 16,
-   "mesh_objects": 1,
+   "mesh_objects": 2,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -1924,8 +2131,8 @@
   "print/pebble/plates/pebble-gray-tiles-plate05.3mf": {
    "strict_read": true,
    "warnings": 0,
-   "build_items": 20,
-   "mesh_objects": 3,
+   "build_items": 16,
+   "mesh_objects": 2,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -1933,8 +2140,8 @@
   "print/pebble/plates/pebble-gray-tiles-plate06.3mf": {
    "strict_read": true,
    "warnings": 0,
-   "build_items": 14,
-   "mesh_objects": 4,
+   "build_items": 18,
+   "mesh_objects": 5,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -2033,7 +2240,7 @@
    "strict_read": true,
    "warnings": 0,
    "build_items": 16,
-   "mesh_objects": 1,
+   "mesh_objects": 4,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -2042,7 +2249,7 @@
    "strict_read": true,
    "warnings": 0,
    "build_items": 16,
-   "mesh_objects": 1,
+   "mesh_objects": 2,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -2068,8 +2275,8 @@
   "print/turned/plates/turned-gray-tiles-plate05.3mf": {
    "strict_read": true,
    "warnings": 0,
-   "build_items": 20,
-   "mesh_objects": 3,
+   "build_items": 16,
+   "mesh_objects": 2,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -2077,8 +2284,8 @@
   "print/turned/plates/turned-gray-tiles-plate06.3mf": {
    "strict_read": true,
    "warnings": 0,
-   "build_items": 14,
-   "mesh_objects": 4,
+   "build_items": 18,
+   "mesh_objects": 5,
    "all_meshes_manifold_oriented": true,
    "unit_millimeter": true,
    "slicer_settings_embedded": false
@@ -2369,6 +2576,17 @@
    "radial_clearance_mm": 0.125,
    "four_high_stack_height_above_tile_mm": 25.6,
    "half_on_cube_interference_mm3": -0.0
+  },
+  "flat_tiles": {
+   "facet.tile-edge-s-flat": 4.0,
+   "facet.tile-interior-flat": 4.0,
+   "facet.tile-edge-n-flat": 4.0,
+   "pebble.tile-edge-s-flat": 4.0,
+   "pebble.tile-interior-flat": 4.0,
+   "pebble.tile-edge-n-flat": 4.0,
+   "turned.tile-edge-s-flat": 4.0,
+   "turned.tile-interior-flat": 4.0,
+   "turned.tile-edge-n-flat": 4.0
   }
  },
  "assemblies": {
@@ -2412,16 +2630,21 @@
    "crystals": 504,
    "resource_total_from_resourceMap_ts": 504,
    "tile_types": {
-    "interior": 64,
-    "edge-s": 8,
-    "edge-n": 8,
-    "edge-w": 8,
-    "edge-e": 8,
     "corner-sw": 1,
+    "edge-s": 5,
+    "edge-s-flat": 3,
     "corner-se": 1,
+    "edge-w": 8,
+    "interior": 52,
+    "interior-flat": 12,
+    "edge-e": 8,
     "corner-nw": 1,
+    "edge-n": 5,
+    "edge-n-flat": 3,
     "corner-ne": 1
-   }
+   },
+   "flat_tiles_exactly_on_zero_squares": true,
+   "flat_tiles": 18
   },
   "pebble": {
    "tiles": 100,
@@ -2439,16 +2662,21 @@
    "crystals": 504,
    "resource_total_from_resourceMap_ts": 504,
    "tile_types": {
-    "interior": 64,
-    "edge-s": 8,
-    "edge-n": 8,
-    "edge-w": 8,
-    "edge-e": 8,
     "corner-sw": 1,
+    "edge-s": 5,
+    "edge-s-flat": 3,
     "corner-se": 1,
+    "edge-w": 8,
+    "interior": 52,
+    "interior-flat": 12,
+    "edge-e": 8,
     "corner-nw": 1,
+    "edge-n": 5,
+    "edge-n-flat": 3,
     "corner-ne": 1
-   }
+   },
+   "flat_tiles_exactly_on_zero_squares": true,
+   "flat_tiles": 18
   },
   "turned": {
    "tiles": 100,
@@ -2466,16 +2694,21 @@
    "crystals": 504,
    "resource_total_from_resourceMap_ts": 504,
    "tile_types": {
-    "interior": 64,
-    "edge-s": 8,
-    "edge-n": 8,
-    "edge-w": 8,
-    "edge-e": 8,
     "corner-sw": 1,
+    "edge-s": 5,
+    "edge-s-flat": 3,
     "corner-se": 1,
+    "edge-w": 8,
+    "interior": 52,
+    "interior-flat": 12,
+    "edge-e": 8,
     "corner-nw": 1,
+    "edge-n": 5,
+    "edge-n-flat": 3,
     "corner-ne": 1
-   }
+   },
+   "flat_tiles_exactly_on_zero_squares": true,
+   "flat_tiles": 18
   }
  },
  "crowded_patch": {

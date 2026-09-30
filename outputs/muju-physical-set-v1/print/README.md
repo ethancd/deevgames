@@ -53,7 +53,7 @@ environment.
 
 | Plate file(s) | Filament | Contents |
 |---|---|---|
-| `facet-gray-tiles-plate01…06.3mf` | PLA Matte medium gray | 98 ordinary tiles: 64 interior, 8 of each edge type, NW and SE corners |
+| `facet-gray-tiles-plate01…06.3mf` | PLA Matte medium gray | 98 ordinary tiles: 52 interior + 12 flat interior, 5 + 3 flat south edge, 5 + 3 flat north edge, 8 west edge, 8 east edge, NW and SE corners |
 | `facet-ivory-army-plate01.3mf` | PLA Matte Ivory White | 48 bases, 18 T2, 6 T3, A1 home tile |
 | `facet-charcoal-army-plate01.3mf` | PLA Matte Charcoal | 48 bases, 18 T2, 6 T3, J10 home tile |
 | `facet-fire-glyphs-plate01.3mf` … `metal` | PLA Basic Red / Yellow / Cobalt Blue / Purple / Bambu Green, PLA Metal Copper Brown | 16 glyphs each |

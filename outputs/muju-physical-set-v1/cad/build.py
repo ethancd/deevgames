@@ -269,15 +269,18 @@ def main():
             {"ivory": 18, "charcoal": 18}, "Upright: recess down, boss up.", ["piece-states", "crowded-patch"])
         add(f"{v}/t3", PT.pedestal(P, V, 3, lg), "pedestal-t3", "T3 addition: widest pedestal under T2; boss up, flat bottom", v,
             {"ivory": 6, "charcoal": 6}, "Upright: flat bottom down, boss up.", ["piece-states", "crowded-patch"])
-        tile_qty = {"interior": {"gray": 64}, "edge-s": {"gray": 8}, "edge-n": {"gray": 8}, "edge-w": {"gray": 8},
-                    "edge-e": {"gray": 8}, "corner-sw": {"ivory": 1}, "corner-ne": {"charcoal": 1},
-                    "corner-se": {"gray": 1}, "corner-nw": {"gray": 1}}
-        for tt, flags in PT.TILE_TYPES.items():
+        tile_qty = PT.board_tile_counts(rmap)
+        for tp, qty in tile_qty.items():
+            tt, flat = tp.removesuffix("-flat"), tp.endswith("-flat")
+            flags = PT.TILE_TYPES[tt]
             role = {"corner-sw": "A1 corner tile — Ivory home", "corner-ne": "J10 corner tile — Charcoal home"}.get(tt, f"{tt} board tile")
-            add(f"{v}/tile-{tt}", PT.tile(P, V, *flags, lg, f"{v} tile {tt}"), "tile",
-                role + " (tabs E/N where a neighbour exists, sockets W/S)", v, tile_qty[tt],
-                "Flat, studs up. Brim optional (see print guide).", ["board", "tile-join", "resource-states", "crowded-patch"],
-                {"tile_type": tt, "tabs_sockets": dict(zip(("east_tab", "north_tab", "west_socket", "south_socket"), flags))})
+            if flat:
+                role += ", flat (no studs): squares that start with 0 crystals"
+            add(f"{v}/tile-{tp}", PT.tile(P, V, *flags, lg, f"{v} tile {tp}", studs=not flat), "tile",
+                role + " (tabs E/N where a neighbour exists, sockets W/S)", v, qty,
+                "Flat, top up. Brim optional (see print guide).", ["board", "tile-join", "resource-states", "crowded-patch"],
+                {"tile_type": tt, "studs": not flat,
+                 "tabs_sockets": dict(zip(("east_tab", "north_tab", "west_socket", "south_socket"), flags))})
 
     manifest = {
         "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
@@ -316,9 +319,7 @@ def main():
         for owner, home in (("ivory", "corner-sw"), ("charcoal", "corner-ne")):
             plates[v][f"army-{owner}"] = write_plates(f"{v}-{owner}-army", [(f"{v}/t3", owner, 6), (f"{v}/tile-{home}", owner, 1),
                                                                             (f"{v}/t2", owner, 18), (f"{v}/base", owner, 48)], parts, pv, f"Muju {v} {owner} army")
-        gray = [(f"{v}/tile-{tt}", "gray", q["gray"]) for tt, q in
-                {"interior": {"gray": 64}, "edge-s": {"gray": 8}, "edge-n": {"gray": 8}, "edge-w": {"gray": 8}, "edge-e": {"gray": 8},
-                 "corner-se": {"gray": 1}, "corner-nw": {"gray": 1}}.items()]
+        gray = [(f"{v}/tile-{tp}", "gray", q["gray"]) for tp, q in PT.board_tile_counts(rmap).items() if "gray" in q]
         plates[v]["tiles-gray"] = write_plates(f"{v}-gray-tiles", gray, parts, pv, f"Muju {v} gray tiles")
         # 550 cubes fit one plate geometrically, but two ~275-cube plates limit the
         # loss from one adhesion failure and keep the job length reasonable.

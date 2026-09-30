@@ -1,6 +1,6 @@
 # Status — Muju physical set v1
 
-Updated 2026-09-30. Built from the prompt pack `outputs/muju-physical-set-prompts/` (master
+Updated 2026-09-30 (second session: flat zero-crystal tiles, slicer checks on a Mac with Bambu Studio). Built from the prompt pack `outputs/muju-physical-set-prompts/` (master
 prompt 00, brief 01, stages 02–06), executed end to end without approval checkpoints. The exact
 repository revision and the sha256 of every Muju source read are in `manifest.json → sources`.
 
@@ -9,11 +9,11 @@ repository revision and the sha256 of every Muju source read are in `manifest.js
 | Evidence kind | State |
 |---|---|
 | Concept sketches (`concepts/`) | **Done.** 9 vector boards (3 per variant) plus saved raster prompts. No AI raster art: no image-generation tool was available. |
-| Actual models (`models/`) | **Done.** 72 part geometries (20 per variant + 12 shared/coupon files); STEP, STL, GLB; 53 geometry-only plate 3MFs |
-| Model renders (`renders/`) | **Done.** 25 scene renders, 72 part renders and 108 state renders of the exported GLBs (three.js in headless Chromium). All inspected. |
+| Actual models (`models/`) | **Done.** 81 part geometries (23 per variant + 12 shared/coupon files); STEP, STL, GLB; 53 geometry-only plate 3MFs |
+| Model renders (`renders/`) | **Done.** 25 scene renders, 81 part renders and 108 state renders of the exported GLBs (three.js in headless Chromium). All inspected. |
 | Digital checks (`validation/`) | **Passed:** 0 failures. Files, 3MF strict reads, fits by mesh booleans, keying, sections, 108 states, board, crowded patch, inventory. |
 | Gallery QA (`validation/gallery-qa/`) | **Passed:** 53/53 browser checks, 0 console/HTTP errors, desktop 1440 px and mobile 390 px, screenshots inspected |
-| Slicer checks | **Not performed.** Bambu Studio / OrcaSlicer could not be downloaded (egress limited to this repository on GitHub). Plates are ready to import. |
+| Slicer checks (`validation/slicer/`) | **Passed:** all 53 plates slice headlessly in Bambu Studio 02.08.02.61 (H2C 0.4 nozzle, 0.20mm Standard, Textured PEI; guide settings), every object present, no warnings, no supports. About 44–47 h and 1.4 kg per set. A visual preview of bridges and the 0.9 mm floor was not inspected. |
 | Physical prints | **Not performed.** No printer was started and no filament was bought. `print/PHYSICAL-TEST-SEQUENCE.md` has blanks. |
 
 ## Completed artifacts
@@ -44,8 +44,10 @@ repository revision and the sha256 of every Muju source read are in `manifest.js
 - **Resized from the brief's starting point:** base / T2 / T3 = 25 / 28.5 / 32 mm across flats
   (not 28 / 32 / 34), so a hand-rotated T3 clears four stacks at the brief's 50 mm pitch. Heights
   are 7.5 / 4 / 4 mm; cubes are 6 mm.
-- Nine tile subtypes (edge/corner) so the border has no protruding tabs. The 100-tile total and
-  the 98 / 1 / 1 colour split are unchanged. There are no separate connectors.
+- Nine tile outline types (edge/corner) so the border has no protruding tabs, plus flat (studless)
+  interior, south-edge and north-edge tiles for the 18 squares that start with 0 crystals
+  (12 + 3 + 3; derived from `resourceMap.ts`). The 100-tile total and the 98 / 1 / 1 colour split
+  are unchanged. There are no separate connectors.
 - Glyph changes from the canonical art: a 0.35 mm outward offset; the leaf vein as a closed
   through-slot plus a solid stem; bolt and leaf standing on a neck 2.5 mm off centre; the anvil's
   two paths fused. All disclosed in `manifest.json → glyph_changes`.
@@ -62,7 +64,7 @@ repository revision and the sha256 of every Muju source read are in `manifest.js
 - Network policy blocked the Bambu wiki and store, the live Muju site, and most engineering
   references. The research used Bambu's slicer profiles on GitHub and the local build instead.
 - No image-generation tool: vector concept sketches were made and prompts saved.
-- No slicer binary: slicer verification is pending.
+- No slicer binary in the first (cloud) session. Resolved in the second session on a Mac: `cad/slice_check.py`.
 
 ## Unresolved fit and ergonomic decisions (need a print)
 
@@ -73,5 +75,6 @@ repository revision and the sha256 of every Muju source read are in `manifest.js
    (metal 48 mm², water 31 mm²) without touching anything. Accept, or scale glyphs about 10 %
    smaller.
 4. PETG crystal socket on PLA studs versus on PETG studs: does mining lift the column?
-5. The 0.9 mm floor between base recess and glyph slot: confirm on the slicer preview.
+5. The 0.9 mm floor between base recess and glyph slot: the bases slice without support; still look at the
+   layer preview in Bambu Studio before the first army plate.
 6. Colour check of Ash Gray against Ivory, Charcoal and Cobalt, and of Teal translucency at 6 mm.

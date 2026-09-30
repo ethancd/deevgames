@@ -779,7 +779,7 @@
 <text x="757.5" y="1000.0" font-size="13" fill="#3a3d44" text-anchor="middle" font-weight="400">H</text>
 <text x="846.5" y="1000.0" font-size="13" fill="#3a3d44" text-anchor="middle" font-weight="400">I</text>
 <text x="935.5" y="1000.0" font-size="13" fill="#3a3d44" text-anchor="middle" font-weight="400">J</text>
-<text x="540.0" y="1024.0" font-size="13" fill="#3a3d44" text-anchor="middle" font-weight="400">Ivory sits on the rank-1 side · A1 ivory home · J10 charcoal home · numbers = stack height</text>
+<text x="540.0" y="1024.0" font-size="13" fill="#3a3d44" text-anchor="middle" font-weight="400">Ivory sits on the rank-1 side · A1 ivory home · J10 charcoal home · numbers = stack height · empty squares = flat tiles, no studs</text>
 <polygon points="245.8,926.3 232.7,913.2 214.3,913.2 201.2,926.3 201.2,944.7 214.3,957.8 232.7,957.8 245.8,944.7" fill="#EDE6D3" stroke="#333"/>
 <rect x="218.2" y="931.5" width="10.7" height="8.0" fill="#C8202F"/>
 <polygon points="245.8,837.3 232.7,824.2 214.3,824.2 201.2,837.3 201.2,855.7 214.3,868.8 232.7,868.8 245.8,855.7" fill="#EDE6D3" stroke="#333"/>

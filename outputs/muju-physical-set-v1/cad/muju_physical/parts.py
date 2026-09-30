@@ -304,7 +304,8 @@ def stud_positions(P: dict):
     return [(d, 0), (0, d), (-d, 0), (0, -d)]
 
 
-def tile(P: dict, variant: dict, east: bool, north: bool, west: bool, south: bool, log: list, label: str):
+def tile(P: dict, variant: dict, east: bool, north: bool, west: bool, south: bool, log: list, label: str, studs: bool = True):
+    """studs=False gives the flat tile for squares that start with 0 crystals."""
     bd = P["board"]
     h = bd["tile_thickness"]
     edge = variant["tile_edge"]
@@ -325,8 +326,9 @@ def tile(P: dict, variant: dict, east: bool, north: bool, west: bool, south: boo
         wdt = edge["groove_width"]
         ring = Rectangle(2 * a, 2 * a) - Rectangle(2 * (a - wdt), 2 * (a - wdt))
         s = s - Pos(0, 0, h - edge["groove_depth"]) * extrude(ring, edge["groove_depth"] + 0.01)
-    for (x, y) in stud_positions(P):
-        s = s + stud(P, x, y, h)
+    if studs:
+        for (x, y) in stud_positions(P):
+            s = s + stud(P, x, y, h)
     return s
 
 
@@ -350,6 +352,24 @@ def tile_type_at(x: int, y: int, n: int = 10) -> str:
         if v == (e, nn, w, s):
             return k
     raise ValueError
+
+
+def board_tile_part(x: int, y: int, rmap: list, n: int = 10) -> str:
+    """Tile part at (x, y): the outline type, plus '-flat' (no studs) where the
+    square starts with 0 crystals in resourceMap.ts."""
+    tt = tile_type_at(x, y, n)
+    return tt + "-flat" if rmap[y * n + x] == 0 else tt
+
+
+def board_tile_counts(rmap: list, n: int = 10) -> dict:
+    """{part: {colour: qty}} for the full board. A1 is ivory, J10 charcoal, the rest gray."""
+    out: dict = {}
+    for y in range(n):
+        for x in range(n):
+            col = "ivory" if (x, y) == (0, 0) else "charcoal" if (x, y) == (n - 1, n - 1) else "gray"
+            q = out.setdefault(board_tile_part(x, y, rmap, n), {})
+            q[col] = q.get(col, 0) + 1
+    return out
 
 
 # ---------------------------------------------------------------- crystals

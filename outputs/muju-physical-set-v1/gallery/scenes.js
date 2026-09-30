@@ -40,7 +40,7 @@ export function stackItems(D, x, y, n, z0) {
   return Array.from({ length: n }, (_, k) => ({ glb: glb(D, 'shared.crystal', 'crystal'), matrix: T(x, y, z0 + k * g.cube), label: null }));
 }
 
-export function tileWithStacks(D, v, per, ox = 0, oy = 0, type = 'interior', color = 'gray') {
+export function tileWithStacks(D, v, per, ox = 0, oy = 0, type = per === 0 ? 'interior-flat' : 'interior', color = 'gray') {
   const g = D.content.geometry;
   const items = [{ glb: glb(D, `${v}.tile-${type}`, color), matrix: T(ox, oy, 0) }];
   for (const [x, y] of g.studs) items.push(...stackItems(D, ox + x, oy + y, per, g.tile_h));

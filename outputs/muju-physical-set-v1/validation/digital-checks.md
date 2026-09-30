@@ -1,14 +1,14 @@
 # Digital checks
 
-Generated 2026-09-30T16:35:32+00:00 by `cad/validate.py`. **Digital evidence only:** exported files re-imported and
-tested with mesh booleans (manifold3d), sections (trimesh) and strict 3MF reads (lib3mf 2.5). No slicer was run and
-nothing was printed. Machine-readable results: [`validation.json`](validation.json).
+Generated 2026-09-30T19:52:59+00:00 by `cad/validate.py`. **Digital evidence only:** exported files re-imported and
+tested with mesh booleans (manifold3d), sections (trimesh) and strict 3MF reads (lib3mf 2.5). Slicer results are separate
+([`slicer/slicer-checks.md`](slicer/slicer-checks.md)); nothing was printed. Machine-readable results: [`validation.json`](validation.json).
 
 **Result: all checks passed.**
 
 ## Files
 
-- 72/72 STL part files pass: watertight, consistent winding, positive volume, one connected body, volume within 0.5 % of the B-rep, bounding box equals the manifest, resting on Z=0 in print orientation.
+- 81/81 STL part files pass: watertight, consistent winding, positive volume, one connected body, volume within 0.5 % of the B-rep, bounding box equals the manifest, resting on Z=0 in print orientation.
 - Largest STL/B-rep volume difference: 0.012 %.
 - 53 plate 3MFs read in lib3mf strict mode: warnings 0, all meshes manifold and oriented: True, units mm: True, slicer settings embedded: False (geometry-only by design).
 
@@ -30,9 +30,9 @@ Crystals (shared): cube-on-cube interference 0.0 mm³, cube on tile stud -0.0 mm
 
 ## Board
 
-- **facet:** 100 tiles = 98 gray + 1 ivory + 1 charcoal; A1 ivory, J10 charcoal; neighbour interference 0.0 mm³; outline [499.6, 499.6] mm, no tab beyond it: True; crystals 504 (resourceMap.ts total 504); types {'interior': 64, 'edge-s': 8, 'edge-n': 8, 'edge-w': 8, 'edge-e': 8, 'corner-sw': 1, 'corner-se': 1, 'corner-nw': 1, 'corner-ne': 1}.
-- **pebble:** 100 tiles = 98 gray + 1 ivory + 1 charcoal; A1 ivory, J10 charcoal; neighbour interference 0.0 mm³; outline [499.6, 499.6] mm, no tab beyond it: True; crystals 504 (resourceMap.ts total 504); types {'interior': 64, 'edge-s': 8, 'edge-n': 8, 'edge-w': 8, 'edge-e': 8, 'corner-sw': 1, 'corner-se': 1, 'corner-nw': 1, 'corner-ne': 1}.
-- **turned:** 100 tiles = 98 gray + 1 ivory + 1 charcoal; A1 ivory, J10 charcoal; neighbour interference 0.0 mm³; outline [499.6, 499.6] mm, no tab beyond it: True; crystals 504 (resourceMap.ts total 504); types {'interior': 64, 'edge-s': 8, 'edge-n': 8, 'edge-w': 8, 'edge-e': 8, 'corner-sw': 1, 'corner-se': 1, 'corner-nw': 1, 'corner-ne': 1}.
+- **facet:** 100 tiles = 98 gray + 1 ivory + 1 charcoal; A1 ivory, J10 charcoal; neighbour interference 0.0 mm³; outline [499.6, 499.6] mm, no tab beyond it: True; crystals 504 (resourceMap.ts total 504); types {'corner-sw': 1, 'edge-s': 5, 'edge-s-flat': 3, 'corner-se': 1, 'edge-w': 8, 'interior': 52, 'interior-flat': 12, 'edge-e': 8, 'corner-nw': 1, 'edge-n': 5, 'edge-n-flat': 3, 'corner-ne': 1}.
+- **pebble:** 100 tiles = 98 gray + 1 ivory + 1 charcoal; A1 ivory, J10 charcoal; neighbour interference 0.0 mm³; outline [499.6, 499.6] mm, no tab beyond it: True; crystals 504 (resourceMap.ts total 504); types {'corner-sw': 1, 'edge-s': 5, 'edge-s-flat': 3, 'corner-se': 1, 'edge-w': 8, 'interior': 52, 'interior-flat': 12, 'edge-e': 8, 'corner-nw': 1, 'edge-n': 5, 'edge-n-flat': 3, 'corner-ne': 1}.
+- **turned:** 100 tiles = 98 gray + 1 ivory + 1 charcoal; A1 ivory, J10 charcoal; neighbour interference 0.0 mm³; outline [499.6, 499.6] mm, no tab beyond it: True; crystals 504 (resourceMap.ts total 504); types {'corner-sw': 1, 'edge-s': 5, 'edge-s-flat': 3, 'corner-se': 1, 'edge-w': 8, 'interior': 52, 'interior-flat': 12, 'edge-e': 8, 'corner-nw': 1, 'edge-n': 5, 'edge-n-flat': 3, 'corner-ne': 1}.
 
 ## Crowded patch and ergonomics (digital part only)
 
@@ -64,4 +64,4 @@ wobble; retention force and wear. See `print/PHYSICAL-TEST-SEQUENCE.md`.
 | `shared.crystal` | 9.34 | 1.8 | 16.4 | socket ceiling bridge (3.45 mm) |
 | `shared.half-crystal` | 9.34 | 1.8 | 16.4 | socket ceiling bridge |
 
-No part needs support material; bridged ceilings still need a slicer preview on the H2C profile (pending).
+No part needs support material; every plate slices without support in Bambu Studio (see `slicer/`); a visual preview of the bridged ceilings is still owed.

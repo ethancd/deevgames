@@ -1,0 +1,1240 @@
+{
+ "meta": {
+  "generated": "2026-09-30",
+  "bambu_studio": "02.08.02.61",
+  "machine": "Bambu Lab H2C 0.4 nozzle",
+  "process": "0.20mm Standard @BBL H2C",
+  "overrides": {
+   "curr_bed_type": "Textured PEI Plate",
+   "wall_loops": "3",
+   "top_shell_layers": "4",
+   "bottom_shell_layers": "4",
+   "sparse_infill_density": "15%"
+  },
+  "glyph_and_crystal_infill": "100%",
+  "evidence": "slicer (not a physical print)",
+  "failures": 0
+ },
+ "plates": [
+  {
+   "plate": "print/calibration/cal-charcoal-plate01.3mf",
+   "colours": [
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 6,
+   "objects_sliced": 6,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    106.6,
+    94.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.69,
+   "filament_g": 23.7,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/calibration/cal-crystal-plate01.3mf",
+   "colours": [
+    "crystal"
+   ],
+   "filament_preset": "Bambu PETG Translucent @BBL H2C 0.4 nozzle",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 28,
+   "objects_sliced": 28,
+   "max_height_mm": 7.6,
+   "layout_span_mm": [
+    38.0,
+    46.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.61,
+   "filament_g": 7.0,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/calibration/cal-gray-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 5,
+   "objects_sliced": 5,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    65.6,
+    103.3
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.42,
+   "filament_g": 16.5,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/calibration/cal-ivory-plate01.3mf",
+   "colours": [
+    "ivory"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 6,
+   "objects_sliced": 6,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    106.6,
+    94.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.69,
+   "filament_g": 23.7,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/calibration/cal-tang-plate01.3mf",
+   "colours": [
+    "fire",
+    "metal"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 2,
+   "objects_sliced": 2,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    41.2,
+    39.4
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.11,
+   "filament_g": 3.7,
+   "note": "multi-colour plate sliced with the first colour's filament for time/mass only",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-charcoal-army-plate01.3mf",
+   "colours": [
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 73,
+   "objects_sliced": 73,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    292.4,
+    281.5
+   ],
+   "within_both_head_area": true,
+   "time_h": 5.67,
+   "filament_g": 195.5,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-crystals-a-plate01.3mf",
+   "colours": [
+    "crystal"
+   ],
+   "filament_preset": "Bambu PETG Translucent @BBL H2C 0.4 nozzle",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 276,
+   "objects_sliced": 276,
+   "max_height_mm": 7.6,
+   "layout_span_mm": [
+    142.0,
+    142.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 6.05,
+   "filament_g": 68.3,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-crystals-b-plate01.3mf",
+   "colours": [
+    "crystal"
+   ],
+   "filament_preset": "Bambu PETG Translucent @BBL H2C 0.4 nozzle",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 275,
+   "objects_sliced": 275,
+   "max_height_mm": 7.6,
+   "layout_span_mm": [
+    142.0,
+    142.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 6.04,
+   "filament_g": 68.2,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-fire-glyphs-plate01.3mf",
+   "colours": [
+    "fire"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    84.1,
+    78.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.52,
+   "filament_g": 13.5,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-gray-tiles-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.78,
+   "filament_g": 129.5,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-gray-tiles-plate02.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.85,
+   "filament_g": 127.6,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-gray-tiles-plate03.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.85,
+   "filament_g": 127.4,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-gray-tiles-plate04.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.85,
+   "filament_g": 127.4,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-gray-tiles-plate05.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.76,
+   "filament_g": 126.7,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-gray-tiles-plate06.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 18,
+   "objects_sliced": 18,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    265.3,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 3.02,
+   "filament_g": 138.5,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-ivory-army-plate01.3mf",
+   "colours": [
+    "ivory"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 73,
+   "objects_sliced": 73,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    299.7,
+    291.7
+   ],
+   "within_both_head_area": true,
+   "time_h": 5.69,
+   "filament_g": 196.3,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-lightning-glyphs-plate01.3mf",
+   "colours": [
+    "lightning"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    76.7,
+    100.4
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.57,
+   "filament_g": 12.1,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-metal-glyphs-plate01.3mf",
+   "colours": [
+    "metal"
+   ],
+   "filament_preset": "Bambu PLA Metal @BBL H2C 0.4 nozzle",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    106.8,
+    97.4
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.82,
+   "filament_g": 20.9,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-plant-glyphs-plate01.3mf",
+   "colours": [
+    "plant"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    97.2,
+    80.4
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.76,
+   "filament_g": 21.5,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-shadow-glyphs-plate01.3mf",
+   "colours": [
+    "shadow"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    82.1,
+    105.3
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.55,
+   "filament_g": 14.1,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/plates/facet-water-glyphs-plate01.3mf",
+   "colours": [
+    "water"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    82.5,
+    95.2
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.58,
+   "filament_g": 20.3,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-charcoal-army-plate01.3mf",
+   "colours": [
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 73,
+   "objects_sliced": 73,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    287.5,
+    287.5
+   ],
+   "within_both_head_area": true,
+   "time_h": 5.26,
+   "filament_g": 194.8,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-crystals-a-plate01.3mf",
+   "colours": [
+    "crystal"
+   ],
+   "filament_preset": "Bambu PETG Translucent @BBL H2C 0.4 nozzle",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 276,
+   "objects_sliced": 276,
+   "max_height_mm": 7.6,
+   "layout_span_mm": [
+    142.0,
+    142.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 6.05,
+   "filament_g": 68.3,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-crystals-b-plate01.3mf",
+   "colours": [
+    "crystal"
+   ],
+   "filament_preset": "Bambu PETG Translucent @BBL H2C 0.4 nozzle",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 275,
+   "objects_sliced": 275,
+   "max_height_mm": 7.6,
+   "layout_span_mm": [
+    142.0,
+    142.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 6.04,
+   "filament_g": 68.2,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-fire-glyphs-plate01.3mf",
+   "colours": [
+    "fire"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    84.1,
+    78.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.52,
+   "filament_g": 13.6,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-gray-tiles-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.76,
+   "filament_g": 129.6,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-gray-tiles-plate02.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.82,
+   "filament_g": 127.7,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-gray-tiles-plate03.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.82,
+   "filament_g": 127.5,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-gray-tiles-plate04.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.82,
+   "filament_g": 127.5,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-gray-tiles-plate05.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.73,
+   "filament_g": 126.8,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-gray-tiles-plate06.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 18,
+   "objects_sliced": 18,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    265.3,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.99,
+   "filament_g": 138.6,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-ivory-army-plate01.3mf",
+   "colours": [
+    "ivory"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 73,
+   "objects_sliced": 73,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    299.9,
+    291.3
+   ],
+   "within_both_head_area": true,
+   "time_h": 5.28,
+   "filament_g": 195.6,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-lightning-glyphs-plate01.3mf",
+   "colours": [
+    "lightning"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    76.7,
+    100.4
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.57,
+   "filament_g": 12.1,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-metal-glyphs-plate01.3mf",
+   "colours": [
+    "metal"
+   ],
+   "filament_preset": "Bambu PLA Metal @BBL H2C 0.4 nozzle",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    106.8,
+    97.4
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.82,
+   "filament_g": 20.9,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-plant-glyphs-plate01.3mf",
+   "colours": [
+    "plant"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    97.2,
+    80.4
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.76,
+   "filament_g": 21.6,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-shadow-glyphs-plate01.3mf",
+   "colours": [
+    "shadow"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    82.1,
+    105.3
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.55,
+   "filament_g": 14.1,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/plates/pebble-water-glyphs-plate01.3mf",
+   "colours": [
+    "water"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    82.5,
+    95.2
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.58,
+   "filament_g": 20.4,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-charcoal-army-plate01.3mf",
+   "colours": [
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 73,
+   "objects_sliced": 73,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    297.1,
+    281.5
+   ],
+   "within_both_head_area": true,
+   "time_h": 5.9,
+   "filament_g": 191.0,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-crystals-a-plate01.3mf",
+   "colours": [
+    "crystal"
+   ],
+   "filament_preset": "Bambu PETG Translucent @BBL H2C 0.4 nozzle",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 276,
+   "objects_sliced": 276,
+   "max_height_mm": 7.6,
+   "layout_span_mm": [
+    142.0,
+    142.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 6.05,
+   "filament_g": 68.3,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-crystals-b-plate01.3mf",
+   "colours": [
+    "crystal"
+   ],
+   "filament_preset": "Bambu PETG Translucent @BBL H2C 0.4 nozzle",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 275,
+   "objects_sliced": 275,
+   "max_height_mm": 7.6,
+   "layout_span_mm": [
+    142.0,
+    142.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 6.04,
+   "filament_g": 68.2,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-fire-glyphs-plate01.3mf",
+   "colours": [
+    "fire"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    84.1,
+    78.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.52,
+   "filament_g": 13.1,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-gray-tiles-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 3.19,
+   "filament_g": 135.7,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-gray-tiles-plate02.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 3.24,
+   "filament_g": 133.5,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-gray-tiles-plate03.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 3.25,
+   "filament_g": 133.3,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-gray-tiles-plate04.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 3.25,
+   "filament_g": 133.3,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-gray-tiles-plate05.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    241.6,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 3.15,
+   "filament_g": 132.6,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-gray-tiles-plate06.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 18,
+   "objects_sliced": 18,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    265.3,
+    241.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 3.43,
+   "filament_g": 144.9,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-ivory-army-plate01.3mf",
+   "colours": [
+    "ivory"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 73,
+   "objects_sliced": 73,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    299.5,
+    291.7
+   ],
+   "within_both_head_area": true,
+   "time_h": 5.92,
+   "filament_g": 191.9,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-lightning-glyphs-plate01.3mf",
+   "colours": [
+    "lightning"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    76.7,
+    100.4
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.56,
+   "filament_g": 11.6,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-metal-glyphs-plate01.3mf",
+   "colours": [
+    "metal"
+   ],
+   "filament_preset": "Bambu PLA Metal @BBL H2C 0.4 nozzle",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    106.8,
+    97.4
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.8,
+   "filament_g": 20.2,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-plant-glyphs-plate01.3mf",
+   "colours": [
+    "plant"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    97.2,
+    80.4
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.75,
+   "filament_g": 20.7,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-shadow-glyphs-plate01.3mf",
+   "colours": [
+    "shadow"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    82.1,
+    105.3
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.55,
+   "filament_g": 13.6,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/plates/turned-water-glyphs-plate01.3mf",
+   "colours": [
+    "water"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "100%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 16,
+   "objects_sliced": 16,
+   "max_height_mm": 4.5,
+   "layout_span_mm": [
+    82.5,
+    95.2
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.59,
+   "filament_g": 19.9,
+   "note": "",
+   "ok": true
+  }
+ ]
+}

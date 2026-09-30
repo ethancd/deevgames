@@ -1,5 +1,5 @@
 {
- "date": "2026-09-30T16:36:27.213Z",
+ "date": "2026-09-30T19:51:47.180Z",
  "url": "http://127.0.0.1:8777/gallery/",
  "checks": [
   {
@@ -115,7 +115,7 @@
   {
    "name": "parts family tile",
    "ok": true,
-   "detail": "27 cards"
+   "detail": "36 cards"
   },
   {
    "name": "parts family crystal",
@@ -130,17 +130,17 @@
   {
    "name": "parts variant facet",
    "ok": true,
-   "detail": "20 cards"
+   "detail": "23 cards"
   },
   {
    "name": "parts variant pebble",
    "ok": true,
-   "detail": "20 cards"
+   "detail": "23 cards"
   },
   {
    "name": "parts variant turned",
    "ok": true,
-   "detail": "20 cards"
+   "detail": "23 cards"
   },
   {
    "name": "parts variant shared",
@@ -250,7 +250,7 @@
   {
    "name": "all links, downloads and images resolve (HTTP 200)",
    "ok": true,
-   "detail": "161 unique URLs + 108 state renders; bad: "
+   "detail": "173 unique URLs + 108 state renders; bad: "
   },
   {
    "name": "desktop: keyboard activation of a control",

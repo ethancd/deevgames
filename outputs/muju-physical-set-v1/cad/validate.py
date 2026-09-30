@@ -208,6 +208,10 @@ def interface_checks():
                       "stud_engagement_mm": st["height"], "socket_diameter_mm": round(sd, 3), "radial_clearance_mm": round((sd - st["diameter"]) / 2, 3),
                       "four_high_stack_height_above_tile_mm": round(4 * b_ + st["height"], 2)}
     check(out["crystal"]["cube_on_cube_interference_mm3"] < 1e-3 and out["crystal"]["cube_on_tile_stud_interference_mm3"] < 1e-3, f"crystal fits {out['crystal']}")
+    # flat tiles (0-crystal squares): nothing may rise above the tile top
+    top = P["board"]["tile_thickness"]
+    out["flat_tiles"] = {pid: round(float(load(p["geometry"]["stl"]).bounds[1][2]), 3) for pid, p in MP.items() if pid.split(".")[-1].endswith("-flat")}
+    check(len(out["flat_tiles"]) > 0 and all(abs(z - top) < 1e-3 for z in out["flat_tiles"].values()), f"flat tiles top {out['flat_tiles']}")
     half = load(MP["shared.half-crystal"]["geometry"]["stl"])
     out["crystal"]["half_on_cube_interference_mm3"] = round(ivol(to_mf(half, [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, b_], [0, 0, 0, 1]]), C0), 4)
     return out
@@ -263,10 +267,13 @@ def board_checks():
                   "A1": a1["color"], "J10": j10["color"], "neighbour_interference_max_mm3": round(worst, 4),
                   "outer_size_mm": size, "no_tab_beyond_outline": bool(max(size) <= 10 * P["board"]["pitch"] - (P["board"]["pitch"] - P["board"]["tile_size"]) + 0.01),
                   "crystals": V["board"]["crystal_count"], "resource_total_from_resourceMap_ts": sum(rmap),
-                  "tile_types": {k: sum(1 for t in tiles if t["type"] == k) for k in PT.TILE_TYPES}}
+                  "tile_types": {k: sum(1 for t in tiles if t["type"] == k) for k in PT.board_tile_counts(rmap)},
+                  "flat_tiles_exactly_on_zero_squares": all(t["type"].endswith("-flat") == (rmap[t["xy"][1] * 10 + t["xy"][0]] == 0) for t in tiles),
+                  "flat_tiles": sum(1 for t in tiles if t["type"].endswith("-flat"))}
         r = out[v]
         check(r["tiles"] == 100 and r["gray"] == 98 and r["ivory"] == 1 and r["charcoal"] == 1 and r["A1"] == "ivory" and r["J10"] == "charcoal"
-              and r["neighbour_interference_max_mm3"] < 1e-3 and r["crystals"] == 504 and r["no_tab_beyond_outline"], f"board {v} {r}")
+              and r["neighbour_interference_max_mm3"] < 1e-3 and r["crystals"] == 504 and r["no_tab_beyond_outline"]
+              and r["flat_tiles_exactly_on_zero_squares"] and r["flat_tiles"] == rmap.count(0), f"board {v} {r}")
     return out
 
 
@@ -320,8 +327,8 @@ def write_md(rep):
     V = list(P["variants"])
     files = rep["files"]
     L = ["# Digital checks", "", f"Generated {rep['generated']} by `cad/validate.py`. **Digital evidence only:** exported files re-imported and",
-         "tested with mesh booleans (manifold3d), sections (trimesh) and strict 3MF reads (lib3mf 2.5). No slicer was run and",
-         "nothing was printed. Machine-readable results: [`validation.json`](validation.json).", "",
+         "tested with mesh booleans (manifold3d), sections (trimesh) and strict 3MF reads (lib3mf 2.5). Slicer results are separate",
+         "([`slicer/slicer-checks.md`](slicer/slicer-checks.md)); nothing was printed. Machine-readable results: [`validation.json`](validation.json).", "",
          f"**Result: {'all checks passed' if rep['passed'] else str(len(rep['failures'])) + ' failures'}.**", "",
          "## Files", "",
          f"- {sum(r['ok'] for r in files.values())}/{len(files)} STL part files pass: watertight, consistent winding, positive volume, one connected body, "
@@ -370,7 +377,7 @@ def write_md(rep):
         why = {"facet.base": "recess ceiling bridge (14.3 mm) + key filler roof", "facet.t2": "recess ceiling bridge", "shared.crystal": "socket ceiling bridge (3.45 mm)",
                "shared.half-crystal": "socket ceiling bridge"}.get(pid, "chamfers only; no support")
         L.append(f"| `{pid}` | {r['overhang_gt45_area_mm2']} | {r['overhang_max_z_mm']} | {r['bed_contact_area_mm2']} | {why} |")
-    L += ["", "No part needs support material; bridged ceilings still need a slicer preview on the H2C profile (pending)."]
+    L += ["", "No part needs support material; every plate slices without support in Bambu Studio (see `slicer/`); a visual preview of the bridged ceilings is still owed."]
     if rep["failures"]:
         L += ["", "## Failures", ""] + [f"- {f}" for f in rep["failures"]]
     (OUT / "validation" / "digital-checks.md").write_text("\n".join(L) + "\n")
