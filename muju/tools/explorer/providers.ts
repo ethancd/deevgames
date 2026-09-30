@@ -22,6 +22,26 @@ export interface ModelReply {
   counterplay: string; explanation: string; memory: string; checkpointId: string | null; actionsJson: string; offset: number;
 }
 export interface ProcessResult { stdout: string; stderr: string }
+export const MODEL_CALL_TIMEOUT_MS = 300000;
+export class ModelCallTimeoutError extends Error {
+  constructor() { super('Model call reached its time limit without a response.'); this.name = 'ModelCallTimeoutError'; }
+}
+export function processFailure(stdout: string, stderr: string) {
+  // Codex emits its actual turn failures on JSON stdout; stderr can contain
+  // unrelated warnings. Keep both, with the actionable error first.
+  const errors = stdout.split('\n').flatMap(line => {
+    try {
+      const event = JSON.parse(line);
+      if (event.type === 'turn.failed' || event.type === 'error' || event.is_error) {
+        const message = event.error?.message ?? event.message ?? event.result ?? event.error;
+        return typeof message === 'string' ? [message] : [];
+      }
+    } catch { /* non-JSON CLI output */ }
+    return [];
+  });
+  return [...new Set(errors)].join('\n').slice(0, 1200) + (errors.length ? '\n' : '') +
+    [stderr.slice(-600), !errors.length ? stdout.slice(-900) : ''].filter(Boolean).join('\n');
+}
 export type RunProcess = (command: string, args: string[], input: string, options: { cwd: string; signal?: AbortSignal; timeoutMs: number; env: NodeJS.ProcessEnv }) => Promise<ProcessResult>;
 /** Shell-free spawning: game/model text is stdin, never executable command text. */
 export const runProcess: RunProcess = (command, args, input, options) => new Promise((resolve, reject) => {
@@ -29,16 +49,16 @@ export const runProcess: RunProcess = (command, args, input, options) => new Pro
   let stdout = '', stderr = '', failure: Error | undefined;
   let killTimer: ReturnType<typeof setTimeout> | undefined;
   const kill = (signal: NodeJS.Signals) => { try { if (process.platform === 'win32') child.kill(signal); else if (child.pid) process.kill(-child.pid, signal); } catch { /* already exited */ } };
-  const stop = (message: string) => { failure ??= new Error(message); kill('SIGTERM'); killTimer ??= setTimeout(() => kill('SIGKILL'), 1500); };
-  const abort = () => stop('Model call cancelled.');
-  const timer = setTimeout(() => stop('Model call timed out; the experiment can be resumed.'), options.timeoutMs);
+  const stop = (message: string | Error) => { failure ??= typeof message === 'string' ? new Error(message) : message; kill('SIGTERM'); killTimer ??= setTimeout(() => kill('SIGKILL'), 1500); };
+  const abort = () => stop(options.signal?.reason instanceof Error ? options.signal.reason.message : 'Model call cancelled.');
+  const timer = setTimeout(() => stop(new ModelCallTimeoutError()), options.timeoutMs);
   options.signal?.addEventListener('abort', abort, { once: true });
   if (options.signal?.aborted) abort();
   const cleanup = () => { clearTimeout(timer); if (killTimer) clearTimeout(killTimer); options.signal?.removeEventListener('abort', abort); };
   child.stdout.on('data', chunk => { stdout += chunk; if (stdout.length > 4_000_000) stop('Model output exceeded the runner limit.'); });
   child.stderr.on('data', chunk => { stderr = (stderr + chunk).slice(-16000); });
   child.on('error', error => { cleanup(); reject(error); });
-  child.on('close', code => { cleanup(); if (failure) reject(failure); else if (code !== 0) reject(new Error(`${command} exited ${code}: ${(stderr || stdout).slice(-1500)}`)); else resolve({ stdout, stderr }); });
+  child.on('close', code => { cleanup(); if (failure) reject(failure); else if (code !== 0) reject(new Error(`${command} exited ${code}: ${processFailure(stdout, stderr)}`)); else resolve({ stdout, stderr }); });
   child.stdin.on('error', () => { /* an early CLI exit is reported above */ });
   child.stdin.end(input);
 });
@@ -68,11 +88,16 @@ export async function invokeModel(player: ExplorerPlayer, prompt: string, signal
   const dir = await mkdtemp(join(tmpdir(), 'muju-player-'));
   const env = subscriptionEnv(), started = Date.now();
   try {
-    const options = { cwd: dir, signal, timeoutMs: 300000, env };
+    const options = () => {
+      signal?.throwIfAborted();
+      const timeoutMs = MODEL_CALL_TIMEOUT_MS - (Date.now() - started);
+      if (timeoutMs <= 0) throw new ModelCallTimeoutError();
+      return { cwd: dir, signal, timeoutMs, env };
+    };
     if (player.provider === 'claude') {
       const result = await run('claude', ['-p', '--model', player.model, '--effort', player.effort,
         '--output-format', 'json', '--json-schema', JSON.stringify(RESPONSE_SCHEMA), '--tools', '', '--strict-mcp-config',
-        '--mcp-config', '{"mcpServers":{}}', '--safe-mode', '--permission-mode', 'dontAsk', '--no-session-persistence'], prompt, options);
+        '--mcp-config', '{"mcpServers":{}}', '--safe-mode', '--permission-mode', 'dontAsk', '--no-session-persistence'], prompt, options());
       const parsed = JSON.parse(result.stdout);
       if (parsed.is_error || !parsed.structured_output) throw new Error(`Claude did not return a structured result: ${String(parsed.result ?? parsed.subtype).slice(0,800)}`);
       const models = Object.keys(parsed.modelUsage ?? {});
@@ -83,7 +108,7 @@ export async function invokeModel(player: ExplorerPlayer, prompt: string, signal
     const schemaPath = join(dir, 'response-schema.json'), outputPath = join(dir, 'result.json');
     await writeFile(schemaPath, JSON.stringify(RESPONSE_SCHEMA));
     // Disable every configured MCP server without copying credentials or altering user settings.
-    const inventory = await run('codex', ['--disable', 'plugins', 'mcp', 'list', '--json'], '', options);
+    const inventory = await run('codex', ['--disable', 'plugins', 'mcp', 'list', '--json'], '', options());
     const servers = JSON.parse(inventory.stdout) as { name: string }[];
     if (servers.some(s => !/^[A-Za-z0-9_-]+$/.test(s.name))) throw new Error('Rename nonstandard MCP server keys before using the isolated game runner.');
     const args = ['exec', '--model', player.model, '--ephemeral', '--skip-git-repo-check', '--sandbox', 'read-only',
@@ -92,7 +117,7 @@ export async function invokeModel(player: ExplorerPlayer, prompt: string, signal
       '-c', 'project_doc_max_bytes=0', '-c', 'model_reasoning_effort="high"', '-c', 'approval_policy="never"',
       ...servers.flatMap(s => ['-c', `mcp_servers.${s.name}.enabled=false`]),
       '--output-schema', schemaPath, '--output-last-message', outputPath, '--json', '-'];
-    const result = await run('codex', args, prompt, options);
+    const result = await run('codex', args, prompt, options());
     const events = result.stdout.split('\n').filter(Boolean).map(line => { try { return JSON.parse(line); } catch { return null; } });
     if (events.some(e => /command_execution|mcp_tool_call|web_search|file_change/.test(e?.item?.type ?? ''))) throw new Error('Codex used an external tool; this experiment only permits the supplied Muju interface.');
     const usage = events.findLast(e => e?.type === 'turn.completed')?.usage;

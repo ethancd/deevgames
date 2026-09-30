@@ -24,6 +24,8 @@ export interface ExplorerGame {
 export interface ExplorerSnapshot {
   id: string; version: number; createdAt: string; updatedAt: string; rulesRevision: string; setupRevision: string;
   sourceIdentity: { commit: string | null; sha256: string };
+  compatibleRuntimes?: { sourceIdentity: { commit: string | null; sha256: string }; firstUsedAt: string;
+    afterPlies: number; afterModelCalls: number; reason: string }[];
   config: ExplorerConfig; status: 'running' | 'paused' | 'complete'; stopReason: string | null;
   plies: number; modelCalls: number; games: ExplorerGame[]; checkpoints: Checkpoint[];
   activeGameId: string; runnerBusy: boolean; review: string; conclusion?: string;
