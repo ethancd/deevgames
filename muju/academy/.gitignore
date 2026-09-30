@@ -88,3 +88,7 @@ dist/
 *.patch
 logs/v7-final-staging-audit.txt
 logs/metal-v8-package-baseline.json
+
+# Raw ElevenLabs responses embed base64 audio, despite their JSON extension.
+# Keep request receipts, alignment metadata and hash manifests beside them tracked.
+vnext/logs/voice/**/*.response.json

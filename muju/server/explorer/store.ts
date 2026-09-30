@@ -1,4 +1,4 @@
-import { EXPLORER_SOURCE_IDENTITY } from './provenance';
+import { EXPLORER_SOURCE_IDENTITY, isCompatibleExplorerSource } from './provenance';
 import { DatabaseSync } from 'node:sqlite';
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { createInitialGameState } from '../../src/game/board';
@@ -76,7 +76,11 @@ export class ExplorerStore {
   }
   private auth(exp: Stored, token: string) {
     if (!timingSafeEqual(Buffer.from(exp.tokenHash), Buffer.from(digest(token)))) throw new RoomError(403, 'EXPERIMENT_TOKEN_REQUIRED', 'Use the private experiment control token.');
-    if (exp.rulesRevision !== PHASING_RULES_VERSION || exp.sourceIdentity.sha256 !== EXPLORER_SOURCE_IDENTITY.sha256) throw new RoomError(409, 'RULES_CHANGED', 'This experiment belongs to another engine/controller revision and is review-only. Export it and start a new experiment on the current code.');
+    if (exp.rulesRevision !== PHASING_RULES_VERSION || !isCompatibleExplorerSource(exp.sourceIdentity.sha256)) throw new RoomError(409, 'RULES_CHANGED', 'This experiment belongs to another engine/controller revision and is review-only. Export it and start a new experiment on the current code.');
+    if (exp.sourceIdentity.sha256 !== EXPLORER_SOURCE_IDENTITY.sha256 && !exp.compatibleRuntimes?.some(r => r.sourceIdentity.sha256 === EXPLORER_SOURCE_IDENTITY.sha256)) {
+      (exp.compatibleRuntimes ??= []).push({ sourceIdentity: EXPLORER_SOURCE_IDENTITY, firstUsedAt: new Date().toISOString(),
+        afterPlies: exp.plies, afterModelCalls: exp.modelCalls, reason: 'Audited source compatibility; game mechanics and prior history preserved.' });
+    }
   }
   private save(exp: Stored) {
     exp.version++; exp.updatedAt = new Date().toISOString();

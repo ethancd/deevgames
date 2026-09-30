@@ -52,3 +52,15 @@ forge-ai/
 # Python bytecode cache
 __pycache__/
 *.pyc
+
+# Local-only work products, experiments and media. This repo is public, so
+# anything here stays on disk (and in local backups) rather than on GitHub.
+# Files already tracked under these paths stay tracked; add new ones with -f.
+/outputs/
+mythgarden/db.sqlite3
+# Hard AI JEV: local Python venv, HF cache and model weights (~7 GB)
+muju/lab/hard-ai/jev/private/
+# Music auditions: original audio and generation receipts
+muju/music-auditions/round-*/
+# Baroque concepts gallery site: its own nested git repo
+muju/print/baroque-concepts-v1/site/
