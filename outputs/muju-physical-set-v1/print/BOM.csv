@@ -1,6 +1,6 @@
 variant,production,part_id,family,inlay_of,alias_of,color,material,filament_lead,qty,bbox_mm,solid_volume_cm3_each,est_mass_g_each,est_mass_g_total,stl
 shared,True,shared.crystal,crystal,,,crystal,PETG,Bambu PETG Translucent Teal,550,6.0x6.0x7.6,0.208,0.21,116.3,models/shared/stl/crystal.stl
-shared,True,shared.half-crystal,crystal,,,crystal,PETG,Bambu PETG Translucent Teal,1,6.0x6.0x3.0,0.079,0.08,0.1,models/shared/stl/half-crystal.stl
+shared,True,shared.half-crystal,crystal,,,crystal,PETG,Bambu PETG Translucent Teal,1,5.8x5.8x6.0,0.097,0.1,0.1,models/shared/stl/half-crystal.stl
 shared,False,shared.coupon-glyph-slots,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,60.0x36.0x7.5,15.003,14.88,14.9,models/shared/stl/coupon-glyph-slots.stl
 shared,False,shared.coupon-glyph-slots,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,60.0x36.0x7.5,15.003,14.88,14.9,models/shared/stl/coupon-glyph-slots.stl
 shared,False,shared.coupon-tang-gauge,coupon,,,fire,PLA,Bambu PLA Basic Red,1,22.0x18.5x4.5,1.493,1.48,1.5,models/shared/stl/coupon-tang-gauge.stl

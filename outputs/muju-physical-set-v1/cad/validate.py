@@ -477,7 +477,7 @@ def write_md(rep):
     for pid in ("facet.base", "facet.t2", "facet.t3", "turned.t3", "facet.glyph-plant", "facet.tile-interior", "shared.crystal", "shared.half-crystal"):
         r = files[pid]
         why = {"facet.base": "recess ceiling bridge (14.3 mm) + key filler roof", "facet.t2": "recess ceiling bridge", "shared.crystal": "socket ceiling bridge (3.45 mm)",
-               "shared.half-crystal": "socket ceiling bridge"}.get(pid, "chamfers only; no support")
+               "shared.half-crystal": "half-socket notch roof on the cut face"}.get(pid, "chamfers only; no support")
         L.append(f"| `{pid}` | {r['overhang_gt45_area_mm2']} | {r['overhang_max_z_mm']} | {r['bed_contact_area_mm2']} | {why} |")
     L += ["", "No part needs support material; every plate slices without support in Bambu Studio (see `slicer/`); a visual preview of the bridged ceilings is still owed."]
     if rep["failures"]:

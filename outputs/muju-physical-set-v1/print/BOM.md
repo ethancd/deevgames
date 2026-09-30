@@ -20,7 +20,7 @@ Assumptions for the per-part estimates:
 | charcoal (PLA) | Bambu PLA Matte Charcoal | `facet.t3` | 6 | 3.57 | 21.4 |
 | charcoal (PLA) | Bambu PLA Matte Charcoal | `facet.tile-corner-ne` | 1 | 9.15 | 9.2 |
 | crystal (PETG) | Bambu PETG Translucent Teal | `shared.crystal` | 550 | 0.21 | 116.3 |
-| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.08 | 0.1 |
+| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.1 | 0.1 |
 | fire (PLA) | Bambu PLA Basic Red | `facet.glyph-fire` | 16 | 0.68 | 10.9 |
 | gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `facet.tile-corner-nw` | 1 | 9.71 | 9.7 |
 | gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `facet.tile-corner-se` | 1 | 9.71 | 9.7 |
@@ -58,7 +58,7 @@ Assumptions for the per-part estimates:
 
 Consumed-filament cost is far below the cost of buying ten whole spools; the spool column is what you must buy.
 
-**Slicer totals (34 plates, Bambu Studio 02.08.02.61):** 73.3 h printing, 2934 g filament (excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.
+**Slicer totals (34 plates, Bambu Studio 02.08.02.61):** 73.4 h printing, 2935 g filament (excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.
 
 ## Pebble (`pebble`) — 891 printed objects
 
@@ -69,7 +69,7 @@ Consumed-filament cost is far below the cost of buying ten whole spools; the spo
 | charcoal (PLA) | Bambu PLA Matte Charcoal | `pebble.t3` | 6 | 3.56 | 21.4 |
 | charcoal (PLA) | Bambu PLA Matte Charcoal | `pebble.tile-corner-ne` | 1 | 9.17 | 9.2 |
 | crystal (PETG) | Bambu PETG Translucent Teal | `shared.crystal` | 550 | 0.21 | 116.3 |
-| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.08 | 0.1 |
+| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.1 | 0.1 |
 | fire (PLA) | Bambu PLA Basic Red | `pebble.glyph-fire` | 16 | 0.68 | 10.9 |
 | gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `pebble.tile-corner-nw` | 1 | 9.73 | 9.7 |
 | gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `pebble.tile-corner-se` | 1 | 9.73 | 9.7 |
@@ -118,7 +118,7 @@ Consumed-filament cost is far below the cost of buying ten whole spools; the spo
 | charcoal (PLA) | Bambu PLA Matte Charcoal | `turned.t3` | 6 | 3.56 | 21.4 |
 | charcoal (PLA) | Bambu PLA Matte Charcoal | `turned.tile-corner-ne` | 1 | 9.11 | 9.1 |
 | crystal (PETG) | Bambu PETG Translucent Teal | `shared.crystal` | 550 | 0.21 | 116.3 |
-| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.08 | 0.1 |
+| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.1 | 0.1 |
 | fire (PLA) | Bambu PLA Basic Red | `turned.glyph-fire` | 16 | 0.66 | 10.6 |
 | gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned.tile-corner-nw` | 1 | 9.66 | 9.7 |
 | gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned.tile-corner-se` | 1 | 9.66 | 9.7 |
@@ -167,7 +167,7 @@ Consumed-filament cost is far below the cost of buying ten whole spools; the spo
 | charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-keyed.t3` | 6 | 3.55 | 21.3 |
 | charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-keyed.tile-corner-ne` | 1 | 9.11 | 9.1 |
 | crystal (PETG) | Bambu PETG Translucent Teal | `shared.crystal` | 550 | 0.21 | 116.3 |
-| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.08 | 0.1 |
+| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.1 | 0.1 |
 | dot (PLA) | Bambu PLA Basic Turquoise | `turned-keyed.dot-base` | 96 | 0.0 | 0.4 |
 | dot (PLA) | Bambu PLA Basic Turquoise | `turned-keyed.dot-t2` | 36 | 0.0 | 0.2 |
 | dot (PLA) | Bambu PLA Basic Turquoise | `turned-keyed.dot-t3` | 12 | 0.0 | 0.1 |
@@ -220,7 +220,7 @@ Consumed-filament cost is far below the cost of buying ten whole spools; the spo
 | charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-ring.t3` | 6 | 2.53 | 15.2 |
 | charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-ring.tile-corner-ne` | 1 | 9.11 | 9.1 |
 | crystal (PETG) | Bambu PETG Translucent Teal | `shared.crystal` | 550 | 0.21 | 116.3 |
-| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.08 | 0.1 |
+| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.1 | 0.1 |
 | dot (PLA) | Bambu PLA Basic Turquoise | `turned-ring.dot-base` | 96 | 0.0 | 0.4 |
 | dot (PLA) | Bambu PLA Basic Turquoise | `turned-ring.dot-t2` | 36 | 0.0 | 0.2 |
 | dot (PLA) | Bambu PLA Basic Turquoise | `turned-ring.dot-t3` | 12 | 0.0 | 0.1 |

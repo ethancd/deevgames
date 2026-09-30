@@ -620,11 +620,16 @@ def crystal(P: dict, socket_clearance: float | None = None, notches: int = 0):
 
 
 def half_crystal(P: dict):
+    """Half-crystal token: a crystal cube cut along its vertical diagonal, so a
+    right-triangle prism of full cube height and exactly half the volume. The
+    stud socket sits on the cut face (the cube centre lies on the diagonal), so
+    it becomes an open half-round notch: it still drops over a stud or stack
+    top, and nothing stacks on the token, so it has no stud of its own."""
     c = P["crystal"]
-    b, h = c["body"], c["half_token_height"]
-    s = Box(b, b, h, align=MIN)
-    s = chamfer(top_edges(s, h), c["half_token_top_chamfer"])
-    s = chamfer(bottom_edges(s), c["edge_chamfer"])
+    b = c["body"]
+    tri = Polygon((-b / 2, -b / 2), (b / 2, -b / 2), (-b / 2, b / 2), align=None)
+    s = extrude(tri, b, dir=(0, 0, 1))
+    s = chamfer(s.edges(), c["edge_chamfer"])
     st = P["board"]["stud"]
     sd = st["diameter"] + c["socket_diameter_clearance_diametral"]
     depth = st["height"] + c["socket_extra_depth"]

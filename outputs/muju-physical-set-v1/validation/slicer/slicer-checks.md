@@ -20,14 +20,14 @@ Generated 2026-09-30 by `cad/slice_check.py`. Machine `Bambu Lab H2C 0.4 nozzle`
 | `facet-gray-tiles-plate03.3mf` | Bambu PLA Matte @BBL H2C | 16/16 | 5.6 | 241.6 × 241.6 | 2.85 | 127.4 |  |
 | `facet-gray-tiles-plate04.3mf` | Bambu PLA Matte @BBL H2C | 16/16 | 5.6 | 241.6 × 241.6 | 2.85 | 127.4 |  |
 | `facet-gray-tiles-plate05.3mf` | Bambu PLA Matte @BBL H2C | 16/16 | 5.6 | 241.6 × 241.6 | 2.76 | 126.7 |  |
-| `facet-gray-tiles-plate06.3mf` | Bambu PLA Matte @BBL H2C | 18/18 | 5.6 | 265.3 × 241.6 | 3.01 | 138.5 |  |
+| `facet-gray-tiles-plate06.3mf` | Bambu PLA Matte @BBL H2C | 18/18 | 5.6 | 265.3 × 241.6 | 3.02 | 138.5 |  |
 | `facet-ivory-army-plate01.3mf` | Bambu PLA Matte @BBL H2C | 73/73 | 7.5 | 299.7 × 291.7 | 5.69 | 196.3 |  |
 | `facet-lightning-glyphs-plate01.3mf` | Bambu PLA Basic @BBL H2C | 16/16 | 4.5 | 76.7 × 100.4 | 0.57 | 12.1 |  |
 | `facet-metal-glyphs-plate01.3mf` | Bambu PLA Metal @BBL H2C 0.4 nozzle | 16/16 | 4.5 | 106.8 × 97.4 | 0.82 | 20.9 |  |
 | `facet-plant-glyphs-plate01.3mf` | Bambu PLA Basic @BBL H2C | 16/16 | 4.5 | 97.2 × 80.4 | 0.76 | 21.5 |  |
 | `facet-shadow-glyphs-plate01.3mf` | Bambu PLA Basic @BBL H2C | 16/16 | 4.5 | 82.1 × 105.3 | 0.55 | 14.1 |  |
 | `facet-water-glyphs-plate01.3mf` | Bambu PLA Basic @BBL H2C | 16/16 | 4.5 | 82.5 × 95.2 | 0.58 | 20.3 |  |
-| `facet-sections-gradient-c-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 208.9 × 208.9 | 2.34 | 122.6 | multi-colour (tile4, gray): geometry sliced with one filament; colour swaps not included |
+| `facet-sections-gradient-c-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 208.9 × 208.9 | 2.34 | 122.7 | multi-colour (tile4, gray): geometry sliced with one filament; colour swaps not included |
 | `facet-sections-gradient-e-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 149.6 × 208.9 | 1.74 | 91.1 | multi-colour (tile4): geometry sliced with one filament; colour swaps not included |
 | `facet-sections-gradient-n-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 208.9 × 149.6 | 1.67 | 90.6 | multi-colour (tile4, tile0): geometry sliced with one filament; colour swaps not included |
 | `facet-sections-gradient-ne-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 149.6 × 149.6 | 1.3 | 67.9 | multi-colour (tile4, gray, charcoal): geometry sliced with one filament; colour swaps not included |
@@ -113,7 +113,7 @@ Generated 2026-09-30 by `cad/slice_check.py`. Machine `Bambu Lab H2C 0.4 nozzle`
 | `turned-sections-gradient-sw-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 158.9 × 158.9 | 1.55 | 73.3 | multi-colour (ivory, gray, tile4): geometry sliced with one filament; colour swaps not included |
 | `turned-sections-gradient-w-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 158.9 × 208.9 | 2.04 | 96.7 | multi-colour (tile4): geometry sliced with one filament; colour swaps not included |
 | `turned-sections-gray-c-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 208.9 × 208.9 | 2.68 | 127.6 | multi-colour (gray): geometry sliced with one filament; colour swaps not included |
-| `turned-sections-gray-e-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 149.6 × 208.9 | 2.0 | 94.8 | multi-colour (gray): geometry sliced with one filament; colour swaps not included |
+| `turned-sections-gray-e-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 149.6 × 208.9 | 2.0 | 94.9 | multi-colour (gray): geometry sliced with one filament; colour swaps not included |
 | `turned-sections-gray-n-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 208.9 × 149.6 | 1.93 | 94.3 | multi-colour (gray): geometry sliced with one filament; colour swaps not included |
 | `turned-sections-gray-ne-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 149.6 × 149.6 | 1.49 | 70.6 | multi-colour (gray, charcoal): geometry sliced with one filament; colour swaps not included |
 | `turned-sections-gray-nw-plate01.3mf` | Bambu PLA Matte @BBL H2C | 1/1 | 5.6 | 158.9 × 149.6 | 1.52 | 71.8 | multi-colour (gray): geometry sliced with one filament; colour swaps not included |

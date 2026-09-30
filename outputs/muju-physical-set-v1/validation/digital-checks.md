@@ -1,6 +1,6 @@
 # Digital checks
 
-Generated 2026-09-30T22:09:58+00:00 by `cad/validate.py`. **Digital evidence only:** exported files re-imported and
+Generated 2026-09-30T22:57:22+00:00 by `cad/validate.py`. **Digital evidence only:** exported files re-imported and
 tested with mesh booleans (manifold3d), sections (trimesh) and strict 3MF reads (lib3mf 2.5). Slicer results are separate
 ([`slicer/slicer-checks.md`](slicer/slicer-checks.md)); nothing was printed. Machine-readable results: [`validation.json`](validation.json).
 
@@ -22,7 +22,7 @@ tested with mesh booleans (manifold3d), sections (trimesh) and strict 3MF reads 
 | Min wall slot-to-outside at z=5.5 (section) | 8.576 mm | 8.541 mm | 7.676 mm | None mm | None mm |
 | Floor between recess and slot | 0.9 mm | 0.9 mm | 0.9 mm | n/a (annular groove; core margin 3.04 mm) mm | n/a (annular groove; core margin 3.04 mm) mm |
 
-Crystals (shared): cube-on-cube interference 0.0 mm³, cube on tile stud -0.0 mm³, half token on cube -0.0 mm³; stud engagement 1.6 mm; radial clearance 0.125 mm; four-high stack 25.6 mm.
+Crystals (shared): cube-on-cube interference 0.0 mm³, cube on tile stud -0.0 mm³, half token on cube 0.0 mm³; stud engagement 1.6 mm; radial clearance 0.125 mm; four-high stack 25.6 mm.
 
 ## Assemblies
 
@@ -85,6 +85,6 @@ wobble; retention force and wear. See `print/PHYSICAL-TEST-SEQUENCE.md`.
 | `facet.glyph-plant` | 21.13 | 0.5 | 210.1 | chamfers only; no support |
 | `facet.tile-interior` | 12.18 | 0.37 | 2346.5 | chamfers only; no support |
 | `shared.crystal` | 9.34 | 1.8 | 16.4 | socket ceiling bridge (3.45 mm) |
-| `shared.half-crystal` | 9.34 | 1.8 | 16.4 | socket ceiling bridge |
+| `shared.half-crystal` | 4.97 | 1.8 | 7.2 | half-socket notch roof on the cut face |
 
 No part needs support material; every plate slices without support in Bambu Studio (see `slicer/`); a visual preview of the bridged ceilings is still owed.

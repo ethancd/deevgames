@@ -1,5 +1,5 @@
 {
- "generated": "2026-09-30T22:09:58+00:00",
+ "generated": "2026-09-30T22:57:22+00:00",
  "scope": "Digital checks of exported files only. No slicer, no printer.",
  "files": {
   "shared.crystal": {
@@ -32,14 +32,14 @@
    "winding_consistent": true,
    "volume_positive": true,
    "bodies": 1,
-   "triangles": 1036,
-   "stl_volume_mm3": 78.991,
-   "brep_volume_mm3": 78.981,
-   "volume_delta_pct": 0.0122,
+   "triangles": 1158,
+   "stl_volume_mm3": 97.166,
+   "brep_volume_mm3": 97.162,
+   "volume_delta_pct": 0.0044,
    "bbox_mm": [
-    6.0,
-    6.0,
-    3.0
+    5.788,
+    5.788,
+    6.0
    ],
    "bbox_matches_manifest": true,
    "on_bed_z0": true,
@@ -47,9 +47,9 @@
    "min_z": -0.0,
    "inlay": false,
    "multi_island_ok": false,
-   "overhang_gt45_area_mm2": 9.34,
+   "overhang_gt45_area_mm2": 4.97,
    "overhang_max_z_mm": 1.8,
-   "bed_contact_area_mm2": 16.4,
+   "bed_contact_area_mm2": 7.2,
    "ok": true
   },
   "shared.coupon-glyph-slots": {
@@ -6995,7 +6995,7 @@
    "socket_diameter_mm": 3.45,
    "radial_clearance_mm": 0.125,
    "four_high_stack_height_above_tile_mm": 25.6,
-   "half_on_cube_interference_mm3": -0.0
+   "half_on_cube_interference_mm3": 0.0
   },
   "flat_tiles": {
    "facet.tile-edge-s-flat": 4.0,

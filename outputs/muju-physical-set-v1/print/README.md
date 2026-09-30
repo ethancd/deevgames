@@ -111,7 +111,8 @@ The section joints use the tile tabs (0.25 mm per side). The 4 × 4 centre is th
 | IF2 T3 | Upright: flat bottom, collar up | Rings: open bore, no bridging |
 | Board section | Flat, top up | Brim optional on the corner sections |
 | Glyph | Flat, front face up | Tang lies in the plane. Layers run parallel to the glyph, so the thin direction is strong in bending. |
-| Crystal / half token | Socket down, stud up | 3.45 mm socket ceiling bridges. |
+| Crystal | Socket down, stud up | 3.45 mm socket ceiling bridges. |
+| Half token | Upright on its triangle, notch down | The half-round notch on the cut face bridges 1.8 mm up; no support. |
 
 ## Assembly
 

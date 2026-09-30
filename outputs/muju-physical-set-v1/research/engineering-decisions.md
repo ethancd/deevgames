@@ -54,7 +54,7 @@ regions read as bare ground. That gives twelve geometries, placed by `board_tile
 | Tile pitch / tile size / thickness | 50.0 / 49.6 / 4.0 mm | 0.4 mm seam. Board outline 499.6 × 499.6 mm. |
 | Stud | Ø3.2 × 1.6 mm, centre 21.5 mm from tile centre | 0.3 mm from the stack's outer face to the tile edge |
 | Crystal | 6.0 mm cube; 4-high stack = 25.6 mm above the tile | 0.3 mm edge chamfers |
-| Half-crystal token | 6 × 6 × 3 mm, chamfered roof, socket, no stud | Distinct by height and roof. Sits on a stud or stack; nothing stacks on it. |
+| Half-crystal token | A crystal cut along its vertical diagonal: right-triangle prism, 6 mm tall, about 47 % of a crystal's volume; the stud socket becomes a half-round notch on the cut face; no stud | Reads as half a crystal by shape at full height (changed 2026-09-30 from a 6 × 6 × 3 mm chamfered-roof slab). Drops over a stud or stack top; nothing stacks on it. |
 | Base | **25.0 mm AF** (27.06 AC) × 7.5 mm | Brief suggested 28 mm; reduced (see resizing) |
 | T2 | **28.5 mm AF** (30.85 AC) × 4.0 mm (+1.6 mm boss) | 1.75 mm step per side |
 | T3 | **32.0 mm AF** (34.64 AC) × 4.0 mm (+1.6 mm boss) | Brief suggested 34 mm; reduced |

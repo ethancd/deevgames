@@ -203,7 +203,7 @@ async function showBoard() {
       break;
     case 'crystals':
       items = S.crystalStackItems(D); frame = { dir: [0.4, 0.6, 1.2], pad: 0.9 };
-      info = `<h3>Crystals</h3><p>6 mm cubes, Ø3.2 × 1.6 mm stud, Ø3.45 mm socket (0.125 mm radial). Shown 1–4 high. The half-crystal token (right) is 3 mm tall with a chamfered roof and no stud; it sits on a stud or a stack top.</p>${partInfo(D.parts['shared.crystal'])}`;
+      info = `<h3>Crystals</h3><p>6 mm cubes, Ø3.2 × 1.6 mm stud, Ø3.45 mm socket (0.125 mm radial). Shown 1–4 high. The half-crystal token (right) is a crystal cut along its diagonal: a full-height triangular prism with the stud notch on its cut face and no stud; it sits on a stud or a stack top.</p>${partInfo(D.parts['shared.crystal'])}`;
       break;
     case 'tiles':
       items = S.tileJoinItems(D, v, 10); frame = { dir: [0.3, 1.3, 0.9], pad: 0.9 };

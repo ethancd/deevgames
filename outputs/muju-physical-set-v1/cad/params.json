@@ -56,9 +56,8 @@
   "socket_diameter_clearance_diametral": 0.25,
   "socket_extra_depth": 0.2,
   "socket_mouth_chamfer": 0.3,
-  "half_token_height": 3.0,
-  "half_token_top_chamfer": 1.0,
-  "large_alternative_body": 7.0
+  "large_alternative_body": 7.0,
+  "half_token": "cube cut along its vertical diagonal: right-triangle prism, full cube height, half volume; stud notch on the cut face"
  },
  "piece": {
   "base_af": 25.0,

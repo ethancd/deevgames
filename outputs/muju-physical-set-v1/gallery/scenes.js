@@ -83,7 +83,7 @@ export function crystalStackItems(D) {
   const items = [];
   [1, 2, 3, 4].forEach((n, i) => items.push(...stackItems(D, (i - 1.5) * 14, 0, n, 0)));
   items.push({ glb: glb(D, 'shared.half-crystal', 'crystal'), matrix: T(38, 0, 0), label: 'Half-crystal token' });
-  items.push({ glb: glb(D, 'shared.half-crystal', 'crystal'), matrix: T(-38, 0, 0), label: null }, ...stackItems(D, -38, 14, 1, 0));
+  items.push({ glb: glb(D, 'shared.half-crystal', 'crystal'), matrix: T(-38, 0, g.cube), label: 'Half token on a crystal' }, ...stackItems(D, -38, 0, 1, 0));
   return items;
 }
 

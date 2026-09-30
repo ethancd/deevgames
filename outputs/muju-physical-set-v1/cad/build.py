@@ -275,7 +275,7 @@ def main():
         {"crystal": 550}, "Socket down on the plate; stud up. No supports (the 3.45 mm socket ceiling bridges).",
         ["resource-states", "board", "crowded-patch", "crystal-stacks"],
         {"shared_reason": "Fit-critical, identical function in every variant; one geometry calibrates once."})
-    add("shared/half-crystal", PT.half_crystal(P), "crystal", "Half-crystal token (fractional handicap); socket, no stud, chamfered roof", "shared",
+    add("shared/half-crystal", PT.half_crystal(P), "crystal", "Half-crystal token (fractional handicap): the cube cut along its diagonal, full height; stud notch on the cut face, no stud", "shared",
         {"crystal": 1}, "Socket down.", ["crystal-stacks"],
         {"shared_reason": "Accounting stock; sits on a stud or stack top, nothing stacks on it."})
     # coupons (calibration; not production inventory)
