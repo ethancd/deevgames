@@ -18,6 +18,7 @@ async function request<T>(path: string, body?: unknown, token?: string, signal?:
 }
 const backend: RoomBackend = {
   create: input => request<RoomAdmission>('', input),
+  fork: (id, input) => request<RoomAdmission>(`/${id}/fork`, input),
   join: (id, input) => request<RoomAdmission>(`/${id}/join`, input),
   get: (id, token) => request<RoomSnapshot>(`/${id}`, undefined, token),
   moveHistory: (id, query = {}) => request<RoomMoveHistory>(`/${id}/history?${new URLSearchParams(Object.entries(query).filter(([, value]) => value !== undefined).map(([key, value]) => [key, String(value)]))}`),

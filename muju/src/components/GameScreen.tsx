@@ -66,7 +66,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   game: ReturnType<typeof useGameState>;
   analysis?: { bar: ReactNode; reviewing: boolean; result?: string };
   online?: { playingIncoming?: boolean; incomingFrame?: IncomingFrame; player: PlayerId | null; ready: boolean; busy: boolean; names: Record<PlayerId, string>; banner: ReactNode;
-    analysisUrl: string; historyOpen?: boolean; onToggleHistory?: () => void };
+    onFork?: () => void; analysisUrl: string; historyOpen?: boolean; onToggleHistory?: () => void };
 }) {
   const observing = online?.player === null;
   const {
@@ -902,7 +902,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
 
   return (
     <main className={`game-shell${phasing ? ' game-shell-phasing' : ''}${online ? ' game-shell-online' : ''}${observing ? ' game-shell-observer' : ''}${analysis ? ` game-shell-analysis${analysis.reviewing ? ' is-reviewing' : ''}` : ''}`}>
-      {state.phase === 'victory' && !analysis && !online?.playingIncoming && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? (micro ? undefined : '/muju/analysis?local=1')} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onViewHistory={online?.onToggleHistory} minedTotals={{ white: whiteMined, black: blackMined }} />}
+      {state.phase === 'victory' && !analysis && !online?.playingIncoming && <VictoryScreen winner={state.winner} reason={state.victoryReason} onPlayAgain={handlePlayAgain} analysisUrl={online?.analysisUrl ?? (micro ? undefined : '/muju/analysis?local=1')} playerNames={playerNames} perspectivePlayer={observing ? null : humanPlayer ?? 'white'} onFork={online?.onFork} onViewHistory={online?.onToggleHistory} minedTotals={{ white: whiteMined, black: blackMined }} />}
       {showPassOverlay && state.phase === 'playing' && <PassDeviceOverlay nextPlayer={state.turn.currentPlayer} onContinue={handleContinueFromPass} />}
       {choosingUpkeep && <UpkeepPanel state={state} onConfirm={payUpkeep} onUndo={canUndo ? undo : undefined} disabled={online?.busy} />}
       <InstructionsModal isOpen={showInstructions} onClose={() => setShowInstructions(false)} actionsPerTurn={actionsPerTurn} phasing={phasing} micro={micro} />

@@ -11,9 +11,19 @@ reports state, clocks and bounded analysis, enforces rules, and records your
 choices. You choose moves and how much time to spend. Expiry is a plain loss;
 the server does not choose a rescue move or automatically end your turn.
 
+## Fork after an interruption
+
+If the user requests a new game from the interrupted position, use
+`muju_fork_room` after observing the source revision. Omit `timeControl` to reuse
+its control with fresh clocks, or provide a preset/custom control or `null` for
+untimed. Both banks and the delay reset in the new room; the source retains its
+result. The saved player to move may be Black. Retain the new credentials and
+invitation, and stage a new candidate after joining: private stages and historical
+clock pace samples do not carry into the fork.
+
 ## Prepare and read the clock
 
-Read `muju_rules()` and prepare before joining: White's clock starts when the second
+Read `muju_rules()` and prepare before joining: the player to move's clock starts when the second
 player joins. Inspect the available tool schemas: at turn start use
 `muju_observe({roomId, player:YOUR_SIDE, briefing:true})` when those options are
 supported, otherwise `muju_observe({roomId})`. Read the board, any briefing, and

@@ -1,0 +1,10 @@
+.fork-room { line-height: 1.5; }
+.fork-room fieldset { min-width: 0; border: 0; padding: 0; }
+.fork-room p { margin: 12px 0; }
+.fork-room label { display: flex; flex-direction: column; gap: 6px; margin: 14px 0; }
+.fork-room input, .fork-room select, .fork-room textarea { width: 100%; min-width: 0; padding: 10px; border: 1px solid #64748b; border-radius: 6px; background: #172033; color: #f1f5f9; font-size: 16px; }
+.fork-room textarea { min-height: 180px; font-family: monospace; }
+.fork-room button, .fork-open { display: inline-block; padding: 10px 14px; margin: 4px 8px 4px 0; border: 1px solid #64748b; border-radius: 6px; background: #1e3a5f; color: #f1f5f9; }
+.fork-room button:disabled { opacity: .5; }
+.fork-room [role=alert] { color: #fda4af; }
+.fork-room details { margin-top: 16px; }

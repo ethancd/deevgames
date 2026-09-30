@@ -12,6 +12,16 @@ a seat token. This check precedes cache access on HTTP MCP and stdio. Existing
 ordinary rooms retain all layers below. See the
 [match protocol](ENGINE-SEAT-MATCH-2026-09-19.md).
 
+## Continue a replay position online
+
+The browser's game analysis offers **Fork from here** for a recorded playable
+position, including an individual movement AP step. It opens a separate online
+room with fresh clocks and seats. Timeout and abandonment frames can resume the
+interrupted turn; other final frames require an earlier playable position.
+Private variations remain local. The server accepts recorded sequence/step
+identifiers, never an uploaded variation state. See [forking](../ONLINE.md#fork-a-game-with-fresh-clocks)
+for MCP/HTTP parameters, provenance and inherited match restrictions.
+
 ## Interface and layers
 
 | Layer | Entry point | Content |

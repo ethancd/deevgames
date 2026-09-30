@@ -1,7 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import type { RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
-import { createSchema, joinSchema, roomIdSchema, tokenSchema, historyQuerySchema, RoomError,
+import { createSchema, forkSchema, joinSchema, roomIdSchema, tokenSchema, historyQuerySchema, RoomError,
   stageRequestSchema, cancelStageSchema, stageIdSchema } from './schema';
 import type { StagingResult, StagingStatus } from '../src/online/staging';
 import { HISTORY_NOTATION, type HistoryQuery, type RoomMoveHistory } from '../src/game/moveHistory';
@@ -17,6 +17,7 @@ import { invitationUrl, observerUrl } from '../src/online/invitations';
 type MaybePromise<T> = T | Promise<T>;
 export interface RoomBackend {
   create(input: unknown): MaybePromise<RoomAdmission>;
+  fork(id: string, input: unknown): MaybePromise<RoomAdmission>;
   join(id: string, input: unknown): MaybePromise<RoomAdmission>;
   get(id: string, token?: string): MaybePromise<RoomSnapshot>;
   moveHistory(id: string, query?: HistoryQuery): MaybePromise<RoomMoveHistory>;
@@ -75,6 +76,10 @@ export function createMcpServer(backend: RoomBackend, publicUrl: string, scope?:
     async ({ variant }) => output(rulesFor(variant)));
   if (matchToolAllowed('muju_create_room', scope)) server.registerTool('muju_create_room', { description: 'Host a new two-player game. Optional immutable matchPolicy declares an experiment toolTier and protocolId for the entire room; omitted ordinary rooms retain all tools. Rooms play the one ruleset: public delayed summons and end-of-turn upkeep/promotions. Both players start with actions regardless of handicap. blackCrystalHandicap always grants Black 0.5, 1.5, …, 18.5 starting crystals (omit for 0.5; zero is rejected). White still starts. Optional immutable timeControl: blitz (10s/2min), rapid (30s/10min), classical (60s/30min), or custom delaySeconds/bankSeconds. Each player has a separate bank; free delay resets each full turn. Omit for untimed. Clocks start when the opponent joins. variant "micro" creates a MICRO MUJU room (6×6, two actions, three pieces; no handicap). Returns your private seat credential and a separate invitation to share.', inputSchema: createSchema.shape,
     annotations: { destructiveHint: false, openWorldHint: false } }, input => safely(async () => admission(await backend.create(input))));
+  if (matchToolAllowed('muju_fork_room', scope)) server.registerTool('muju_fork_room', {
+    description: 'Fork a public room into a new game with independent seats and fresh clocks. Read the source revision first. Omit sequence for its current position, or choose a history sequence and optional movement step. Timeout/abandonment results resume the exact interrupted turn; other finished positions require an earlier playable sequence. Preserves all gameplay state and matchPolicy. Omit timeControl to reuse the old control; null is untimed, or choose a preset/custom control. Full banks and a fresh turn delay start when the opponent joins, for whichever player is to move. Returns fresh private credentials and a new invitation; old credentials do not work in the fork.',
+    inputSchema: { roomId: roomIdSchema, ...forkSchema.shape }, annotations: { destructiveHint: false, openWorldHint: false },
+  }, ({ roomId, ...input }) => safely(async () => admission(await backend.fork(roomId, input))));
   if (matchToolAllowed('muju_join_room', scope)) server.registerTool('muju_join_room', { description: 'Join or take over the invited seat using its private reusable invitation. Each join returns a fresh credential and revokes the previous invited-seat credential; save the new one. The host seat, board and clocks are preserved. Pending staged play for the taken-over seat is cancelled. Rooms close and archive after 24 hours without a game action.',
     inputSchema: { roomId: roomIdSchema, ...joinSchema.shape }, annotations: { destructiveHint: false, openWorldHint: false } },
     ({ roomId, ...input }) => safely(async () => admission(await backend.join(roomId, input))));

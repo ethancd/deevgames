@@ -11,6 +11,7 @@ import { invitationCodeFromPath, watchCodeFromPath } from './invitations';
 import { useOnlineGame } from './useOnlineGame';
 import { RoomHistory } from './RoomHistory';
 import { RoomClocks } from './RoomClocks';
+import { ForkRoomDialog } from './ForkRoomDialog';
 import { PlayDialog } from '../components/PlayDialog';
 import { TIME_CONTROL_PRESETS, type TimeControlPreset } from './timeControl';
 import { ArchivedGames } from './ArchivedGames';
@@ -193,6 +194,8 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
   const [copied, setCopied] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showRoomDetails, setShowRoomDetails] = useState(false);
+  const [showFork, setShowFork] = useState(false);
+  const canFork = room.state.phase === 'playing' || room.state.victoryReason === 'timeout' || room.state.victoryReason === 'abandoned';
   const config = useMemo<GameConfig>(() => ({ mode: 'online', controls: {
     white: connection.player === 'white' ? 'human' : 'remote', black: connection.player === 'black' ? 'human' : 'remote',
   }, aiDifficulty: { white: 'medium', black: 'medium' } }), [connection.player]);
@@ -210,6 +213,8 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
     {!room.ready && <span>{isMicro(room.state) ? MICRO_TITLE : `${rulesetLabel(room.state)} rules`}</span>}
     {(room.state.blackCrystalHandicap ?? 0) > 0 && <span>Black crystal handicap · {room.state.blackCrystalHandicap} starting crystals</span>}
     <RoomClocks room={room} />
+    {canFork && <button onClick={() => { setShowRoomDetails(false); setShowFork(true); }}>Fork game</button>}
+    {room.forkedFrom && <a href={observerUrl(connection.serverUrl, room.forkedFrom.roomId, room.forkedFrom.watchCode)}>View original game</a>}
     {!room.archivedAt && link && <details open={!room.ready}><summary>Private invitation · {room.invitedPlayer ?? 'opponent'} seat</summary><label>Invite your opponent<input readOnly value={link} onFocus={e => e.target.select()} /></label>
       <button onClick={() => { void navigator.clipboard?.writeText(link).then(() => setCopied(true)).catch(() => setCopied(false)); }}>{copied ? 'Copied' : 'Copy invitation'}</button><p>Reuse this link to move control of the invited seat to another browser. Keep it private.</p></details>}
     {!room.archivedAt && link && inviteCode && <details open={!room.ready && isMicro(room.state)}><summary>Invite an LLM</summary>
@@ -242,7 +247,8 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
   </section>;
   const names = { white: room.seats.white ?? 'Waiting for White', black: room.seats.black ?? 'Waiting for Black' };
   return <><GameView game={game} config={config} onBackToMenu={onLeave} online={{ player: connection.player ?? null, ready: room.ready, busy, playingIncoming: incoming.playing, incomingFrame: incoming.frame,
-    names, banner, analysisUrl: analysisUrl(connection), historyOpen: showHistory, onToggleHistory: () => setShowHistory(value => !value) }} />
+    names, banner, onFork: canFork ? () => setShowFork(true) : undefined, analysisUrl: analysisUrl(connection), historyOpen: showHistory, onToggleHistory: () => setShowHistory(value => !value) }} />
+    {showFork && <ForkRoomDialog serverUrl={connection.serverUrl} roomId={room.id} defaultSide={connection.player ?? 'white'} defaultName={connection.player ? room.seats[connection.player] ?? 'Player' : 'Player'} onClose={() => setShowFork(false)} />}
     {showRoomDetails && <PlayDialog title="Room details" onClose={() => setShowRoomDetails(false)}>{roomDetails}</PlayDialog>}
     {showHistory && <RoomHistory connection={connection} revision={room.revision} names={names} onClose={() => setShowHistory(false)} />}</>;
 }
@@ -250,7 +256,8 @@ function OnlineMatch({ session, notice, onLeave }: { session: Session; notice: s
 /** A self-contained brief that lets an MCP-capable agent take the invited seat. */
 function llmPrompt(serverUrl: string, room: RoomSnapshot, inviteCode: string, link: string): string {
   const micro = isMicro(room.state), game = micro ? MICRO_TITLE : 'Muju Hono Irumbu', seat = room.invitedPlayer ?? 'black';
-  return [`Let's play ${game}. You are ${seat === 'white' ? 'White (you move first)' : 'Black (White moves first)'}.`,
+  const firstPlayer = room.state.turn.currentPlayer === 'white' ? 'White' : 'Black';
+  return [`Let's play ${game}. You are ${seat === 'white' ? 'White' : 'Black'}. ${firstPlayer} moves first from this position.`,
     '',
     `MCP server (streamable HTTP): ${serverUrl}/mcp`,
     `If you cannot add an MCP server, POST JSON-RPC "tools/call" requests to that URL (Accept: application/json, text/event-stream).`,

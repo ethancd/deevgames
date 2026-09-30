@@ -1,5 +1,46 @@
 # Muju Hono Irumbu: multiplayer and MCP
 
+## Fork a game with fresh clocks
+
+Use **Room → Fork game** during play, or **Fork game** on a timeout/abandonment
+result. In **Analyze this game**, select a saved position and choose **Fork from
+here** to continue from that exact replay step. Choose your side and name, keep
+the same time control, select a preset, enter custom delay/bank values, or choose
+untimed play. Share the new invitation and open the fork to play.
+
+A fork preserves the board, resources, handicap, mining totals, kill clock,
+current player, turn/phase, remaining actions, damage, upkeep and pending summons.
+Both players receive full fresh banks and the current player receives a full
+turn delay when the opponent joins. Waiting in the new lobby costs no time.
+The source game retains its history and result. A timeout or abandonment resumes
+the interrupted position; for a board victory or resignation, choose an earlier
+playable position in analysis. Existing rooms using retired rules cannot fork.
+
+For MCP use `muju_fork_room({roomId, expectedRevision, name, side?, sequence?,
+step?, timeControl?})`; HTTP uses `POST /api/muju/rooms/:id/fork` with the same
+body except `roomId`. Read the source first and pass its current revision. A
+changed source returns `STALE_REVISION` for review before retrying. Omit `sequence`
+for the current position; `0` selects the first recorded position. Positive
+sequences come from `muju_history`, and optional `step` selects a movement AP step.
+Unavailable or undone positions are rejected. Client-supplied board states are
+never accepted.
+
+On a fork, **omitting `timeControl` inherits the source control**; `null` explicitly
+selects untimed play. Presets and custom values use the usual creation bounds.
+The response has the same fresh private seat credentials and invitation as room
+creation, plus public `forkedFrom` provenance (source room/revision/watch code,
+sequence or null, optional step and resumed result). Save the new credentials;
+the original credentials and invitation belong only to the original room.
+Forks start independent move/replay/undo histories and clock pace sampling,
+with no copied private staged plans or request receipts. History and pace mark
+their start as partial, and undo cannot cross the fork boundary. Immutable
+`matchPolicy` is inherited. Single-room experiment services deny forking.
+
+Forking is available to spectators because positions are public. It creates a
+separate room and does not take over either source seat. Like room creation, each
+successful request creates a room; do not blindly repeat it after an uncertain
+network response. Normal room capacity, origin, rate and archive limits apply.
+
 ## Restricted experiment rooms
 
 HTTP creation and `muju_create_room` accept immutable `matchPolicy` with
@@ -240,6 +281,7 @@ Only protocol messages go to stdout. The implementation uses the
 | Tool | Purpose |
 | --- | --- |
 | `muju_rules` | Rules, all unit definitions, coordinates and workflow |
+| `muju_fork_room` | Continue a source position in a separate room with fresh clocks and an optional new time control |
 | `muju_create_room` | Choose a side (all games use four actions); get a private seat token and separate invitation |
 | `muju_join_room` | Claim the other seat using `roomId`, `inviteCode`, and a name |
 | `muju_observe` | Compact board, units, resources, home threats, history, revision and clocks |
@@ -607,6 +649,7 @@ and J-025.
 | --- | --- |
 | `GET /api/muju/rooms` | Public `{rooms}` list of unfinished room summaries: ID, player names, readiness, turn number, current player, updated time; no boards or credentials |
 | `GET /api/muju/rooms/archived` | Public archived summaries; `limit` 1–100 (default 20), optional `before` room-ID cursor; returns `{rooms, nextCursor}` |
+| `POST /api/muju/rooms/:id/fork` | `{name, side?, expectedRevision, sequence?, step?, timeControl?}`; inherit control when omitted, null for untimed; fresh credentials and invitation |
 | `POST /api/muju/rooms` | `{name, side, actionsPerTurn?: 4, timeControl?}` → admission (only 4 actions supported) |
 | `POST /api/muju/rooms/:id/join` | `{name, inviteCode}` → fresh invited-seat admission; revokes its previous token |
 | `GET /api/muju/rooms/invitations/:code` | Resolve a six-letter invitation to `{roomId}` without claiming a seat |

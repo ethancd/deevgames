@@ -39,8 +39,9 @@ it.each([false, true])('blocks mirror creation and every cross-room MCP read wit
   const { store, match, ordinary } = rooms(), url = await listenerFor(store, match.room.id), client = await clientFor(url, stdio);
   const tools = (await client.listTools()).tools.map(tool => tool.name);
   expect(tools).toEqual(expect.arrayContaining(['muju_rules', 'muju_observe', 'muju_legal_actions', 'muju_preview', 'muju_stage', 'muju_play']));
-  for (const name of ['muju_create_room', 'muju_join_room', 'muju_analyze']) expect(tools).not.toContain(name);
+  for (const name of ['muju_create_room', 'muju_fork_room', 'muju_join_room', 'muju_analyze']) expect(tools).not.toContain(name);
   await deniedTool(client, 'muju_create_room', { name: 'Mirror' });
+  await deniedTool(client, 'muju_fork_room', { roomId: match.room.id, expectedRevision: 1, name: 'Mirror fork' });
   await deniedTool(client, 'muju_join_room', { roomId: match.room.id, name: 'Takeover', inviteCode: match.inviteCode });
   await deniedTool(client, 'muju_analyze', { roomId: ordinary.room.id, expectedRevision: 1, player: 'white', topics: ['economy'] });
   for (const name of ['muju_observe', 'muju_clock', 'muju_history', 'muju_legal_actions', 'muju_wait_for_change']) {
@@ -64,7 +65,7 @@ it('default-denies direct HTTP mirror/list/join/restore/static and cross-room pa
     const response = await fetch(url + path); expect(response.status, path).toBe(403);
     expect(await response.json()).toMatchObject({ code: 'MATCH_SERVICE_RESTRICTED' });
   }
-  for (const [path, body] of [['/api/muju/rooms', { name: 'Mirror' }], [`/api/muju/rooms/${match.room.id}/join`, { name: 'Takeover', inviteCode: match.inviteCode }],
+  for (const [path, body] of [['/api/muju/rooms', { name: 'Mirror' }], [`/api/muju/rooms/${match.room.id}/fork`, { name: 'Mirror fork', expectedRevision: 1 }], [`/api/muju/rooms/${match.room.id}/join`, { name: 'Takeover', inviteCode: match.inviteCode }],
     [`/api/muju/rooms/${match.room.id}/restore`, { player: 'white' }], [`/api/muju/rooms/${ordinary.room.id}/actions`, { expectedRevision: 1, requestId: 'mirror-replay', actions: [{ type: 'END_ACTION_PHASE' }] }]] as const) {
     expect((await post(url + path, body, match.credentials.token)).status).toBe(403);
   }

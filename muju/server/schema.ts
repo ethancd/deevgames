@@ -62,6 +62,14 @@ export const createSchema = z.object({ name: nameSchema, side: z.enum(['white', 
   ]).nullable().optional().describe('Creation only. Omit/null for untimed, select blitz (10s/2min), rapid (30s/10min), classical (60s/30min), or supply custom delaySeconds/bankSeconds. Starts on join; running out loses.'),
 }).strict();
 export const shortInviteSchema = z.string().regex(shortInvitePattern);
+export const forkSchema = z.object({
+  name: nameSchema,
+  side: createSchema.shape.side,
+  expectedRevision: actionRequestSchema.shape.expectedRevision.describe('Source room revision from a fresh observation. A changed source must be reviewed again.'),
+  sequence: z.number().int().nonnegative().optional().describe('Optional saved history sequence; 0 is the recording root. Omit for the current position.'),
+  step: z.number().int().positive().optional().describe('Optional movement step within sequence, as in the analysis replay.'),
+  timeControl: createSchema.shape.timeControl.describe('Omit to reuse the source time control with full fresh banks and delay. Null makes the fork untimed; presets or custom controls replace it. Starts on join.'),
+}).strict();
 export const joinSchema = z.object({ name: nameSchema, inviteCode: z.string().regex(invitePattern) }).strict();
 export const historyQuerySchema = z.object({
   before: z.coerce.number().int().positive().optional(),

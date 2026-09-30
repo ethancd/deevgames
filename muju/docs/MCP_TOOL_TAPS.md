@@ -38,6 +38,15 @@ Put step 3 behind a script gate so it costs no thinking time: the script runs
 analyze, prints only `proven_possible` lines, and refuses to play if any hit a
 named unit.
 
+## Continuing after an interruption
+
+When the user asks to resume in a fork, read `muju_observe` and call
+`muju_fork_room` with the source `expectedRevision`, chosen name and side.
+Omit `timeControl` for the same control with fresh clocks, use `null` for untimed,
+or supply a preset/custom control. Share the new invitation, retain the new seat
+credential, and stage any candidate anew after joining. The saved player to move
+starts the clock; do not assume White. See [the fork protocol](../ONLINE.md#fork-a-game-with-fresh-clocks).
+
 ## Before joining
 
 | Trigger | Action |

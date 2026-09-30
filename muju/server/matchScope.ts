@@ -56,7 +56,7 @@ export function scopeBackend(backend: RoomBackend, scope: MatchScope): RoomBacke
     const room = await backend.get(id, token); assertScopeRoom(scope, room); return room;
   };
   return {
-    create: () => { throw forbidden(); }, join: () => { throw forbidden(); }, get,
+    create: () => { throw forbidden(); }, fork: () => { throw forbidden(); }, join: () => { throw forbidden(); }, get,
     moveHistory: async (id, query) => { await get(id); return backend.moveHistory(id, query); },
     wait: async (id, revision, timeout, signal) => {
       await get(id); const change = await backend.wait(id, revision, timeout, signal);

@@ -14,7 +14,7 @@ import { applyAction } from '../src/ai/simulate';
 import type { GameState, PlayerId } from '../src/game/types';
 import type { ActionRequest, ActiveRoom, RoomArchive, RoomAction, RoomAdmission, RoomChange, RoomSnapshot } from '../src/online/types';
 import { projectClock, type ClockSnapshot } from '../src/online/timeControl';
-import { RoomError, actionRequestSchema, createSchema, joinSchema, roomIdSchema, historyQuerySchema,
+import { RoomError, actionRequestSchema, createSchema, forkSchema, joinSchema, roomIdSchema, historyQuerySchema,
   stageRequestSchema, cancelStageSchema, stageIdSchema, shortInviteSchema } from './schema';
 import type { PendingStage, SeatStaging, StageAcknowledgement, StageReceipt, StagingResult, StagingStatus } from '../src/online/staging';
 import { assertMatchCapability, allowsMatchCapability } from './matchPolicy';
@@ -321,6 +321,7 @@ export class RoomStore {
     const clock = room.clockBase ? projectClock(room.clockBase, Date.now()) : null;
     return structuredClone({ ...(room.matchPolicy ? { matchPolicy: room.matchPolicy } : {}), createdAt: room.createdAt, lastMoveAt: room.lastMoveAt, archivedAt: room.archivedAt, invitedPlayer: room.invitedPlayer, id: room.id, watchCode: this.watchCode(room.id), revision: room.revision, ready: room.ready, seats: room.seats,
       ...(player ? { authenticatedPlayer: player } : {}),
+      ...(room.forkedFrom ? { forkedFrom: room.forkedFrom } : {}),
       timeControl: room.timeControl ?? null, clock,
       clockPressure: clock && room.clockHistory ? projectClockPressure(room.clockHistory, clock) : null,
       ...(player && room.clockBase ? { staging: this.seatStaging(room, player) } : {}),
@@ -421,11 +422,15 @@ export class RoomStore {
     return Number(this.db.prepare('SELECT COALESCE(MAX(sequence), 0) AS sequence FROM room_moves WHERE room_id = ?').get(id)!.sequence);
   }
   position(id: string, sequence: number, step?: number): { roomId: string; revision: number; state: GameState } {
-    const room = this.get(id);
+    return this.readPosition(this.get(id), sequence, step);
+  }
+  private readPosition(room: RoomSnapshot, sequence: number, step?: number): { roomId: string; revision: number; state: GameState } {
+    const id = room.id;
     if (!Number.isInteger(sequence) || sequence < 0 || (step !== undefined && (!Number.isInteger(step) || step < 1))) {
       throw new RoomError(400, 'INVALID_POSITION', 'Use a nonnegative sequence and a positive step.');
     }
     if (sequence === 0) {
+      if (step !== undefined && step !== 1) throw new RoomError(400, 'INVALID_POSITION', 'The recording root has only one position.');
       const root = this.db.prepare('SELECT state FROM room_history_roots WHERE room_id = ?').get(id);
       // Existing rooms can be explored from their present position before their first recorded action.
       return { roomId: id, revision: room.revision, state: root ? unpackState(root.state as Uint8Array) : room.state };
@@ -478,11 +483,11 @@ export class RoomStore {
       : { changed: true, ...metadata, room };
   }
   create(input: unknown): RoomAdmission {
-    const { name, side, actionsPerTurn, timeControl, blackCrystalHandicap: requestedHandicap, matchPolicy, variant } = createSchema.parse(input);
+    const parsed = createSchema.parse(input);
+    const { actionsPerTurn, blackCrystalHandicap: requestedHandicap, variant } = parsed;
     const micro = variant === 'micro';
     const blackCrystalHandicap = requestedHandicap ?? (micro ? 0 : 0.5);
     if (!micro && !isBlackCrystalHandicap(blackCrystalHandicap)) throw new RoomError(400, 'INVALID_HANDICAP', 'Black must start with 0.5, 1.5, …, 18.5 crystals, including komi.');
-    // Micro is exactly its own opening: two actions, empty banks.
     if (micro && (blackCrystalHandicap > 0 || (actionsPerTurn !== undefined && actionsPerTurn !== MICRO_ACTIONS_PER_TURN))) {
       throw new RoomError(400, 'INVALID_MICRO_SETUP', 'MICRO MUJU rooms always use two actions per turn and no crystal handicap. Omit actionsPerTurn and blackCrystalHandicap.');
     }
@@ -490,32 +495,58 @@ export class RoomStore {
       throw new RoomError(400, 'INVALID_ACTIONS_PER_TURN', 'Muju Hono Irumbu rooms use four actions per turn.');
     }
     this.settleDue();
+    return this.transaction(() => this.createPosition(parsed,
+      micro ? createMicroGameState() : createInitialGameState(undefined, 4, blackCrystalHandicap, 'phasing')));
+  }
+  fork(id: string, input: unknown): RoomAdmission {
+    const parsed = forkSchema.parse(input);
+    if (parsed.step !== undefined && parsed.sequence === undefined) throw new RoomError(400, 'INVALID_POSITION', 'A step requires a history sequence.');
+    // Settle in a separate transaction, so a rejected stale fork cannot roll back
+    // an authoritative timeout or scheduled move in the source.
+    this.settleDue();
+    this.get(id);
     return this.transaction(() => {
-      const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms WHERE archived_at IS NULL').get()!.count as number;
-      if (count >= this.maxRooms) throw new RoomError(503, 'ROOM_LIMIT', 'This host is at its room limit.');
-      const id = randomBytes(16).toString('hex'), token = secret();
-      let inviteCode: string;
-      do {
-        inviteCode = shortCode();
-      } while (this.db.prepare('SELECT 1 FROM room_invitations WHERE code_hash = ?').get(digest(inviteCode))
-        || this.db.prepare('SELECT 1 FROM room_watch_links WHERE code = ?').get(inviteCode));
-      this.db.prepare('INSERT INTO room_invitations (code_hash, room_id) VALUES (?, ?)').run(digest(inviteCode), id);
-      const room: StoredRoom = { ...(matchPolicy ? { matchPolicy } : {}), id, revision: 0, ready: false, seats: { white: null, black: null },
-        state: micro ? createMicroGameState() : createInitialGameState(undefined, 4, blackCrystalHandicap, 'phasing'), canUndo: false, undoHistory: [], updatedAt: new Date(Date.now()).toISOString(), history: [],
-        moveHistoryStart: { revision: 0, turnNumber: 1, player: 'white', complete: true },
-        rulesVersion: micro ? MICRO_ROOM_RULES_VERSION : PHASING_RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
-      room.createdAt = room.lastMoveAt = room.updatedAt;
-      room.invitedPlayer = side === 'white' ? 'black' : 'white';
-      room.seats[side] = name;
-      room.timeControl = timeControl ?? null;
-      if (timeControl) room.clockBase = { serverNowMs: Date.now(), runningPlayer: null, turnStartedAtMs: null, deadlineAtMs: null,
-        delayRemainingMs: timeControl.delaySeconds * 1000,
-        bankRemainingMs: { white: timeControl.bankSeconds * 1000, black: timeControl.bankSeconds * 1000 } };
-      if (timeControl) room.clockHistory = newClockHistory(Date.now(), room.revision, true);
-      this.db.prepare('INSERT INTO room_history_roots (room_id, state) VALUES (?, ?)').run(id, packState(room.state));
-      this.save(room);
-      return { credentials: { roomId: id, player: side, token }, inviteCode, room: this.snapshot(room) };
+      const source = this.read(id);
+      if (source.revision !== parsed.expectedRevision) throw new RoomError(409, 'STALE_REVISION', 'The source game changed. Review it again before forking.');
+      const state = structuredClone(parsed.sequence === undefined ? source.state : this.readPosition(source, parsed.sequence, parsed.step).state);
+      const resumedAfter = state.phase === 'victory' && (state.victoryReason === 'timeout' || state.victoryReason === 'abandoned') ? state.victoryReason : undefined;
+      // These administrative results only change phase/winner/highlights, leaving
+      // every gameplay field intact. Never revive an actual board adjudication.
+      if (resumedAfter) { state.phase = 'playing'; state.winner = null; delete state.victoryReason; }
+      if (state.phase !== 'playing') throw new RoomError(409, 'POSITION_FINISHED', 'Choose an earlier playable position in game analysis to fork this game.');
+      state.selectedUnit = null; state.validMoves = []; state.validAttacks = [];
+      return this.createPosition({ ...parsed, timeControl: parsed.timeControl === undefined ? source.timeControl : parsed.timeControl,
+        matchPolicy: source.matchPolicy }, state, { roomId: id, revision: source.revision, watchCode: this.watchCode(id),
+        sequence: parsed.sequence ?? null, ...(parsed.step !== undefined ? { step: parsed.step } : {}), ...(resumedAfter ? { resumedAfter } : {}) });
     });
+  }
+  /** Called inside a transaction; only gameplay state crosses a fork boundary. */
+  private createPosition({ name, side, timeControl, matchPolicy }: Pick<ReturnType<typeof createSchema.parse>, 'name' | 'side' | 'timeControl' | 'matchPolicy'>,
+    state: GameState, forkedFrom?: RoomSnapshot['forkedFrom']): RoomAdmission {
+    const count = this.db.prepare('SELECT COUNT(*) AS count FROM rooms WHERE archived_at IS NULL').get()!.count as number;
+    if (count >= this.maxRooms) throw new RoomError(503, 'ROOM_LIMIT', 'This host is at its room limit.');
+    const id = randomBytes(16).toString('hex'), token = secret();
+    let inviteCode: string;
+    do {
+      inviteCode = shortCode();
+    } while (this.db.prepare('SELECT 1 FROM room_invitations WHERE code_hash = ?').get(digest(inviteCode))
+      || this.db.prepare('SELECT 1 FROM room_watch_links WHERE code = ?').get(inviteCode));
+    this.db.prepare('INSERT INTO room_invitations (code_hash, room_id) VALUES (?, ?)').run(digest(inviteCode), id);
+    const room: StoredRoom = { ...(matchPolicy ? { matchPolicy } : {}), id, revision: 0, ready: false, seats: { white: null, black: null },
+      state, ...(forkedFrom ? { forkedFrom } : {}), canUndo: false, undoHistory: [], updatedAt: new Date(Date.now()).toISOString(), history: [],
+      moveHistoryStart: { revision: 0, turnNumber: state.turn.turnNumber, player: state.turn.currentPlayer, complete: !forkedFrom },
+      rulesVersion: isMicro(state) ? MICRO_ROOM_RULES_VERSION : PHASING_RULES_VERSION, inviteHash: digest(inviteCode), tokenHashes: { [side]: digest(token) }, receipts: [] };
+    room.createdAt = room.lastMoveAt = room.updatedAt;
+    room.invitedPlayer = side === 'white' ? 'black' : 'white';
+    room.seats[side] = name;
+    room.timeControl = timeControl ?? null;
+    if (timeControl) room.clockBase = { serverNowMs: Date.now(), runningPlayer: null, turnStartedAtMs: null, deadlineAtMs: null,
+      delayRemainingMs: timeControl.delaySeconds * 1000,
+      bankRemainingMs: { white: timeControl.bankSeconds * 1000, black: timeControl.bankSeconds * 1000 } };
+    if (timeControl) room.clockHistory = newClockHistory(Date.now(), room.revision, !forkedFrom);
+    this.db.prepare('INSERT INTO room_history_roots (room_id, state) VALUES (?, ?)').run(id, packState(room.state));
+    this.save(room);
+    return { credentials: { roomId: id, player: side, token }, inviteCode, room: this.snapshot(room) };
   }
   resolveInvitation(code: string): { roomId: string } {
     shortInviteSchema.parse(code);
