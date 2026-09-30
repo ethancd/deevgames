@@ -3,7 +3,8 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { randomUUID } from 'node:crypto';
 import type { ExplorerJob, ExplorerSnapshot } from '../../src/explorer/types';
-import { preflight, invokeModel, type ModelReply } from './providers';
+import { preflight, invokeModel, ModelCallTimeoutError, type ModelReply } from './providers';
+import { MAX_DECISION_CALLS, pacingReminder, enforcePolicy, policyReview, prepareDecision, runnerPolicySchema, type RunnerPolicy } from './policy';
 
 export interface RunnerConnection { server: string; experimentId: string; token: string; workerId: string }
 class ApiError extends Error { constructor(message: string, public code: string) { super(message); } }
@@ -31,18 +32,25 @@ export function modelResult(reply: ModelReply) {
   if (reply.kind === 'branch') return { kind: 'branch', checkpointId: reply.checkpointId, actions, explanation: reply.explanation, memory: reply.memory };
   return { ...(reply.checkpointId ? { checkpointId: reply.checkpointId } : {}), actions, offset: reply.offset };
 }
-export async function runExperiment(connection: RunnerConnection, signal: AbortSignal, invoke = invokeModel) {
+export async function runExperiment(connection: RunnerConnection, signal: AbortSignal, invoke = invokeModel, policy?: RunnerPolicy) {
   const request = api(connection), path = `/${connection.experimentId}`;
   let activeJob: ExplorerJob | null = null;
+  let policyRecorded = false;
   try {
     while (!signal.aborted) {
       const state = await request<ExplorerSnapshot>(path);
       if (state.status === 'complete') { console.log(`Experiment complete: ${state.stopReason}. ${state.games.length} games, ${state.plies} new player-turns.`); return; }
+      if (policy && !policyRecorded) {
+        const note = policyReview(policy, state);
+        if (note !== state.review) await request(`${path}/review`, { note });
+        policyRecorded = true;
+      }
       if (state.status === 'paused') { await new Promise(resolve => setTimeout(resolve, 2000)); continue; }
       const { job } = await request<{ job: ExplorerJob | null }>(`${path}/claim`, { workerId: connection.workerId });
       if (!job) { await new Promise(resolve => setTimeout(resolve, 2000)); continue; }
       activeJob = job;
       const controller = new AbortController();
+      const started = Date.now();
       const abort = () => controller.abort(); signal.addEventListener('abort', abort, { once: true });
       let checking = false;
       const monitor = setInterval(async () => {
@@ -51,17 +59,35 @@ export async function runExperiment(connection: RunnerConnection, signal: AbortS
         finally { checking = false; }
       }, 3000);
       try {
-        let prompt = job.prompt;
+        const prepared = prepareDecision(job, policy);
+        if (prepared.finishReason) {
+          await request(`${path}/control`, { action: 'stop', reason: prepared.finishReason });
+          console.log(`Experiment complete: ${prepared.finishReason}. The prior game outcome is preserved.`);
+          return;
+        }
+        let prompt = prepared.prompt;
         const usage: ExplorerSnapshot['usage'] = [];
         let submitted = false;
-        for (let round = 0; round < 12 && !signal.aborted; round++) {
+        for (let round = 0; round < MAX_DECISION_CALLS && !signal.aborted; round++) {
+          controller.signal.throwIfAborted();
           const { allowed } = await request<{ allowed: boolean }>(`${path}/call`, { jobId: job.id, callId: randomUUID() });
           if (!allowed) return;
+          controller.signal.throwIfAborted();
           console.log(`${job.player} · ${job.config.players[job.player].model} · ${job.kind} · call ${round + 1}`);
-          const answer = await invoke(job.config.players[job.player], prompt, controller.signal);
+          let answer: Awaited<ReturnType<typeof invokeModel>>;
+          try {
+            answer = await invoke(job.config.players[job.player], prompt + pacingReminder(job, Date.now() - started, round, policy?.paceAfterMs), controller.signal);
+          } catch (error) {
+            controller.signal.throwIfAborted();
+            if (!(error instanceof ModelCallTimeoutError)) throw error;
+            console.warn(`${job.player} · ${job.kind} · call ${round + 1} timed out; ${MAX_DECISION_CALLS - round - 1} calls remain.`);
+            prompt += '\nYour previous model call timed out without a response. No action from that call was submitted. Use the existing position and successful previews to finish promptly; this retry consumes the same decision call budget.';
+            continue;
+          }
+          controller.signal.throwIfAborted();
           usage.push({ player: job.player, provider: job.config.players[job.player].provider, ...answer.usage });
           try {
-            const input = modelResult(answer.reply);
+            const input = modelResult(enforcePolicy(answer.reply, job, prepared.checkpointId, policy, prepared.retryNote));
             if (answer.reply.kind === 'preview') {
               const result = await request(`${path}/query`, { jobId: job.id, input });
               prompt += `\nYour preview request: ${JSON.stringify(answer.reply)}\nAuthoritative preview: ${JSON.stringify(result)}`;
@@ -92,9 +118,12 @@ export async function runExperiment(connection: RunnerConnection, signal: AbortS
 async function main() {
   const args = process.argv.slice(2), option = (name: string) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : undefined; };
   if (args.includes('--help')) {
-    console.log('Create: npm run explorer:runner -- --server http://localhost:3003 --create [--config config.json] [--connection ./muju-runner.private.json]\nResume: npm run explorer:runner -- --connection ./muju-runner.private.json\nConnect to a browser-created experiment: save its private runner connection file, then use --connection.\nModels: gpt-6-astra / claude-opus-5-5; high effort; existing subscription logins.'); return;
+    console.log('Create: npm run explorer:runner -- --server http://localhost:3003 --create [--config config.json] [--connection ./muju-runner.private.json]\nResume: npm run explorer:runner -- --connection ./muju-runner.private.json [--policy policy.json]\nA version-3 policy records branching, a search hypothesis and learning instructions in the public review. noEligibleCheckpoint chooses opening fallback or normal completion when no estimate reaches the threshold. Version 2 retains its original pause behavior. Decisions have a five-minute soft pacing target; hard limits are five minutes per call and twelve calls per decision.\nConnect to a browser-created experiment: save its private runner connection file, then use --connection.\nModels: gpt-6-astra / claude-opus-5-5; high effort; existing subscription logins.'); return;
   }
   const connectionFile = resolve(option('--connection') ?? 'muju-runner.private.json');
+  const policyInput = option('--policy') ? JSON.parse(await readFile(resolve(option('--policy')!), 'utf8')) : undefined;
+  if (policyInput?.version === 1) throw new Error('Policy version 1 used a hard decision deadline. Preserve it as historical evidence and create a version-2 policy with paceAfterMs instead of decisionTimeMs to continue.');
+  const policy = policyInput ? runnerPolicySchema.parse(policyInput) : undefined;
   let connection: RunnerConnection;
   if (args.includes('--create')) {
     try { await access(connectionFile); throw new Error(`Connection file already exists: ${connectionFile}. Use it to resume or choose a different --connection path.`); } catch (error) { if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error; }
@@ -115,6 +144,6 @@ async function main() {
   console.log(`Private runner connection saved at ${connectionFile}. Keep it private.`);
   const controller = new AbortController();
   for (const signal of ['SIGINT', 'SIGTERM'] as const) process.once(signal, () => controller.abort());
-  await runExperiment(connection, controller.signal);
+  await runExperiment(connection, controller.signal, invokeModel, policy);
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) main().catch(error => { console.error(error.message); process.exitCode = 1; });

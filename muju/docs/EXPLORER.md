@@ -54,10 +54,63 @@ subscription usage without a recorded response; it is never counted as a loss.
 Authentication or model errors pause the run with an explanation. Fix the login
 or availability problem, resume in the browser and rerun the same command.
 There is no fallback to another model or to API billing. Subscription usage
-limits still apply. One inference has a five-minute timeout; one job permits
-at most twelve calls including previews/corrections; the experiment has a
+limits still apply. Each model call has a five-minute hard timeout, including
+CLI setup, and each decision (assessment, complete turn or branch) permits at
+most twelve calls. A timed-out call consumes an attempt and retries automatically
+within that same budget. It does not pause the run by itself. Exhausting all
+twelve attempts still pauses without inventing a move or recording a loss.
+
+Five minutes per decision is a **soft pacing target**. The runner reports elapsed
+time and remaining calls before every inference. After five minutes it adds a
+finish-soon reminder: use the best line already considered, avoid new strategic
+searches, and only preview further to fix legality or complete the turn. These
+reminders arrive at the next model-call boundary, not inside an active CLI call.
+Elapsed decision time alone never aborts or pauses the run. Each seat's independent
+assessment is a separate decision. The experiment has a
 configurable 1,000-call ceiling by default. Neither plies nor calls predict
 subscription token usage exactly.
+
+For a stricter retry policy and explicit learning/search instructions, save:
+
+```json
+{"version":3,"retryThreshold":0.45,"paceAfterMs":300000,"blackTarget":0.6,"noEligibleCheckpoint":"opening"}
+```
+
+Then run `npm run explorer:runner -- --connection /path/to/connection.private.json
+--policy /path/to/policy.json` (on one command line). This requires the latest own
+turn-start checkpoint at or above 45%, including inherited checkpoints. If the
+loser never reached 45%, `noEligibleCheckpoint: "opening"` retries its earliest
+own turn-start checkpoint with a different opening plan. This is explicitly
+labeled an opening fallback in the prompt and saved branch explanation; it does
+not claim that the original opening forecast met the threshold. Both seats keep
+their lessons, the parent remains immutable, and the same game/move/call limits
+apply. Choosing `noEligibleCheckpoint: "finish"` instead ends normally with
+`no-qualifying-retry-checkpoint`, without another model call or a changed game
+outcome. Neither choice treats the empty qualifying set as a runner failure.
+Previews and the new turn are restricted to the selected checkpoint. Each retry
+must supply `Lesson:` and `Strategy:` in its public
+explanation and retain private memory; the prompt asks for a materially changed
+plan and an account of the opponent's strongest reply. The server also rejects
+equivalent continuations, but semantic strategic novelty is not mechanically
+provable. Both seats retain their own cumulative lessons and see public prior
+games. This is learning from supplied context, not model training.
+
+The 60% Black target is an exploration hypothesis, never a forecast floor.
+White still tries to win and both sides must report honest estimates. The runner
+appends the policy, its fingerprint and the starting game/turn/call counts to
+the public review before doing work, and tags subsequent explanations. It does
+not rewrite the original server config (whose suggested retry default is still
+33%) or prior evidence. Export/review the amendment alongside the original
+config, and keep `--policy` when restarting this worker. Changing the local
+runner does not require a server or browser deployment.
+
+Version-1 policies described the retired hard decision deadline and are rejected
+with a migration explanation. Version 2 retains its original pause when no own
+checkpoint meets the threshold. Preserve those files and their old review entries
+as historical evidence. New runs should use version 3. To amend an existing run,
+create a new version-3 file using `paceAfterMs` instead of `decisionTimeMs` and an
+explicit `noEligibleCheckpoint` choice. The runner records its new fingerprint
+and starting counts before continuing; old policy meanings are unchanged.
 
 ## Protocol and interpretation
 
@@ -111,8 +164,15 @@ critical mistake. The mode does not calculate a sufficient handicap for them.
 JSON exports include full states and action records, branch ancestry, config,
 usage when reported by the CLI, rules/setup revision and a hash of the canonical
 rule/controller sources. Mutating an experiment after those sources change is
-rejected; old trees remain readable. A code change is never silently treated as
-a continuation of the same evidence. The source commit is recorded when supplied
+rejected unless its exact old hash is approved for the exact current implementation
+digest in `server/explorer/compatibility.ts`. That audited manifest permits only
+documented changes that preserve gameplay; changing any implementation byte
+invalidates its entries until separately reviewed. The full source digest also
+includes the manifest. Compatible continuations append `compatibleRuntimes`
+with the new source identity and starting turn/call counts while retaining the
+original identity and history. Unknown changes and changed rules revisions are
+still rejected; old trees remain readable. A code change is never silently treated
+as a continuation of the same evidence. The source commit is recorded when supplied
 by `RENDER_GIT_COMMIT` or `MUJU_SOURCE_REVISION`; the content hash works in dirty
 local checkouts too. Restore unchanged server code to resume an old experiment.
 
