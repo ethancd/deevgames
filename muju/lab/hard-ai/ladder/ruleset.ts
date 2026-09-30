@@ -61,7 +61,9 @@ export const LADDER_RULES_VERSION = RULES_VERSION;
  * evidence and the ANALYST has to be able to open them. Reading is all this
  * grants: see `assertPoolableRevision` for what it does not.
  */
-export const HISTORICAL_PHASING_REVISIONS = ['muju-phasing-1'] as const;
+// `muju-phasing-2` (20-ply draw) and `muju-phasing-3` (kill clock, tier-capped
+// Cleave) joined when later revisions superseded them (2026-09-23).
+export const HISTORICAL_PHASING_REVISIONS = ['muju-phasing-1', 'muju-phasing-2', 'muju-phasing-3'] as const;
 
 /**
  * What a record's `rulesVersion` field means: which rule set replays its
