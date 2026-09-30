@@ -62,6 +62,43 @@ environment.
 Army plates hold 73 objects. If adhesion or job length is a concern, split them in the slicer; the
 positions are only a starting layout.
 
+### Turned Court · Keyed and · Rings (IF2 pieces with tier dots)
+
+These two variants print their glyphs, tiles and crystals from the **Turned Court** plates. Only
+the pieces differ:
+
+| Plate file | Filaments | Contents |
+|---|---|---|
+| `turned-keyed-ivory-army-plate01.3mf` (and `-charcoal-`, and `turned-ring-…`) | slot 1: army colour (PLA Matte Ivory White / Charcoal); slot 2: **PLA Basic Turquoise** | 6 T3, 18 T2, 48 bases. Each is a two-part object: body + tier dot |
+| `turned-keyed-ivory-home-plate01.3mf` (and `-charcoal-`) | army colour | the A1 / J10 home tile |
+
+On import, check in Bambu Studio that each piece shows two parts with the dot on filament 2. The
+3MF carries Bambu's part-to-filament map, but it has not been confirmed in the Bambu Studio
+window. Print upright, groove down: the groove ceilings are 2 mm annular bridges and need no
+support. Do not add a brim; it would fill the beam slits.
+
+### Board in nine sections (alternative to the 100 tiles)
+
+`print/<variant>/sections/<variant>-sections-gray-<sw|s|se|w|c|e|nw|n|ne>-plate01.3mf` and
+`…-sections-gradient-…`: one section per plate, flat, top up.
+
+- **Gray scheme:** all sections are single colour (PLA Matte Ash Gray) except SW (the A1 square
+  in Ivory White) and NE (the J10 square in Charcoal).
+- **Gradient scheme:** every square is coloured by its starting crystals, as listed in the
+  table below. Each section is a multi-part object, one part per colour, with Bambu filament
+  slots in the order given by the 3MF's material list.
+
+| Squares | Filament |
+|---|---|
+| 16 | PLA Matte Bone White |
+| 8 | Ash Gray |
+| 4 | Nardo Gray |
+| 0 | PLA Basic Dark Gray |
+| A1 / J10 homes | army colours |
+
+The section joints use the tile tabs (0.25 mm per side). The 4 × 4 centre is the largest print,
+209 mm across with its tabs.
+
 ### Print orientations (as modelled, no supports needed)
 
 | Part | Orientation | Notes |
@@ -70,6 +107,9 @@ positions are only a starting layout.
 | Ownership base | Upright: recess down, slot up | Recess ceiling (14.3 mm octagon) bridges. 0.9 mm of material separates recess and slot. |
 | T2 addition | Upright: recess down, boss up | Recess ceiling bridges. |
 | T3 addition | Upright: flat bottom, boss up | |
+| IF2 base / T2 (Turned Court · Keyed, · Rings) | Upright: groove down, slot or collar up | The annular groove ceiling bridges about 2 mm. Beam slits must stay open. No brim. |
+| IF2 T3 | Upright: flat bottom, collar up | Rings: open bore, no bridging |
+| Board section | Flat, top up | Brim optional on the corner sections |
 | Glyph | Flat, front face up | Tang lies in the plane. Layers run parallel to the glyph, so the thin direction is strong in bending. |
 | Crystal / half token | Socket down, stud up | 3.45 mm socket ceiling bridges. |
 

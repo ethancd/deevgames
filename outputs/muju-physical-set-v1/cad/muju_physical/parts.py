@@ -86,7 +86,7 @@ def engrave(solid, text: str, size: float, x: float, y: float, z_top: float, dep
 
 
 # ---------------------------------------------------------------- pieces
-def octagon_body(af: float, h: float, edge: dict, P: dict, log: list, label: str):
+def octagon_body(af: float, h: float, edge: dict, P: dict, log: list, label: str, skip_flutes: tuple = ()):
     cr = edge.get("corner_radius", 0.0)
     kind = edge["kind"]
     if kind == "turned":
@@ -102,6 +102,8 @@ def octagon_body(af: float, h: float, edge: dict, P: dict, log: list, label: str
         if kind == "fluted":
             fr, fd = edge["flute_radius"], edge["flute_depth"]
             for i in range(8):
+                if i in skip_flutes:
+                    continue
                 a = i * math.pi / 4
                 d = af / 2 + fr - fd
                 solid = solid - Pos(d * math.cos(a), d * math.sin(a), 0.6) * Cylinder(fr, h, align=MIN)
@@ -176,6 +178,140 @@ def pedestal(P: dict, variant: dict, tier: int, log: list):
     if tier == 2:
         s = s - recess_cutter(P)
     return s
+
+
+# ---------------------------------------------------------------- IF2 pieces
+# Interface IF2 (params.if2): tube collar up, annular groove down, in-plane
+# cantilever beams with preload bumps in the groove's outer wall, a one-way key
+# at +Y and a tier-dot inlay at the front (-Y). All features are Z prisms of
+# 2D (shapely) profiles, so every boolean is between simple extrusions.
+def _sector(r0: float, r1: float, a0: float, a1: float, n: int = 64) -> SPoly:
+    """Annular sector r0..r1 between angles a0..a1 (radians, counter-clockwise)."""
+    k = max(4, int(n * abs(a1 - a0) / (2 * math.pi)) + 2)
+    angs = [a0 + (a1 - a0) * i / (k - 1) for i in range(k)]
+    outer = [(r1 * math.cos(a), r1 * math.sin(a)) for a in angs]
+    inner = [(r0 * math.cos(a), r0 * math.sin(a)) for a in reversed(angs)] if r0 > 0 else [(0.0, 0.0)]
+    return SPoly(outer + inner)
+
+
+def _disc(r: float) -> SPoly:
+    from shapely.geometry import Point
+    return Point(0, 0).buffer(r, quad_segs=32)
+
+
+def _rect_radial(angle_deg: float, r0: float, r1: float, width: float) -> SPoly:
+    from shapely import affinity
+    return affinity.rotate(SPoly([(r0, -width / 2), (r1, -width / 2), (r1, width / 2), (r0, width / 2)]), angle_deg, origin=(0, 0))
+
+
+def _prism2d(poly, h: float, z0: float = 0.0):
+    polys = [poly] if poly.geom_type == "Polygon" else list(poly.geoms)
+    solids = [Pos(0, 0, z0) * extrude(shapely_to_face(q, 0.002), h, dir=(0, 0, 1)) for q in polys if q.area > 1e-4]
+    out = solids[0]
+    for x in solids[1:]:
+        out = out + x
+    return out
+
+
+def if2_collar_radii(P: dict, tier: int):
+    I = P["if2"]
+    ro = I["collar_outer_r"][str(tier)]
+    return ro, ro - I["collar_wall"]
+
+
+def if2_collar(P: dict, tier: int, z0: float, log: list, label: str):
+    """Tube collar on top of a T`tier` pedestal (fits the groove under the layer above), with the key lug at +Y."""
+    I = P["if2"]
+    ro, ri = if2_collar_radii(P, tier)
+    k = I["key"]
+    outer = _disc(ro).union(_rect_radial(k["angle_deg"], ro - 0.3, ro + k["protrusion"], k["width"]))
+    h, c = I["collar_height"], I["collar_top_chamfer"]
+    # lead-in as a 45-degree tapered extrusion of the outer profile: OCCT's chamfer on these
+    # polygonal edges returned a "valid" solid with the wrong volume
+    body = _prism2d(outer, h - c, z0) + Pos(0, 0, z0 + h - c) * extrude(shapely_to_face(outer, 0.002), c, dir=(0, 0, 1), taper=45)
+    return body - _prism2d(_disc(ri), h + 1.0, z0 - 0.5)
+
+
+def if2_groove(P: dict, tier: int, core: bool = True, bump_interference: float | None = None):
+    """(cutter, bumps): the groove that receives a T`tier` collar, opening at z=0 and
+    going up; bumps are added back after the cut."""
+    I = P["if2"]
+    b, k = I["beam"], I["key"]
+    ro, ri = if2_collar_radii(P, tier)
+    R = ro + I["outer_clearance"]
+    depth = I["collar_height"] + I["groove_extra_depth"]
+    cut = _disc(R)
+    if core:
+        cut = cut.difference(_disc(ri - I["inner_clearance"]))
+    cut = cut.union(_rect_radial(k["angle_deg"], R - 0.2, ro + k["protrusion"] + k["clearance"], k["width"] + 2 * k["clearance"]))
+    t, sl = b["thickness"], b["slit"]
+    bi = b["bump_interference"] if bump_interference is None else bump_interference
+    bumps = []
+    for c in b["centre_deg"]:
+        span = b["length"] / (R + t / 2)
+        a0 = math.radians(c) - span / 2
+        a1 = a0 + span
+        cutw = b["free_end_cut"] / R
+        cut = cut.union(_sector(R + t, R + t + sl, a0, a1 + cutw))       # slit behind the beam
+        cut = cut.union(_sector(R - 0.05, R + t + sl, a1, a1 + cutw))    # free end
+        bumps.append(_sector(ro - bi, R + 0.02, a1 - b["bump_arc"] / R, a1))
+    from shapely.ops import unary_union
+    cutter = _prism2d(cut, depth + 0.01, -0.01)
+    bump_solid = _prism2d(unary_union(bumps), b["bump_height"], depth - b["bump_height"]) if bi > 0 else None
+    return cutter, bump_solid
+
+
+def if2_dot(P: dict, inradius: float, z: float, pocket: bool = False):
+    """Tier dot on the front flat (-Y). pocket=True returns the (slightly longer) cutter."""
+    d = P["if2"]["dot"]
+    ln = d["depth"] + (1.0 if pocket else 0.0)
+    yc = -inradius + d["depth"] - ln / 2
+    return Pos(0, yc, z) * Rot(90, 0, 0) * Cylinder(d["diameter"] / 2, ln)
+
+
+def if2_layer_dot_frame(P: dict, variant: dict, layer: str):
+    """(inradius of the front flat, dot centre z) for 'base', 't2' or 't3'."""
+    p, d = P["piece"], P["if2"]["dot"]
+    if layer == "base":
+        e = variant["base_edge"]
+        inset = e.get("body_inset", 0.0) if e["kind"] == "turned" else 0.0
+        return p["base_af"] / 2 - inset, d["z_base"]
+    return p[f"{layer}_af"] / 2, d["z_pedestal"]
+
+
+def if2_base(P: dict, variant: dict, log: list, bump_interference: float | None = None):
+    p = P["piece"]
+    s = octagon_body(p["base_af"], p["base_height"], variant["base_edge"], P, log, "if2 base")
+    cutter, bumps = if2_groove(P, 2, core=True, bump_interference=bump_interference)
+    s = s - cutter
+    if bumps is not None:
+        s = s + bumps
+    s = s - slot_cutter(P, p["base_height"])
+    r, z = if2_layer_dot_frame(P, variant, "base")
+    return s - if2_dot(P, r, z, pocket=True)
+
+
+def if2_pedestal(P: dict, variant: dict, tier: int, log: list, hollow: bool):
+    p = P["piece"]
+    af, h = p[f"t{tier}_af"], p[f"t{tier}_height"]
+    front = round((P["if2"]["dot"]["angle_deg"] % 360) / 45) % 8
+    s = octagon_body(af, h, variant["pedestal_edge"], P, log, f"if2 t{tier}", skip_flutes=(front,))
+    s = s + if2_collar(P, tier, h, log, f"if2 t{tier}")
+    if tier == 2:
+        cutter, bumps = if2_groove(P, 3, core=not hollow)
+        s = s - cutter
+        if bumps is not None:
+            s = s + bumps
+    if hollow:  # ring: open through the collar bore
+        _, ri = if2_collar_radii(P, tier)
+        s = s - _prism2d(_disc(ri), h + P["if2"]["collar_height"] + 0.2, -0.1)
+    r, z = if2_layer_dot_frame(P, variant, f"t{tier}")
+    return s - if2_dot(P, r, z, pocket=True)
+
+
+def if2_dot_part(P: dict, variant: dict, layer: str):
+    r, z = if2_layer_dot_frame(P, variant, layer)
+    return if2_dot(P, r, z)
 
 
 # ---------------------------------------------------------------- glyphs
@@ -372,6 +508,96 @@ def board_tile_counts(rmap: list, n: int = 10) -> dict:
     return out
 
 
+# ---------------------------------------------------------------- board sections
+SECTION_NAMES = {(0, 0): "sw", (1, 0): "s", (2, 0): "se", (0, 1): "w", (1, 1): "c", (2, 1): "e", (0, 2): "nw", (1, 2): "n", (2, 2): "ne"}
+
+
+def section_bounds(P: dict):
+    """[(name, x0, x1, y0, y1)] for the nine printed board sections (squares [x0,x1) x [y0,y1))."""
+    b = P["board"]["sections"]["bounds"]
+    return [(SECTION_NAMES[(i, j)], b[i], b[i + 1], b[j], b[j + 1]) for j in range(3) for i in range(3)]
+
+
+def section_centre(P: dict, x0, x1, y0, y1):
+    """Board-frame centre of a section (square (x, y) is centred at ((x+.5)p, (y+.5)p))."""
+    pt = P["board"]["pitch"]
+    return ((x0 + x1) / 2 * pt, (y0 + y1) / 2 * pt)
+
+
+def _vgroove(length: float, depth: float, along_x: bool, x: float, y: float, z_top: float):
+    a = depth * math.sqrt(2)
+    b = Box(a, length, a) if not along_x else Box(length, a, a)
+    r = Rot(0, 45, 0) if not along_x else Rot(45, 0, 0)
+    return Pos(x, y, z_top) * r * b
+
+
+def board_section(P: dict, variant: dict, x0: int, x1: int, y0: int, y1: int, rmap: list, log: list, label: str, n: int = 10):
+    """One printed board section: squares [x0,x1) x [y0,y1) as a single solid, centred
+    on its own centre. Tabs (E/N) and sockets (W/S) only where another section
+    meets it; V-grooves mark the squares inside; studs only on squares that start
+    with crystals; the variant's tile edge on the outside and its court groove per square."""
+    bd = P["board"]
+    pt, h, half = bd["pitch"], bd["tile_thickness"], bd["pitch"] / 2
+    edge = variant["tile_edge"]
+    cx, cy = section_centre(P, x0, x1, y0, y1)
+    W, H = (x1 - x0) * pt - (pt - bd["tile_size"]), (y1 - y0) * pt - (pt - bd["tile_size"])
+    f = Rectangle(W, H)
+    tab, sock = _tab_face(P), _tab_face(P, bd["tab"]["clearance_per_side"])
+    o = bd["tab"]["offset_along_edge"]
+    for x in range(x0, x1):
+        for y in range(y0, y1):
+            sx, sy = (x + 0.5) * pt - cx, (y + 0.5) * pt - cy
+            if x == x1 - 1 and x1 < n:
+                f = f + Pos(sx + half, sy + o) * tab
+            if y == y1 - 1 and y1 < n:
+                f = f + Pos(sx + o, sy + half) * Rot(0, 0, 90) * tab
+            if x == x0 and x0 > 0:
+                f = f - Pos(sx - half, sy + o) * sock
+            if y == y0 and y0 > 0:
+                f = f - Pos(sx + o, sy - half) * Rot(0, 0, 90) * sock
+    s = extrude(f, h)
+    kind = edge["kind"]
+    s = safe_edge_op(s, top_edges(s, h), "fillet" if kind == "fillet" else "chamfer", edge["top"], label + " top", log)
+    s = safe_edge_op(s, bottom_edges(s), "chamfer", bd["bottom_chamfer"], label + " bottom", log)
+    g = bd["sections"]["seam_groove"]
+    for x in range(x0 + 1, x1):
+        s = s - _vgroove(H + 2, g["depth"], False, x * pt - cx, 0, h)
+    for y in range(y0 + 1, y1):
+        s = s - _vgroove(W + 2, g["depth"], True, 0, y * pt - cy, h)
+    for x in range(x0, x1):
+        for y in range(y0, y1):
+            sx, sy = (x + 0.5) * pt - cx, (y + 0.5) * pt - cy
+            if kind == "grooved":
+                a = bd["tile_size"] / 2 - edge["groove_inset"]
+                wdt = edge["groove_width"]
+                ring = Rectangle(2 * a, 2 * a) - Rectangle(2 * (a - wdt), 2 * (a - wdt))
+                s = s - Pos(sx, sy, h - edge["groove_depth"]) * extrude(ring, edge["groove_depth"] + 0.01)
+            if rmap[y * n + x] > 0:
+                for (dx, dy) in stud_positions(P):
+                    s = s + stud(P, sx + dx, sy + dy, h)
+    return s
+
+
+def section_colour_regions(P: dict, x0, x1, y0, y1, colour_of) -> dict:
+    """{colour: shapely region} splitting a section by square colour; cells reach
+    15 mm past the outline so each tab belongs to its own square."""
+    from shapely.geometry import box as sbox
+    from shapely.ops import unary_union
+    pt = P["board"]["pitch"]
+    cx, cy = section_centre(P, x0, x1, y0, y1)
+    cells: dict = {}
+    for x in range(x0, x1):
+        for y in range(y0, y1):
+            lx0, lx1 = x * pt - cx - (15 if x == x0 else 0), (x + 1) * pt - cx + (15 if x == x1 - 1 else 0)
+            ly0, ly1 = y * pt - cy - (15 if y == y0 else 0), (y + 1) * pt - cy + (15 if y == y1 - 1 else 0)
+            cells.setdefault(colour_of(x, y), []).append(sbox(lx0, ly0, lx1, ly1))
+    return {c: unary_union(v) for c, v in cells.items()}
+
+
+def split_by_regions(solid, regions: dict, h: float):
+    return {c: solid & _prism2d(r, h + 10, -5) for c, r in regions.items()}
+
+
 # ---------------------------------------------------------------- crystals
 def crystal(P: dict, socket_clearance: float | None = None, notches: int = 0):
     c = P["crystal"]
@@ -491,3 +717,36 @@ def coupon_tile_pair(P: dict, clearance: float | None, label: str):
     s = chamfer(bottom_edges(s), bd["bottom_chamfer"])
     s = engrave(s, label, 3.4, 0, -5.5, h, 0.5)
     return s
+
+
+def square_colour(P: dict, scheme: str, x: int, y: int, rmap: list, n: int = 10) -> str:
+    """Colour of board square (x, y) under a board scheme ('gray' or 'gradient'); homes keep the army colours."""
+    if (x, y) == (0, 0):
+        return "ivory"
+    if (x, y) == (n - 1, n - 1):
+        return "charcoal"
+    return P["board"]["schemes"][scheme][str(rmap[y * n + x])]
+
+
+def coupon_if2_socket(P: dict, bump_interference: float, notches: int):
+    """IF2 base-groove sweep: a 25 mm octagon block (printed like a base) whose groove
+    bumps preload a T2 collar by `bump_interference`; notches = sweep index."""
+    I = P["if2"]
+    h = I["collar_height"] + I["groove_extra_depth"] + 1.4
+    s = prism(octagon_face(P["piece"]["base_af"]), h)
+    s = chamfer(bottom_edges(s), 0.4)
+    cutter, bumps = if2_groove(P, 2, core=True, bump_interference=bump_interference)
+    s = s - cutter
+    if bumps is not None:
+        s = s + bumps
+    for i in range(notches):
+        a = -math.pi / 2 + (i - (notches - 1) / 2) * 0.28
+        s = s - Pos(12.5 * math.cos(a), 12.5 * math.sin(a), 0) * Cylinder(0.9, h, align=MIN)
+    return s
+
+
+def coupon_if2_collar(P: dict, log: list):
+    """T2-size IF2 collar key on a thin octagon plate (the part the socket sweep is tested with)."""
+    s = prism(octagon_face(P["piece"]["t2_af"]), 2.0)
+    s = chamfer(bottom_edges(s), 0.4)
+    return s + if2_collar(P, 2, 2.0, log, "coupon collar")

@@ -134,3 +134,63 @@ cube's half-width is added (22 + 3.5 = 25.5 > 24.8), so it **requires about 52 m
 - Colour meanings are identical: ten filaments, with metal in copper.
 - Optional embellishments (for example engraved tier marks) are **not** in the required
   inventory. None are modelled.
+
+## Addendum 2026-09-30 — IF2 joints, tier dots, board colour and sections
+
+Requested after v1: a Lego-like piece joint, a comparison of solid pedestals with rings, and
+turquoise tier dots, for **Turned Court only**. Two variants were added. They reuse Turned
+Court's glyphs, tiles and silhouette: `turned-keyed` has solid pedestals and `turned-ring` has
+hollow ones. Both use interface **IF2** (`params.json → if2`). IF1 is unchanged for Facet,
+Pebble and Turned Court.
+
+**Why IF1 was not Lego-like.** Its 1.6 mm boss is a short engagement, so a sideways nudge tips
+the layer off. Its crush ribs deform plastically, so the fit loosens over repeated promotions.
+Lego's clutch comes from elastic wall deflection of a few hundredths of a millimetre held to
+moulding precision. FDM varies by about ±0.1 mm, so it needs compliance with more travel that
+stays elastic.
+
+**IF2 construction.**
+
+| Feature | Value | Why |
+|---|---|---|
+| Collar (tube) on top of T2 / T3 | outer R 8.75 / 10.5 mm, wall 1.45, height 2.8, 0.5 chamfer | Engagement is 1.75× IF1's. The two sizes differ per tier, so a base cannot seat on a T3 (177 mm³ collision). |
+| Annular groove under base / T2 | outer R = collar + 0.15; inner core R = collar bore − 0.3; depth 3.0 | Annular, so the core under the glyph slot stays solid. The core clears the slot by more than 2 mm, where IF1 left a 0.9 mm floor. |
+| Flex beams | 4 per groove at the diagonals: 0.9 thick, 7 mm long, 0.6 mm slit behind, free end cut | They bend **in the layer plane**, so the bending strain runs along the extrusions. Strain at 0.15 mm deflection is about 3tδ/2L² ≈ 0.4 %, well inside PLA's elastic range, so they spring back instead of wearing. |
+| Bumps | at each beam's free end, 2.2 mm arc, 0.15 mm preload, over the deepest 1.4 mm of the groove | Friction is felt only over the last ~1.2 mm, so the joint starts easy and then seats firmly. Estimated normal force ≈ 0.8 N per beam (E ≈ 3.5 GPa), so pull-off at μ≈0.3 is ≈ 1 N for 4 beams, about 10× a full T3's weight. **Estimate only; the coupon sweep measures it.** |
+| Key | lug 2.4 × 0.9 mm at the back (+Y), 0.15 clearance notch | Each joint fits one way only, so glyph, base, T2 and T3 share one front. |
+| Tier dot | Ø2.6 × 0.8 mm flush inlay on the front flat; base at z 4.6, pedestals at z 2.0; the front flute is omitted on pedestals | T1 shows 1 dot, T2 2 and T3 3, in a column under the glyph. PLA Basic Turquoise, opaque so it reads the same on ivory and charcoal. PETG was avoided because it bonds poorly to PLA. |
+| Ring variant | T2 / T3 open through the collar bore; the T2 groove has no core | T2 −36 %, T3 −28 % volume. No large bridged ceilings. Lighter, so it tips more easily. A T2 collar sits loosely inside another T2 ring (wrong use; it is not gripped). |
+
+**Printing.** Each IF2 layer is one two-part object: the body plus its dot. The 3MF carries
+Bambu `model_settings.config` part-to-filament slots. The dots need filament changes on about
+26 layers of an army plate (z 0.7–5.9 mm: pedestal dots low, base dots higher).
+
+**Board colour by starting crystals (mock-up).** Five neutrals sit between the two army
+colours, all Bambu catalogue colours:
+
+| Squares | Colour |
+|---|---|
+| A1 home | PLA Matte Ivory White (unchanged) |
+| 16 crystals | PLA Matte Bone White |
+| 8 crystals | PLA Matte Ash Gray (today's board gray) |
+| 4 crystals | PLA Matte Nardo Gray |
+| 0 crystals | PLA Basic Dark Gray (no matte dark gray exists between Nardo and Charcoal) |
+| J10 home | PLA Matte Charcoal (unchanged) |
+
+The homes stay the ends of the scale, so the armies need no change. The 0-crystal squares are
+also the studless flat tiles.
+
+**Board in nine sections.** The board prints as four 3 × 3 corners, four 3 × 4 edges and one
+4 × 4 centre, in both the gray and gradient schemes. Each section is one solid:
+- Tabs and sockets appear only where it meets another section.
+- 0.5 mm V-grooves mark the squares inside it.
+- Studs appear only on squares that start with crystals.
+- Each variant's own tile edge is used, including Turned Court's court groove on every square.
+
+For colour, a section splits into per-square colour parts, which make one multi-part object.
+The largest section (the centre) is 209 mm across with its tabs, inside the H2C's 300 × 320
+area. Trade-offs:
+- Fewer seams (9 sections against 100 tiles) and much faster set-up.
+- A misprint costs a whole section.
+- The gradient scheme makes every section a multi-colour print.
+- A section is not reconfigurable into other maps.

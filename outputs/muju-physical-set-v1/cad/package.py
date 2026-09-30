@@ -24,6 +24,7 @@ FILL = 0.80  # assumed effective fill: small parts at 3 walls + 15-20 % infill a
 _SL = OUT / "validation" / "slicer" / "slicer-checks.json"
 SLICE_DOC = json.loads(_SL.read_text()) if _SL.exists() else {"meta": {}, "plates": []}
 SLICE, SLICE_META = SLICE_DOC["plates"], SLICE_DOC["meta"]
+VARIANTS = list(P["variants"])
 PRICE_PER_KG_ASSUMED = 20.0  # USD, placeholder -- store prices were NOT verified (research/filament-shortlist.md)
 SPOOL_KG = 1.0
 
@@ -43,7 +44,7 @@ def bom():
             vol = p["geometry"]["brep_volume_mm3"] / 1000.0
             dens = DENSITY.get(inst["color"], 1.24)
             rows.append({
-                "variant": p["variant"], "production": p["production"], "part_id": p["id"], "family": p["family"],
+                "variant": p["variant"], "production": p["production"], "part_id": p["id"], "family": p["family"], "inlay_of": p.get("inlay_of", ""), "alias_of": p.get("alias_of", ""),
                 "color": inst["color"], "material": material(inst["color"]), "filament_lead": inst["filament_lead"],
                 "qty": inst["qty_per_set"], "bbox_mm": "x".join(f"{v:.1f}" for v in p["geometry"]["bbox_mm"]),
                 "solid_volume_cm3_each": round(vol, 3),
@@ -72,7 +73,7 @@ def main():
              "  during research (see `research/filament-shortlist.md`), so no price is quoted as current.",
              "- Print time and sliced mass come from `validation/slicer/slicer-checks.json` (`cad/slice_check.py`)." if SLICE else
              "- Print time: **not estimated**. Run `cad/slice_check.py` (Bambu Studio, H2C profile) to obtain it.", ""]
-    for v in ("facet", "pebble", "turned"):
+    for v in VARIANTS:
         vr = [r for r in rows if r["production"] and r["variant"] in (v, "shared")]
         tot = sum(r["qty"] for r in vr)
         lines += [f"## {P['variants'][v]['name']} (`{v}`) — {tot} printed objects", "",
@@ -97,7 +98,7 @@ def main():
             lines += [f"**Slicer totals ({len(sl)} plates, Bambu Studio {SLICE_META['bambu_studio']}):** "
                       f"{sum(r['time_h'] for r in sl):.1f} h printing, {sum(r['filament_g'] for r in sl):.0f} g filament "
                       "(excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.", ""]
-    cal = [r for r in rows if not r["production"]]
+    cal = [r for r in rows if r["family"] == "coupon"]
     lines += ["## Calibration coupons (separate from production inventory)", "",
               "| Part | Colour | Qty | Est. g total |", "|---|---|---:|---:|"]
     for r in cal:
@@ -111,14 +112,24 @@ def main():
     dl = OUT / "downloads"
     dl.mkdir(exist_ok=True)
     pkgs = {}
-    for v in ("facet", "pebble", "turned"):
+    for v in VARIANTS:
         z = dl / f"muju-physical-{v}.zip"
         with zipfile.ZipFile(z, "w", zipfile.ZIP_DEFLATED) as zf:
             for p in MAN["parts"]:
                 if p["production"] and p["variant"] in (v, "shared"):
                     zf.write(OUT / p["geometry"]["stl"], f"stl/{Path(p['geometry']['stl']).name}")
+            par = P["variants"][v].get("extends")
             for f in sorted((pr / v / "plates").glob("*.3mf")):
                 zf.write(f, f"plates-3mf/{f.name}")
+            if par:  # glyphs, tiles and crystals print from the parent variant's plates
+                for f in sorted((pr / par / "plates").glob("*.3mf")):
+                    if "-army-" not in f.name and "-home-" not in f.name and "-ivory-" not in f.name and "-charcoal-" not in f.name:
+                        zf.write(f, f"plates-3mf/{f.name}")
+            for f in sorted((pr / (par or v) / "sections").glob("*.3mf")):
+                zf.write(f, f"plates-3mf-board-sections/{f.name}")
+            for p in MAN["parts"]:
+                if p["family"] == "board-section" and p["variant"] == (par or v):
+                    zf.write(OUT / p["geometry"]["stl"], f"stl-board-sections/{Path(p['geometry']['stl']).name}")
             for f in ("README.md", "BOM.md", "BOM.csv", "PHYSICAL-TEST-SEQUENCE.md"):
                 if (pr / f).exists():
                     zf.write(pr / f, f)
@@ -129,7 +140,7 @@ def main():
     z = dl / "muju-physical-calibration-IF1.zip"
     with zipfile.ZipFile(z, "w", zipfile.ZIP_DEFLATED) as zf:
         for p in MAN["parts"]:
-            if not p["production"]:
+            if p["family"] == "coupon":
                 zf.write(OUT / p["geometry"]["stl"], f"stl/{Path(p['geometry']['stl']).name}")
         for f in sorted((pr / "calibration").glob("*.3mf")):
             zf.write(f, f"plates-3mf/{f.name}")

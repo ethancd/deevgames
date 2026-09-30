@@ -29,6 +29,9 @@ switch (scene) {
   case 'resources': items = [0, 4, 8, 16].flatMap((n, i) => S.tileWithStacks(D, v, n / 4, (i - 1.5) * 58, 0)); frame = { dir: [0.3, 0.8, 1.2], pad: 0.8 }; break;
   case 'tiles': items = S.tileJoinItems(D, v, 8); frame = { dir: [0.3, 1.3, 0.9], pad: 0.85 }; break;
   case 'crystals': items = S.crystalStackItems(D); frame = { dir: [0.4, 0.6, 1.2], pad: 0.85 }; break;
+  case 'gradient': items = S.boardGradientItems(D, v); frame = { dir: [0.0, 1.35, 1.0], pad: 0.62 }; break;
+  case 'sections-gray': items = S.sectionItems(D, v, 'gray', 8); frame = { dir: [0.0, 1.35, 1.0], pad: 0.62 }; break;
+  case 'sections-gradient': items = S.sectionItems(D, v, 'gradient', 8); frame = { dir: [0.0, 1.35, 1.0], pad: 0.62 }; break;
   case 'part': items = S.partItems(D, q.get('id'), q.get('color')); frame = { dir: iso, pad: 1.0 }; break;
 }
 const explode = scene === 't3-exploded' ? 1 : 0;

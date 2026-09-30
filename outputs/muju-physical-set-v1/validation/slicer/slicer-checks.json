@@ -36,6 +36,7 @@
    "within_both_head_area": true,
    "time_h": 0.69,
    "filament_g": 23.7,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -59,6 +60,7 @@
    "within_both_head_area": true,
    "time_h": 0.61,
    "filament_g": 7.0,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -82,6 +84,55 @@
    "within_both_head_area": true,
    "time_h": 0.42,
    "filament_g": 16.5,
+   "multi_part": false,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/calibration/cal-if2-charcoal-plate01.3mf",
+   "colours": [
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 5,
+   "objects_sliced": 5,
+   "max_height_mm": 4.8,
+   "layout_span_mm": [
+    61.4,
+    87.8
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.41,
+   "filament_g": 10.9,
+   "multi_part": false,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/calibration/cal-if2-ivory-plate01.3mf",
+   "colours": [
+    "ivory"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 5,
+   "objects_sliced": 5,
+   "max_height_mm": 4.8,
+   "layout_span_mm": [
+    61.4,
+    87.8
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.41,
+   "filament_g": 10.9,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -105,6 +156,7 @@
    "within_both_head_area": true,
    "time_h": 0.69,
    "filament_g": 23.7,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -129,6 +181,7 @@
    "within_both_head_area": true,
    "time_h": 0.11,
    "filament_g": 3.7,
+   "multi_part": false,
    "note": "multi-colour plate sliced with the first colour's filament for time/mass only",
    "ok": true
   },
@@ -152,6 +205,7 @@
    "within_both_head_area": true,
    "time_h": 5.67,
    "filament_g": 195.5,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -175,6 +229,7 @@
    "within_both_head_area": true,
    "time_h": 6.05,
    "filament_g": 68.3,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -198,6 +253,7 @@
    "within_both_head_area": true,
    "time_h": 6.04,
    "filament_g": 68.2,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -221,6 +277,7 @@
    "within_both_head_area": true,
    "time_h": 0.52,
    "filament_g": 13.5,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -244,6 +301,7 @@
    "within_both_head_area": true,
    "time_h": 2.78,
    "filament_g": 129.5,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -267,6 +325,7 @@
    "within_both_head_area": true,
    "time_h": 2.85,
    "filament_g": 127.6,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -290,6 +349,7 @@
    "within_both_head_area": true,
    "time_h": 2.85,
    "filament_g": 127.4,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -313,6 +373,7 @@
    "within_both_head_area": true,
    "time_h": 2.85,
    "filament_g": 127.4,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -336,6 +397,7 @@
    "within_both_head_area": true,
    "time_h": 2.76,
    "filament_g": 126.7,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -357,8 +419,9 @@
     241.6
    ],
    "within_both_head_area": true,
-   "time_h": 3.02,
+   "time_h": 3.01,
    "filament_g": 138.5,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -382,6 +445,7 @@
    "within_both_head_area": true,
    "time_h": 5.69,
    "filament_g": 196.3,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -405,6 +469,7 @@
    "within_both_head_area": true,
    "time_h": 0.57,
    "filament_g": 12.1,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -428,6 +493,7 @@
    "within_both_head_area": true,
    "time_h": 0.82,
    "filament_g": 20.9,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -451,6 +517,7 @@
    "within_both_head_area": true,
    "time_h": 0.76,
    "filament_g": 21.5,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -474,6 +541,7 @@
    "within_both_head_area": true,
    "time_h": 0.55,
    "filament_g": 14.1,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -497,7 +565,451 @@
    "within_both_head_area": true,
    "time_h": 0.58,
    "filament_g": 20.3,
+   "multi_part": false,
    "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gradient-c-plate01.3mf",
+   "colours": [
+    "tile4",
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.34,
+   "filament_g": 122.6,
+   "multi_part": true,
+   "note": "multi-colour (tile4, gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gradient-e-plate01.3mf",
+   "colours": [
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.74,
+   "filament_g": 91.1,
+   "multi_part": true,
+   "note": "multi-colour (tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gradient-n-plate01.3mf",
+   "colours": [
+    "tile4",
+    "tile0"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.67,
+   "filament_g": 90.6,
+   "multi_part": true,
+   "note": "multi-colour (tile4, tile0): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gradient-ne-plate01.3mf",
+   "colours": [
+    "tile4",
+    "gray",
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.3,
+   "filament_g": 67.9,
+   "multi_part": true,
+   "note": "multi-colour (tile4, gray, charcoal): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gradient-nw-plate01.3mf",
+   "colours": [
+    "tile4",
+    "tile16"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.32,
+   "filament_g": 69.1,
+   "multi_part": true,
+   "note": "multi-colour (tile4, tile16): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gradient-s-plate01.3mf",
+   "colours": [
+    "tile0",
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.7,
+   "filament_g": 87.3,
+   "multi_part": true,
+   "note": "multi-colour (tile0, tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gradient-se-plate01.3mf",
+   "colours": [
+    "tile4",
+    "tile16"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.32,
+   "filament_g": 69.0,
+   "multi_part": true,
+   "note": "multi-colour (tile4, tile16): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gradient-sw-plate01.3mf",
+   "colours": [
+    "ivory",
+    "gray",
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.34,
+   "filament_g": 70.3,
+   "multi_part": true,
+   "note": "multi-colour (ivory, gray, tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gradient-w-plate01.3mf",
+   "colours": [
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.77,
+   "filament_g": 92.9,
+   "multi_part": true,
+   "note": "multi-colour (tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gray-c-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.34,
+   "filament_g": 122.7,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gray-e-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.74,
+   "filament_g": 91.1,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gray-n-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.67,
+   "filament_g": 90.6,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gray-ne-plate01.3mf",
+   "colours": [
+    "gray",
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.3,
+   "filament_g": 67.9,
+   "multi_part": true,
+   "note": "multi-colour (gray, charcoal): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gray-nw-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.32,
+   "filament_g": 69.1,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gray-s-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.7,
+   "filament_g": 92.3,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gray-se-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.32,
+   "filament_g": 69.0,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gray-sw-plate01.3mf",
+   "colours": [
+    "ivory",
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.34,
+   "filament_g": 70.3,
+   "multi_part": true,
+   "note": "multi-colour (ivory, gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/facet/sections/facet-sections-gray-w-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.77,
+   "filament_g": 92.9,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
    "ok": true
   },
   {
@@ -520,6 +1032,7 @@
    "within_both_head_area": true,
    "time_h": 5.26,
    "filament_g": 194.8,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -543,6 +1056,7 @@
    "within_both_head_area": true,
    "time_h": 6.05,
    "filament_g": 68.3,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -566,6 +1080,7 @@
    "within_both_head_area": true,
    "time_h": 6.04,
    "filament_g": 68.2,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -589,6 +1104,7 @@
    "within_both_head_area": true,
    "time_h": 0.52,
    "filament_g": 13.6,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -612,6 +1128,7 @@
    "within_both_head_area": true,
    "time_h": 2.76,
    "filament_g": 129.6,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -635,6 +1152,7 @@
    "within_both_head_area": true,
    "time_h": 2.82,
    "filament_g": 127.7,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -658,6 +1176,7 @@
    "within_both_head_area": true,
    "time_h": 2.82,
    "filament_g": 127.5,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -681,6 +1200,7 @@
    "within_both_head_area": true,
    "time_h": 2.82,
    "filament_g": 127.5,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -704,6 +1224,7 @@
    "within_both_head_area": true,
    "time_h": 2.73,
    "filament_g": 126.8,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -727,6 +1248,7 @@
    "within_both_head_area": true,
    "time_h": 2.99,
    "filament_g": 138.6,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -750,6 +1272,7 @@
    "within_both_head_area": true,
    "time_h": 5.28,
    "filament_g": 195.6,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -773,6 +1296,7 @@
    "within_both_head_area": true,
    "time_h": 0.57,
    "filament_g": 12.1,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -796,6 +1320,7 @@
    "within_both_head_area": true,
    "time_h": 0.82,
    "filament_g": 20.9,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -819,6 +1344,7 @@
    "within_both_head_area": true,
    "time_h": 0.76,
    "filament_g": 21.6,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -842,6 +1368,7 @@
    "within_both_head_area": true,
    "time_h": 0.55,
    "filament_g": 14.1,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -865,6 +1392,646 @@
    "within_both_head_area": true,
    "time_h": 0.58,
    "filament_g": 20.4,
+   "multi_part": false,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gradient-c-plate01.3mf",
+   "colours": [
+    "tile4",
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.34,
+   "filament_g": 122.8,
+   "multi_part": true,
+   "note": "multi-colour (tile4, gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gradient-e-plate01.3mf",
+   "colours": [
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.74,
+   "filament_g": 91.3,
+   "multi_part": true,
+   "note": "multi-colour (tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gradient-n-plate01.3mf",
+   "colours": [
+    "tile4",
+    "tile0"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.67,
+   "filament_g": 90.7,
+   "multi_part": true,
+   "note": "multi-colour (tile4, tile0): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gradient-ne-plate01.3mf",
+   "colours": [
+    "tile4",
+    "gray",
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.3,
+   "filament_g": 67.9,
+   "multi_part": true,
+   "note": "multi-colour (tile4, gray, charcoal): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gradient-nw-plate01.3mf",
+   "colours": [
+    "tile4",
+    "tile16"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.32,
+   "filament_g": 69.1,
+   "multi_part": true,
+   "note": "multi-colour (tile4, tile16): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gradient-s-plate01.3mf",
+   "colours": [
+    "tile0",
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.7,
+   "filament_g": 87.3,
+   "multi_part": true,
+   "note": "multi-colour (tile0, tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gradient-se-plate01.3mf",
+   "colours": [
+    "tile4",
+    "tile16"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.32,
+   "filament_g": 69.1,
+   "multi_part": true,
+   "note": "multi-colour (tile4, tile16): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gradient-sw-plate01.3mf",
+   "colours": [
+    "ivory",
+    "gray",
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.35,
+   "filament_g": 70.5,
+   "multi_part": true,
+   "note": "multi-colour (ivory, gray, tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gradient-w-plate01.3mf",
+   "colours": [
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.77,
+   "filament_g": 93.0,
+   "multi_part": true,
+   "note": "multi-colour (tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gray-c-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.34,
+   "filament_g": 122.8,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gray-e-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.74,
+   "filament_g": 91.3,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gray-n-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.67,
+   "filament_g": 90.7,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gray-ne-plate01.3mf",
+   "colours": [
+    "gray",
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.3,
+   "filament_g": 67.9,
+   "multi_part": true,
+   "note": "multi-colour (gray, charcoal): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gray-nw-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.32,
+   "filament_g": 69.1,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gray-s-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.7,
+   "filament_g": 92.4,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gray-se-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.32,
+   "filament_g": 69.1,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gray-sw-plate01.3mf",
+   "colours": [
+    "ivory",
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.35,
+   "filament_g": 70.5,
+   "multi_part": true,
+   "note": "multi-colour (ivory, gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/pebble/sections/pebble-sections-gray-w-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.77,
+   "filament_g": 93.0,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned-keyed/plates/turned-keyed-charcoal-army-plate01.3mf",
+   "colours": [
+    "charcoal",
+    "dot"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 72,
+   "objects_sliced": 72,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    289.0,
+    269.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 7.97,
+   "filament_g": 209.6,
+   "multi_part": true,
+   "note": "multi-colour (charcoal, dot): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned-keyed/plates/turned-keyed-charcoal-home-plate01.3mf",
+   "colours": [
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    49.6,
+    49.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.2,
+   "filament_g": 7.9,
+   "multi_part": false,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned-keyed/plates/turned-keyed-ivory-army-plate01.3mf",
+   "colours": [
+    "ivory",
+    "dot"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 72,
+   "objects_sliced": 72,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    289.0,
+    269.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 7.97,
+   "filament_g": 209.6,
+   "multi_part": true,
+   "note": "multi-colour (ivory, dot): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned-keyed/plates/turned-keyed-ivory-home-plate01.3mf",
+   "colours": [
+    "ivory"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    58.9,
+    58.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.21,
+   "filament_g": 8.8,
+   "multi_part": false,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned-ring/plates/turned-ring-charcoal-army-plate01.3mf",
+   "colours": [
+    "charcoal",
+    "dot"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 72,
+   "objects_sliced": 72,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    289.0,
+    269.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 7.76,
+   "filament_g": 192.4,
+   "multi_part": true,
+   "note": "multi-colour (charcoal, dot): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned-ring/plates/turned-ring-charcoal-home-plate01.3mf",
+   "colours": [
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    49.6,
+    49.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.2,
+   "filament_g": 7.9,
+   "multi_part": false,
+   "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned-ring/plates/turned-ring-ivory-army-plate01.3mf",
+   "colours": [
+    "ivory",
+    "dot"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 72,
+   "objects_sliced": 72,
+   "max_height_mm": 7.5,
+   "layout_span_mm": [
+    289.0,
+    269.0
+   ],
+   "within_both_head_area": true,
+   "time_h": 7.76,
+   "filament_g": 192.4,
+   "multi_part": true,
+   "note": "multi-colour (ivory, dot): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned-ring/plates/turned-ring-ivory-home-plate01.3mf",
+   "colours": [
+    "ivory"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    58.9,
+    58.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 0.21,
+   "filament_g": 8.8,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -888,6 +2055,7 @@
    "within_both_head_area": true,
    "time_h": 5.9,
    "filament_g": 191.0,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -911,6 +2079,7 @@
    "within_both_head_area": true,
    "time_h": 6.05,
    "filament_g": 68.3,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -934,6 +2103,7 @@
    "within_both_head_area": true,
    "time_h": 6.04,
    "filament_g": 68.2,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -957,6 +2127,7 @@
    "within_both_head_area": true,
    "time_h": 0.52,
    "filament_g": 13.1,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -980,6 +2151,7 @@
    "within_both_head_area": true,
    "time_h": 3.19,
    "filament_g": 135.7,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1003,6 +2175,7 @@
    "within_both_head_area": true,
    "time_h": 3.24,
    "filament_g": 133.5,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1026,6 +2199,7 @@
    "within_both_head_area": true,
    "time_h": 3.25,
    "filament_g": 133.3,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1049,6 +2223,7 @@
    "within_both_head_area": true,
    "time_h": 3.25,
    "filament_g": 133.3,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1072,6 +2247,7 @@
    "within_both_head_area": true,
    "time_h": 3.15,
    "filament_g": 132.6,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1095,6 +2271,7 @@
    "within_both_head_area": true,
    "time_h": 3.43,
    "filament_g": 144.9,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1118,6 +2295,7 @@
    "within_both_head_area": true,
    "time_h": 5.92,
    "filament_g": 191.9,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1141,6 +2319,7 @@
    "within_both_head_area": true,
    "time_h": 0.56,
    "filament_g": 11.6,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1164,6 +2343,7 @@
    "within_both_head_area": true,
    "time_h": 0.8,
    "filament_g": 20.2,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1187,6 +2367,7 @@
    "within_both_head_area": true,
    "time_h": 0.75,
    "filament_g": 20.7,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1210,6 +2391,7 @@
    "within_both_head_area": true,
    "time_h": 0.55,
    "filament_g": 13.6,
+   "multi_part": false,
    "note": "",
    "ok": true
   },
@@ -1233,7 +2415,451 @@
    "within_both_head_area": true,
    "time_h": 0.59,
    "filament_g": 19.9,
+   "multi_part": false,
    "note": "",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gradient-c-plate01.3mf",
+   "colours": [
+    "tile4",
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.68,
+   "filament_g": 127.6,
+   "multi_part": true,
+   "note": "multi-colour (tile4, gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gradient-e-plate01.3mf",
+   "colours": [
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.0,
+   "filament_g": 94.8,
+   "multi_part": true,
+   "note": "multi-colour (tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gradient-n-plate01.3mf",
+   "colours": [
+    "tile4",
+    "tile0"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.93,
+   "filament_g": 94.3,
+   "multi_part": true,
+   "note": "multi-colour (tile4, tile0): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gradient-ne-plate01.3mf",
+   "colours": [
+    "tile4",
+    "gray",
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.49,
+   "filament_g": 70.6,
+   "multi_part": true,
+   "note": "multi-colour (tile4, gray, charcoal): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gradient-nw-plate01.3mf",
+   "colours": [
+    "tile4",
+    "tile16"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.52,
+   "filament_g": 71.9,
+   "multi_part": true,
+   "note": "multi-colour (tile4, tile16): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gradient-s-plate01.3mf",
+   "colours": [
+    "tile0",
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Basic @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.97,
+   "filament_g": 90.8,
+   "multi_part": true,
+   "note": "multi-colour (tile0, tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gradient-se-plate01.3mf",
+   "colours": [
+    "tile4",
+    "tile16"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.52,
+   "filament_g": 71.8,
+   "multi_part": true,
+   "note": "multi-colour (tile4, tile16): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gradient-sw-plate01.3mf",
+   "colours": [
+    "ivory",
+    "gray",
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.55,
+   "filament_g": 73.3,
+   "multi_part": true,
+   "note": "multi-colour (ivory, gray, tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gradient-w-plate01.3mf",
+   "colours": [
+    "tile4"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.04,
+   "filament_g": 96.7,
+   "multi_part": true,
+   "note": "multi-colour (tile4): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gray-c-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.68,
+   "filament_g": 127.6,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gray-e-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.0,
+   "filament_g": 94.8,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gray-n-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.93,
+   "filament_g": 94.3,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gray-ne-plate01.3mf",
+   "colours": [
+    "gray",
+    "charcoal"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.49,
+   "filament_g": 70.6,
+   "multi_part": true,
+   "note": "multi-colour (gray, charcoal): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gray-nw-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    149.6
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.52,
+   "filament_g": 71.8,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gray-s-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    208.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.97,
+   "filament_g": 96.1,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gray-se-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    149.6,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.52,
+   "filament_g": 71.9,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gray-sw-plate01.3mf",
+   "colours": [
+    "ivory",
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    158.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 1.55,
+   "filament_g": 73.3,
+   "multi_part": true,
+   "note": "multi-colour (ivory, gray): geometry sliced with one filament; colour swaps not included",
+   "ok": true
+  },
+  {
+   "plate": "print/turned/sections/turned-sections-gray-w-plate01.3mf",
+   "colours": [
+    "gray"
+   ],
+   "filament_preset": "Bambu PLA Matte @BBL H2C",
+   "infill": "15%",
+   "return_code": 0,
+   "error": "Success.",
+   "warning": "",
+   "objects_expected": 1,
+   "objects_sliced": 1,
+   "max_height_mm": 5.6,
+   "layout_span_mm": [
+    158.9,
+    208.9
+   ],
+   "within_both_head_area": true,
+   "time_h": 2.04,
+   "filament_g": 96.7,
+   "multi_part": true,
+   "note": "multi-colour (gray): geometry sliced with one filament; colour swaps not included",
    "ok": true
   }
  ]

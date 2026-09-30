@@ -27,7 +27,26 @@ def _fmt(v: float) -> str:
     return "0" if s in ("-0", "") else s
 
 
-def write_3mf(path, objects: list[dict], items: list[dict], title: str, materials: list[dict], metadata: dict | None = None):
+def bambu_model_settings(bambu_parts: dict) -> str:
+    """Bambu Studio per-part filament slots: {object_id: (name, [(component_id, part_name, slot)])}.
+    Plain 3MF readers ignore this file; Bambu Studio reads it to assign each part its filament."""
+    out = ['<?xml version="1.0" encoding="UTF-8"?>', '<config>']
+    for oid, (name, comps) in bambu_parts.items():
+        out.append(f'  <object id="{oid}">')
+        out.append(f'    <metadata key="name" value="{escape(name)}"/>')
+        out.append(f'    <metadata key="extruder" value="{comps[0][2]}"/>')
+        for cid, pname, slot in comps:
+            out.append(f'    <part id="{cid}" subtype="normal_part">')
+            out.append(f'      <metadata key="name" value="{escape(pname)}"/>')
+            out.append(f'      <metadata key="extruder" value="{slot}"/>')
+            out.append('    </part>')
+        out.append('  </object>')
+    out.append('</config>\n')
+    return "\n".join(out)
+
+
+def write_3mf(path, objects: list[dict], items: list[dict], title: str, materials: list[dict], metadata: dict | None = None,
+              bambu_parts: dict | None = None):
     """objects: [{id, name, vertices (N,3), faces (M,3), material_index}]
     items: [{object_id, transform (4x4), name?}]
     materials: [{name, hex}] -> one basematerials group (id 1)."""
@@ -44,6 +63,11 @@ def write_3mf(path, objects: list[dict], items: list[dict], title: str, material
         out.append(f'   <base name="{escape(m["name"])}" displaycolor="{m["hex"].upper()}FF"/>')
     out.append('  </basematerials>')
     for o in objects:
+        if "components" in o:  # multi-part object: one component per mesh object (e.g. body + tier-dot inlay)
+            out.append(f'  <object id="{o["id"]}" name="{escape(o["name"])}" type="model">\n   <components>')
+            out.extend(f'    <component objectid="{c}"/>' for c in o["components"])
+            out.append('   </components>\n  </object>')
+            continue
         out.append(f'  <object id="{o["id"]}" name="{escape(o["name"])}" type="model" pid="1" pindex="{o["material_index"]}">')
         out.append('   <mesh>\n    <vertices>')
         out.extend(f'     <vertex x="{_fmt(x)}" y="{_fmt(y)}" z="{_fmt(z)}"/>' for x, y, z in np.asarray(o["vertices"]))
@@ -62,3 +86,5 @@ def write_3mf(path, objects: list[dict], items: list[dict], title: str, material
         z.writestr("[Content_Types].xml", CT)
         z.writestr("_rels/.rels", RELS)
         z.writestr("3D/3dmodel.model", "\n".join(out))
+        if bambu_parts:
+            z.writestr("Metadata/model_settings.config", bambu_model_settings(bambu_parts))

@@ -1,98 +1,249 @@
-variant,production,part_id,family,color,material,filament_lead,qty,bbox_mm,solid_volume_cm3_each,est_mass_g_each,est_mass_g_total,stl
-shared,True,shared.crystal,crystal,crystal,PETG,Bambu PETG Translucent Teal,550,6.0x6.0x7.6,0.208,0.21,116.3,models/shared/stl/crystal.stl
-shared,True,shared.half-crystal,crystal,crystal,PETG,Bambu PETG Translucent Teal,1,6.0x6.0x3.0,0.079,0.08,0.1,models/shared/stl/half-crystal.stl
-shared,False,shared.coupon-glyph-slots,coupon,ivory,PLA,Bambu PLA Matte Ivory White,1,60.0x36.0x7.5,15.003,14.88,14.9,models/shared/stl/coupon-glyph-slots.stl
-shared,False,shared.coupon-glyph-slots,coupon,charcoal,PLA,Bambu PLA Matte Charcoal,1,60.0x36.0x7.5,15.003,14.88,14.9,models/shared/stl/coupon-glyph-slots.stl
-shared,False,shared.coupon-tang-gauge,coupon,fire,PLA,Bambu PLA Basic Red,1,22.0x18.5x4.5,1.493,1.48,1.5,models/shared/stl/coupon-tang-gauge.stl
-shared,False,shared.coupon-tang-gauge,coupon,metal,PLA,Bambu PLA Metal Copper Brown Metallic,1,22.0x18.5x4.5,1.493,1.48,1.5,models/shared/stl/coupon-tang-gauge.stl
-shared,False,shared.coupon-recess-plate,coupon,ivory,PLA,Bambu PLA Matte Ivory White,1,78.0x28.0x3.4,6.185,6.14,6.1,models/shared/stl/coupon-recess-plate.stl
-shared,False,shared.coupon-recess-plate,coupon,charcoal,PLA,Bambu PLA Matte Charcoal,1,78.0x28.0x3.4,6.185,6.14,6.1,models/shared/stl/coupon-recess-plate.stl
-shared,False,shared.coupon-boss-key-r0,coupon,ivory,PLA,Bambu PLA Matte Ivory White,1,22.0x22.0x4.6,1.453,1.44,1.4,models/shared/stl/coupon-boss-key-r0.stl
-shared,False,shared.coupon-boss-key-r0,coupon,charcoal,PLA,Bambu PLA Matte Charcoal,1,22.0x22.0x4.6,1.453,1.44,1.4,models/shared/stl/coupon-boss-key-r0.stl
-shared,False,shared.coupon-boss-key-r10,coupon,ivory,PLA,Bambu PLA Matte Ivory White,1,22.0x22.0x4.6,1.447,1.44,1.4,models/shared/stl/coupon-boss-key-r10.stl
-shared,False,shared.coupon-boss-key-r10,coupon,charcoal,PLA,Bambu PLA Matte Charcoal,1,22.0x22.0x4.6,1.447,1.44,1.4,models/shared/stl/coupon-boss-key-r10.stl
-shared,False,shared.coupon-boss-key-r20,coupon,ivory,PLA,Bambu PLA Matte Ivory White,1,22.0x22.0x4.6,1.441,1.43,1.4,models/shared/stl/coupon-boss-key-r20.stl
-shared,False,shared.coupon-boss-key-r20,coupon,charcoal,PLA,Bambu PLA Matte Charcoal,1,22.0x22.0x4.6,1.441,1.43,1.4,models/shared/stl/coupon-boss-key-r20.stl
-shared,False,shared.coupon-boss-key-r30,coupon,ivory,PLA,Bambu PLA Matte Ivory White,1,22.0x22.0x4.6,1.437,1.43,1.4,models/shared/stl/coupon-boss-key-r30.stl
-shared,False,shared.coupon-boss-key-r30,coupon,charcoal,PLA,Bambu PLA Matte Charcoal,1,22.0x22.0x4.6,1.437,1.43,1.4,models/shared/stl/coupon-boss-key-r30.stl
-shared,False,shared.coupon-stud-strip,coupon,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,40.0x14.0x5.6,2.277,2.26,2.3,models/shared/stl/coupon-stud-strip.stl
-shared,False,shared.coupon-crystal-socket-10,coupon,crystal,PETG,Bambu PETG Translucent Teal,4,6.0x6.0x7.6,0.209,0.21,0.9,models/shared/stl/coupon-crystal-socket-10.stl
-shared,False,shared.coupon-crystal-socket-20,coupon,crystal,PETG,Bambu PETG Translucent Teal,4,6.0x6.0x7.6,0.208,0.21,0.8,models/shared/stl/coupon-crystal-socket-20.stl
-shared,False,shared.coupon-crystal-socket-30,coupon,crystal,PETG,Bambu PETG Translucent Teal,4,6.0x6.0x7.6,0.207,0.21,0.8,models/shared/stl/coupon-crystal-socket-30.stl
-shared,False,shared.coupon-crystal-socket-40,coupon,crystal,PETG,Bambu PETG Translucent Teal,4,6.0x6.0x7.6,0.206,0.21,0.8,models/shared/stl/coupon-crystal-socket-40.stl
-shared,False,shared.coupon-tile-tab,coupon,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x31.3x4.0,4.621,4.58,4.6,models/shared/stl/coupon-tile-tab.stl
-shared,False,shared.coupon-tile-socket-15,coupon,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x22.0x4.0,4.072,4.04,4.0,models/shared/stl/coupon-tile-socket-15.stl
-shared,False,shared.coupon-tile-socket-25,coupon,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x22.0x4.0,4.063,4.03,4.0,models/shared/stl/coupon-tile-socket-25.stl
-shared,False,shared.coupon-tile-socket-35,coupon,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x22.0x4.0,4.053,4.02,4.0,models/shared/stl/coupon-tile-socket-35.stl
-facet,True,facet.glyph-fire,glyph,fire,PLA,Bambu PLA Basic Red,16,12.6x21.3x4.5,0.688,0.68,10.9,models/facet/stl/glyph-fire.stl
-facet,True,facet.glyph-lightning,glyph,lightning,PLA,Bambu PLA Basic Yellow,16,15.9x24.7x4.5,0.614,0.61,9.7,models/facet/stl/glyph-lightning.stl
-facet,True,facet.glyph-water,glyph,water,PLA,Bambu PLA Basic Cobalt Blue,16,15.2x25.0x4.5,1.031,1.02,16.4,models/facet/stl/glyph-water.stl
-facet,True,facet.glyph-shadow,glyph,shadow,PLA,Bambu PLA Basic Purple,16,17.9x24.0x4.5,0.715,0.71,11.4,models/facet/stl/glyph-shadow.stl
-facet,True,facet.glyph-plant,glyph,plant,PLA,Bambu PLA Basic Bambu Green,16,17.3x23.4x4.5,1.09,1.08,17.3,models/facet/stl/glyph-plant.stl
-facet,True,facet.glyph-metal,glyph,metal,PLA,Bambu PLA Metal Copper Brown Metallic,16,21.8x21.0x4.5,1.056,1.05,16.8,models/facet/stl/glyph-metal.stl
-facet,True,facet.base,base,ivory,PLA,Bambu PLA Matte Ivory White,48,25.0x25.0x7.5,3.324,3.3,158.3,models/facet/stl/base.stl
-facet,True,facet.base,base,charcoal,PLA,Bambu PLA Matte Charcoal,48,25.0x25.0x7.5,3.324,3.3,158.3,models/facet/stl/base.stl
-facet,True,facet.t2,pedestal-t2,ivory,PLA,Bambu PLA Matte Ivory White,18,28.5x28.5x5.6,2.596,2.58,46.4,models/facet/stl/t2.stl
-facet,True,facet.t2,pedestal-t2,charcoal,PLA,Bambu PLA Matte Charcoal,18,28.5x28.5x5.6,2.596,2.58,46.4,models/facet/stl/t2.stl
-facet,True,facet.t3,pedestal-t3,ivory,PLA,Bambu PLA Matte Ivory White,6,32.0x32.0x5.6,3.599,3.57,21.4,models/facet/stl/t3.stl
-facet,True,facet.t3,pedestal-t3,charcoal,PLA,Bambu PLA Matte Charcoal,6,32.0x32.0x5.6,3.599,3.57,21.4,models/facet/stl/t3.stl
-facet,True,facet.tile-corner-sw,tile,ivory,PLA,Bambu PLA Matte Ivory White,1,58.9x58.9x5.6,10.344,10.26,10.3,models/facet/stl/tile-corner-sw.stl
-facet,True,facet.tile-edge-s,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x58.9x5.6,10.05,9.97,49.8,models/facet/stl/tile-edge-s.stl
-facet,True,facet.tile-edge-s-flat,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x58.9x4.0,10.001,9.92,29.8,models/facet/stl/tile-edge-s-flat.stl
-facet,True,facet.tile-corner-se,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x58.9x5.6,9.784,9.71,9.7,models/facet/stl/tile-corner-se.stl
-facet,True,facet.tile-edge-w,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,58.9x58.9x5.6,10.05,9.97,79.8,models/facet/stl/tile-edge-w.stl
-facet,True,facet.tile-interior,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),52,58.9x58.9x5.6,9.756,9.68,503.3,models/facet/stl/tile-interior.stl
-facet,True,facet.tile-interior-flat,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),12,58.9x58.9x4.0,9.707,9.63,115.5,models/facet/stl/tile-interior-flat.stl
-facet,True,facet.tile-edge-e,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,49.6x58.9x5.6,9.49,9.41,75.3,models/facet/stl/tile-edge-e.stl
-facet,True,facet.tile-corner-nw,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,58.9x49.6x5.6,9.784,9.71,9.7,models/facet/stl/tile-corner-nw.stl
-facet,True,facet.tile-edge-n,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x49.6x5.6,9.49,9.41,47.1,models/facet/stl/tile-edge-n.stl
-facet,True,facet.tile-edge-n-flat,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x49.6x4.0,9.441,9.36,28.1,models/facet/stl/tile-edge-n-flat.stl
-facet,True,facet.tile-corner-ne,tile,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.6x49.6x5.6,9.224,9.15,9.2,models/facet/stl/tile-corner-ne.stl
-pebble,True,pebble.glyph-fire,glyph,fire,PLA,Bambu PLA Basic Red,16,12.6x21.3x4.5,0.688,0.68,10.9,models/pebble/stl/glyph-fire.stl
-pebble,True,pebble.glyph-lightning,glyph,lightning,PLA,Bambu PLA Basic Yellow,16,15.9x24.7x4.5,0.615,0.61,9.8,models/pebble/stl/glyph-lightning.stl
-pebble,True,pebble.glyph-water,glyph,water,PLA,Bambu PLA Basic Cobalt Blue,16,15.2x25.0x4.5,1.031,1.02,16.4,models/pebble/stl/glyph-water.stl
-pebble,True,pebble.glyph-shadow,glyph,shadow,PLA,Bambu PLA Basic Purple,16,17.9x24.0x4.5,0.716,0.71,11.4,models/pebble/stl/glyph-shadow.stl
-pebble,True,pebble.glyph-plant,glyph,plant,PLA,Bambu PLA Basic Bambu Green,16,17.3x23.4x4.5,1.091,1.08,17.3,models/pebble/stl/glyph-plant.stl
-pebble,True,pebble.glyph-metal,glyph,metal,PLA,Bambu PLA Metal Copper Brown Metallic,16,21.8x21.0x4.5,1.057,1.05,16.8,models/pebble/stl/glyph-metal.stl
-pebble,True,pebble.base,base,ivory,PLA,Bambu PLA Matte Ivory White,48,25.0x25.0x7.5,3.317,3.29,158.0,models/pebble/stl/base.stl
-pebble,True,pebble.base,base,charcoal,PLA,Bambu PLA Matte Charcoal,48,25.0x25.0x7.5,3.317,3.29,158.0,models/pebble/stl/base.stl
-pebble,True,pebble.t2,pedestal-t2,ivory,PLA,Bambu PLA Matte Ivory White,18,28.5x28.5x5.6,2.588,2.57,46.2,models/pebble/stl/t2.stl
-pebble,True,pebble.t2,pedestal-t2,charcoal,PLA,Bambu PLA Matte Charcoal,18,28.5x28.5x5.6,2.588,2.57,46.2,models/pebble/stl/t2.stl
-pebble,True,pebble.t3,pedestal-t3,ivory,PLA,Bambu PLA Matte Ivory White,6,32.0x32.0x5.6,3.59,3.56,21.4,models/pebble/stl/t3.stl
-pebble,True,pebble.t3,pedestal-t3,charcoal,PLA,Bambu PLA Matte Charcoal,6,32.0x32.0x5.6,3.59,3.56,21.4,models/pebble/stl/t3.stl
-pebble,True,pebble.tile-corner-sw,tile,ivory,PLA,Bambu PLA Matte Ivory White,1,58.9x58.9x5.6,10.366,10.28,10.3,models/pebble/stl/tile-corner-sw.stl
-pebble,True,pebble.tile-edge-s,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x58.9x5.6,10.075,9.99,50.0,models/pebble/stl/tile-edge-s.stl
-pebble,True,pebble.tile-edge-s-flat,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x58.9x4.0,10.026,9.95,29.8,models/pebble/stl/tile-edge-s-flat.stl
-pebble,True,pebble.tile-corner-se,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x58.9x5.6,9.806,9.73,9.7,models/pebble/stl/tile-corner-se.stl
-pebble,True,pebble.tile-edge-w,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,58.9x58.9x5.6,10.075,9.99,80.0,models/pebble/stl/tile-edge-w.stl
-pebble,True,pebble.tile-interior,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),52,58.9x58.9x5.6,9.785,9.71,504.7,models/pebble/stl/tile-interior.stl
-pebble,True,pebble.tile-interior-flat,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),12,58.9x58.9x4.0,9.735,9.66,115.9,models/pebble/stl/tile-interior-flat.stl
-pebble,True,pebble.tile-edge-e,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,49.6x58.9x5.6,9.515,9.44,75.5,models/pebble/stl/tile-edge-e.stl
-pebble,True,pebble.tile-corner-nw,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,58.9x49.6x5.6,9.806,9.73,9.7,models/pebble/stl/tile-corner-nw.stl
-pebble,True,pebble.tile-edge-n,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x49.6x5.6,9.515,9.44,47.2,models/pebble/stl/tile-edge-n.stl
-pebble,True,pebble.tile-edge-n-flat,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x49.6x4.0,9.465,9.39,28.2,models/pebble/stl/tile-edge-n-flat.stl
-pebble,True,pebble.tile-corner-ne,tile,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.6x49.6x5.6,9.245,9.17,9.2,models/pebble/stl/tile-corner-ne.stl
-turned,True,turned.glyph-fire,glyph,fire,PLA,Bambu PLA Basic Red,16,12.6x21.3x4.5,0.668,0.66,10.6,models/turned/stl/glyph-fire.stl
-turned,True,turned.glyph-lightning,glyph,lightning,PLA,Bambu PLA Basic Yellow,16,15.9x24.7x4.5,0.59,0.59,9.4,models/turned/stl/glyph-lightning.stl
-turned,True,turned.glyph-water,glyph,water,PLA,Bambu PLA Basic Cobalt Blue,16,15.2x25.0x4.5,1.01,1.0,16.0,models/turned/stl/glyph-water.stl
-turned,True,turned.glyph-shadow,glyph,shadow,PLA,Bambu PLA Basic Purple,16,17.9x24.0x4.5,0.69,0.68,10.9,models/turned/stl/glyph-shadow.stl
-turned,True,turned.glyph-plant,glyph,plant,PLA,Bambu PLA Basic Bambu Green,16,17.3x23.4x4.5,1.054,1.05,16.7,models/turned/stl/glyph-plant.stl
-turned,True,turned.glyph-metal,glyph,metal,PLA,Bambu PLA Metal Copper Brown Metallic,16,21.8x21.0x4.5,1.023,1.01,16.2,models/turned/stl/glyph-metal.stl
-turned,True,turned.base,base,ivory,PLA,Bambu PLA Matte Ivory White,48,25.0x25.0x7.5,3.028,3.0,144.2,models/turned/stl/base.stl
-turned,True,turned.base,base,charcoal,PLA,Bambu PLA Matte Charcoal,48,25.0x25.0x7.5,3.028,3.0,144.2,models/turned/stl/base.stl
-turned,True,turned.t2,pedestal-t2,ivory,PLA,Bambu PLA Matte Ivory White,18,28.5x28.5x5.6,2.586,2.57,46.2,models/turned/stl/t2.stl
-turned,True,turned.t2,pedestal-t2,charcoal,PLA,Bambu PLA Matte Charcoal,18,28.5x28.5x5.6,2.586,2.57,46.2,models/turned/stl/t2.stl
-turned,True,turned.t3,pedestal-t3,ivory,PLA,Bambu PLA Matte Ivory White,6,32.0x32.0x5.6,3.592,3.56,21.4,models/turned/stl/t3.stl
-turned,True,turned.t3,pedestal-t3,charcoal,PLA,Bambu PLA Matte Charcoal,6,32.0x32.0x5.6,3.592,3.56,21.4,models/turned/stl/t3.stl
-turned,True,turned.tile-corner-sw,tile,ivory,PLA,Bambu PLA Matte Ivory White,1,58.9x58.9x5.6,10.288,10.21,10.2,models/turned/stl/tile-corner-sw.stl
-turned,True,turned.tile-edge-s,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x58.9x5.6,10.003,9.92,49.6,models/turned/stl/tile-edge-s.stl
-turned,True,turned.tile-edge-s-flat,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x58.9x4.0,9.953,9.87,29.6,models/turned/stl/tile-edge-s-flat.stl
-turned,True,turned.tile-corner-se,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x58.9x5.6,9.733,9.66,9.7,models/turned/stl/tile-corner-se.stl
-turned,True,turned.tile-edge-w,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,58.9x58.9x5.6,10.003,9.92,79.4,models/turned/stl/tile-edge-w.stl
-turned,True,turned.tile-interior,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),52,58.9x58.9x5.6,9.718,9.64,501.3,models/turned/stl/tile-interior.stl
-turned,True,turned.tile-interior-flat,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),12,58.9x58.9x4.0,9.669,9.59,115.1,models/turned/stl/tile-interior-flat.stl
-turned,True,turned.tile-edge-e,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,49.6x58.9x5.6,9.449,9.37,75.0,models/turned/stl/tile-edge-e.stl
-turned,True,turned.tile-corner-nw,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,58.9x49.6x5.6,9.733,9.66,9.7,models/turned/stl/tile-corner-nw.stl
-turned,True,turned.tile-edge-n,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x49.6x5.6,9.449,9.37,46.9,models/turned/stl/tile-edge-n.stl
-turned,True,turned.tile-edge-n-flat,tile,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x49.6x4.0,9.399,9.32,28.0,models/turned/stl/tile-edge-n-flat.stl
-turned,True,turned.tile-corner-ne,tile,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.6x49.6x5.6,9.179,9.11,9.1,models/turned/stl/tile-corner-ne.stl
+variant,production,part_id,family,inlay_of,alias_of,color,material,filament_lead,qty,bbox_mm,solid_volume_cm3_each,est_mass_g_each,est_mass_g_total,stl
+shared,True,shared.crystal,crystal,,,crystal,PETG,Bambu PETG Translucent Teal,550,6.0x6.0x7.6,0.208,0.21,116.3,models/shared/stl/crystal.stl
+shared,True,shared.half-crystal,crystal,,,crystal,PETG,Bambu PETG Translucent Teal,1,6.0x6.0x3.0,0.079,0.08,0.1,models/shared/stl/half-crystal.stl
+shared,False,shared.coupon-glyph-slots,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,60.0x36.0x7.5,15.003,14.88,14.9,models/shared/stl/coupon-glyph-slots.stl
+shared,False,shared.coupon-glyph-slots,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,60.0x36.0x7.5,15.003,14.88,14.9,models/shared/stl/coupon-glyph-slots.stl
+shared,False,shared.coupon-tang-gauge,coupon,,,fire,PLA,Bambu PLA Basic Red,1,22.0x18.5x4.5,1.493,1.48,1.5,models/shared/stl/coupon-tang-gauge.stl
+shared,False,shared.coupon-tang-gauge,coupon,,,metal,PLA,Bambu PLA Metal Copper Brown Metallic,1,22.0x18.5x4.5,1.493,1.48,1.5,models/shared/stl/coupon-tang-gauge.stl
+shared,False,shared.coupon-recess-plate,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,78.0x28.0x3.4,6.185,6.14,6.1,models/shared/stl/coupon-recess-plate.stl
+shared,False,shared.coupon-recess-plate,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,78.0x28.0x3.4,6.185,6.14,6.1,models/shared/stl/coupon-recess-plate.stl
+shared,False,shared.coupon-boss-key-r0,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,22.0x22.0x4.6,1.453,1.44,1.4,models/shared/stl/coupon-boss-key-r0.stl
+shared,False,shared.coupon-boss-key-r0,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,22.0x22.0x4.6,1.453,1.44,1.4,models/shared/stl/coupon-boss-key-r0.stl
+shared,False,shared.coupon-boss-key-r10,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,22.0x22.0x4.6,1.447,1.44,1.4,models/shared/stl/coupon-boss-key-r10.stl
+shared,False,shared.coupon-boss-key-r10,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,22.0x22.0x4.6,1.447,1.44,1.4,models/shared/stl/coupon-boss-key-r10.stl
+shared,False,shared.coupon-boss-key-r20,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,22.0x22.0x4.6,1.441,1.43,1.4,models/shared/stl/coupon-boss-key-r20.stl
+shared,False,shared.coupon-boss-key-r20,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,22.0x22.0x4.6,1.441,1.43,1.4,models/shared/stl/coupon-boss-key-r20.stl
+shared,False,shared.coupon-boss-key-r30,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,22.0x22.0x4.6,1.437,1.43,1.4,models/shared/stl/coupon-boss-key-r30.stl
+shared,False,shared.coupon-boss-key-r30,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,22.0x22.0x4.6,1.437,1.43,1.4,models/shared/stl/coupon-boss-key-r30.stl
+shared,False,shared.coupon-stud-strip,coupon,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,40.0x14.0x5.6,2.277,2.26,2.3,models/shared/stl/coupon-stud-strip.stl
+shared,False,shared.coupon-crystal-socket-10,coupon,,,crystal,PETG,Bambu PETG Translucent Teal,4,6.0x6.0x7.6,0.209,0.21,0.9,models/shared/stl/coupon-crystal-socket-10.stl
+shared,False,shared.coupon-crystal-socket-20,coupon,,,crystal,PETG,Bambu PETG Translucent Teal,4,6.0x6.0x7.6,0.208,0.21,0.8,models/shared/stl/coupon-crystal-socket-20.stl
+shared,False,shared.coupon-crystal-socket-30,coupon,,,crystal,PETG,Bambu PETG Translucent Teal,4,6.0x6.0x7.6,0.207,0.21,0.8,models/shared/stl/coupon-crystal-socket-30.stl
+shared,False,shared.coupon-crystal-socket-40,coupon,,,crystal,PETG,Bambu PETG Translucent Teal,4,6.0x6.0x7.6,0.206,0.21,0.8,models/shared/stl/coupon-crystal-socket-40.stl
+shared,False,shared.coupon-tile-tab,coupon,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x31.3x4.0,4.621,4.58,4.6,models/shared/stl/coupon-tile-tab.stl
+shared,False,shared.coupon-tile-socket-15,coupon,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x22.0x4.0,4.072,4.04,4.0,models/shared/stl/coupon-tile-socket-15.stl
+shared,False,shared.coupon-tile-socket-25,coupon,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x22.0x4.0,4.063,4.03,4.0,models/shared/stl/coupon-tile-socket-25.stl
+shared,False,shared.coupon-tile-socket-35,coupon,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x22.0x4.0,4.053,4.02,4.0,models/shared/stl/coupon-tile-socket-35.stl
+shared,False,shared.coupon-if2-socket-10,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,25.0x25.0x4.4,1.911,1.9,1.9,models/shared/stl/coupon-if2-socket-10.stl
+shared,False,shared.coupon-if2-socket-10,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,25.0x25.0x4.4,1.911,1.9,1.9,models/shared/stl/coupon-if2-socket-10.stl
+shared,False,shared.coupon-if2-socket-15,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,25.0x25.0x4.4,1.904,1.89,1.9,models/shared/stl/coupon-if2-socket-15.stl
+shared,False,shared.coupon-if2-socket-15,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,25.0x25.0x4.4,1.904,1.89,1.9,models/shared/stl/coupon-if2-socket-15.stl
+shared,False,shared.coupon-if2-socket-20,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,25.0x25.0x4.4,1.894,1.88,1.9,models/shared/stl/coupon-if2-socket-20.stl
+shared,False,shared.coupon-if2-socket-20,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,25.0x25.0x4.4,1.894,1.88,1.9,models/shared/stl/coupon-if2-socket-20.stl
+shared,False,shared.coupon-if2-socket-25,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,25.0x25.0x4.4,1.883,1.87,1.9,models/shared/stl/coupon-if2-socket-25.stl
+shared,False,shared.coupon-if2-socket-25,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,25.0x25.0x4.4,1.883,1.87,1.9,models/shared/stl/coupon-if2-socket-25.stl
+shared,False,shared.coupon-if2-collar,coupon,,,ivory,PLA,Bambu PLA Matte Ivory White,1,28.5x28.5x4.8,1.542,1.53,1.5,models/shared/stl/coupon-if2-collar.stl
+shared,False,shared.coupon-if2-collar,coupon,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,28.5x28.5x4.8,1.542,1.53,1.5,models/shared/stl/coupon-if2-collar.stl
+facet,True,facet.glyph-fire,glyph,,,fire,PLA,Bambu PLA Basic Red,16,12.6x21.3x4.5,0.688,0.68,10.9,models/facet/stl/glyph-fire.stl
+facet,True,facet.glyph-lightning,glyph,,,lightning,PLA,Bambu PLA Basic Yellow,16,15.9x24.7x4.5,0.614,0.61,9.7,models/facet/stl/glyph-lightning.stl
+facet,True,facet.glyph-water,glyph,,,water,PLA,Bambu PLA Basic Cobalt Blue,16,15.2x25.0x4.5,1.031,1.02,16.4,models/facet/stl/glyph-water.stl
+facet,True,facet.glyph-shadow,glyph,,,shadow,PLA,Bambu PLA Basic Purple,16,17.9x24.0x4.5,0.715,0.71,11.4,models/facet/stl/glyph-shadow.stl
+facet,True,facet.glyph-plant,glyph,,,plant,PLA,Bambu PLA Basic Bambu Green,16,17.3x23.4x4.5,1.09,1.08,17.3,models/facet/stl/glyph-plant.stl
+facet,True,facet.glyph-metal,glyph,,,metal,PLA,Bambu PLA Metal Copper Brown Metallic,16,21.8x21.0x4.5,1.056,1.05,16.8,models/facet/stl/glyph-metal.stl
+facet,True,facet.base,base,,,ivory,PLA,Bambu PLA Matte Ivory White,48,25.0x25.0x7.5,3.324,3.3,158.3,models/facet/stl/base.stl
+facet,True,facet.base,base,,,charcoal,PLA,Bambu PLA Matte Charcoal,48,25.0x25.0x7.5,3.324,3.3,158.3,models/facet/stl/base.stl
+facet,True,facet.t2,pedestal-t2,,,ivory,PLA,Bambu PLA Matte Ivory White,18,28.5x28.5x5.6,2.596,2.58,46.4,models/facet/stl/t2.stl
+facet,True,facet.t2,pedestal-t2,,,charcoal,PLA,Bambu PLA Matte Charcoal,18,28.5x28.5x5.6,2.596,2.58,46.4,models/facet/stl/t2.stl
+facet,True,facet.t3,pedestal-t3,,,ivory,PLA,Bambu PLA Matte Ivory White,6,32.0x32.0x5.6,3.599,3.57,21.4,models/facet/stl/t3.stl
+facet,True,facet.t3,pedestal-t3,,,charcoal,PLA,Bambu PLA Matte Charcoal,6,32.0x32.0x5.6,3.599,3.57,21.4,models/facet/stl/t3.stl
+facet,True,facet.tile-corner-sw,tile,,,ivory,PLA,Bambu PLA Matte Ivory White,1,58.9x58.9x5.6,10.344,10.26,10.3,models/facet/stl/tile-corner-sw.stl
+facet,True,facet.tile-edge-s,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x58.9x5.6,10.05,9.97,49.8,models/facet/stl/tile-edge-s.stl
+facet,True,facet.tile-edge-s-flat,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x58.9x4.0,10.001,9.92,29.8,models/facet/stl/tile-edge-s-flat.stl
+facet,True,facet.tile-corner-se,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x58.9x5.6,9.784,9.71,9.7,models/facet/stl/tile-corner-se.stl
+facet,True,facet.tile-edge-w,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,58.9x58.9x5.6,10.05,9.97,79.8,models/facet/stl/tile-edge-w.stl
+facet,True,facet.tile-interior,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),52,58.9x58.9x5.6,9.756,9.68,503.3,models/facet/stl/tile-interior.stl
+facet,True,facet.tile-interior-flat,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),12,58.9x58.9x4.0,9.707,9.63,115.5,models/facet/stl/tile-interior-flat.stl
+facet,True,facet.tile-edge-e,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,49.6x58.9x5.6,9.49,9.41,75.3,models/facet/stl/tile-edge-e.stl
+facet,True,facet.tile-corner-nw,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,58.9x49.6x5.6,9.784,9.71,9.7,models/facet/stl/tile-corner-nw.stl
+facet,True,facet.tile-edge-n,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x49.6x5.6,9.49,9.41,47.1,models/facet/stl/tile-edge-n.stl
+facet,True,facet.tile-edge-n-flat,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x49.6x4.0,9.441,9.36,28.1,models/facet/stl/tile-edge-n-flat.stl
+facet,True,facet.tile-corner-ne,tile,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.6x49.6x5.6,9.224,9.15,9.2,models/facet/stl/tile-corner-ne.stl
+facet,False,facet.section-gray-sw-ivory,board-section,,,ivory,PLA,Bambu PLA Matte Ivory White,1,49.8x49.8x5.6,9.918,9.84,9.8,models/facet/stl/section-gray-sw-ivory.stl
+facet,False,facet.section-gray-sw-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x158.9x5.6,81.261,80.61,80.6,models/facet/stl/section-gray-sw-gray.stl
+facet,False,facet.section-gradient-sw-ivory,board-section,,,ivory,PLA,Bambu PLA Matte Ivory White,1,49.8x49.8x5.6,9.918,9.84,9.8,models/facet/stl/section-gradient-sw-ivory.stl
+facet,False,facet.section-gradient-sw-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x158.9x5.6,50.336,49.93,49.9,models/facet/stl/section-gradient-sw-gray.stl
+facet,False,facet.section-gradient-sw-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,109.1x109.1x5.6,30.925,30.68,30.7,models/facet/stl/section-gradient-sw-tile4.stl
+facet,False,facet.section-gray-s-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x158.9x5.6,120.084,119.12,119.1,models/facet/stl/section-gray-s-gray.stl
+facet,False,facet.section-gradient-s-tile0,board-section,,,tile0,PLA,Bambu PLA Basic Dark Gray (no matte dark gray exists),1,149.8x158.9x4.0,89.212,88.5,88.5,models/facet/stl/section-gradient-s-tile0.stl
+facet,False,facet.section-gradient-s-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,59.1x158.9x5.6,30.872,30.63,30.6,models/facet/stl/section-gradient-s-tile4.stl
+facet,False,facet.section-gray-se-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x158.9x5.6,89.499,88.78,88.8,models/facet/stl/section-gray-se-gray.stl
+facet,False,facet.section-gradient-se-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,149.6x158.9x5.6,49.669,49.27,49.3,models/facet/stl/section-gradient-se-tile4.stl
+facet,False,facet.section-gradient-se-tile16,board-section,,,tile16,PLA,Bambu PLA Matte Bone White,1,99.8x109.1x5.6,39.83,39.51,39.5,models/facet/stl/section-gradient-se-tile16.stl
+facet,False,facet.section-gray-w-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x208.9x5.6,120.532,119.57,119.6,models/facet/stl/section-gray-w-gray.stl
+facet,False,facet.section-gradient-w-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,158.9x208.9x5.6,120.532,119.57,119.6,models/facet/stl/section-gradient-w-tile4.stl
+facet,False,facet.section-gray-c-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x208.9x5.6,159.321,158.05,158.0,models/facet/stl/section-gray-c-gray.stl
+facet,False,facet.section-gradient-c-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,208.9x208.9x5.6,79.391,78.76,78.8,models/facet/stl/section-gradient-c-tile4.stl
+facet,False,facet.section-gradient-c-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x208.9x5.6,79.93,79.29,79.3,models/facet/stl/section-gradient-c-gray.stl
+facet,False,facet.section-gray-e-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x208.9x5.6,118.291,117.35,117.3,models/facet/stl/section-gray-e-gray.stl
+facet,False,facet.section-gradient-e-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,149.6x208.9x5.6,118.291,117.35,117.3,models/facet/stl/section-gradient-e-tile4.stl
+facet,False,facet.section-gray-nw-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x149.6x5.6,89.499,88.78,88.8,models/facet/stl/section-gray-nw-gray.stl
+facet,False,facet.section-gradient-nw-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,158.9x149.6x5.6,49.669,49.27,49.3,models/facet/stl/section-gradient-nw-tile4.stl
+facet,False,facet.section-gradient-nw-tile16,board-section,,,tile16,PLA,Bambu PLA Matte Bone White,1,109.1x99.8x5.6,39.83,39.51,39.5,models/facet/stl/section-gradient-nw-tile16.stl
+facet,False,facet.section-gray-n-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x149.6x5.6,117.844,116.9,116.9,models/facet/stl/section-gray-n-gray.stl
+facet,False,facet.section-gradient-n-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,49.8x149.6x5.6,28.632,28.4,28.4,models/facet/stl/section-gradient-n-tile4.stl
+facet,False,facet.section-gradient-n-tile0,board-section,,,tile0,PLA,Bambu PLA Basic Dark Gray (no matte dark gray exists),1,159.1x149.6x4.0,89.212,88.5,88.5,models/facet/stl/section-gradient-n-tile0.stl
+facet,False,facet.section-gray-ne-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x149.6x5.6,77.901,77.28,77.3,models/facet/stl/section-gray-ne-gray.stl
+facet,False,facet.section-gray-ne-charcoal,board-section,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.8x49.8x5.6,9.918,9.84,9.8,models/facet/stl/section-gray-ne-charcoal.stl
+facet,False,facet.section-gradient-ne-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,99.8x99.8x5.6,28.685,28.46,28.5,models/facet/stl/section-gradient-ne-tile4.stl
+facet,False,facet.section-gradient-ne-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x149.6x5.6,49.216,48.82,48.8,models/facet/stl/section-gradient-ne-gray.stl
+facet,False,facet.section-gradient-ne-charcoal,board-section,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.8x49.8x5.6,9.918,9.84,9.8,models/facet/stl/section-gradient-ne-charcoal.stl
+pebble,True,pebble.glyph-fire,glyph,,,fire,PLA,Bambu PLA Basic Red,16,12.6x21.3x4.5,0.688,0.68,10.9,models/pebble/stl/glyph-fire.stl
+pebble,True,pebble.glyph-lightning,glyph,,,lightning,PLA,Bambu PLA Basic Yellow,16,15.9x24.7x4.5,0.615,0.61,9.8,models/pebble/stl/glyph-lightning.stl
+pebble,True,pebble.glyph-water,glyph,,,water,PLA,Bambu PLA Basic Cobalt Blue,16,15.2x25.0x4.5,1.031,1.02,16.4,models/pebble/stl/glyph-water.stl
+pebble,True,pebble.glyph-shadow,glyph,,,shadow,PLA,Bambu PLA Basic Purple,16,17.9x24.0x4.5,0.716,0.71,11.4,models/pebble/stl/glyph-shadow.stl
+pebble,True,pebble.glyph-plant,glyph,,,plant,PLA,Bambu PLA Basic Bambu Green,16,17.3x23.4x4.5,1.091,1.08,17.3,models/pebble/stl/glyph-plant.stl
+pebble,True,pebble.glyph-metal,glyph,,,metal,PLA,Bambu PLA Metal Copper Brown Metallic,16,21.8x21.0x4.5,1.057,1.05,16.8,models/pebble/stl/glyph-metal.stl
+pebble,True,pebble.base,base,,,ivory,PLA,Bambu PLA Matte Ivory White,48,25.0x25.0x7.5,3.317,3.29,158.0,models/pebble/stl/base.stl
+pebble,True,pebble.base,base,,,charcoal,PLA,Bambu PLA Matte Charcoal,48,25.0x25.0x7.5,3.317,3.29,158.0,models/pebble/stl/base.stl
+pebble,True,pebble.t2,pedestal-t2,,,ivory,PLA,Bambu PLA Matte Ivory White,18,28.5x28.5x5.6,2.588,2.57,46.2,models/pebble/stl/t2.stl
+pebble,True,pebble.t2,pedestal-t2,,,charcoal,PLA,Bambu PLA Matte Charcoal,18,28.5x28.5x5.6,2.588,2.57,46.2,models/pebble/stl/t2.stl
+pebble,True,pebble.t3,pedestal-t3,,,ivory,PLA,Bambu PLA Matte Ivory White,6,32.0x32.0x5.6,3.59,3.56,21.4,models/pebble/stl/t3.stl
+pebble,True,pebble.t3,pedestal-t3,,,charcoal,PLA,Bambu PLA Matte Charcoal,6,32.0x32.0x5.6,3.59,3.56,21.4,models/pebble/stl/t3.stl
+pebble,True,pebble.tile-corner-sw,tile,,,ivory,PLA,Bambu PLA Matte Ivory White,1,58.9x58.9x5.6,10.366,10.28,10.3,models/pebble/stl/tile-corner-sw.stl
+pebble,True,pebble.tile-edge-s,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x58.9x5.6,10.075,9.99,50.0,models/pebble/stl/tile-edge-s.stl
+pebble,True,pebble.tile-edge-s-flat,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x58.9x4.0,10.026,9.95,29.8,models/pebble/stl/tile-edge-s-flat.stl
+pebble,True,pebble.tile-corner-se,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x58.9x5.6,9.806,9.73,9.7,models/pebble/stl/tile-corner-se.stl
+pebble,True,pebble.tile-edge-w,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,58.9x58.9x5.6,10.075,9.99,80.0,models/pebble/stl/tile-edge-w.stl
+pebble,True,pebble.tile-interior,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),52,58.9x58.9x5.6,9.785,9.71,504.7,models/pebble/stl/tile-interior.stl
+pebble,True,pebble.tile-interior-flat,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),12,58.9x58.9x4.0,9.735,9.66,115.9,models/pebble/stl/tile-interior-flat.stl
+pebble,True,pebble.tile-edge-e,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,49.6x58.9x5.6,9.515,9.44,75.5,models/pebble/stl/tile-edge-e.stl
+pebble,True,pebble.tile-corner-nw,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,58.9x49.6x5.6,9.806,9.73,9.7,models/pebble/stl/tile-corner-nw.stl
+pebble,True,pebble.tile-edge-n,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x49.6x5.6,9.515,9.44,47.2,models/pebble/stl/tile-edge-n.stl
+pebble,True,pebble.tile-edge-n-flat,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x49.6x4.0,9.465,9.39,28.2,models/pebble/stl/tile-edge-n-flat.stl
+pebble,True,pebble.tile-corner-ne,tile,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.6x49.6x5.6,9.245,9.17,9.2,models/pebble/stl/tile-corner-ne.stl
+pebble,False,pebble.section-gray-sw-ivory,board-section,,,ivory,PLA,Bambu PLA Matte Ivory White,1,49.8x49.8x5.6,9.936,9.86,9.9,models/pebble/stl/section-gray-sw-ivory.stl
+pebble,False,pebble.section-gray-sw-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x158.9x5.6,81.372,80.72,80.7,models/pebble/stl/section-gray-sw-gray.stl
+pebble,False,pebble.section-gradient-sw-ivory,board-section,,,ivory,PLA,Bambu PLA Matte Ivory White,1,49.8x49.8x5.6,9.936,9.86,9.9,models/pebble/stl/section-gradient-sw-ivory.stl
+pebble,False,pebble.section-gradient-sw-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x158.9x5.6,50.397,49.99,50.0,models/pebble/stl/section-gradient-sw-gray.stl
+pebble,False,pebble.section-gradient-sw-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,109.1x109.1x5.6,30.975,30.73,30.7,models/pebble/stl/section-gradient-sw-tile4.stl
+pebble,False,pebble.section-gray-s-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x158.9x5.6,120.243,119.28,119.3,models/pebble/stl/section-gray-s-gray.stl
+pebble,False,pebble.section-gradient-s-tile0,board-section,,,tile0,PLA,Bambu PLA Basic Dark Gray (no matte dark gray exists),1,149.8x158.9x4.0,89.312,88.6,88.6,models/pebble/stl/section-gradient-s-tile0.stl
+pebble,False,pebble.section-gradient-s-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,59.1x158.9x5.6,30.931,30.68,30.7,models/pebble/stl/section-gradient-s-tile4.stl
+pebble,False,pebble.section-gray-se-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x158.9x5.6,89.627,88.91,88.9,models/pebble/stl/section-gray-se-gray.stl
+pebble,False,pebble.section-gradient-se-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,149.6x158.9x5.6,49.748,49.35,49.3,models/pebble/stl/section-gradient-se-tile4.stl
+pebble,False,pebble.section-gradient-se-tile16,board-section,,,tile16,PLA,Bambu PLA Matte Bone White,1,99.8x109.1x5.6,39.879,39.56,39.6,models/pebble/stl/section-gradient-se-tile16.stl
+pebble,False,pebble.section-gray-w-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x208.9x5.6,120.691,119.73,119.7,models/pebble/stl/section-gray-w-gray.stl
+pebble,False,pebble.section-gradient-w-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,158.9x208.9x5.6,120.691,119.73,119.7,models/pebble/stl/section-gradient-w-tile4.stl
+pebble,False,pebble.section-gray-c-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x208.9x5.6,159.517,158.24,158.2,models/pebble/stl/section-gray-c-gray.stl
+pebble,False,pebble.section-gradient-c-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,208.9x208.9x5.6,79.538,78.9,78.9,models/pebble/stl/section-gradient-c-tile4.stl
+pebble,False,pebble.section-gradient-c-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x208.9x5.6,79.979,79.34,79.3,models/pebble/stl/section-gradient-c-gray.stl
+pebble,False,pebble.section-gray-e-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x208.9x5.6,118.45,117.5,117.5,models/pebble/stl/section-gray-e-gray.stl
+pebble,False,pebble.section-gradient-e-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,149.6x208.9x5.6,118.45,117.5,117.5,models/pebble/stl/section-gradient-e-tile4.stl
+pebble,False,pebble.section-gray-nw-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x149.6x5.6,89.627,88.91,88.9,models/pebble/stl/section-gray-nw-gray.stl
+pebble,False,pebble.section-gradient-nw-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,158.9x149.6x5.6,49.748,49.35,49.3,models/pebble/stl/section-gradient-nw-tile4.stl
+pebble,False,pebble.section-gradient-nw-tile16,board-section,,,tile16,PLA,Bambu PLA Matte Bone White,1,109.1x99.8x5.6,39.879,39.56,39.6,models/pebble/stl/section-gradient-nw-tile16.stl
+pebble,False,pebble.section-gray-n-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x149.6x5.6,118.002,117.06,117.1,models/pebble/stl/section-gray-n-gray.stl
+pebble,False,pebble.section-gradient-n-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,49.8x149.6x5.6,28.689,28.46,28.5,models/pebble/stl/section-gradient-n-tile4.stl
+pebble,False,pebble.section-gradient-n-tile0,board-section,,,tile0,PLA,Bambu PLA Basic Dark Gray (no matte dark gray exists),1,159.1x149.6x4.0,89.312,88.6,88.6,models/pebble/stl/section-gradient-n-tile0.stl
+pebble,False,pebble.section-gray-ne-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x149.6x5.6,78.01,77.39,77.4,models/pebble/stl/section-gray-ne-gray.stl
+pebble,False,pebble.section-gray-ne-charcoal,board-section,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.8x49.8x5.6,9.936,9.86,9.9,models/pebble/stl/section-gray-ne-charcoal.stl
+pebble,False,pebble.section-gradient-ne-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,99.8x99.8x5.6,28.734,28.5,28.5,models/pebble/stl/section-gradient-ne-tile4.stl
+pebble,False,pebble.section-gradient-ne-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x149.6x5.6,49.276,48.88,48.9,models/pebble/stl/section-gradient-ne-gray.stl
+pebble,False,pebble.section-gradient-ne-charcoal,board-section,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.8x49.8x5.6,9.936,9.86,9.9,models/pebble/stl/section-gradient-ne-charcoal.stl
+turned,True,turned.glyph-fire,glyph,,,fire,PLA,Bambu PLA Basic Red,16,12.6x21.3x4.5,0.668,0.66,10.6,models/turned/stl/glyph-fire.stl
+turned,True,turned.glyph-lightning,glyph,,,lightning,PLA,Bambu PLA Basic Yellow,16,15.9x24.7x4.5,0.59,0.59,9.4,models/turned/stl/glyph-lightning.stl
+turned,True,turned.glyph-water,glyph,,,water,PLA,Bambu PLA Basic Cobalt Blue,16,15.2x25.0x4.5,1.01,1.0,16.0,models/turned/stl/glyph-water.stl
+turned,True,turned.glyph-shadow,glyph,,,shadow,PLA,Bambu PLA Basic Purple,16,17.9x24.0x4.5,0.69,0.68,10.9,models/turned/stl/glyph-shadow.stl
+turned,True,turned.glyph-plant,glyph,,,plant,PLA,Bambu PLA Basic Bambu Green,16,17.3x23.4x4.5,1.054,1.05,16.7,models/turned/stl/glyph-plant.stl
+turned,True,turned.glyph-metal,glyph,,,metal,PLA,Bambu PLA Metal Copper Brown Metallic,16,21.8x21.0x4.5,1.023,1.01,16.2,models/turned/stl/glyph-metal.stl
+turned,True,turned.base,base,,,ivory,PLA,Bambu PLA Matte Ivory White,48,25.0x25.0x7.5,3.028,3.0,144.2,models/turned/stl/base.stl
+turned,True,turned.base,base,,,charcoal,PLA,Bambu PLA Matte Charcoal,48,25.0x25.0x7.5,3.028,3.0,144.2,models/turned/stl/base.stl
+turned,True,turned.t2,pedestal-t2,,,ivory,PLA,Bambu PLA Matte Ivory White,18,28.5x28.5x5.6,2.586,2.57,46.2,models/turned/stl/t2.stl
+turned,True,turned.t2,pedestal-t2,,,charcoal,PLA,Bambu PLA Matte Charcoal,18,28.5x28.5x5.6,2.586,2.57,46.2,models/turned/stl/t2.stl
+turned,True,turned.t3,pedestal-t3,,,ivory,PLA,Bambu PLA Matte Ivory White,6,32.0x32.0x5.6,3.592,3.56,21.4,models/turned/stl/t3.stl
+turned,True,turned.t3,pedestal-t3,,,charcoal,PLA,Bambu PLA Matte Charcoal,6,32.0x32.0x5.6,3.592,3.56,21.4,models/turned/stl/t3.stl
+turned,True,turned.tile-corner-sw,tile,,,ivory,PLA,Bambu PLA Matte Ivory White,1,58.9x58.9x5.6,10.288,10.21,10.2,models/turned/stl/tile-corner-sw.stl
+turned,True,turned.tile-edge-s,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x58.9x5.6,10.003,9.92,49.6,models/turned/stl/tile-edge-s.stl
+turned,True,turned.tile-edge-s-flat,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x58.9x4.0,9.953,9.87,29.6,models/turned/stl/tile-edge-s-flat.stl
+turned,True,turned.tile-corner-se,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x58.9x5.6,9.733,9.66,9.7,models/turned/stl/tile-corner-se.stl
+turned,True,turned.tile-edge-w,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,58.9x58.9x5.6,10.003,9.92,79.4,models/turned/stl/tile-edge-w.stl
+turned,True,turned.tile-interior,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),52,58.9x58.9x5.6,9.718,9.64,501.3,models/turned/stl/tile-interior.stl
+turned,True,turned.tile-interior-flat,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),12,58.9x58.9x4.0,9.669,9.59,115.1,models/turned/stl/tile-interior-flat.stl
+turned,True,turned.tile-edge-e,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,49.6x58.9x5.6,9.449,9.37,75.0,models/turned/stl/tile-edge-e.stl
+turned,True,turned.tile-corner-nw,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,58.9x49.6x5.6,9.733,9.66,9.7,models/turned/stl/tile-corner-nw.stl
+turned,True,turned.tile-edge-n,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x49.6x5.6,9.449,9.37,46.9,models/turned/stl/tile-edge-n.stl
+turned,True,turned.tile-edge-n-flat,tile,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x49.6x4.0,9.399,9.32,28.0,models/turned/stl/tile-edge-n-flat.stl
+turned,True,turned.tile-corner-ne,tile,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.6x49.6x5.6,9.179,9.11,9.1,models/turned/stl/tile-corner-ne.stl
+turned,False,turned.section-gray-sw-ivory,board-section,,,ivory,PLA,Bambu PLA Matte Ivory White,1,49.8x49.8x5.6,9.835,9.76,9.8,models/turned/stl/section-gray-sw-ivory.stl
+turned,False,turned.section-gray-sw-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x158.9x5.6,80.565,79.92,79.9,models/turned/stl/section-gray-sw-gray.stl
+turned,False,turned.section-gradient-sw-ivory,board-section,,,ivory,PLA,Bambu PLA Matte Ivory White,1,49.8x49.8x5.6,9.835,9.76,9.8,models/turned/stl/section-gradient-sw-ivory.stl
+turned,False,turned.section-gradient-sw-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x158.9x5.6,49.892,49.49,49.5,models/turned/stl/section-gradient-sw-gray.stl
+turned,False,turned.section-gradient-sw-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,109.1x109.1x5.6,30.673,30.43,30.4,models/turned/stl/section-gradient-sw-tile4.stl
+turned,False,turned.section-gray-s-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x158.9x5.6,119.05,118.1,118.1,models/turned/stl/section-gray-s-gray.stl
+turned,False,turned.section-gradient-s-tile0,board-section,,,tile0,PLA,Bambu PLA Basic Dark Gray (no matte dark gray exists),1,149.8x158.9x4.0,88.421,87.71,87.7,models/turned/stl/section-gradient-s-tile0.stl
+turned,False,turned.section-gradient-s-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,59.1x158.9x5.6,30.629,30.38,30.4,models/turned/stl/section-gradient-s-tile4.stl
+turned,False,turned.section-gray-se-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x158.9x5.6,88.737,88.03,88.0,models/turned/stl/section-gray-se-gray.stl
+turned,False,turned.section-gradient-se-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,149.6x158.9x5.6,49.25,48.86,48.9,models/turned/stl/section-gradient-se-tile4.stl
+turned,False,turned.section-gradient-se-tile16,board-section,,,tile16,PLA,Bambu PLA Matte Bone White,1,99.8x109.1x5.6,39.487,39.17,39.2,models/turned/stl/section-gradient-se-tile16.stl
+turned,False,turned.section-gray-w-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x208.9x5.6,119.498,118.54,118.5,models/turned/stl/section-gray-w-gray.stl
+turned,False,turned.section-gradient-w-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,158.9x208.9x5.6,119.498,118.54,118.5,models/turned/stl/section-gradient-w-tile4.stl
+turned,False,turned.section-gray-c-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x208.9x5.6,157.949,156.69,156.7,models/turned/stl/section-gray-c-gray.stl
+turned,False,turned.section-gradient-c-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,208.9x208.9x5.6,78.77,78.14,78.1,models/turned/stl/section-gradient-c-tile4.stl
+turned,False,turned.section-gradient-c-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x208.9x5.6,79.18,78.55,78.5,models/turned/stl/section-gradient-c-gray.stl
+turned,False,turned.section-gray-e-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x208.9x5.6,117.281,116.34,116.3,models/turned/stl/section-gray-e-gray.stl
+turned,False,turned.section-gradient-e-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,149.6x208.9x5.6,117.281,116.34,116.3,models/turned/stl/section-gradient-e-tile4.stl
+turned,False,turned.section-gray-nw-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,158.9x149.6x5.6,88.737,88.03,88.0,models/turned/stl/section-gray-nw-gray.stl
+turned,False,turned.section-gradient-nw-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,158.9x149.6x5.6,49.25,48.86,48.9,models/turned/stl/section-gradient-nw-tile4.stl
+turned,False,turned.section-gradient-nw-tile16,board-section,,,tile16,PLA,Bambu PLA Matte Bone White,1,109.1x99.8x5.6,39.487,39.17,39.2,models/turned/stl/section-gradient-nw-tile16.stl
+turned,False,turned.section-gray-n-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,208.9x149.6x5.6,116.833,115.9,115.9,models/turned/stl/section-gray-n-gray.stl
+turned,False,turned.section-gradient-n-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,49.8x149.6x5.6,28.412,28.18,28.2,models/turned/stl/section-gradient-n-tile4.stl
+turned,False,turned.section-gradient-n-tile0,board-section,,,tile0,PLA,Bambu PLA Basic Dark Gray (no matte dark gray exists),1,159.1x149.6x4.0,88.421,87.71,87.7,models/turned/stl/section-gradient-n-tile0.stl
+turned,False,turned.section-gray-ne-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x149.6x5.6,77.239,76.62,76.6,models/turned/stl/section-gray-ne-gray.stl
+turned,False,turned.section-gray-ne-charcoal,board-section,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.8x49.8x5.6,9.835,9.76,9.8,models/turned/stl/section-gray-ne-charcoal.stl
+turned,False,turned.section-gradient-ne-tile4,board-section,,,tile4,PLA,Bambu PLA Matte Nardo Gray,1,99.8x99.8x5.6,28.455,28.23,28.2,models/turned/stl/section-gradient-ne-tile4.stl
+turned,False,turned.section-gradient-ne-gray,board-section,,,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,149.6x149.6x5.6,48.783,48.39,48.4,models/turned/stl/section-gradient-ne-gray.stl
+turned,False,turned.section-gradient-ne-charcoal,board-section,,,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.8x49.8x5.6,9.835,9.76,9.8,models/turned/stl/section-gradient-ne-charcoal.stl
+turned-keyed,True,turned-keyed.glyph-fire,glyph,,turned.glyph-fire,fire,PLA,Bambu PLA Basic Red,16,12.6x21.3x4.5,0.668,0.66,10.6,models/turned/stl/glyph-fire.stl
+turned-keyed,True,turned-keyed.glyph-lightning,glyph,,turned.glyph-lightning,lightning,PLA,Bambu PLA Basic Yellow,16,15.9x24.7x4.5,0.59,0.59,9.4,models/turned/stl/glyph-lightning.stl
+turned-keyed,True,turned-keyed.glyph-water,glyph,,turned.glyph-water,water,PLA,Bambu PLA Basic Cobalt Blue,16,15.2x25.0x4.5,1.01,1.0,16.0,models/turned/stl/glyph-water.stl
+turned-keyed,True,turned-keyed.glyph-shadow,glyph,,turned.glyph-shadow,shadow,PLA,Bambu PLA Basic Purple,16,17.9x24.0x4.5,0.69,0.68,10.9,models/turned/stl/glyph-shadow.stl
+turned-keyed,True,turned-keyed.glyph-plant,glyph,,turned.glyph-plant,plant,PLA,Bambu PLA Basic Bambu Green,16,17.3x23.4x4.5,1.054,1.05,16.7,models/turned/stl/glyph-plant.stl
+turned-keyed,True,turned-keyed.glyph-metal,glyph,,turned.glyph-metal,metal,PLA,Bambu PLA Metal Copper Brown Metallic,16,21.8x21.0x4.5,1.023,1.01,16.2,models/turned/stl/glyph-metal.stl
+turned-keyed,True,turned-keyed.tile-corner-sw,tile,,turned.tile-corner-sw,ivory,PLA,Bambu PLA Matte Ivory White,1,58.9x58.9x5.6,10.288,10.21,10.2,models/turned/stl/tile-corner-sw.stl
+turned-keyed,True,turned-keyed.tile-edge-s,tile,,turned.tile-edge-s,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x58.9x5.6,10.003,9.92,49.6,models/turned/stl/tile-edge-s.stl
+turned-keyed,True,turned-keyed.tile-edge-s-flat,tile,,turned.tile-edge-s-flat,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x58.9x4.0,9.953,9.87,29.6,models/turned/stl/tile-edge-s-flat.stl
+turned-keyed,True,turned-keyed.tile-corner-se,tile,,turned.tile-corner-se,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x58.9x5.6,9.733,9.66,9.7,models/turned/stl/tile-corner-se.stl
+turned-keyed,True,turned-keyed.tile-edge-w,tile,,turned.tile-edge-w,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,58.9x58.9x5.6,10.003,9.92,79.4,models/turned/stl/tile-edge-w.stl
+turned-keyed,True,turned-keyed.tile-interior,tile,,turned.tile-interior,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),52,58.9x58.9x5.6,9.718,9.64,501.3,models/turned/stl/tile-interior.stl
+turned-keyed,True,turned-keyed.tile-interior-flat,tile,,turned.tile-interior-flat,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),12,58.9x58.9x4.0,9.669,9.59,115.1,models/turned/stl/tile-interior-flat.stl
+turned-keyed,True,turned-keyed.tile-edge-e,tile,,turned.tile-edge-e,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,49.6x58.9x5.6,9.449,9.37,75.0,models/turned/stl/tile-edge-e.stl
+turned-keyed,True,turned-keyed.tile-corner-nw,tile,,turned.tile-corner-nw,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,58.9x49.6x5.6,9.733,9.66,9.7,models/turned/stl/tile-corner-nw.stl
+turned-keyed,True,turned-keyed.tile-edge-n,tile,,turned.tile-edge-n,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x49.6x5.6,9.449,9.37,46.9,models/turned/stl/tile-edge-n.stl
+turned-keyed,True,turned-keyed.tile-edge-n-flat,tile,,turned.tile-edge-n-flat,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x49.6x4.0,9.399,9.32,28.0,models/turned/stl/tile-edge-n-flat.stl
+turned-keyed,True,turned-keyed.tile-corner-ne,tile,,turned.tile-corner-ne,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.6x49.6x5.6,9.179,9.11,9.1,models/turned/stl/tile-corner-ne.stl
+turned-keyed,True,turned-keyed.base,base,,,ivory,PLA,Bambu PLA Matte Ivory White,48,25.0x25.0x7.5,2.976,2.95,141.7,models/turned-keyed/stl/base.stl
+turned-keyed,True,turned-keyed.base,base,,,charcoal,PLA,Bambu PLA Matte Charcoal,48,25.0x25.0x7.5,2.976,2.95,141.7,models/turned-keyed/stl/base.stl
+turned-keyed,True,turned-keyed.t2,pedestal-t2,,,ivory,PLA,Bambu PLA Matte Ivory White,18,28.5x28.5x6.8,2.423,2.4,43.3,models/turned-keyed/stl/t2.stl
+turned-keyed,True,turned-keyed.t2,pedestal-t2,,,charcoal,PLA,Bambu PLA Matte Charcoal,18,28.5x28.5x6.8,2.423,2.4,43.3,models/turned-keyed/stl/t2.stl
+turned-keyed,True,turned-keyed.t3,pedestal-t3,,,ivory,PLA,Bambu PLA Matte Ivory White,6,32.0x32.0x6.8,3.582,3.55,21.3,models/turned-keyed/stl/t3.stl
+turned-keyed,True,turned-keyed.t3,pedestal-t3,,,charcoal,PLA,Bambu PLA Matte Charcoal,6,32.0x32.0x6.8,3.582,3.55,21.3,models/turned-keyed/stl/t3.stl
+turned-keyed,True,turned-keyed.dot-base,tier-dot,turned-keyed.base,,dot,PLA,Bambu PLA Basic Turquoise,96,2.6x0.8x2.6,0.004,0.0,0.4,models/turned-keyed/stl/dot-base.stl
+turned-keyed,True,turned-keyed.dot-t2,tier-dot,turned-keyed.t2,,dot,PLA,Bambu PLA Basic Turquoise,36,2.6x0.8x2.6,0.004,0.0,0.2,models/turned-keyed/stl/dot-t2.stl
+turned-keyed,True,turned-keyed.dot-t3,tier-dot,turned-keyed.t3,,dot,PLA,Bambu PLA Basic Turquoise,12,2.6x0.8x2.6,0.004,0.0,0.1,models/turned-keyed/stl/dot-t3.stl
+turned-ring,True,turned-ring.glyph-fire,glyph,,turned.glyph-fire,fire,PLA,Bambu PLA Basic Red,16,12.6x21.3x4.5,0.668,0.66,10.6,models/turned/stl/glyph-fire.stl
+turned-ring,True,turned-ring.glyph-lightning,glyph,,turned.glyph-lightning,lightning,PLA,Bambu PLA Basic Yellow,16,15.9x24.7x4.5,0.59,0.59,9.4,models/turned/stl/glyph-lightning.stl
+turned-ring,True,turned-ring.glyph-water,glyph,,turned.glyph-water,water,PLA,Bambu PLA Basic Cobalt Blue,16,15.2x25.0x4.5,1.01,1.0,16.0,models/turned/stl/glyph-water.stl
+turned-ring,True,turned-ring.glyph-shadow,glyph,,turned.glyph-shadow,shadow,PLA,Bambu PLA Basic Purple,16,17.9x24.0x4.5,0.69,0.68,10.9,models/turned/stl/glyph-shadow.stl
+turned-ring,True,turned-ring.glyph-plant,glyph,,turned.glyph-plant,plant,PLA,Bambu PLA Basic Bambu Green,16,17.3x23.4x4.5,1.054,1.05,16.7,models/turned/stl/glyph-plant.stl
+turned-ring,True,turned-ring.glyph-metal,glyph,,turned.glyph-metal,metal,PLA,Bambu PLA Metal Copper Brown Metallic,16,21.8x21.0x4.5,1.023,1.01,16.2,models/turned/stl/glyph-metal.stl
+turned-ring,True,turned-ring.tile-corner-sw,tile,,turned.tile-corner-sw,ivory,PLA,Bambu PLA Matte Ivory White,1,58.9x58.9x5.6,10.288,10.21,10.2,models/turned/stl/tile-corner-sw.stl
+turned-ring,True,turned-ring.tile-edge-s,tile,,turned.tile-edge-s,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x58.9x5.6,10.003,9.92,49.6,models/turned/stl/tile-edge-s.stl
+turned-ring,True,turned-ring.tile-edge-s-flat,tile,,turned.tile-edge-s-flat,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x58.9x4.0,9.953,9.87,29.6,models/turned/stl/tile-edge-s-flat.stl
+turned-ring,True,turned-ring.tile-corner-se,tile,,turned.tile-corner-se,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,49.6x58.9x5.6,9.733,9.66,9.7,models/turned/stl/tile-corner-se.stl
+turned-ring,True,turned-ring.tile-edge-w,tile,,turned.tile-edge-w,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,58.9x58.9x5.6,10.003,9.92,79.4,models/turned/stl/tile-edge-w.stl
+turned-ring,True,turned-ring.tile-interior,tile,,turned.tile-interior,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),52,58.9x58.9x5.6,9.718,9.64,501.3,models/turned/stl/tile-interior.stl
+turned-ring,True,turned-ring.tile-interior-flat,tile,,turned.tile-interior-flat,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),12,58.9x58.9x4.0,9.669,9.59,115.1,models/turned/stl/tile-interior-flat.stl
+turned-ring,True,turned-ring.tile-edge-e,tile,,turned.tile-edge-e,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),8,49.6x58.9x5.6,9.449,9.37,75.0,models/turned/stl/tile-edge-e.stl
+turned-ring,True,turned-ring.tile-corner-nw,tile,,turned.tile-corner-nw,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),1,58.9x49.6x5.6,9.733,9.66,9.7,models/turned/stl/tile-corner-nw.stl
+turned-ring,True,turned-ring.tile-edge-n,tile,,turned.tile-edge-n,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),5,58.9x49.6x5.6,9.449,9.37,46.9,models/turned/stl/tile-edge-n.stl
+turned-ring,True,turned-ring.tile-edge-n-flat,tile,,turned.tile-edge-n-flat,gray,PLA,Bambu PLA Matte Ash Gray (alt. Nardo Gray),3,58.9x49.6x4.0,9.399,9.32,28.0,models/turned/stl/tile-edge-n-flat.stl
+turned-ring,True,turned-ring.tile-corner-ne,tile,,turned.tile-corner-ne,charcoal,PLA,Bambu PLA Matte Charcoal,1,49.6x49.6x5.6,9.179,9.11,9.1,models/turned/stl/tile-corner-ne.stl
+turned-ring,True,turned-ring.base,base,,,ivory,PLA,Bambu PLA Matte Ivory White,48,25.0x25.0x7.5,2.976,2.95,141.7,models/turned-ring/stl/base.stl
+turned-ring,True,turned-ring.base,base,,,charcoal,PLA,Bambu PLA Matte Charcoal,48,25.0x25.0x7.5,2.976,2.95,141.7,models/turned-ring/stl/base.stl
+turned-ring,True,turned-ring.t2,pedestal-t2,,,ivory,PLA,Bambu PLA Matte Ivory White,18,28.5x28.5x6.8,1.535,1.52,27.4,models/turned-ring/stl/t2.stl
+turned-ring,True,turned-ring.t2,pedestal-t2,,,charcoal,PLA,Bambu PLA Matte Charcoal,18,28.5x28.5x6.8,1.535,1.52,27.4,models/turned-ring/stl/t2.stl
+turned-ring,True,turned-ring.t3,pedestal-t3,,,ivory,PLA,Bambu PLA Matte Ivory White,6,32.0x32.0x6.8,2.553,2.53,15.2,models/turned-ring/stl/t3.stl
+turned-ring,True,turned-ring.t3,pedestal-t3,,,charcoal,PLA,Bambu PLA Matte Charcoal,6,32.0x32.0x6.8,2.553,2.53,15.2,models/turned-ring/stl/t3.stl
+turned-ring,True,turned-ring.dot-base,tier-dot,turned-ring.base,,dot,PLA,Bambu PLA Basic Turquoise,96,2.6x0.8x2.6,0.004,0.0,0.4,models/turned-ring/stl/dot-base.stl
+turned-ring,True,turned-ring.dot-t2,tier-dot,turned-ring.t2,,dot,PLA,Bambu PLA Basic Turquoise,36,2.6x0.8x2.6,0.004,0.0,0.2,models/turned-ring/stl/dot-t2.stl
+turned-ring,True,turned-ring.dot-t3,tier-dot,turned-ring.t3,,dot,PLA,Bambu PLA Basic Turquoise,12,2.6x0.8x2.6,0.004,0.0,0.1,models/turned-ring/stl/dot-t3.stl

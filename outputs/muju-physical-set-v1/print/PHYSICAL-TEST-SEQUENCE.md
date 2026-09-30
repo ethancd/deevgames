@@ -58,3 +58,23 @@ Print a 3 × 3 patch (interior tiles; one ivory corner if you want the home colo
 Production run recommended?  yes / no. Variant: ___. Signed/dated: ___
 
 Until Stage 1–3 have results, the correct status of every part is **"digitally validated, physically untested"**.
+
+## IF2 (Turned Court · Keyed and · Rings)
+
+Print `print/calibration/cal-if2-ivory-plate01.3mf` and `cal-if2-charcoal-plate01.3mf`. Each
+has four socket blocks, groove down, with bump preload 0.10 / 0.15 / 0.20 / 0.25 mm (1–4
+notches), and one T2-size collar key.
+
+| # | Test | Pass criterion | Result |
+|---|---|---|---|
+| I.1 | Press the collar key into each socket block. Lift the block by the key. Pull it apart. | Seats with a firm push, feels the "last millimetre" grip, lifts the block, pulls apart by hand with a good grip. Pick the preload that feels most Lego-like. | ivory: ___ charcoal: ___ |
+| I.2 | The key rotated 45° / 180° | Must **not** seat | ___ |
+| I.3 | 100 cycles on the chosen block, then repeat I.1 | Grip still holds the block. No cracked beam root; beams still spring back. | ___ |
+| I.4 | Look at the beams and slits on the underside | Slits open, beams free; no stringing bridging a slit | ___ |
+| I.5 | Full T3 of each variant (keyed, ring): lift by the glyph 20×; pull apart 20× | Nothing left behind; separates by hand; the three dots stay aligned in a column | ___ |
+| I.6 | Base placed on a T3 directly | Does not seat | ___ |
+| I.7 | Ring vs keyed T3 on a tile: flick the glyph top sideways | Record which tips first. Ring is expected to be lighter and less planted | ___ |
+| I.8 | Tier-dot inlay (turquoise on ivory and on charcoal) | Flush, round, clearly readable at arm's length; no colour bleed | ___ |
+
+Then set `if2.beam.bump_interference` in `cad/params.json` to the chosen value and regenerate.
+Record the value here: ___

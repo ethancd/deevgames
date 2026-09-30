@@ -95,7 +95,7 @@ function stateInfo(s) {
     <dl class="kv"><dt>State id</dt><dd><code>${esc(s.id)}</code></dd><dt>Height</dt><dd>${s.height_mm} mm on the table (${(s.height_mm + C.geometry.tile_h).toFixed(1)} on a tile)</dd>
     <dt>Footprint</dt><dd>${s.footprint_af_mm} mm across flats</dd><dt>Layers</dt><dd>${s.parts.length} separate parts${s.tier === 3 ? ' (T3 keeps the base and T2)' : ''}</dd></dl>
     <table>${rows}</table>
-    <p class="note">${st.mode === 'section' ? 'Section through the thickness of the glyph: tang in slot, bosses in recesses. ' : ''}Stack interference in the model: crush ribs only <span class="ev ev-digital">Digital check</span></p>`;
+    <p class="note">${st.mode === 'section' ? (C.variants[st.variant].interface === 'IF2' || String(C.variants[st.variant].interface).startsWith('IF2') ? 'Section through the thickness of the glyph: tang in slot, collars in grooves (flex beams grip each collar). ' : 'Section through the thickness of the glyph: tang in slot, bosses in recesses. ') : ''}Stack interference in the model: ${String(C.variants[st.variant].interface).startsWith('IF2') ? 'glyph crush ribs and the flex-beam bump preload only; one-way keys line up the tier dots' : 'crush ribs only'} <span class="ev ev-digital">Digital check</span></p>`;
 }
 
 function partInfo(p, color) {
@@ -140,7 +140,7 @@ renderParts();
 // ------------------------------------------------------------------ board & crystals
 const boardV = new Viewer($('#v-board'));
 const bst = { variant: 'facet', scene: 'board' };
-const SCENES = [['board', 'Full 10×10 board'], ['patch', 'Crowded patch'], ['resources', 'Resource tiles 0/4/8/16'], ['crystals', 'Crystal stacks 1–4 + half token'], ['tiles', 'Tile join (A1 corner)']];
+const SCENES = [['board', 'Full 10×10 board'], ['gradient', 'Board: colour by crystals'], ['sections-gray', '9 sections (gray)'], ['sections-gradient', '9 sections (by crystals)'], ['patch', 'Crowded patch'], ['resources', 'Resource tiles 0/4/8/16'], ['crystals', 'Crystal stacks 1–4 + half token'], ['tiles', 'Tile join (A1 corner)']];
 $('#board-controls').innerHTML = `<div class="seg" data-b="variant">${VARIANTS.map(v => `<button type="button" data-val="${v}">${esc(C.variants[v].name)}</button>`).join('')}</div>
   <div class="seg" data-b="scene">${SCENES.map(([k, l]) => `<button type="button" data-val="${k}">${l}</button>`).join('')}</div>`;
 $('#board-controls').addEventListener('click', e => {
@@ -171,6 +171,27 @@ async function showBoard() {
         <tr><th>Checks</th><td>${vb ? `<span class="ok">98/1/1 colours, A1/J10 homes, no tile clashes</span> <span class="ev ev-digital">Digital check</span>` : ''}</td></tr></table>
         <p class="note">Ivory sits at the near (rank-1) edge; file A is on Ivory's left. Tiles and crystals are drawn as GPU instances of one mesh per type.</p>`;
       break;
+    case 'gradient': {
+      items = S.boardGradientItems(D, v); frame = { dir: [0.0, 1.35, 1.0], pad: 0.8 };
+      const ramp = [['ivory', 'A1 home (Ivory)'], ['tile16', '16 crystals'], ['gray', '8 crystals'], ['tile4', '4 crystals'], ['tile0', '0 crystals (flat tiles)'], ['charcoal', 'J10 home (Charcoal)']];
+      const n = c => D.asm.variants[v].board_gradient_tiles.filter(t => t.color === c).length;
+      info = `<h3>Board coloured by starting crystals</h3><p>A mock-up: the same 100 tiles, each printed in a neutral that steps from light to dark with its starting reserve. The two homes keep the army colours, so they stay the ends of the scale.</p>
+        <table>${ramp.map(([c, l]) => `<tr><th>${sw(c)}${l}</th><td>${n(c)} tile${n(c) === 1 ? '' : 's'} · ${esc(C.palette[c].lead.replace(/ \(alt\..*\)$/, ''))}</td></tr>`).join('')}</table>
+        <p class="note">Bambu has no matte dark gray between Nardo Gray and Charcoal, so the 0-crystal tiles use PLA Basic Dark Gray (slightly glossier). On screen the viewer's lighting makes Bone White (16) look close to the Ivory home; the real filaments are further apart (Bone White is a warm light gray), so compare swatches in hand <span class="ev ev-concept">Mock-up</span></p>`;
+      break;
+    }
+    case 'sections-gray':
+    case 'sections-gradient': {
+      const scheme = bst.scene.split('-')[1];
+      items = S.sectionItems(D, v, scheme, 8); frame = { dir: [0.0, 1.35, 1.0], pad: 0.8 };
+      const sv = D.validation?.sections?.[C.variants[v].extends || v]?.[scheme];
+      info = `<h3>Board printed in nine sections (${scheme === 'gray' ? 'all gray' : 'coloured by starting crystals'})</h3>
+        <p>Four 3×3 corners, four 3×4 edges and a 4×4 centre, shown 8 mm apart. Each section is one print; the squares inside it are marked by shallow V-grooves, and the sections join with the same tabs as the single tiles. ${scheme === 'gray' ? 'Only the two corner sections need a second colour (the home square).' : 'Each section is a multi-colour print: every square is its own coloured part.'}</p>
+        <table><tr><th>Largest section</th><td>4×4 centre, ${sv ? sv.largest_section_mm : '—'} mm (bed 300 × 320)</td></tr>
+        <tr><th>Checks</th><td>${sv ? `<span class="${sv.colours_match_scheme && sv.section_interference_max_mm3 < 1e-3 ? 'ok' : 'bad'}">9 sections, colours match, no overlap</span> <span class="ev ev-digital">Digital check</span>` : ''}</td></tr>
+        <tr><th>Plates</th><td>one 3MF per section in <code>print/${esc(C.variants[v].extends || v)}/sections/</code></td></tr></table>`;
+      break;
+    }
     case 'patch':
       items = S.patchItems(D, v); frame = { dir: [0.6, 0.95, 1.1], pad: 0.8 };
       info = `<h3>Crowded patch</h3><p>3×3 tiles, four 4-high stacks on every tile, T3 pieces on the centre (rotated 22.5°, the worst case) and neighbours, and a loose shadow glyph beside the centre piece.</p>
@@ -218,7 +239,7 @@ $('#concept-list').innerHTML = VARIANTS.map(v => {
   const con = C.concepts[v] || [];
   const pairs = [[con[0], `renders/${v}-lineup.png`, 'Overview'], [con[1], `renders/${v}-t3-exploded.png`, 'Construction'], [con[2], `renders/${v}-board.png`, 'Tabletop']];
   return `<h3>${esc(C.variants[v].name)}</h3>` + pairs.map(([c, r, lab]) => `<div class="pair">
-    <figure>${c ? `<img src="${ROOT}${c}" alt="Concept sketch: ${esc(C.variants[v].name)} ${lab.toLowerCase()}" loading="lazy">` : '<p>No concept image.</p>'}<figcaption><span class="ev ev-concept">Concept sketch</span> ${lab}: vector drawing of intent. ${link(`concepts/${v}/prompts.md`, 'Raster prompts (not run)')}</figcaption></figure>
+    <figure>${c ? `<img src="${ROOT}${c}" alt="Concept sketch: ${esc(C.variants[v].name)} ${lab.toLowerCase()}" loading="lazy">` : '<p>No concept image.</p>'}<figcaption><span class="ev ev-concept">Concept sketch</span> ${c ? `${lab}: vector drawing of intent. ${link(`concepts/${v}/prompts.md`, 'Raster prompts (not run)')}` : `${lab}: no separate sketch; this variant shares ${esc(C.variants[C.variants[v].extends]?.name || 'its parent')}'s look.`}</figcaption></figure>
     <figure><img src="${ROOT}${r}" alt="Model render: ${esc(C.variants[v].name)} ${lab.toLowerCase()}" loading="lazy"><figcaption><span class="ev ev-model">Model render</span> exported GLB meshes, three.js</figcaption></figure></div>`).join('');
 }).join('');
 
@@ -232,7 +253,7 @@ $('#download-list').innerHTML = `<div class="tbl-wrap"><table class="tbl"><thead
   <tr><td>Print &amp; assembly guide</td><td>H2C set-up, plates, orientations, assembly, pending-summon handling</td><td>${link('print/README.md', 'README')}</td></tr>
   <tr><td>Manifest &amp; checksums</td><td>Stable part ids, quantities, dimensions, paths, source hashes</td><td>${link('manifest.json', 'manifest.json')} ${link('SHA256SUMS', 'SHA256SUMS')}</td></tr>
   </tbody></table></div>
-  <p class="note"><strong>Geometry-only 3MF:</strong> the plate files contain positioned, named objects with material names and display colours. They contain <em>no</em> printer, process or filament settings; choose those in Bambu Studio. No slicer-configured project is provided because slicing was not possible here.</p>`;
+  <p class="note"><strong>Plate 3MFs:</strong> positioned, named objects with material names and display colours, and <em>no</em> printer, process or filament settings (choose those in Bambu Studio). Multi-colour objects (tier-dot pieces, board sections) are multi-part objects whose parts carry Bambu filament slots.</p>`;
 
 // ------------------------------------------------------------------ validation
 const V = D.validation;
@@ -242,11 +263,11 @@ if (V) {
   $('#validation-list').innerHTML = `<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Check</th><th>Result</th><th>Kind</th></tr></thead><tbody>
     <tr><td>Exported STLs re-imported: watertight, consistent winding, one body, volume within 0.5 % of the B-rep, bbox matches manifest, on the bed</td><td class="${okF === files.length ? 'ok' : 'bad'}">${okF}/${files.length}</td><td><span class="ev ev-digital">Digital</span></td></tr>
     <tr><td>3MF strict lib3mf read, millimetre units, manifold meshes</td><td class="ok">${tm.filter(t => t.warnings === 0 && t.all_meshes_manifold_oriented).length}/${tm.length}</td><td><span class="ev ev-digital">Digital</span></td></tr>
-    <tr><td>Assembled states resolve to model files; T3 contains base + T2 + T3; only crush-rib interference</td><td class="ok">${V.assemblies.total_states}/108</td><td><span class="ev ev-digital">Digital</span></td></tr>
-    <tr><td>Glyph key: correct insertion fits, flipped insertion collides (all 6 glyphs × 3 variants)</td><td class="ok">${VARIANTS.every(v => Object.values(V.interfaces[v].glyph_in_base).every(g => g.keyed)) ? 'pass' : 'FAIL'}</td><td><span class="ev ev-digital">Digital</span></td></tr>
+    <tr><td>Assembled states resolve to model files; T3 contains base + T2 + T3; only crush-rib interference</td><td class="ok">${V.assemblies.total_states}/${36 * VARIANTS.length}</td><td><span class="ev ev-digital">Digital</span></td></tr>
+    <tr><td>Glyph key: correct insertion fits, flipped insertion collides (all 6 glyphs × ${VARIANTS.length} variants)</td><td class="ok">${VARIANTS.every(v => Object.values(V.interfaces[v].glyph_in_base).every(g => g.keyed)) ? 'pass' : 'FAIL'}</td><td><span class="ev ev-digital">Digital</span></td></tr>
     <tr><td>Board: 100 tiles, 98 gray, A1 ivory, J10 charcoal, no clashes, 504 crystals from resourceMap.ts</td><td class="ok">${VARIANTS.map(v => `${C.variants[v].name}: ${V.board[v].gray}/${V.board[v].A1}/${V.board[v].J10}/${V.board[v].crystals}`).join('<br>')}</td><td><span class="ev ev-digital">Digital</span></td></tr>
     <tr><td>Inventory per variant (target 891)</td><td class="ok">${Object.entries(V.inventory).map(([k, n]) => `${esc(C.variants[k].name)}: ${n}`).join('<br>')}</td><td><span class="ev ev-digital">Digital</span></td></tr>
-    <tr><td>Slicing on an H2C profile (support, bridges, time, mass)</td><td class="pending">not performed</td><td><span class="ev ev-slicer">Slicer</span></td></tr>
+    <tr><td>Slicing on an H2C profile (support, bridges, time, mass)</td><td class="ok">every plate sliced in Bambu Studio; multi-colour plates as geometry only — ${link('validation/slicer/slicer-checks.md', 'slicer-checks.md')}</td><td><span class="ev ev-slicer">Slicer</span></td></tr>
     <tr><td>Printed fits, retention, wear, ergonomics, colours</td><td class="pending">not performed</td><td><span class="ev ev-physical">Physical</span></td></tr>
     </tbody></table></div><p class="note">Overall digital result: <span class="${V.passed ? 'ok' : 'bad'}">${V.passed ? 'all digital checks passed' : V.failures.length + ' failures'}</span> (${esc(V.generated)}). Details: ${link('validation/validation.json', 'validation.json')} · ${link('validation/digital-checks.md', 'digital-checks.md')}</p>`;
 }

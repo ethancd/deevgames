@@ -58,13 +58,19 @@ def piece_stack(variant: str, element: str, owner: str, tier: int):
     t = P["glyph"]["thickness"]
     layers = []
     z = 0.0
+    dots = P["variants"][variant].get("interface", "IF1").startswith("IF2")
+
+    def layer(pid, M, label, dz, dot_layer):
+        layers.append((f"{variant}.{pid}", owner, M, label, dz))
+        if dots:
+            layers.append((f"{variant}.dot-{dot_layer}", "dot", M, f"Tier dot ({label})", dz))
     if tier >= 3:
-        layers.append((f"{variant}.t3", owner, T(z=z), "T3 addition", 0.0))
+        layer("t3", T(z=z), "T3 addition", 0.0, "t3")
         z += pc["t3_height"]
     if tier >= 2:
-        layers.append((f"{variant}.t2", owner, T(z=z), "T2 addition", 12.0 if tier == 3 else 0.0))
+        layer("t2", T(z=z), "T2 addition", 12.0 if tier == 3 else 0.0, "t2")
         z += pc["t2_height"]
-    layers.append((f"{variant}.base", owner, T(z=z), "Ownership base (T1)", {1: 0.0, 2: 12.0, 3: 24.0}[tier]))
+    layer("base", T(z=z), "Ownership base (T1)", {1: 0.0, 2: 12.0, 3: 24.0}[tier], "base")
     z += pc["base_height"]
     # glyph frame -> standing: rotate +90 about X (front faces -Y), thickness centred
     M = T(0, t / 2, z, rx=90)
@@ -203,6 +209,23 @@ def main():
                 base = T((x - 4.5) * pitch, (y - 4.5) * pitch, tile_h, rz=0 if owner == "ivory" else 180)
                 pieces.append({"coord": f"{chr(65 + x)}{y + 1}", "owner": owner, "element": el,
                                "parts": [dict(part_ref(mp, pid, col), matrix=L(base @ M)) for pid, col, M, lab, dz in layers]})
+        # gradient colour scheme on the same 100 tiles
+        V["board_gradient_tiles"] = [dict(t, color=PT.square_colour(P, "gradient", t["xy"][0], t["xy"][1], rmap),
+                                          glb=mp[f"{v}.tile-{t['type']}"]["geometry"]["glb"][PT.square_colour(P, "gradient", t["xy"][0], t["xy"][1], rmap)])
+                                     for t in tiles]
+        # nine printed sections (the IF2 variants share their parent's tiles and sections)
+        sv = P["variants"][v].get("extends", v)
+        V["board_sections"] = {}
+        for scheme in ("gray", "gradient"):
+            secs = []
+            for r in man["parts"]:
+                if r["variant"] == sv and r.get("section", {}).get("scheme") == scheme:
+                    scx, scy = r["section"]["centre_mm"]
+                    col = r["instances"][0]["color"]
+                    secs.append({"part": r["id"], "section": r["section"]["name"], "color": col, "glb": r["geometry"]["glb"][col],
+                                 "stl": r["geometry"]["stl"], "offset": [scx - 5 * pitch, scy - 5 * pitch],
+                                 "matrix": L(T(scx - 5 * pitch, scy - 5 * pitch))})
+            V["board_sections"][scheme] = secs
         V["board"] = {"tiles": tiles, "crystal_glb": mp["shared.crystal"]["geometry"]["glb"]["crystal"], "crystal_matrices": crystals,
                       "crystal_count": len(crystals), "start_pieces": pieces,
                       "outer_size_mm": [round(10 * pitch - (pitch - P["board"]["tile_size"]), 2)] * 2}

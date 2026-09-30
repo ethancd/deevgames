@@ -20,6 +20,7 @@ import datetime as dt
 import json
 import subprocess
 import tempfile
+import zipfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -32,7 +33,8 @@ ELEMENTS = ("fire", "lightning", "water", "shadow", "plant", "metal")
 FILAMENT = {"gray": "Bambu PLA Matte @BBL H2C", "ivory": "Bambu PLA Matte @BBL H2C", "charcoal": "Bambu PLA Matte @BBL H2C",
             "fire": "Bambu PLA Basic @BBL H2C", "lightning": "Bambu PLA Basic @BBL H2C", "water": "Bambu PLA Basic @BBL H2C",
             "shadow": "Bambu PLA Basic @BBL H2C", "plant": "Bambu PLA Basic @BBL H2C",
-            "metal": "Bambu PLA Metal @BBL H2C 0.4 nozzle", "crystal": "Bambu PETG Translucent @BBL H2C 0.4 nozzle"}
+            "metal": "Bambu PLA Metal @BBL H2C 0.4 nozzle", "crystal": "Bambu PETG Translucent @BBL H2C 0.4 nozzle",
+            "tile16": "Bambu PLA Matte @BBL H2C", "tile4": "Bambu PLA Matte @BBL H2C", "tile0": "Bambu PLA Basic @BBL H2C", "dot": "Bambu PLA Basic @BBL H2C"}
 BASE = {"curr_bed_type": "Textured PEI Plate", "wall_loops": "3", "top_shell_layers": "4", "bottom_shell_layers": "4", "sparse_infill_density": "15%"}
 # reach of both toolheads on the H2C (print/README.md)
 BOTH_HEADS_X, BOTH_HEADS_Y = 300.0, 320.0
@@ -51,8 +53,9 @@ def resolve(profiles: Path, kind: str, name: str) -> dict:
 def plates():
     for group in MAN["plates"].values():
         for entries in group.values():
-            for e in entries:
-                yield e
+            if isinstance(entries, list):
+                for e in entries:
+                    yield e
 
 
 def main():
@@ -70,7 +73,7 @@ def main():
         for e in sorted(plates(), key=lambda e: e["file"]):
             if a.only and a.only not in e["file"]:
                 continue
-            colours = sorted({k.split("|")[1] for k in e["contents"]})
+            colours = e.get("filament_slots") or sorted({k.split("|")[1] for k in e["contents"]})
             fil = FILAMENT[colours[0]]
             proc = resolve(profiles, "process", PROCESS)
             proc.update(BASE)
@@ -82,8 +85,17 @@ def main():
             (tmp / "filament.json").write_text(json.dumps(resolve(profiles, "filament", fil)))
             od = tmp / name
             od.mkdir()
+            src = OUT / e["file"]
+            if e.get("multi_part"):
+                # The Bambu CLI cannot slice multi-filament H2C plates without a GUI-made project, so
+                # slice the geometry with one filament: strip the per-part slot map, keep every part.
+                src = tmp / f"{name}-geometry.3mf"
+                with zipfile.ZipFile(OUT / e["file"]) as zi, zipfile.ZipFile(src, "w", zipfile.ZIP_DEFLATED) as zo:
+                    for it in zi.infolist():
+                        if it.filename != "Metadata/model_settings.config":
+                            zo.writestr(it, zi.read(it.filename))
             p = subprocess.run([exe, "--debug", "1", "--load-settings", f"{tmp}/machine.json;{tmp}/process.json",
-                                "--load-filaments", f"{tmp}/filament.json", "--slice", "0", "--outputdir", str(od), OUT / e["file"]],
+                                "--load-filaments", f"{tmp}/filament.json", "--slice", "0", "--outputdir", str(od), src],
                                capture_output=True, text=True)
             res = json.loads((od / "result.json").read_text()) if (od / "result.json").exists() else {}
             sp = (res.get("sliced_plates") or [{}])[0]
@@ -98,7 +110,9 @@ def main():
                    "max_height_mm": round(max((o["bbox"]["height"] for o in objs), default=0), 2), "layout_span_mm": span,
                    "within_both_head_area": bool(span and span[0] <= BOTH_HEADS_X and span[1] <= BOTH_HEADS_Y),
                    "time_h": round(sp.get("total_predication", 0) / 3600, 2), "filament_g": round(g, 1),
-                   "note": "multi-colour plate sliced with the first colour's filament for time/mass only" if len(colours) > 1 else ""}
+                   "multi_part": bool(e.get("multi_part")),
+                   "note": (f"multi-colour ({', '.join(colours)}): geometry sliced with one filament; colour swaps not included" if e.get("multi_part")
+                            else "multi-colour plate sliced with the first colour's filament for time/mass only" if len(colours) > 1 else "")}
             row["ok"] = bool(row["return_code"] == 0 and row["objects_sliced"] == row["objects_expected"] and row["within_both_head_area"])
             rows.append(row)
             print(f"{'OK ' if row['ok'] else 'BAD'} {name:38s} {row['objects_sliced']:3d}/{row['objects_expected']:<3d} "
@@ -118,11 +132,21 @@ def main():
         L.append(f"| {'' if r['ok'] else '**FAIL** '}`{Path(r['plate']).name}` | {r['filament_preset']} | {r['objects_sliced']}/{r['objects_expected']} | "
                  f"{r['max_height_mm']} | {r['layout_span_mm'][0]} × {r['layout_span_mm'][1]} | {r['time_h']} | {r['filament_g']} | {' '.join(x for x in (r['warning'], r['note']) if x)} |"
                  if r["layout_span_mm"] else f"| **FAIL** `{Path(r['plate']).name}` | {r['filament_preset']} | 0/{r['objects_expected']} | | | | | {r['error']} |")
-    for v in ("facet", "pebble", "turned"):
-        vr = [r for r in rows if f"/{v}/" in r["plate"]]
+    for v in MAN["variants"]:
+        vr = [r for r in rows if f"/{v}/plates/" in r["plate"]]
+        if MAN["variants"][v].get("extends"):
+            if vr:
+                L.append(f"\n**{v}** army plates (with tier dots): {len(vr)} plates, {sum(r['time_h'] for r in vr):.1f} h, "
+                         f"{sum(r['filament_g'] for r in vr) / 1000:.2f} kg; glyphs, tiles and crystals as {MAN['variants'][v]['extends']}.")
+            continue
         if vr:
-            L.append(f"\n**{v}** set: {len(vr)} plates, {sum(r['time_h'] for r in vr):.1f} h printing, "
+            L.append(f"\n**{v}** set (single tiles): {len(vr)} plates, {sum(r['time_h'] for r in vr):.1f} h printing, "
                      f"{sum(r['filament_g'] for r in vr) / 1000:.2f} kg filament (slicer estimate).")
+        for scheme in ("gray", "gradient"):
+            sr = [r for r in rows if f"/{v}/sections/{v}-sections-{scheme}-" in r["plate"]]
+            if sr:
+                L.append(f"\n**{v}** board in 9 sections ({scheme}): {sum(r['time_h'] for r in sr):.1f} h, {sum(r['filament_g'] for r in sr) / 1000:.2f} kg "
+                         "(geometry; colour swaps not included).")
     (vd / "slicer-checks.md").write_text("\n".join(L) + "\n")
     print(f"{len(rows)} plates, {meta['failures']} failures -> {vd}")
 

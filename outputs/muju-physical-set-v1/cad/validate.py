@@ -81,8 +81,10 @@ def file_checks():
             "degenerate_faces": int((m.area_faces < 1e-9).sum()),
             "min_z": round(float(lo[2]), 4),
         }
-        ok = (r["watertight"] and r["winding_consistent"] and r["volume_positive"] and r["bodies"] == 1
-              and abs(r["volume_delta_pct"]) < 0.5 and r["bbox_matches_manifest"] and r["on_bed_z0"] and g["brep_valid"])
+        # tier-dot inlays sit in their layer's frame (not on the bed); a section's colour part may be several islands
+        r["inlay"], r["multi_island_ok"] = bool(p.get("inlay_of")), p["family"] == "board-section"
+        ok = (r["watertight"] and r["winding_consistent"] and r["volume_positive"] and (r["bodies"] == 1 or r["multi_island_ok"])
+              and abs(r["volume_delta_pct"]) < 0.5 and r["bbox_matches_manifest"] and (r["on_bed_z0"] or r["inlay"]) and g["brep_valid"])
         check(ok, f"file check {p['id']}: {r}")
         # downward-facing area above the bed (needs bridging/overhang), print frame
         n = m.face_normals
@@ -160,6 +162,9 @@ def interface_checks():
                 "tang_bottom_z": round(tb[2], 3), "slot_floor_z": round(pc["base_height"] - g["tang_depth"] - g["slot_extra_depth"], 3),
             }
             check(res["glyph_in_base"][el]["only_rib_interference"] and res["glyph_in_base"][el]["keyed"], f"{v} glyph {el} slot fit {res['glyph_in_base'][el]}")
+        if P["variants"][v].get("interface", "IF1").startswith("IF2"):
+            out[v] = dict(res, **if2_checks(v, base, t2, t3))
+            continue
         # base on T2, T2 on T3
         b = pc["boss"]
         hseg = b["rib_protrusion"] - pc["recess"]["clearance_per_side"]
@@ -217,7 +222,91 @@ def interface_checks():
     return out
 
 
+def if2_checks(v, base, t2, t3):
+    """IF2: only the flex-beam bumps may overlap the collar; the key rejects any other rotation;
+    a base cannot seat on a T3; dots sit flush in their pockets; core clears the glyph slot."""
+    I, pc, g = P["if2"], P["piece"], P["glyph"]
+    b = I["beam"]
+
+    def Tz(z, rz=0.0):
+        c, s_ = math.cos(math.radians(rz)), math.sin(math.radians(rz))
+        return [[c, -s_, 0, 0], [s_, c, 0, 0], [0, 0, 1, z], [0, 0, 0, 1]]
+    T2, T3 = to_mf(t2), to_mf(t3)
+    depth = I["collar_height"] + I["groove_extra_depth"]
+    engaged = min(depth, I["collar_height"]) - (depth - b["bump_height"])  # collar height inside the bump band
+    exp = b["count"] * b["bump_arc"] * b["bump_interference"] * max(engaged, 0)
+    r = {"interface": P["variants"][v]["interface"], "hollow_pedestals": P["variants"][v].get("hollow_pedestals", False),
+         "base_on_t2_interference_mm3": round(ivol(to_mf(base, Tz(pc["t2_height"])), T2), 3),
+         "t2_on_t3_interference_mm3": round(ivol(to_mf(t2, Tz(pc["t3_height"])), T3), 3),
+         "expected_bump_preload_mm3_upper": round(exp, 3),
+         "base_on_t2_rotated": {str(a): round(ivol(to_mf(base, Tz(pc["t2_height"], a)), T2), 3) for a in (45, 90, 180, 270)},
+         "t2_on_t3_rotated": {str(a): round(ivol(to_mf(t2, Tz(pc["t3_height"], a)), T3), 3) for a in (45, 90, 180, 270)},
+         "base_on_t3_wrong_tier_mm3": round(ivol(to_mf(base, Tz(pc["t3_height"])), T3), 3),
+         "collar_engagement_mm": I["collar_height"]}
+    dots = {}
+    for layer, m in (("base", base), ("t2", t2), ("t3", t3)):
+        dots[layer] = round(ivol(to_mf(load(MP[f"{v}.dot-{layer}"]["geometry"]["stl"])), to_mf(m)), 4)
+    r["dot_vs_layer_interference_mm3"] = dots
+    ro2, ri2 = P["if2"]["collar_outer_r"]["2"], P["if2"]["collar_outer_r"]["2"] - I["collar_wall"]
+    slot_half_diag = math.hypot(g["tang_width"] / 2 + g["slot_clearance_per_side"], g["thickness"] / 2 + g["slot_clearance_per_side"])
+    r["core_radius_minus_slot_half_diagonal_mm"] = round(ri2 - I["inner_clearance"] - slot_half_diag, 3)
+    r["sections"] = {"base_at_slot_mid": {"min_wall_slot_to_outside_mm": None},
+                     "base_between_recess_and_slot": {"floor_mm": f"n/a (annular groove; core margin {r['core_radius_minus_slot_half_diagonal_mm']} mm)"}}
+    ok = (r["base_on_t2_interference_mm3"] <= exp * 1.6 + 0.05 and r["t2_on_t3_interference_mm3"] <= exp * 1.6 + 0.05
+          and min(r["base_on_t2_rotated"].values()) > 2.0 and min(r["t2_on_t3_rotated"].values()) > 2.0
+          and r["base_on_t3_wrong_tier_mm3"] > 20.0 and max(dots.values()) < 1e-3 and r["core_radius_minus_slot_half_diagonal_mm"] >= 2.0)
+    check(ok, f"{v} IF2 fits {r}")
+    return r
+
+
+def section_checks():
+    """Sectioned board: nine sections per tile style and scheme, colour parts per section
+    union to one body, sections do not overlap when assembled, colours match the scheme."""
+    out = {}
+    rmap = MAN["resource_map"]["values_row_major_y_then_x"]
+    for v in P["variants"]:
+        if P["variants"][v].get("extends"):
+            continue
+        out[v] = {}
+        for scheme in ("gray", "gradient"):
+            secs = {}
+            for r in MAN["parts"]:
+                if r["variant"] == v and r.get("section", {}).get("scheme") == scheme:
+                    secs.setdefault(r["section"]["name"], []).append(r)
+            bodies, colours_ok = {}, True
+            for name, rows in secs.items():
+                x0, x1, y0, y1 = rows[0]["section"]["bounds"]
+                cx, cy = rows[0]["section"]["centre_mm"]
+                want = {PT.square_colour(P, scheme, x, y, rmap) for x in range(x0, x1) for y in range(y0, y1)}
+                have = {rr["instances"][0]["color"] for rr in rows}
+                colours_ok &= want == have
+                ms = [to_mf(load(rr["geometry"]["stl"]), [[1, 0, 0, cx], [0, 1, 0, cy], [0, 0, 1, 0], [0, 0, 0, 1]]) for rr in rows]
+                bodies[name] = mf.Manifold.batch_boolean(ms, mf.OpType.Add)
+            worst = max(ivol(a, b) for a, b in itertools.combinations(bodies.values(), 2))
+            allm = mf.Manifold.batch_boolean(list(bodies.values()), mf.OpType.Add)
+            bb = allm.bounding_box()
+            res = {"sections": len(secs), "colour_parts": sum(len(x) for x in secs.values()), "colours_match_scheme": bool(colours_ok),
+                   "section_interference_max_mm3": round(worst, 4), "outer_size_mm": [round(bb[3] - bb[0], 2), round(bb[4] - bb[1], 2)],
+                   "largest_section_mm": max(max(rr["geometry"]["bbox_mm"][:2]) for rows in secs.values() for rr in rows)}
+            check(res["sections"] == 9 and colours_ok and worst < 1e-3 and max(res["outer_size_mm"]) <= 10 * P["board"]["pitch"] + 0.01
+                  and res["largest_section_mm"] <= 300, f"sections {v} {scheme} {res}")
+            out[v][scheme] = res
+    return out
+
+
 # ------------------------------------------------------------ 3. assemblies
+def state_tol(v):
+    """Largest allowed pairwise overlap inside an assembled state: IF1 crush ribs < 1 mm³;
+    IF2 the designed bump preload (4 bumps x arc x preload x engaged height) with 60 % margin."""
+    if not P["variants"][v].get("interface", "IF1").startswith("IF2"):
+        return 1.0
+    I = P["if2"]
+    b = I["beam"]
+    depth = I["collar_height"] + I["groove_extra_depth"]
+    engaged = min(depth, I["collar_height"]) - (depth - b["bump_height"])
+    return max(1.0, b["count"] * b["bump_arc"] * b["bump_interference"] * engaged * 1.6 + 0.05)
+
+
 def assembly_checks():
     res = {"piece_states": {}, "missing_files": []}
     for v, V in ASM["variants"].items():
@@ -233,14 +322,14 @@ def assembly_checks():
             worst = max(worst, inter)
             has = {pp["label"] for pp in s["parts"]}
             layers_ok = (s["tier"] < 3 or {"T3 addition", "T2 addition", "Ownership base (T1)"} <= has) and (s["tier"] != 2 or "T2 addition" in has)
-            ok = inter < 1.0 and layers_ok and len(s["parts"]) == s["tier"] + 1
+            ok = inter < state_tol(v) and layers_ok and len([pp for pp in s["parts"] if not pp["part"].split(".")[-1].startswith("dot-")]) == s["tier"] + 1
             n_ok += ok
             check(ok, f"state {s['id']} inter {inter} parts {len(s['parts'])}")
         res["piece_states"][v] = {"states": len(V["piece_states"]), "ok": n_ok, "max_pair_interference_mm3": round(worst, 3),
                                   "combos": sorted({(s["element"], s["owner"], s["tier"]) for s in V["piece_states"]}).__len__()}
         check(len(V["piece_states"]) == 36, f"{v} has {len(V['piece_states'])} states")
     res["total_states"] = sum(r["states"] for r in res["piece_states"].values())
-    check(res["total_states"] == 108 and not res["missing_files"], "state count / files")
+    check(res["total_states"] == 36 * len(ASM["variants"]) and not res["missing_files"], "state count / files")
     return res
 
 
@@ -351,14 +440,27 @@ def write_md(rep):
           f"half token on cube {c['half_on_cube_interference_mm3']} mm³; stud engagement {c['stud_engagement_mm']} mm; radial clearance {c['radial_clearance_mm']} mm; "
           f"four-high stack {c['four_high_stack_height_above_tile_mm']} mm.", "",
           "## Assemblies", "",
-          f"- {rep['assemblies']['total_states']} of 108 element × owner × tier states resolve to existing GLB and STL files. Every T3 contains base, T2 and T3. "
-          f"Maximum pairwise interference inside any state: {max(r['max_pair_interference_mm3'] for r in rep['assemblies']['piece_states'].values())} mm³ (the glyph's crush ribs).",
+          f"- {rep['assemblies']['total_states']} of {36 * len(V)} element × owner × tier states resolve to existing GLB and STL files. Every T3 contains base, T2 and T3. "
+          f"Maximum pairwise interference inside any state: {max(r['max_pair_interference_mm3'] for r in rep['assemblies']['piece_states'].values())} mm³ (IF1 crush ribs; IF2 flex-beam bump preload).",
           "", "## Board", ""]
     for v in V:
         b = rep["board"][v]
         L.append(f"- **{v}:** {b['tiles']} tiles = {b['gray']} gray + {b['ivory']} ivory + {b['charcoal']} charcoal; A1 {b['A1']}, J10 {b['J10']}; "
                  f"neighbour interference {b['neighbour_interference_max_mm3']} mm³; outline {b['outer_size_mm']} mm, no tab beyond it: {b['no_tab_beyond_outline']}; "
                  f"crystals {b['crystals']} (resourceMap.ts total {b['resource_total_from_resourceMap_ts']}); types {b['tile_types']}.")
+    L += ["", "## Board in nine sections", ""]
+    for v, d in rep["sections"].items():
+        for scheme, r in d.items():
+            L.append(f"- **{v} / {scheme}:** {r['sections']} sections, {r['colour_parts']} colour parts, colours match the scheme: {r['colours_match_scheme']}; "
+                     f"section overlap {r['section_interference_max_mm3']} mm³; assembled outline {r['outer_size_mm']} mm; largest section {r['largest_section_mm']} mm (bed 300 × 320).")
+    if2v = [v for v in V if "expected_bump_preload_mm3_upper" in I[v]]
+    if if2v:
+        L += ["", "## IF2 joints (Turned Court keyed / ring)", "", "| Check | " + " | ".join(if2v) + " |", "|---|" + "---|" * len(if2v)]
+        L.append("| Base on T2 / T2 on T3 overlap = bump preload only (mm³; bound) | " + " | ".join(f"{I[v]['base_on_t2_interference_mm3']} / {I[v]['t2_on_t3_interference_mm3']} (≤ {I[v]['expected_bump_preload_mm3_upper']})" for v in if2v) + " |")
+        L.append("| Wrong rotation collides (min over 45/90/180/270°, mm³) | " + " | ".join(f"{min(I[v]['base_on_t2_rotated'].values())} / {min(I[v]['t2_on_t3_rotated'].values())}" for v in if2v) + " |")
+        L.append("| Base on a T3 (wrong tier) collides (mm³) | " + " | ".join(str(I[v]["base_on_t3_wrong_tier_mm3"]) for v in if2v) + " |")
+        L.append("| Tier dots flush in pockets (max overlap mm³) | " + " | ".join(str(max(I[v]["dot_vs_layer_interference_mm3"].values())) for v in if2v) + " |")
+        L.append("| Groove core clears the glyph slot by (mm) | " + " | ".join(str(I[v]["core_radius_minus_slot_half_diagonal_mm"]) for v in if2v) + " |")
     L += ["", "## Crowded patch and ergonomics (digital part only)", ""]
     for v in V:
         cp = rep["crowded_patch"][v]
@@ -391,18 +493,18 @@ def main():
     rep = {"generated": t, "scope": "Digital checks of exported files only. No slicer, no printer.",
            "files": file_checks(), "threemf": threemf_checks(), "interfaces": interface_checks(),
            "assemblies": assembly_checks(), "board": board_checks(), "crowded_patch": crowded_checks(),
-           "lift": lift_checks(), "coexistence_loose_glyph": ASM["loose_beside_piece"]}
+           "lift": lift_checks(), "sections": section_checks(), "coexistence_loose_glyph": ASM["loose_beside_piece"]}
     inv = MAN["inventory"]
     rep["inventory"] = {v: inv[v]["objects"] for v in inv}
     check(all(n == 891 for n in rep["inventory"].values()), f"inventory {rep['inventory']}")
     rep["failures"] = fails
     rep["passed"] = not fails
     (OUT / "validation").mkdir(exist_ok=True)
-    (OUT / "validation" / "validation.json").write_text(json.dumps(rep, indent=1))
+    (OUT / "validation" / "validation.json").write_text(json.dumps(rep, indent=1, default=lambda o: o.item() if hasattr(o, "item") else str(o)))
     for p in MAN["parts"]:
         p["validation"]["digital"] = "pass" if rep["files"][p["id"]]["ok"] else "FAIL"
     MAN["validation_summary"] = {"generated": t, "digital_passed": rep["passed"], "failures": len(fails),
-                                 "slicer": "not performed (Bambu Studio not available in the build environment)",
+                                 "slicer": "see validation/slicer/ (cad/slice_check.py)",
                                  "physical": "not performed"}
     (OUT / "manifest.json").write_text(json.dumps(MAN, indent=1, ensure_ascii=False))
     write_md(rep)

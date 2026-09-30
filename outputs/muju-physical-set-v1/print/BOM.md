@@ -58,7 +58,7 @@ Assumptions for the per-part estimates:
 
 Consumed-filament cost is far below the cost of buying ten whole spools; the spool column is what you must buy.
 
-**Slicer totals (16 plates, Bambu Studio 02.08.02.61):** 44.4 h printing, 1408 g filament (excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.
+**Slicer totals (34 plates, Bambu Studio 02.08.02.61):** 73.3 h printing, 2934 g filament (excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.
 
 ## Pebble (`pebble`) — 891 printed objects
 
@@ -107,7 +107,7 @@ Consumed-filament cost is far below the cost of buying ten whole spools; the spo
 
 Consumed-filament cost is far below the cost of buying ten whole spools; the spool column is what you must buy.
 
-**Slicer totals (16 plates, Bambu Studio 02.08.02.61):** 43.4 h printing, 1407 g filament (excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.
+**Slicer totals (34 plates, Bambu Studio 02.08.02.61):** 72.4 h printing, 2936 g filament (excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.
 
 ## Turned Court (`turned`) — 891 printed objects
 
@@ -156,7 +156,113 @@ Consumed-filament cost is far below the cost of buying ten whole spools; the spo
 
 Consumed-filament cost is far below the cost of buying ten whole spools; the spool column is what you must buy.
 
-**Slicer totals (16 plates, Bambu Studio 02.08.02.61):** 47.2 h printing, 1432 g filament (excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.
+**Slicer totals (34 plates, Bambu Studio 02.08.02.61):** 80.6 h printing, 3021 g filament (excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.
+
+## Turned Court · Keyed (`turned-keyed`) — 1035 printed objects
+
+| Colour / material | Filament lead | Part | Qty | Est. g each | Est. g total |
+|---|---|---|---:|---:|---:|
+| charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-keyed.base` | 48 | 2.95 | 141.7 |
+| charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-keyed.t2` | 18 | 2.4 | 43.3 |
+| charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-keyed.t3` | 6 | 3.55 | 21.3 |
+| charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-keyed.tile-corner-ne` | 1 | 9.11 | 9.1 |
+| crystal (PETG) | Bambu PETG Translucent Teal | `shared.crystal` | 550 | 0.21 | 116.3 |
+| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.08 | 0.1 |
+| dot (PLA) | Bambu PLA Basic Turquoise | `turned-keyed.dot-base` | 96 | 0.0 | 0.4 |
+| dot (PLA) | Bambu PLA Basic Turquoise | `turned-keyed.dot-t2` | 36 | 0.0 | 0.2 |
+| dot (PLA) | Bambu PLA Basic Turquoise | `turned-keyed.dot-t3` | 12 | 0.0 | 0.1 |
+| fire (PLA) | Bambu PLA Basic Red | `turned-keyed.glyph-fire` | 16 | 0.66 | 10.6 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-keyed.tile-corner-nw` | 1 | 9.66 | 9.7 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-keyed.tile-corner-se` | 1 | 9.66 | 9.7 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-keyed.tile-edge-e` | 8 | 9.37 | 75.0 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-keyed.tile-edge-n` | 5 | 9.37 | 46.9 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-keyed.tile-edge-n-flat` | 3 | 9.32 | 28.0 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-keyed.tile-edge-s` | 5 | 9.92 | 49.6 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-keyed.tile-edge-s-flat` | 3 | 9.87 | 29.6 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-keyed.tile-edge-w` | 8 | 9.92 | 79.4 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-keyed.tile-interior` | 52 | 9.64 | 501.3 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-keyed.tile-interior-flat` | 12 | 9.59 | 115.1 |
+| ivory (PLA) | Bambu PLA Matte Ivory White | `turned-keyed.base` | 48 | 2.95 | 141.7 |
+| ivory (PLA) | Bambu PLA Matte Ivory White | `turned-keyed.t2` | 18 | 2.4 | 43.3 |
+| ivory (PLA) | Bambu PLA Matte Ivory White | `turned-keyed.t3` | 6 | 3.55 | 21.3 |
+| ivory (PLA) | Bambu PLA Matte Ivory White | `turned-keyed.tile-corner-sw` | 1 | 10.21 | 10.2 |
+| lightning (PLA) | Bambu PLA Basic Yellow | `turned-keyed.glyph-lightning` | 16 | 0.59 | 9.4 |
+| metal (PLA) | Bambu PLA Metal Copper Brown Metallic | `turned-keyed.glyph-metal` | 16 | 1.01 | 16.2 |
+| plant (PLA) | Bambu PLA Basic Bambu Green | `turned-keyed.glyph-plant` | 16 | 1.05 | 16.7 |
+| shadow (PLA) | Bambu PLA Basic Purple | `turned-keyed.glyph-shadow` | 16 | 0.68 | 10.9 |
+| water (PLA) | Bambu PLA Basic Cobalt Blue | `turned-keyed.glyph-water` | 16 | 1.0 | 16.0 |
+
+| Colour | Objects | Est. consumed g | Est. consumed cost (placeholder price) | Whole 1 kg spools to buy |
+|---|---:|---:|---:|---:|
+| charcoal | 73 | 215 | $4.31 | 1 |
+| crystal | 551 | 116 | $2.33 | 1 |
+| dot | 144 | 1 | $0.01 | 1 |
+| fire | 16 | 11 | $0.21 | 1 |
+| gray | 98 | 944 | $18.89 | 2 |
+| ivory | 73 | 216 | $4.33 | 1 |
+| lightning | 16 | 9 | $0.19 | 1 |
+| metal | 16 | 16 | $0.32 | 1 |
+| plant | 16 | 17 | $0.33 | 1 |
+| shadow | 16 | 11 | $0.22 | 1 |
+| water | 16 | 16 | $0.32 | 1 |
+| **total** | **1035** | **1573** | **$31.46** | **12 spools (10 colours)** |
+
+Consumed-filament cost is far below the cost of buying ten whole spools; the spool column is what you must buy.
+
+**Slicer totals (4 plates, Bambu Studio 02.08.02.61):** 16.3 h printing, 436 g filament (excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.
+
+## Turned Court · Rings (`turned-ring`) — 1035 printed objects
+
+| Colour / material | Filament lead | Part | Qty | Est. g each | Est. g total |
+|---|---|---|---:|---:|---:|
+| charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-ring.base` | 48 | 2.95 | 141.7 |
+| charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-ring.t2` | 18 | 1.52 | 27.4 |
+| charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-ring.t3` | 6 | 2.53 | 15.2 |
+| charcoal (PLA) | Bambu PLA Matte Charcoal | `turned-ring.tile-corner-ne` | 1 | 9.11 | 9.1 |
+| crystal (PETG) | Bambu PETG Translucent Teal | `shared.crystal` | 550 | 0.21 | 116.3 |
+| crystal (PETG) | Bambu PETG Translucent Teal | `shared.half-crystal` | 1 | 0.08 | 0.1 |
+| dot (PLA) | Bambu PLA Basic Turquoise | `turned-ring.dot-base` | 96 | 0.0 | 0.4 |
+| dot (PLA) | Bambu PLA Basic Turquoise | `turned-ring.dot-t2` | 36 | 0.0 | 0.2 |
+| dot (PLA) | Bambu PLA Basic Turquoise | `turned-ring.dot-t3` | 12 | 0.0 | 0.1 |
+| fire (PLA) | Bambu PLA Basic Red | `turned-ring.glyph-fire` | 16 | 0.66 | 10.6 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-ring.tile-corner-nw` | 1 | 9.66 | 9.7 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-ring.tile-corner-se` | 1 | 9.66 | 9.7 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-ring.tile-edge-e` | 8 | 9.37 | 75.0 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-ring.tile-edge-n` | 5 | 9.37 | 46.9 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-ring.tile-edge-n-flat` | 3 | 9.32 | 28.0 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-ring.tile-edge-s` | 5 | 9.92 | 49.6 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-ring.tile-edge-s-flat` | 3 | 9.87 | 29.6 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-ring.tile-edge-w` | 8 | 9.92 | 79.4 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-ring.tile-interior` | 52 | 9.64 | 501.3 |
+| gray (PLA) | Bambu PLA Matte Ash Gray (alt. Nardo Gray) | `turned-ring.tile-interior-flat` | 12 | 9.59 | 115.1 |
+| ivory (PLA) | Bambu PLA Matte Ivory White | `turned-ring.base` | 48 | 2.95 | 141.7 |
+| ivory (PLA) | Bambu PLA Matte Ivory White | `turned-ring.t2` | 18 | 1.52 | 27.4 |
+| ivory (PLA) | Bambu PLA Matte Ivory White | `turned-ring.t3` | 6 | 2.53 | 15.2 |
+| ivory (PLA) | Bambu PLA Matte Ivory White | `turned-ring.tile-corner-sw` | 1 | 10.21 | 10.2 |
+| lightning (PLA) | Bambu PLA Basic Yellow | `turned-ring.glyph-lightning` | 16 | 0.59 | 9.4 |
+| metal (PLA) | Bambu PLA Metal Copper Brown Metallic | `turned-ring.glyph-metal` | 16 | 1.01 | 16.2 |
+| plant (PLA) | Bambu PLA Basic Bambu Green | `turned-ring.glyph-plant` | 16 | 1.05 | 16.7 |
+| shadow (PLA) | Bambu PLA Basic Purple | `turned-ring.glyph-shadow` | 16 | 0.68 | 10.9 |
+| water (PLA) | Bambu PLA Basic Cobalt Blue | `turned-ring.glyph-water` | 16 | 1.0 | 16.0 |
+
+| Colour | Objects | Est. consumed g | Est. consumed cost (placeholder price) | Whole 1 kg spools to buy |
+|---|---:|---:|---:|---:|
+| charcoal | 73 | 193 | $3.87 | 1 |
+| crystal | 551 | 116 | $2.33 | 1 |
+| dot | 144 | 1 | $0.01 | 1 |
+| fire | 16 | 11 | $0.21 | 1 |
+| gray | 98 | 944 | $18.89 | 2 |
+| ivory | 73 | 194 | $3.89 | 1 |
+| lightning | 16 | 9 | $0.19 | 1 |
+| metal | 16 | 16 | $0.32 | 1 |
+| plant | 16 | 17 | $0.33 | 1 |
+| shadow | 16 | 11 | $0.22 | 1 |
+| water | 16 | 16 | $0.32 | 1 |
+| **total** | **1035** | **1529** | **$30.58** | **12 spools (10 colours)** |
+
+Consumed-filament cost is far below the cost of buying ten whole spools; the spool column is what you must buy.
+
+**Slicer totals (4 plates, Bambu Studio 02.08.02.61):** 15.9 h printing, 402 g filament (excludes failed prints and purge). Per plate: `validation/slicer/slicer-checks.md`.
 
 ## Calibration coupons (separate from production inventory)
 
@@ -185,5 +291,15 @@ Consumed-filament cost is far below the cost of buying ten whole spools; the spo
 | `shared.coupon-tile-socket-15` | gray | 1 | 4.0 |
 | `shared.coupon-tile-socket-25` | gray | 1 | 4.0 |
 | `shared.coupon-tile-socket-35` | gray | 1 | 4.0 |
+| `shared.coupon-if2-socket-10` | ivory | 1 | 1.9 |
+| `shared.coupon-if2-socket-10` | charcoal | 1 | 1.9 |
+| `shared.coupon-if2-socket-15` | ivory | 1 | 1.9 |
+| `shared.coupon-if2-socket-15` | charcoal | 1 | 1.9 |
+| `shared.coupon-if2-socket-20` | ivory | 1 | 1.9 |
+| `shared.coupon-if2-socket-20` | charcoal | 1 | 1.9 |
+| `shared.coupon-if2-socket-25` | ivory | 1 | 1.9 |
+| `shared.coupon-if2-socket-25` | charcoal | 1 | 1.9 |
+| `shared.coupon-if2-collar` | ivory | 1 | 1.5 |
+| `shared.coupon-if2-collar` | charcoal | 1 | 1.5 |
 
-Calibration objects: **35**, about 78 g.
+Calibration objects: **45**, about 97 g.

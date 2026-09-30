@@ -4,16 +4,31 @@ Updated 2026-09-30 (second session: flat zero-crystal tiles, slicer checks on a 
 prompt 00, brief 01, stages 02–06), executed end to end without approval checkpoints. The exact
 repository revision and the sha256 of every Muju source read are in `manifest.json → sources`.
 
+## Added in the second session (2026-09-30)
+
+- **Flat tiles** on the 18 squares that start with 0 crystals (no studs).
+- **Slicer checks:** every plate is sliced headlessly in Bambu Studio (`cad/slice_check.py`).
+- **Turned Court · Keyed** and **Turned Court · Rings:** two piece variants with interface
+  **IF2**. A tube collar fits an annular groove, four in-plane flex beams with bump preload
+  grip it, a one-way back key aligns the layers, and a turquoise tier-dot inlay sits on every
+  layer (T1 = 1 dot, T2 = 2, T3 = 3). Keyed has solid pedestals; Rings has hollow T2/T3. Both
+  reuse Turned Court's glyphs, tiles and crystals. Five IF2 coupons are in `print/calibration/`.
+- **Board colour by starting crystals** (mock-up): 16 Bone White, 8 Ash Gray, 4 Nardo Gray,
+  0 Dark Gray, with the homes in the army colours.
+- **Board in nine sections** (3×3 corners, 3×4 edges, 4×4 centre) for Facet, Pebble and
+  Turned Court, in the gray and gradient schemes, with one multi-part 3MF per section.
+- Design record: `research/engineering-decisions.md` → *Addendum 2026-09-30*.
+
 ## Evidence ladder
 
 | Evidence kind | State |
 |---|---|
 | Concept sketches (`concepts/`) | **Done.** 9 vector boards (3 per variant) plus saved raster prompts. No AI raster art: no image-generation tool was available. |
-| Actual models (`models/`) | **Done.** 81 part geometries (23 per variant + 12 shared/coupon files); STEP, STL, GLB; 53 geometry-only plate 3MFs |
-| Model renders (`renders/`) | **Done.** 25 scene renders, 81 part renders and 108 state renders of the exported GLBs (three.js in headless Chromium). All inspected. |
-| Digital checks (`validation/`) | **Passed:** 0 failures. Files, 3MF strict reads, fits by mesh booleans, keying, sections, 108 states, board, crowded patch, inventory. |
-| Gallery QA (`validation/gallery-qa/`) | **Passed:** 53/53 browser checks, 0 console/HTTP errors, desktop 1440 px and mobile 390 px, screenshots inspected |
-| Slicer checks (`validation/slicer/`) | **Passed:** all 53 plates slice headlessly in Bambu Studio 02.08.02.61 (H2C 0.4 nozzle, 0.20mm Standard, Textured PEI; guide settings), every object present, no warnings, no supports. About 44–47 h and 1.4 kg per set. A visual preview of bridges and the 0.9 mm floor was not inspected. |
+| Actual models (`models/`) | **Done.** 221 manifest parts: 3 styles × (6 glyphs + base, T2, T3 + 12 tile types + 29 section colour parts) = 150; 2 IF2 variants × (base, T2, T3, 3 dots + 18 aliases of Turned Court glyphs and tiles) = 48; 23 shared (2 crystal, 21 coupon). STEP, STL, GLB. 117 plate 3MFs (multi-part where there are two or more colours) |
+| Model renders (`renders/`) | **Done.** 50 scene renders, 116 part renders (board-section colour parts are shown in the board scenes instead) and 180 state renders of the exported GLBs (three.js in headless Chromium). Key new renders inspected. |
+| Digital checks (`validation/`) | **Passed:** 0 failures. 221/221 files, 117 3MF strict reads, fits by mesh booleans (IF1 and IF2), keying, wrong-tier rejection, dot seating, 180 states, board, nine-section boards, crowded patch, inventory 891 per variant. |
+| Gallery QA (`validation/gallery-qa/`) | **Passed:** 92/92 browser checks (5 variants, 8 board scenes each incl. gradient and 9-section boards), 0 console/HTTP errors, desktop 1440 px and mobile 390 px |
+| Slicer checks (`validation/slicer/`) | **Passed:** all 117 plates slice headlessly in Bambu Studio 02.08.02.61 (H2C 0.4 nozzle, 0.20mm Standard, Textured PEI; guide settings), every object present, no warnings, no supports. Single-tile sets 43–47 h / 1.4 kg; 9-section board 14.5–16.7 h / 0.8 kg; IF2 army plates ~8 h each. **Multi-colour plates (tier dots, gradient sections, home squares) were sliced as one-filament geometry**: the CLI cannot slice multi-filament H2C plates without a GUI-made project, so colour-swap time is not included and part-to-filament assignment is unconfirmed. Bridges and the IF1 0.9 mm floor were not inspected in a layer preview. |
 | Physical prints | **Not performed.** No printer was started and no filament was bought. `print/PHYSICAL-TEST-SEQUENCE.md` has blanks. |
 
 ## Completed artifacts
@@ -78,3 +93,11 @@ repository revision and the sha256 of every Muju source read are in `manifest.js
 5. The 0.9 mm floor between base recess and glyph slot: the bases slice without support; still look at the
    layer preview in Bambu Studio before the first army plate.
 6. Colour check of Ash Gray against Ivory, Charcoal and Cobalt, and of Teal translucency at 6 mm.
+7. **IF2 grip:** bump preload 0.10–0.25 mm (coupon sweep). The pull-off force of about 1 N is an
+   estimate. Also check that the beams survive 100 cycles.
+8. **Rings or solid pedestals:** tipping and feel in the hand (test I.7).
+9. **Multi-colour plates:** open an IF2 army plate and a gradient section in Bambu Studio and
+   confirm each part is on its filament. The CLI could not slice multi-filament H2C plates, so
+   those were sliced as one-filament geometry.
+10. **Gradient contrast:** Bone White (16) against the Ivory White home, and Nardo against Dark
+    Gray, in hand.

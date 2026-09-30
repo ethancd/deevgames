@@ -43,7 +43,8 @@ PBR = {  # viewing materials (GLB only); colours from params.palette
     "ivory": (0.0, 0.75), "charcoal": (0.0, 0.75), "gray": (0.0, 0.8),
     "fire": (0.0, 0.45), "lightning": (0.0, 0.45), "water": (0.0, 0.45),
     "shadow": (0.0, 0.45), "plant": (0.0, 0.45), "metal": (0.65, 0.38),
-    "crystal": (0.0, 0.15),
+    "crystal": (0.0, 0.15), "dot": (0.0, 0.45),
+    "tile16": (0.0, 0.8), "tile4": (0.0, 0.8), "tile0": (0.0, 0.7),
 }
 
 
@@ -183,6 +184,56 @@ def write_plates(name: str, items: list[tuple[str, str, int]], parts: dict, fold
     return out
 
 
+def write_multi_plates(name: str, groups: list[tuple[str, list[tuple[str, str]], int]], parts: dict, folder: Path, title: str):
+    """groups: (object_name, [(part_key, colour), ...], qty). Each object is one multi-part
+    3MF object (components share one frame); Bambu Studio's model_settings.config assigns
+    each part the filament slot of its colour (slot order = first appearance on the plate)."""
+    folder.mkdir(parents=True, exist_ok=True)
+    fps = []
+    for gname, comps, qty in groups:
+        lo = np.min([parts[k]["_mesh"].bounds[0] for k, _ in comps], axis=0)
+        hi = np.max([parts[k]["_mesh"].bounds[1] for k, _ in comps], axis=0)
+        for i in range(qty):
+            fps.append((f"{gname}|{i}", hi[0] - lo[0], hi[1] - lo[1], (lo, hi, comps, gname)))
+    plates = pack([(a, w, h) for a, w, h, _ in fps])
+    info = {a: x for a, _, _, x in fps}
+    out = []
+    for n, plate in enumerate(plates, 1):
+        objs, mesh_ids, grp_ids, mats, slots, items3, bparts = [], {}, {}, [], {}, [], {}
+        for pid, cx, cy in plate:
+            lo, hi, comps, gname = info[pid]
+            for _, col in comps:
+                if col not in slots:
+                    slots[col] = len(slots) + 1
+                    mats.append({"name": f"{col} — {P['palette'][col]['lead']}", "hex": P["palette"][col]["hex"]})
+            if gname not in grp_ids:
+                cids = []
+                for k, col in comps:
+                    if (k, col) not in mesh_ids:
+                        m = parts[k]["_mesh"]
+                        mesh_ids[(k, col)] = len(objs) + 2
+                        objs.append({"id": mesh_ids[(k, col)], "name": f"{k.replace('/', '_')} [{col}]", "vertices": m.vertices,
+                                     "faces": m.faces, "material_index": slots[col] - 1})
+                    cids.append(mesh_ids[(k, col)])
+                grp_ids[gname] = None
+                gid = 10000 + len(grp_ids)
+                grp_ids[gname] = gid
+                objs.append({"id": gid, "name": gname, "components": cids})
+                bparts[gid] = (gname, [(mesh_ids[(k, col)], f"{k.split('/')[-1]} [{col}]", slots[col]) for k, col in comps])
+            T = np.eye(4)
+            T[:3, 3] = [cx - (lo[0] + hi[0]) / 2, cy - (lo[1] + hi[1]) / 2, -lo[2]]
+            items3.append({"object_id": grp_ids[gname], "transform": T})
+        path = folder / f"{name}-plate{n:02d}.3mf"
+        write_3mf(path, objs, items3, f"{title} plate {n}", mats, {"Units": "millimeter", "Kind": "multi-part print plate"}, bambu_parts=bparts)
+        counts = {}
+        for pid, _, _ in plate:
+            g = pid.rsplit("|", 1)[0]
+            counts[g] = counts.get(g, 0) + 1
+        out.append({"file": rel(path), "objects": len(plate), "contents": counts, "filament_slots": list(slots), "multi_part": True,
+                    "sha256": sha(path)})
+    return out
+
+
 # ------------------------------------------------------------------ main
 def main():
     ap = argparse.ArgumentParser()
@@ -203,10 +254,10 @@ def main():
     parts: dict[str, dict] = {}
     manifest_parts = []
 
-    def add(key, shape, family, role, variant, colors_qty: dict, orientation, assemblies, extra=None, production=True):
+    def add(key, shape, family, role, variant, colors_qty: dict, orientation, assemblies, extra=None, production=True, view_colors=()):
         folder = OUT / "models" / variant
         pid = key.split("/", 1)[1]
-        info = export_part(shape, pid, folder, list(colors_qty))
+        info = export_part(shape, pid, folder, list(colors_qty) + [c for c in view_colors if c not in colors_qty])
         parts[key] = info
         row = {"id": key.replace("/", "."), "variant": variant, "family": family, "role": role,
                "geometry": {k: v for k, v in info.items() if not k.startswith("_")},
@@ -253,10 +304,50 @@ def main():
             "coupon", f"Tile-edge strip, socket clearance {c:.2f} mm per side", "shared", {"gray": 1}, "Flat.", [],
             {"coupon": {"tab_clearance_per_side": c}}, production=False)
 
+    def alias(key, parent_key, variant):
+        """Reuse a parent variant's identical part (same files) under this variant's id."""
+        parts[key] = parts[parent_key]
+        src = next(r for r in manifest_parts if r["id"] == parent_key.replace("/", "."))
+        row = json.loads(json.dumps(src))
+        row.update({"id": key.replace("/", "."), "variant": variant, "alias_of": src["id"]})
+        manifest_parts.append(row)
+
+    if any(P["variants"][v].get("interface", "").startswith("IF2") for v in variants):
+        clg = log.setdefault("shared", [])
+        for i, bi in enumerate((0.10, 0.15, 0.20, 0.25), 1):
+            add(f"shared/coupon-if2-socket-{int(bi * 100):02d}", PT.coupon_if2_socket(P, bi, i), "coupon",
+                f"IF2 base-groove sweep: flex-beam bump preload {bi:.2f} mm ({i} notch{'es' if i > 1 else ''})", "shared",
+                {"ivory": 1, "charcoal": 1}, "Groove down, like a base.", [], {"coupon": {"bump_interference": bi, "notches": i}}, production=False)
+        add("shared/coupon-if2-collar", PT.coupon_if2_collar(P, clg), "coupon", "IF2 T2-size collar key (with back key lug) for the socket sweep",
+            "shared", {"ivory": 1, "charcoal": 1}, "Collar up.", [], production=False)
+
     for v in variants:
         V = P["variants"][v]
         lg = log.setdefault(v, [])
         print(f"variant {v}", flush=True)
+        if V.get("extends"):
+            par = V["extends"]
+            assert f"{par}/base" in parts, f"build {par} before {v}"
+            for r in [r for r in manifest_parts if r["variant"] == par and r["family"] in ("glyph", "tile")]:
+                alias(f"{v}/{r['id'].split('.', 1)[1]}", r["id"].replace(".", "/", 1), v)
+            hollow = V["hollow_pedestals"]
+            kind = "ring" if hollow else "solid keyed"
+            add(f"{v}/base", PT.if2_base(P, V, lg), "base",
+                "Octagonal ownership base (T1), IF2: keyed glyph slot on top; annular groove below with four flex beams and a back key notch; tier-dot pocket at the front", v,
+                {"ivory": 48, "charcoal": 48}, "Upright: groove down (2.2 mm annular bridge), slot up. Print with the dot part in turquoise.",
+                ["piece-states", "crowded-patch"], {"interface": "IF2"})
+            add(f"{v}/t2", PT.if2_pedestal(P, V, 2, lg, hollow), "pedestal-t2",
+                f"T2 addition ({kind}), IF2: keyed collar up for the base; groove with flex beams below for the T3 collar; tier dot at the front", v,
+                {"ivory": 18, "charcoal": 18}, "Upright: groove down, collar up.", ["piece-states", "crowded-patch"], {"interface": "IF2", "hollow": hollow})
+            add(f"{v}/t3", PT.if2_pedestal(P, V, 3, lg, hollow), "pedestal-t3",
+                f"T3 addition ({kind}), IF2: keyed collar up for T2; flat bottom; tier dot at the front", v,
+                {"ivory": 6, "charcoal": 6}, "Upright: flat bottom down, collar up.", ["piece-states", "crowded-patch"], {"interface": "IF2", "hollow": hollow})
+            for layer, q in (("base", 96), ("t2", 36), ("t3", 12)):
+                add(f"{v}/dot-{layer}", PT.if2_dot_part(P, V, layer), "tier-dot",
+                    f"Tier-dot inlay for the {layer} (same frame as the {layer}; printed as a second-filament part of it)", v,
+                    {"dot": q}, f"Part of the {layer} object on the plate (filament slot for turquoise).", ["piece-states"],
+                    {"inlay_of": f"{v}.{layer}"})
+            continue
         for el in G.ELEMENTS:
             meta = {k: val for k, val in outlines[el].items() if k not in ("outline", "canonical_mm")}
             add(f"{v}/glyph-{el}", PT.glyph(outlines[el]["outline"], P, V, lg, f"{v} {el}"), "glyph",
@@ -280,7 +371,20 @@ def main():
                 role + " (tabs E/N where a neighbour exists, sockets W/S)", v, qty,
                 "Flat, top up. Brim optional (see print guide).", ["board", "tile-join", "resource-states", "crowded-patch"],
                 {"tile_type": tt, "studs": not flat,
-                 "tabs_sockets": dict(zip(("east_tab", "north_tab", "west_socket", "south_socket"), flags))})
+                 "tabs_sockets": dict(zip(("east_tab", "north_tab", "west_socket", "south_socket"), flags))},
+                view_colors=("tile16", "tile4", "tile0"))
+        # alternative board: nine printed sections, in both colour schemes
+        for sname, x0, x1, y0, y1 in PT.section_bounds(P):
+            whole = PT.board_section(P, V, x0, x1, y0, y1, rmap, lg, f"{v} section {sname}")
+            for scheme in ("gray", "gradient"):
+                regions = PT.section_colour_regions(P, x0, x1, y0, y1, lambda x, y: PT.square_colour(P, scheme, x, y, rmap))
+                for col, body in PT.split_by_regions(whole, regions, P["board"]["tile_thickness"]).items():
+                    add(f"{v}/section-{scheme}-{sname}-{col}", body, "board-section",
+                        f"Board section {sname.upper()} ({x1 - x0}x{y1 - y0} squares, {scheme} scheme): the {col} squares", v,
+                        {col: 1}, "Flat, top up; one multi-part object per section.", ["board-sections"],
+                        {"section": {"name": sname, "bounds": [x0, x1, y0, y1], "scheme": scheme,
+                                     "centre_mm": PT.section_centre(P, x0, x1, y0, y1)}, "alternative": "sectioned board"},
+                        production=False)
 
     manifest = {
         "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
@@ -298,13 +402,13 @@ def main():
     # inventory per variant
     inv = {}
     for v in variants:
-        rows = [p for p in manifest_parts if p["production"] and p["variant"] in (v, "shared")]
+        rows = [p for p in manifest_parts if p["production"] and p["variant"] in (v, "shared") and not p.get("inlay_of")]
         inv[v] = {"objects": sum(i["qty_per_set"] for p in rows for i in p["instances"]),
                   "by_color": {}}
         for p in rows:
             for i in p["instances"]:
                 inv[v]["by_color"][i["color"]] = inv[v]["by_color"].get(i["color"], 0) + i["qty_per_set"]
-    coupons = [p for p in manifest_parts if not p["production"]]
+    coupons = [p for p in manifest_parts if p["family"] == "coupon"]
     manifest["inventory"] = inv
     manifest["calibration_objects"] = sum(i["qty_per_set"] for p in coupons for i in p["instances"])
 
@@ -312,8 +416,26 @@ def main():
     plates = {}
     for v in variants:
         pv = OUT / "print" / v / "plates"
-        gl = [(f"{v}/glyph-{el}", el, 16) for el in G.ELEMENTS]
         plates[v] = {}
+        if P["variants"][v].get("extends"):
+            # only the pieces differ; glyphs, tiles and crystals print from the parent variant's plates
+            for owner, home in (("ivory", "corner-sw"), ("charcoal", "corner-ne")):
+                plates[v][f"army-{owner}"] = write_multi_plates(
+                    f"{v}-{owner}-army",
+                    [(f"{owner} T3", [(f"{v}/t3", owner), (f"{v}/dot-t3", "dot")], 6),
+                     (f"{owner} T2", [(f"{v}/t2", owner), (f"{v}/dot-t2", "dot")], 18),
+                     (f"{owner} base", [(f"{v}/base", owner), (f"{v}/dot-base", "dot")], 48)], parts, pv, f"Muju {v} {owner} army")
+                plates[v][f"home-{owner}"] = write_plates(f"{v}-{owner}-home", [(f"{v}/tile-{home}", owner, 1)], parts, pv, f"Muju {v} {owner} home tile")
+            plates[v]["shared_with"] = P["variants"][v]["extends"]
+            continue
+        for scheme in ("gray", "gradient"):
+            groups = []
+            for sname, *_ in PT.section_bounds(P):
+                comps = [(r["id"].replace(".", "/", 1), r["instances"][0]["color"]) for r in manifest_parts
+                         if r["variant"] == v and r.get("section", {}).get("name") == sname and r["section"]["scheme"] == scheme]
+                groups.append((f"section {sname.upper()} ({scheme})", comps, 1))
+            plates[v][f"sections-{scheme}"] = [pl for g in groups for pl in write_multi_plates(
+                f"{v}-sections-{scheme}-{g[0].split()[1].lower()}", [g], parts, OUT / "print" / v / "sections", f"Muju {v} board section")]
         for el in G.ELEMENTS:
             plates[v][f"glyph-{el}"] = write_plates(f"{v}-{el}-glyphs", [(f"{v}/glyph-{el}", el, 16)], parts, pv, f"Muju {v} {el} glyphs")
         for owner, home in (("ivory", "corner-sw"), ("charcoal", "corner-ne")):
@@ -338,6 +460,11 @@ def main():
         "petg-crystal": write_plates("cal-crystal", [(f"shared/coupon-crystal-socket-{c}", "crystal", 4) for c in ("10", "20", "30", "40")] +
                                      [("shared/crystal", "crystal", 12)], parts, cal, "IF1 crystal coupons"),
     }
+    if "shared/coupon-if2-collar" in parts:
+        for owner in ("ivory", "charcoal"):
+            plates["calibration"][f"if2-{owner}"] = write_plates(
+                f"cal-if2-{owner}", [(f"shared/coupon-if2-socket-{c}", owner, 1) for c in ("10", "15", "20", "25")] +
+                [("shared/coupon-if2-collar", owner, 1)], parts, cal, f"IF2 {owner} coupons")
     manifest["plates"] = plates
     (OUT / "manifest.json").write_text(json.dumps(manifest, indent=1, ensure_ascii=False))
     print(f"parts {len(manifest_parts)}; inventory {json.dumps({k: v['objects'] for k, v in inv.items()})}; {time.time() - t0:.0f}s")

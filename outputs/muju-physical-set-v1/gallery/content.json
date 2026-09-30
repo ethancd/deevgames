@@ -37,6 +37,8 @@
   "facet": {
    "name": "Facet",
    "direction": "Crisp chamfered",
+   "extends": null,
+   "interface": "IF1",
    "tagline": "Crisp chamfered octagons",
    "text": "Plain planar faces with 45° chamfers: a 1.6 mm crown on the base, 0.9 mm on each pedestal, 0.8 mm bevels on the glyph faces. The strongest silhouettes and the least ambiguity at arm's length; the tier steps read as clean ledges.",
    "tactile": "Hard, precise edges. Chamfers take fingernails for separating layers.",
@@ -46,6 +48,8 @@
   "pebble": {
    "name": "Pebble",
    "direction": "Soft octagonal",
+   "extends": null,
+   "interface": "IF1",
    "tagline": "Soft octagonal, rounded edges",
    "text": "The octagon keeps its flats but its eight corners are rounded (3.0–3.4 mm) and every top edge is a quarter-round. Glyphs have a 1.2 mm rounded face edge. Quiet, tactile, friendly; still unmistakably octagonal.",
    "tactile": "Warm and pebble-like in the hand; no corners to catch.",
@@ -55,11 +59,35 @@
   "turned": {
    "name": "Turned Court",
    "direction": "Restrained turned / fluted",
+   "extends": null,
+   "interface": "IF1",
    "tagline": "Turned Court: plinth, crown and broad flutes",
    "text": "Informed by the earlier Turned Court / Baroque studies, without their tall monolithic figurines: a stepped plinth and filleted crown on the base, eight broad flutes (1.5 mm radius) on each pedestal and a raised, inset plateau on every glyph. Tiles carry a court frame groove around the piece area.",
    "tactile": "Architectural; the flutes give the pedestals grip and make the tier layers countable by touch.",
    "print": "All ornament is vertical or stepped, so no supports. Flutes are 3 mm wide and 0.7 mm deep, well above minimum feature size.",
    "risk": "Most visual detail, so dust and stringing show more. Keep the flute count and depth; do not add finer ornament."
+  },
+  "turned-keyed": {
+   "name": "Turned Court · Keyed",
+   "direction": "Restrained turned / fluted — solid pedestals, IF2 keyed flex joints, tier dots",
+   "extends": "turned",
+   "interface": "IF2-keyed",
+   "tagline": "Turned Court with keyed flex joints and tier dots (solid pedestals)",
+   "text": "Same glyphs, tiles and silhouette as Turned Court. The joints are new (IF2): a 2.8 mm tube collar on each pedestal enters an annular groove under the layer above, where four flex beams with small bumps grip it; they bend along the print layers, not across them, so the clutch stays consistent and does not wear like crush ribs. A key at the back lets each layer on one way only, so a turquoise tier dot on every layer lines up at the front: one dot on T1, two on T2, three on T3. Collars differ per tier, so a base cannot sit on a T3.",
+   "tactile": "Aims for the Lego feel: seats with a firm push, stays together in play, pulls apart with a good grip. The preload is tunable with the IF2 coupon sweep.",
+   "print": "Upright, no supports; the groove ceilings are 2 mm annular bridges. Each piece is two parts on the plate (body + dot), so the army plates need a second filament (turquoise).",
+   "risk": "Retention force is estimated, not measured: print the IF2 socket sweep. Multi-filament plates are sliced as geometry only here; check dot assignment in Bambu Studio."
+  },
+  "turned-ring": {
+   "name": "Turned Court · Rings",
+   "direction": "Restrained turned / fluted — hollow ring pedestals, IF2 keyed flex joints, tier dots",
+   "extends": "turned",
+   "interface": "IF2-ring",
+   "tagline": "Turned Court rings: hollow T2/T3 with keyed flex joints and tier dots",
+   "text": "As Turned Court · Keyed, but T2 and T3 are rings: open through the collar bore, with the flex-beam groove cut into the ring wall. About a third lighter (T2 −36 %, T3 −28 % volume) and no large bridged ceilings.",
+   "tactile": "Lighter in the hand; a promoted piece sits a little less planted.",
+   "print": "Upright, no supports; the ring walls print as closed loops. Same two-filament plates as Keyed.",
+   "risk": "Lower mass and a hollow centre make a T3 tip more easily if knocked. The thinner ring walls matter more in the drop test. Two T2 rings can be stacked loosely (the ring bore takes a T2 collar without gripping it)."
   }
  },
  "palette": {
@@ -113,6 +141,26 @@
    "role": "Crystals + half token (translucent)",
    "lead": "Bambu PETG Translucent Teal",
    "opacity": 0.62
+  },
+  "dot": {
+   "hex": "#00B1B7",
+   "role": "Tier dot inlay (one per layer, front)",
+   "lead": "Bambu PLA Basic Turquoise"
+  },
+  "tile16": {
+   "hex": "#CBC6B8",
+   "role": "Gradient board: 16-crystal squares",
+   "lead": "Bambu PLA Matte Bone White"
+  },
+  "tile4": {
+   "hex": "#727476",
+   "role": "Gradient board: 4-crystal squares",
+   "lead": "Bambu PLA Matte Nardo Gray"
+  },
+  "tile0": {
+   "hex": "#4C4D4F",
+   "role": "Gradient board: 0-crystal squares",
+   "lead": "Bambu PLA Basic Dark Gray (no matte dark gray exists)"
   }
  },
  "concepts": {
@@ -130,15 +178,20 @@
    "concepts/turned/turned-1-overview.svg",
    "concepts/turned/turned-2-construction.svg",
    "concepts/turned/turned-3-tabletop.svg"
-  ]
+  ],
+  "turned-keyed": [],
+  "turned-ring": []
  },
  "renders": {
   "facet": [
    "renders/facet-beside.png",
    "renders/facet-board.png",
+   "renders/facet-gradient.png",
    "renders/facet-lineup.png",
    "renders/facet-patch.png",
    "renders/facet-resources.png",
+   "renders/facet-sections-gradient.png",
+   "renders/facet-sections-gray.png",
    "renders/facet-t3-exploded.png",
    "renders/facet-t3-section.png",
    "renders/facet-tiles.png"
@@ -146,9 +199,12 @@
   "pebble": [
    "renders/pebble-beside.png",
    "renders/pebble-board.png",
+   "renders/pebble-gradient.png",
    "renders/pebble-lineup.png",
    "renders/pebble-patch.png",
    "renders/pebble-resources.png",
+   "renders/pebble-sections-gradient.png",
+   "renders/pebble-sections-gray.png",
    "renders/pebble-t3-exploded.png",
    "renders/pebble-t3-section.png",
    "renders/pebble-tiles.png"
@@ -156,12 +212,35 @@
   "turned": [
    "renders/turned-beside.png",
    "renders/turned-board.png",
+   "renders/turned-gradient.png",
    "renders/turned-lineup.png",
    "renders/turned-patch.png",
    "renders/turned-resources.png",
+   "renders/turned-sections-gradient.png",
+   "renders/turned-sections-gray.png",
    "renders/turned-t3-exploded.png",
    "renders/turned-t3-section.png",
    "renders/turned-tiles.png"
+  ],
+  "turned-keyed": [
+   "renders/turned-keyed-beside.png",
+   "renders/turned-keyed-board.png",
+   "renders/turned-keyed-lineup.png",
+   "renders/turned-keyed-patch.png",
+   "renders/turned-keyed-resources.png",
+   "renders/turned-keyed-t3-exploded.png",
+   "renders/turned-keyed-t3-section.png",
+   "renders/turned-keyed-tiles.png"
+  ],
+  "turned-ring": [
+   "renders/turned-ring-beside.png",
+   "renders/turned-ring-board.png",
+   "renders/turned-ring-lineup.png",
+   "renders/turned-ring-patch.png",
+   "renders/turned-ring-resources.png",
+   "renders/turned-ring-t3-exploded.png",
+   "renders/turned-ring-t3-section.png",
+   "renders/turned-ring-tiles.png"
   ],
   "shared": [
    "renders/shared-crystals.png"
@@ -220,6 +299,11 @@
   "shared.coupon-crystal-socket-30": "renders/parts/shared.coupon-crystal-socket-30.png",
   "shared.coupon-crystal-socket-40": "renders/parts/shared.coupon-crystal-socket-40.png",
   "shared.coupon-glyph-slots": "renders/parts/shared.coupon-glyph-slots.png",
+  "shared.coupon-if2-collar": "renders/parts/shared.coupon-if2-collar.png",
+  "shared.coupon-if2-socket-10": "renders/parts/shared.coupon-if2-socket-10.png",
+  "shared.coupon-if2-socket-15": "renders/parts/shared.coupon-if2-socket-15.png",
+  "shared.coupon-if2-socket-20": "renders/parts/shared.coupon-if2-socket-20.png",
+  "shared.coupon-if2-socket-25": "renders/parts/shared.coupon-if2-socket-25.png",
   "shared.coupon-recess-plate": "renders/parts/shared.coupon-recess-plate.png",
   "shared.coupon-stud-strip": "renders/parts/shared.coupon-stud-strip.png",
   "shared.coupon-tang-gauge": "renders/parts/shared.coupon-tang-gauge.png",
@@ -229,6 +313,18 @@
   "shared.coupon-tile-tab": "renders/parts/shared.coupon-tile-tab.png",
   "shared.crystal": "renders/parts/shared.crystal.png",
   "shared.half-crystal": "renders/parts/shared.half-crystal.png",
+  "turned-keyed.base": "renders/parts/turned-keyed.base.png",
+  "turned-keyed.dot-base": "renders/parts/turned-keyed.dot-base.png",
+  "turned-keyed.dot-t2": "renders/parts/turned-keyed.dot-t2.png",
+  "turned-keyed.dot-t3": "renders/parts/turned-keyed.dot-t3.png",
+  "turned-keyed.t2": "renders/parts/turned-keyed.t2.png",
+  "turned-keyed.t3": "renders/parts/turned-keyed.t3.png",
+  "turned-ring.base": "renders/parts/turned-ring.base.png",
+  "turned-ring.dot-base": "renders/parts/turned-ring.dot-base.png",
+  "turned-ring.dot-t2": "renders/parts/turned-ring.dot-t2.png",
+  "turned-ring.dot-t3": "renders/parts/turned-ring.dot-t3.png",
+  "turned-ring.t2": "renders/parts/turned-ring.t2.png",
+  "turned-ring.t3": "renders/parts/turned-ring.t3.png",
   "turned.base": "renders/parts/turned.base.png",
   "turned.glyph-fire": "renders/parts/turned.glyph-fire.png",
   "turned.glyph-lightning": "renders/parts/turned.glyph-lightning.png",
@@ -249,6 +345,42 @@
   "turned.tile-edge-s": "renders/parts/turned.tile-edge-s.png",
   "turned.tile-edge-w": "renders/parts/turned.tile-edge-w.png",
   "turned.tile-interior-flat": "renders/parts/turned.tile-interior-flat.png",
-  "turned.tile-interior": "renders/parts/turned.tile-interior.png"
+  "turned.tile-interior": "renders/parts/turned.tile-interior.png",
+  "turned-keyed.glyph-fire": "renders/parts/turned.glyph-fire.png",
+  "turned-keyed.glyph-lightning": "renders/parts/turned.glyph-lightning.png",
+  "turned-keyed.glyph-water": "renders/parts/turned.glyph-water.png",
+  "turned-keyed.glyph-shadow": "renders/parts/turned.glyph-shadow.png",
+  "turned-keyed.glyph-plant": "renders/parts/turned.glyph-plant.png",
+  "turned-keyed.glyph-metal": "renders/parts/turned.glyph-metal.png",
+  "turned-keyed.tile-corner-sw": "renders/parts/turned.tile-corner-sw.png",
+  "turned-keyed.tile-edge-s": "renders/parts/turned.tile-edge-s.png",
+  "turned-keyed.tile-edge-s-flat": "renders/parts/turned.tile-edge-s-flat.png",
+  "turned-keyed.tile-corner-se": "renders/parts/turned.tile-corner-se.png",
+  "turned-keyed.tile-edge-w": "renders/parts/turned.tile-edge-w.png",
+  "turned-keyed.tile-interior": "renders/parts/turned.tile-interior.png",
+  "turned-keyed.tile-interior-flat": "renders/parts/turned.tile-interior-flat.png",
+  "turned-keyed.tile-edge-e": "renders/parts/turned.tile-edge-e.png",
+  "turned-keyed.tile-corner-nw": "renders/parts/turned.tile-corner-nw.png",
+  "turned-keyed.tile-edge-n": "renders/parts/turned.tile-edge-n.png",
+  "turned-keyed.tile-edge-n-flat": "renders/parts/turned.tile-edge-n-flat.png",
+  "turned-keyed.tile-corner-ne": "renders/parts/turned.tile-corner-ne.png",
+  "turned-ring.glyph-fire": "renders/parts/turned.glyph-fire.png",
+  "turned-ring.glyph-lightning": "renders/parts/turned.glyph-lightning.png",
+  "turned-ring.glyph-water": "renders/parts/turned.glyph-water.png",
+  "turned-ring.glyph-shadow": "renders/parts/turned.glyph-shadow.png",
+  "turned-ring.glyph-plant": "renders/parts/turned.glyph-plant.png",
+  "turned-ring.glyph-metal": "renders/parts/turned.glyph-metal.png",
+  "turned-ring.tile-corner-sw": "renders/parts/turned.tile-corner-sw.png",
+  "turned-ring.tile-edge-s": "renders/parts/turned.tile-edge-s.png",
+  "turned-ring.tile-edge-s-flat": "renders/parts/turned.tile-edge-s-flat.png",
+  "turned-ring.tile-corner-se": "renders/parts/turned.tile-corner-se.png",
+  "turned-ring.tile-edge-w": "renders/parts/turned.tile-edge-w.png",
+  "turned-ring.tile-interior": "renders/parts/turned.tile-interior.png",
+  "turned-ring.tile-interior-flat": "renders/parts/turned.tile-interior-flat.png",
+  "turned-ring.tile-edge-e": "renders/parts/turned.tile-edge-e.png",
+  "turned-ring.tile-corner-nw": "renders/parts/turned.tile-corner-nw.png",
+  "turned-ring.tile-edge-n": "renders/parts/turned.tile-edge-n.png",
+  "turned-ring.tile-edge-n-flat": "renders/parts/turned.tile-edge-n-flat.png",
+  "turned-ring.tile-corner-ne": "renders/parts/turned.tile-corner-ne.png"
  }
 }

@@ -107,3 +107,26 @@ export function partItems(D, id, color) {
   const c = color || Object.keys(p.geometry.glb)[0];
   return [{ glb: p.geometry.glb[c], matrix: T(), label: null, part: id }];
 }
+
+export function boardGradientItems(D, v) {
+  const B = D.asm.variants[v].board;
+  return [
+    ...D.asm.variants[v].board_gradient_tiles.map(t => ({ glb: t.glb, matrix: t.matrix })),
+    ...B.crystal_matrices.map(m => ({ glb: B.crystal_glb, matrix: m })),
+    ...B.start_pieces.flatMap(p => p.parts.map(q => ({ glb: q.glb, matrix: q.matrix }))),
+  ];
+}
+
+/** The nine printed board sections of a scheme, spread `gap` mm apart, with crystals and start pieces on them. */
+export function sectionItems(D, v, scheme, gap = 8) {
+  const V = D.asm.variants[v], B = V.board, pitch = D.content.geometry.pitch;
+  const bnd = { sw: [0, 0], s: [1, 0], se: [2, 0], w: [0, 1], c: [1, 1], e: [2, 1], nw: [0, 2], n: [1, 2], ne: [2, 2] };
+  const shift = (i) => (i - 1) * gap;
+  const secOf = (x, y) => [x < 3 ? 0 : x < 7 ? 1 : 2, y < 3 ? 0 : y < 7 ? 1 : 2];
+  const moveBy = (m, dx, dy) => { const o = m.slice(); o[3] += dx; o[7] += dy; return o; };
+  const items = V.board_sections[scheme].map(s => ({ glb: s.glb, matrix: moveBy(s.matrix, shift(bnd[s.section][0]), shift(bnd[s.section][1])) }));
+  const toXY = (m) => [Math.floor((m[3] + 5 * pitch) / pitch), Math.floor((m[7] + 5 * pitch) / pitch)];
+  for (const m of B.crystal_matrices) { const [i, j] = secOf(...toXY(m)); items.push({ glb: B.crystal_glb, matrix: moveBy(m, shift(i), shift(j)) }); }
+  for (const p of B.start_pieces) for (const q of p.parts) { const [i, j] = secOf(...toXY(q.matrix)); items.push({ glb: q.glb, matrix: moveBy(q.matrix, shift(i), shift(j)) }); }
+  return items;
+}

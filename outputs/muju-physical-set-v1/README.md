@@ -22,7 +22,15 @@ for what was and was not done.
 | Slicer checks | [`validation/slicer/slicer-checks.md`](validation/slicer/slicer-checks.md) |
 | Manifest | [`manifest.json`](manifest.json): part ids, quantities, dimensions, paths, source hashes |
 
-## The three variants
+## Variants
+
+Facet, Pebble and Turned Court are the three original styles, with interface IF1. **Turned Court ·
+Keyed** and **Turned Court · Rings** keep Turned Court's look but use the Lego-style IF2 joint and
+turquoise tier dots, with solid or hollow pedestals (see `research/engineering-decisions.md`,
+addendum). The board is available as 100 single tiles or as nine printed sections, each in all
+gray or coloured by starting crystals (gallery → Board & crystals).
+
+### The three original styles
 
 | | Facet | Pebble | Turned Court |
 |---|---|---|---|

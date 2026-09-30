@@ -1,11 +1,11 @@
 {
- "date": "2026-09-30T19:51:47.180Z",
+ "date": "2026-09-30T22:25:50.863Z",
  "url": "http://127.0.0.1:8777/gallery/",
  "checks": [
   {
-   "name": "three variant cards",
+   "name": "5 variant cards",
    "ok": true,
-   "detail": "3"
+   "detail": "5"
   },
   {
    "name": "inspect facet metal ivory T3 exploded",
@@ -88,34 +88,84 @@
    "detail": "Pending glyph beside an occupying piece"
   },
   {
+   "name": "inspect turned-keyed metal ivory T3 exploded",
+   "ok": true,
+   "detail": "Turned Court · Keyed · metal · ivory · T3"
+  },
+  {
+   "name": "inspect turned-keyed lightning charcoal T1 standing",
+   "ok": true,
+   "detail": "Turned Court · Keyed · lightning · charcoal · T1"
+  },
+  {
+   "name": "inspect turned-keyed plant charcoal T3 section",
+   "ok": true,
+   "detail": "Turned Court · Keyed · plant · charcoal · T3"
+  },
+  {
+   "name": "inspect turned-keyed water ivory T2 loose",
+   "ok": true,
+   "detail": "Loose water glyph = pending summon"
+  },
+  {
+   "name": "inspect turned-keyed fire charcoal T3 beside",
+   "ok": true,
+   "detail": "Pending glyph beside an occupying piece"
+  },
+  {
+   "name": "inspect turned-ring metal ivory T3 exploded",
+   "ok": true,
+   "detail": "Turned Court · Rings · metal · ivory · T3"
+  },
+  {
+   "name": "inspect turned-ring lightning charcoal T1 standing",
+   "ok": true,
+   "detail": "Turned Court · Rings · lightning · charcoal · T1"
+  },
+  {
+   "name": "inspect turned-ring plant charcoal T3 section",
+   "ok": true,
+   "detail": "Turned Court · Rings · plant · charcoal · T3"
+  },
+  {
+   "name": "inspect turned-ring water ivory T2 loose",
+   "ok": true,
+   "detail": "Loose water glyph = pending summon"
+  },
+  {
+   "name": "inspect turned-ring fire charcoal T3 beside",
+   "ok": true,
+   "detail": "Pending glyph beside an occupying piece"
+  },
+  {
    "name": "T3 exploded labels show base, T2 and T3 separately",
    "ok": true,
-   "detail": "T3 addition | T2 addition | Ownership base (T1) | Element glyph (keyed tang in slot)"
+   "detail": "T3 addition | Tier dot (T3 addition) | T2 addition | Tier dot (T2 addition) | Ownership base (T1) | Tier dot (Ownership base (T1)) | Element glyph (keyed tang in slot)"
   },
   {
    "name": "parts family glyph",
    "ok": true,
-   "detail": "18 cards"
+   "detail": "30 cards"
   },
   {
    "name": "parts family base",
    "ok": true,
-   "detail": "3 cards"
+   "detail": "5 cards"
   },
   {
    "name": "parts family pedestal-t2",
    "ok": true,
-   "detail": "3 cards"
+   "detail": "5 cards"
   },
   {
    "name": "parts family pedestal-t3",
    "ok": true,
-   "detail": "3 cards"
+   "detail": "5 cards"
   },
   {
    "name": "parts family tile",
    "ok": true,
-   "detail": "36 cards"
+   "detail": "60 cards"
   },
   {
    "name": "parts family crystal",
@@ -125,27 +175,37 @@
   {
    "name": "parts family coupon",
    "ok": true,
-   "detail": "16 cards"
+   "detail": "21 cards"
   },
   {
    "name": "parts variant facet",
    "ok": true,
-   "detail": "23 cards"
+   "detail": "52 cards"
   },
   {
    "name": "parts variant pebble",
    "ok": true,
-   "detail": "23 cards"
+   "detail": "52 cards"
   },
   {
    "name": "parts variant turned",
    "ok": true,
-   "detail": "23 cards"
+   "detail": "52 cards"
+  },
+  {
+   "name": "parts variant turned-keyed",
+   "ok": true,
+   "detail": "26 cards"
+  },
+  {
+   "name": "parts variant turned-ring",
+   "ok": true,
+   "detail": "26 cards"
   },
   {
    "name": "parts variant shared",
    "ok": true,
-   "detail": "18 cards"
+   "detail": "23 cards"
   },
   {
    "name": "part viewer (A1 home tile)",
@@ -156,6 +216,21 @@
    "name": "board facet board",
    "ok": true,
    "detail": "Full board, canonical start"
+  },
+  {
+   "name": "board facet gradient",
+   "ok": true,
+   "detail": "Board coloured by starting crystals"
+  },
+  {
+   "name": "board facet sections-gray",
+   "ok": true,
+   "detail": "Board printed in nine sections (all gray)"
+  },
+  {
+   "name": "board facet sections-gradient",
+   "ok": true,
+   "detail": "Board printed in nine sections (coloured by starting crystals)"
   },
   {
    "name": "board facet patch",
@@ -183,6 +258,21 @@
    "detail": "Full board, canonical start"
   },
   {
+   "name": "board pebble gradient",
+   "ok": true,
+   "detail": "Board coloured by starting crystals"
+  },
+  {
+   "name": "board pebble sections-gray",
+   "ok": true,
+   "detail": "Board printed in nine sections (all gray)"
+  },
+  {
+   "name": "board pebble sections-gradient",
+   "ok": true,
+   "detail": "Board printed in nine sections (coloured by starting crystals)"
+  },
+  {
    "name": "board pebble patch",
    "ok": true,
    "detail": "Crowded patch"
@@ -208,6 +298,21 @@
    "detail": "Full board, canonical start"
   },
   {
+   "name": "board turned gradient",
+   "ok": true,
+   "detail": "Board coloured by starting crystals"
+  },
+  {
+   "name": "board turned sections-gray",
+   "ok": true,
+   "detail": "Board printed in nine sections (all gray)"
+  },
+  {
+   "name": "board turned sections-gradient",
+   "ok": true,
+   "detail": "Board printed in nine sections (coloured by starting crystals)"
+  },
+  {
    "name": "board turned patch",
    "ok": true,
    "detail": "Crowded patch"
@@ -224,6 +329,86 @@
   },
   {
    "name": "board turned tiles",
+   "ok": true,
+   "detail": "Tile join (A1, B1, A2, B2, spread apart)"
+  },
+  {
+   "name": "board turned-keyed board",
+   "ok": true,
+   "detail": "Full board, canonical start"
+  },
+  {
+   "name": "board turned-keyed gradient",
+   "ok": true,
+   "detail": "Board coloured by starting crystals"
+  },
+  {
+   "name": "board turned-keyed sections-gray",
+   "ok": true,
+   "detail": "Board printed in nine sections (all gray)"
+  },
+  {
+   "name": "board turned-keyed sections-gradient",
+   "ok": true,
+   "detail": "Board printed in nine sections (coloured by starting crystals)"
+  },
+  {
+   "name": "board turned-keyed patch",
+   "ok": true,
+   "detail": "Crowded patch"
+  },
+  {
+   "name": "board turned-keyed resources",
+   "ok": true,
+   "detail": "Initial reserves"
+  },
+  {
+   "name": "board turned-keyed crystals",
+   "ok": true,
+   "detail": "Crystals"
+  },
+  {
+   "name": "board turned-keyed tiles",
+   "ok": true,
+   "detail": "Tile join (A1, B1, A2, B2, spread apart)"
+  },
+  {
+   "name": "board turned-ring board",
+   "ok": true,
+   "detail": "Full board, canonical start"
+  },
+  {
+   "name": "board turned-ring gradient",
+   "ok": true,
+   "detail": "Board coloured by starting crystals"
+  },
+  {
+   "name": "board turned-ring sections-gray",
+   "ok": true,
+   "detail": "Board printed in nine sections (all gray)"
+  },
+  {
+   "name": "board turned-ring sections-gradient",
+   "ok": true,
+   "detail": "Board printed in nine sections (coloured by starting crystals)"
+  },
+  {
+   "name": "board turned-ring patch",
+   "ok": true,
+   "detail": "Crowded patch"
+  },
+  {
+   "name": "board turned-ring resources",
+   "ok": true,
+   "detail": "Initial reserves"
+  },
+  {
+   "name": "board turned-ring crystals",
+   "ok": true,
+   "detail": "Crystals"
+  },
+  {
+   "name": "board turned-ring tiles",
    "ok": true,
    "detail": "Tile join (A1, B1, A2, B2, spread apart)"
   },
@@ -248,9 +433,19 @@
    "detail": "36"
   },
   {
+   "name": "state grid turned-keyed has 36",
+   "ok": true,
+   "detail": "36"
+  },
+  {
+   "name": "state grid turned-ring has 36",
+   "ok": true,
+   "detail": "36"
+  },
+  {
    "name": "all links, downloads and images resolve (HTTP 200)",
    "ok": true,
-   "detail": "173 unique URLs + 108 state renders; bad: "
+   "detail": "305 unique URLs + 180 state renders; bad: "
   },
   {
    "name": "desktop: keyboard activation of a control",
@@ -279,14 +474,27 @@
   "validation/gallery-qa/desktop-inspect-turned-plant-section.png",
   "validation/gallery-qa/desktop-inspect-turned-water-loose.png",
   "validation/gallery-qa/desktop-inspect-turned-fire-beside.png",
+  "validation/gallery-qa/desktop-inspect-turned-keyed-metal-exploded.png",
+  "validation/gallery-qa/desktop-inspect-turned-ring-metal-exploded.png",
   "validation/gallery-qa/desktop-parts.png",
   "validation/gallery-qa/desktop-board-facet-board.png",
+  "validation/gallery-qa/desktop-board-facet-gradient.png",
+  "validation/gallery-qa/desktop-board-facet-sections-gray.png",
+  "validation/gallery-qa/desktop-board-facet-sections-gradient.png",
   "validation/gallery-qa/desktop-board-facet-patch.png",
   "validation/gallery-qa/desktop-board-facet-resources.png",
   "validation/gallery-qa/desktop-board-facet-crystals.png",
   "validation/gallery-qa/desktop-board-facet-tiles.png",
   "validation/gallery-qa/desktop-board-pebble-board.png",
+  "validation/gallery-qa/desktop-board-pebble-gradient.png",
   "validation/gallery-qa/desktop-board-turned-board.png",
+  "validation/gallery-qa/desktop-board-turned-gradient.png",
+  "validation/gallery-qa/desktop-board-turned-sections-gray.png",
+  "validation/gallery-qa/desktop-board-turned-sections-gradient.png",
+  "validation/gallery-qa/desktop-board-turned-keyed-board.png",
+  "validation/gallery-qa/desktop-board-turned-keyed-gradient.png",
+  "validation/gallery-qa/desktop-board-turned-ring-board.png",
+  "validation/gallery-qa/desktop-board-turned-ring-gradient.png",
   "validation/gallery-qa/desktop-states.png",
   "validation/gallery-qa/desktop-concepts.png",
   "validation/gallery-qa/desktop-downloads.png",
