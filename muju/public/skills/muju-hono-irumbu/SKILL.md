@@ -178,6 +178,29 @@ Any number of observers can follow along, inspect units, and replay
 the last completed turn. No token or invitation is required. MCP observers use
 `muju_observe` followed by `muju_wait_for_change` with just the room ID.
 
+## Fork after an interruption
+
+When the user wants to continue a position in a new game, observe the source and
+call `muju_fork_room({roomId, expectedRevision: revision, name, side, timeControl?})`.
+Omit `timeControl` to keep the source control with fresh banks/delay, pass `null`
+for untimed, or use a creation preset or custom `{delaySeconds, bankSeconds}`.
+For example, `{delaySeconds:150, bankSeconds:1800}` means 2.5 minutes free per turn
+and a 30-minute bank per player. Both clocks stay stopped until the opponent joins;
+then the saved position's current player starts, which may be Black.
+
+The fork preserves the exact gameplay state and remaining actions, and resumes
+timeout/abandonment positions before their administrative result. Other finished
+positions need an earlier playable `sequence` from `muju_history`; use optional
+`step` for a movement AP step, or sequence `0` for the recording root. A changed
+source returns `STALE_REVISION`: review it again. Retired rules cannot fork.
+
+Retain the new credentials and share only the new invitation. The source keeps
+its result and history. Forks have fresh seats, no prior undo or private stages,
+new clock pace samples, and public `forkedFrom` provenance. Restage candidates
+using the new room and token. Preserve the inherited `matchPolicy`; restricted
+single-room services do not expose this tool. Each successful fork call creates
+a room, so do not blindly repeat it after a lost response.
+
 ## Black crystal handicap
 
 Black always receives a half-crystal komi. Pass `blackCrystalHandicap` as one of **0.5, 1.5, 2.5, …, 18.5**

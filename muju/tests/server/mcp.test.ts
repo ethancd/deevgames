@@ -468,3 +468,25 @@ it.each([false, true])('plays, previews, analyzes and stages a complete Phasing 
   expect(history.entries.some((e: any) => e.kind === 'summoning')).toBe(true);
   expect(history.notation.actions).toContain('◌');
 }, 15000);
+
+
+it.each([false, true])('forks through MCP with fresh credentials, controls and public provenance (stdio=%s)', async stdio => {
+  const { store, url } = await setup();
+  const host = store.create({ name: 'Source host', side: 'black', timeControl: 'rapid' });
+  const client = await clientFor(url, stdio);
+  const result = await call(client, 'muju_fork_room', { roomId: host.room.id, expectedRevision: 0,
+    name: 'Fork host', side: 'black', timeControl: { delaySeconds: 150, bankSeconds: 1800 } });
+  expect(result.credentials.player).toBe('black');
+  expect(result.credentials.token).not.toBe(host.credentials.token);
+  expect(result.invitation.url).toMatch(/\/join\/[a-z]{6}$/);
+  expect(result.watchUrl).toMatch(/\/watch\/[a-z]{6}$/);
+  expect(result.room).toMatchObject({ ready: false, revision: 0, forkedFrom: { roomId: host.room.id, sequence: null },
+    timeControl: { delaySeconds: 150, bankSeconds: 1800 }, clock: { runningPlayer: null, bankRemainingMs: { white: 1800000, black: 1800000 } } });
+  const observed = await call(client, 'muju_observe', { roomId: result.credentials.roomId });
+  expect(observed.forkedFrom).toEqual(result.room.forkedFrom);
+  expect(JSON.stringify(observed)).not.toContain(result.credentials.token);
+  const response = await fetch(`${url}/api/muju/rooms/${host.room.id}/fork`, { method: 'POST',
+    headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'HTTP fork', expectedRevision: 0, timeControl: null }) });
+  expect(response.status).toBe(201);
+  expect((await response.json()).room.clock).toBeNull();
+});

@@ -8,13 +8,14 @@ interface VictoryScreenProps {
   /** Omitted where no analysis screen exists for the game (MICRO MUJU). */
   analysisUrl?: string;
   onViewHistory?: () => void;
+  onFork?: () => void;
   playerNames?: { white: string; black: string };
   perspectivePlayer?: PlayerId | null;
   /** Each side's mined total (`minedTotal`), for the kill-clock verdict line. */
   minedTotals?: { white: number; black: number };
 }
 
-export function VictoryScreen({ winner, reason, onPlayAgain, analysisUrl, onViewHistory, playerNames, perspectivePlayer = 'white', minedTotals }: VictoryScreenProps) {
+export function VictoryScreen({ winner, reason, onPlayAgain, analysisUrl, onViewHistory, onFork, playerNames, perspectivePlayer = 'white', minedTotals }: VictoryScreenProps) {
   const isPlayerWinner = !!winner && (perspectivePlayer === null || winner === perspectivePlayer);
   const winnerName = !winner ? 'Draw' : playerNames
     ? playerNames[winner]
@@ -45,6 +46,7 @@ export function VictoryScreen({ winner, reason, onPlayAgain, analysisUrl, onView
                 : 'Your forces have been eliminated.')}
         </p>
 
+        {onFork && <button onClick={onFork} className="block mx-auto mb-4 px-6 py-3 bg-cyan-700 text-white rounded-lg">Fork game</button>}
         {analysisUrl && <a href={analysisUrl} className="block mb-4 px-6 py-3 bg-cyan-700 hover:bg-cyan-800 text-white font-medium rounded-lg transition-colors">
           Analyze this game
         </a>}

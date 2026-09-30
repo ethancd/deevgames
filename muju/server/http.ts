@@ -50,6 +50,7 @@ export function createApp(store: RoomStore, options: { publicUrl: string; distPa
   if (options.explorer && !scope) explorerRoutes(app, options.explorer);
   app.get('/api/muju/health', (_req, res) => res.json({ ok: true, game: 'Muju Hono Irumbu', protocol: 1, ...(scope ? { matchScope: scope } : {}) }));
   app.post('/api/muju/rooms', (req, res) => res.status(201).json(store.create(req.body)));
+  app.post('/api/muju/rooms/:id/fork', (req, res) => res.status(201).json(store.fork(req.params.id, req.body)));
   app.get('/api/muju/rooms', (_req, res) => res.json({ rooms: store.listActive() }));
   app.get('/api/muju/rooms/invitations/:code', (req, res) => res.json(store.resolveInvitation(req.params.code)));
   app.get('/api/muju/rooms/watch/:code', (req, res) => res.json(store.resolveWatch(req.params.code)));

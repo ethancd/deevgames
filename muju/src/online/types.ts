@@ -32,6 +32,9 @@ export interface MatchPolicy {
   protocolId: string;
 }
 export interface RoomSnapshot {
+  /** Public provenance; the new room has independent seats, history and clocks. */
+  forkedFrom?: { roomId: string; revision: number; watchCode: string; sequence: number | null; step?: number;
+    resumedAfter?: 'timeout' | 'abandoned' };
   /** Token-authenticated seat on private responses; absent from public snapshots and waits. */
   authenticatedPlayer?: PlayerId;
   /** Immutable, room-wide experiment assistance policy. Absent in ordinary rooms. */

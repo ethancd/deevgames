@@ -10,6 +10,7 @@ import { loadGameHistory, loadRetiredHistory } from '../utils/persistence';
 import type { AIAction } from '../ai/types';
 import type { GameConfig, GameState, PlayerId, Position } from '../game/types';
 import { resolveObserverConnection, roomRequest } from '../online/client';
+import { ForkRoomDialog } from '../online/ForkRoomDialog';
 import './AnalysisScreen.css';
 
 interface Frame { sequence: number; step: number; label: string; turn: string }
@@ -38,6 +39,7 @@ export function AnalysisScreen() {
   const [selected, setSelected] = useState<string | null>(null);
   const [loading, setLoading] = useState(!!roomId), [error, setError] = useState(local && !localHistory ? retired ? 'No retired-rules game is archived on this device.' : 'No saved game is available on this device.' : '');
   const [refresh, setRefresh] = useState(0), [partial, setPartial] = useState(!!localHistory && !localHistory.complete), [roomInput, setRoomInput] = useState('');
+  const [showFork, setShowFork] = useState(false);
   const cache = useRef(new Map<string, GameState>());
   const reviewing = hasScore && !variation;
 
@@ -153,6 +155,7 @@ export function AnalysisScreen() {
     </select></label>
     <div className="analysis-actions">
       {reviewing ? <button disabled={loading || !!error || rawState.phase !== 'playing' || rawState.ruleset !== 'phasing'} onClick={() => setVariation({ frames: [localFrame(rawState, 'Variation starts here')], cursor: 0 })}>Explore from here</button> : <span>You control both players</span>}
+      {roomId && reviewing && <button disabled={loading || !!error || !frames[index] || !(rawState.phase === 'playing' || rawState.victoryReason === 'timeout' || rawState.victoryReason === 'abandoned')} onClick={() => setShowFork(true)}>Fork from here</button>}
       {hasScore && <button onClick={() => { setVariation(null); setRefresh(value => value + 1); }}>Return to game score</button>}
       {partial && <small>Earlier positions were not recorded.</small>}
       {rawState.ruleset !== 'phasing' && <p role="note">Retired Standard rules · review only</p>}
@@ -165,6 +168,6 @@ export function AnalysisScreen() {
       } catch (error) { setError(error instanceof Error ? error.message : 'Invalid room link.'); }
     }}><input aria-label="Room link or ID" value={roomInput} onChange={event => setRoomInput(event.target.value)} placeholder="Room link or ID" /><button>Open</button></form></details>}
   </section>;
-  return <GameView game={game} config={config} onBackToMenu={() => { window.location.href = '/muju/'; }} analysis={{ bar, reviewing: reviewing || loading,
-    result: rawState.phase === 'victory' ? rawState.victoryReason === 'abandoned' ? 'Room archived · no moves for 24 hours' : `${rawState.winner ? `${rawState.winner} wins` : 'Draw'} · ${rawState.victoryReason?.replaceAll('-', ' ')}` : undefined }} />;
+  return <>{showFork && roomId && frames[index] && <ForkRoomDialog serverUrl={server} roomId={roomId} position={frames[index]} onClose={() => setShowFork(false)} />}<GameView game={game} config={config} onBackToMenu={() => { window.location.href = '/muju/'; }} analysis={{ bar, reviewing: reviewing || loading,
+    result: rawState.phase === 'victory' ? rawState.victoryReason === 'abandoned' ? 'Room archived · no moves for 24 hours' : `${rawState.winner ? `${rawState.winner} wins` : 'Draw'} · ${rawState.victoryReason?.replaceAll('-', ' ')}` : undefined }} /></>;
 }

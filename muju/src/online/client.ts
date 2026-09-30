@@ -73,6 +73,8 @@ export async function roomRequest<T>(serverUrl: string, path: string, body?: unk
 export const createRoom = (serverUrl: string, name: string, side: PlayerId, actionsPerTurn: import('../game/types').ActionsPerTurn = 4, timeControl?: TimeControl | TimeControlPreset | null, blackCrystalHandicap = 0.5, variant?: import('../game/types').Variant) =>
   roomRequest<RoomAdmission>(serverUrl, '', variant === 'micro' ? { name, side, timeControl, variant }
     : { name, side, actionsPerTurn, timeControl, blackCrystalHandicap });
+export const forkRoom = (serverUrl: string, roomId: string, input: { name: string; side: PlayerId; expectedRevision: number;
+  sequence?: number; step?: number; timeControl?: TimeControl | TimeControlPreset | null }) => roomRequest<RoomAdmission>(serverUrl, `/${roomId}/fork`, input);
 export const listActiveRooms = (serverUrl: string, signal?: AbortSignal) => roomRequest<{ rooms: ActiveRoom[] }>(serverUrl, '', undefined, undefined, signal);
 export const listArchivedRooms = (serverUrl: string, before?: string, signal?: AbortSignal) => roomRequest<RoomArchive>(serverUrl, `/archived${before ? `?before=${before}` : ''}`, undefined, undefined, signal);
 export const joinRoom = (serverUrl: string, roomId: string, name: string, inviteCode: string) => roomRequest<RoomAdmission>(serverUrl, `/${roomId}/join`, { name, inviteCode });
