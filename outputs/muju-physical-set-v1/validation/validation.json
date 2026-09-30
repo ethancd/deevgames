@@ -1,0 +1,2707 @@
+{
+ "generated": "2026-09-30T16:35:32+00:00",
+ "scope": "Digital checks of exported files only. No slicer, no printer.",
+ "files": {
+  "shared.crystal": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 2060,
+   "stl_volume_mm3": 208.043,
+   "brep_volume_mm3": 208.04,
+   "volume_delta_pct": 0.0013,
+   "bbox_mm": [
+    6.0,
+    6.0,
+    7.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 9.34,
+   "overhang_max_z_mm": 1.8,
+   "bed_contact_area_mm2": 16.4,
+   "ok": true
+  },
+  "shared.half-crystal": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 1036,
+   "stl_volume_mm3": 78.991,
+   "brep_volume_mm3": 78.981,
+   "volume_delta_pct": 0.0122,
+   "bbox_mm": [
+    6.0,
+    6.0,
+    3.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 9.34,
+   "overhang_max_z_mm": 1.8,
+   "bed_contact_area_mm2": 16.4,
+   "ok": true
+  },
+  "shared.coupon-glyph-slots": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 32602,
+   "stl_volume_mm3": 14989.626,
+   "brep_volume_mm3": 14989.61,
+   "volume_delta_pct": 0.0001,
+   "bbox_mm": [
+    60.0,
+    36.0,
+    7.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 0.0,
+   "overhang_max_z_mm": 0.0,
+   "bed_contact_area_mm2": 2083.8,
+   "ok": true
+  },
+  "shared.coupon-tang-gauge": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 1230,
+   "stl_volume_mm3": 1490.377,
+   "brep_volume_mm3": 1490.376,
+   "volume_delta_pct": 0.0001,
+   "bbox_mm": [
+    22.0,
+    18.5,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 0.0,
+   "overhang_max_z_mm": 0.0,
+   "bed_contact_area_mm2": 303.8,
+   "ok": true
+  },
+  "shared.coupon-recess-plate": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 10606,
+   "stl_volume_mm3": 6180.212,
+   "brep_volume_mm3": 6180.203,
+   "volume_delta_pct": 0.0001,
+   "bbox_mm": [
+    78.0,
+    28.0,
+    3.4
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 703.43,
+   "overhang_max_z_mm": 1.79,
+   "bed_contact_area_mm2": 1351.2,
+   "ok": true
+  },
+  "shared.coupon-boss-key-r0": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 92,
+   "stl_volume_mm3": 1453.269,
+   "brep_volume_mm3": 1453.269,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    22.0,
+    22.0,
+    4.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 0.0,
+   "overhang_max_z_mm": 0.0,
+   "bed_contact_area_mm2": 372.3,
+   "ok": true
+  },
+  "shared.coupon-boss-key-r10": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 818,
+   "stl_volume_mm3": 1447.27,
+   "brep_volume_mm3": 1447.268,
+   "volume_delta_pct": 0.0001,
+   "bbox_mm": [
+    22.0,
+    22.0,
+    4.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 0.05,
+   "overhang_max_z_mm": 0.33,
+   "bed_contact_area_mm2": 371.0,
+   "ok": true
+  },
+  "shared.coupon-boss-key-r20": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 1304,
+   "stl_volume_mm3": 1441.415,
+   "brep_volume_mm3": 1441.412,
+   "volume_delta_pct": 0.0002,
+   "bbox_mm": [
+    22.0,
+    22.0,
+    4.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 0.38,
+   "overhang_max_z_mm": 0.33,
+   "bed_contact_area_mm2": 369.7,
+   "ok": true
+  },
+  "shared.coupon-boss-key-r30": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 1712,
+   "stl_volume_mm3": 1436.877,
+   "brep_volume_mm3": 1436.871,
+   "volume_delta_pct": 0.0004,
+   "bbox_mm": [
+    22.0,
+    22.0,
+    4.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 0.38,
+   "overhang_max_z_mm": 0.33,
+   "bed_contact_area_mm2": 368.8,
+   "ok": true
+  },
+  "shared.coupon-stud-strip": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 8938,
+   "stl_volume_mm3": 2273.818,
+   "brep_volume_mm3": 2273.839,
+   "volume_delta_pct": -0.0009,
+   "bbox_mm": [
+    40.0,
+    14.0,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": 0.0,
+   "overhang_gt45_area_mm2": 22.63,
+   "overhang_max_z_mm": 0.27,
+   "bed_contact_area_mm2": 517.4,
+   "ok": true
+  },
+  "shared.coupon-crystal-socket-10": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 2076,
+   "stl_volume_mm3": 209.424,
+   "brep_volume_mm3": 209.422,
+   "volume_delta_pct": 0.001,
+   "bbox_mm": [
+    6.0,
+    6.0,
+    7.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 8.55,
+   "overhang_max_z_mm": 1.8,
+   "bed_contact_area_mm2": 17.3,
+   "ok": true
+  },
+  "shared.coupon-crystal-socket-20": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 2092,
+   "stl_volume_mm3": 208.395,
+   "brep_volume_mm3": 208.393,
+   "volume_delta_pct": 0.001,
+   "bbox_mm": [
+    6.0,
+    6.0,
+    7.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 9.08,
+   "overhang_max_z_mm": 1.8,
+   "bed_contact_area_mm2": 16.7,
+   "ok": true
+  },
+  "shared.coupon-crystal-socket-30": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 2108,
+   "stl_volume_mm3": 207.338,
+   "brep_volume_mm3": 207.335,
+   "volume_delta_pct": 0.0015,
+   "bbox_mm": [
+    6.0,
+    6.0,
+    7.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 9.62,
+   "overhang_max_z_mm": 1.8,
+   "bed_contact_area_mm2": 16.1,
+   "ok": true
+  },
+  "shared.coupon-crystal-socket-40": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 1998,
+   "stl_volume_mm3": 206.252,
+   "brep_volume_mm3": 206.249,
+   "volume_delta_pct": 0.0013,
+   "bbox_mm": [
+    6.0,
+    6.0,
+    7.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 10.17,
+   "overhang_max_z_mm": 1.8,
+   "bed_contact_area_mm2": 15.4,
+   "ok": true
+  },
+  "shared.coupon-tile-tab": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 3138,
+   "stl_volume_mm3": 4617.36,
+   "brep_volume_mm3": 4617.443,
+   "volume_delta_pct": -0.0018,
+   "bbox_mm": [
+    49.6,
+    31.3,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 4.49,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 1095.7,
+   "ok": true
+  },
+  "shared.coupon-tile-socket-15": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 2024,
+   "stl_volume_mm3": 4069.848,
+   "brep_volume_mm3": 4069.773,
+   "volume_delta_pct": 0.0019,
+   "bbox_mm": [
+    49.6,
+    22.0,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 1.58,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 958.4,
+   "ok": true
+  },
+  "shared.coupon-tile-socket-25": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 2846,
+   "stl_volume_mm3": 4060.11,
+   "brep_volume_mm3": 4060.026,
+   "volume_delta_pct": 0.0021,
+   "bbox_mm": [
+    49.6,
+    22.0,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 1.61,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 956.0,
+   "ok": true
+  },
+  "shared.coupon-tile-socket-35": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 4278,
+   "stl_volume_mm3": 4050.35,
+   "brep_volume_mm3": 4050.257,
+   "volume_delta_pct": 0.0023,
+   "bbox_mm": [
+    49.6,
+    22.0,
+    4.0
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 1.8,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 953.5,
+   "ok": true
+  },
+  "facet.glyph-fire": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 5142,
+   "stl_volume_mm3": 687.632,
+   "brep_volume_mm3": 687.632,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    12.58,
+    21.27,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 12.49,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 133.1,
+   "ok": true
+  },
+  "facet.glyph-lightning": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 1972,
+   "stl_volume_mm3": 613.982,
+   "brep_volume_mm3": 613.982,
+   "volume_delta_pct": -0.0001,
+   "bbox_mm": [
+    15.867,
+    24.698,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 15.04,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 113.2,
+   "ok": true
+  },
+  "facet.glyph-water": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 3778,
+   "stl_volume_mm3": 1030.623,
+   "brep_volume_mm3": 1030.623,
+   "volume_delta_pct": 0.0,
+   "bbox_mm": [
+    15.212,
+    25.006,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 12.14,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 209.8,
+   "ok": true
+  },
+  "facet.glyph-shadow": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 5186,
+   "stl_volume_mm3": 715.239,
+   "brep_volume_mm3": 715.239,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    17.887,
+    24.046,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 15.8,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 134.5,
+   "ok": true
+  },
+  "facet.glyph-plant": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 6014,
+   "stl_volume_mm3": 1089.904,
+   "brep_volume_mm3": 1089.904,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    17.283,
+    23.369,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 21.13,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 210.1,
+   "ok": true
+  },
+  "facet.glyph-metal": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 3718,
+   "stl_volume_mm3": 1055.946,
+   "brep_volume_mm3": 1055.946,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    21.816,
+    21.04,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 20.32,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 203.9,
+   "ok": true
+  },
+  "facet.base": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 488,
+   "stl_volume_mm3": 3324.268,
+   "brep_volume_mm3": 3324.269,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    25.0,
+    25.0,
+    7.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 169.41,
+   "overhang_max_z_mm": 1.79,
+   "bed_contact_area_mm2": 296.8,
+   "ok": true
+  },
+  "facet.t2": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 780,
+   "stl_volume_mm3": 2596.418,
+   "brep_volume_mm3": 2596.418,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    28.5,
+    28.5,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 169.41,
+   "overhang_max_z_mm": 1.79,
+   "bed_contact_area_mm2": 447.3,
+   "ok": true
+  },
+  "facet.t3": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 732,
+   "stl_volume_mm3": 3599.375,
+   "brep_volume_mm3": 3599.376,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    32.0,
+    32.0,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 0.0,
+   "overhang_max_z_mm": 0.0,
+   "bed_contact_area_mm2": 806.4,
+   "ok": true
+  },
+  "facet.tile-interior": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 8372,
+   "stl_volume_mm3": 9756.52,
+   "brep_volume_mm3": 9756.49,
+   "volume_delta_pct": 0.0003,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 12.18,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2346.5,
+   "ok": true
+  },
+  "facet.tile-edge-s": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7310,
+   "stl_volume_mm3": 10050.249,
+   "brep_volume_mm3": 10050.351,
+   "volume_delta_pct": -0.001,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 10.58,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2425.1,
+   "ok": true
+  },
+  "facet.tile-edge-n": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7278,
+   "stl_volume_mm3": 9490.43,
+   "brep_volume_mm3": 9490.296,
+   "volume_delta_pct": 0.0014,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 7.7,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2285.4,
+   "ok": true
+  },
+  "facet.tile-edge-w": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7310,
+   "stl_volume_mm3": 10050.249,
+   "brep_volume_mm3": 10050.351,
+   "volume_delta_pct": -0.001,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 10.58,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2425.1,
+   "ok": true
+  },
+  "facet.tile-edge-e": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7278,
+   "stl_volume_mm3": 9490.43,
+   "brep_volume_mm3": 9490.296,
+   "volume_delta_pct": 0.0014,
+   "bbox_mm": [
+    49.6,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 7.7,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2285.4,
+   "ok": true
+  },
+  "facet.tile-corner-sw": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 6248,
+   "stl_volume_mm3": 10343.978,
+   "brep_volume_mm3": 10344.211,
+   "volume_delta_pct": -0.0023,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 8.97,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2503.7,
+   "ok": true
+  },
+  "facet.tile-corner-se": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 6216,
+   "stl_volume_mm3": 9784.158,
+   "brep_volume_mm3": 9784.157,
+   "volume_delta_pct": 0.0,
+   "bbox_mm": [
+    49.6,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 6.09,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2364.0,
+   "ok": true
+  },
+  "facet.tile-corner-nw": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 6216,
+   "stl_volume_mm3": 9784.158,
+   "brep_volume_mm3": 9784.157,
+   "volume_delta_pct": 0.0,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 6.09,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2364.0,
+   "ok": true
+  },
+  "facet.tile-corner-ne": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 6184,
+   "stl_volume_mm3": 9224.339,
+   "brep_volume_mm3": 9224.102,
+   "volume_delta_pct": 0.0026,
+   "bbox_mm": [
+    49.6,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 3.21,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2224.3,
+   "ok": true
+  },
+  "pebble.glyph-fire": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 6844,
+   "stl_volume_mm3": 688.403,
+   "brep_volume_mm3": 688.403,
+   "volume_delta_pct": 0.0,
+   "bbox_mm": [
+    12.58,
+    21.27,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 12.49,
+   "overhang_max_z_mm": 3.4,
+   "bed_contact_area_mm2": 133.1,
+   "ok": true
+  },
+  "pebble.glyph-lightning": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 2664,
+   "stl_volume_mm3": 614.912,
+   "brep_volume_mm3": 614.912,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    15.867,
+    24.698,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 15.04,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 113.2,
+   "ok": true
+  },
+  "pebble.glyph-water": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 4936,
+   "stl_volume_mm3": 1031.372,
+   "brep_volume_mm3": 1031.372,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    15.212,
+    25.006,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 12.14,
+   "overhang_max_z_mm": 3.4,
+   "bed_contact_area_mm2": 209.8,
+   "ok": true
+  },
+  "pebble.glyph-shadow": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7094,
+   "stl_volume_mm3": 716.213,
+   "brep_volume_mm3": 716.213,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    17.887,
+    24.046,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 15.81,
+   "overhang_max_z_mm": 3.3,
+   "bed_contact_area_mm2": 134.5,
+   "ok": true
+  },
+  "pebble.glyph-plant": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7748,
+   "stl_volume_mm3": 1091.176,
+   "brep_volume_mm3": 1091.176,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    17.283,
+    23.369,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 21.13,
+   "overhang_max_z_mm": 3.3,
+   "bed_contact_area_mm2": 210.1,
+   "ok": true
+  },
+  "pebble.glyph-metal": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 5168,
+   "stl_volume_mm3": 1057.167,
+   "brep_volume_mm3": 1057.167,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    21.816,
+    21.04,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 20.32,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 203.9,
+   "ok": true
+  },
+  "pebble.base": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 8072,
+   "stl_volume_mm3": 3317.047,
+   "brep_volume_mm3": 3317.282,
+   "volume_delta_pct": -0.0071,
+   "bbox_mm": [
+    25.0,
+    25.0,
+    7.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 171.62,
+   "overhang_max_z_mm": 1.79,
+   "bed_contact_area_mm2": 295.6,
+   "ok": true
+  },
+  "pebble.t2": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 10348,
+   "stl_volume_mm3": 2587.471,
+   "brep_volume_mm3": 2587.588,
+   "volume_delta_pct": -0.0045,
+   "bbox_mm": [
+    28.5,
+    28.5,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 171.94,
+   "overhang_max_z_mm": 1.79,
+   "bed_contact_area_mm2": 445.7,
+   "ok": true
+  },
+  "pebble.t3": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 10296,
+   "stl_volume_mm3": 3590.24,
+   "brep_volume_mm3": 3590.364,
+   "volume_delta_pct": -0.0035,
+   "bbox_mm": [
+    32.0,
+    32.0,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 2.54,
+   "overhang_max_z_mm": 0.33,
+   "bed_contact_area_mm2": 804.9,
+   "ok": true
+  },
+  "pebble.tile-interior": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 56184,
+   "stl_volume_mm3": 9784.474,
+   "brep_volume_mm3": 9784.53,
+   "volume_delta_pct": -0.0006,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 13.52,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2342.7,
+   "ok": true
+  },
+  "pebble.tile-edge-s": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 48394,
+   "stl_volume_mm3": 10075.125,
+   "brep_volume_mm3": 10075.277,
+   "volume_delta_pct": -0.0015,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 11.91,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2421.3,
+   "ok": true
+  },
+  "pebble.tile-edge-n": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 42636,
+   "stl_volume_mm3": 9515.03,
+   "brep_volume_mm3": 9515.012,
+   "volume_delta_pct": 0.0002,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 9.03,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2281.6,
+   "ok": true
+  },
+  "pebble.tile-edge-w": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 48394,
+   "stl_volume_mm3": 10075.125,
+   "brep_volume_mm3": 10075.277,
+   "volume_delta_pct": -0.0015,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 11.91,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2421.3,
+   "ok": true
+  },
+  "pebble.tile-edge-e": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 42636,
+   "stl_volume_mm3": 9515.03,
+   "brep_volume_mm3": 9515.012,
+   "volume_delta_pct": 0.0002,
+   "bbox_mm": [
+    49.6,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 9.03,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2281.6,
+   "ok": true
+  },
+  "pebble.tile-corner-sw": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 40604,
+   "stl_volume_mm3": 10365.776,
+   "brep_volume_mm3": 10366.025,
+   "volume_delta_pct": -0.0024,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 10.3,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2499.9,
+   "ok": true
+  },
+  "pebble.tile-corner-se": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 34846,
+   "stl_volume_mm3": 9805.681,
+   "brep_volume_mm3": 9805.759,
+   "volume_delta_pct": -0.0008,
+   "bbox_mm": [
+    49.6,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 7.43,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2360.2,
+   "ok": true
+  },
+  "pebble.tile-corner-nw": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 34846,
+   "stl_volume_mm3": 9805.681,
+   "brep_volume_mm3": 9805.759,
+   "volume_delta_pct": -0.0008,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 7.43,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2360.2,
+   "ok": true
+  },
+  "pebble.tile-corner-ne": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 29088,
+   "stl_volume_mm3": 9245.586,
+   "brep_volume_mm3": 9245.493,
+   "volume_delta_pct": 0.001,
+   "bbox_mm": [
+    49.6,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 4.55,
+   "overhang_max_z_mm": 0.37,
+   "bed_contact_area_mm2": 2220.5,
+   "ok": true
+  },
+  "turned.glyph-fire": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 4780,
+   "stl_volume_mm3": 668.006,
+   "brep_volume_mm3": 668.006,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    12.58,
+    21.27,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 12.49,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 133.1,
+   "ok": true
+  },
+  "turned.glyph-lightning": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 1932,
+   "stl_volume_mm3": 589.969,
+   "brep_volume_mm3": 589.969,
+   "volume_delta_pct": 0.0,
+   "bbox_mm": [
+    15.867,
+    24.698,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 15.04,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 113.2,
+   "ok": true
+  },
+  "turned.glyph-water": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 3492,
+   "stl_volume_mm3": 1010.445,
+   "brep_volume_mm3": 1010.445,
+   "volume_delta_pct": -0.0,
+   "bbox_mm": [
+    15.212,
+    25.006,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 12.14,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 209.8,
+   "ok": true
+  },
+  "turned.glyph-shadow": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 4742,
+   "stl_volume_mm3": 689.668,
+   "brep_volume_mm3": 689.668,
+   "volume_delta_pct": 0.0001,
+   "bbox_mm": [
+    17.887,
+    24.046,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 15.8,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 134.5,
+   "ok": true
+  },
+  "turned.glyph-plant": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 5620,
+   "stl_volume_mm3": 1054.458,
+   "brep_volume_mm3": 1054.458,
+   "volume_delta_pct": 0.0,
+   "bbox_mm": [
+    17.283,
+    23.369,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 21.13,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 210.1,
+   "ok": true
+  },
+  "turned.glyph-metal": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 3584,
+   "stl_volume_mm3": 1022.939,
+   "brep_volume_mm3": 1022.939,
+   "volume_delta_pct": 0.0,
+   "bbox_mm": [
+    21.816,
+    21.04,
+    4.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 20.32,
+   "overhang_max_z_mm": 0.5,
+   "bed_contact_area_mm2": 203.9,
+   "ok": true
+  },
+  "turned.base": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 1096,
+   "stl_volume_mm3": 3028.351,
+   "brep_volume_mm3": 3028.371,
+   "volume_delta_pct": -0.0007,
+   "bbox_mm": [
+    25.0,
+    25.0,
+    7.5
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 169.41,
+   "overhang_max_z_mm": 1.79,
+   "bed_contact_area_mm2": 296.8,
+   "ok": true
+  },
+  "turned.t2": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 2220,
+   "stl_volume_mm3": 2586.192,
+   "brep_volume_mm3": 2586.173,
+   "volume_delta_pct": 0.0007,
+   "bbox_mm": [
+    28.5,
+    28.5,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 169.41,
+   "overhang_max_z_mm": 1.79,
+   "bed_contact_area_mm2": 447.3,
+   "ok": true
+  },
+  "turned.t3": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 2172,
+   "stl_volume_mm3": 3591.758,
+   "brep_volume_mm3": 3591.74,
+   "volume_delta_pct": 0.0005,
+   "bbox_mm": [
+    32.0,
+    32.0,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 0.0,
+   "overhang_max_z_mm": 0.0,
+   "bed_contact_area_mm2": 806.4,
+   "ok": true
+  },
+  "turned.tile-interior": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 8046,
+   "stl_volume_mm3": 9718.458,
+   "brep_volume_mm3": 9718.463,
+   "volume_delta_pct": -0.0001,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 26.88,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2346.5,
+   "ok": true
+  },
+  "turned.tile-edge-s": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7076,
+   "stl_volume_mm3": 10002.985,
+   "brep_volume_mm3": 10003.092,
+   "volume_delta_pct": -0.0011,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 25.27,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2425.1,
+   "ok": true
+  },
+  "turned.tile-edge-n": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7052,
+   "stl_volume_mm3": 9448.807,
+   "brep_volume_mm3": 9448.72,
+   "volume_delta_pct": 0.0009,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 22.39,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2285.4,
+   "ok": true
+  },
+  "turned.tile-edge-w": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7076,
+   "stl_volume_mm3": 10002.985,
+   "brep_volume_mm3": 10003.092,
+   "volume_delta_pct": -0.0011,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 25.27,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2425.1,
+   "ok": true
+  },
+  "turned.tile-edge-e": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 7052,
+   "stl_volume_mm3": 9448.807,
+   "brep_volume_mm3": 9448.72,
+   "volume_delta_pct": 0.0009,
+   "bbox_mm": [
+    49.6,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 22.39,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2285.4,
+   "ok": true
+  },
+  "turned.tile-corner-sw": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 6106,
+   "stl_volume_mm3": 10287.513,
+   "brep_volume_mm3": 10287.721,
+   "volume_delta_pct": -0.002,
+   "bbox_mm": [
+    58.9,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 23.66,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2503.7,
+   "ok": true
+  },
+  "turned.tile-corner-se": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 6082,
+   "stl_volume_mm3": 9733.335,
+   "brep_volume_mm3": 9733.349,
+   "volume_delta_pct": -0.0001,
+   "bbox_mm": [
+    49.6,
+    58.9,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 20.79,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2364.0,
+   "ok": true
+  },
+  "turned.tile-corner-nw": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 6082,
+   "stl_volume_mm3": 9733.335,
+   "brep_volume_mm3": 9733.349,
+   "volume_delta_pct": -0.0001,
+   "bbox_mm": [
+    58.9,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 20.79,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2364.0,
+   "ok": true
+  },
+  "turned.tile-corner-ne": {
+   "watertight": true,
+   "winding_consistent": true,
+   "volume_positive": true,
+   "bodies": 1,
+   "triangles": 6058,
+   "stl_volume_mm3": 9179.157,
+   "brep_volume_mm3": 9178.977,
+   "volume_delta_pct": 0.002,
+   "bbox_mm": [
+    49.6,
+    49.6,
+    5.6
+   ],
+   "bbox_matches_manifest": true,
+   "on_bed_z0": true,
+   "degenerate_faces": 0,
+   "min_z": -0.0,
+   "overhang_gt45_area_mm2": 17.91,
+   "overhang_max_z_mm": 4.0,
+   "bed_contact_area_mm2": 2224.3,
+   "ok": true
+  }
+ },
+ "threemf": {
+  "print/calibration/cal-charcoal-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 6,
+   "mesh_objects": 6,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/calibration/cal-crystal-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 28,
+   "mesh_objects": 5,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/calibration/cal-gray-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 5,
+   "mesh_objects": 5,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/calibration/cal-ivory-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 6,
+   "mesh_objects": 6,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/calibration/cal-tang-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 2,
+   "mesh_objects": 2,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-charcoal-army-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 73,
+   "mesh_objects": 4,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-crystals-a-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 276,
+   "mesh_objects": 2,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-crystals-b-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 275,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-fire-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-gray-tiles-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-gray-tiles-plate02.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-gray-tiles-plate03.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-gray-tiles-plate04.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-gray-tiles-plate05.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 20,
+   "mesh_objects": 3,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-gray-tiles-plate06.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 14,
+   "mesh_objects": 4,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-ivory-army-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 73,
+   "mesh_objects": 4,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-lightning-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-metal-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-plant-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-shadow-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/facet/plates/facet-water-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-charcoal-army-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 73,
+   "mesh_objects": 4,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-crystals-a-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 276,
+   "mesh_objects": 2,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-crystals-b-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 275,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-fire-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-gray-tiles-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-gray-tiles-plate02.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-gray-tiles-plate03.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-gray-tiles-plate04.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-gray-tiles-plate05.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 20,
+   "mesh_objects": 3,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-gray-tiles-plate06.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 14,
+   "mesh_objects": 4,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-ivory-army-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 73,
+   "mesh_objects": 4,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-lightning-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-metal-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-plant-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-shadow-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/pebble/plates/pebble-water-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-charcoal-army-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 73,
+   "mesh_objects": 4,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-crystals-a-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 276,
+   "mesh_objects": 2,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-crystals-b-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 275,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-fire-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-gray-tiles-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-gray-tiles-plate02.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-gray-tiles-plate03.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-gray-tiles-plate04.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-gray-tiles-plate05.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 20,
+   "mesh_objects": 3,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-gray-tiles-plate06.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 14,
+   "mesh_objects": 4,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-ivory-army-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 73,
+   "mesh_objects": 4,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-lightning-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-metal-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-plant-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-shadow-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  },
+  "print/turned/plates/turned-water-glyphs-plate01.3mf": {
+   "strict_read": true,
+   "warnings": 0,
+   "build_items": 16,
+   "mesh_objects": 1,
+   "all_meshes_manifold_oriented": true,
+   "unit_millimeter": true,
+   "slicer_settings_embedded": false
+  }
+ },
+ "interfaces": {
+  "facet": {
+   "glyph_in_base": {
+    "fire": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "lightning": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "water": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "shadow": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "plant": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "metal": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    }
+   },
+   "base_on_t2_interference_mm3": 0.049,
+   "t2_on_t3_interference_mm3": 0.049,
+   "expected_boss_rib_interference_mm3": 0.07,
+   "boss_engagement_mm": 1.6,
+   "boss_top_gap_mm": 0.2,
+   "sections": {
+    "base_at_slot_mid": {
+     "z": 5.5,
+     "holes": 1,
+     "min_wall_slot_to_outside_mm": 8.576,
+     "closed_polygons": 1
+    },
+    "base_between_recess_and_slot": {
+     "floor_mm": 0.9
+    }
+   }
+  },
+  "pebble": {
+   "glyph_in_base": {
+    "fire": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "lightning": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "water": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "shadow": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "plant": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "metal": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    }
+   },
+   "base_on_t2_interference_mm3": 0.049,
+   "t2_on_t3_interference_mm3": 0.049,
+   "expected_boss_rib_interference_mm3": 0.07,
+   "boss_engagement_mm": 1.6,
+   "boss_top_gap_mm": 0.2,
+   "sections": {
+    "base_at_slot_mid": {
+     "z": 5.5,
+     "holes": 1,
+     "min_wall_slot_to_outside_mm": 8.541,
+     "closed_polygons": 1
+    },
+    "base_between_recess_and_slot": {
+     "floor_mm": 0.9
+    }
+   }
+  },
+  "turned": {
+   "glyph_in_base": {
+    "fire": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "lightning": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "water": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "shadow": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "plant": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    },
+    "metal": {
+     "interference_mm3": 0.289,
+     "expected_rib_interference_mm3": 0.327,
+     "only_rib_interference": true,
+     "flipped_insertion_interference_mm3": 1.449,
+     "keyed": true,
+     "tang_bottom_z": 3.0,
+     "slot_floor_z": 2.7
+    }
+   },
+   "base_on_t2_interference_mm3": 0.049,
+   "t2_on_t3_interference_mm3": 0.049,
+   "expected_boss_rib_interference_mm3": 0.07,
+   "boss_engagement_mm": 1.6,
+   "boss_top_gap_mm": 0.2,
+   "sections": {
+    "base_at_slot_mid": {
+     "z": 5.5,
+     "holes": 1,
+     "min_wall_slot_to_outside_mm": 7.676,
+     "closed_polygons": 1
+    },
+    "base_between_recess_and_slot": {
+     "floor_mm": 0.9
+    }
+   }
+  },
+  "crystal": {
+   "cube_on_cube_interference_mm3": 0.0,
+   "cube_on_tile_stud_interference_mm3": -0.0,
+   "stud_engagement_mm": 1.6,
+   "socket_diameter_mm": 3.45,
+   "radial_clearance_mm": 0.125,
+   "four_high_stack_height_above_tile_mm": 25.6,
+   "half_on_cube_interference_mm3": -0.0
+  }
+ },
+ "assemblies": {
+  "piece_states": {
+   "facet": {
+    "states": 36,
+    "ok": 36,
+    "max_pair_interference_mm3": 0.289,
+    "combos": 36
+   },
+   "pebble": {
+    "states": 36,
+    "ok": 36,
+    "max_pair_interference_mm3": 0.289,
+    "combos": 36
+   },
+   "turned": {
+    "states": 36,
+    "ok": 36,
+    "max_pair_interference_mm3": 0.289,
+    "combos": 36
+   }
+  },
+  "missing_files": [],
+  "total_states": 108
+ },
+ "board": {
+  "facet": {
+   "tiles": 100,
+   "gray": 98,
+   "ivory": 1,
+   "charcoal": 1,
+   "A1": "ivory",
+   "J10": "charcoal",
+   "neighbour_interference_max_mm3": 0.0,
+   "outer_size_mm": [
+    499.6,
+    499.6
+   ],
+   "no_tab_beyond_outline": true,
+   "crystals": 504,
+   "resource_total_from_resourceMap_ts": 504,
+   "tile_types": {
+    "interior": 64,
+    "edge-s": 8,
+    "edge-n": 8,
+    "edge-w": 8,
+    "edge-e": 8,
+    "corner-sw": 1,
+    "corner-se": 1,
+    "corner-nw": 1,
+    "corner-ne": 1
+   }
+  },
+  "pebble": {
+   "tiles": 100,
+   "gray": 98,
+   "ivory": 1,
+   "charcoal": 1,
+   "A1": "ivory",
+   "J10": "charcoal",
+   "neighbour_interference_max_mm3": 0.0,
+   "outer_size_mm": [
+    499.6,
+    499.6
+   ],
+   "no_tab_beyond_outline": true,
+   "crystals": 504,
+   "resource_total_from_resourceMap_ts": 504,
+   "tile_types": {
+    "interior": 64,
+    "edge-s": 8,
+    "edge-n": 8,
+    "edge-w": 8,
+    "edge-e": 8,
+    "corner-sw": 1,
+    "corner-se": 1,
+    "corner-nw": 1,
+    "corner-ne": 1
+   }
+  },
+  "turned": {
+   "tiles": 100,
+   "gray": 98,
+   "ivory": 1,
+   "charcoal": 1,
+   "A1": "ivory",
+   "J10": "charcoal",
+   "neighbour_interference_max_mm3": 0.0,
+   "outer_size_mm": [
+    499.6,
+    499.6
+   ],
+   "no_tab_beyond_outline": true,
+   "crystals": 504,
+   "resource_total_from_resourceMap_ts": 504,
+   "tile_types": {
+    "interior": 64,
+    "edge-s": 8,
+    "edge-n": 8,
+    "edge-w": 8,
+    "edge-e": 8,
+    "corner-sw": 1,
+    "corner-se": 1,
+    "corner-nw": 1,
+    "corner-ne": 1
+   }
+  }
+ },
+ "crowded_patch": {
+  "facet": {
+   "piece_vs_crystal_interference_mm3": 0.0,
+   "loose_glyph_interference_mm3": 0.0,
+   "stack_inner_face_from_centre_mm": 18.5,
+   "t3_half_across_flats_mm": 16.0,
+   "t3_half_across_corners_mm": 17.318,
+   "clearance_flats_facing_mm": 2.5,
+   "clearance_worst_rotation_mm": 1.182
+  },
+  "pebble": {
+   "piece_vs_crystal_interference_mm3": 0.0,
+   "loose_glyph_interference_mm3": 0.0,
+   "stack_inner_face_from_centre_mm": 18.5,
+   "t3_half_across_flats_mm": 16.0,
+   "t3_half_across_corners_mm": 17.318,
+   "clearance_flats_facing_mm": 2.5,
+   "clearance_worst_rotation_mm": 1.182
+  },
+  "turned": {
+   "piece_vs_crystal_interference_mm3": 0.0,
+   "loose_glyph_interference_mm3": 0.0,
+   "stack_inner_face_from_centre_mm": 18.5,
+   "t3_half_across_flats_mm": 16.0,
+   "t3_half_across_corners_mm": 17.318,
+   "clearance_flats_facing_mm": 2.5,
+   "clearance_worst_rotation_mm": 1.182
+  }
+ },
+ "lift": {
+  "facet": {
+   "mass_g_solid_upper_bound": {
+    "base": 4.12,
+    "t2": 3.22,
+    "t3": 4.46
+   },
+   "load_on_glyph_joint_N": 0.116,
+   "load_on_base_T2_joint_N": 0.075,
+   "load_on_T2_T3_joint_N": 0.044,
+   "weakest_joint": "glyph tang in base slot: it carries base + T2 + T3 when lifted by the glyph",
+   "note": "Retention force of the crush-rib fits is not computable reliably for FDM; the coupon sweep measures it. Pass criterion: holds >= 3x the load (about 0.3 N) and releases by hand."
+  },
+  "pebble": {
+   "mass_g_solid_upper_bound": {
+    "base": 4.11,
+    "t2": 3.21,
+    "t3": 4.45
+   },
+   "load_on_glyph_joint_N": 0.116,
+   "load_on_base_T2_joint_N": 0.075,
+   "load_on_T2_T3_joint_N": 0.044,
+   "weakest_joint": "glyph tang in base slot: it carries base + T2 + T3 when lifted by the glyph",
+   "note": "Retention force of the crush-rib fits is not computable reliably for FDM; the coupon sweep measures it. Pass criterion: holds >= 3x the load (about 0.3 N) and releases by hand."
+  },
+  "turned": {
+   "mass_g_solid_upper_bound": {
+    "base": 3.76,
+    "t2": 3.21,
+    "t3": 4.45
+   },
+   "load_on_glyph_joint_N": 0.112,
+   "load_on_base_T2_joint_N": 0.075,
+   "load_on_T2_T3_joint_N": 0.044,
+   "weakest_joint": "glyph tang in base slot: it carries base + T2 + T3 when lifted by the glyph",
+   "note": "Retention force of the crush-rib fits is not computable reliably for FDM; the coupon sweep measures it. Pass criterion: holds >= 3x the load (about 0.3 N) and releases by hand."
+  }
+ },
+ "coexistence_loose_glyph": {
+  "1": {
+   "fire": {
+    "rotation_deg": 10,
+    "x": 16.3,
+    "y": 8.24,
+    "overhang_beyond_own_tile_mm2": 0.0,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "lightning": {
+    "rotation_deg": 100,
+    "x": 19.8,
+    "y": 16.57,
+    "overhang_beyond_own_tile_mm2": 0.0,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "water": {
+    "rotation_deg": 50,
+    "x": 19.46,
+    "y": 11.92,
+    "overhang_beyond_own_tile_mm2": 0.62,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "shadow": {
+    "rotation_deg": 210,
+    "x": 8.65,
+    "y": 20.89,
+    "overhang_beyond_own_tile_mm2": 2.55,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "plant": {
+    "rotation_deg": 250,
+    "x": 9.09,
+    "y": 20.32,
+    "overhang_beyond_own_tile_mm2": 3.2,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "metal": {
+    "rotation_deg": 40,
+    "x": 19.66,
+    "y": 9.88,
+    "overhang_beyond_own_tile_mm2": 14.92,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   }
+  },
+  "2": {
+   "fire": {
+    "rotation_deg": 10,
+    "x": 18.8,
+    "y": 8.24,
+    "overhang_beyond_own_tile_mm2": 0.0,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "lightning": {
+    "rotation_deg": 240,
+    "x": 9.3,
+    "y": 19.84,
+    "overhang_beyond_own_tile_mm2": 0.21,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "water": {
+    "rotation_deg": 210,
+    "x": 13.93,
+    "y": 22.18,
+    "overhang_beyond_own_tile_mm2": 9.44,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "shadow": {
+    "rotation_deg": 210,
+    "x": 11.65,
+    "y": 21.89,
+    "overhang_beyond_own_tile_mm2": 10.08,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "plant": {
+    "rotation_deg": 250,
+    "x": 9.09,
+    "y": 20.82,
+    "overhang_beyond_own_tile_mm2": 4.23,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "metal": {
+    "rotation_deg": 30,
+    "x": 21.02,
+    "y": 9.58,
+    "overhang_beyond_own_tile_mm2": 24.31,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   }
+  },
+  "3": {
+   "fire": {
+    "rotation_deg": 240,
+    "x": 11.84,
+    "y": 20.44,
+    "overhang_beyond_own_tile_mm2": 1.38,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "lightning": {
+    "rotation_deg": 250,
+    "x": 8.96,
+    "y": 19.77,
+    "overhang_beyond_own_tile_mm2": 3.33,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "water": {
+    "rotation_deg": 210,
+    "x": 14.43,
+    "y": 24.18,
+    "overhang_beyond_own_tile_mm2": 31.06,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "shadow": {
+    "rotation_deg": 50,
+    "x": 21.03,
+    "y": 17.2,
+    "overhang_beyond_own_tile_mm2": 21.5,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "plant": {
+    "rotation_deg": 260,
+    "x": 9.37,
+    "y": 20.46,
+    "overhang_beyond_own_tile_mm2": 26.2,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   },
+   "metal": {
+    "rotation_deg": 30,
+    "x": 22.52,
+    "y": 10.58,
+    "overhang_beyond_own_tile_mm2": 47.71,
+    "centre_on_own_tile": true,
+    "touches_piece_or_stack": false
+   }
+  }
+ },
+ "inventory": {
+  "facet": 891,
+  "pebble": 891,
+  "turned": 891
+ },
+ "failures": [],
+ "passed": true
+}

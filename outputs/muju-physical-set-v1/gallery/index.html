@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Muju Physical Set</title>
+<meta name="description" content="Three printable variants of the Muju tabletop set: actual model inspection, parts, board, downloads and validation status.">
+<link rel="stylesheet" href="style.css">
+<script type="importmap">{"imports":{"three":"./vendor/three.module.min.js"}}</script>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>Muju physical set <span class="v">v1</span></h1>
+    <p class="lede">Three printable variants of one modular set for a Bambu Lab H2C: 100 interlocking tiles, keyed element glyphs, additive T2/T3 pedestals and stackable crystals. <strong>Digitally validated · physically untested.</strong></p>
+    <ul class="legend" aria-label="Evidence labels used on this page">
+      <li><span class="ev ev-concept">Concept sketch</span> design intent only</li>
+      <li><span class="ev ev-model">Model render</span> exported mesh, rendered</li>
+      <li><span class="ev ev-digital">Digital check</span> automated geometry test</li>
+      <li><span class="ev ev-slicer">Slicer check</span> <em>not performed</em></li>
+      <li><span class="ev ev-physical">Physical test</span> <em>not performed</em></li>
+    </ul>
+    <nav aria-label="Sections"><a href="#compare">Compare</a><a href="#inspect">Inspect pieces</a><a href="#parts">Parts</a><a href="#board">Board &amp; crystals</a><a href="#states">All 108 states</a><a href="#concepts">Concepts vs models</a><a href="#downloads">Downloads</a><a href="#validation">Validation</a></nav>
+  </div>
+</header>
+<main class="wrap">
+  <section id="compare" aria-labelledby="h-compare">
+    <h2 id="h-compare">Compare the three variants</h2>
+    <p class="note">Same composition, camera, palette and lighting for each: ivory T1·T2·T3 in front, charcoal T3·T2·T1 behind, two loose glyphs and 4/2/1-high crystal stacks. <span class="ev ev-model">Model render</span></p>
+    <div id="compare-grid" class="grid3"></div>
+  </section>
+
+  <section id="inspect" aria-labelledby="h-inspect">
+    <h2 id="h-inspect">Inspect any piece</h2>
+    <div class="viewer-layout">
+      <div class="viewer-box">
+        <canvas id="v-inspect" aria-label="3D view of the selected piece (actual exported model)"></canvas>
+        <div id="labels" class="labels" aria-hidden="true"></div>
+        <div class="viewer-tools"><button id="reset" type="button">Reset camera</button><span class="ev ev-model">Model · live 3D</span></div>
+        <p id="loading" class="loading" role="status"></p>
+      </div>
+      <form class="controls" id="controls" onsubmit="return false">
+        <fieldset><legend>Variant</legend><div class="seg" data-key="variant"></div></fieldset>
+        <fieldset><legend>Element</legend><div class="seg" data-key="element"></div></fieldset>
+        <fieldset><legend>Owner</legend><div class="seg" data-key="owner"></div></fieldset>
+        <fieldset><legend>Tier</legend><div class="seg" data-key="tier"></div></fieldset>
+        <fieldset><legend>View</legend><div class="seg" data-key="mode"></div></fieldset>
+        <div id="state-info" class="info" aria-live="polite"></div>
+      </form>
+    </div>
+  </section>
+
+  <section id="parts" aria-labelledby="h-parts">
+    <h2 id="h-parts">Every printable part</h2>
+    <div class="filters">
+      <label>Variant <select id="f-variant"></select></label>
+      <label>Family <select id="f-family"></select></label>
+      <span id="f-count" class="note"></span>
+    </div>
+    <div id="part-grid" class="cards"></div>
+  </section>
+
+  <section id="board" aria-labelledby="h-board">
+    <h2 id="h-board">Board, tiles and crystals</h2>
+    <div class="filters" id="board-controls"></div>
+    <div class="viewer-layout">
+      <div class="viewer-box tall">
+        <canvas id="v-board" aria-label="3D view of board scenes (actual exported models)"></canvas>
+        <div class="viewer-tools"><button id="reset-b" type="button">Reset camera</button><span class="ev ev-model">Model · live 3D</span></div>
+        <p id="loading-b" class="loading" role="status"></p>
+      </div>
+      <div class="info" id="board-info"></div>
+    </div>
+  </section>
+
+  <section id="states" aria-labelledby="h-states">
+    <h2 id="h-states">All assembled states</h2>
+    <p class="note">6 elements × 2 owners × 3 tiers per variant, rendered from the exported meshes. Each image opens that state in the 3D inspector. <span class="ev ev-model">Model render</span></p>
+    <div class="filters"><label>Variant <select id="s-variant"></select></label></div>
+    <div id="state-grid" class="states"></div>
+  </section>
+
+  <section id="concepts" aria-labelledby="h-concepts">
+    <h2 id="h-concepts">Concepts vs actual models</h2>
+    <p class="note">The concept sketches are vector drawings of design intent: no image-generation tool was available, and the saved raster prompts have not been run. The model renders are the only evidence of shape.</p>
+    <div id="concept-list"></div>
+  </section>
+
+  <section id="downloads" aria-labelledby="h-downloads">
+    <h2 id="h-downloads">Downloads</h2>
+    <div id="download-list"></div>
+  </section>
+
+  <section id="validation" aria-labelledby="h-validation">
+    <h2 id="h-validation">Validation status</h2>
+    <div id="validation-list"></div>
+  </section>
+</main>
+<footer class="wrap foot"><p>Generated from <code>manifest.json</code>, <code>assemblies/assemblies.json</code> and <code>validation/validation.json</code>. Viewer: three.js r170 (MIT, vendored). Local gallery; not published.</p></footer>
+<script type="module" src="app.js"></script>
+</body>
+</html>

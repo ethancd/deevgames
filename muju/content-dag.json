@@ -40,6 +40,7 @@
     "online": ["server-runtime"],
     "explorer": ["advantage-explorer"],
     "ui": ["browser-ui"],
+    "print": ["physical-set"],
     "academy": ["academy-lessons"],
     "release": ["game-validation", "academy-package"]
   },
@@ -101,6 +102,12 @@
       "paths": ["muju/src/components/", "muju/src/App.tsx", "muju/src/main.tsx", "muju/src/hooks/useAI.ts", "muju/src/index.css", "muju/src/utils/colors.ts", "muju/src/utils/positionReport.ts", "muju/src/utils/compactReport.ts", "muju/src/sound/", "muju/src/music/", "muju/public/music/", "muju/index.html", "muju/public/previews/"],
       "update": ["Inspect UnitShop, UnitInfo, InstructionsModal, VisualKey, AnalysisScreen, MapPainter, action/reach previews and unit artwork for copied facts or numeric assumptions. Reuse canonical data where possible. Regenerate affected previews."],
       "verify": ["Inspect desktop and phone play: instructions, stat cards, legal highlights, purchase/promotion, turn endings and analysis. Ensure the AI worker still runs."]
+    },
+    {
+      "id": "physical-set", "title": "3D-printable physical set: parametric CAD, print packages and local model gallery", "depends_on": ["catalogue", "board-rules", "browser-ui"],
+      "paths": ["outputs/muju-physical-set-v1/cad/", "outputs/muju-physical-set-v1/README.md"],
+      "update": ["Glyph artwork (ElementGlyph.tsx), the resource map, army/tier semantics or pending-summon rules changed: edit outputs/muju-physical-set-v1/cad/params.json only if dimensions must change, then rerun build.py, assemblies.py, validate.py, render.mjs, package.py and gallery_content.py (commands in the set README). Keep outputs/muju-print-reference-b5117f43 and outputs/muju-baroque-reference-v1 unchanged."],
+      "verify": ["validate.py reports 0 failures (891 objects per variant, 108 states, 504 crystals from resourceMap.ts, A1 ivory / J10 charcoal) and gallery_qa.mjs passes. Physical fit claims require the print/PHYSICAL-TEST-SEQUENCE.md results; this node never publishes anything."]
     },
     {
       "id": "persistence", "title": "Saved games, migrations, history and replay compatibility", "depends_on": ["transitions"],

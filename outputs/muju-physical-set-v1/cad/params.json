@@ -1,0 +1,210 @@
+{
+  "_doc": "Single source of physical dimensions for all three Muju set variants. Millimetres. Clearances are PER SIDE (radial) unless the key ends in _diametral. Candidate values only: physical fit coupons decide final numbers.",
+  "schema": 1,
+  "board": {
+    "pitch": 50.0,
+    "tile_size": 49.6,
+    "tile_thickness": 4.0,
+    "bottom_chamfer": 0.4,
+    "tab": {
+      "offset_along_edge": 13.0,
+      "neck_width": 6.5,
+      "head_diameter": 9.0,
+      "head_center_from_boundary": 4.6,
+      "clearance_per_side": 0.25,
+      "_rule": "Tile at (x,y) has an east tab if x<9 and a north tab if y<9; a west socket if x>0 and a south socket if y>0. North = increasing rank (towards row 10)."
+    },
+    "stud": {
+      "diameter": 3.2,
+      "height": 1.6,
+      "top_chamfer": 0.3,
+      "center_from_tile_center": 21.5
+    }
+  },
+  "crystal": {
+    "body": 6.0,
+    "edge_chamfer": 0.3,
+    "bottom_chamfer": 0.35,
+    "socket_diameter_clearance_diametral": 0.25,
+    "socket_extra_depth": 0.2,
+    "socket_mouth_chamfer": 0.3,
+    "half_token_height": 3.0,
+    "half_token_top_chamfer": 1.0,
+    "large_alternative_body": 7.0
+  },
+  "piece": {
+    "base_af": 25.0,
+    "base_height": 7.5,
+    "t2_af": 28.5,
+    "t2_height": 4.0,
+    "t3_af": 32.0,
+    "t3_height": 4.0,
+    "bottom_chamfer": 0.4,
+    "boss": {
+      "af": 14.0,
+      "height": 1.6,
+      "top_chamfer": 0.4,
+      "rib_count": 4,
+      "rib_radius": 0.5,
+      "rib_protrusion": 0.2
+    },
+    "recess": {
+      "clearance_per_side": 0.15,
+      "extra_depth": 0.2,
+      "mouth_chamfer": 0.4
+    }
+  },
+  "glyph": {
+    "units_to_mm": 0.66,
+    "thickness": 4.5,
+    "thicken_offset": 0.35,
+    "min_feature": 1.2,
+    "tang_width": 6.0,
+    "tang_depth": 4.5,
+    "tang_key_chamfer": 1.2,
+    "tang_tip_chamfer": 0.5,
+    "tang_overlap_units": 3.0,
+    "vein_width_units": 2.5,
+    "vein_end_margin": 1.3,
+    "slot_clearance_per_side": 0.15,
+    "slot_extra_depth": 0.3,
+    "slot_mouth_chamfer": 0.5,
+    "slot_rib_radius": 0.5,
+    "slot_rib_protrusion": 0.25,
+    "neck_band": 2.8,
+    "tang_max_offset": 2.5
+  },
+  "variants": {
+    "facet": {
+      "name": "Facet",
+      "brief_direction": "Crisp chamfered",
+      "glyph_edge": {
+        "kind": "chamfer",
+        "top": 0.8,
+        "bottom": 0.5
+      },
+      "base_edge": {
+        "kind": "chamfer",
+        "top": 1.6,
+        "corner_radius": 0.0
+      },
+      "pedestal_edge": {
+        "kind": "chamfer",
+        "top": 0.9,
+        "corner_radius": 0.0
+      },
+      "tile_edge": {
+        "kind": "chamfer",
+        "top": 0.8,
+        "corner_radius": 0.0
+      }
+    },
+    "pebble": {
+      "name": "Pebble",
+      "brief_direction": "Soft octagonal",
+      "glyph_edge": {
+        "kind": "fillet",
+        "top": 1.2,
+        "bottom": 0.5
+      },
+      "base_edge": {
+        "kind": "fillet",
+        "top": 2.4,
+        "corner_radius": 3.0
+      },
+      "pedestal_edge": {
+        "kind": "fillet",
+        "top": 1.4,
+        "corner_radius": 3.4
+      },
+      "tile_edge": {
+        "kind": "fillet",
+        "top": 0.8,
+        "corner_radius": 2.5
+      }
+    },
+    "turned": {
+      "name": "Turned Court",
+      "brief_direction": "Restrained turned / fluted",
+      "glyph_edge": {
+        "kind": "step",
+        "top": 0.7,
+        "step_height": 0.9,
+        "bottom": 0.5
+      },
+      "base_edge": {
+        "kind": "turned",
+        "plinth_height": 2.4,
+        "plinth_chamfer": 0.6,
+        "body_inset": 0.9,
+        "top": 1.0
+      },
+      "pedestal_edge": {
+        "kind": "fluted",
+        "top": 0.6,
+        "flute_radius": 1.5,
+        "flute_depth": 0.7
+      },
+      "tile_edge": {
+        "kind": "grooved",
+        "top": 0.5,
+        "groove_inset": 3.0,
+        "groove_width": 1.2,
+        "groove_depth": 0.5
+      }
+    }
+  },
+  "palette": {
+    "ivory": {
+      "hex": "#EDE6D3",
+      "role": "Ivory army + A1 home tile",
+      "lead": "Bambu PLA Matte Ivory White"
+    },
+    "charcoal": {
+      "hex": "#2E2F31",
+      "role": "Charcoal army + J10 home tile",
+      "lead": "Bambu PLA Matte Charcoal"
+    },
+    "gray": {
+      "hex": "#8E9193",
+      "role": "98 ordinary board tiles",
+      "lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)"
+    },
+    "fire": {
+      "hex": "#C8202F",
+      "role": "Fire glyph",
+      "lead": "Bambu PLA Basic Red"
+    },
+    "lightning": {
+      "hex": "#F4D21F",
+      "role": "Lightning glyph",
+      "lead": "Bambu PLA Basic Yellow"
+    },
+    "water": {
+      "hex": "#1F4FBF",
+      "role": "Water glyph",
+      "lead": "Bambu PLA Basic Cobalt Blue"
+    },
+    "shadow": {
+      "hex": "#6B3FA0",
+      "role": "Shadow glyph",
+      "lead": "Bambu PLA Basic Purple"
+    },
+    "plant": {
+      "hex": "#1E9A4B",
+      "role": "Plant glyph",
+      "lead": "Bambu PLA Basic Bambu Green"
+    },
+    "metal": {
+      "hex": "#B8703A",
+      "role": "Metal glyph (copper, not silver)",
+      "lead": "Bambu PLA Metal Copper Brown Metallic"
+    },
+    "crystal": {
+      "hex": "#7FD8D4",
+      "role": "Crystals + half token (translucent)",
+      "lead": "Bambu PETG Translucent Teal",
+      "opacity": 0.62
+    }
+  }
+}

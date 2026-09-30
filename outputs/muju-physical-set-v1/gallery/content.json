@@ -1,0 +1,245 @@
+{
+ "title": "Muju physical set — three variants",
+ "geometry": {
+  "tile_h": 4.0,
+  "studs": [
+   [
+    21.5,
+    0
+   ],
+   [
+    0,
+    21.5
+   ],
+   [
+    -21.5,
+    0
+   ],
+   [
+    0,
+    -21.5
+   ]
+  ],
+  "cube": 6.0,
+  "pitch": 50.0,
+  "tile": 49.6,
+  "base_af": 25.0,
+  "t2_af": 28.5,
+  "t3_af": 32.0,
+  "base_h": 7.5,
+  "t2_h": 4.0,
+  "t3_h": 4.0,
+  "glyph_t": 4.5,
+  "stud_d": 3.2,
+  "stud_h": 1.6
+ },
+ "variants": {
+  "facet": {
+   "name": "Facet",
+   "direction": "Crisp chamfered",
+   "tagline": "Crisp chamfered octagons",
+   "text": "Plain planar faces with 45° chamfers: a 1.6 mm crown on the base, 0.9 mm on each pedestal, 0.8 mm bevels on the glyph faces. The strongest silhouettes and the least ambiguity at arm's length; the tier steps read as clean ledges.",
+   "tactile": "Hard, precise edges. Chamfers take fingernails for separating layers.",
+   "print": "Simplest to print: straight walls, 45° chamfers, no ornament.",
+   "risk": "Chamfered glyph tips are the sharpest points in the project. They are rounded by the 0.35 mm outline offset, but should still be checked."
+  },
+  "pebble": {
+   "name": "Pebble",
+   "direction": "Soft octagonal",
+   "tagline": "Soft octagonal, rounded edges",
+   "text": "The octagon keeps its flats but its eight corners are rounded (3.0–3.4 mm) and every top edge is a quarter-round. Glyphs have a 1.2 mm rounded face edge. Quiet, tactile, friendly; still unmistakably octagonal.",
+   "tactile": "Warm and pebble-like in the hand; no corners to catch.",
+   "print": "Rounded top edges print as fine terraces at 0.2 mm layers (0.12–0.16 mm layers look smoother). Larger files.",
+   "risk": "Softer step edges make the T2/T3 ledges slightly less crisp from far away. The rounded tile top is 0.8 mm; a 1.0 mm round failed in the kernel at the puzzle-tab necks."
+  },
+  "turned": {
+   "name": "Turned Court",
+   "direction": "Restrained turned / fluted",
+   "tagline": "Turned Court: plinth, crown and broad flutes",
+   "text": "Informed by the earlier Turned Court / Baroque studies, without their tall monolithic figurines: a stepped plinth and filleted crown on the base, eight broad flutes (1.5 mm radius) on each pedestal and a raised, inset plateau on every glyph. Tiles carry a court frame groove around the piece area.",
+   "tactile": "Architectural; the flutes give the pedestals grip and make the tier layers countable by touch.",
+   "print": "All ornament is vertical or stepped, so no supports. Flutes are 3 mm wide and 0.7 mm deep, well above minimum feature size.",
+   "risk": "Most visual detail, so dust and stringing show more. Keep the flute count and depth; do not add finer ornament."
+  }
+ },
+ "palette": {
+  "ivory": {
+   "hex": "#EDE6D3",
+   "role": "Ivory army + A1 home tile",
+   "lead": "Bambu PLA Matte Ivory White"
+  },
+  "charcoal": {
+   "hex": "#2E2F31",
+   "role": "Charcoal army + J10 home tile",
+   "lead": "Bambu PLA Matte Charcoal"
+  },
+  "gray": {
+   "hex": "#8E9193",
+   "role": "98 ordinary board tiles",
+   "lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)"
+  },
+  "fire": {
+   "hex": "#C8202F",
+   "role": "Fire glyph",
+   "lead": "Bambu PLA Basic Red"
+  },
+  "lightning": {
+   "hex": "#F4D21F",
+   "role": "Lightning glyph",
+   "lead": "Bambu PLA Basic Yellow"
+  },
+  "water": {
+   "hex": "#1F4FBF",
+   "role": "Water glyph",
+   "lead": "Bambu PLA Basic Cobalt Blue"
+  },
+  "shadow": {
+   "hex": "#6B3FA0",
+   "role": "Shadow glyph",
+   "lead": "Bambu PLA Basic Purple"
+  },
+  "plant": {
+   "hex": "#1E9A4B",
+   "role": "Plant glyph",
+   "lead": "Bambu PLA Basic Bambu Green"
+  },
+  "metal": {
+   "hex": "#B8703A",
+   "role": "Metal glyph (copper, not silver)",
+   "lead": "Bambu PLA Metal Copper Brown Metallic"
+  },
+  "crystal": {
+   "hex": "#7FD8D4",
+   "role": "Crystals + half token (translucent)",
+   "lead": "Bambu PETG Translucent Teal",
+   "opacity": 0.62
+  }
+ },
+ "concepts": {
+  "facet": [
+   "concepts/facet/facet-1-overview.svg",
+   "concepts/facet/facet-2-construction.svg",
+   "concepts/facet/facet-3-tabletop.svg"
+  ],
+  "pebble": [
+   "concepts/pebble/pebble-1-overview.svg",
+   "concepts/pebble/pebble-2-construction.svg",
+   "concepts/pebble/pebble-3-tabletop.svg"
+  ],
+  "turned": [
+   "concepts/turned/turned-1-overview.svg",
+   "concepts/turned/turned-2-construction.svg",
+   "concepts/turned/turned-3-tabletop.svg"
+  ]
+ },
+ "renders": {
+  "facet": [
+   "renders/facet-beside.png",
+   "renders/facet-board.png",
+   "renders/facet-lineup.png",
+   "renders/facet-patch.png",
+   "renders/facet-resources.png",
+   "renders/facet-t3-exploded.png",
+   "renders/facet-t3-section.png",
+   "renders/facet-tiles.png"
+  ],
+  "pebble": [
+   "renders/pebble-beside.png",
+   "renders/pebble-board.png",
+   "renders/pebble-lineup.png",
+   "renders/pebble-patch.png",
+   "renders/pebble-resources.png",
+   "renders/pebble-t3-exploded.png",
+   "renders/pebble-t3-section.png",
+   "renders/pebble-tiles.png"
+  ],
+  "turned": [
+   "renders/turned-beside.png",
+   "renders/turned-board.png",
+   "renders/turned-lineup.png",
+   "renders/turned-patch.png",
+   "renders/turned-resources.png",
+   "renders/turned-t3-exploded.png",
+   "renders/turned-t3-section.png",
+   "renders/turned-tiles.png"
+  ],
+  "shared": [
+   "renders/shared-crystals.png"
+  ]
+ },
+ "contact_sheets": [],
+ "part_thumbs": {
+  "facet.base": "renders/parts/facet.base.png",
+  "facet.glyph-fire": "renders/parts/facet.glyph-fire.png",
+  "facet.glyph-lightning": "renders/parts/facet.glyph-lightning.png",
+  "facet.glyph-metal": "renders/parts/facet.glyph-metal.png",
+  "facet.glyph-plant": "renders/parts/facet.glyph-plant.png",
+  "facet.glyph-shadow": "renders/parts/facet.glyph-shadow.png",
+  "facet.glyph-water": "renders/parts/facet.glyph-water.png",
+  "facet.t2": "renders/parts/facet.t2.png",
+  "facet.t3": "renders/parts/facet.t3.png",
+  "facet.tile-corner-ne": "renders/parts/facet.tile-corner-ne.png",
+  "facet.tile-corner-nw": "renders/parts/facet.tile-corner-nw.png",
+  "facet.tile-corner-se": "renders/parts/facet.tile-corner-se.png",
+  "facet.tile-corner-sw": "renders/parts/facet.tile-corner-sw.png",
+  "facet.tile-edge-e": "renders/parts/facet.tile-edge-e.png",
+  "facet.tile-edge-n": "renders/parts/facet.tile-edge-n.png",
+  "facet.tile-edge-s": "renders/parts/facet.tile-edge-s.png",
+  "facet.tile-edge-w": "renders/parts/facet.tile-edge-w.png",
+  "facet.tile-interior": "renders/parts/facet.tile-interior.png",
+  "pebble.base": "renders/parts/pebble.base.png",
+  "pebble.glyph-fire": "renders/parts/pebble.glyph-fire.png",
+  "pebble.glyph-lightning": "renders/parts/pebble.glyph-lightning.png",
+  "pebble.glyph-metal": "renders/parts/pebble.glyph-metal.png",
+  "pebble.glyph-plant": "renders/parts/pebble.glyph-plant.png",
+  "pebble.glyph-shadow": "renders/parts/pebble.glyph-shadow.png",
+  "pebble.glyph-water": "renders/parts/pebble.glyph-water.png",
+  "pebble.t2": "renders/parts/pebble.t2.png",
+  "pebble.t3": "renders/parts/pebble.t3.png",
+  "pebble.tile-corner-ne": "renders/parts/pebble.tile-corner-ne.png",
+  "pebble.tile-corner-nw": "renders/parts/pebble.tile-corner-nw.png",
+  "pebble.tile-corner-se": "renders/parts/pebble.tile-corner-se.png",
+  "pebble.tile-corner-sw": "renders/parts/pebble.tile-corner-sw.png",
+  "pebble.tile-edge-e": "renders/parts/pebble.tile-edge-e.png",
+  "pebble.tile-edge-n": "renders/parts/pebble.tile-edge-n.png",
+  "pebble.tile-edge-s": "renders/parts/pebble.tile-edge-s.png",
+  "pebble.tile-edge-w": "renders/parts/pebble.tile-edge-w.png",
+  "pebble.tile-interior": "renders/parts/pebble.tile-interior.png",
+  "shared.coupon-boss-key-r0": "renders/parts/shared.coupon-boss-key-r0.png",
+  "shared.coupon-boss-key-r10": "renders/parts/shared.coupon-boss-key-r10.png",
+  "shared.coupon-boss-key-r20": "renders/parts/shared.coupon-boss-key-r20.png",
+  "shared.coupon-boss-key-r30": "renders/parts/shared.coupon-boss-key-r30.png",
+  "shared.coupon-crystal-socket-10": "renders/parts/shared.coupon-crystal-socket-10.png",
+  "shared.coupon-crystal-socket-20": "renders/parts/shared.coupon-crystal-socket-20.png",
+  "shared.coupon-crystal-socket-30": "renders/parts/shared.coupon-crystal-socket-30.png",
+  "shared.coupon-crystal-socket-40": "renders/parts/shared.coupon-crystal-socket-40.png",
+  "shared.coupon-glyph-slots": "renders/parts/shared.coupon-glyph-slots.png",
+  "shared.coupon-recess-plate": "renders/parts/shared.coupon-recess-plate.png",
+  "shared.coupon-stud-strip": "renders/parts/shared.coupon-stud-strip.png",
+  "shared.coupon-tang-gauge": "renders/parts/shared.coupon-tang-gauge.png",
+  "shared.coupon-tile-socket-15": "renders/parts/shared.coupon-tile-socket-15.png",
+  "shared.coupon-tile-socket-25": "renders/parts/shared.coupon-tile-socket-25.png",
+  "shared.coupon-tile-socket-35": "renders/parts/shared.coupon-tile-socket-35.png",
+  "shared.coupon-tile-tab": "renders/parts/shared.coupon-tile-tab.png",
+  "shared.crystal": "renders/parts/shared.crystal.png",
+  "shared.half-crystal": "renders/parts/shared.half-crystal.png",
+  "turned.base": "renders/parts/turned.base.png",
+  "turned.glyph-fire": "renders/parts/turned.glyph-fire.png",
+  "turned.glyph-lightning": "renders/parts/turned.glyph-lightning.png",
+  "turned.glyph-metal": "renders/parts/turned.glyph-metal.png",
+  "turned.glyph-plant": "renders/parts/turned.glyph-plant.png",
+  "turned.glyph-shadow": "renders/parts/turned.glyph-shadow.png",
+  "turned.glyph-water": "renders/parts/turned.glyph-water.png",
+  "turned.t2": "renders/parts/turned.t2.png",
+  "turned.t3": "renders/parts/turned.t3.png",
+  "turned.tile-corner-ne": "renders/parts/turned.tile-corner-ne.png",
+  "turned.tile-corner-nw": "renders/parts/turned.tile-corner-nw.png",
+  "turned.tile-corner-se": "renders/parts/turned.tile-corner-se.png",
+  "turned.tile-corner-sw": "renders/parts/turned.tile-corner-sw.png",
+  "turned.tile-edge-e": "renders/parts/turned.tile-edge-e.png",
+  "turned.tile-edge-n": "renders/parts/turned.tile-edge-n.png",
+  "turned.tile-edge-s": "renders/parts/turned.tile-edge-s.png",
+  "turned.tile-edge-w": "renders/parts/turned.tile-edge-w.png",
+  "turned.tile-interior": "renders/parts/turned.tile-interior.png"
+ }
+}

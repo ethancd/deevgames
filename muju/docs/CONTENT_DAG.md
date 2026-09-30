@@ -48,7 +48,9 @@ python3 tools/muju-content-dag.py diagram
 ```
 
 Kinds are `piece-stats`, `rules`, `map-economy`, `ai`, `ai-strength`, `mcp`,
-`online`, `ui`, `explorer`, `academy`, and `release`. Repeat `--kind` or `--node` to combine changes.
+`online`, `ui`, `explorer`, `academy`, `print`, and `release`. `print` selects the
+3D-printable physical set (`outputs/muju-physical-set-v1/`), which reads the glyph artwork, map and
+catalogue but feeds nothing downstream. Repeat `--kind` or `--node` to combine changes.
 Use `--kind rules` for new mechanics or uncertain rule scope. File paths are
 repository-relative even when running the script from another directory;
 absolute paths inside this checkout also work. Include deleted/renamed paths

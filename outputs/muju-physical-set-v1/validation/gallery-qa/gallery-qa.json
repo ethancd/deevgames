@@ -1,0 +1,301 @@
+{
+ "date": "2026-09-30T16:36:27.213Z",
+ "url": "http://127.0.0.1:8777/gallery/",
+ "checks": [
+  {
+   "name": "three variant cards",
+   "ok": true,
+   "detail": "3"
+  },
+  {
+   "name": "inspect facet metal ivory T3 exploded",
+   "ok": true,
+   "detail": "Facet · metal · ivory · T3"
+  },
+  {
+   "name": "inspect facet lightning charcoal T1 standing",
+   "ok": true,
+   "detail": "Facet · lightning · charcoal · T1"
+  },
+  {
+   "name": "inspect facet plant charcoal T3 section",
+   "ok": true,
+   "detail": "Facet · plant · charcoal · T3"
+  },
+  {
+   "name": "inspect facet water ivory T2 loose",
+   "ok": true,
+   "detail": "Loose water glyph = pending summon"
+  },
+  {
+   "name": "inspect facet fire charcoal T3 beside",
+   "ok": true,
+   "detail": "Pending glyph beside an occupying piece"
+  },
+  {
+   "name": "exploded T3 labels all layers",
+   "ok": true,
+   "detail": "labels shown in last exploded view"
+  },
+  {
+   "name": "inspect pebble metal ivory T3 exploded",
+   "ok": true,
+   "detail": "Pebble · metal · ivory · T3"
+  },
+  {
+   "name": "inspect pebble lightning charcoal T1 standing",
+   "ok": true,
+   "detail": "Pebble · lightning · charcoal · T1"
+  },
+  {
+   "name": "inspect pebble plant charcoal T3 section",
+   "ok": true,
+   "detail": "Pebble · plant · charcoal · T3"
+  },
+  {
+   "name": "inspect pebble water ivory T2 loose",
+   "ok": true,
+   "detail": "Loose water glyph = pending summon"
+  },
+  {
+   "name": "inspect pebble fire charcoal T3 beside",
+   "ok": true,
+   "detail": "Pending glyph beside an occupying piece"
+  },
+  {
+   "name": "inspect turned metal ivory T3 exploded",
+   "ok": true,
+   "detail": "Turned Court · metal · ivory · T3"
+  },
+  {
+   "name": "inspect turned lightning charcoal T1 standing",
+   "ok": true,
+   "detail": "Turned Court · lightning · charcoal · T1"
+  },
+  {
+   "name": "inspect turned plant charcoal T3 section",
+   "ok": true,
+   "detail": "Turned Court · plant · charcoal · T3"
+  },
+  {
+   "name": "inspect turned water ivory T2 loose",
+   "ok": true,
+   "detail": "Loose water glyph = pending summon"
+  },
+  {
+   "name": "inspect turned fire charcoal T3 beside",
+   "ok": true,
+   "detail": "Pending glyph beside an occupying piece"
+  },
+  {
+   "name": "T3 exploded labels show base, T2 and T3 separately",
+   "ok": true,
+   "detail": "T3 addition | T2 addition | Ownership base (T1) | Element glyph (keyed tang in slot)"
+  },
+  {
+   "name": "parts family glyph",
+   "ok": true,
+   "detail": "18 cards"
+  },
+  {
+   "name": "parts family base",
+   "ok": true,
+   "detail": "3 cards"
+  },
+  {
+   "name": "parts family pedestal-t2",
+   "ok": true,
+   "detail": "3 cards"
+  },
+  {
+   "name": "parts family pedestal-t3",
+   "ok": true,
+   "detail": "3 cards"
+  },
+  {
+   "name": "parts family tile",
+   "ok": true,
+   "detail": "27 cards"
+  },
+  {
+   "name": "parts family crystal",
+   "ok": true,
+   "detail": "2 cards"
+  },
+  {
+   "name": "parts family coupon",
+   "ok": true,
+   "detail": "16 cards"
+  },
+  {
+   "name": "parts variant facet",
+   "ok": true,
+   "detail": "20 cards"
+  },
+  {
+   "name": "parts variant pebble",
+   "ok": true,
+   "detail": "20 cards"
+  },
+  {
+   "name": "parts variant turned",
+   "ok": true,
+   "detail": "20 cards"
+  },
+  {
+   "name": "parts variant shared",
+   "ok": true,
+   "detail": "18 cards"
+  },
+  {
+   "name": "part viewer (A1 home tile)",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "board facet board",
+   "ok": true,
+   "detail": "Full board, canonical start"
+  },
+  {
+   "name": "board facet patch",
+   "ok": true,
+   "detail": "Crowded patch"
+  },
+  {
+   "name": "board facet resources",
+   "ok": true,
+   "detail": "Initial reserves"
+  },
+  {
+   "name": "board facet crystals",
+   "ok": true,
+   "detail": "Crystals"
+  },
+  {
+   "name": "board facet tiles",
+   "ok": true,
+   "detail": "Tile join (A1, B1, A2, B2, spread apart)"
+  },
+  {
+   "name": "board pebble board",
+   "ok": true,
+   "detail": "Full board, canonical start"
+  },
+  {
+   "name": "board pebble patch",
+   "ok": true,
+   "detail": "Crowded patch"
+  },
+  {
+   "name": "board pebble resources",
+   "ok": true,
+   "detail": "Initial reserves"
+  },
+  {
+   "name": "board pebble crystals",
+   "ok": true,
+   "detail": "Crystals"
+  },
+  {
+   "name": "board pebble tiles",
+   "ok": true,
+   "detail": "Tile join (A1, B1, A2, B2, spread apart)"
+  },
+  {
+   "name": "board turned board",
+   "ok": true,
+   "detail": "Full board, canonical start"
+  },
+  {
+   "name": "board turned patch",
+   "ok": true,
+   "detail": "Crowded patch"
+  },
+  {
+   "name": "board turned resources",
+   "ok": true,
+   "detail": "Initial reserves"
+  },
+  {
+   "name": "board turned crystals",
+   "ok": true,
+   "detail": "Crystals"
+  },
+  {
+   "name": "board turned tiles",
+   "ok": true,
+   "detail": "Tile join (A1, B1, A2, B2, spread apart)"
+  },
+  {
+   "name": "board info shows 98 gray, A1 ivory, J10 charcoal, 504 crystals",
+   "ok": true,
+   "detail": "Tiles\t100: 98 gray, A1 ivory, J10 charcoal Crystals\t504 from resourceMap.ts (504)"
+  },
+  {
+   "name": "state grid facet has 36",
+   "ok": true,
+   "detail": "36"
+  },
+  {
+   "name": "state grid pebble has 36",
+   "ok": true,
+   "detail": "36"
+  },
+  {
+   "name": "state grid turned has 36",
+   "ok": true,
+   "detail": "36"
+  },
+  {
+   "name": "all links, downloads and images resolve (HTTP 200)",
+   "ok": true,
+   "detail": "161 unique URLs + 108 state renders; bad: "
+  },
+  {
+   "name": "desktop: keyboard activation of a control",
+   "ok": true,
+   "detail": ""
+  },
+  {
+   "name": "mobile: no horizontal page scroll",
+   "ok": true,
+   "detail": "0px"
+  },
+  {
+   "name": "mobile: keyboard activation of a control",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "errors": [],
+ "screenshots": [
+  "validation/gallery-qa/desktop-top.png",
+  "validation/gallery-qa/desktop-compare.png",
+  "validation/gallery-qa/desktop-inspect-facet-metal-exploded.png",
+  "validation/gallery-qa/desktop-inspect-pebble-metal-exploded.png",
+  "validation/gallery-qa/desktop-inspect-turned-metal-exploded.png",
+  "validation/gallery-qa/desktop-inspect-turned-lightning-standing.png",
+  "validation/gallery-qa/desktop-inspect-turned-plant-section.png",
+  "validation/gallery-qa/desktop-inspect-turned-water-loose.png",
+  "validation/gallery-qa/desktop-inspect-turned-fire-beside.png",
+  "validation/gallery-qa/desktop-parts.png",
+  "validation/gallery-qa/desktop-board-facet-board.png",
+  "validation/gallery-qa/desktop-board-facet-patch.png",
+  "validation/gallery-qa/desktop-board-facet-resources.png",
+  "validation/gallery-qa/desktop-board-facet-crystals.png",
+  "validation/gallery-qa/desktop-board-facet-tiles.png",
+  "validation/gallery-qa/desktop-board-pebble-board.png",
+  "validation/gallery-qa/desktop-board-turned-board.png",
+  "validation/gallery-qa/desktop-states.png",
+  "validation/gallery-qa/desktop-concepts.png",
+  "validation/gallery-qa/desktop-downloads.png",
+  "validation/gallery-qa/desktop-validation.png",
+  "validation/gallery-qa/mobile-top.png",
+  "validation/gallery-qa/mobile-compare.png",
+  "validation/gallery-qa/mobile-inspect.png",
+  "validation/gallery-qa/mobile-board.png",
+  "validation/gallery-qa/mobile-downloads.png"
+ ],
+ "passed": true
+}

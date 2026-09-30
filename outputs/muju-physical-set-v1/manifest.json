@@ -1,0 +1,5163 @@
+{
+ "generated": "2026-09-30T16:32:39+00:00",
+ "generator": "cad/build.py",
+ "repo_revision": "c17d67ebba2b15ac5f80637924c03a568866ea78",
+ "tools": {
+  "python": "3.11.15",
+  "build123d": "0.13.0",
+  "trimesh": "5.1.0",
+  "manifold3d": "installed"
+ },
+ "sources": {
+  "muju/src/components/ElementGlyph.tsx": "dd2bebffe363997818b55355ef17ecc5065559483033a8c297aafe2050aeeec0",
+  "muju/src/game/resourceMap.ts": "d80bbf0d3d6e30edb56878c2f829e3840d48df669f7682342c1818a4bd9c6bc7",
+  "muju/src/game/units.ts": "5a899e4fc8c3b93b0ddfea9a59e04b2031e821accf3482be565815a259955e58",
+  "muju/SPEC.md": "c15e1adda3967a57aa7156621f91f94a69f8e5fcceff599f91c99f959af80cd2",
+  "cad/params.json": "cfe718c3ae0b257715225e725ece5479ce393e0f9fce8d876b392f2e10ae1b9c"
+ },
+ "resource_map": {
+  "values_row_major_y_then_x": [
+   8,
+   8,
+   8,
+   0,
+   0,
+   0,
+   4,
+   4,
+   4,
+   4,
+   8,
+   8,
+   4,
+   0,
+   0,
+   0,
+   4,
+   16,
+   16,
+   4,
+   8,
+   4,
+   4,
+   0,
+   0,
+   0,
+   4,
+   16,
+   16,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   8,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   8,
+   8,
+   8,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   8,
+   8,
+   8,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   8,
+   4,
+   4,
+   4,
+   4,
+   4,
+   4,
+   16,
+   16,
+   4,
+   0,
+   0,
+   0,
+   4,
+   4,
+   8,
+   4,
+   16,
+   16,
+   4,
+   0,
+   0,
+   0,
+   4,
+   8,
+   8,
+   4,
+   4,
+   4,
+   4,
+   0,
+   0,
+   0,
+   8,
+   8,
+   8
+  ],
+  "total": 504,
+  "counts": {
+   "0": 18,
+   "4": 54,
+   "8": 20,
+   "16": 8
+  }
+ },
+ "glyph_changes": [
+  "Outline offset outward uniformly (params glyph.thicken_offset) so needle tips of the bolt, crescent and leaf become rounded, printable points.",
+  "Plant vein: the SVG stroke is a lighter-colour line. In one filament it becomes a through-slot inside the leaf (stopped short of the outline so the leaf stays one piece) and a solid stem where the stroke leaves the leaf.",
+  "Metal: the anvil's two SVG paths (face bar and body) are fused into one solid.",
+  "A rectangular tang with one 45-degree key chamfer is added below each symbol. Standing, it is hidden in the base; lying down it is visible as the glyph's foot.",
+  "Where a symbol's lowest point is narrower than the tang (bolt tip, droplet and flame bottoms), the part of the symbol below the tang shoulder is replaced by the tang, which sits inside the base."
+ ],
+ "unit_names_tier1": {
+  "fire": "Hi",
+  "lightning": "Radi",
+  "water": "Sjór",
+  "shadow": "Loş",
+  "plant": "Muju",
+  "metal": "Poṉ"
+ },
+ "edge_op_log": {
+  "shared": [],
+  "facet": [],
+  "pebble": [],
+  "turned": []
+ },
+ "palette": {
+  "ivory": {
+   "hex": "#EDE6D3",
+   "role": "Ivory army + A1 home tile",
+   "lead": "Bambu PLA Matte Ivory White"
+  },
+  "charcoal": {
+   "hex": "#2E2F31",
+   "role": "Charcoal army + J10 home tile",
+   "lead": "Bambu PLA Matte Charcoal"
+  },
+  "gray": {
+   "hex": "#8E9193",
+   "role": "98 ordinary board tiles",
+   "lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)"
+  },
+  "fire": {
+   "hex": "#C8202F",
+   "role": "Fire glyph",
+   "lead": "Bambu PLA Basic Red"
+  },
+  "lightning": {
+   "hex": "#F4D21F",
+   "role": "Lightning glyph",
+   "lead": "Bambu PLA Basic Yellow"
+  },
+  "water": {
+   "hex": "#1F4FBF",
+   "role": "Water glyph",
+   "lead": "Bambu PLA Basic Cobalt Blue"
+  },
+  "shadow": {
+   "hex": "#6B3FA0",
+   "role": "Shadow glyph",
+   "lead": "Bambu PLA Basic Purple"
+  },
+  "plant": {
+   "hex": "#1E9A4B",
+   "role": "Plant glyph",
+   "lead": "Bambu PLA Basic Bambu Green"
+  },
+  "metal": {
+   "hex": "#B8703A",
+   "role": "Metal glyph (copper, not silver)",
+   "lead": "Bambu PLA Metal Copper Brown Metallic"
+  },
+  "crystal": {
+   "hex": "#7FD8D4",
+   "role": "Crystals + half token (translucent)",
+   "lead": "Bambu PETG Translucent Teal",
+   "opacity": 0.62
+  }
+ },
+ "variants": {
+  "facet": {
+   "name": "Facet",
+   "brief_direction": "Crisp chamfered",
+   "glyph_edge": {
+    "kind": "chamfer",
+    "top": 0.8,
+    "bottom": 0.5
+   },
+   "base_edge": {
+    "kind": "chamfer",
+    "top": 1.6,
+    "corner_radius": 0.0
+   },
+   "pedestal_edge": {
+    "kind": "chamfer",
+    "top": 0.9,
+    "corner_radius": 0.0
+   },
+   "tile_edge": {
+    "kind": "chamfer",
+    "top": 0.8,
+    "corner_radius": 0.0
+   }
+  },
+  "pebble": {
+   "name": "Pebble",
+   "brief_direction": "Soft octagonal",
+   "glyph_edge": {
+    "kind": "fillet",
+    "top": 1.2,
+    "bottom": 0.5
+   },
+   "base_edge": {
+    "kind": "fillet",
+    "top": 2.4,
+    "corner_radius": 3.0
+   },
+   "pedestal_edge": {
+    "kind": "fillet",
+    "top": 1.4,
+    "corner_radius": 3.4
+   },
+   "tile_edge": {
+    "kind": "fillet",
+    "top": 0.8,
+    "corner_radius": 2.5
+   }
+  },
+  "turned": {
+   "name": "Turned Court",
+   "brief_direction": "Restrained turned / fluted",
+   "glyph_edge": {
+    "kind": "step",
+    "top": 0.7,
+    "step_height": 0.9,
+    "bottom": 0.5
+   },
+   "base_edge": {
+    "kind": "turned",
+    "plinth_height": 2.4,
+    "plinth_chamfer": 0.6,
+    "body_inset": 0.9,
+    "top": 1.0
+   },
+   "pedestal_edge": {
+    "kind": "fluted",
+    "top": 0.6,
+    "flute_radius": 1.5,
+    "flute_depth": 0.7
+   },
+   "tile_edge": {
+    "kind": "grooved",
+    "top": 0.5,
+    "groove_inset": 3.0,
+    "groove_width": 1.2,
+    "groove_depth": 0.5
+   }
+  }
+ },
+ "parts": [
+  {
+   "id": "shared.crystal",
+   "variant": "shared",
+   "family": "crystal",
+   "role": "Whole crystal cube; top stud, bottom socket",
+   "geometry": {
+    "step": "models/shared/step/crystal.step",
+    "stl": "models/shared/stl/crystal.stl",
+    "glb": {
+     "crystal": "models/shared/glb/crystal@crystal.glb"
+    },
+    "bbox_mm": [
+     6.0,
+     6.0,
+     7.6
+    ],
+    "bbox_min_mm": [
+     -3.0,
+     -3.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 208.04,
+    "stl_volume_mm3": 208.043,
+    "stl_triangles": 2060,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "46c145b89239e47fa9a357ff4bf9d183f3842fb19fce93c99dce66b55a569033",
+     "stl": "cc2067e32cc63f588fd18fbbf5e446edd56b347bf07f7bf48e6c1d8464f320f8"
+    }
+   },
+   "instances": [
+    {
+     "color": "crystal",
+     "filament_lead": "Bambu PETG Translucent Teal",
+     "qty_per_set": 550
+    }
+   ],
+   "print_orientation": "Socket down on the plate; stud up. No supports (the 3.45 mm socket ceiling bridges).",
+   "assemblies": [
+    "resource-states",
+    "board",
+    "crowded-patch",
+    "crystal-stacks"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "shared_reason": "Fit-critical, identical function in every variant; one geometry calibrates once."
+  },
+  {
+   "id": "shared.half-crystal",
+   "variant": "shared",
+   "family": "crystal",
+   "role": "Half-crystal token (fractional handicap); socket, no stud, chamfered roof",
+   "geometry": {
+    "step": "models/shared/step/half-crystal.step",
+    "stl": "models/shared/stl/half-crystal.stl",
+    "glb": {
+     "crystal": "models/shared/glb/half-crystal@crystal.glb"
+    },
+    "bbox_mm": [
+     6.0,
+     6.0,
+     3.0
+    ],
+    "bbox_min_mm": [
+     -3.0,
+     -3.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 78.981,
+    "stl_volume_mm3": 78.991,
+    "stl_triangles": 1036,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "f691b39dd8afd051f5b029e7bdfe2f43e4f3508d3c93794ab0fe9fede1e86d8e",
+     "stl": "7d70744c4a5cecef8b7ffffeef62ea2b50d92343377acc60f33ee1712f1a7505"
+    }
+   },
+   "instances": [
+    {
+     "color": "crystal",
+     "filament_lead": "Bambu PETG Translucent Teal",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Socket down.",
+   "assemblies": [
+    "crystal-stacks"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "shared_reason": "Accounting stock; sits on a stud or stack top, nothing stacks on it."
+  },
+  {
+   "id": "shared.coupon-glyph-slots",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Glyph slot clearance and crush-rib sweep (8 slots)",
+   "geometry": {
+    "step": "models/shared/step/coupon-glyph-slots.step",
+    "stl": "models/shared/stl/coupon-glyph-slots.stl",
+    "glb": {
+     "ivory": "models/shared/glb/coupon-glyph-slots@ivory.glb",
+     "charcoal": "models/shared/glb/coupon-glyph-slots@charcoal.glb"
+    },
+    "bbox_mm": [
+     60.0,
+     36.0,
+     7.5
+    ],
+    "bbox_min_mm": [
+     -30.0,
+     -18.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 14989.61,
+    "stl_volume_mm3": 14989.626,
+    "stl_triangles": 32602,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "429bd13911df5feeeb2d35cc99c29e1e01726e35ec1da841709bf3315eadfe76",
+     "stl": "863236cdfd39e3f3901afc498a7c5c3df81b262bce0a42b3b78b100dede72d5f"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 1
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "As a base: slots up.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "row_A_slot_clearance_per_side": [
+     0.1,
+     0.15,
+     0.2,
+     0.25
+    ],
+    "row_A_rib_protrusion": 0.25,
+    "row_B_rib_protrusion": [
+     0.0,
+     0.15,
+     0.25,
+     0.35
+    ],
+    "row_B_slot_clearance_per_side": 0.15
+   }
+  },
+  {
+   "id": "shared.coupon-tang-gauge",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Keyed tang gauge for the slot block",
+   "geometry": {
+    "step": "models/shared/step/coupon-tang-gauge.step",
+    "stl": "models/shared/stl/coupon-tang-gauge.stl",
+    "glb": {
+     "fire": "models/shared/glb/coupon-tang-gauge@fire.glb",
+     "metal": "models/shared/glb/coupon-tang-gauge@metal.glb"
+    },
+    "bbox_mm": [
+     22.0,
+     18.5,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -11.0,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 1490.376,
+    "stl_volume_mm3": 1490.377,
+    "stl_triangles": 1230,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "f3c29fb7630b6a0ab410e9c57ddca022e639c555ae7909e1de0925ffab52b551",
+     "stl": "6e53d4a207404bb933c1e1057a616f1a68e3f81e0b17fd5a760ac20927367024"
+    }
+   },
+   "instances": [
+    {
+     "color": "fire",
+     "filament_lead": "Bambu PLA Basic Red",
+     "qty_per_set": 1
+    },
+    {
+     "color": "metal",
+     "filament_lead": "Bambu PLA Metal Copper Brown Metallic",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, like a glyph.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "tang": "nominal"
+   }
+  },
+  {
+   "id": "shared.coupon-recess-plate",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Pedestal recess clearance sweep (4 recesses)",
+   "geometry": {
+    "step": "models/shared/step/coupon-recess-plate.step",
+    "stl": "models/shared/stl/coupon-recess-plate.stl",
+    "glb": {
+     "ivory": "models/shared/glb/coupon-recess-plate@ivory.glb",
+     "charcoal": "models/shared/glb/coupon-recess-plate@charcoal.glb"
+    },
+    "bbox_mm": [
+     78.0,
+     28.0,
+     3.4
+    ],
+    "bbox_min_mm": [
+     -39.0,
+     -14.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 6180.203,
+    "stl_volume_mm3": 6180.212,
+    "stl_triangles": 10606,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "72fb812f348c7bd6a072e11c975f4ae590f87d655be0da98cee953ac4be4878c",
+     "stl": "9da650dab95ae9db4ce3ee863170265d153bca6c945c742a660f86e3c8170136"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 1
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Recesses down on the plate (as bases/T2 print).",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "recess_clearance_per_side": [
+     0.05,
+     0.1,
+     0.15,
+     0.2
+    ]
+   }
+  },
+  {
+   "id": "shared.coupon-boss-key-r0",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Pedestal boss key, crush ribs 0.0 mm (notches = tenths)",
+   "geometry": {
+    "step": "models/shared/step/coupon-boss-key-r0.step",
+    "stl": "models/shared/stl/coupon-boss-key-r0.stl",
+    "glb": {
+     "ivory": "models/shared/glb/coupon-boss-key-r0@ivory.glb",
+     "charcoal": "models/shared/glb/coupon-boss-key-r0@charcoal.glb"
+    },
+    "bbox_mm": [
+     22.0,
+     22.0,
+     4.6
+    ],
+    "bbox_min_mm": [
+     -11.0,
+     -11.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 1453.269,
+    "stl_volume_mm3": 1453.269,
+    "stl_triangles": 92,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "d1f7ee035a1721ffa9947c9975482431cc840c45d3fbf05fd984466144bd46c1",
+     "stl": "a65f99421ae9c6709f60f6c180d34f0e777002592c2abd655a80761ff06dbcda"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 1
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Boss up.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "rib_protrusion": 0.0
+   }
+  },
+  {
+   "id": "shared.coupon-boss-key-r10",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Pedestal boss key, crush ribs 0.1 mm (notches = tenths)",
+   "geometry": {
+    "step": "models/shared/step/coupon-boss-key-r10.step",
+    "stl": "models/shared/stl/coupon-boss-key-r10.stl",
+    "glb": {
+     "ivory": "models/shared/glb/coupon-boss-key-r10@ivory.glb",
+     "charcoal": "models/shared/glb/coupon-boss-key-r10@charcoal.glb"
+    },
+    "bbox_mm": [
+     22.0,
+     22.0,
+     4.6
+    ],
+    "bbox_min_mm": [
+     -11.0,
+     -11.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 1447.268,
+    "stl_volume_mm3": 1447.27,
+    "stl_triangles": 818,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "a65154c700f00a71041af2dde53b4b15a52e5463b178c32395d743c93dde14ee",
+     "stl": "0f729c5223a977461e0e3aa539be076adcf6b2bd890f2e0139265c42810baa90"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 1
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Boss up.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "rib_protrusion": 0.1
+   }
+  },
+  {
+   "id": "shared.coupon-boss-key-r20",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Pedestal boss key, crush ribs 0.2 mm (notches = tenths)",
+   "geometry": {
+    "step": "models/shared/step/coupon-boss-key-r20.step",
+    "stl": "models/shared/stl/coupon-boss-key-r20.stl",
+    "glb": {
+     "ivory": "models/shared/glb/coupon-boss-key-r20@ivory.glb",
+     "charcoal": "models/shared/glb/coupon-boss-key-r20@charcoal.glb"
+    },
+    "bbox_mm": [
+     22.0,
+     22.0,
+     4.6
+    ],
+    "bbox_min_mm": [
+     -11.0,
+     -11.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 1441.412,
+    "stl_volume_mm3": 1441.415,
+    "stl_triangles": 1304,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "6468690ab981c48eb434bb964c78d609a1f33296b72a11f4011b2a921e228caa",
+     "stl": "4a0932d2078ee760bef9939313392b6321ce029f1b7408d089831c87ba807509"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 1
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Boss up.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "rib_protrusion": 0.2
+   }
+  },
+  {
+   "id": "shared.coupon-boss-key-r30",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Pedestal boss key, crush ribs 0.3 mm (notches = tenths)",
+   "geometry": {
+    "step": "models/shared/step/coupon-boss-key-r30.step",
+    "stl": "models/shared/stl/coupon-boss-key-r30.stl",
+    "glb": {
+     "ivory": "models/shared/glb/coupon-boss-key-r30@ivory.glb",
+     "charcoal": "models/shared/glb/coupon-boss-key-r30@charcoal.glb"
+    },
+    "bbox_mm": [
+     22.0,
+     22.0,
+     4.6
+    ],
+    "bbox_min_mm": [
+     -11.0,
+     -11.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 1436.871,
+    "stl_volume_mm3": 1436.877,
+    "stl_triangles": 1712,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "55270d64c5080d8f2793912a9a3c2a60bb9c54ad7648f86800dd7594c9e65abb",
+     "stl": "5d24027f50d74cc3f62dc7310d8ee2371ef6329b92dd6fcb7df1e43429c9d0ee"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 1
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Boss up.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "rib_protrusion": 0.3
+   }
+  },
+  {
+   "id": "shared.coupon-stud-strip",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Four tile studs for crystal socket tests",
+   "geometry": {
+    "step": "models/shared/step/coupon-stud-strip.step",
+    "stl": "models/shared/stl/coupon-stud-strip.stl",
+    "glb": {
+     "gray": "models/shared/glb/coupon-stud-strip@gray.glb"
+    },
+    "bbox_mm": [
+     40.0,
+     14.0,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -20.0,
+     -7.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 2273.839,
+    "stl_volume_mm3": 2273.818,
+    "stl_triangles": 8938,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "f35b8958f2c63e83acabd711faf20807092fba95a189ed71e48693c6ff9065dd",
+     "stl": "252687496ef82e1ce7a4692a85f1dc51b3740beebb476dc1da6cb1a097036222"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Studs up.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "shared.coupon-crystal-socket-10",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Crystal with 0.10 mm diametral socket clearance (1 notch)",
+   "geometry": {
+    "step": "models/shared/step/coupon-crystal-socket-10.step",
+    "stl": "models/shared/stl/coupon-crystal-socket-10.stl",
+    "glb": {
+     "crystal": "models/shared/glb/coupon-crystal-socket-10@crystal.glb"
+    },
+    "bbox_mm": [
+     6.0,
+     6.0,
+     7.6
+    ],
+    "bbox_min_mm": [
+     -3.0,
+     -3.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 209.422,
+    "stl_volume_mm3": 209.424,
+    "stl_triangles": 2076,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "315749363389f3e038b7c677a39d7b24d8f64536bcce330210b1add114ae5d1e",
+     "stl": "55a2ba5d995a4f8457cfcd104d6b774d891e5bca76551498ca471cf5bc0b8326"
+    }
+   },
+   "instances": [
+    {
+     "color": "crystal",
+     "filament_lead": "Bambu PETG Translucent Teal",
+     "qty_per_set": 4
+    }
+   ],
+   "print_orientation": "Socket down.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "socket_clearance_diametral": 0.1,
+    "notches": 1
+   }
+  },
+  {
+   "id": "shared.coupon-crystal-socket-20",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Crystal with 0.20 mm diametral socket clearance (2 notches)",
+   "geometry": {
+    "step": "models/shared/step/coupon-crystal-socket-20.step",
+    "stl": "models/shared/stl/coupon-crystal-socket-20.stl",
+    "glb": {
+     "crystal": "models/shared/glb/coupon-crystal-socket-20@crystal.glb"
+    },
+    "bbox_mm": [
+     6.0,
+     6.0,
+     7.6
+    ],
+    "bbox_min_mm": [
+     -3.0,
+     -3.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 208.393,
+    "stl_volume_mm3": 208.395,
+    "stl_triangles": 2092,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "b50d83efeb4f5175741bd03062aefd1dc430007772a6864db6ec69be183ec6f0",
+     "stl": "bb506aa9044049315de30af7cc5c99e033b5deacbfec6e5e67174167b1279706"
+    }
+   },
+   "instances": [
+    {
+     "color": "crystal",
+     "filament_lead": "Bambu PETG Translucent Teal",
+     "qty_per_set": 4
+    }
+   ],
+   "print_orientation": "Socket down.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "socket_clearance_diametral": 0.2,
+    "notches": 2
+   }
+  },
+  {
+   "id": "shared.coupon-crystal-socket-30",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Crystal with 0.30 mm diametral socket clearance (3 notches)",
+   "geometry": {
+    "step": "models/shared/step/coupon-crystal-socket-30.step",
+    "stl": "models/shared/stl/coupon-crystal-socket-30.stl",
+    "glb": {
+     "crystal": "models/shared/glb/coupon-crystal-socket-30@crystal.glb"
+    },
+    "bbox_mm": [
+     6.0,
+     6.0,
+     7.6
+    ],
+    "bbox_min_mm": [
+     -3.0,
+     -3.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 207.335,
+    "stl_volume_mm3": 207.338,
+    "stl_triangles": 2108,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "3bb6f3374ecdf0054efa225689f8cfc6480b321f29d939ca4b87ab32cc24cd41",
+     "stl": "39c421ad991b715797cd378468fcb0519fe383f305f52d28ca9179c6c698db20"
+    }
+   },
+   "instances": [
+    {
+     "color": "crystal",
+     "filament_lead": "Bambu PETG Translucent Teal",
+     "qty_per_set": 4
+    }
+   ],
+   "print_orientation": "Socket down.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "socket_clearance_diametral": 0.3,
+    "notches": 3
+   }
+  },
+  {
+   "id": "shared.coupon-crystal-socket-40",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Crystal with 0.40 mm diametral socket clearance (4 notches)",
+   "geometry": {
+    "step": "models/shared/step/coupon-crystal-socket-40.step",
+    "stl": "models/shared/stl/coupon-crystal-socket-40.stl",
+    "glb": {
+     "crystal": "models/shared/glb/coupon-crystal-socket-40@crystal.glb"
+    },
+    "bbox_mm": [
+     6.0,
+     6.0,
+     7.6
+    ],
+    "bbox_min_mm": [
+     -3.0,
+     -3.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 206.249,
+    "stl_volume_mm3": 206.252,
+    "stl_triangles": 1998,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "3d815065d91a8495c279e38d5f99729d2d810d8efc4eb1a754c23b821bf198b2",
+     "stl": "ddeb55afebd1c6bb6b5e5bcfd6c7bec75aa4a452c891f665ce1c623987f8b285"
+    }
+   },
+   "instances": [
+    {
+     "color": "crystal",
+     "filament_lead": "Bambu PETG Translucent Teal",
+     "qty_per_set": 4
+    }
+   ],
+   "print_orientation": "Socket down.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "socket_clearance_diametral": 0.4,
+    "notches": 4
+   }
+  },
+  {
+   "id": "shared.coupon-tile-tab",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Tile-edge strip with one tab",
+   "geometry": {
+    "step": "models/shared/step/coupon-tile-tab.step",
+    "stl": "models/shared/stl/coupon-tile-tab.stl",
+    "glb": {
+     "gray": "models/shared/glb/coupon-tile-tab@gray.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     31.3,
+     4.0
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -11.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 4617.443,
+    "stl_volume_mm3": 4617.36,
+    "stl_triangles": 3138,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "7c9fbaad2bb6de94aa594ef5f6100ada4ab3432020c5f81c34898de596050e9e",
+     "stl": "48d518f5fae0b216aed823fda4112acbab55dd0760ad49da6577327fa8ccffbb"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "shared.coupon-tile-socket-15",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Tile-edge strip, socket clearance 0.15 mm per side",
+   "geometry": {
+    "step": "models/shared/step/coupon-tile-socket-15.step",
+    "stl": "models/shared/stl/coupon-tile-socket-15.stl",
+    "glb": {
+     "gray": "models/shared/glb/coupon-tile-socket-15@gray.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     22.0,
+     4.0
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -11.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 4069.773,
+    "stl_volume_mm3": 4069.848,
+    "stl_triangles": 2024,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "25a64f222129c1c52e5595d47386e89a5682660e3e839ed925146bcae1ebb150",
+     "stl": "e2826879444fbfe32a4071deed50065a5ac07666d884760c85105005e73538ba"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "tab_clearance_per_side": 0.15
+   }
+  },
+  {
+   "id": "shared.coupon-tile-socket-25",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Tile-edge strip, socket clearance 0.25 mm per side",
+   "geometry": {
+    "step": "models/shared/step/coupon-tile-socket-25.step",
+    "stl": "models/shared/stl/coupon-tile-socket-25.stl",
+    "glb": {
+     "gray": "models/shared/glb/coupon-tile-socket-25@gray.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     22.0,
+     4.0
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -11.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 4060.026,
+    "stl_volume_mm3": 4060.11,
+    "stl_triangles": 2846,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "2587bc363c66c8e1ba4da9dff661cddc483616166f800706eb505f545e3f220e",
+     "stl": "ae402b140f23080af9dab69be70e4db4f59546e478e34e1a64b567c95f483dcd"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "tab_clearance_per_side": 0.25
+   }
+  },
+  {
+   "id": "shared.coupon-tile-socket-35",
+   "variant": "shared",
+   "family": "coupon",
+   "role": "Tile-edge strip, socket clearance 0.35 mm per side",
+   "geometry": {
+    "step": "models/shared/step/coupon-tile-socket-35.step",
+    "stl": "models/shared/stl/coupon-tile-socket-35.stl",
+    "glb": {
+     "gray": "models/shared/glb/coupon-tile-socket-35@gray.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     22.0,
+     4.0
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -11.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 4050.257,
+    "stl_volume_mm3": 4050.35,
+    "stl_triangles": 4278,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "8b474e10caec7f610ca10a6822375ea049bf605bc72c8ab2fa64df2d5eb61c61",
+     "stl": "6aa5d2d9976ffcc3d216a96b5e36489392b2b70837f7f907ae7d79a1dd45c48d"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat.",
+   "assemblies": [],
+   "production": false,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "coupon": {
+    "tab_clearance_per_side": 0.35
+   }
+  },
+  {
+   "id": "facet.glyph-fire",
+   "variant": "facet",
+   "family": "glyph",
+   "role": "Fire glyph (Hi); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/facet/step/glyph-fire.step",
+    "stl": "models/facet/stl/glyph-fire.stl",
+    "glb": {
+     "fire": "models/facet/glb/glyph-fire@fire.glb"
+    },
+    "bbox_mm": [
+     12.58,
+     21.27,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -6.29,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 687.632,
+    "stl_volume_mm3": 687.632,
+    "stl_triangles": 5142,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "ea0eb7af7fe1d1cd764cc38d8e21fd5aa56fdc68cba1ab6bc5acd5609262a2c9",
+     "stl": "379150fd5a8f3c9a49990973c15563b2e91d2d81ced4eba3962c80ded3f9b38a"
+    }
+   },
+   "instances": [
+    {
+     "color": "fire",
+     "filament_lead": "Bambu PLA Basic Red",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.003,
+    "under_min_feature_area_mm2": 2.452,
+    "visible_height_mm": 16.77,
+    "width_mm": 12.58,
+    "total_length_mm": 21.27,
+    "bounds": [
+     -6.29,
+     -4.5,
+     6.29,
+     16.77
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "facet.glyph-lightning",
+   "variant": "facet",
+   "family": "glyph",
+   "role": "Lightning glyph (Radi); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/facet/step/glyph-lightning.step",
+    "stl": "models/facet/stl/glyph-lightning.stl",
+    "glb": {
+     "lightning": "models/facet/glb/glyph-lightning@lightning.glb"
+    },
+    "bbox_mm": [
+     15.867,
+     24.698,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -5.433,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 613.982,
+    "stl_volume_mm3": 613.982,
+    "stl_triangles": 1972,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "fe38e4f189464423c18930d30420e44e6a54a02e04235a3e6bc0d6749e0fbecf",
+     "stl": "8ec189dea8bb6159af25aa6292ca28b6fa8501428e233ab34cdbd60d515a24fc"
+    }
+   },
+   "instances": [
+    {
+     "color": "lightning",
+     "filament_lead": "Bambu PLA Basic Yellow",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.0,
+    "under_min_feature_area_mm2": 1.138,
+    "visible_height_mm": 20.2,
+    "width_mm": 15.88,
+    "total_length_mm": 24.7,
+    "bounds": [
+     -5.439,
+     -4.5,
+     10.439,
+     20.198
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 6.527,
+    "tang_offset_from_symbol_centre_mm": 2.5
+   }
+  },
+  {
+   "id": "facet.glyph-water",
+   "variant": "facet",
+   "family": "glyph",
+   "role": "Water glyph (Sjór); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/facet/step/glyph-water.step",
+    "stl": "models/facet/stl/glyph-water.stl",
+    "glb": {
+     "water": "models/facet/glb/glyph-water@water.glb"
+    },
+    "bbox_mm": [
+     15.212,
+     25.006,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -7.602,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 1030.623,
+    "stl_volume_mm3": 1030.623,
+    "stl_triangles": 3778,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "24d66175050ffeb0d498ccad99336697af6f8ca35f0ebf73127ed11314cd66fd",
+     "stl": "5eb682e1e0224644159654896461c8f01060ed76486e85d0a691cae570142086"
+    }
+   },
+   "instances": [
+    {
+     "color": "water",
+     "filament_lead": "Bambu PLA Basic Cobalt Blue",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.003,
+    "under_min_feature_area_mm2": 0.35,
+    "visible_height_mm": 20.51,
+    "width_mm": 15.22,
+    "total_length_mm": 25.01,
+    "bounds": [
+     -7.61,
+     -4.5,
+     7.61,
+     20.508
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "facet.glyph-shadow",
+   "variant": "facet",
+   "family": "glyph",
+   "role": "Shadow glyph (Loş); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/facet/step/glyph-shadow.step",
+    "stl": "models/facet/stl/glyph-shadow.stl",
+    "glb": {
+     "shadow": "models/facet/glb/glyph-shadow@shadow.glb"
+    },
+    "bbox_mm": [
+     17.887,
+     24.046,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -8.945,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 715.239,
+    "stl_volume_mm3": 715.239,
+    "stl_triangles": 5186,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "fedfff63d3ad94ccd9b96e398bf37f44fa5028009e21e0f466073e70827ec01f",
+     "stl": "93a2e82ee8bab91a955de95da566d85fa79f8e845f67a7dd3b3520a73e9e52bd"
+    }
+   },
+   "instances": [
+    {
+     "color": "shadow",
+     "filament_lead": "Bambu PLA Basic Purple",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 1.223,
+    "under_min_feature_area_mm2": 1.432,
+    "visible_height_mm": 19.55,
+    "width_mm": 17.89,
+    "total_length_mm": 24.05,
+    "bounds": [
+     -8.947,
+     -4.5,
+     8.946,
+     19.55
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "facet.glyph-plant",
+   "variant": "facet",
+   "family": "glyph",
+   "role": "Plant glyph (Muju); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/facet/step/glyph-plant.step",
+    "stl": "models/facet/stl/glyph-plant.stl",
+    "glb": {
+     "plant": "models/facet/glb/glyph-plant@plant.glb"
+    },
+    "bbox_mm": [
+     17.283,
+     23.369,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -6.141,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 1089.904,
+    "stl_volume_mm3": 1089.904,
+    "stl_triangles": 6014,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "92f1c2e7075433b72b24cddfe09e87abec40556a7db664ef1b8e73e27da2c1bd",
+     "stl": "863d8753d235584f811a038394dcd7defb969b3f96878be2f48b905f67cc4842"
+    }
+   },
+   "instances": [
+    {
+     "color": "plant",
+     "filament_lead": "Bambu PLA Basic Bambu Green",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.295,
+    "under_min_feature_area_mm2": 0.227,
+    "visible_height_mm": 18.87,
+    "width_mm": 17.28,
+    "total_length_mm": 23.37,
+    "bounds": [
+     -6.141,
+     -4.5,
+     11.141,
+     18.869
+    ],
+    "has_vein_slot": true,
+    "neck_area_mm2": 12.643,
+    "tang_offset_from_symbol_centre_mm": 2.5
+   }
+  },
+  {
+   "id": "facet.glyph-metal",
+   "variant": "facet",
+   "family": "glyph",
+   "role": "Metal glyph (Poṉ); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/facet/step/glyph-metal.step",
+    "stl": "models/facet/stl/glyph-metal.stl",
+    "glb": {
+     "metal": "models/facet/glb/glyph-metal@metal.glb"
+    },
+    "bbox_mm": [
+     21.816,
+     21.04,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -10.906,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 1055.946,
+    "stl_volume_mm3": 1055.946,
+    "stl_triangles": 3718,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "cef24d196f212aa00e26237e52dbdeca6fe7f57f1bedd9765a2de79b07c22b2a",
+     "stl": "07d34f80730e9d251b250da194c13be9e582ef2a7b754afc98ca36be37a1904a"
+    }
+   },
+   "instances": [
+    {
+     "color": "metal",
+     "filament_lead": "Bambu PLA Metal Copper Brown Metallic",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.0,
+    "under_min_feature_area_mm2": 0.95,
+    "visible_height_mm": 16.54,
+    "width_mm": 21.82,
+    "total_length_mm": 21.04,
+    "bounds": [
+     -10.909,
+     -4.5,
+     10.909,
+     16.54
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "facet.base",
+   "variant": "facet",
+   "family": "base",
+   "role": "Octagonal ownership base (T1); keyed glyph slot on top, pedestal recess below",
+   "geometry": {
+    "step": "models/facet/step/base.step",
+    "stl": "models/facet/stl/base.stl",
+    "glb": {
+     "ivory": "models/facet/glb/base@ivory.glb",
+     "charcoal": "models/facet/glb/base@charcoal.glb"
+    },
+    "bbox_mm": [
+     25.0,
+     25.0,
+     7.5
+    ],
+    "bbox_min_mm": [
+     -12.5,
+     -12.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 3324.269,
+    "stl_volume_mm3": 3324.268,
+    "stl_triangles": 488,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "96d545b7ad6f45e0fb7cb17bf781ce0bc2e05f40fce851aaf3ac413a9d3b478b",
+     "stl": "f49a143d7bf2da26787f56a21d08fd8ae4a74f77993d7a48e22316cf2f2d1422"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 48
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 48
+    }
+   ],
+   "print_orientation": "Upright: recess down (bridged ceiling), slot up.",
+   "assemblies": [
+    "piece-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "facet.t2",
+   "variant": "facet",
+   "family": "pedestal-t2",
+   "role": "T2 addition: wider octagonal pedestal under the base; boss up, recess down",
+   "geometry": {
+    "step": "models/facet/step/t2.step",
+    "stl": "models/facet/stl/t2.stl",
+    "glb": {
+     "ivory": "models/facet/glb/t2@ivory.glb",
+     "charcoal": "models/facet/glb/t2@charcoal.glb"
+    },
+    "bbox_mm": [
+     28.5,
+     28.5,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -14.25,
+     -14.25,
+     -0.0
+    ],
+    "brep_volume_mm3": 2596.418,
+    "stl_volume_mm3": 2596.418,
+    "stl_triangles": 780,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "6f3e65a23c8b1f443af97537dc85be507f6778da5d467f02c2dc647603277dd1",
+     "stl": "3239fad9a57e8bb16d467809c3ce8025da2208a81cc3e658c34abaf5d1a7e284"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 18
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 18
+    }
+   ],
+   "print_orientation": "Upright: recess down, boss up.",
+   "assemblies": [
+    "piece-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "facet.t3",
+   "variant": "facet",
+   "family": "pedestal-t3",
+   "role": "T3 addition: widest pedestal under T2; boss up, flat bottom",
+   "geometry": {
+    "step": "models/facet/step/t3.step",
+    "stl": "models/facet/stl/t3.stl",
+    "glb": {
+     "ivory": "models/facet/glb/t3@ivory.glb",
+     "charcoal": "models/facet/glb/t3@charcoal.glb"
+    },
+    "bbox_mm": [
+     32.0,
+     32.0,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -16.0,
+     -16.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 3599.376,
+    "stl_volume_mm3": 3599.375,
+    "stl_triangles": 732,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "dd3d279ab7c748dcffe01de11e7b4f2de21a85745b1724ec43f1798a3be6770c",
+     "stl": "d484bcb6a3f4f8f56d638c753abfd30d44c5e94e4907f5748996df0f3ead63c1"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 6
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 6
+    }
+   ],
+   "print_orientation": "Upright: flat bottom down, boss up.",
+   "assemblies": [
+    "piece-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "facet.tile-interior",
+   "variant": "facet",
+   "family": "tile",
+   "role": "interior board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/facet/step/tile-interior.step",
+    "stl": "models/facet/stl/tile-interior.stl",
+    "glb": {
+     "gray": "models/facet/glb/tile-interior@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9756.49,
+    "stl_volume_mm3": 9756.52,
+    "stl_triangles": 8372,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "099824b40a9178f1ae6f6e870e04e4bf97b03a904fdd3b729ecc198353d75ede",
+     "stl": "94c3a21865245cc9f940c1c92dedb811eccf5017748a64e49500116df46ff51b"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 64
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "interior",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "facet.tile-edge-s",
+   "variant": "facet",
+   "family": "tile",
+   "role": "edge-s board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/facet/step/tile-edge-s.step",
+    "stl": "models/facet/stl/tile-edge-s.stl",
+    "glb": {
+     "gray": "models/facet/glb/tile-edge-s@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 10050.351,
+    "stl_volume_mm3": 10050.249,
+    "stl_triangles": 7310,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "7507e5feab762262fc772f68eddf4a4803f8af9049cc347cbb3faec6a001cb4c",
+     "stl": "5882f0fec88d3e24f290199bd713069f2e6e915b92d79f8cde7daba63a1ad033"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-s",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": false
+   }
+  },
+  {
+   "id": "facet.tile-edge-n",
+   "variant": "facet",
+   "family": "tile",
+   "role": "edge-n board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/facet/step/tile-edge-n.step",
+    "stl": "models/facet/stl/tile-edge-n.stl",
+    "glb": {
+     "gray": "models/facet/glb/tile-edge-n@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     49.6,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9490.296,
+    "stl_volume_mm3": 9490.43,
+    "stl_triangles": 7278,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "8b7b4dd3d111551bca53d2389c3b8cb86b7b515bdac375ba93d87bc74afe25b5",
+     "stl": "f5e879781734c6939bf1375fd647c732cbdc7036c9f1ac43d831bd5f6d5b2d5b"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-n",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": false,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "facet.tile-edge-w",
+   "variant": "facet",
+   "family": "tile",
+   "role": "edge-w board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/facet/step/tile-edge-w.step",
+    "stl": "models/facet/stl/tile-edge-w.stl",
+    "glb": {
+     "gray": "models/facet/glb/tile-edge-w@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 10050.351,
+    "stl_volume_mm3": 10050.249,
+    "stl_triangles": 7310,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "889b2b358c0caa9ba7a313c3172a4b5a4648e6fb0c7834a97cb05e8b5504a91c",
+     "stl": "41b45ebf2cdaaf3d7ef856676659fe00f14f6dce84d966672d8b6ff999eeb734"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-w",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": false,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "facet.tile-edge-e",
+   "variant": "facet",
+   "family": "tile",
+   "role": "edge-e board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/facet/step/tile-edge-e.step",
+    "stl": "models/facet/stl/tile-edge-e.stl",
+    "glb": {
+     "gray": "models/facet/glb/tile-edge-e@gray.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9490.296,
+    "stl_volume_mm3": 9490.43,
+    "stl_triangles": 7278,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "1074f3a4ebdd90d41e8869cfa1735ffad271cf8a157bfcaacdf4209721fda0a1",
+     "stl": "8e5f7e6d59951a0b06a7fdf67b4f431a110e547c0394efaadda3d012115c5d26"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-e",
+   "tabs_sockets": {
+    "east_tab": false,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "facet.tile-corner-sw",
+   "variant": "facet",
+   "family": "tile",
+   "role": "A1 corner tile — Ivory home (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/facet/step/tile-corner-sw.step",
+    "stl": "models/facet/stl/tile-corner-sw.stl",
+    "glb": {
+     "ivory": "models/facet/glb/tile-corner-sw@ivory.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 10344.211,
+    "stl_volume_mm3": 10343.978,
+    "stl_triangles": 6248,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "dd98b499e21396adf25afc2f52834e63438892763d09eca0d8a9b1c8e1bc901b",
+     "stl": "30e33ce1aee3c1da7f247860b032e9b85cda8b552324c148e863b4707c175486"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-sw",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": false,
+    "south_socket": false
+   }
+  },
+  {
+   "id": "facet.tile-corner-se",
+   "variant": "facet",
+   "family": "tile",
+   "role": "corner-se board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/facet/step/tile-corner-se.step",
+    "stl": "models/facet/stl/tile-corner-se.stl",
+    "glb": {
+     "gray": "models/facet/glb/tile-corner-se@gray.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9784.157,
+    "stl_volume_mm3": 9784.158,
+    "stl_triangles": 6216,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "9c6701256af02742d5cd507c780237d5ef01f78f019874ace3eec8db64d8340b",
+     "stl": "c0ca2f4f6e36b866d1c3f662627c26aa1d236db98840b6e0be9562cf037c9d0a"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-se",
+   "tabs_sockets": {
+    "east_tab": false,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": false
+   }
+  },
+  {
+   "id": "facet.tile-corner-nw",
+   "variant": "facet",
+   "family": "tile",
+   "role": "corner-nw board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/facet/step/tile-corner-nw.step",
+    "stl": "models/facet/stl/tile-corner-nw.stl",
+    "glb": {
+     "gray": "models/facet/glb/tile-corner-nw@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     49.6,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9784.157,
+    "stl_volume_mm3": 9784.158,
+    "stl_triangles": 6216,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "5f4bac1dc19ab2b3f3ec5f6876f75bbeb0a821dfcf11bf7dbdfa42bba9deda4c",
+     "stl": "7f4edbbca9847828daca57baec8e30889e88650c30866fb2c51c6f6c4bcf8359"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-nw",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": false,
+    "west_socket": false,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "facet.tile-corner-ne",
+   "variant": "facet",
+   "family": "tile",
+   "role": "J10 corner tile — Charcoal home (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/facet/step/tile-corner-ne.step",
+    "stl": "models/facet/stl/tile-corner-ne.stl",
+    "glb": {
+     "charcoal": "models/facet/glb/tile-corner-ne@charcoal.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     49.6,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9224.102,
+    "stl_volume_mm3": 9224.339,
+    "stl_triangles": 6184,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "f5fdb40d8fb116a71c4e1ff39c89a23c15c0014b3d2c2054e497f28e333a5f72",
+     "stl": "89136a00875ef6904a528154f44c2f1ea056f8fc10daebf657d9e4a637906cff"
+    }
+   },
+   "instances": [
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-ne",
+   "tabs_sockets": {
+    "east_tab": false,
+    "north_tab": false,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "pebble.glyph-fire",
+   "variant": "pebble",
+   "family": "glyph",
+   "role": "Fire glyph (Hi); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/pebble/step/glyph-fire.step",
+    "stl": "models/pebble/stl/glyph-fire.stl",
+    "glb": {
+     "fire": "models/pebble/glb/glyph-fire@fire.glb"
+    },
+    "bbox_mm": [
+     12.58,
+     21.27,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -6.29,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 688.403,
+    "stl_volume_mm3": 688.403,
+    "stl_triangles": 6844,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "69b0aa9253694d735286147ea6cb24be88f97b62b09edeb4580ef13a0227d3d3",
+     "stl": "ccc32517fe0d6cf2a00f61cb8a7bd6c400d39a49f36c91337fafc4881b278d13"
+    }
+   },
+   "instances": [
+    {
+     "color": "fire",
+     "filament_lead": "Bambu PLA Basic Red",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.003,
+    "under_min_feature_area_mm2": 2.452,
+    "visible_height_mm": 16.77,
+    "width_mm": 12.58,
+    "total_length_mm": 21.27,
+    "bounds": [
+     -6.29,
+     -4.5,
+     6.29,
+     16.77
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "pebble.glyph-lightning",
+   "variant": "pebble",
+   "family": "glyph",
+   "role": "Lightning glyph (Radi); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/pebble/step/glyph-lightning.step",
+    "stl": "models/pebble/stl/glyph-lightning.stl",
+    "glb": {
+     "lightning": "models/pebble/glb/glyph-lightning@lightning.glb"
+    },
+    "bbox_mm": [
+     15.867,
+     24.698,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -5.433,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 614.912,
+    "stl_volume_mm3": 614.912,
+    "stl_triangles": 2664,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "8defc654d2a9e72a943d1e5579c61b3c24a037253eb89a5d764a78e70c377d96",
+     "stl": "353c449803337bcf3e3bb9c7119db72fca8d42a717c03c7b8fc9be39884301c7"
+    }
+   },
+   "instances": [
+    {
+     "color": "lightning",
+     "filament_lead": "Bambu PLA Basic Yellow",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.0,
+    "under_min_feature_area_mm2": 1.138,
+    "visible_height_mm": 20.2,
+    "width_mm": 15.88,
+    "total_length_mm": 24.7,
+    "bounds": [
+     -5.439,
+     -4.5,
+     10.439,
+     20.198
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 6.527,
+    "tang_offset_from_symbol_centre_mm": 2.5
+   }
+  },
+  {
+   "id": "pebble.glyph-water",
+   "variant": "pebble",
+   "family": "glyph",
+   "role": "Water glyph (Sjór); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/pebble/step/glyph-water.step",
+    "stl": "models/pebble/stl/glyph-water.stl",
+    "glb": {
+     "water": "models/pebble/glb/glyph-water@water.glb"
+    },
+    "bbox_mm": [
+     15.212,
+     25.006,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -7.602,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 1031.372,
+    "stl_volume_mm3": 1031.372,
+    "stl_triangles": 4936,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "1d62b461dd50d3e78a49aff8d08fc8c7d021dfa6aca2d8562d48ad0953937e3a",
+     "stl": "d684af55caa147853bc90b21112cb41118fea9c2f527555a0668ab3305c6b883"
+    }
+   },
+   "instances": [
+    {
+     "color": "water",
+     "filament_lead": "Bambu PLA Basic Cobalt Blue",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.003,
+    "under_min_feature_area_mm2": 0.35,
+    "visible_height_mm": 20.51,
+    "width_mm": 15.22,
+    "total_length_mm": 25.01,
+    "bounds": [
+     -7.61,
+     -4.5,
+     7.61,
+     20.508
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "pebble.glyph-shadow",
+   "variant": "pebble",
+   "family": "glyph",
+   "role": "Shadow glyph (Loş); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/pebble/step/glyph-shadow.step",
+    "stl": "models/pebble/stl/glyph-shadow.stl",
+    "glb": {
+     "shadow": "models/pebble/glb/glyph-shadow@shadow.glb"
+    },
+    "bbox_mm": [
+     17.887,
+     24.046,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -8.945,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 716.213,
+    "stl_volume_mm3": 716.213,
+    "stl_triangles": 7094,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "0fe3e89428b892e4f670c549fb8f0f3b3bee34acd1b63155012ae2801763cf50",
+     "stl": "b1a160c2cd22c3deb9e5931bf3a0b89dbeac85160d49a46f3418d9a03a597ca0"
+    }
+   },
+   "instances": [
+    {
+     "color": "shadow",
+     "filament_lead": "Bambu PLA Basic Purple",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 1.223,
+    "under_min_feature_area_mm2": 1.432,
+    "visible_height_mm": 19.55,
+    "width_mm": 17.89,
+    "total_length_mm": 24.05,
+    "bounds": [
+     -8.947,
+     -4.5,
+     8.946,
+     19.55
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "pebble.glyph-plant",
+   "variant": "pebble",
+   "family": "glyph",
+   "role": "Plant glyph (Muju); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/pebble/step/glyph-plant.step",
+    "stl": "models/pebble/stl/glyph-plant.stl",
+    "glb": {
+     "plant": "models/pebble/glb/glyph-plant@plant.glb"
+    },
+    "bbox_mm": [
+     17.283,
+     23.369,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -6.141,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 1091.176,
+    "stl_volume_mm3": 1091.176,
+    "stl_triangles": 7748,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "4fa301fb0ed14e0cc5d43047b454d994f3b65f7638e00d18108ba4989061383e",
+     "stl": "7d52f0b14935251d09cf84c7a6660da4733fa30405ca29c4819caad67a123bae"
+    }
+   },
+   "instances": [
+    {
+     "color": "plant",
+     "filament_lead": "Bambu PLA Basic Bambu Green",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.295,
+    "under_min_feature_area_mm2": 0.227,
+    "visible_height_mm": 18.87,
+    "width_mm": 17.28,
+    "total_length_mm": 23.37,
+    "bounds": [
+     -6.141,
+     -4.5,
+     11.141,
+     18.869
+    ],
+    "has_vein_slot": true,
+    "neck_area_mm2": 12.643,
+    "tang_offset_from_symbol_centre_mm": 2.5
+   }
+  },
+  {
+   "id": "pebble.glyph-metal",
+   "variant": "pebble",
+   "family": "glyph",
+   "role": "Metal glyph (Poṉ); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/pebble/step/glyph-metal.step",
+    "stl": "models/pebble/stl/glyph-metal.stl",
+    "glb": {
+     "metal": "models/pebble/glb/glyph-metal@metal.glb"
+    },
+    "bbox_mm": [
+     21.816,
+     21.04,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -10.906,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 1057.167,
+    "stl_volume_mm3": 1057.167,
+    "stl_triangles": 5168,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "f0e50d61bf8c6dcf86c9bcf43be6f9ddaec1bd80b1fcf2f784274c548d1a21d7",
+     "stl": "ad62340c51b34427bff2d8084a92eb06579c295a7ad33d64679aa3b64507c96a"
+    }
+   },
+   "instances": [
+    {
+     "color": "metal",
+     "filament_lead": "Bambu PLA Metal Copper Brown Metallic",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.0,
+    "under_min_feature_area_mm2": 0.95,
+    "visible_height_mm": 16.54,
+    "width_mm": 21.82,
+    "total_length_mm": 21.04,
+    "bounds": [
+     -10.909,
+     -4.5,
+     10.909,
+     16.54
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "pebble.base",
+   "variant": "pebble",
+   "family": "base",
+   "role": "Octagonal ownership base (T1); keyed glyph slot on top, pedestal recess below",
+   "geometry": {
+    "step": "models/pebble/step/base.step",
+    "stl": "models/pebble/stl/base.stl",
+    "glb": {
+     "ivory": "models/pebble/glb/base@ivory.glb",
+     "charcoal": "models/pebble/glb/base@charcoal.glb"
+    },
+    "bbox_mm": [
+     25.0,
+     25.0,
+     7.5
+    ],
+    "bbox_min_mm": [
+     -12.5,
+     -12.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 3317.282,
+    "stl_volume_mm3": 3317.047,
+    "stl_triangles": 8072,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "a1019436d8df7bde87a6b9892c41d817218aefd57c766e48b39f2cb762d12d20",
+     "stl": "dced79fe9c624a4cd1a623ab656b0aa22583d2cc17f6c2513bb08c8ddc02092f"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 48
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 48
+    }
+   ],
+   "print_orientation": "Upright: recess down (bridged ceiling), slot up.",
+   "assemblies": [
+    "piece-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "pebble.t2",
+   "variant": "pebble",
+   "family": "pedestal-t2",
+   "role": "T2 addition: wider octagonal pedestal under the base; boss up, recess down",
+   "geometry": {
+    "step": "models/pebble/step/t2.step",
+    "stl": "models/pebble/stl/t2.stl",
+    "glb": {
+     "ivory": "models/pebble/glb/t2@ivory.glb",
+     "charcoal": "models/pebble/glb/t2@charcoal.glb"
+    },
+    "bbox_mm": [
+     28.5,
+     28.5,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -14.25,
+     -14.25,
+     -0.0
+    ],
+    "brep_volume_mm3": 2587.588,
+    "stl_volume_mm3": 2587.471,
+    "stl_triangles": 10348,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "f165dd40f3a2be34322ea46f090807126ffed88ce597bbbac84718a0bc013815",
+     "stl": "f56c457bb4b7bcf2217f12fbecbd844b5bcfcedb74d20ddd8b66e77b787b6403"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 18
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 18
+    }
+   ],
+   "print_orientation": "Upright: recess down, boss up.",
+   "assemblies": [
+    "piece-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "pebble.t3",
+   "variant": "pebble",
+   "family": "pedestal-t3",
+   "role": "T3 addition: widest pedestal under T2; boss up, flat bottom",
+   "geometry": {
+    "step": "models/pebble/step/t3.step",
+    "stl": "models/pebble/stl/t3.stl",
+    "glb": {
+     "ivory": "models/pebble/glb/t3@ivory.glb",
+     "charcoal": "models/pebble/glb/t3@charcoal.glb"
+    },
+    "bbox_mm": [
+     32.0,
+     32.0,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -16.0,
+     -16.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 3590.364,
+    "stl_volume_mm3": 3590.24,
+    "stl_triangles": 10296,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "ab6e01a1bbf360f7aaa35ef8872ad663a2869988a99a95a1ea041c3372149f6e",
+     "stl": "86e5a4ecc2749dbd58f4767767151f202ee924a97fd0d76254ec9166b3486837"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 6
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 6
+    }
+   ],
+   "print_orientation": "Upright: flat bottom down, boss up.",
+   "assemblies": [
+    "piece-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "pebble.tile-interior",
+   "variant": "pebble",
+   "family": "tile",
+   "role": "interior board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/pebble/step/tile-interior.step",
+    "stl": "models/pebble/stl/tile-interior.stl",
+    "glb": {
+     "gray": "models/pebble/glb/tile-interior@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9784.53,
+    "stl_volume_mm3": 9784.474,
+    "stl_triangles": 56184,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "a6c9171f5e0d8e93bb78e369266a1cb284532f089775f19bff81e06bcde0185b",
+     "stl": "3a830095cdc483a2b7aa4301020829ec6e5884149ce2f6513bbfce14ef4a01cc"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 64
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "interior",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "pebble.tile-edge-s",
+   "variant": "pebble",
+   "family": "tile",
+   "role": "edge-s board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/pebble/step/tile-edge-s.step",
+    "stl": "models/pebble/stl/tile-edge-s.stl",
+    "glb": {
+     "gray": "models/pebble/glb/tile-edge-s@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 10075.277,
+    "stl_volume_mm3": 10075.125,
+    "stl_triangles": 48394,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "ac2d776a494f123ed36c6c3b45789e9109a819a959fb00152572de6886ed0143",
+     "stl": "fecba3be868efd3f2baae1171dcd2c8c56c2f9c2f30510400fce2cd39a6a0878"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-s",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": false
+   }
+  },
+  {
+   "id": "pebble.tile-edge-n",
+   "variant": "pebble",
+   "family": "tile",
+   "role": "edge-n board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/pebble/step/tile-edge-n.step",
+    "stl": "models/pebble/stl/tile-edge-n.stl",
+    "glb": {
+     "gray": "models/pebble/glb/tile-edge-n@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     49.6,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9515.012,
+    "stl_volume_mm3": 9515.03,
+    "stl_triangles": 42636,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "399af62441992032fa7b99f07bd2479cd5edf842d2f32190150f88e4357c699b",
+     "stl": "cb3fa182477c06d3a76b7cb1a6f96c50d70844b523815f4326dafbd00b954f7a"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-n",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": false,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "pebble.tile-edge-w",
+   "variant": "pebble",
+   "family": "tile",
+   "role": "edge-w board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/pebble/step/tile-edge-w.step",
+    "stl": "models/pebble/stl/tile-edge-w.stl",
+    "glb": {
+     "gray": "models/pebble/glb/tile-edge-w@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 10075.277,
+    "stl_volume_mm3": 10075.125,
+    "stl_triangles": 48394,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "0e74a59af252820b9c9b391f0a974494fbad6e307b266fb78b58dbef2dea50e5",
+     "stl": "f5d73bf44235c9102265c4f6a56d7da7585015c6486682489cea1a45dfc409b4"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-w",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": false,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "pebble.tile-edge-e",
+   "variant": "pebble",
+   "family": "tile",
+   "role": "edge-e board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/pebble/step/tile-edge-e.step",
+    "stl": "models/pebble/stl/tile-edge-e.stl",
+    "glb": {
+     "gray": "models/pebble/glb/tile-edge-e@gray.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9515.012,
+    "stl_volume_mm3": 9515.03,
+    "stl_triangles": 42636,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "873b72b8b73cc476f8dc209402a709fbcbcd0873bd6c426204bb885e631ce417",
+     "stl": "1d54b560bfc984a07f4edc8a84adcc50c17cd232634a00b18b425c380df9a999"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-e",
+   "tabs_sockets": {
+    "east_tab": false,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "pebble.tile-corner-sw",
+   "variant": "pebble",
+   "family": "tile",
+   "role": "A1 corner tile — Ivory home (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/pebble/step/tile-corner-sw.step",
+    "stl": "models/pebble/stl/tile-corner-sw.stl",
+    "glb": {
+     "ivory": "models/pebble/glb/tile-corner-sw@ivory.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 10366.025,
+    "stl_volume_mm3": 10365.776,
+    "stl_triangles": 40604,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "8a7d0ef486bf88a51193183883d3fbd1b7370fe944da2f8f6d8d6302c1bc61e1",
+     "stl": "6f3bb8ad2caa152e6cec82bd7ef1e77f5b9b07817fbb48eb4edca6a3610c52cd"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-sw",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": false,
+    "south_socket": false
+   }
+  },
+  {
+   "id": "pebble.tile-corner-se",
+   "variant": "pebble",
+   "family": "tile",
+   "role": "corner-se board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/pebble/step/tile-corner-se.step",
+    "stl": "models/pebble/stl/tile-corner-se.stl",
+    "glb": {
+     "gray": "models/pebble/glb/tile-corner-se@gray.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9805.759,
+    "stl_volume_mm3": 9805.681,
+    "stl_triangles": 34846,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "d4d43d2a63e8c9e0b447a22ebc4e2b9bff3f50f09ba14534b05923a812917d16",
+     "stl": "57917abd74376eeef2fac41f7c5fdc63430994345272fd14f1495b96436b9e62"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-se",
+   "tabs_sockets": {
+    "east_tab": false,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": false
+   }
+  },
+  {
+   "id": "pebble.tile-corner-nw",
+   "variant": "pebble",
+   "family": "tile",
+   "role": "corner-nw board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/pebble/step/tile-corner-nw.step",
+    "stl": "models/pebble/stl/tile-corner-nw.stl",
+    "glb": {
+     "gray": "models/pebble/glb/tile-corner-nw@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     49.6,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9805.759,
+    "stl_volume_mm3": 9805.681,
+    "stl_triangles": 34846,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "cb60029b3ecc7365bb6c4776b03ea3863ddf5a2f0b683337e0e3bf69a1332960",
+     "stl": "75d7e49c6540d66696665e747e779a0323f852b2311ffabb451254529756f1e8"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-nw",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": false,
+    "west_socket": false,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "pebble.tile-corner-ne",
+   "variant": "pebble",
+   "family": "tile",
+   "role": "J10 corner tile — Charcoal home (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/pebble/step/tile-corner-ne.step",
+    "stl": "models/pebble/stl/tile-corner-ne.stl",
+    "glb": {
+     "charcoal": "models/pebble/glb/tile-corner-ne@charcoal.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     49.6,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9245.493,
+    "stl_volume_mm3": 9245.586,
+    "stl_triangles": 29088,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "28dd646985bdd89076d12721d1fa21d8167ea1c1e31bfc1d701542824488ddaa",
+     "stl": "3e8ab97393017e30bf1cd37e1bf87d19fcd020c0d5a04bb185d9e1fae530b969"
+    }
+   },
+   "instances": [
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-ne",
+   "tabs_sockets": {
+    "east_tab": false,
+    "north_tab": false,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "turned.glyph-fire",
+   "variant": "turned",
+   "family": "glyph",
+   "role": "Fire glyph (Hi); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/turned/step/glyph-fire.step",
+    "stl": "models/turned/stl/glyph-fire.stl",
+    "glb": {
+     "fire": "models/turned/glb/glyph-fire@fire.glb"
+    },
+    "bbox_mm": [
+     12.58,
+     21.27,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -6.29,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 668.006,
+    "stl_volume_mm3": 668.006,
+    "stl_triangles": 4780,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "bff6ccd651ae0dac7ab73b3b05c8de75671b803b6e34ad135e3f15af462bdf18",
+     "stl": "b5625141cb1ef6d11089ebf48cc26ab43f7a6b020dec43f0e624f38d0f4a3c30"
+    }
+   },
+   "instances": [
+    {
+     "color": "fire",
+     "filament_lead": "Bambu PLA Basic Red",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.003,
+    "under_min_feature_area_mm2": 2.452,
+    "visible_height_mm": 16.77,
+    "width_mm": 12.58,
+    "total_length_mm": 21.27,
+    "bounds": [
+     -6.29,
+     -4.5,
+     6.29,
+     16.77
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "turned.glyph-lightning",
+   "variant": "turned",
+   "family": "glyph",
+   "role": "Lightning glyph (Radi); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/turned/step/glyph-lightning.step",
+    "stl": "models/turned/stl/glyph-lightning.stl",
+    "glb": {
+     "lightning": "models/turned/glb/glyph-lightning@lightning.glb"
+    },
+    "bbox_mm": [
+     15.867,
+     24.698,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -5.433,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 589.969,
+    "stl_volume_mm3": 589.969,
+    "stl_triangles": 1932,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "f356a2bb00ad77dae119375cea2d73db80c853241411e518447994f8002cca92",
+     "stl": "4d4bb6ff446f57dbdff90d44c1f65bf624d11dd24aa40ee8e638372c04e261fa"
+    }
+   },
+   "instances": [
+    {
+     "color": "lightning",
+     "filament_lead": "Bambu PLA Basic Yellow",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.0,
+    "under_min_feature_area_mm2": 1.138,
+    "visible_height_mm": 20.2,
+    "width_mm": 15.88,
+    "total_length_mm": 24.7,
+    "bounds": [
+     -5.439,
+     -4.5,
+     10.439,
+     20.198
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 6.527,
+    "tang_offset_from_symbol_centre_mm": 2.5
+   }
+  },
+  {
+   "id": "turned.glyph-water",
+   "variant": "turned",
+   "family": "glyph",
+   "role": "Water glyph (Sjór); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/turned/step/glyph-water.step",
+    "stl": "models/turned/stl/glyph-water.stl",
+    "glb": {
+     "water": "models/turned/glb/glyph-water@water.glb"
+    },
+    "bbox_mm": [
+     15.212,
+     25.006,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -7.602,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 1010.445,
+    "stl_volume_mm3": 1010.445,
+    "stl_triangles": 3492,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "ff6ce316632a841950349cec3416eb714ba939b019c6ab416b5d50bf28f5886d",
+     "stl": "9b9eed70465b5bec5c189857e507d154bfa8c1986c479cb768f4fdf435182920"
+    }
+   },
+   "instances": [
+    {
+     "color": "water",
+     "filament_lead": "Bambu PLA Basic Cobalt Blue",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.003,
+    "under_min_feature_area_mm2": 0.35,
+    "visible_height_mm": 20.51,
+    "width_mm": 15.22,
+    "total_length_mm": 25.01,
+    "bounds": [
+     -7.61,
+     -4.5,
+     7.61,
+     20.508
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "turned.glyph-shadow",
+   "variant": "turned",
+   "family": "glyph",
+   "role": "Shadow glyph (Loş); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/turned/step/glyph-shadow.step",
+    "stl": "models/turned/stl/glyph-shadow.stl",
+    "glb": {
+     "shadow": "models/turned/glb/glyph-shadow@shadow.glb"
+    },
+    "bbox_mm": [
+     17.887,
+     24.046,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -8.945,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 689.668,
+    "stl_volume_mm3": 689.668,
+    "stl_triangles": 4742,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "da37b0022ecbe82729281c7fbc7a78a1d2939a28d66e4502592c0c3a9f33d753",
+     "stl": "b848fb70f44add60c2606b78aafeda941b47a1faa6cffeda32acf4f78d13a3e3"
+    }
+   },
+   "instances": [
+    {
+     "color": "shadow",
+     "filament_lead": "Bambu PLA Basic Purple",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 1.223,
+    "under_min_feature_area_mm2": 1.432,
+    "visible_height_mm": 19.55,
+    "width_mm": 17.89,
+    "total_length_mm": 24.05,
+    "bounds": [
+     -8.947,
+     -4.5,
+     8.946,
+     19.55
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "turned.glyph-plant",
+   "variant": "turned",
+   "family": "glyph",
+   "role": "Plant glyph (Muju); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/turned/step/glyph-plant.step",
+    "stl": "models/turned/stl/glyph-plant.stl",
+    "glb": {
+     "plant": "models/turned/glb/glyph-plant@plant.glb"
+    },
+    "bbox_mm": [
+     17.283,
+     23.369,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -6.141,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 1054.458,
+    "stl_volume_mm3": 1054.458,
+    "stl_triangles": 5620,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "bb1cd97c9d9661222fc2e8ea68994c3489c6ff4b0667efab78cbaef424263685",
+     "stl": "ae5737502560299b5347abea2afde0c0d6b72ca2de3977190c18c493390158e6"
+    }
+   },
+   "instances": [
+    {
+     "color": "plant",
+     "filament_lead": "Bambu PLA Basic Bambu Green",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.295,
+    "under_min_feature_area_mm2": 0.227,
+    "visible_height_mm": 18.87,
+    "width_mm": 17.28,
+    "total_length_mm": 23.37,
+    "bounds": [
+     -6.141,
+     -4.5,
+     11.141,
+     18.869
+    ],
+    "has_vein_slot": true,
+    "neck_area_mm2": 12.643,
+    "tang_offset_from_symbol_centre_mm": 2.5
+   }
+  },
+  {
+   "id": "turned.glyph-metal",
+   "variant": "turned",
+   "family": "glyph",
+   "role": "Metal glyph (Poṉ); stands keyed in any base, lies flat as a pending summon",
+   "geometry": {
+    "step": "models/turned/step/glyph-metal.step",
+    "stl": "models/turned/stl/glyph-metal.stl",
+    "glb": {
+     "metal": "models/turned/glb/glyph-metal@metal.glb"
+    },
+    "bbox_mm": [
+     21.816,
+     21.04,
+     4.5
+    ],
+    "bbox_min_mm": [
+     -10.906,
+     -4.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 1022.939,
+    "stl_volume_mm3": 1022.939,
+    "stl_triangles": 3584,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "fc04a432ba0f9eba3868125810e4ee53732bc93c1240700cabf002e67933fc99",
+     "stl": "f7da145b3b09213c302d3d7d8354435cbcf32cb083dca61aee6922a34860bbda"
+    }
+   },
+   "instances": [
+    {
+     "color": "metal",
+     "filament_lead": "Bambu PLA Metal Copper Brown Metallic",
+     "qty_per_set": 16
+    }
+   ],
+   "print_orientation": "Flat on the plate, front face up (as modelled). Tang lies in-plane; no supports.",
+   "assemblies": [
+    "piece-states",
+    "loose",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "glyph": {
+    "shoulder_trim_area_mm2": 0.0,
+    "under_min_feature_area_mm2": 0.95,
+    "visible_height_mm": 16.54,
+    "width_mm": 21.82,
+    "total_length_mm": 21.04,
+    "bounds": [
+     -10.909,
+     -4.5,
+     10.909,
+     16.54
+    ],
+    "has_vein_slot": false,
+    "neck_area_mm2": 0.0,
+    "tang_offset_from_symbol_centre_mm": 0.0
+   }
+  },
+  {
+   "id": "turned.base",
+   "variant": "turned",
+   "family": "base",
+   "role": "Octagonal ownership base (T1); keyed glyph slot on top, pedestal recess below",
+   "geometry": {
+    "step": "models/turned/step/base.step",
+    "stl": "models/turned/stl/base.stl",
+    "glb": {
+     "ivory": "models/turned/glb/base@ivory.glb",
+     "charcoal": "models/turned/glb/base@charcoal.glb"
+    },
+    "bbox_mm": [
+     25.0,
+     25.0,
+     7.5
+    ],
+    "bbox_min_mm": [
+     -12.5,
+     -12.5,
+     -0.0
+    ],
+    "brep_volume_mm3": 3028.371,
+    "stl_volume_mm3": 3028.351,
+    "stl_triangles": 1096,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "cd6eca334504f1eee91337d584af56e4965584a288e047930d090826d44bde44",
+     "stl": "c17988da5004a596909fcac6d930815e2cf6a68b81d3eb29f3dd1528a6f78e95"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 48
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 48
+    }
+   ],
+   "print_orientation": "Upright: recess down (bridged ceiling), slot up.",
+   "assemblies": [
+    "piece-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "turned.t2",
+   "variant": "turned",
+   "family": "pedestal-t2",
+   "role": "T2 addition: wider octagonal pedestal under the base; boss up, recess down",
+   "geometry": {
+    "step": "models/turned/step/t2.step",
+    "stl": "models/turned/stl/t2.stl",
+    "glb": {
+     "ivory": "models/turned/glb/t2@ivory.glb",
+     "charcoal": "models/turned/glb/t2@charcoal.glb"
+    },
+    "bbox_mm": [
+     28.5,
+     28.5,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -14.25,
+     -14.25,
+     -0.0
+    ],
+    "brep_volume_mm3": 2586.173,
+    "stl_volume_mm3": 2586.192,
+    "stl_triangles": 2220,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "d8e64447aef82c7b68f5b80e997b62d41ccd34c3b7dd3ed25974a25c038b1472",
+     "stl": "09acffa134f718216988a5a3b0257cd436417d6585217648ff3726e221da6f1f"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 18
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 18
+    }
+   ],
+   "print_orientation": "Upright: recess down, boss up.",
+   "assemblies": [
+    "piece-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "turned.t3",
+   "variant": "turned",
+   "family": "pedestal-t3",
+   "role": "T3 addition: widest pedestal under T2; boss up, flat bottom",
+   "geometry": {
+    "step": "models/turned/step/t3.step",
+    "stl": "models/turned/stl/t3.stl",
+    "glb": {
+     "ivory": "models/turned/glb/t3@ivory.glb",
+     "charcoal": "models/turned/glb/t3@charcoal.glb"
+    },
+    "bbox_mm": [
+     32.0,
+     32.0,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -16.0,
+     -16.0,
+     -0.0
+    ],
+    "brep_volume_mm3": 3591.74,
+    "stl_volume_mm3": 3591.758,
+    "stl_triangles": 2172,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "572c30ea6290e2faac40b03b63315c4ae143f36520a578948f5dd6d4443955fe",
+     "stl": "e1d27b64ef7b98dfd58bd5d5fd4f1ec4a7ad30dd59e4516ed1b29cb117d4187f"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 6
+    },
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 6
+    }
+   ],
+   "print_orientation": "Upright: flat bottom down, boss up.",
+   "assemblies": [
+    "piece-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   }
+  },
+  {
+   "id": "turned.tile-interior",
+   "variant": "turned",
+   "family": "tile",
+   "role": "interior board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/turned/step/tile-interior.step",
+    "stl": "models/turned/stl/tile-interior.stl",
+    "glb": {
+     "gray": "models/turned/glb/tile-interior@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9718.463,
+    "stl_volume_mm3": 9718.458,
+    "stl_triangles": 8046,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "a9e663fc1c2ae6d0de1645200763ae7403d9da81e065ee5085adac35551237d7",
+     "stl": "9b231e1d876ea5515f67763fdbb2fbdb25faa8aad640768e8dbdb82cb3a1860c"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 64
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "interior",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "turned.tile-edge-s",
+   "variant": "turned",
+   "family": "tile",
+   "role": "edge-s board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/turned/step/tile-edge-s.step",
+    "stl": "models/turned/stl/tile-edge-s.stl",
+    "glb": {
+     "gray": "models/turned/glb/tile-edge-s@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 10003.092,
+    "stl_volume_mm3": 10002.985,
+    "stl_triangles": 7076,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "a77154d6ff1954cfe79e7bdd3dd3107e91089d78774d2f3b2ef20e0705412924",
+     "stl": "3eb725cdd2efd90207b00b6082e4d14f1710d5ce200c139a0d0d94b0a01d0555"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-s",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": false
+   }
+  },
+  {
+   "id": "turned.tile-edge-n",
+   "variant": "turned",
+   "family": "tile",
+   "role": "edge-n board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/turned/step/tile-edge-n.step",
+    "stl": "models/turned/stl/tile-edge-n.stl",
+    "glb": {
+     "gray": "models/turned/glb/tile-edge-n@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     49.6,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9448.72,
+    "stl_volume_mm3": 9448.807,
+    "stl_triangles": 7052,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "d86b95ec0de8d6c818421fa15a4762c54cb8e756e5e203ff4dd932e07c8ffdc4",
+     "stl": "a8bb0393ecedf65e76c46f677cbc373245c5e96f41c9246c094b6ac2a744f9bd"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-n",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": false,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "turned.tile-edge-w",
+   "variant": "turned",
+   "family": "tile",
+   "role": "edge-w board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/turned/step/tile-edge-w.step",
+    "stl": "models/turned/stl/tile-edge-w.stl",
+    "glb": {
+     "gray": "models/turned/glb/tile-edge-w@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 10003.092,
+    "stl_volume_mm3": 10002.985,
+    "stl_triangles": 7076,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "76a0ede981fae793faabf30e38047a1573f67bbeab994431f8496412d46403ab",
+     "stl": "08cda58f1ebcb12aaa222bb179ed0555eeb28838691d8556872fea493e6a8249"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-w",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": false,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "turned.tile-edge-e",
+   "variant": "turned",
+   "family": "tile",
+   "role": "edge-e board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/turned/step/tile-edge-e.step",
+    "stl": "models/turned/stl/tile-edge-e.stl",
+    "glb": {
+     "gray": "models/turned/glb/tile-edge-e@gray.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9448.72,
+    "stl_volume_mm3": 9448.807,
+    "stl_triangles": 7052,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "3cc95a8af845f5bc94775f99039d663e413d54cdf39c913a52d77eddce87f56c",
+     "stl": "5f47822177168f4e85805a94f224d70b16a4978e9b5ed3ceec1bfa75b2f85517"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 8
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "edge-e",
+   "tabs_sockets": {
+    "east_tab": false,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "turned.tile-corner-sw",
+   "variant": "turned",
+   "family": "tile",
+   "role": "A1 corner tile — Ivory home (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/turned/step/tile-corner-sw.step",
+    "stl": "models/turned/stl/tile-corner-sw.stl",
+    "glb": {
+     "ivory": "models/turned/glb/tile-corner-sw@ivory.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 10287.721,
+    "stl_volume_mm3": 10287.513,
+    "stl_triangles": 6106,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "ede2c35ef3606ec838e6036630fc832b4ce4f11afe70ccabe195d3b134e5fd49",
+     "stl": "e0ecfbbc0006401f2448cc01281d3ccf65d7443bbcbae425104beaf8100b1142"
+    }
+   },
+   "instances": [
+    {
+     "color": "ivory",
+     "filament_lead": "Bambu PLA Matte Ivory White",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-sw",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": true,
+    "west_socket": false,
+    "south_socket": false
+   }
+  },
+  {
+   "id": "turned.tile-corner-se",
+   "variant": "turned",
+   "family": "tile",
+   "role": "corner-se board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/turned/step/tile-corner-se.step",
+    "stl": "models/turned/stl/tile-corner-se.stl",
+    "glb": {
+     "gray": "models/turned/glb/tile-corner-se@gray.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     58.9,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9733.349,
+    "stl_volume_mm3": 9733.335,
+    "stl_triangles": 6082,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "d977d0c547653a08d3a00dbfa3108e38fa41be36379d9561955f1022051b455b",
+     "stl": "7fd36876c1d3112afaa1946b878b5cf32b18dc5cff5241a718dad3de55460e62"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-se",
+   "tabs_sockets": {
+    "east_tab": false,
+    "north_tab": true,
+    "west_socket": true,
+    "south_socket": false
+   }
+  },
+  {
+   "id": "turned.tile-corner-nw",
+   "variant": "turned",
+   "family": "tile",
+   "role": "corner-nw board tile (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/turned/step/tile-corner-nw.step",
+    "stl": "models/turned/stl/tile-corner-nw.stl",
+    "glb": {
+     "gray": "models/turned/glb/tile-corner-nw@gray.glb"
+    },
+    "bbox_mm": [
+     58.9,
+     49.6,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9733.349,
+    "stl_volume_mm3": 9733.335,
+    "stl_triangles": 6082,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "157908dafcc10d7a649b73db66c1bf19157af9c821b3bcb7c681299636b41e74",
+     "stl": "37778e2988d96290fd0cdc25de9b6f8b5676b8676a96e7b199dc9baec9b5f7ed"
+    }
+   },
+   "instances": [
+    {
+     "color": "gray",
+     "filament_lead": "Bambu PLA Matte Ash Gray (alt. Nardo Gray)",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-nw",
+   "tabs_sockets": {
+    "east_tab": true,
+    "north_tab": false,
+    "west_socket": false,
+    "south_socket": true
+   }
+  },
+  {
+   "id": "turned.tile-corner-ne",
+   "variant": "turned",
+   "family": "tile",
+   "role": "J10 corner tile — Charcoal home (tabs E/N where a neighbour exists, sockets W/S)",
+   "geometry": {
+    "step": "models/turned/step/tile-corner-ne.step",
+    "stl": "models/turned/stl/tile-corner-ne.stl",
+    "glb": {
+     "charcoal": "models/turned/glb/tile-corner-ne@charcoal.glb"
+    },
+    "bbox_mm": [
+     49.6,
+     49.6,
+     5.6
+    ],
+    "bbox_min_mm": [
+     -24.8,
+     -24.8,
+     -0.0
+    ],
+    "brep_volume_mm3": 9178.977,
+    "stl_volume_mm3": 9179.157,
+    "stl_triangles": 6058,
+    "brep_valid": true,
+    "solids": 1,
+    "sha256": {
+     "step": "464ea3ab3e7c03d28c5584862beafff3b37739856b02951a81d0645e86b97e7b",
+     "stl": "7d40f3ea2bfd7b058ba757f7d7bbc259d966e88d4576e05631a5883ce781995b"
+    }
+   },
+   "instances": [
+    {
+     "color": "charcoal",
+     "filament_lead": "Bambu PLA Matte Charcoal",
+     "qty_per_set": 1
+    }
+   ],
+   "print_orientation": "Flat, studs up. Brim optional (see print guide).",
+   "assemblies": [
+    "board",
+    "tile-join",
+    "resource-states",
+    "crowded-patch"
+   ],
+   "production": true,
+   "validation": {
+    "digital": "pass",
+    "slicer": "not performed",
+    "physical": "not performed"
+   },
+   "tile_type": "corner-ne",
+   "tabs_sockets": {
+    "east_tab": false,
+    "north_tab": false,
+    "west_socket": true,
+    "south_socket": true
+   }
+  }
+ ],
+ "inventory": {
+  "facet": {
+   "objects": 891,
+   "by_color": {
+    "crystal": 551,
+    "fire": 16,
+    "lightning": 16,
+    "water": 16,
+    "shadow": 16,
+    "plant": 16,
+    "metal": 16,
+    "ivory": 73,
+    "charcoal": 73,
+    "gray": 98
+   }
+  },
+  "pebble": {
+   "objects": 891,
+   "by_color": {
+    "crystal": 551,
+    "fire": 16,
+    "lightning": 16,
+    "water": 16,
+    "shadow": 16,
+    "plant": 16,
+    "metal": 16,
+    "ivory": 73,
+    "charcoal": 73,
+    "gray": 98
+   }
+  },
+  "turned": {
+   "objects": 891,
+   "by_color": {
+    "crystal": 551,
+    "fire": 16,
+    "lightning": 16,
+    "water": 16,
+    "shadow": 16,
+    "plant": 16,
+    "metal": 16,
+    "ivory": 73,
+    "charcoal": 73,
+    "gray": 98
+   }
+  }
+ },
+ "calibration_objects": 35,
+ "plates": {
+  "facet": {
+   "glyph-fire": [
+    {
+     "file": "print/facet/plates/facet-fire-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "facet/glyph-fire|fire": 16
+     },
+     "sha256": "9d60f66b90b0cf16c10e4bf5e8fdeb81b0efcbe9e0423b3f68cd15ac6b026d1b"
+    }
+   ],
+   "glyph-lightning": [
+    {
+     "file": "print/facet/plates/facet-lightning-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "facet/glyph-lightning|lightning": 16
+     },
+     "sha256": "7be2501ce99c90b22235b131d510190452ad3a0c2ccf8c3df4261e2775b34811"
+    }
+   ],
+   "glyph-water": [
+    {
+     "file": "print/facet/plates/facet-water-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "facet/glyph-water|water": 16
+     },
+     "sha256": "a623ae3661e9f0d71234ed8fc1ec74dc867cce9ff41f5c5c81886735ec0be15b"
+    }
+   ],
+   "glyph-shadow": [
+    {
+     "file": "print/facet/plates/facet-shadow-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "facet/glyph-shadow|shadow": 16
+     },
+     "sha256": "f6efb022ebef0ea777ff4cf50142cf0e4f583ca615fb268b31ab543cd6adb6e6"
+    }
+   ],
+   "glyph-plant": [
+    {
+     "file": "print/facet/plates/facet-plant-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "facet/glyph-plant|plant": 16
+     },
+     "sha256": "01fbbe2b05ddbdc0157fb560629fdb4cf931640af9fd02c39806e4efdc7a1a6d"
+    }
+   ],
+   "glyph-metal": [
+    {
+     "file": "print/facet/plates/facet-metal-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "facet/glyph-metal|metal": 16
+     },
+     "sha256": "68e4fbdce1e531ccf185b226868bc78b580eac9087d64a1799cdbd270462f745"
+    }
+   ],
+   "army-ivory": [
+    {
+     "file": "print/facet/plates/facet-ivory-army-plate01.3mf",
+     "objects": 73,
+     "contents": {
+      "facet/t3|ivory": 6,
+      "facet/tile-corner-sw|ivory": 1,
+      "facet/t2|ivory": 18,
+      "facet/base|ivory": 48
+     },
+     "sha256": "9e9075f4e3d68c32f78beaa153c8d669b3ef9d567803f8cc0bd318e0c93cde40"
+    }
+   ],
+   "army-charcoal": [
+    {
+     "file": "print/facet/plates/facet-charcoal-army-plate01.3mf",
+     "objects": 73,
+     "contents": {
+      "facet/t3|charcoal": 6,
+      "facet/tile-corner-ne|charcoal": 1,
+      "facet/t2|charcoal": 18,
+      "facet/base|charcoal": 48
+     },
+     "sha256": "3784e28ec81277ed0622d4e1f67ff06e095872999d4a102419068846abc22c64"
+    }
+   ],
+   "tiles-gray": [
+    {
+     "file": "print/facet/plates/facet-gray-tiles-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "facet/tile-interior|gray": 16
+     },
+     "sha256": "9d356b7da61d50967ee42b7ae62f3e42eb66be377ec040ad51373f7b0d7b04a2"
+    },
+    {
+     "file": "print/facet/plates/facet-gray-tiles-plate02.3mf",
+     "objects": 16,
+     "contents": {
+      "facet/tile-interior|gray": 16
+     },
+     "sha256": "b1c7c59fa04f3d023360f0a5845f53ad3571f476344e4527e5b6cd25f085df0d"
+    },
+    {
+     "file": "print/facet/plates/facet-gray-tiles-plate03.3mf",
+     "objects": 16,
+     "contents": {
+      "facet/tile-interior|gray": 16
+     },
+     "sha256": "5c1b10f3c5d5a93760e37dec472ceddf792c5542c47fbe72998796485aedde84"
+    },
+    {
+     "file": "print/facet/plates/facet-gray-tiles-plate04.3mf",
+     "objects": 16,
+     "contents": {
+      "facet/tile-interior|gray": 16
+     },
+     "sha256": "08bdf5e7293418b8bc8eb04060a045baf00eabd665b7277bef3ddad16e6d4e3c"
+    },
+    {
+     "file": "print/facet/plates/facet-gray-tiles-plate05.3mf",
+     "objects": 20,
+     "contents": {
+      "facet/tile-edge-s|gray": 8,
+      "facet/tile-edge-n|gray": 8,
+      "facet/tile-edge-w|gray": 4
+     },
+     "sha256": "aef9aeca9d803db78b18c4c8711f7175347950acd88445454b0e40cb9dfed16f"
+    },
+    {
+     "file": "print/facet/plates/facet-gray-tiles-plate06.3mf",
+     "objects": 14,
+     "contents": {
+      "facet/tile-edge-w|gray": 4,
+      "facet/tile-edge-e|gray": 8,
+      "facet/tile-corner-se|gray": 1,
+      "facet/tile-corner-nw|gray": 1
+     },
+     "sha256": "cd7f3b08824af5d2db816a6e7210d1a009a1fef9228ba0b972cca017c354ce13"
+    }
+   ],
+   "crystals": [
+    {
+     "file": "print/facet/plates/facet-crystals-a-plate01.3mf",
+     "objects": 276,
+     "contents": {
+      "shared/half-crystal|crystal": 1,
+      "shared/crystal|crystal": 275
+     },
+     "sha256": "f6dddee089117bf2e8cf6bbcc86652534a7ea6d02d2e6f200e9f138e8d05825f"
+    },
+    {
+     "file": "print/facet/plates/facet-crystals-b-plate01.3mf",
+     "objects": 275,
+     "contents": {
+      "shared/crystal|crystal": 275
+     },
+     "sha256": "8e19466093a12703ea926dea0eaeef7a55c6d91688281d08f35ef7a25983338c"
+    }
+   ]
+  },
+  "pebble": {
+   "glyph-fire": [
+    {
+     "file": "print/pebble/plates/pebble-fire-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "pebble/glyph-fire|fire": 16
+     },
+     "sha256": "c3ddc8d65e4a94da5bd8089aa501214ea5dcc164172086f61711c8fc3cab86dd"
+    }
+   ],
+   "glyph-lightning": [
+    {
+     "file": "print/pebble/plates/pebble-lightning-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "pebble/glyph-lightning|lightning": 16
+     },
+     "sha256": "266e8b4dce513620db389420a25036f201aed5f2e6fb9554dec5174d542250a3"
+    }
+   ],
+   "glyph-water": [
+    {
+     "file": "print/pebble/plates/pebble-water-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "pebble/glyph-water|water": 16
+     },
+     "sha256": "f97b9e205b2f3d613d1d590d213823c5ab25adb9bf4058782e439f633cdf35bc"
+    }
+   ],
+   "glyph-shadow": [
+    {
+     "file": "print/pebble/plates/pebble-shadow-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "pebble/glyph-shadow|shadow": 16
+     },
+     "sha256": "0f1f1b362424770f9cf602369daa47084131a051501ae1efd82a415b2c372956"
+    }
+   ],
+   "glyph-plant": [
+    {
+     "file": "print/pebble/plates/pebble-plant-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "pebble/glyph-plant|plant": 16
+     },
+     "sha256": "e4de905394d85b10f3ec54611cfc0c2de84c7d31f034b9e02fc7c464928ee470"
+    }
+   ],
+   "glyph-metal": [
+    {
+     "file": "print/pebble/plates/pebble-metal-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "pebble/glyph-metal|metal": 16
+     },
+     "sha256": "443332b45e2f77323ba2371a76fb1b0021941cbd98790fd2a98c143b86624008"
+    }
+   ],
+   "army-ivory": [
+    {
+     "file": "print/pebble/plates/pebble-ivory-army-plate01.3mf",
+     "objects": 73,
+     "contents": {
+      "pebble/t3|ivory": 6,
+      "pebble/tile-corner-sw|ivory": 1,
+      "pebble/t2|ivory": 18,
+      "pebble/base|ivory": 48
+     },
+     "sha256": "e1806a6dae942c514ef56eba16ff967d799cfe339cc4024cdac5ccc8ae323235"
+    }
+   ],
+   "army-charcoal": [
+    {
+     "file": "print/pebble/plates/pebble-charcoal-army-plate01.3mf",
+     "objects": 73,
+     "contents": {
+      "pebble/t3|charcoal": 6,
+      "pebble/tile-corner-ne|charcoal": 1,
+      "pebble/t2|charcoal": 18,
+      "pebble/base|charcoal": 48
+     },
+     "sha256": "f8767104b76b754e9e6ac48dac3c0b97af69ad4574bebb3a64b4b2b5e4779c7f"
+    }
+   ],
+   "tiles-gray": [
+    {
+     "file": "print/pebble/plates/pebble-gray-tiles-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "pebble/tile-interior|gray": 16
+     },
+     "sha256": "92d08de665592f8047c3defd3c506f6167ebad9be7eb7ed6b8406112e4bc7e3c"
+    },
+    {
+     "file": "print/pebble/plates/pebble-gray-tiles-plate02.3mf",
+     "objects": 16,
+     "contents": {
+      "pebble/tile-interior|gray": 16
+     },
+     "sha256": "2309ed62d05aa2c995b2c0ecd16e64f3cb40ea156ee6b7ccada1a4dd3d92a60c"
+    },
+    {
+     "file": "print/pebble/plates/pebble-gray-tiles-plate03.3mf",
+     "objects": 16,
+     "contents": {
+      "pebble/tile-interior|gray": 16
+     },
+     "sha256": "c2241dc96b4a625e23845bd9a2fba15d914c7e456810387596103c7023029e03"
+    },
+    {
+     "file": "print/pebble/plates/pebble-gray-tiles-plate04.3mf",
+     "objects": 16,
+     "contents": {
+      "pebble/tile-interior|gray": 16
+     },
+     "sha256": "d7ea5a0b523be17da3fdc343f0f4d857e4abcf75df4af804f391a465005385e3"
+    },
+    {
+     "file": "print/pebble/plates/pebble-gray-tiles-plate05.3mf",
+     "objects": 20,
+     "contents": {
+      "pebble/tile-edge-s|gray": 8,
+      "pebble/tile-edge-n|gray": 8,
+      "pebble/tile-edge-w|gray": 4
+     },
+     "sha256": "eaf24d4ffa043d561f42cb96fa6bbd5c0d4ea15da001f37335c31f4f393c2765"
+    },
+    {
+     "file": "print/pebble/plates/pebble-gray-tiles-plate06.3mf",
+     "objects": 14,
+     "contents": {
+      "pebble/tile-edge-w|gray": 4,
+      "pebble/tile-edge-e|gray": 8,
+      "pebble/tile-corner-se|gray": 1,
+      "pebble/tile-corner-nw|gray": 1
+     },
+     "sha256": "10d7fe53388c01700442914781c56aeab896794291a425b6c95685ea4c7f6244"
+    }
+   ],
+   "crystals": [
+    {
+     "file": "print/pebble/plates/pebble-crystals-a-plate01.3mf",
+     "objects": 276,
+     "contents": {
+      "shared/half-crystal|crystal": 1,
+      "shared/crystal|crystal": 275
+     },
+     "sha256": "e9e7610b0fb7b7c388c057f300099f45d73577d043fc540c5190a0349b21d345"
+    },
+    {
+     "file": "print/pebble/plates/pebble-crystals-b-plate01.3mf",
+     "objects": 275,
+     "contents": {
+      "shared/crystal|crystal": 275
+     },
+     "sha256": "2f4a7a7933c14b9350dbb7ece82d7c0d3f3ae7878a7de4d1ac755e11160bccc8"
+    }
+   ]
+  },
+  "turned": {
+   "glyph-fire": [
+    {
+     "file": "print/turned/plates/turned-fire-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "turned/glyph-fire|fire": 16
+     },
+     "sha256": "f1f4aa1384046a72548f2011263919233fee3b00cf22c6ccaeddbc41d00fc681"
+    }
+   ],
+   "glyph-lightning": [
+    {
+     "file": "print/turned/plates/turned-lightning-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "turned/glyph-lightning|lightning": 16
+     },
+     "sha256": "7725550430baa6b476341c2410d76e15510a61fdc651ec4f8392f2fdb2b3c0dd"
+    }
+   ],
+   "glyph-water": [
+    {
+     "file": "print/turned/plates/turned-water-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "turned/glyph-water|water": 16
+     },
+     "sha256": "f54dd05f29eaae3d954322f244c203bf1dd14824c1b04f639abe3ad9b0950e95"
+    }
+   ],
+   "glyph-shadow": [
+    {
+     "file": "print/turned/plates/turned-shadow-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "turned/glyph-shadow|shadow": 16
+     },
+     "sha256": "843afa0e7e48e786c54f69e4742be152545cbf0377cc86e7f16ca82884e63597"
+    }
+   ],
+   "glyph-plant": [
+    {
+     "file": "print/turned/plates/turned-plant-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "turned/glyph-plant|plant": 16
+     },
+     "sha256": "a261a62319020e8a995b29f647fef4a1b3b563f07ca4f64b9ac875a01a5b2db3"
+    }
+   ],
+   "glyph-metal": [
+    {
+     "file": "print/turned/plates/turned-metal-glyphs-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "turned/glyph-metal|metal": 16
+     },
+     "sha256": "8d579b7cc592230906586ba0dd958855cd3629e5ee27e17c7751e22c01e5235c"
+    }
+   ],
+   "army-ivory": [
+    {
+     "file": "print/turned/plates/turned-ivory-army-plate01.3mf",
+     "objects": 73,
+     "contents": {
+      "turned/t3|ivory": 6,
+      "turned/tile-corner-sw|ivory": 1,
+      "turned/t2|ivory": 18,
+      "turned/base|ivory": 48
+     },
+     "sha256": "149f47020238b33ce283eb9e09d0218e12fd4ca52e3fcf7a2ad3d8584692c5da"
+    }
+   ],
+   "army-charcoal": [
+    {
+     "file": "print/turned/plates/turned-charcoal-army-plate01.3mf",
+     "objects": 73,
+     "contents": {
+      "turned/t3|charcoal": 6,
+      "turned/tile-corner-ne|charcoal": 1,
+      "turned/t2|charcoal": 18,
+      "turned/base|charcoal": 48
+     },
+     "sha256": "674691984454d92cb8af50a6e538a3bad008ffb598b7e97234eac8d89a74367e"
+    }
+   ],
+   "tiles-gray": [
+    {
+     "file": "print/turned/plates/turned-gray-tiles-plate01.3mf",
+     "objects": 16,
+     "contents": {
+      "turned/tile-interior|gray": 16
+     },
+     "sha256": "996cc0db155b03cf235770746831c38bdb2195872795c046135c7cdfc894547f"
+    },
+    {
+     "file": "print/turned/plates/turned-gray-tiles-plate02.3mf",
+     "objects": 16,
+     "contents": {
+      "turned/tile-interior|gray": 16
+     },
+     "sha256": "22ea33a47ff691b6991ff026c01fc1c71dc9eee729622548cee450f9514841e6"
+    },
+    {
+     "file": "print/turned/plates/turned-gray-tiles-plate03.3mf",
+     "objects": 16,
+     "contents": {
+      "turned/tile-interior|gray": 16
+     },
+     "sha256": "d4842f5699c91e029feded3c3e7545f1cf9e532b72eb61d25702cdf901728253"
+    },
+    {
+     "file": "print/turned/plates/turned-gray-tiles-plate04.3mf",
+     "objects": 16,
+     "contents": {
+      "turned/tile-interior|gray": 16
+     },
+     "sha256": "8ad67e2b8e36d6263a2585fc72b830a696262d64a23382124ee052f4bc91b1ab"
+    },
+    {
+     "file": "print/turned/plates/turned-gray-tiles-plate05.3mf",
+     "objects": 20,
+     "contents": {
+      "turned/tile-edge-s|gray": 8,
+      "turned/tile-edge-n|gray": 8,
+      "turned/tile-edge-w|gray": 4
+     },
+     "sha256": "2c0517aa489c0866fd7671e6a1b6192ad05e41414c87909b3c96af4b3a366557"
+    },
+    {
+     "file": "print/turned/plates/turned-gray-tiles-plate06.3mf",
+     "objects": 14,
+     "contents": {
+      "turned/tile-edge-w|gray": 4,
+      "turned/tile-edge-e|gray": 8,
+      "turned/tile-corner-se|gray": 1,
+      "turned/tile-corner-nw|gray": 1
+     },
+     "sha256": "39b12a03c807664b700baccf8baa1f288cbca37f416672d3310c8dd63d61a2ad"
+    }
+   ],
+   "crystals": [
+    {
+     "file": "print/turned/plates/turned-crystals-a-plate01.3mf",
+     "objects": 276,
+     "contents": {
+      "shared/half-crystal|crystal": 1,
+      "shared/crystal|crystal": 275
+     },
+     "sha256": "f0bef1dd37daa829ae2a77cdb79773fdbdf5fbf0d804b8b3946cf35296f3b6ad"
+    },
+    {
+     "file": "print/turned/plates/turned-crystals-b-plate01.3mf",
+     "objects": 275,
+     "contents": {
+      "shared/crystal|crystal": 275
+     },
+     "sha256": "5cacee0be4291e62de0e12909a144f9b43c9553302f7e8c283289a7d86e38230"
+    }
+   ]
+  },
+  "calibration": {
+   "pla-ivory": [
+    {
+     "file": "print/calibration/cal-ivory-plate01.3mf",
+     "objects": 6,
+     "contents": {
+      "shared/coupon-glyph-slots|ivory": 1,
+      "shared/coupon-recess-plate|ivory": 1,
+      "shared/coupon-boss-key-r0|ivory": 1,
+      "shared/coupon-boss-key-r10|ivory": 1,
+      "shared/coupon-boss-key-r20|ivory": 1,
+      "shared/coupon-boss-key-r30|ivory": 1
+     },
+     "sha256": "6007aba129f32f060b124386f43c3250ec1ff193f4d3c52ca99704a075f85cc6"
+    }
+   ],
+   "pla-charcoal": [
+    {
+     "file": "print/calibration/cal-charcoal-plate01.3mf",
+     "objects": 6,
+     "contents": {
+      "shared/coupon-glyph-slots|charcoal": 1,
+      "shared/coupon-recess-plate|charcoal": 1,
+      "shared/coupon-boss-key-r0|charcoal": 1,
+      "shared/coupon-boss-key-r10|charcoal": 1,
+      "shared/coupon-boss-key-r20|charcoal": 1,
+      "shared/coupon-boss-key-r30|charcoal": 1
+     },
+     "sha256": "a7c96483ca25e8aefe073ba3cdcd9772c4811ae5400e2e719bdb7eca8441a26c"
+    }
+   ],
+   "pla-gray": [
+    {
+     "file": "print/calibration/cal-gray-plate01.3mf",
+     "objects": 5,
+     "contents": {
+      "shared/coupon-stud-strip|gray": 1,
+      "shared/coupon-tile-tab|gray": 1,
+      "shared/coupon-tile-socket-15|gray": 1,
+      "shared/coupon-tile-socket-25|gray": 1,
+      "shared/coupon-tile-socket-35|gray": 1
+     },
+     "sha256": "4c10d64ca70c335f1ced267e9b1c789d06eea089af30775dfc96ba6c4d83612c"
+    }
+   ],
+   "pla-glyph-colours": [
+    {
+     "file": "print/calibration/cal-tang-plate01.3mf",
+     "objects": 2,
+     "contents": {
+      "shared/coupon-tang-gauge|fire": 1,
+      "shared/coupon-tang-gauge|metal": 1
+     },
+     "sha256": "bd70a22331b90044280286e11899ce4877743dd9f8bd009bd815af5b4df2ba98"
+    }
+   ],
+   "petg-crystal": [
+    {
+     "file": "print/calibration/cal-crystal-plate01.3mf",
+     "objects": 28,
+     "contents": {
+      "shared/coupon-crystal-socket-10|crystal": 4,
+      "shared/coupon-crystal-socket-20|crystal": 4,
+      "shared/coupon-crystal-socket-30|crystal": 4,
+      "shared/coupon-crystal-socket-40|crystal": 4,
+      "shared/crystal|crystal": 12
+     },
+     "sha256": "c819ddc4c65399b14a8289906e0c1c2f1ec2e1081885e1904edb73e5618f078a"
+    }
+   ]
+  }
+ },
+ "validation_summary": {
+  "generated": "2026-09-30T16:35:32+00:00",
+  "digital_passed": true,
+  "failures": 0,
+  "slicer": "not performed (Bambu Studio not available in the build environment)",
+  "physical": "not performed"
+ }
+}
