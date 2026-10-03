@@ -56,28 +56,32 @@ export function PuzzleScreen({ spec, arc, index, onExit, onNext, onProgressChang
   }, [spec.id, usedHint, onProgressChange]);
 
   return <PuzzleRun key={`${spec.id}:${attempt}`} ctx={ctx} arc={arc} index={index} start={start} demo={demo} solver={solver} cadence={cadence}
-    usedHint={usedHint} hintArmed={hintArmed} onArmHint={() => { setUsedHint(true); setHintArmed(true); }} onShowMe={showMe}
+    usedHint={usedHint} hintArmed={hintArmed} onUseHint={() => setUsedHint(true)} onArmShowMe={() => setHintArmed(true)} onShowMe={showMe}
     onRetry={() => restart()} onRewind={state => restart(state)} onDemoDone={onDemoDone} onSolved={onSolved} onExit={onExit} onNext={onNext} />;
 }
 
+/** "Show me" takes over the hint button only once the hint has been on screen this long, so a double tap cannot skip to the demo. */
+export const SHOW_ME_ARM_MS = 1200;
+
 interface RunProps {
   ctx: PuzzleContext; arc: Arc; index: number; start: GameState; demo: AIAction[] | null; solver: LearnSolverClient; cadence?: number;
-  usedHint: boolean; hintArmed: boolean; onArmHint: () => void; onShowMe: () => void;
+  usedHint: boolean; hintArmed: boolean; onUseHint: () => void; onArmShowMe: () => void; onShowMe: () => void;
   onRetry: () => void; onRewind: (state: GameState) => void; onDemoDone: () => void; onSolved: () => void;
   onExit: () => void; onNext: (() => void) | null;
 }
 
-function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hintArmed, onArmHint, onShowMe, onRetry, onRewind, onDemoDone, onSolved, onExit, onNext }: RunProps) {
+function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hintArmed, onUseHint, onArmShowMe, onShowMe, onRetry, onRewind, onDemoDone, onSolved, onExit, onNext }: RunProps) {
   const { spec, hero } = ctx;
   const boardEffects = useBoardEffects();
   const play = useSoundEffects();
-  const celebrate = useCallback((state: GameState) => {
+  const marks = useMemo(() => goalMarks(ctx), [ctx]);
+  const sparkle = useCallback((state: GameState) => {
     play(['reveal']);
     const squares = [...marks.flags, ...state.board.units.filter(u => u.owner === hero).map(u => u.position)];
     for (const [i, p] of squares.entries()) setTimeout(() => boardEffects.emit({ kind: 'reveal', x: p.x, y: p.y }), i * 90);
-    onSolved();
-  }, [play, boardEffects, hero, onSolved]); // eslint-disable-line react-hooks/exhaustive-deps -- marks is derived from ctx
-  const run = usePuzzleRun({ ctx, start, solver, demo, cadence, onSolved: celebrate, onDemoDone });
+  }, [play, boardEffects, hero, marks]);
+  const celebrate = useCallback((state: GameState) => { sparkle(state); onSolved(); }, [sparkle, onSolved]);
+  const run = usePuzzleRun({ ctx, start, solver, demo, cadence, onSolved: celebrate, onDemoSolved: sparkle, onDemoDone });
   const { game, phase, failure, cardShown, hint } = run;
   const { state } = game;
   // `?probe=1` exposes the live position to end-to-end tests that play every puzzle.
@@ -86,7 +90,6 @@ function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hi
       (window as unknown as { __mujuLearn?: unknown }).__mujuLearn = { id: spec.id, phase, state };
     }
   }, [spec.id, phase, state]);
-  const marks = useMemo(() => goalMarks(ctx), [ctx]);
 
   // Crystals leaving the squares your pieces mined, the moment Mine & prepare lands.
   const seenIncome = useRef(state.lastIncome);
@@ -123,18 +126,32 @@ function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hi
   const unitClassName = useCallback((unit: Unit) => unit.id === hintPiece ? 'learn-hint-piece' : undefined, [hintPiece]);
 
   // === Goal line with live mining progress ===
+  // The count is what is already mined; what your pieces would mine from where
+  // they stand is shown beside it, lighter, until Mine & prepare collects it.
   const text = goalText(spec);
   const mine = mineProgress(ctx, state);
-  const projected = mine && state.phase === 'playing' && state.turn.currentPlayer === hero && state.turn.phase === 'action' ? projectedIncome(state, hero) : 0;
+  const acting = state.phase === 'playing' && state.turn.currentPlayer === hero && state.turn.phase === 'action';
+  const projected = mine && acting ? projectedIncome(state, hero) : 0;
   const goal = <>
     <span className="learn-goal-text">{text}</span>
-    {mine && <span className="learn-goal-progress" data-testid="puzzle-progress"><b>{mine.have + projected}</b> / {mine.need}</span>}
+    {mine && <span className="learn-goal-meter">
+      <span className="learn-goal-progress" data-testid="puzzle-progress"><b>{mine.have}</b> / {mine.need}</span>
+      {acting && <span className={`learn-goal-projected${projected > 0 ? '' : ' is-empty'}`} data-testid="puzzle-projected"
+        aria-label={projected > 0 ? `${projected} more at Mine & prepare` : undefined} aria-hidden={projected > 0 ? undefined : true}>+{projected}</span>}
+    </span>}
   </>;
 
+  // Hint, then (once the hint has been seen) Show me.
+  const [hinting, setHinting] = useState(false);
+  const armTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  useEffect(() => () => clearTimeout(armTimer.current), []);
   const requestHint = async () => {
     if (hintArmed) { onShowMe(); return; }
-    onArmHint();
+    if (hinting) return;
+    setHinting(true);
+    onUseHint();
     await run.requestHint();
+    armTimer.current = setTimeout(onArmShowMe, SHOW_ME_ARM_MS);
   };
   const canUndo = game.canUndo || !!run.rewindState;
   const undo = () => { if (game.canUndo) game.undo(); else if (run.rewindState) onRewind(run.rewindState); };
@@ -142,27 +159,33 @@ function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hi
   const narration = phase === 'solved' ? `Solved. ${text}.`
     : phase === 'failed' ? `Not solved. ${failureText(failure)}`
     : phase === 'enemy' ? 'Opponent’s turn.'
-    : phase === 'demo' ? 'Showing the solution.'
+    : phase === 'demo' ? run.demoSolved ? 'Solved.' : 'Showing the solution.'
     : `${text}.${hint ? hintText(hint) : ''}`;
 
   const bar = <div className="learn-controls">
     <button type="button" className="learn-retry" aria-label="Retry" title="Retry" onClick={onRetry}><span aria-hidden="true">↻</span></button>
-    <button type="button" className={`learn-hint${hintArmed ? ' is-armed' : ''}`} aria-label={hintArmed ? 'Show me' : 'Hint'} title={hintArmed ? 'Show me' : 'Hint'}
+    <button type="button" className={`learn-hint${hintArmed ? ' is-armed' : hint ? ' is-lit' : ''}`} aria-label={hintArmed ? 'Show me' : 'Hint'} title={hintArmed ? 'Show me' : 'Hint'}
       disabled={phase !== 'playing'} onClick={requestHint}>
-      {hintArmed ? <><span aria-hidden="true">▶</span><span className="learn-hint-label">Show me</span></> : <span aria-hidden="true">💡</span>}
+      {hintArmed ? <><span aria-hidden="true" className="learn-hint-glyph">▶</span><span className="learn-hint-label">Show me</span></> : <span aria-hidden="true">💡</span>}
     </button>
   </div>;
 
   const lastInArc = index === arc.puzzles.length - 1;
   const overlay = cardShown && phase === 'solved' ? <SuccessCard arc={lastInArc ? arc : null} usedHint={usedHint} onNext={onNext} onRetry={onRetry} onExit={onExit} />
     : cardShown && phase === 'failed' ? <FailureCard failure={failure} canUndo={canUndo} onUndo={undo} onRetry={onRetry} />
+    : phase === 'demo' && run.demoSolved ? <div className="learn-card learn-card-success learn-card-demo" aria-hidden="true" data-testid="puzzle-demo-solved"><div className="learn-card-mark">✓</div></div>
     : null;
 
   return <GameView config={config} game={game} onBackToMenu={onExit} puzzle={{
     title: <>{arc.title} <small className="puzzle-number">{index + 1} / {arc.puzzles.length}</small></>,
     goal, bar, overlay, narration,
     locked: run.locked, hideHomes: !spec.homes,
-    shellClassName: `${hint && 'control' in hint ? `learn-hint-${hint.control}` : ''} learn-phase-${phase}`.trim(),
+    // Summoning is taught with the homes: before that, Prepare has no shop.
+    hideShop: !spec.homes,
+    // A lit hint replaces whatever was selected, so the lit piece is the only one marked;
+    // a decided puzzle drops its selection, so the board shows only the position.
+    clearSelection: phase === 'solved' || phase === 'failed' ? phase : hint,
+    shellClassName: [hint && 'control' in hint ? `learn-hint-${hint.control}` : '', `learn-phase-${phase}`, mine ? 'learn-mining' : 'learn-no-mining', overlay ? 'learn-card-up' : ''].filter(Boolean).join(' '),
     onExit, onRestart: onRetry, boardEffects, cellClassName, unitClassName,
   }} />;
 }

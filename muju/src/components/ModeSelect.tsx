@@ -7,7 +7,7 @@ import { AI_PACES, AI_PACE_LABEL, AI_TURN_SECONDS, formatTurnSeconds, type AIPac
 import { getActionsPerTurn } from '../game/rules';
 import { INACTIVITY_LIMIT } from '../game/inactivity';
 import { loadAIPace, loadGameState, loadRetiredSave } from '../utils/persistence';
-import { PUZZLE_COUNT } from '../learn/catalog';
+import { PUZZLE_COUNT } from '../learn/count';
 
 const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
 /** Remembers whether "Other ways to play" was left open. */

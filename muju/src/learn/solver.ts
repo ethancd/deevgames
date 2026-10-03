@@ -56,12 +56,17 @@ export class PuzzleSearch {
     return last ? { buys: this.finalBuys, promotes: this.finalPromotes } : { buys: true, promotes: true };
   }
 
-  /** Your legal actions, minus Prepare verbs that cannot matter. */
+  /**
+   * Your legal actions, minus Prepare verbs that cannot matter. A puzzle with
+   * its homes hidden has no shop on screen (summoning is taught later), so its
+   * hints and proofs never summon either.
+   */
   heroActions(state: GameState): AIAction[] {
     const all = generateAllActions(state, this.ctx.hero);
     if (state.turn.phase !== 'place' || state.upkeepPending) return orderActions(all);
     const { buys, promotes } = this.prepareMatters(state);
-    return all.filter(a => (a.type !== 'BUY_UNIT' || buys) && (a.type !== 'PROMOTE_UNIT' || promotes));
+    const shop = buys && !!this.ctx.spec.homes;
+    return all.filter(a => (a.type !== 'BUY_UNIT' || shop) && (a.type !== 'PROMOTE_UNIT' || promotes));
   }
 
   private enemyActions(state: GameState): AIAction[] {

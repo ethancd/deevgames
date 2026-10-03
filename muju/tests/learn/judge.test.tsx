@@ -6,7 +6,7 @@ import { FIXTURES, fixtureById } from '../../src/learn/fixtures';
 import { goalText, makeContext, type PuzzleContext } from '../../src/learn/goals';
 import { parseMove, playLine } from '../../src/learn/notation';
 import { solutionLine } from '../../src/learn/solver';
-import { hintTargetOf, usePuzzleRun, type PuzzleRun } from '../../src/learn/usePuzzle';
+import { hintTargetOf, judgesLive, usePuzzleRun, type PuzzleRun } from '../../src/learn/usePuzzle';
 import { LearnSolverClient } from '../../src/learn/worker/client';
 import { heldWorkers } from './held-worker';
 
@@ -22,9 +22,10 @@ const inline = () => new LearnSolverClient(() => null);
 const fx = (id: string) => fixtureById(id)!;
 
 type Hook = { result: { current: PuzzleRun } };
-function mount(ctx: PuzzleContext, options: { demo?: AIAction[] | null; onSolved?: () => void; onDemoDone?: () => void; start?: GameState } = {}) {
-  const solver = inline();
-  return renderHook(() => usePuzzleRun({ ctx, start: options.start ?? ctx.start, solver, cadence: 5, demo: options.demo, onSolved: options.onSolved, onDemoDone: options.onDemoDone }));
+function mount(ctx: PuzzleContext, options: { demo?: AIAction[] | null; onSolved?: () => void; onDemoSolved?: () => void; onDemoDone?: () => void; start?: GameState; solver?: LearnSolverClient } = {}) {
+  const solver = options.solver ?? inline();
+  return renderHook(() => usePuzzleRun({ ctx, start: options.start ?? ctx.start, solver, cadence: 5, demo: options.demo,
+    onSolved: options.onSolved, onDemoSolved: options.onDemoSolved, onDemoDone: options.onDemoDone }));
 }
 
 /** Dispatch one action through the hook's game, as the screen would. */
@@ -113,23 +114,61 @@ describe('usePuzzleRun', () => {
     const { workers, factory } = heldWorkers();
     const solver = new LearnSolverClient(factory);
     const hook = renderHook(() => usePuzzleRun({ ctx, start: ctx.start, solver, cadence: 5 }));
+    // Turn 1 of 2 is never judged live: a move asks nothing.
     play(hook, ['a1-a2']);
-    expect(workers[0].received.map(r => r.kind)).toEqual(['win']);
-    // The next move stops the first search rather than waiting for it.
+    expect(workers).toHaveLength(0);
+    // A hint search is stopped by the next move rather than left running.
+    act(() => { void hook.result.current.requestHint(); });
+    expect(workers[0].received.map(r => r.kind)).toEqual(['line']);
     play(hook, ['a2-a3']);
     expect(workers[0].terminated).toBe(true);
-    expect(workers[1].received.map(r => r.kind)).toEqual(['win']);
     // A hint search still running when the turn is handed over is stopped too.
     play(hook, ['mine']);
     act(() => { void hook.result.current.requestHint(); });
     const busy = workers.at(-1)!;
-    expect(busy.received.map(r => r.kind)).toEqual(['win', 'line']);
+    expect(busy.received.map(r => r.kind)).toEqual(['line']);
     play(hook, ['end']);
     await waitFor(() => expect(workers.at(-1)!.received.map(r => r.kind)).toEqual(['reply']));
     expect(busy.terminated).toBe(true);
     const replier = workers.at(-1)!;
     act(() => replier.answer(replier.received[0]));
     await waitFor(() => expect(hook.result.current.game.state.turn.turnNumber).toBe(2), { timeout: 3000 });
+    // The final turn is judged live: the next move asks "can you still win?".
+    await settled(hook);
+    play(hook, ['a3-a4']);
+    await waitFor(() => expect(workers.at(-1)!.received.map(r => r.kind)).toContain('win'));
+  });
+
+  it('judges live only on your final turn, and never for goals judged after the reply', () => {
+    const two = makeContext(fx('fx-two-turns'));
+    expect(judgesLive(two, two.start)).toBe(false);
+    const turnTwo = playLine(two.start, ['a1-a5', 'mine', 'end']).state;
+    const handedBack = { ...turnTwo, turn: { ...turnTwo.turn, currentPlayer: 'white' as const, turnNumber: 2 } };
+    expect(judgesLive(two, handedBack)).toBe(true);
+    const capture = makeContext(fx('fx-capture'));
+    expect(judgesLive(capture, capture.start)).toBe(true);
+    for (const id of ['fx-survive', 'fx-hold', 'fx-arrive']) {
+      const ctx = makeContext(fx(id));
+      expect(judgesLive(ctx, ctx.start), id).toBe(false);
+    }
+  });
+
+  it('a hopeless first turn of two plays on: the enemy replies, then the final turn fails at its start', async () => {
+    const ctx = makeContext(fx('fx-two-turns'));
+    const hook = mount(ctx);
+    // Not moving at all leaves four actions for five squares: hopeless, but not flagged yet.
+    play(hook, ['mine']);
+    await new Promise(resolve => setTimeout(resolve, 80));
+    expect(hook.result.current.phase).toBe('playing');
+    play(hook, ['end']);
+    await waitFor(() => expect(hook.result.current.phase).toBe('enemy'));
+    await waitFor(() => expect(hook.result.current.phase).toBe('failed'), { timeout: 4000 });
+    expect(hook.result.current.failure).toBe('stuck');
+    // The enemy's turn was played before the card.
+    expect(hook.result.current.game.state.turn.turnNumber).toBe(2);
+    expect(hook.result.current.game.lastTurnReplay?.player).toBe('black');
+    // Undo from the turn start goes back to the turn before it.
+    expect(hook.result.current.rewindState).toBe(ctx.start);
   });
 
   it('fails at the deadline when the turn ends unsolved, with a rewind to the turn start', async () => {
@@ -144,8 +183,17 @@ describe('usePuzzleRun', () => {
 
   it('plays the refuting reply for a survive goal and fails as lost when the enemy wins', async () => {
     const ctx = makeContext(fx('fx-survive'));
-    const hook = mount(ctx);
-    play(hook, ['mine', 'end']);
+    const { workers, factory } = heldWorkers();
+    const hook = mount(ctx, { solver: new LearnSolverClient(factory) });
+    // Standing still is already lost, but a goal judged after the reply is never flagged early:
+    // the turn may end, and the enemy's kill is the explanation.
+    play(hook, ['mine']);
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(hook.result.current.phase).toBe('playing');
+    expect(workers.flatMap(w => w.received.map(r => r.kind))).not.toContain('win');
+    play(hook, ['end']);
+    await waitFor(() => expect(workers.at(-1)?.received.map(r => r.kind)).toEqual(['reply']));
+    act(() => workers.at(-1)!.answer(workers.at(-1)!.received[0]));
     await waitFor(() => expect(hook.result.current.phase).toBe('enemy'));
     await waitFor(() => expect(hook.result.current.phase).toBe('failed'), { timeout: 4000 });
     const { game, failure } = hook.result.current;
@@ -233,19 +281,48 @@ describe('usePuzzleRun', () => {
     expect(hintTargetOf(undefined)).toBeNull();
   });
 
-  it('"Show me" plays the authored line with the acting piece lit, without judging', async () => {
+  it('"Show me" plays the authored line with the acting piece lit, celebrates, and records nothing', async () => {
     const ctx = makeContext(fx('fx-reach'));
-    const onSolved = vi.fn(), onDemoDone = vi.fn();
+    const onSolved = vi.fn(), onDemoSolved = vi.fn(), onDemoDone = vi.fn();
     const demo = playLine(ctx.start, ctx.spec.solution).actions;
-    const hook = mount(ctx, { demo, onSolved, onDemoDone });
+    const hook = mount(ctx, { demo, onSolved, onDemoSolved, onDemoDone });
     expect(hook.result.current.phase).toBe('demo');
     expect(hook.result.current.locked).toBe(true);
     await waitFor(() => expect(hook.result.current.hint).toEqual({ piece: 'p-white-a1' }));
     await waitFor(() => expect(onDemoDone).toHaveBeenCalledTimes(1), { timeout: 3000 });
     expect(hook.result.current.game.state.board.units[0].position).toEqual({ x: 1, y: 0 });
+    expect(onDemoSolved).toHaveBeenCalledTimes(1);
+    expect(hook.result.current.demoSolved).toBe(true);
     expect(onSolved).not.toHaveBeenCalled();
     expect(hook.result.current.phase).toBe('demo');
   });
+
+  it('"Show me" plays the whole solution: the authored turn, the enemy’s reply, then the solver’s next turn', async () => {
+    const ctx = makeContext(fx('fx-two-turns'));
+    const onSolved = vi.fn(), onDemoSolved = vi.fn(), onDemoDone = vi.fn();
+    const demo = playLine(ctx.start, ctx.spec.solution).actions;
+    const hook = mount(ctx, { demo, onSolved, onDemoSolved, onDemoDone });
+    await waitFor(() => expect(onDemoDone).toHaveBeenCalledTimes(1), { timeout: 6000 });
+    const { state } = hook.result.current.game;
+    expect(state.turn.turnNumber).toBe(2);
+    expect(hook.result.current.game.lastTurnReplay?.player).toBe('black');
+    // The Muju finished on the flag (a6) in the second turn.
+    expect(state.board.units.find(u => u.id === 'p-white-a1')?.position).toEqual({ x: 0, y: 5 });
+    expect(onDemoSolved).toHaveBeenCalledTimes(1);
+    expect(onSolved).not.toHaveBeenCalled();
+  }, 10_000);
+
+  it('"Show me" for a goal judged after the reply shows the enemy’s harmless reply before it ends', async () => {
+    const ctx = makeContext(fx('fx-survive'));
+    const onDemoSolved = vi.fn(), onDemoDone = vi.fn();
+    const demo = playLine(ctx.start, ctx.spec.solution).actions;
+    const hook = mount(ctx, { demo, onDemoSolved, onDemoDone });
+    await waitFor(() => expect(onDemoDone).toHaveBeenCalledTimes(1), { timeout: 6000 });
+    expect(hook.result.current.game.state.turn.turnNumber).toBe(2);
+    expect(hook.result.current.game.lastTurnReplay?.player).toBe('black');
+    expect(hook.result.current.game.state.board.units.some(u => u.id === 'p-white-b2')).toBe(true);
+    expect(onDemoSolved).toHaveBeenCalledTimes(1);
+  }, 10_000);
 
   it('a mining goal shows progress and is solved at Mine & prepare', async () => {
     const ctx = makeContext(fx('fx-mine'));

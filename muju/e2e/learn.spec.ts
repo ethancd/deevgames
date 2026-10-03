@@ -186,7 +186,7 @@ test('a line that can no longer win fails at once; Undo takes it back and Retry 
   await expect(page.getByTestId('puzzle-narration')).toContainText('Not solved');
   await page.screenshot({ path: `${SHOTS}/e2e-failed.png` });
   // The board is locked under the card.
-  await expect(page.getByRole('button', { name: /Mine & prepare/ })).toBeDisabled();
+  await expect(page.locator('.play-footer .action-bar button.primary')).toBeDisabled();
   await failure.getByRole('button', { name: 'Undo' }).click();
   await expect(failure).toHaveCount(0);
   await expect(page.locator('.action-budget strong')).toHaveText('2 actions');
@@ -208,17 +208,23 @@ test('a hint lights the piece, Show me plays the line, and the solve is marked a
   await hint.click();
   await expect(page.locator('.unit-wrap.learn-hint-piece')).toHaveCount(1);
   await expect(cell(page, 0, 0).locator('..').locator('.learn-hint-piece')).toHaveCount(1);
+  // A quick second tap does not skip to the demo: Show me arms once the hint has been seen.
+  await hint.click();
+  await expect(page.locator('.learn-phase-demo')).toHaveCount(0);
   const show = page.locator('.learn-controls').getByRole('button', { name: 'Show me' });
   await expect(show).toBeVisible();
+  await expect(show).toContainText('Show me');
   await page.screenshot({ path: `${SHOTS}/e2e-hint.png` });
   await show.click();
-  // The line plays itself, then the puzzle restarts for the player.
+  // The line plays itself to the goal, celebrates, then the puzzle restarts for the player.
   await expect(cell(page, 1, 1)).toHaveAttribute('aria-label', /white Muju/, { timeout: 6000 });
+  await expect(page.getByTestId('puzzle-demo-solved')).toBeVisible({ timeout: 6000 });
   await expect(cell(page, 0, 0)).toHaveAttribute('aria-label', /white Muju/, { timeout: 8000 });
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
-  // Live progress: standing on the 8-crystal square projects 3.
+  // Live progress: standing on the 8-crystal square projects 3, shown beside the count, not in it.
   await playByTapping(page, spec, ['a1-a2', 'a2-b2']);
-  await expect(page.getByTestId('puzzle-progress')).toHaveText('3 / 3');
+  await expect(page.getByTestId('puzzle-progress')).toHaveText('0 / 3');
+  await expect(page.getByTestId('puzzle-projected')).toHaveText('+3');
   await playByTapping(page, spec, ['mine']);
   await expect(page.getByTestId('puzzle-success')).toBeVisible({ timeout: 6000 });
   await expect(page.getByTestId('puzzle-success').locator('.learn-card-hinted')).toBeVisible();
@@ -229,13 +235,18 @@ test('the enemy replies through the real game: a survive goal is judged after it
   const spec = fixtureById('fx-survive')!;
   await page.goto('./?learn=fx-survive&fixture=1');
   await expect(page.getByTestId('puzzle-goal')).toContainText('Keep all your pieces safe');
-  // Standing still is already lost at Prepare: the Sjór can walk over and strike. Flagged before the turn can end.
+  // Standing still is already lost, but nothing says so yet: the turn may end, and the
+  // opponent's turn is the explanation. The card comes after the Sjór's strike.
   await playByTapping(page, spec, ['mine']);
+  await expect(page.getByRole('button', { name: /End turn/ })).toBeEnabled();
+  await expect(page.getByTestId('puzzle-failure')).toHaveCount(0);
+  await playByTapping(page, spec, ['end']);
+  await expect(page.locator('.turn-strip')).toContainText('Opponent');
   const failure = page.getByTestId('puzzle-failure');
-  await expect(failure).toBeVisible({ timeout: 6000 });
-  await expect(failure).toHaveAttribute('data-failure', 'stuck');
-  await expect(page.getByRole('button', { name: /End turn/ })).toBeDisabled();
-  await failure.getByRole('button', { name: 'Undo' }).click();
+  await expect(failure).toBeVisible({ timeout: 12000 });
+  await expect(failure).toHaveAttribute('data-failure', 'lost');
+  await expect(cell(page, 1, 1)).not.toHaveAttribute('aria-label', /white Hi/);
+  await failure.getByRole('button', { name: 'Retry' }).click();
   await expect(page.locator('.action-budget strong')).toHaveText('4 actions');
   // Step out of reach, end the turn, and watch the opponent's turn play out at the AI's cadence.
   await playByTapping(page, spec, spec.solution);
@@ -341,4 +352,161 @@ test('reduced motion still solves and celebrates', async ({ page }) => {
   await playByTapping(page, spec, spec.solution);
   await expect(page.getByTestId('puzzle-success')).toBeVisible({ timeout: 6000 });
   await expect(page.locator('.board-square.learn-flag.is-reached')).toHaveCount(1);
+});
+
+test('a Poṉ attacking from where it stands previews its cost, never NaN', async ({ page }) => {
+  await page.goto('./?learn=elements-2');
+  await expect(page.getByTestId('puzzle-goal')).toBeVisible();
+  // The Poṉ on c4 strikes the Sjór on d4 without moving.
+  await cell(page, 2, 3).click();
+  await cell(page, 3, 3).click();
+  const preview = page.locator('.action-preview');
+  await expect(preview.locator('.preview-heading')).toContainText('1 action · 3 left');
+  await expect(preview).not.toContainText('NaN');
+});
+
+test('Prepare shows the summon shop only once homes (and summoning) are taught', async ({ page }) => {
+  const bank = fixtureById('fx-bank')!;
+  await page.goto('./?learn=fx-bank&fixture=1');
+  await playByTapping(page, bank, ['a1-a2', 'a2-b2', 'mine']);
+  await expect(page.getByRole('button', { name: /End turn/ })).toBeEnabled();
+  await expect(page.getByRole('button', { name: /^Summon / })).toHaveCount(0);
+  // Summoning: walk the Hi past the flag (standing still could no longer win), then Prepare has the shop.
+  await page.goto('./?learn=summon-2');
+  const summon = PUZZLES.find(e => e.puzzle.id === 'summon-2')!.puzzle;
+  await playByTapping(page, summon, ['b1-d3', 'mine']);
+  await expect(page.getByRole('button', { name: 'Summon Hi · 3 crystals', exact: true })).toBeVisible();
+  await expect(page.getByTestId('puzzle-failure')).toHaveCount(0);
+});
+
+test('Show me plays every turn of the solution, with the enemy’s reply between them', async ({ page }) => {
+  await page.goto('./?learn=fx-two-turns&fixture=1');
+  await page.locator('.learn-controls').getByRole('button', { name: 'Hint' }).click();
+  await page.locator('.learn-controls').getByRole('button', { name: 'Show me' }).click();
+  await expect(page.locator('.turn-strip')).toContainText('Turn 2', { timeout: 10000 });
+  // The second turn is played too: the Muju reaches the flag on a6.
+  await expect(cell(page, 0, 5)).toHaveAttribute('aria-label', /white Muju/, { timeout: 10000 });
+  await expect(page.getByTestId('puzzle-demo-solved')).toBeVisible();
+  // Then it restarts for the player, with nothing recorded.
+  await expect(cell(page, 0, 0)).toHaveAttribute('aria-label', /white Muju/, { timeout: 8000 });
+  await expect(page.locator('.turn-strip')).toContainText('Turn 1');
+  await expect(page.locator('.learn-controls').getByRole('button', { name: 'Hint' })).toBeEnabled();
+  expect(await progress(page)).toBeNull();
+});
+
+/** Every visible label in the thumb bar is shown whole. */
+async function noTruncation(page: Page, what: string) {
+  const cut = await page.evaluate(() => [...document.querySelectorAll<HTMLElement>('.learn-thumb-bar button, .learn-thumb-bar strong, .learn-thumb-bar span')].filter(e => {
+    const style = getComputedStyle(e);
+    if (style.display === 'none' || style.visibility === 'hidden' || !e.offsetParent) return false;
+    if (style.position === 'absolute' && e.clientWidth <= 1) return false; // visually hidden, still read
+    return e.scrollWidth > e.clientWidth + 1;
+  }).map(e => `${e.textContent} ${e.scrollWidth}>${e.clientWidth}`));
+  expect(cut, what).toEqual([]);
+}
+
+for (const width of [375, 390, 414, 430]) {
+  test(`the thumb bar fits ${width} px wide in Act, with Show me armed, and in Prepare`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    const spec = PUZZLES.find(e => e.puzzle.id === 'summon-2')!.puzzle;
+    await page.goto('./?learn=summon-2');
+    await noTruncation(page, 'act');
+    await page.locator('.learn-controls').getByRole('button', { name: 'Hint' }).click();
+    const show = page.locator('.learn-controls').getByRole('button', { name: 'Show me' });
+    await expect(show).toBeVisible();
+    await expect(show).toContainText('Show me');
+    await noTruncation(page, 'armed');
+    for (const name of ['Retry', 'Show me']) {
+      const box = (await page.locator('.learn-controls').getByRole('button', { name }).boundingBox())!;
+      expect(box.height, name).toBeGreaterThanOrEqual(44);
+      expect(box.width, name).toBeGreaterThanOrEqual(44);
+    }
+    await playByTapping(page, spec, ['b1-d3', 'mine']);
+    await expect(page.getByRole('button', { name: /End turn/ })).toBeEnabled();
+    await noTruncation(page, 'prepare');
+  });
+}
+
+for (const [width, height] of [[390, 844], [375, 667], [844, 390], [1280, 800]] as const) {
+  test(`the result cards leave the board in view at ${width}×${height}`, async ({ page }) => {
+    await page.setViewportSize({ width, height });
+    const overlaps = (a: { x: number; y: number; width: number; height: number }, b: typeof a) =>
+      a.x < b.x + b.width - 1 && b.x < a.x + a.width - 1 && a.y < b.y + b.height - 1 && b.y < a.y + a.height - 1;
+    const onScreen = (box: { y: number; height: number }) => expect(box.y + box.height).toBeLessThanOrEqual(height + 1);
+    // Failure, with focus on Undo.
+    const capture = fixtureById('fx-capture')!;
+    await page.goto('./?learn=fx-capture&fixture=1');
+    const board = (await page.locator('.battle-board').boundingBox())!;
+    await playByTapping(page, capture, ['a1-c2', 'c2xc3']);
+    const failure = page.getByTestId('puzzle-failure');
+    await expect(failure).toBeVisible({ timeout: 6000 });
+    await expect(failure.getByRole('button', { name: 'Undo' })).toBeFocused();
+    await page.waitForTimeout(400);
+    const failed = (await failure.boundingBox())!;
+    expect(overlaps(failed, board), 'failure card').toBe(false);
+    onScreen(failed);
+    // On phones the docked card stands in for the thumb bar, which keeps its room unseen (nothing peeks out above the card).
+    if (width < 960) await expect(page.locator('.play-footer')).toBeHidden();
+    // Success in the arc's last puzzle: the tallest card, with the arc-complete block.
+    const two = fixtureById('fx-two-turns')!;
+    await page.goto('./?learn=fx-two-turns&fixture=1&probe=1');
+    const twoBoard = (await page.locator('.battle-board').boundingBox())!;
+    await playByTapping(page, two, two.solution);
+    await expect(page.locator('.turn-strip')).toContainText('Turn 2', { timeout: 10000 });
+    await expect(page.getByRole('button', { name: /Mine & prepare/ })).toBeEnabled({ timeout: 10000 });
+    await cell(page, 0, 4).click();
+    await cell(page, 0, 5).click();
+    const success = page.getByTestId('puzzle-success');
+    await expect(success).toBeVisible({ timeout: 6000 });
+    await expect(success.locator('.learn-card-arc')).toBeVisible();
+    await expect(success.getByRole('button', { name: /Next|All puzzles/ }).first()).toBeFocused();
+    await page.waitForTimeout(400);
+    const solvedBox = (await success.boundingBox())!;
+    expect(overlaps(solvedBox, twoBoard), 'success card').toBe(false);
+    onScreen(solvedBox);
+  });
+}
+
+test('on desktop the goal is a band above the board, and the idle panel is no box', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('./?learn=plant-6');
+  await expect(page.locator('.decision-panel')).toHaveClass(/is-quiet/);
+  const goal = (await page.getByTestId('puzzle-goal').boundingBox())!;
+  const board = (await page.locator('.battle-board').boundingBox())!;
+  expect(goal.y + goal.height).toBeLessThanOrEqual(board.y);
+  // Centered over the board's column, one or two lines.
+  expect(Math.abs((goal.x + goal.width / 2) - (board.x + board.width / 2))).toBeLessThan(4);
+  expect(goal.height).toBeLessThanOrEqual(64);
+  const lines = await page.locator('.learn-goal-text').evaluate(e => Math.round(e.getBoundingClientRect().height / parseFloat(getComputedStyle(e).lineHeight)));
+  expect(lines).toBeLessThanOrEqual(2);
+  // A mining puzzle keeps the income line; one without mining hides it.
+  await expect(page.getByTestId('projected-income')).toBeVisible();
+  await page.goto('./?learn=move-1');
+  await expect(page.getByTestId('puzzle-goal')).toBeVisible();
+  await expect(page.getByTestId('projected-income')).toBeHidden();
+});
+
+test('on a phone the idle panel is no box, and the board does not move when it fills', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('./?learn=move-6');
+  const panel = page.locator('.decision-panel');
+  await expect(panel).toHaveClass(/is-quiet/);
+  expect(await panel.evaluate(e => getComputedStyle(e).borderTopColor)).toBe('rgba(0, 0, 0, 0)');
+  const before = (await page.locator('.battle-board').boundingBox())!;
+  const panelBefore = (await panel.boundingBox())!;
+  await cell(page, 2, 1).click();
+  await expect(panel).not.toHaveClass(/is-quiet/);
+  expect(await page.locator('.battle-board').boundingBox()).toEqual(before);
+  expect(await panel.boundingBox()).toEqual(panelBefore);
+});
+
+test('map tiles wrap into balanced rows', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('./?learn=1');
+  for (const arc of ARCS) {
+    const tops = await page.getByTestId(`learn-arc-${arc.id}`).locator('.learn-tile').evaluateAll(tiles => tiles.map(t => Math.round(t.getBoundingClientRect().top)));
+    const rows = [...new Set(tops)].map(top => tops.filter(t => t === top).length);
+    expect(Math.max(...rows) - Math.min(...rows), `${arc.id}: ${rows.join(' + ')}`).toBeLessThanOrEqual(1);
+    expect(Math.max(...rows)).toBeLessThanOrEqual(7);
+  }
 });

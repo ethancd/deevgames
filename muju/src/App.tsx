@@ -1,5 +1,5 @@
 import { Explorer } from './explorer/Explorer';
-import { useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { GameScreen } from './components/GameScreen';
 import { ModeSelect } from './components/ModeSelect';
 import type { GameConfig } from './game/types';
@@ -14,13 +14,12 @@ import { Onboarding } from './onboarding/Onboarding';
 import { hasCompletedOnboarding, tutorialRequested } from './onboarding/storage';
 import { loadGameState } from './utils/persistence';
 import { EffectsGallery } from './effects/EffectsGallery';
-import { LearnScreen } from './learn/LearnScreen';
-import { PuzzleScreen } from './learn/PuzzleScreen';
-import { nextPuzzle, PUZZLES, puzzleById, type CatalogEntry } from './learn/catalog';
-import { FIXTURES } from './learn/fixtures';
+import { PUZZLE_IDS } from './learn/count';
 import { loadProgress, solvedCount } from './learn/progress';
 import { learnUrl, parseLearnRoute, type LearnRoute } from './learn/routing';
-import type { Arc } from './learn/types';
+
+/** Learn to Play (map, puzzles, solver, fixtures) is its own chunk, loaded when a Learn route opens. */
+const LearnRoot = lazy(() => import('./learn/LearnRoot'));
 
 type MenuScreen = 'tutorial' | 'menu' | 'welcome' | 'learn';
 /** First visit to the plain mode screen only: never over a deep link, a room, a saved game or a Learn link. */
@@ -29,21 +28,6 @@ function firstScreen(online: boolean, learn: LearnRoute | null): MenuScreen {
   if (online || !/^\/muju\/?$/.test(window.location.pathname)) return 'menu';
   if (tutorialRequested()) return 'tutorial';
   return hasCompletedOnboarding() || loadGameState() ? 'menu' : 'tutorial';
-}
-
-/** Test fixtures stand in for the catalog behind `?fixture=1`; they are never on the map. */
-const FIXTURE_ARC: Arc = { id: 'fixtures', title: 'Fixtures', part: 'basics', icon: 'review', puzzles: [...FIXTURES] };
-function resolvePuzzle(route: Extract<LearnRoute, { kind: 'puzzle' }>): { entry: CatalogEntry; next: LearnRoute | null } | null {
-  if (route.fixture) {
-    const index = FIXTURES.findIndex(f => f.id === route.id);
-    if (index < 0) return null;
-    const after = FIXTURES[index + 1];
-    return { entry: { puzzle: FIXTURES[index], arc: FIXTURE_ARC, index, number: index + 1 }, next: after ? { kind: 'puzzle', id: after.id, fixture: true } : null };
-  }
-  const entry = puzzleById(route.id);
-  if (!entry) return null;
-  const after = nextPuzzle(route.id);
-  return { entry, next: after ? { kind: 'puzzle', id: after.puzzle.id } : null };
 }
 
 function GameApp() {
@@ -107,18 +91,12 @@ function GameApp() {
     }} />;
   }
   if (!gameConfig && screen === 'learn' && learnRoute) {
-    const resolved = learnRoute.kind === 'puzzle' ? resolvePuzzle(learnRoute) : null;
-    if (learnRoute.kind === 'map' || !resolved) {
-      return <LearnScreen progress={progress} onProgressChange={setProgress} onBack={() => leaveLearn(null)}
-        onOpen={id => navigateLearn({ kind: 'puzzle', id })} />;
-    }
-    const { entry, next } = resolved;
-    return <PuzzleScreen key={entry.puzzle.id} spec={entry.puzzle} arc={entry.arc} index={entry.index} onProgressChange={setProgress}
-      onExit={() => leaveLearn({ kind: 'map' })}
-      onNext={next ? () => navigateLearn(next, true) : null} />;
+    return <Suspense fallback={<main className="learn-loading min-h-screen bg-gray-900" aria-busy="true" aria-label="Learn to Play" />}>
+      <LearnRoot route={learnRoute} progress={progress} onProgressChange={setProgress} onNavigate={navigateLearn} onLeave={leaveLearn} />
+    </Suspense>;
   }
   if (!gameConfig) {
-    return <ModeSelect welcome={screen === 'welcome'} onLearn={() => navigateLearn({ kind: 'map' })} learnSolved={solvedCount(progress, PUZZLES.map(e => e.puzzle.id))}
+    return <ModeSelect welcome={screen === 'welcome'} onLearn={() => navigateLearn({ kind: 'map' })} learnSolved={solvedCount(progress, PUZZLE_IDS)}
       onReplayTutorial={() => setScreen('tutorial')} onStartGame={handleStartGame} onOnline={() => {
       const url = new URL(window.location.href);
       url.searchParams.set('online', '1');

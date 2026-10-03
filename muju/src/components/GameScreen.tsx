@@ -38,7 +38,7 @@ import { canPromote } from '../game/promotion';
 import { getPurchasePositions, hasPendingSummon } from '../game/summoning';
 import { SummoningStatus } from './SummoningStatus';
 import { getSpawnInvalidReason } from '../game/spawning';
-import { findAttackApproach, getMovementRange, getAttackFrontier, type MovementRangePosition } from '../game/movement';
+import { findAttackApproach, getMovementRange, getAttackFrontier, movementActionCost, type MovementRangePosition } from '../game/movement';
 import { calculateAttackPower, calculateDefense } from '../game/combat';
 import { ownKoTargets, enemyKoThreats } from '../utils/koIndicators';
 import { PlayDialog } from './PlayDialog';
@@ -66,6 +66,10 @@ export interface PuzzleChrome {
   /** The board is inert while the enemy replies, during "Show me", and once the puzzle is decided. */
   locked?: boolean;
   hideHomes?: boolean;
+  /** Prepare without the summon shop (puzzles before summoning is taught). Promotion stays. */
+  hideShop?: boolean;
+  /** Whenever this changes to a new truthy value, every selection and preview is cleared (a hint has lit something else). */
+  clearSelection?: unknown;
   shellClassName?: string;
   onExit: () => void;
   onRestart: () => void;
@@ -884,6 +888,9 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
     setSelectedPurchaseId(null);
     setViewedEnemyUnitId(null);
   };
+  const clearSelection = puzzle?.clearSelection;
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- runs only when the puzzle asks
+  useEffect(() => { if (clearSelection) handleCloseUnitInfo(); }, [clearSelection]);
 
   // Get the current player's state for public bank display
   const currentPlayerState = state.players[state.turn.currentPlayer];
@@ -902,8 +909,9 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
   const isEnemyView = !!shownUnit && (observing || shownUnit.owner !== (online?.player ?? state.turn.currentPlayer));
   const showingReach = inspectOnly || isEnemyView || !!summonPreview;
   const previewTarget = preview ? getUnitAt(state.board, preview.position) : null;
+  // An attack from where the piece stands costs no movement, even for a piece with Speed 0 (0 / 0 is NaN).
   const previewMoveCost = preview && selectedUnitData
-    ? Math.ceil(preview.path.length / getUnitDefinition(selectedUnitData.definitionId).speed) : 0;
+    ? movementActionCost(preview.path.length, getUnitDefinition(selectedUnitData.definitionId).speed) : 0;
   const previewCost = previewMoveCost + 1;
   const previewPath = preview?.path ?? pendingMovePath;
   const previewLanding = preview?.path.at(-1);
@@ -915,6 +923,9 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
     else attackWith(state.selectedUnit, preview.position);
     setPreview(null);
   }
+  /** A puzzle with nothing selected keeps the panel's room (so the board never jumps) but draws no box. */
+  const puzzleIdle = !!puzzle && !playback && !preview && !shownUnit && !selectedPurchaseDefinitionId
+    && !(state.turn.phase === 'place' && interactive && !puzzle.hideShop);
   const lastSquare = boardSize(state.board) - 1;
   const whiteHome = 'A1', blackHome = squareName({ x: lastSquare, y: lastSquare });
   const homeNotice = state.victoryRule === 'elimination' ? '' : getHomeOccupier(state.board, state.turn.currentPlayer === 'white' ? 'black' : 'white')
@@ -1003,10 +1014,10 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
           <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || (showingReach && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack · ☠ eliminates · ⚠ danger')}</span>
           <button disabled={showReplay} className="visual-key-trigger" onClick={() => setShowVisualKey(true)}>Key</button>
         </div>
-        <section className="decision-panel" aria-label="Current choice">
+        <section className={`decision-panel${puzzleIdle ? ' is-quiet' : ''}`} aria-label="Current choice">
           {analysis && state.upkeepPending && !analysis.reviewing ? <UpkeepPanel key={`${state.turn.turnNumber}-${state.turn.currentPlayer}`} state={state} onConfirm={payUpkeep} inline /> : playback ? <TurnReplay replay={playback.replay} step={playback.step} paused={playback.paused} mode={replayMode} playerName={playerNames[playback.replay.player]} onClose={closeReplay} onToggle={toggleReplay} onStep={stepReplay} />
           : online?.playingIncoming && !shownUnit ? <div className="selection-hint"><strong>Opponent’s move</strong><p role="status">{online.incomingFrame?.label}</p><small>{replayMode === 'fast' ? 'Fast · 0.3s' : 'Slow · 1s'} per action</small></div>
-          : state.turn.phase === 'place' && interactive && !shownUnit ? <UnitShop phasing={phasing} micro={micro} resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
+          : state.turn.phase === 'place' && interactive && !shownUnit && !puzzle?.hideShop ? <UnitShop phasing={phasing} micro={micro} resources={currentPlayerState.resources} player={state.turn.currentPlayer} board={state.board}
             selectedId={selectedPurchaseId} onSelectId={id => { setSelectedPurchaseId(id); setSelectedPlaceUnitId(null); setViewedEnemyUnitId(null); }} />
           : preview && selectedUnitData ? <div className="action-preview">
               <div className="preview-heading"><strong>Attack → {String.fromCharCode(65 + preview.position.x)}{preview.position.y + 1}</strong><span>{previewCost} action{previewCost !== 1 ? 's' : ''} · {state.turn.actionsRemaining - previewCost} left</span></div>

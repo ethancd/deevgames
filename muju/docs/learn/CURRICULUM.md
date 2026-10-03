@@ -61,7 +61,7 @@ The full reports are in `research/`. This section is the short version.
 
 ## The course
 
-The counts are targets for the arc authors; the catalog is the truth.
+The counts are the shipped catalog (164 puzzles); `src/learn/catalog/` is the truth.
 
 | Part | Arc | Puzzles | What it teaches |
 |---|---|---|---|
@@ -107,9 +107,11 @@ The counts are targets for the arc authors; the catalog is the truth.
 
 - **White plays, moving down from the top-left,** exactly as in the real game.
   A puzzle sets `side: 'black'` only when playing Black is the point.
-- **Homes are hidden and home rules off** unless the arc is about summoning or
-  homes. A summon's rectangle starts at your home, so economy and winning arcs
-  show both homes.
+- **Homes are hidden and home rules off** unless the puzzle needs them. A
+  summon's rectangle starts at your home, so the economy arcs, Invasion,
+  Defense and most of the review show both homes. Elimination keeps them hidden,
+  so a stray walk into the enemy home cannot win by the wrong route. Without
+  homes there is no shop: purchases first appear in Summoning.
 - **No kill clock, no handicap,** with four actions in every turn. A puzzle may
   start with fewer actions left (mid-turn), and may start in Prepare.
 - **Goal lines follow one grammar:** verb, count, object, horizon. The text

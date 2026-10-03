@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { MusicButton } from '../music/MusicPlayer';
 import { ArcIcon } from './ArcIcon';
 import { ARCS, PARTS, PUZZLES, PUZZLE_COUNT } from './catalog';
@@ -11,6 +11,15 @@ interface LearnScreenProps {
   onBack: () => void;
   onProgressChange: (progress: LearnProgress) => void;
 }
+
+/**
+ * Columns for `count` tiles in rows of at most `max`, balanced so no row is
+ * left with an orphan: 9 → 5 + 4, 10 → 5 + 5, 14 → 7 + 7, 8 → 4 + 4, 6 → 6.
+ */
+export const balancedColumns = (count: number, max = 7): number => count <= 0 ? 1 : Math.ceil(count / Math.ceil(count / max));
+
+/** The arc's column counts for rows of at most 7, 6 and 5 tiles; the stylesheet picks the widest that fits. */
+const tileColumns = (count: number) => ({ '--cols-7': balancedColumns(count, 7), '--cols-6': balancedColumns(count, 6), '--cols-5': balancedColumns(count, 5) }) as CSSProperties;
 
 /**
  * The course map: every part, every arc, every puzzle as a numbered tile.
@@ -49,7 +58,7 @@ export function LearnScreen({ progress, onOpen, onBack, onProgressChange }: Lear
                   <h3 className="learn-arc-title">{arc.title}</h3>
                   <span className="learn-arc-count">{done} / {arc.puzzles.length}</span>
                 </div>
-                <ol className="learn-tiles" aria-label={`${arc.title} puzzles`}>
+                <ol className="learn-tiles" aria-label={`${arc.title} puzzles`} style={tileColumns(arc.puzzles.length)}>
                   {arc.puzzles.map((puzzle, i) => {
                     const isSolved = !!progress.solved[puzzle.id];
                     const isNext = puzzle.id === next && !isSolved;

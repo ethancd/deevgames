@@ -17,7 +17,7 @@ interface ActionBarProps {
 export const actionCount = (n: number) => `${n} ${n === 1 ? 'action' : 'actions'}`;
 
 export function ActionBar({ phasing = false, actionsRemaining, actionsPerTurn = DEFAULT_ACTIONS_PER_TURN, phase, onEndPlacePhase, onEndActionPhase, isPlayerTurn, onUndo, canUndo = false, readOnly = false }: ActionBarProps) {
-  return <div className="action-bar">
+  return <div className="action-bar" data-phase={phase}>
     <div className="action-budget" aria-label={`${actionCount(actionsRemaining)} remaining`}>
       <strong>{phase === 'action' ? actionCount(actionsRemaining) : phasing ? 'Summon & promote' : 'Buy & promote'}</strong>
       <span aria-hidden="true" data-active={phase === 'action'}>{Array.from({ length: actionsPerTurn }, (_, i) => <i key={i} className={i < actionsRemaining ? 'available' : ''} />)}</span>
