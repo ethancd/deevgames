@@ -44,16 +44,16 @@ const MUJU: Scenario = {
   narration: { piece: 'Tap the Muju in the top-left corner.', target: 'Tap the crystals in the far corner to move there.', done: 'The Muju mined three crystals.' },
 };
 
-/** The only crystals in the tutorial are the Muju's square: 8, then 8 − 3 = 5 once it has mined.
+/** The only crystals in the tutorial are the 8 on the Muju's square in puzzle 1;
+ * what it leaves behind fades with the 3×3, and the larger boards start empty.
  * Three pieces in all: the Muju walks, the black Honō eats it, the Irumbu invades. */
-const MINED_CORNER = [{ x: 2, y: 2, crystals: 5 }];
 const HONO: Scenario = {
   id: 'hono', size: 6, hideHomeMarkers: true, active: 'hono',
   pieces: [
     { id: 'muju', owner: 'white', type: 'plant_1', x: 2, y: 2 },
     { id: 'hono', owner: 'black', type: 'fire_2', x: 5, y: 5 },
   ],
-  reserves: MINED_CORNER,
+  reserves: [],
   goal: { kind: 'kill', target: 'muju' },
   reveal: { word: 'Honō', title: 'Hono', type: 'fire_2' },
   narration: { piece: 'Now you play Black. Tap the black Honō.', target: 'Tap the white Muju to attack it.', done: 'Fire burns plant. The Muju is eliminated.' },
@@ -66,7 +66,7 @@ const IRUMBU: Scenario = {
     { id: 'hono', owner: 'black', type: 'fire_2', x: 2, y: 3, inert: true },
     { id: 'irumbu', owner: 'white', type: 'metal_3', x: 9, y: 1 },
   ],
-  reserves: MINED_CORNER,
+  reserves: [],
   // The invader must survive its own upkeep (tier 3: 2 crystals) before `#` is
   // awarded; with no crystals left to mine, White starts with exactly that.
   banks: { white: 2 },

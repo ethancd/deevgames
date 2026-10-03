@@ -46,10 +46,10 @@ test('a first visit plays three puzzles with no words but the piece names, then 
   await cell(page, 2, 2).click();
   await expect(page.getByTestId('tutorial-word')).toHaveText('Muju', { timeout: 5000 });
   await expect(page.getByTestId('tutorial-word')).toHaveCount(0, { timeout: 5000 });
-  // Zoomed out: the Muju is where it finished, on the mined corner (8 − 3), and Black moves next.
+  // Zoomed out: the Muju is where it finished, the crystals are gone, and Black moves next.
   await expect(page.locator('[data-testid^="cell-"]')).toHaveCount(36);
   await expect(cell(page, 2, 2)).toHaveAttribute('aria-label', /white Muju/);
-  await expect(cell(page, 2, 2)).toHaveAttribute('aria-label', /5 crystals/);
+  await expect(page.locator('.puzzle-hono [data-testid^="cell-"][aria-label*=" 0 crystals"]')).toHaveCount(36);
   await expect(cell(page, 5, 5)).toHaveAttribute('aria-label', /black Honō/);
   // Homes appear only on the full board.
   await expect(page.locator('.puzzle-hono .home-marker')).toHaveCount(0);

@@ -30,8 +30,9 @@ blows play lower. Everything follows the existing `muju:sfx:v1` toggle and level
   states with four actions, `inactivityRule: 'off'` and Black's bank at 0. Moves are
   played only through `applyAction`. Positions are never persisted, and
   `useGameState` is never used.
-- The only crystals in the tutorial are the Muju's square: 8 on the 3×3, then the
-  5 it leaves behind on every later board.
+- The only crystals in the tutorial are the 8 on the Muju's square in puzzle 1. The
+  5 it leaves behind fade away with the 3×3 during the zoom; the 6×6 and 10×10 are
+  empty. Mining and map layouts are left for later lessons.
 - Puzzle 1, Muju: 3×3, home markers hidden. A1 to C3 costs four actions, then the
   real mining rule takes 3 of the 8 crystals.
 - Puzzle 2, Honō: 6×6, and the player plays **Black**. The black Honō on F6

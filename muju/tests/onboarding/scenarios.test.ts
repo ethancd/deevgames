@@ -79,11 +79,12 @@ describe('onboarding scenarios', () => {
     expect(checkmate).toBe(true);
   });
 
-  it('carries pieces and reserves into the larger boards exactly where they finished', () => {
+  it('carries pieces into the larger boards exactly where they finished, but not crystals', () => {
     const one = playScenario(muju).final, two = playScenario(hono).frames.at(-1)!;
     const twoStart = buildScenarioState(hono), threeStart = buildScenarioState(irumbu);
-    for (let y = 0; y < 3; y++) for (let x = 0; x < 3; x++) expect(twoStart.board.cells[y][x].resourceLayers).toBe(one.board.cells[y][x].resourceLayers);
-    for (let y = 0; y < 6; y++) for (let x = 0; x < 6; x++) expect(threeStart.board.cells[y][x].resourceLayers).toBe(two.board.cells[y][x].resourceLayers);
+    // Crystals belong to puzzle 1 only: the larger boards are empty.
+    expect(one.board.cells[2][2].resourceLayers).toBeGreaterThan(0);
+    for (const start of [twoStart, threeStart]) expect(start.board.cells.flat().every(c => c.resourceLayers === 0)).toBe(true);
     const at = (state: typeof one, id: string) => getUnitById(state.board, id)?.position;
     const mujuId = activeUnitId(muju), honoId = activeUnitId(hono);
     expect(at(twoStart, mujuId)).toEqual(at(one, mujuId));
