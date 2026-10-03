@@ -70,6 +70,171 @@ behind it.
   at once. `node --import tsx tools/learn-check.ts --live` measures this.
   Either make the positions smaller or speed up the search.
 
+### Puzzle revisions queued for the next session
+
+- **move-7: "Reach the flag", not "Get the Hi to the flag"** (owner, 2026-10-03).
+  Today the flag (a1) is four squares from the row Muju (e1), so the goal must
+  name the Hi, or the Muju would simply walk there. Move the flag so it is
+  five squares from that Muju, out of its reach at Speed 1 with four actions,
+  and drop `piece` from the goal. The player then discovers by themselves that
+  the boxed-in Hi is the only piece that can make it, and that the Muju must
+  first step out of its way. Keep the lesson (friends block too; making way
+  costs one of the team's actions) and the tries (the Muju stepping along the
+  row; the other Muju moving; the Muju walking toward the flag). Re-prove with
+  `node --import tsx tools/learn-check.ts move --board --puzzle move-7`; the
+  only winning line should still be step aside, then run.
+
+- **move-9: make "End turn" unmissable** (owner, 2026-10-03). move-9 is the first
+  puzzle where the player must press End turn. Every earlier Moving puzzle ends
+  the moment the flag is reached. Once the Hi stands on the enemy home, the End
+  turn button should glow strongly, unprompted: a warm pulsing halo, brighter
+  than the hint pulse, perhaps with a gentle motion toward it. It should not
+  wait for a hint. Generalize it as a per-puzzle `spotlight` field naming a
+  control to light the first time it is needed, when the solver's next winning
+  action uses it:
+  - End turn in move-9;
+  - Mine & prepare in the first economy puzzle that shows it;
+  - the shop in summon-1;
+  - the Promote button in promote-1;
+  - the keep panel in the first upkeep choice.
+
+  Keep it wordless, and respect reduced motion.
+
+- **mine-3 and mine-6: no fail grade before End turn** (owner, 2026-10-03).
+  - **mine-3.** Today, walking the Muju onto the 1 or the 2 shows the failure card
+    at once, because the live "can I still win?" check flags it. Instead, let the
+    player press End turn and watch the real consequence: the Muju mines 1 or 2
+    (the collect effect, and the goal counter reading "1 / 3" or "2 / 3"). Only
+    then show the failure card, after the collect animation finishes. That is
+    the min(Mining, reserve) lesson told by the board.
+  - **mine-6** (match buckets to squares). The nearest-square assignment (the Muju
+    on the 2, the Sjór on the 4) is flagged the same way. After End turn it
+    should visibly mine 2 + 2 = 4, with crystals flying off both squares and the
+    counter stopping at "4 / 5". Then the card appears, so the player sees that
+    the Muju's bigger bucket was wasted on the small square.
+  - Do this for every mining goal, and consider making End turn the commit point
+    for all one-turn puzzles: the early check becomes a soft cue, such as Undo
+    gently pulsing, rather than a verdict, so the end-of-turn consequence is
+    always what explains the failure.
+  - Keep Undo available on the card after the turn's mining, as it is today.
+
+- **Celebrate what the goal measured, not every piece** (owner, 2026-10-03).
+  Today a solved puzzle sparkles every piece you own plus the flags
+  (`sparkle` in `src/learn/PuzzleScreen.tsx`), so on mine-5 the Radi, which mined
+  0, gets a win ring. "Only pieces that moved" is no better: the Radi moved, a
+  Poṉ that captures in place never moves, and nothing moves in mine-1. Instead,
+  attribute the celebration to whatever the goal measured:
+
+  | Goal | What sparkles |
+  |---|---|
+  | mine | pieces whose take this turn is above 0 (the same set the collect effect uses) |
+  | capture, eliminate | pieces that landed a blow |
+  | reach | pieces on the flags |
+  | home | the invader |
+  | summon | the new commitment's square |
+  | promote | the promoted piece |
+  | keep, survive | the protected pieces |
+  | deny | the denied landing squares |
+
+  Pieces that only made way (a Mining-0 Radi stepping aside) do not sparkle. Use
+  the same rule for "Show me".
+
+  **Timing: cause, beat, reward** (owner, 2026-10-03). Today the sparkles fire
+  on the same frame as the solve, on top of the effect that caused it:
+  - kill shatters last 380–900 ms (`ELEMENT_LOOK.life`), scaled up to ×1.6 on a
+    vulnerable hit;
+  - the crystal collect sounds run 160 ms apart for up to six crystals (about
+    1.1 s);
+  - the success card follows a fixed 700 ms (`SUCCESS_CARD_DELAY_MS`).
+
+  Instead, sequence it:
+  1. The final mining or attack effect plays out completely.
+  2. A beat of about 250 ms.
+  3. The win rings and the "reveal" sound.
+  4. About 600 ms later, the card.
+
+  Give the effects handle (`useBoardEffects`) a `whenSettled()` promise (or a
+  `settledAt` time) computed from the lifetimes of the effects it has emitted.
+  The celebration then waits on it rather than on guessed delays, and the home
+  win's confetti follows the same rule after the defender's turn.
+
+- **Stat badges on the selected piece** (owner idea, 2026-10-03). Show ATK, DEF,
+  SPD and MINE as color-coded chips around the selected piece (red, blue, yellow,
+  green). Five prototypes were drawn on the real board, with screenshots and a
+  verdict for each, in [`design/stat-badges/`](design/stat-badges/README.md).
+  The recommendation is V1 (solid chips on the token's corners, legible even on
+  lit crystal squares) plus V5 (during an attack preview, the ATK chip shows
+  "1+1" against that target, and the target shows its current DEF, glowing on a
+  kill). Applies to the whole game, not only Learn to Play.
+
+- **Never start a puzzle mid-turn: cut or rework the eight that do** (owner
+  decision, 2026-10-03, from teamwork-3 on a phone). A mid-turn start asserts a
+  past nobody saw, and it confuses. teamwork-3's Hi is "already" spent and
+  drawn in the muddy half-saturated resting style, the Sjór is "already"
+  wounded, and only 2 actions remain. Every puzzle starts either at a fresh turn
+  start (4 actions, no spent pieces, no damage on the board) or at the start of
+  Prepare, which is allowed (owner, 2026-10-03): it is a clean phase start with
+  nothing half-done, as in promote-1 and upkeep-6. To rework:
+
+  | Puzzle | Starts mid-turn because |
+  |---|---|
+  | teamwork-3 | 2 actions, a spent Hi, a wounded Sjór |
+  | plant-5 | 2 actions, a wounded Kagari |
+    | upkeep-1, upkeep-2, upkeep-5, upkeep-7 | 3 actions, a spent piece (used to stop it walking to crystals or scenery) |
+    | eliminate-5 | 3 actions |
+  | defend-4 | 2 actions, a spent piece, a wounded Loş |
+
+  Rework each one so its idea arises inside a full fresh turn. For example, the
+  player deals the chip damage themselves, and geometry, not a frozen piece,
+  keeps a piece away from the crystals. Cut any puzzle whose idea needs the
+  mid-turn premise; the arcs have room. Then enforce the rule in
+  `src/learn/verify.ts`: reject `actions` below 4, the `~` marker and `!n` damage
+  (`prepare: true` stays). Retire those options from AUTHORING.md, keeping `!n`
+  and `~` in the notation only for the solver's own printouts.
+
+### Decisions to make
+
+- **Should a puzzle end your turn automatically when you spend your fourth
+  action?** (raised by the owner, 2026-10-03)
+
+  **For:**
+  - With 0 actions left, nothing else can happen in Act, so the press is a
+    formality.
+  - It removes the "what do I do now?" moment of move-9, the first puzzle that
+    needs End turn.
+  - Correct lines pay off at once (crystals fly, the defender replies), so the
+    flow is faster on phones.
+
+  **Against:**
+  - It teaches a habit the real game does not have. SPEC §2 says spending every
+    action does not end the turn, and Prepare (summon, promote) follows. A
+    player who learns "the turn ends itself" will stall in real games.
+  - It removes the commit point. The mine-3 and mine-6 revisions make End turn
+    the moment the puzzle is judged, so the player can look, reconsider and Undo
+    the fourth action first. Auto-ending turns the last tap into an irreversible
+    hand-over (only the turn-start rewind remains).
+  - It is inconsistent:
+    - puzzles that start with fewer than four actions, or are won with fewer,
+      still need the button;
+    - from Summoning on, Prepare often has choices, so the rule would have to
+      become "auto Mine & prepare" there;
+    - in two-turn and reply puzzles, the enemy would start moving the instant
+      you tap, which feels like a misclick.
+  - Accidental taps become costly.
+
+  **Middle grounds:**
+  - **(a) Glow, don't press.** At 0 actions, the End turn button lights with the
+    spotlight from the move-9 item: strongly in the first arcs, subtly later.
+  - **(b) Auto-end only when ending wins.** This feels great, but it gives away
+    correctness: if the turn did not end, you must be wrong.
+  - **(c) A player setting**, which is overkill for now.
+
+  **Recommendation: (a).** Keep End turn as the press that commits, in line with
+  the real game and the mine-3 decision. At 0 actions, make it the brightest
+  thing on the screen, glowing strongly in Moving and Mining and more softly
+  afterwards, with Enter as the keyboard equivalent. Revisit (b) only if
+  playtests show people stuck at 0 actions even with the glow.
+
 ### Also noted by the reviewers
 
 - **exam-6 is the heaviest puzzle.** About 1.4M proof nodes, far over the live
@@ -105,6 +270,32 @@ behind it.
 - **Proof tooling:** multi-turn puzzles report no "wins W/T" count, so a second
   solution there (mine-8 had one through the shop, now closed) is only found
   by hand. Count winning first turns for multi-turn puzzles too.
+- **Smaller known issues from the code review and playtest (2026-10-03):**
+  - **Stale hint fallback.** When the solver finds no line (a lost position, or
+    over the 100k budget), the hint lights the first piece of the *authored*
+    line from the start, which may have moved or been captured. Show nothing, or
+    offer Retry, instead.
+  - **Test hooks ship to players:** `?fixture=1` (the 14 fixtures) and `?probe=1`
+    (`window.__mujuLearn`). Both are harmless but should be dev-only, or gated
+    by a build flag.
+  - **The Back button during a local game.** Back is ignored while a vs-AI game is
+    open, so the URL can change to `?learn=1` underneath it, and a reload then
+    opens Learn. From the online lobby, Back into a `?learn=` entry changes the URL
+    but leaves the lobby on screen.
+  - **`useGameState({ persist: false })` without `initialState`** still reads the
+    saved match, contrary to its comment. No caller does this today; make it
+    start fresh or throw.
+  - **A reply goal combined with an immediate goal** (for example reach +
+    survive) can turn to failed during the opponent's turn, cutting the reply
+    short. No catalog puzzle does this yet.
+  - **Two live regions** (the status line and the puzzle narration) may both
+    announce "Opponent's turn".
+  - **The red capture ring next to the game's own red attack ring.** When a piece
+    is selected, they look alike (defend-1, promote-4). The gold enemy-home glow
+    also resembles the selection outline. Differentiate the goal marks.
+  - **Memory:** the heaviest hint searches grow the heap by about 140–220 MB
+    (exam-6, review-13, promote-4), which risks phones. Only one search runs at a
+    time now; consider smaller budgets on mobile.
 
 ## Learn to Play, the advanced course: about 200 more puzzles (added 2026-10-03)
 

@@ -177,9 +177,10 @@ wording change:
 | academy-lessons, academy-audio, academy-video, academy-package, academy-deploy | Verified unchanged. No rule, stat or taught fact changed, and the lessons show no mode screen. |
 | advantage-explorer | Changed: a wording-only transition in two hashed files (the `rules` text in `server/observation.ts` and the replay caption in `src/game/replay.ts`), with no engine or rules change. The owner approved the audit, recorded in [`2026-10-03-explorer-wording-audit.md`](2026-10-03-explorer-wording-audit.md) and `server/explorer/compatibility.ts`. Saved experiments continue. |
 | game-validation | See Verification. |
-| static-package, static-deploy | Not yet released from this branch. |
-| server-package, server-deploy | Not yet released. The server's behavior is unchanged, but agents see the new MCP text only after the Node host is redeployed. |
-| release-verification | Pending release. |
+| static-package | Built and checked: GitHub run 37132988112 on merge `5790adc2` passed the build, the rules, multiplayer and MCP checks, and the browser and phone/tablet gameplay smoke. |
+| static-deploy | Not published. The workflow skips publishing without a Cloudflare credential, and Pages releases are a manual local Wrangler step. The Pages hub links Muju to the Render host (live, below). Only the bundled mirror at `deevgames.pages.dev/muju/` still serves the previous build (`index-BgBPKubz.js`). |
+| server-package, server-deploy | Changed and live. Render service `srv-dahbp4ht0dsc73fdqn10` auto-deployed merge `5790adc2`. Evidence is in the Release section. |
+| release-verification | Done; see the Release section. |
 
 ## Verification
 
@@ -208,3 +209,25 @@ wording change:
   Its findings were fixed, except these, which are left for later: board shift
   when the income and replay rows appear, wordy shop text, the keep panel at
   844×390, and no markers for enemy moves.
+
+## Release (2026-10-03)
+
+- **Merge:** PR #52 was merged as `5790adc2`. Its tree is identical to `e3e97bbb`.
+- **Node/MCP host (Render):** the service auto-deployed master. It briefly
+  returned a 502 while swapping instances, then served the new build.
+  - `/api/muju/health` returns ok.
+  - `muju_rules` serves the new victory text ("occupy the enemy home until your
+    next own turn starts").
+  - `/SKILL.md` is byte-identical to the repository.
+  - `tools/list` returns all 16 tools.
+  - `https://deevgames-muju.onrender.com/muju/` and
+    `https://deevgames.ashkie.com/muju/` (Render behind Cloudflare) both serve
+    `index-ba0RO8Es.js`. That bundle contains the Stopping summons arc
+    (`deny-10`) and "Start summoning". Its lazy chunk `LearnRoot-Dkm9VTi6.js`
+    contains "Successfully summon", "from landing" and "Start occupying the
+    enemy home".
+  - A disposable room (`d45aff35…`, "release smoke 2026-10-03") was created,
+    joined, and accepted White's Mine & prepare (revision 2, both seats ready).
+- **Static site (Cloudflare Pages):** see static-deploy above. GitHub run
+  37132988112 passed every check. Publishing awaits the manual Wrangler step.
+

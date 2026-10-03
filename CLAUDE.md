@@ -9,6 +9,13 @@ kind), then review every affected node through verification and applicable
 deployment. Record changed, verified unchanged, or blocked with evidence.
 The browser site, Node/MCP host and Academy have separate release paths.
 
+## Learn to Play (puzzle course) — start here
+
+Read [the Learn to Play handoff](muju/docs/learn/HANDOFF.md) before touching
+`muju/src/learn` or the puzzle catalog: state, owner decisions already made for
+the next batch, commands, and the proof rules. The course design is
+`muju/docs/learn/CURRICULUM.md`; the authoring craft is `muju/docs/learn/AUTHORING.md`.
+
 ## Hard AI under Phasing — current work (start here)
 
 Read [the 2026-09-20 repair handoff](muju/docs/hard-ai/phasing/repair-2026-09-20/HANDOFF.md) before
