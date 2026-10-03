@@ -175,7 +175,7 @@ wording change:
 | mcp-tools | Changed, wording only: `muju_rules` `victory` and `checkmate` (full game and MICRO MUJU), the `muju_play` description and three `checkmate` analysis reasons. No tool, schema, field or behavior changed. Verified by both type checks and the server tests in the vitest run below. |
 | agent-guides | Changed: `public/skills/muju-hono-irumbu/SKILL.md` (three phrases) and one row of `docs/MCP_TOOL_TAPS.md`. The retired `muju-hono-tanka` copy keeps its old text. Not yet compared against a live host. |
 | academy-lessons, academy-audio, academy-video, academy-package, academy-deploy | Verified unchanged. No rule, stat or taught fact changed, and the lessons show no mode screen. |
-| advantage-explorer | Affected by the wording change, not yet resolved. No engine or rule changed, but explorer prompts include the `rules` text in `server/observation.ts`, and the explorer source hash also covers `src/game/replay.ts` (the replay caption). Both edits change that hash, so `tests/server/explorer-provenance.test.ts` fails, and existing experiments would become review-only after a server release. Either audit the transition in `server/explorer/compatibility.ts` or keep the old text in those two files. Owner decision pending. |
+| advantage-explorer | Changed: a wording-only transition in two hashed files (the `rules` text in `server/observation.ts` and the replay caption in `src/game/replay.ts`), with no engine or rules change. The owner approved the audit, recorded in [`2026-10-03-explorer-wording-audit.md`](2026-10-03-explorer-wording-audit.md) and `server/explorer/compatibility.ts`. Saved experiments continue. |
 | game-validation | See Verification. |
 | static-package, static-deploy | Not yet released from this branch. |
 | server-package, server-deploy | Not yet released. The server's behavior is unchanged, but agents see the new MCP text only after the Node host is redeployed. |
@@ -188,7 +188,7 @@ wording change:
   position after one or two actions within the live budget. In safety-6,
   review-13 and exam-5, some positions are over budget; there the refutation is
   shown at the hand-over instead of at once.
-- `npx vitest run` (the whole repository): 3723 tests passed, 17 skipped, 3 failed. The three failures are `tests/server/explorer-provenance.test.ts`, which waits on the advantage-explorer decision below.
+- `npx vitest run` (the whole repository): everything passes, including `tests/server/explorer-provenance.test.ts` after the audited transition.
 - `npx tsc --noEmit` is clean. `npx vite build` puts Learn in its own lazy chunk
   (38.7 kB JS, 15.7 kB CSS). Main JS went from 587.5 to 552.8 kB.
 - Playwright against the dev server: `e2e/learn-catalog.spec.ts` (all 174
@@ -196,9 +196,8 @@ wording change:
   `e2e/learn.spec.ts` and `e2e/onboarding.spec.ts`: everything passes except
   the onboarding "gold dot" test, which fails at the same rate on the unmodified
   base commit.
-- The wording change: both `tsc` checks are clean. In the whole vitest run,
-  the only failure it causes is `tests/server/explorer-provenance.test.ts`
-  (see advantage-explorer above). Playwright against the dev server
+- The wording change: both `tsc` checks are clean. The explorer provenance tests
+  pass after the audited transition (see advantage-explorer above). Playwright against the dev server
   (learn, learn-catalog, onboarding, mobile, phasing, sounds, upkeep-undo,
   home-checkmate) passed every case that runs without the room API, except
   the onboarding "gold dot" test noted above. The room cases (phone-playback,
