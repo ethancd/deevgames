@@ -84,6 +84,22 @@ behind it.
   `node --import tsx tools/learn-check.ts move --board --puzzle move-7`; the
   only winning line should still be step aside, then run.
 
+- **move-9: make "End turn" unmissable** (owner, 2026-10-03). move-9 is the first
+  puzzle where the player must press End turn. Every earlier Moving puzzle ends
+  the moment the flag is reached. Once the Hi stands on the enemy home, the End
+  turn button should glow strongly, unprompted: a warm pulsing halo, brighter
+  than the hint pulse, perhaps with a gentle motion toward it. It should not
+  wait for a hint. Generalize it as a per-puzzle `spotlight` field naming a
+  control to light the first time it is needed, when the solver's next winning
+  action uses it:
+  - End turn in move-9;
+  - Mine & prepare in the first economy puzzle that shows it;
+  - the shop in summon-1;
+  - the Promote button in promote-1;
+  - the keep panel in the first upkeep choice.
+
+  Keep it wordless, and respect reduced motion.
+
 ### Also noted by the reviewers
 
 - **exam-6 is the heaviest puzzle.** About 1.4M proof nodes, far over the live
