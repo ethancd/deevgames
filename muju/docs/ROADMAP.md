@@ -139,6 +139,25 @@ behind it.
   Pieces that only made way (a Mining-0 Radi stepping aside) do not sparkle. Use
   the same rule for "Show me".
 
+  **Timing: cause, beat, reward** (owner, 2026-10-03). Today the sparkles fire
+  on the same frame as the solve, on top of the effect that caused it:
+  - kill shatters last 380–900 ms (`ELEMENT_LOOK.life`), scaled up to ×1.6 on a
+    vulnerable hit;
+  - the crystal collect sounds run 160 ms apart for up to six crystals (about
+    1.1 s);
+  - the success card follows a fixed 700 ms (`SUCCESS_CARD_DELAY_MS`).
+
+  Instead, sequence it:
+  1. The final mining or attack effect plays out completely.
+  2. A beat of about 250 ms.
+  3. The win rings and the "reveal" sound.
+  4. About 600 ms later, the card.
+
+  Give the effects handle (`useBoardEffects`) a `whenSettled()` promise (or a
+  `settledAt` time) computed from the lifetimes of the effects it has emitted.
+  The celebration then waits on it rather than on guessed delays, and the home
+  win's confetti follows the same rule after the defender's turn.
+
 - **Stat badges on the selected piece** (owner idea, 2026-10-03). Show ATK, DEF,
   SPD and MINE as color-coded chips around the selected piece (red, blue, yellow,
   green). Five prototypes were drawn on the real board, with screenshots and a
