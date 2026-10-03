@@ -167,32 +167,30 @@ behind it.
   "1+1" against that target, and the target shows its current DEF, glowing on a
   kill). Applies to the whole game, not only Learn to Play.
 
-- **Never start a puzzle mid-turn: cut or rework the ten that do** (owner
+- **Never start a puzzle mid-turn: cut or rework the eight that do** (owner
   decision, 2026-10-03, from teamwork-3 on a phone). A mid-turn start asserts a
   past nobody saw, and it confuses. teamwork-3's Hi is "already" spent and
   drawn in the muddy half-saturated resting style, the Sjór is "already"
-  wounded, and only 2 actions remain. Every puzzle starts at a fresh turn
-  start: 4 actions, no spent pieces, no damage on the board, and not in Prepare.
-  To rework:
+  wounded, and only 2 actions remain. Every puzzle starts either at a fresh turn
+  start (4 actions, no spent pieces, no damage on the board) or at the start of
+  Prepare, which is allowed (owner, 2026-10-03): it is a clean phase start with
+  nothing half-done, as in promote-1 and upkeep-6. To rework:
 
   | Puzzle | Starts mid-turn because |
   |---|---|
   | teamwork-3 | 2 actions, a spent Hi, a wounded Sjór |
   | plant-5 | 2 actions, a wounded Kagari |
-  | promote-1 | starts in Prepare |
-  | upkeep-1, upkeep-2, upkeep-5, upkeep-7 | 3 actions, a spent piece (used to stop it walking to crystals or scenery) |
-  | upkeep-6 | starts in Prepare |
-  | eliminate-5 | 3 actions |
+    | upkeep-1, upkeep-2, upkeep-5, upkeep-7 | 3 actions, a spent piece (used to stop it walking to crystals or scenery) |
+    | eliminate-5 | 3 actions |
   | defend-4 | 2 actions, a spent piece, a wounded Loş |
 
   Rework each one so its idea arises inside a full fresh turn. For example, the
-  player deals the chip damage themselves; geometry, not a frozen piece, keeps
-  a piece away from the crystals; and Prepare is reached by pressing Mine &
-  prepare. Cut any puzzle whose idea needs the mid-turn premise; the arcs have
-  room. Then enforce the rule in `src/learn/verify.ts`: reject `actions` below 4,
-  `prepare: true`, the `~` marker and `!n` damage. Retire those options from
-  AUTHORING.md, keeping `!n` and `~` in the notation only for the solver's own
-  printouts.
+  player deals the chip damage themselves, and geometry, not a frozen piece,
+  keeps a piece away from the crystals. Cut any puzzle whose idea needs the
+  mid-turn premise; the arcs have room. Then enforce the rule in
+  `src/learn/verify.ts`: reject `actions` below 4, the `~` marker and `!n` damage
+  (`prepare: true` stays). Retire those options from AUTHORING.md, keeping `!n`
+  and `~` in the notation only for the solver's own printouts.
 
 ### Decisions to make
 
