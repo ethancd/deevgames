@@ -9,6 +9,37 @@ commitments; each becomes a dated `docs/changes/` record when it is executed.
   the rename. Redo the Metal track with Tamil instrumentation (for example nadaswaram,
   thavil, veena, mridangam) and retitle it; the soundtrack pages and `public/music/`
   filenames follow at that time. Until then the soundtrack keeps its historical titles.
+- **Pieces perfectly centered in their squares at every board size** (added 2026-10-03).
+  Today a piece can sit visibly off-center in its square. A ring around it makes
+  this obvious. In a Learn to Play puzzle on a 4×4 board at phone size, the enemy
+  Sjór and its red capture ring sit up and to the left of the square's center.
+  Fix it at the source in the board, cell and piece layout, not per screen, so
+  normal play, Learn, MICRO MUJU, analysis and replays all agree. Cover:
+  - every board size from 3×3 to 10×10;
+  - both armies' piece shapes;
+  - pieces with and without selection, rings, damage badges and the lifted
+    piece cap in Learn puzzles;
+  - phone and desktop layouts.
+
+  Guard it with an e2e check that measures each piece's center against its
+  cell's center.
+- **Rename Cleave to "Bonus Attacks" everywhere players see it** (added 2026-10-03).
+  The rule is unchanged: each kill unlocks one more attack by the same piece, up
+  to the four shared actions. Remove the word "Cleave" from the rules and the
+  website.
+  - **Rules:** `SPEC.md` §4.2 and the rules text the MCP host serves.
+  - **The site:** the How to play deck ("Combat & Cleave"), the attack status in
+    the piece panel ("Cleave ready · 1 action"), MICRO MUJU's rules ("No
+    Cleave") and the Learn to Play arc title.
+  - **Learn ids:** the Learn arc's ids (`cleave-1`…`cleave-8`) are progress keys.
+    Rename them before Learn ships; after that, keep them stable.
+  - **The Academy:** R03 says "Cleave" in narration and on cards. Changing
+    spoken words means new audio and video through the content DAG, so decide
+    whether to re-record or leave the published lessons as dated history.
+  - **History stays:** dated `docs/changes/`, `JUDGMENT_LOG.md` and lab records
+    keep their wording.
+  - **Code names:** internal identifiers (`cleave-status`, test names, lab
+    tooling) can follow later.
 
 ## Learn to Play follow-ups (added 2026-10-03)
 
