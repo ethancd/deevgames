@@ -39,7 +39,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     engine.current?.configure(settings.enabled, settings.volume);
     try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch { /* In-memory controls still work. */ }
   }, [settings]);
-  const play = useCallback((effects: readonly SoundEffect[], options?: { rate?: number }) => engine.current?.play(effects, options), []);
+  const play = useCallback((effects: readonly SoundEffect[], options?: { rate?: number }) => options ? engine.current?.play(effects, options) : engine.current?.play(effects), []);
   const value = useMemo(() => ({ ...settings, play,
     setEnabled: (enabled: boolean) => {
       engine.current?.configure(enabled, settings.volume);

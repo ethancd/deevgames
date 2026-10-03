@@ -32,7 +32,7 @@ it.each([0.5, 2.5, 9.5, 18.5])('starts and resumes a %i-crystal game without reg
   expect(loadGameState()).toEqual(saved);
 });
 
-it.each(['vs AI', 'Pass & Play', 'Watch AI'])('passes the handicap in %s setup', name => {
+it.each(['Play vs AI', 'Pass & Play', 'Watch AI'])('passes the handicap in %s setup', name => {
   let config: GameConfig | undefined;
   render(<ModeSelect onStartGame={value => { config = value; }} />);
   fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${name}`) }));

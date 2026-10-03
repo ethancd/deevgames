@@ -200,7 +200,7 @@ it('records the running game’s pace on its save', () => {
 it('offers a thinking time per difficulty and starts the game with it', () => {
   const started = vi.fn();
   render(<ModeSelect onStartGame={started} />);
-  fireEvent.click(screen.getByRole('button', { name: /^vs AI/ }));
+  fireEvent.click(screen.getByRole('button', { name: /^Play vs AI/ }));
   const pace = screen.getByLabelText('Thinking time');
   // Medium is the default difficulty: 3 / 10 / 30 seconds.
   expect([...pace.querySelectorAll('option')].map(o => o.textContent)).toEqual(['Quick · 3 s', 'Normal · 10 s', 'Deep · 30 s']);

@@ -65,7 +65,7 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); localStorage.clear(); });
 /* ------------------------------ ModeSelect ------------------------------ */
 
 it('starts Phasing in every mode, with no ruleset control and no Standard copy', () => {
-  for (const [mode, label] of [[/^vs AI/, 'vs-ai'], [/^Watch AI/, 'ai-vs-ai'], [/^Pass & Play/, 'pass-play']] as const) {
+  for (const [mode, label] of [[/^Play vs AI/, 'vs-ai'], [/^Watch AI/, 'ai-vs-ai'], [/^Pass & Play/, 'pass-play']] as const) {
     const started = vi.fn();
     render(<ModeSelect onStartGame={started} />);
     fireEvent.click(screen.getByRole('button', { name: mode }));

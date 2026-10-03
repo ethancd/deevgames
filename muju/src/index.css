@@ -630,3 +630,15 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 /* Hit, kill and celebration effects: one canvas over the board, never interactive. */
 .board-stage { position: relative; }
 .board-effects { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 40; }
+/* The mode screen fades in from the tutorial's assembled title. */
+.mode-select-welcome { animation: mode-welcome .8s ease-out both; }
+.mode-select-welcome .mode-title { animation: mode-welcome-title 1s ease-out both; }
+@keyframes mode-welcome { from { opacity: 0; } }
+@keyframes mode-welcome-title { from { opacity: 0; transform: translateY(-8px) scale(1.15); } }
+.effects-gallery { max-width: 720px; margin: auto; padding: 12px; }
+.effects-gallery h1 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.effects-gallery-stage { height: min(80vw, 420px); }
+.effects-gallery-controls { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-top: 10px; font-size: 12px; }
+.effects-gallery-controls fieldset { border: 1px solid #334155; border-radius: 8px; padding: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+.effects-gallery-controls legend { padding: 0 4px; color: #94a3b8; text-transform: capitalize; }
+.effects-gallery-controls button { padding: 4px 8px; border-radius: 6px; background: #253448; }
