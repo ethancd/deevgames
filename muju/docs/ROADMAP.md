@@ -100,6 +100,19 @@ behind it.
 
   Keep it wordless, and respect reduced motion.
 
+- **mine-3: no fail grade before End turn** (owner, 2026-10-03). Today, walking
+  the Muju onto the 1 or the 2 shows the failure card at once, because the live
+  "can I still win?" check flags it. Instead, let the player press End turn and
+  watch the real consequence: the Muju mines 1 or 2 (the collect effect, and the
+  goal counter reading "1 / 3" or "2 / 3"). Only then show the failure card, after
+  the collect animation finishes. That is the min(Mining, reserve) lesson told by
+  the board.
+  - Do this for every mining goal, and consider making End turn the commit point
+    for all one-turn puzzles: the early check becomes a soft cue, such as Undo
+    gently pulsing, rather than a verdict, so the end-of-turn consequence is
+    always what explains the failure.
+  - Keep Undo available on the card after the turn's mining, as it is today.
+
 ### Also noted by the reviewers
 
 - **exam-6 is the heaviest puzzle.** About 1.4M proof nodes, far over the live
