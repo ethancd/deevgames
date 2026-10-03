@@ -642,3 +642,5 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .effects-gallery-controls fieldset { border: 1px solid #334155; border-radius: 8px; padding: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
 .effects-gallery-controls legend { padding: 0 4px; color: #94a3b8; text-transform: capitalize; }
 .effects-gallery-controls button { padding: 4px 8px; border-radius: 6px; background: #253448; }
+.mode-chevron { display: inline-block; font-size: 18px; line-height: 1; transform: translateY(-3px); transition: transform .2s ease; }
+.mode-chevron.is-open { transform: translateY(3px) rotate(180deg); }

@@ -31,16 +31,15 @@ describe('board effect selection', () => {
     const hono = scenarioById('hono')!;
     const { frames } = playScenario(hono);
     const before = frames.at(-2)!.board, after = frames.at(-1)!.board;
-    expect(attackEffects(before, after)).toEqual([{ kind: 'kill', x: 4, y: 4, attackerElement: 'fire', magnitude: 'vulnerable', defenderOwner: 'black' }]);
+    expect(attackEffects(before, after)).toEqual([{ kind: 'kill', x: 2, y: 2, attackerElement: 'fire', magnitude: 'vulnerable', defenderOwner: 'white' }]);
     expect(attackEffects(after, before)).toEqual([]);
     expect(attackEffects(before, before)).toEqual([]);
   });
 
-  it('reports a surviving hit as a hit at the resisted magnitude', () => {
+  it('reports a surviving hit as a hit, at the attacker\'s magnitude', () => {
     const state = buildScenarioState(scenarioById('hono')!);
-    const prey = state.board.units.find(u => u.owner === 'black')!;
-    const attacker = { ...state.board.units.find(u => u.id.endsWith('hono'))!, definitionId: 'plant_2', position: { x: 4, y: 3 } };
-    expect(blowEffect(attacker, prey, 'hit')).toMatchObject({ kind: 'hit', magnitude: 'normal', attackerElement: 'plant' });
+    const prey = state.board.units.find(u => u.owner === 'white')!;
+    expect(blowEffect({ definitionId: 'plant_2' }, prey, 'hit')).toMatchObject({ kind: 'hit', x: 2, y: 2, magnitude: 'normal', attackerElement: 'plant' });
     expect(blowEffect({ definitionId: 'plant_1' }, { ...prey, definitionId: 'fire_1' }, 'hit').magnitude).toBe('resisted');
   });
 

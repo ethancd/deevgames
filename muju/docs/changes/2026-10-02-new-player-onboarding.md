@@ -32,29 +32,34 @@ blows play lower. Everything follows the existing `muju:sfx:v1` toggle and level
   `useGameState` is never used.
 - Puzzle 1, Muju: 3×3, home markers hidden. A1 to C3 costs four actions, then the
   real mining rule takes 3 of the 8 crystals.
-- Puzzle 2, Honō: 6×6. The Honō on B2 approaches the black Muju on E5 by
-  `findAttackApproach` (B3, D4, E4: three actions) and kills it with the fourth
-  (fire on plant, 4 ≥ 3).
+- Puzzle 2, Honō: 6×6, and the player plays **Black**. The black Honō on F6
+  approaches the white Muju from puzzle 1 (still on C3) by `findAttackApproach`
+  (F5, D4, C4: three actions) and kills it with the fourth (fire on plant, 4 ≥ 3).
 - Puzzle 3, Irumbu: the real 10×10, keeping the 6×6 in its top-left corner. The
-  Irumbu runs J2 to J10 in four hops of two. The tutorial then asks the real
-  prover (`END_ACTION_PHASE` through `applyAction`) and celebrates only on
-  `home-checkmate`.
+  Irumbu runs J2 to J10 in four hops of two. The only defender is the Honō, which
+  cannot hurt the Irumbu (4 < 5). The tutorial asks the real prover
+  (`END_ACTION_PHASE` through `applyAction`) and celebrates only on
+  `home-checkmate`. Only three pieces appear in the whole tutorial: the white Muju,
+  the black Honō and the white Irumbu.
 - `useScenario` runs `hint-piece → hint-target → playing → solved`. The active
   piece pulses. After 2 s idle a ghost pointer taps it. Selecting lights the
   path dots in sequence, and the goal pulses gold. A wrong tap shakes, plays
   `wrong` and restarts the hint. Inert pieces ignore taps.
-- `Onboarding` sequences intro → puzzle → reveal → zoom → … → assembled title →
-  fade to the mode screen. The zoom renders the next board underneath, scaled so
-  its top-left cells sit on the old ones (measured live), and tweens it to 1 while
-  the old board fades. Reduced motion cuts. Skip is always visible. An
-  `aria-live` region narrates each step, and focus moves to the square that
-  matters next, so keyboard users can finish.
+- `Onboarding` sequences intro → puzzle → name → zoom out → … → fade to the mode
+  screen. The only visible words are a small **Skip Tutorial →** at the bottom right
+  and each piece's name, which fades in at the top middle after its puzzle and fades
+  away without leaving text behind. The zoom renders the next board underneath,
+  scaled so its top-left cells sit on the old ones (measured live), holds a beat,
+  then shrinks it to fit while the old board fades. Reduced motion cuts. An
+  `aria-live` region narrates each step for screen readers. Keyboard players get
+  focus moved to the square that matters next; pointer players get no focus ring.
 
-**Mode screen and gating.** `ModeSelect` now leads with three large buttons:
-**Play vs AI**, **Play online**, **Puzzles**. Pass & Play, Watch AI, Analysis board
-and MICRO MUJU sit below as smaller choices, followed by **Replay tutorial**.
-`PuzzleList` replays each scenario with its own reveal; a new puzzle is one more
-scenario object.
+**Mode screen and gating.** `ModeSelect` puts **Muju Hono Irumbu** at the top,
+then three large buttons: **Play vs AI**, **Play online**, **Puzzles**. Below them,
+**Other ways to play ⌄** expands Pass & Play, Watch AI, Analysis board, MICRO MUJU
+and Replay tutorial. Its open state is remembered in `muju:other-modes-open:v1`.
+Start Game appears once a mode is chosen. `PuzzleList` replays each scenario with
+its name; a new puzzle is one more scenario object.
 
 ## Storage key and gating
 
@@ -73,15 +78,16 @@ removed on finish. Unreadable storage counts as completed, so nobody is trapped.
   pieces and reserves between boards.
 - `tests/effects/effectModel.test.ts` covers magnitude, element and shake
   selection, kill detection and undo silence.
-- `e2e/fixtures.ts` seeds the flag through `context.addInitScript`. Every existing
-  spec imports `test` from it. Specs that open their own contexts use
+- `e2e/fixtures.ts` seeds the flag, and "Other ways to play" open, through
+  `context.addInitScript`. Every existing spec imports `test` from it. Specs that open their own contexts use
   `seededContext(browser, …)`. `e2e/onboarding.spec.ts` starts as a first-time
-  visitor and covers first visit, completion, return visit, Skip, `?tutorial=1`,
+  visitor and covers first visit (including that no words but Skip Tutorial and
+  the names are visible), completion, return visit, Skip, `?tutorial=1`,
   Replay, deep links, saved games, wrong taps, inert pieces, reduced motion,
   keyboard play and the Puzzles list. `e2e/effects.spec.ts` captures each element
   at each magnitude, the reduced-motion flash and the checkmate burst.
 - `tools/smoke-site.cjs` checks the first-visit tutorial and Skip, then continues
-  as a returning player.
+  as a returning player, opening "Other ways to play" for Pass & Play.
 - Mode-screen selectors that named "vs AI" now name "Play vs AI".
 
 Frame strips of the full flow at phone portrait (390×664), landscape (844×390) and

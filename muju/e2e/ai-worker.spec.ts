@@ -43,7 +43,7 @@ test('menu responds during Hard search; mode switch terminates the old worker',a
   expect(elapsed).toBeLessThan(100);
   await expect(page.getByRole('dialog')).toBeVisible();await page.screenshot({path:info.outputPath('menu-during-search.png')});
   await page.getByRole('button',{name:'Choose game mode',exact:true}).click();await closed;
-  await expect(page.getByRole('button',{name:'Start Game',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:/^Play vs AI/})).toBeVisible();
   await info.attach('menu-response-ms',{body:JSON.stringify({elapsedMs:elapsed,browser:page.context().browser()?.version()}),contentType:'application/json'});
 });
 test('restart during search cannot dispatch an old result into the new game',async({page})=>{

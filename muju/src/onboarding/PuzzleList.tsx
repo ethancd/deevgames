@@ -21,7 +21,7 @@ export function PuzzleList({ onBack }: { onBack: () => void }) {
         {SCENARIOS.map((scenario, i) => {
           const def = getUnitDefinition(scenario.reveal.type);
           return <li key={scenario.id}><button type="button" onClick={() => setPlaying(scenario)} aria-label={`Puzzle ${i + 1}: ${scenario.reveal.word}`}>
-            <span className="puzzle-glyph"><UnitArtwork element={def.element} owner="white" tier={def.tier} /></span>
+            <span className="puzzle-glyph"><UnitArtwork element={def.element} owner={scenario.pieces.find(p => p.id === scenario.active)!.owner} tier={def.tier} /></span>
             <strong>{scenario.reveal.word}</strong>
             <small>{scenario.size}×{scenario.size}</small>
           </button></li>;
@@ -42,18 +42,16 @@ function PuzzlePlayer({ scenario, onBack }: { scenario: Scenario; onBack: () => 
   const narration = stage !== 'puzzle' ? `${scenario.narration.done} ${scenario.reveal.word}.`
     : phase === 'hint-target' ? scenario.narration.target : scenario.narration.piece;
   return <main className="onboarding puzzle-player" data-stage={stage} data-puzzle={scenario.id} aria-label={`${scenario.reveal.word} puzzle`}>
-    <button type="button" className="onboarding-skip" onClick={onBack}>Puzzles</button>
-    <h1 className="onboarding-title"><span className="is-shown">{stage === 'puzzle' ? '' : scenario.reveal.word}</span></h1>
+    <div className="onboarding-word-band">{stage === 'reveal' && <Reveal word={scenario.reveal.word} onDone={() => setStage('done')} />}</div>
     <div ref={stageRef} className="onboarding-stage">
       <div className="onboarding-layer"><div className="zoom-board">
         <PuzzleBoard key={round} scenario={scenario} stage={stageRef} emit={effects.emit} play={play} paused={stage !== 'puzzle'} onSolved={onSolved} onPhase={setPhase} />
       </div></div>
-      {stage === 'reveal' && <Reveal scenario={scenario} onDone={() => setStage('done')} />}
-      {stage === 'done' && <div className="puzzle-done">
-        <button type="button" onClick={() => { setRound(r => r + 1); setStage('puzzle'); }}>Play again</button>
-        <button type="button" onClick={onBack}>All puzzles</button>
-      </div>}
       <BoardEffects handle={effects.handle} />
+    </div>
+    <div className="onboarding-skip-band puzzle-player-actions">
+      {stage === 'done' && <button type="button" className="onboarding-skip" onClick={() => { setRound(r => r + 1); setStage('puzzle'); }}>Play again</button>}
+      <button type="button" className="onboarding-skip" onClick={onBack}>All puzzles <span aria-hidden="true">→</span></button>
     </div>
     <p className="vh-label" aria-live="polite">{narration}</p>
   </main>;

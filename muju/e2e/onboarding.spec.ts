@@ -13,43 +13,65 @@ async function solve(page: Page, piece: [number, number], target: [number, numbe
   await cell(page, ...piece).click();
   await expect(page.locator(`.puzzle-${id}[data-phase="hint-target"]`)).toBeVisible();
   await cell(page, ...target).click();
-  await expect(page.getByTestId('tutorial-reveal')).toBeVisible({ timeout: 5000 });
-  await page.getByTestId('tutorial-reveal').click();
+  await expect(page.getByTestId('tutorial-word')).toBeVisible({ timeout: 5000 });
+  // The name passes through and leaves nothing behind.
+  await expect(page.getByTestId('tutorial-word')).toHaveCount(0, { timeout: 5000 });
 }
 
 async function playThrough(page: Page) {
   await solve(page, [0, 0], [2, 2], 'muju');
-  await solve(page, [1, 1], [4, 4], 'hono');
+  await solve(page, [5, 5], [2, 2], 'hono');
   await solve(page, [9, 1], [9, 9], 'irumbu');
 }
 
-test('a first visit plays three puzzles, assembles the title and lands on the three-button screen', async ({ page }) => {
+/** Every word a sighted player can read (symbols like ⌂ aside), minus the screen-reader narration. */
+const visibleWords = (page: Page) => page.locator('main.onboarding').evaluate(main => {
+  const narration = main.querySelector('[data-testid="tutorial-narration"]')?.textContent ?? '';
+  return ((main as HTMLElement).innerText.replace(narration, '').match(/\p{L}+/gu) ?? []).join(' ');
+});
+
+test('a first visit plays three puzzles with no words but the piece names, then lands on the mode screen', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.goto('./');
   await expect(page.locator('main.onboarding')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Skip' })).toBeVisible();
   await expect(page.locator('[data-testid^="cell-"]')).toHaveCount(9);
+  // Playwright calls opacity 0 "visible"; the board must actually be seen.
+  await expect(page.locator('.onboarding-stage')).toHaveCSS('opacity', '1');
   await expect(page.getByTestId('tutorial-narration')).toContainText('Tap the Muju');
+  expect(await visibleWords(page)).toBe('Skip Tutorial');
   // The idle hint demonstrates the tap.
   await expect(page.getByTestId('ghost-pointer')).toBeVisible({ timeout: 4000 });
-  await solve(page, [0, 0], [2, 2], 'muju');
-  // The pulled-back board keeps the Muju where it finished and the mined corner at 8 − 3.
+  await cell(page, 0, 0).click();
+  await cell(page, 2, 2).click();
+  await expect(page.getByTestId('tutorial-word')).toHaveText('Muju', { timeout: 5000 });
+  await expect(page.getByTestId('tutorial-word')).toHaveCount(0, { timeout: 5000 });
+  // Zoomed out: the Muju is where it finished, on the mined corner (8 − 3), and Black moves next.
   await expect(page.locator('[data-testid^="cell-"]')).toHaveCount(36);
   await expect(cell(page, 2, 2)).toHaveAttribute('aria-label', /white Muju/);
   await expect(cell(page, 2, 2)).toHaveAttribute('aria-label', /5 crystals/);
-  await solve(page, [1, 1], [4, 4], 'hono');
+  await expect(cell(page, 5, 5)).toHaveAttribute('aria-label', /black Honō/);
+  expect(await visibleWords(page)).toBe('Skip Tutorial');
+  await solve(page, [5, 5], [2, 2], 'hono');
+  // Three pieces in all: the Muju is gone and the Honō waits where it struck from.
   await expect(page.locator('[data-testid^="cell-"]')).toHaveCount(100);
+  await expect(page.locator('[data-testid^="cell-"][aria-label*="Muju"]')).toHaveCount(0);
+  await expect(cell(page, 2, 3)).toHaveAttribute('aria-label', /black Honō/);
   await solve(page, [9, 1], [9, 9], 'irumbu');
-  await expect(page.locator('.onboarding-title.assembled')).toHaveText(/Muju\s*Hono\s*Irumbu/);
-  for (const name of ['Play vs AI', 'Play online', 'Puzzles']) await expect(page.getByRole('button', { name: new RegExp(`^${name}`) })).toBeVisible({ timeout: 6000 });
+  await expect(page.getByRole('heading', { name: 'Muju Hono Irumbu' })).toBeVisible({ timeout: 6000 });
+  for (const name of ['Play vs AI', 'Play online', 'Puzzles']) await expect(page.getByRole('button', { name: new RegExp(`^${name}`) })).toBeVisible();
+  const other = page.getByRole('button', { name: 'Other ways to play' });
+  await expect(other).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByRole('button', { name: /Pass & Play/ })).toHaveCount(0);
+  await other.click();
   await expect(page.getByRole('button', { name: /Pass & Play/ })).toBeVisible();
   await expect(page.getByRole('link', { name: /MICRO MUJU/ })).toBeVisible();
   expect(await flag(page)).toMatchObject({ completed: true, version: 1 });
   expect(errors).toEqual([]);
-  // A return visit goes straight to the mode screen.
+  // A return visit goes straight to the mode screen, which remembers the open list.
   await page.reload();
   await expect(page.getByRole('button', { name: /^Play vs AI/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Pass & Play/ })).toBeVisible();
   await expect(page.locator('main.onboarding')).toHaveCount(0);
 });
 
@@ -64,19 +86,22 @@ test('wrong taps shake and never advance; inert pieces ignore taps', async ({ pa
   await cell(page, 1, 1).click();
   await expect(page.locator('.puzzle-muju')).toHaveAttribute('data-phase', 'hint-target');
   await cell(page, 2, 2).click();
-  await page.getByTestId('tutorial-reveal').click();
-  await expect(page.locator('.puzzle-hono[data-phase="hint-piece"]')).toBeVisible();
-  // The dimmed Muju from puzzle 1 is scenery now.
+  await expect(page.locator('.puzzle-hono[data-phase="hint-piece"]')).toBeVisible({ timeout: 8000 });
+  // The Muju is the prey now, not a piece to pick up.
   await cell(page, 2, 2).click();
-  await expect(page.locator('.tutorial-wrong')).toHaveCount(0);
-  await cell(page, 4, 4).click();
   await expect(page.locator('.puzzle-hono')).toHaveAttribute('data-phase', 'hint-piece');
-  expect(await puzzle(page)).toBe('hono');
+  await expect(page.locator('.tutorial-wrong')).toHaveCount(1);
+  await solve(page, [5, 5], [2, 2], 'hono');
+  await expect(page.locator('.puzzle-irumbu[data-phase="hint-piece"]')).toBeVisible();
+  // The Honō from puzzle 2 is scenery.
+  await cell(page, 2, 3).click();
+  await expect(page.locator('.tutorial-wrong')).toHaveCount(0);
+  expect(await puzzle(page)).toBe('irumbu');
 });
 
 test('Skip sets the flag and shows the mode screen', async ({ page }) => {
   await page.goto('./');
-  await page.getByRole('button', { name: 'Skip' }).click();
+  await page.getByRole('button', { name: 'Skip Tutorial' }).click();
   await expect(page.getByRole('button', { name: /^Play vs AI/ })).toBeVisible();
   expect(await flag(page)).toMatchObject({ completed: true, version: 1 });
 });
@@ -85,11 +110,12 @@ test('?tutorial=1 and the Replay link replay it for a returning player', async (
   await page.addInitScript(key => localStorage.setItem(key, JSON.stringify({ completed: true, at: '2026-10-02T00:00:00Z', version: 1 })), KEY);
   await page.goto('./');
   await expect(page.getByRole('button', { name: /^Play vs AI/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Other ways to play' }).click();
   await page.getByRole('button', { name: 'Replay tutorial' }).click();
   await expect(page.locator('main.onboarding')).toBeVisible();
   await page.goto('./?tutorial=1');
   await expect(page.locator('main.onboarding')).toBeVisible();
-  await page.getByRole('button', { name: 'Skip' }).click();
+  await page.getByRole('button', { name: 'Skip Tutorial' }).click();
   await expect(page).not.toHaveURL(/tutorial=1/);
 });
 
@@ -119,14 +145,21 @@ test('reduced motion completes the whole flow', async ({ page }) => {
   expect(await flag(page)).toMatchObject({ completed: true });
 });
 
-test('keyboard users can finish a puzzle: focus follows the next square', async ({ page }) => {
+test('keyboard users can finish a puzzle: focus follows the next square, and taps get no focus ring', async ({ page }) => {
   await page.goto('./');
   await expect(page.locator('.puzzle-muju[data-phase="hint-piece"]')).toBeVisible();
-  await expect(cell(page, 0, 0)).toBeFocused({ timeout: 3000 });
+  // The Muju is the only piece on the board, so it is the first tab stop.
+  await page.keyboard.press('Tab');
+  await expect(cell(page, 0, 0)).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(cell(page, 2, 2)).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(page.getByTestId('tutorial-reveal')).toBeVisible({ timeout: 5000 });
+  await expect(page.getByTestId('tutorial-word')).toBeVisible({ timeout: 5000 });
+  // Puzzle 2 by pointer: focus stays put.
+  await expect(page.locator('.puzzle-hono[data-phase="hint-piece"]')).toBeVisible({ timeout: 8000 });
+  await cell(page, 5, 5).click();
+  await expect(page.locator('.puzzle-hono')).toHaveAttribute('data-phase', 'hint-target');
+  await expect(cell(page, 2, 2)).not.toBeFocused();
 });
 
 test('Puzzles lists every scenario and replays one with its reveal', async ({ page }) => {
@@ -136,11 +169,9 @@ test('Puzzles lists every scenario and replays one with its reveal', async ({ pa
   for (const word of ['Muju', 'Honō', 'Irumbu']) await expect(page.getByRole('button', { name: new RegExp(word) })).toBeVisible();
   await page.getByRole('button', { name: /Honō/ }).click();
   await expect(page.locator('[data-testid^="cell-"]')).toHaveCount(36);
-  await cell(page, 1, 1).click();
-  await cell(page, 4, 4).click();
-  await page.getByTestId('tutorial-reveal').click();
+  await solve(page, [5, 5], [2, 2], 'hono');
   await page.getByRole('button', { name: 'Play again' }).click();
   await expect(page.locator('.puzzle-hono[data-phase="hint-piece"]')).toBeVisible();
-  await page.getByRole('button', { name: 'Puzzles', exact: true }).click();
+  await page.getByRole('button', { name: 'All puzzles' }).click();
   await expect(page.getByRole('button', { name: /Irumbu/ })).toBeVisible();
 });

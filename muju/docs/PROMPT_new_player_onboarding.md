@@ -1,6 +1,9 @@
 # New player onboarding: plan and implementation prompt
 
 **Status:** built 2026-10-02 on `claude/muju-onboarding`; see [the change record](changes/2026-10-02-new-player-onboarding.md).
+Revised the same day after review: three pieces in all (white Muju, black Honō, white Irumbu), the
+player plays Black in puzzle 2 (overriding decision 1 below), no words on screen except
+"Skip Tutorial →" and the three names, and "Other ways to play" collapses the secondary modes.
 
 Written 2026-10-02 from a read-only survey of `muju/` at commit `c6ce6342`. Part 1 is the
 plan (what to build and why, with the decisions already made). Part 2 is the prompt to hand

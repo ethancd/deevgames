@@ -1,26 +1,16 @@
 import { useEffect, useRef } from 'react';
-import { UnitArtwork } from '../components/UnitArtwork';
-import { getUnitDefinition } from '../game/units';
-import type { Scenario } from './scenarios';
 
-/** Hold before advancing on its own; a tap advances sooner. */
-export const REVEAL_MS = 2100;
+/** How long a piece's name stays at the top of the screen, fade included. */
+export const REVEAL_MS = 2000;
 
-/** The piece's name, large, with its counter beside it. */
-export function Reveal({ scenario, onDone }: { scenario: Scenario; onDone: () => void }) {
+/** The piece's name fades in at the top middle, then fades away and leaves nothing behind.
+ * Screen readers hear it through the page's live region instead. */
+export function Reveal({ word, onDone }: { word: string; onDone: () => void }) {
   const done = useRef(onDone);
   done.current = onDone;
-  const finished = useRef(false);
-  const finish = () => { if (!finished.current) { finished.current = true; done.current(); } };
   useEffect(() => {
-    const timer = window.setTimeout(finish, REVEAL_MS);
+    const timer = window.setTimeout(() => done.current(), REVEAL_MS);
     return () => clearTimeout(timer);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  const def = getUnitDefinition(scenario.reveal.type);
-  return <button type="button" className="tutorial-reveal" onClick={finish} data-testid="tutorial-reveal" aria-label={`${scenario.reveal.word}. Continue`}>
-    <span className="tutorial-reveal-card">
-      <span className="tutorial-reveal-glyph"><UnitArtwork element={def.element} owner="white" tier={def.tier} /></span>
-      <span className="tutorial-reveal-word">{scenario.reveal.word}</span>
-    </span>
-  </button>;
+  }, []);
+  return <p className="onboarding-word" data-testid="tutorial-word" aria-hidden="true">{word}</p>;
 }

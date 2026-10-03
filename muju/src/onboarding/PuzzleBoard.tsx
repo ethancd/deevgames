@@ -19,6 +19,14 @@ interface Props {
 
 const same = (a: Position, b: Position) => a.x === b.x && a.y === b.y;
 
+/** Focus follows the puzzle only for keyboard players; a focus ring would
+ * compete with the gold hints for everyone tapping. */
+let keyboardPlayer = false;
+if (typeof window !== 'undefined') {
+  window.addEventListener('keydown', event => { if (event.key === 'Tab' || event.key === 'Enter' || event.key === ' ') keyboardPlayer = true; }, true);
+  window.addEventListener('pointerdown', () => { keyboardPlayer = false; }, true);
+}
+
 /** One interactive puzzle: the real Board plus light-only guidance. */
 export function PuzzleBoard({ scenario, emit, play, paused, stage, onSolved, onPhase }: Props) {
   const puzzle = useScenario(scenario, { emit, play, paused, onSolved });
@@ -32,8 +40,7 @@ export function PuzzleBoard({ scenario, emit, play, paused, stage, onSolved, onP
     if (paused || !hinting) return;
     const at = puzzle.phase === 'hint-piece' ? puzzle.state.board.units.find(u => u.id === puzzle.activeId)!.position : puzzle.goal;
     const cell = host.current?.querySelector<HTMLButtonElement>(`[data-testid="cell-${at.x}-${at.y}"]`);
-    if (cell && host.current?.contains(document.activeElement ?? null)) cell.focus({ preventScroll: true });
-    else if (cell && document.activeElement === document.body) cell.focus({ preventScroll: true });
+    if (cell && keyboardPlayer) cell.focus({ preventScroll: true });
   }, [puzzle.phase, paused]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ghostAt = puzzle.ghost && !paused ? puzzle.phase === 'hint-piece'

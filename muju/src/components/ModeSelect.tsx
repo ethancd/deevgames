@@ -9,6 +9,11 @@ import { INACTIVITY_LIMIT } from '../game/inactivity';
 import { loadAIPace, loadGameState, loadRetiredSave } from '../utils/persistence';
 
 const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
+/** Remembers whether "Other ways to play" was left open. */
+const OTHER_MODES_KEY = 'muju:other-modes-open:v1';
+function loadOtherModesOpen(): boolean {
+  try { return localStorage.getItem(OTHER_MODES_KEY) === '1'; } catch { return false; }
+}
 
 /** "Quick · 10 s", "Deep · 1 min" — the allowance depends on the difficulty. */
 const paceOptionLabel = (difficulty: AIDifficulty, pace: AIPace): string =>
@@ -33,6 +38,12 @@ interface ModeSelectProps {
 
 export function ModeSelect({ onStartGame, onOnline, onPuzzles, onReplayTutorial, welcome = false }: ModeSelectProps) {
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
+  const [otherOpen, setOtherOpen] = useState(loadOtherModesOpen);
+  const toggleOther = () => {
+    const next = !otherOpen;
+    setOtherOpen(next);
+    try { localStorage.setItem(OTHER_MODES_KEY, next ? '1' : '0'); } catch { /* Still toggles for this visit. */ }
+  };
   const [playerSide, setPlayerSide] = useState<PlayerId>(loadPreferredSide);
   const [playerDifficulty, setPlayerDifficulty] = useState<AIDifficulty>('medium');
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('medium');
@@ -107,7 +118,7 @@ export function ModeSelect({ onStartGame, onOnline, onPuzzles, onReplayTutorial,
   };
 
   return (
-    <div className={`mode-select${welcome ? ' mode-select-welcome' : ''} min-h-screen bg-gray-900 text-white flex items-center justify-center p-4`}>
+    <div className={`mode-select${welcome ? ' mode-select-welcome' : ''} min-h-screen bg-gray-900 text-white flex items-start justify-center p-4 pt-6 sm:pt-10`}>
       <div className="max-w-md w-full space-y-6">
         <div className="music-lobby-nav"><a href="https://deevgames.pages.dev/" className="text-sm text-cyan-300">← Deev Games</a><MusicButton /></div>
         <h1 className="mode-title text-3xl font-bold text-center">Muju Hono Irumbu</h1>
@@ -136,7 +147,11 @@ export function ModeSelect({ onStartGame, onOnline, onPuzzles, onReplayTutorial,
           </button>}
         </div>
 
-        <div className="mode-secondary grid grid-cols-2 gap-2">
+        <button type="button" onClick={toggleOther} aria-expanded={otherOpen} aria-controls="other-ways-to-play"
+          className="mode-other-toggle w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-300 hover:text-white">
+          Other ways to play <span aria-hidden="true" className={`mode-chevron${otherOpen ? ' is-open' : ''}`}>⌄</span>
+        </button>
+        {otherOpen && <div id="other-ways-to-play" className="mode-secondary grid grid-cols-2 gap-2">
           <button
             onClick={() => setSelectedMode('pass-play')}
             aria-pressed={selectedMode === 'pass-play'}
@@ -170,8 +185,8 @@ export function ModeSelect({ onStartGame, onOnline, onPuzzles, onReplayTutorial,
             <div className="text-sm font-semibold">MICRO MUJU</div>
             <div className="text-xs text-gray-400">6×6 pass &amp; play · three pieces, two actions, no clock</div>
           </a>
-        </div>
-        {onReplayTutorial && <p className="text-center"><button type="button" onClick={onReplayTutorial} className="text-sm text-cyan-300 underline-offset-4 hover:underline">Replay tutorial</button></p>}
+          {onReplayTutorial && <button type="button" onClick={onReplayTutorial} className="col-span-2 p-2 rounded-lg border border-gray-700 hover:border-cyan-400 text-sm text-cyan-300">Replay tutorial</button>}
+        </div>}
 
         {/* Side and difficulty selectors */}
         {selectedMode === 'vs-ai' && (
@@ -287,7 +302,7 @@ export function ModeSelect({ onStartGame, onOnline, onPuzzles, onReplayTutorial,
 
         {/* Start button */}
         {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · After {INACTIVITY_LIMIT} consecutive turns without a kill, higher mined crystals wins (a tie draws).</p>}
-        <button
+        {selectedMode && <button
           onClick={() => handleStart()}
           disabled={!selectedMode}
           className={`w-full p-3 rounded-lg font-semibold transition-all ${
@@ -297,7 +312,7 @@ export function ModeSelect({ onStartGame, onOnline, onPuzzles, onReplayTutorial,
           }`}
         >
           Start Game
-        </button>
+        </button>}
         {savedGame && <button disabled={!selectedMode} onClick={() => handleStart(false)}
           className="w-full p-3 rounded-lg border border-gray-600 disabled:text-gray-500">
           Continue saved game · {getActionsPerTurn(savedGame)} actions

@@ -2,27 +2,21 @@
    global rule in index.css (animations off) plus explicit cuts in the components. */
 .onboarding {
   --display: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
-  position: fixed; inset: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); background: radial-gradient(120% 90% at 50% 40%, #17283a 0%, #0c141e 70%);
+  position: fixed; inset: 0; display: grid; grid-template-rows: 64px minmax(0, 1fr) 56px; background: radial-gradient(120% 90% at 50% 40%, #17283a 0%, #0c141e 70%);
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   overflow: hidden; color: #f2efe4; animation: onboarding-in .6s ease-out both;
 }
 .onboarding[data-stage="out"] { animation: onboarding-out .5s ease-in forwards; }
+.onboarding-skip-band { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 0 max(10px, env(safe-area-inset-right)) env(safe-area-inset-bottom) 10px; position: relative; z-index: 60; }
 .onboarding-skip {
-  position: absolute; top: calc(env(safe-area-inset-top) + 6px); right: calc(env(safe-area-inset-right) + 6px); z-index: 60;
-  min-width: 44px; min-height: 44px; padding: 0 14px; border-radius: 22px; background: transparent; color: #a9b8c8; font-size: 14px;
+  min-height: 44px; padding: 0 14px; border-radius: 22px; background: transparent; color: #8fa1b4; font-size: 14px; font-weight: 500; letter-spacing: .01em;
 }
 .onboarding-skip:hover { color: #f2efe4; }
-.onboarding-title {
-  display: flex; justify-content: center; align-items: baseline; gap: .55em; min-height: 56px; margin: 0; padding: 14px 64px 4px;
-  font-family: var(--display); font-weight: 600; font-size: clamp(18px, 4.6vw, 26px); letter-spacing: .02em; color: #f5d780;
-  transition: transform .9s cubic-bezier(.45,0,.2,1), font-size .9s cubic-bezier(.45,0,.2,1), gap .9s ease;
-  position: relative; z-index: 50; pointer-events: none;
+.onboarding-word-band { position: relative; z-index: 50; display: flex; align-items: flex-end; justify-content: center; pointer-events: none; }
+.onboarding-word {
+  margin: 0; font-family: var(--display); font-weight: 600; font-size: clamp(30px, 8vw, 44px); line-height: 1; letter-spacing: .02em;
+  color: #fff3cf; text-shadow: 0 2px 22px #f5d78088; animation: onboarding-word 2s ease-in-out both;
 }
-.onboarding-title span { opacity: 0; transform: translateY(6px); transition: opacity .5s ease, transform .5s ease; }
-.onboarding-title span.is-shown { opacity: 1; transform: none; }
-.onboarding-title.assembled { transform: translateY(calc(50dvh - 70px)); padding-inline: 12px; font-size: clamp(28px, 8vw, 58px); gap: .3em; white-space: nowrap; flex-wrap: wrap; text-align: center; text-shadow: 0 2px 24px #f5d78055; }
-.onboarding-title.assembled span { opacity: 1; transform: none; }
-.onboarding[data-stage="title"] .onboarding-stage, .onboarding[data-stage="out"] .onboarding-stage { opacity: 0; transition: opacity .7s ease; }
 
 .onboarding-stage { position: relative; min-height: 0; container-type: size; padding: 8px; overflow: hidden; }
 .onboarding-layer { position: absolute; inset: 8px; display: flex; align-items: center; justify-content: center; }
@@ -56,18 +50,6 @@
 .ghost-pointer::before { content: ''; position: absolute; left: 34%; top: 0; width: calc(var(--cell) * .5); height: calc(var(--cell) * .5); border-radius: 50%;
   border: 2px solid #fff; transform: translate(-50%, -50%) scale(.3); opacity: 0; animation: ghost-ripple 1.5s ease-out infinite; }
 
-.tutorial-reveal {
-  position: absolute; inset: 0; z-index: 48; display: flex; align-items: center; justify-content: center;
-  background: radial-gradient(closest-side, #0c141ecc, #0c141e55 70%, transparent); border: 0; padding: 0; color: inherit; cursor: pointer;
-  animation: tutorial-fade-in .45s ease-out both;
-}
-.tutorial-reveal-card { display: flex; align-items: center; gap: .3em; font-family: var(--display); font-weight: 600; font-size: clamp(44px, 14vw, 96px);
-  letter-spacing: .02em; color: #fff7dc; text-shadow: 0 4px 30px #f5d78088; animation: tutorial-reveal 2.1s ease-out both; }
-.tutorial-reveal-glyph { width: 1.05em; height: 1.05em; display: inline-flex; }
-.tutorial-reveal-glyph svg { width: 100%; height: 100%; }
-
-.puzzle-done { position: absolute; left: 0; right: 0; bottom: 18px; z-index: 49; display: flex; justify-content: center; gap: 10px; }
-.puzzle-done button { min-height: 44px; padding: 0 18px; border-radius: 22px; background: #253448; color: #f2efe4; font-weight: 650; border: 1px solid #f5d78066; }
 .puzzle-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
 .puzzle-grid button { width: 100%; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
   border-radius: 12px; border: 2px solid #374151; background: #111827; color: #f2efe4; }
@@ -79,6 +61,7 @@
 
 @keyframes onboarding-in { from { opacity: 0; } }
 @keyframes onboarding-out { to { opacity: 0; } }
+@keyframes onboarding-word { 0% { opacity: 0; transform: translateY(-10px); } 22%, 72% { opacity: 1; transform: none; } 100% { opacity: 0; transform: translateY(-4px); } }
 @keyframes tutorial-fade-in { from { opacity: 0; transform: scale(.92); } }
 @keyframes tutorial-bob { 0%, 100% { transform: translate(-4%, -1%); } 50% { transform: translate(-4%, -7%); } }
 @keyframes tutorial-ring { 0%, 100% { box-shadow: inset 0 0 0 2px #f5d780; } 50% { box-shadow: inset 0 0 0 4px #f5d780, 0 0 18px #f5d78099; } }
@@ -90,4 +73,3 @@
 @keyframes tutorial-shake-b { 0%, 100% { translate: 0; } 20% { translate: -4px; } 40% { translate: 4px; } 60% { translate: -3px; } 80% { translate: 2px; } }
 @keyframes ghost-tap { 0%, 100% { translate: 10% 30%; opacity: .0; } 15% { opacity: 1; } 45% { translate: 0 0; } 55% { translate: 0 6%; } 70% { translate: 0 0; opacity: 1; } 90% { opacity: 0; } }
 @keyframes ghost-ripple { 0%, 50% { opacity: 0; transform: translate(-50%, -50%) scale(.3); } 55% { opacity: .9; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); } }
-@keyframes tutorial-reveal { 0% { opacity: 0; transform: translateY(10px) scale(.94); letter-spacing: .12em; } 22% { opacity: 1; transform: none; letter-spacing: .02em; } 85% { opacity: 1; } 100% { opacity: .0; } }

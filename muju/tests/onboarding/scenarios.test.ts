@@ -11,13 +11,19 @@ import { activeUnitId, buildScenarioState, goalSquare, hopsAlong, playScenario, 
 const muju = scenarioById('muju')!, hono = scenarioById('hono')!, irumbu = scenarioById('irumbu')!;
 
 describe('onboarding scenarios', () => {
-  it('build White-to-move positions with four actions, no kill clock and an empty Black bank', () => {
+  it('uses three pieces in all and gives each puzzle to its piece\'s side: White, Black, White', () => {
+    expect(SCENARIOS.map(s => buildScenarioState(s).turn.currentPlayer)).toEqual(['white', 'black', 'white']);
+    expect(new Set(SCENARIOS.flatMap(s => s.pieces.map(p => unitId(p))))).toEqual(new Set(['tutorial-white-muju', 'tutorial-black-hono', 'tutorial-white-irumbu']));
+  });
+
+  it('build positions with four actions, no kill clock and empty banks', () => {
     for (const scenario of SCENARIOS) {
       const state = buildScenarioState(scenario);
       expect(state.board.cells).toHaveLength(scenario.size);
-      expect(state.turn).toMatchObject({ currentPlayer: 'white', phase: 'action', actionsRemaining: 4 });
+      expect(state.turn).toMatchObject({ phase: 'action', actionsRemaining: 4 });
       expect(state.inactivityRule).toBe('off');
       expect(state.players.black.resources).toBe(0);
+      expect(state.players.white.resources).toBe(0);
     }
   });
 
@@ -42,7 +48,7 @@ describe('onboarding scenarios', () => {
     expect(final.board.cells[2][2].resourceLayers).toBe(8 - mined);
   });
 
-  it('puzzle 2: the Honō approaches in three actions and its fourth eliminates the black Muju', () => {
+  it('puzzle 2: the black Honō approaches in three actions and its fourth eliminates the white Muju', () => {
     const state = buildScenarioState(hono);
     const attacker = getUnitById(state.board, activeUnitId(hono))!, prey = getUnitById(state.board, targetUnitId(hono)!)!;
     const path = findAttackApproach(attacker, prey, state.board, 4)!;
@@ -59,6 +65,9 @@ describe('onboarding scenarios', () => {
     const state = buildScenarioState(irumbu);
     const unit = getUnitById(state.board, activeUnitId(irumbu))!;
     expect(getMoveCost(unit.position, goalSquare(irumbu), getUnitDefinition(unit.definitionId).speed, state.board)).toBe(4);
+    // The only defender is the Honō, and it cannot pierce the Irumbu's defense.
+    const defender = state.board.units.find(u => u.owner === 'black')!;
+    expect(calculateAttackPower(defender, unit)).toBeLessThan(calculateDefense(unit));
     const { frames, checkmate } = playScenario(irumbu);
     const invaded = frames.at(-1)!;
     expect(invaded.turn.actionsRemaining).toBe(0);
@@ -67,16 +76,19 @@ describe('onboarding scenarios', () => {
     expect(checkmate).toBe(true);
   });
 
-  it('carries earlier pieces and reserves into the larger boards exactly where they finished', () => {
+  it('carries pieces and reserves into the larger boards exactly where they finished', () => {
     const one = playScenario(muju).final, two = playScenario(hono).frames.at(-1)!;
     const twoStart = buildScenarioState(hono), threeStart = buildScenarioState(irumbu);
     for (let y = 0; y < 3; y++) for (let x = 0; x < 3; x++) expect(twoStart.board.cells[y][x].resourceLayers).toBe(one.board.cells[y][x].resourceLayers);
     for (let y = 0; y < 6; y++) for (let x = 0; x < 6; x++) expect(threeStart.board.cells[y][x].resourceLayers).toBe(two.board.cells[y][x].resourceLayers);
-    const at = (state: typeof one, id: string) => getUnitById(state.board, id)!.position;
-    expect(at(twoStart, unitId({ id: 'muju', owner: 'white' }))).toEqual(at(one, activeUnitId(muju)));
-    expect(at(threeStart, unitId({ id: 'muju', owner: 'white' }))).toEqual(at(one, activeUnitId(muju)));
-    expect(at(threeStart, unitId({ id: 'hono', owner: 'white' }))).toEqual(at(two, activeUnitId(hono)));
-    for (const scenario of [hono, irumbu]) expect(scenario.pieces.filter(p => p.owner === 'white' && p.id !== scenario.active).every(p => p.inert)).toBe(true);
+    const at = (state: typeof one, id: string) => getUnitById(state.board, id)?.position;
+    const mujuId = activeUnitId(muju), honoId = activeUnitId(hono);
+    expect(at(twoStart, mujuId)).toEqual(at(one, mujuId));
+    expect(targetUnitId(hono)).toBe(mujuId); // the Honō eats the Muju from puzzle 1
+    expect(at(two, mujuId)).toBeUndefined();
+    expect(at(threeStart, mujuId)).toBeUndefined();
+    expect(at(threeStart, honoId)).toEqual(at(two, honoId));
+    expect(irumbu.pieces.find(p => p.id === 'hono')!.inert).toBe(true);
   });
 
   it('splits paths into speed-sized hops of one action each', () => {

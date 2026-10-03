@@ -5,7 +5,7 @@ import { findAttackApproach, findPath } from '../game/movement';
 import { endOfTurnIncome } from '../game/mining';
 import { UNEQUAL_ROUTES_MAP } from '../game/resourceMap';
 import { getUnitDefinition } from '../game/units';
-import type { Element, GameState, PlayerId, Position, Unit } from '../game/types';
+import type { GameState, PlayerId, Position, Unit } from '../game/types';
 
 /**
  * Puzzle scenarios: the wordless onboarding and the Puzzles list share this format.
@@ -29,7 +29,7 @@ export interface Scenario {
   reserves: { x: number; y: number; crystals: number }[];
   goal: ScenarioGoal;
   /** `title` is the word's spelling inside the assembled game title (ASCII, SPEC §7). */
-  reveal: { word: string; title: string; glyphElement: Element; type: string };
+  reveal: { word: string; title: string; type: string };
   /** Screen-reader narration for each step. */
   narration: { piece: string; target: string; done: string };
 }
@@ -43,46 +43,43 @@ const MUJU: Scenario = {
   pieces: [{ id: 'muju', owner: 'white', type: 'plant_1', x: 0, y: 0 }],
   reserves: [{ x: 2, y: 2, crystals: 8 }],
   goal: { kind: 'move', to: { x: 2, y: 2 } },
-  reveal: { word: 'Muju', title: 'Muju', glyphElement: 'plant', type: 'plant_1' },
+  reveal: { word: 'Muju', title: 'Muju', type: 'plant_1' },
   narration: { piece: 'Tap the Muju in the top-left corner.', target: 'Tap the crystals in the far corner to move there.', done: 'The Muju mined three crystals.' },
 };
 
-/** After puzzle 1 the far corner holds 8 − 3 = 5; the 6×6 adds a few reserves of its own. */
+/** After puzzle 1 the far corner holds 8 − 3 = 5; the 6×6 adds a few reserves of its own.
+ * Three pieces in all: the Muju walks, the black Honō eats it, the Irumbu invades. */
 const HONO_RESERVES = [{ x: 2, y: 2, crystals: 5 }, { x: 5, y: 0, crystals: 4 }, { x: 0, y: 5, crystals: 4 }, { x: 4, y: 4, crystals: 4 }, { x: 5, y: 5, crystals: 8 }];
 const HONO: Scenario = {
   id: 'hono', size: 6, hideHomeMarkers: false, active: 'hono',
   pieces: [
-    { id: 'muju', owner: 'white', type: 'plant_1', x: 2, y: 2, inert: true },
-    { id: 'hono', owner: 'white', type: 'fire_2', x: 1, y: 1 },
-    { id: 'prey', owner: 'black', type: 'plant_1', x: 4, y: 4 },
+    { id: 'muju', owner: 'white', type: 'plant_1', x: 2, y: 2 },
+    { id: 'hono', owner: 'black', type: 'fire_2', x: 5, y: 5 },
   ],
   reserves: HONO_RESERVES,
-  goal: { kind: 'kill', target: 'prey' },
-  reveal: { word: 'Honō', title: 'Hono', glyphElement: 'fire', type: 'fire_2' },
-  narration: { piece: 'Tap the Honō.', target: 'Tap the black Muju to attack it.', done: 'Fire burns plant. The black Muju is eliminated.' },
+  goal: { kind: 'kill', target: 'muju' },
+  reveal: { word: 'Honō', title: 'Hono', type: 'fire_2' },
+  narration: { piece: 'Now you play Black. Tap the black Honō.', target: 'Tap the white Muju to attack it.', done: 'Fire burns plant. The Muju is eliminated.' },
 };
 
 /** The 10×10 keeps the 6×6 exactly in its top-left corner and the real map everywhere else. */
 const IRUMBU: Scenario = {
   id: 'irumbu', size: 10, hideHomeMarkers: false, active: 'irumbu',
   pieces: [
-    { id: 'muju', owner: 'white', type: 'plant_1', x: 2, y: 2, inert: true },
-    { id: 'hono', owner: 'white', type: 'fire_2', x: 4, y: 3, inert: true },
+    { id: 'hono', owner: 'black', type: 'fire_2', x: 2, y: 3, inert: true },
     { id: 'irumbu', owner: 'white', type: 'metal_3', x: 9, y: 1 },
-    { id: 'guard', owner: 'black', type: 'plant_1', x: 8, y: 9 },
-    { id: 'hi', owner: 'black', type: 'fire_1', x: 2, y: 8 },
   ],
   reserves: cellsOf(10, (x, y) => x < 6 && y < 6 ? HONO_RESERVES.find(c => c.x === x && c.y === y)?.crystals ?? 0 : UNEQUAL_ROUTES_MAP[y * 10 + x]),
   goal: { kind: 'invade' },
-  reveal: { word: 'Irumbu', title: 'Irumbu', glyphElement: 'metal', type: 'metal_3' },
-  narration: { piece: 'Tap the Irumbu.', target: 'Tap the black home in the bottom-right corner to invade it.', done: 'Checkmate. The Irumbu holds the black home and nothing can remove it.' },
+  reveal: { word: 'Irumbu', title: 'Irumbu', type: 'metal_3' },
+  narration: { piece: 'Now you play White again. Tap the Irumbu.', target: 'Tap the black home in the bottom-right corner to invade it.', done: 'Checkmate. The Honō cannot hurt the Irumbu, so the black home is lost.' },
 };
 
 export const SCENARIOS: readonly Scenario[] = [MUJU, HONO, IRUMBU];
 export const scenarioById = (id: string) => SCENARIOS.find(s => s.id === id);
 export const unitId = (piece: Pick<ScenarioPiece, 'id' | 'owner'>) => `tutorial-${piece.owner}-${piece.id}`;
 
-/** White to move with four actions, Black's bank empty, no kill clock. Never persisted. */
+/** The active piece's side to move with four actions, empty banks, no kill clock. Never persisted. */
 export function buildScenarioState(scenario: Scenario): GameState {
   const { size } = scenario;
   const board = createEmptyBoard(size);
@@ -99,7 +96,7 @@ export function buildScenarioState(scenario: Scenario): GameState {
     ruleset: 'phasing', actionsPerTurn: 4, pendingSummons: [], blackCrystalHandicap: 0,
     inactivityRule: 'off', inactivityPlies: 0, progressThisTurn: false,
     phase: 'playing', board, players: { white: player('white'), black: player('black') },
-    turn: { currentPlayer: 'white', phase: 'action', actionsRemaining: 4, turnNumber: 1 },
+    turn: { currentPlayer: scenario.pieces.find(p => p.id === scenario.active)!.owner, phase: 'action', actionsRemaining: 4, turnNumber: 1 },
     winner: null, selectedUnit: null, validMoves: [], validAttacks: [],
   };
 }
@@ -159,7 +156,7 @@ export function playScenario(scenario: Scenario): { frames: GameState[]; final: 
 /** Puzzle 1 ends with the real mining rule; puzzle 3 asks the real checkmate prover. */
 export function finishScenario(state: GameState, scenario: Scenario): { final: GameState; mined: number; checkmate: boolean } {
   if (scenario.goal.kind === 'move') {
-    const income = endOfTurnIncome(state, 'white');
+    const income = endOfTurnIncome(state, state.turn.currentPlayer);
     return { final: income.state, mined: income.total, checkmate: false };
   }
   if (scenario.goal.kind === 'invade') {

@@ -5,6 +5,9 @@ import { createInitialGameState } from '../../src/game/board';
 import { startHistory } from '../../src/game/analysis';
 import { loadGameState, loadRetiredSave, RETIRED_STORAGE_KEY } from '../../src/utils/persistence';
 
+/** Pass & Play and Watch AI sit under "Other ways to play", collapsed by default. */
+const openOtherWays = () => { const toggle = screen.queryByRole('button', { name: 'Other ways to play', expanded: false }); if (toggle) fireEvent.click(toggle); };
+
 afterEach(()=>{cleanup();localStorage.clear();});
 
 /**
@@ -15,7 +18,7 @@ afterEach(()=>{cleanup();localStorage.clear();});
  */
 it('starts a new four-action Phasing game, undoes, resumes it and hands over',()=>{
   let view=render(<App />);
-  fireEvent.click(screen.getByRole('button',{name:/^Pass & Play/}));
+  openOtherWays(); fireEvent.click(screen.getByRole('button',{name:/^Pass & Play/}));
   expect(screen.queryByRole('combobox',{name:'Actions per turn'})).toBeNull();
   // No ruleset control anywhere on the screen, for any mode.
   expect(screen.queryByRole('radio',{name:/Phasing|Standard/})).toBeNull();
@@ -28,7 +31,7 @@ it('starts a new four-action Phasing game, undoes, resumes it and hands over',()
   fireEvent.click(screen.getByRole('button',{name:/Undo/}));
   expect(loadGameState()?.turn.actionsRemaining).toBe(4);
   view.unmount();view=render(<App />);
-  fireEvent.click(screen.getByRole('button',{name:/^Pass & Play/}));
+  openOtherWays(); fireEvent.click(screen.getByRole('button',{name:/^Pass & Play/}));
   // The saved game carries no ruleset label any more: there is only one.
   fireEvent.click(screen.getByRole('button',{name:/Continue saved game · 4 actions/}));
   expect(view.container.querySelectorAll('.action-budget i')).toHaveLength(4);
@@ -38,7 +41,7 @@ it('starts a new four-action Phasing game, undoes, resumes it and hands over',()
   fireEvent.click(screen.getByRole('button',{name:/End turn/}));
   expect(loadGameState()).toMatchObject({ruleset:'phasing',actionsPerTurn:4,turn:{currentPlayer:'black',actionsRemaining:4}});
   view.unmount();view=render(<App />);
-  fireEvent.click(screen.getByRole('button',{name:/^Pass & Play/}));
+  openOtherWays(); fireEvent.click(screen.getByRole('button',{name:/^Pass & Play/}));
   fireEvent.click(screen.getByRole('button',{name:'Start Game'}));
   expect(loadGameState()).toMatchObject({ruleset:'phasing',actionsPerTurn:4,turn:{currentPlayer:'white',actionsRemaining:4}});
   expect(view.container.querySelectorAll('.action-budget i')).toHaveLength(4);
