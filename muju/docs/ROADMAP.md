@@ -167,23 +167,32 @@ behind it.
   "1+1" against that target, and the target shows its current DEF, glowing on a
   kill). Applies to the whole game, not only Learn to Play.
 
-- **Mid-turn puzzles: show the setup; give "already acted" a deliberate look**
-  (owner, 2026-10-03, from teamwork-3 on a phone). teamwork-3 starts mid-turn: its
-  Hi on a2 is marked spent (`F1~`) because it "already" chipped the Sjór, and the
-  player starts with 2 actions. The game draws a spent piece with
-  `.piece-resting { filter: saturate(.5) }`, which turns a Fire piece a muddy dark
-  red that reads as a glitch. Nothing on screen explains the −1, the dim Hi or
-  the missing actions. The `~` marker is also used in five upkeep puzzles and
-  defend-4.
-  - **A `prelude` field.** The puzzle starts from the earlier position and plays
-    its "earlier this turn" moves at the reply cadence, with the real effects
-    (on teamwork-3, the Hi hits the Sjór for 1), then hands over. The damage,
-    the spent piece and the remaining actions explain themselves. Proofs start
-    after the prelude. Re-prove each converted puzzle, since a prelude piece is
-    usually not frozen the way `~` freezes it, which may open new lines.
-  - **The resting look.** Replace the half-saturation filter with an intentional
-    "done for this turn" treatment (dimmed and cooled, perhaps a small moon or
-    check), consistent across elements and armies, in normal play too.
+- **Never start a puzzle mid-turn: cut or rework the ten that do** (owner
+  decision, 2026-10-03, from teamwork-3 on a phone). A mid-turn start asserts a
+  past nobody saw, and it confuses. teamwork-3's Hi is "already" spent and
+  drawn in the muddy half-saturated resting style, the Sjór is "already"
+  wounded, and only 2 actions remain. Every puzzle starts at a fresh turn
+  start: 4 actions, no spent pieces, no damage on the board, and not in Prepare.
+  To rework:
+
+  | Puzzle | Starts mid-turn because |
+  |---|---|
+  | teamwork-3 | 2 actions, a spent Hi, a wounded Sjór |
+  | plant-5 | 2 actions, a wounded Kagari |
+  | promote-1 | starts in Prepare |
+  | upkeep-1, upkeep-2, upkeep-5, upkeep-7 | 3 actions, a spent piece (used to stop it walking to crystals or scenery) |
+  | upkeep-6 | starts in Prepare |
+  | eliminate-5 | 3 actions |
+  | defend-4 | 2 actions, a spent piece, a wounded Loş |
+
+  Rework each one so its idea arises inside a full fresh turn. For example, the
+  player deals the chip damage themselves; geometry, not a frozen piece, keeps
+  a piece away from the crystals; and Prepare is reached by pressing Mine &
+  prepare. Cut any puzzle whose idea needs the mid-turn premise; the arcs have
+  room. Then enforce the rule in `src/learn/verify.ts`: reject `actions` below 4,
+  `prepare: true`, the `~` marker and `!n` damage. Retire those options from
+  AUTHORING.md, keeping `!n` and `~` in the notation only for the solver's own
+  printouts.
 
 ### Decisions to make
 
