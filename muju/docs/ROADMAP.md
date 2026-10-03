@@ -139,6 +139,15 @@ behind it.
   Pieces that only made way (a Mining-0 Radi stepping aside) do not sparkle. Use
   the same rule for "Show me".
 
+- **Stat badges on the selected piece** (owner idea, 2026-10-03). Show ATK, DEF,
+  SPD and MINE as color-coded chips around the selected piece (red, blue, yellow,
+  green). Five prototypes were drawn on the real board, with screenshots and a
+  verdict for each, in [`design/stat-badges/`](design/stat-badges/README.md).
+  The recommendation is V1 (solid chips on the token's corners, legible even on
+  lit crystal squares) plus V5 (during an attack preview, the ATK chip shows
+  "1+1" against that target, and the target shows its current DEF, glowing on a
+  kill). Applies to the whole game, not only Learn to Play.
+
 ### Decisions to make
 
 - **Should a puzzle end your turn automatically when you spend your fourth
