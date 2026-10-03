@@ -113,6 +113,27 @@ behind it.
     always what explains the failure.
   - Keep Undo available on the card after the turn's mining, as it is today.
 
+- **Celebrate what the goal measured, not every piece** (owner, 2026-10-03).
+  Today a solved puzzle sparkles every piece you own plus the flags
+  (`sparkle` in `src/learn/PuzzleScreen.tsx`), so on mine-5 the Radi, which mined
+  0, gets a win ring. "Only pieces that moved" is no better: the Radi moved, a
+  Poṉ that captures in place never moves, and nothing moves in mine-1. Instead,
+  attribute the celebration to whatever the goal measured:
+
+  | Goal | What sparkles |
+  |---|---|
+  | mine | pieces whose take this turn is above 0 (the same set the collect effect uses) |
+  | capture, eliminate | pieces that landed a blow |
+  | reach | pieces on the flags |
+  | home | the invader |
+  | summon | the new commitment's square |
+  | promote | the promoted piece |
+  | keep, survive | the protected pieces |
+  | deny | the denied landing squares |
+
+  Pieces that only made way (a Mining-0 Radi stepping aside) do not sparkle. Use
+  the same rule for "Show me".
+
 ### Also noted by the reviewers
 
 - **exam-6 is the heaviest puzzle.** About 1.4M proof nodes, far over the live
