@@ -167,6 +167,24 @@ behind it.
   "1+1" against that target, and the target shows its current DEF, glowing on a
   kill). Applies to the whole game, not only Learn to Play.
 
+- **Mid-turn puzzles: show the setup; give "already acted" a deliberate look**
+  (owner, 2026-10-03, from teamwork-3 on a phone). teamwork-3 starts mid-turn: its
+  Hi on a2 is marked spent (`F1~`) because it "already" chipped the Sjór, and the
+  player starts with 2 actions. The game draws a spent piece with
+  `.piece-resting { filter: saturate(.5) }`, which turns a Fire piece a muddy dark
+  red that reads as a glitch. Nothing on screen explains the −1, the dim Hi or
+  the missing actions. The `~` marker is also used in five upkeep puzzles and
+  defend-4.
+  - **A `prelude` field.** The puzzle starts from the earlier position and plays
+    its "earlier this turn" moves at the reply cadence, with the real effects
+    (on teamwork-3, the Hi hits the Sjór for 1), then hands over. The damage,
+    the spent piece and the remaining actions explain themselves. Proofs start
+    after the prelude. Re-prove each converted puzzle, since a prelude piece is
+    usually not frozen the way `~` freezes it, which may open new lines.
+  - **The resting look.** Replace the half-saturation filter with an intentional
+    "done for this turn" treatment (dimmed and cooled, perhaps a small moon or
+    check), consistent across elements and armies, in normal play too.
+
 ### Decisions to make
 
 - **Should a puzzle end your turn automatically when you spend your fourth
