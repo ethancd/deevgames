@@ -6,9 +6,9 @@ import { PuzzleSearch } from '../../src/learn/solver';
 import type { PuzzleSpec } from '../../src/learn/types';
 
 /**
- * A puzzle with its homes hidden has no summon shop on screen (summoning is
- * taught with the homes), so its hints and proofs must never summon either.
- * Promotion stays.
+ * A puzzle with its homes hidden comes before the economy arcs: no summon shop
+ * and no promote button on screen, so its hints and proofs never summon or
+ * promote either.
  */
 describe('PuzzleSearch.heroActions in Prepare', () => {
   // Two turns, so Prepare on turn 1 could matter for a purchase; the bank of 1 + 3 mined affords a Hi.
@@ -21,14 +21,16 @@ describe('PuzzleSearch.heroActions in Prepare', () => {
     return new Set(new PuzzleSearch(ctx).heroActions(state).map(a => a.type));
   };
 
-  it('never buys when the homes are hidden, but still promotes', () => {
-    const types = kinds(base);
+  it('never buys or promotes when the homes are hidden', () => {
+    const types = kinds({ ...base, homes: false });
     expect(types.has('BUY_UNIT')).toBe(false);
-    expect(types.has('PROMOTE_UNIT')).toBe(true);
+    expect(types.has('PROMOTE_UNIT')).toBe(false);
     expect(types.has('END_PLACE_PHASE')).toBe(true);
   });
 
-  it('buys when the homes are shown', () => {
-    expect(kinds({ ...base, homes: true }).has('BUY_UNIT')).toBe(true);
+  it('buys and promotes when the homes are shown', () => {
+    const types = kinds(base);
+    expect(types.has('BUY_UNIT')).toBe(true);
+    expect(types.has('PROMOTE_UNIT')).toBe(true);
   });
 });

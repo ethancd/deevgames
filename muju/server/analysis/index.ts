@@ -155,12 +155,12 @@ function checkmate(s: GameState, budget: WorkBudget) {
   const invader = s.turn.currentPlayer, occupier = getHomeOccupier(s.board, invader);
   if (!occupier) {
     const enemy = getOpponent(invader), threat = getHomeOccupier(s.board, enemy);
-    if (!threat) return { result: 'not_applicable', reason: 'No home occupation. Use hypotheticalActions to place a legal occupier.' };
+    if (!threat) return { result: 'not_applicable', reason: 'Neither side has a unit on the enemy home. Use hypotheticalActions to move a legal occupier onto it.' };
     const reply = searchTurn(s, budget, { targetId: threat.id, categories: ['combined'] });
     return { scope: 'remaining current defense turn', rescue: reply.proof, search: reply.search,
       ...(reply.best ? { reply: describeEvidence(s, reply.best, threat.id) } : {}) };
   }
-  if (getHomeOccupier(s.board, getOpponent(invader))) return { result: 'not_applicable', reason: 'Earlier opposing home occupation has priority.' };
+  if (getHomeOccupier(s.board, getOpponent(invader))) return { result: 'not_applicable', reason: 'The defender already occupies the invader’s home; that occupation is judged first, at the defender’s next turn start.' };
   if (s.victoryRule === 'elimination') return { result: 'not_applicable', reason: 'Elimination-only rules.' };
   if (isPhasing(s) && (s.turn.phase !== 'place' || s.upkeepPending)) return {
     occupier: occupier.id, result: 'unknown', reason: 'Phasing home checkmate is checked after the invader survives mining/upkeep. Preview END_ACTION_PHASE and any required PAY_UPKEEP first.',
@@ -178,7 +178,7 @@ function checkmate(s: GameState, budget: WorkBudget) {
     method: proof.method, rescueCategories: proof.categories,
     ...(proof.witness ? { reply: { ...(proof.witness.length <= 32 ? { witness: proof.witness.map(describeAction) } : {
       witnessCommands: Array.from({ length: Math.ceil(proof.witness.length / 32) }, (_, i) => proof.witness!.slice(i * 32, (i + 1) * 32).map(describeAction)) }),
-      basis: isPhasing(s) ? 'Defender Act after turn-start healing. Home occupation prevents all pending arrivals. No pre-action upkeep or promotions.' : 'Defender start before upkeep/healing, with upkeep review enabled. Purchases are forbidden by home occupation. No future defender income.',
+      basis: isPhasing(s) ? 'Defender Act after turn-start healing. The invader on the defender’s home blocks every defender spawn rectangle, so no pending summon arrives. No pre-action upkeep or promotions.' : 'Defender start before upkeep/healing, with upkeep review enabled. Purchases are forbidden by home occupation. No future defender income.',
       setup: isPhasing(s) ? 'Use the defender turn after END_PLACE_PHASE; do not pay upkeep or promote before the rescue.' : 'If upkeep was paid automatically, undo that payment alone before previewing this reply; otherwise enable upkeep review before handoff.' } } : {}),
     cornerEntrances: getAdjacentPositions(getStartCorner(getOpponent(invader))).map(p => ({ square: square(p), unitId: getUnitAt(s.board, p)?.id ?? null })),
     cornerRule: 'Only two adjacent attack squares; three distinct hits need at least five AP.' };

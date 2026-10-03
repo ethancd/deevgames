@@ -46,12 +46,13 @@ export function verifyPuzzle(spec: PuzzleSpec, options: { nodeLimit?: number; ou
   // Shape.
   const heroes = start.board.units.filter(u => u.owner === hero), enemies = start.board.units.filter(u => u.owner === enemy);
   if (!heroes.length) fail('you have no pieces');
-  const needsEnemy = turns > 1 || ctx.timing === 'reply' || kinds.has('summon') || kinds.has('promote') || kinds.has('bank') || kinds.has('home') || !!spec.prepare;
+  const needsEnemy = turns > 1 || ctx.timing === 'reply' || kinds.has('summon') || kinds.has('deny') || kinds.has('promote') || kinds.has('bank') || kinds.has('home') || !!spec.prepare;
   if (!enemies.length && needsEnemy) fail('needs at least one enemy piece: with none, the game ends at Mine & prepare');
   const heroHome = getStartCorner(hero, size), enemyHome = getStartCorner(enemy, size);
   if (spec.homes && enemies.some(u => u.position.x === heroHome.x && u.position.y === heroHome.y)) report.notes.push('an enemy piece starts on your home');
   if (spec.homes && heroes.some(u => u.position.x === enemyHome.x && u.position.y === enemyHome.y)) report.notes.push('one of your pieces starts on the enemy home');
-  if ((kinds.has('home') || kinds.has('summon') || kinds.has('hold')) && !spec.homes) fail('home, hold and summon goals need `homes: true`');
+  if ((kinds.has('home') || kinds.has('summon') || kinds.has('hold') || kinds.has('deny')) && !spec.homes) fail('home, hold, summon and deny goals need `homes: true`');
+  if (kinds.has('deny') && !(start.pendingSummons ?? []).some(p => p.owner === enemy)) fail('a deny goal needs enemy summons in `pending` (owner: the enemy)');
   for (const p of parseBoard(spec.board).pieces) if (p.owner === hero && p.damage) fail('your own pieces cannot start damaged (they heal at your turn start)');
   if (spec.side === 'black' && turns > 1) report.notes.push('multi-turn puzzle played as Black');
 
@@ -100,7 +101,10 @@ export function verifyPuzzle(spec: PuzzleSpec, options: { nodeLimit?: number; ou
       const tried = playLine(start, attempt);
       if (tried.error) { fail(`try ${i + 1}: ${tried.error}`); continue; }
       if (search.wins(tried.state)) { fail(`try ${i + 1} [${attempt.join(' ')}] still wins`); continue; }
-      if (tried.state.phase === 'playing' && tried.state.turn.currentPlayer === enemy) {
+      // The app plays the enemy's refutation only when the puzzle is still open at the hand-over
+      // (or for a home goal, where the defender's turn is the lesson); a line already lost there shows its card at once.
+      const decidedAtHandOver = evaluate(ctx, tried.state) === 'failed' && !kinds.has('home');
+      if (tried.state.phase === 'playing' && tried.state.turn.currentPlayer === enemy && !decidedAtHandOver) {
         // At the app's own budget: a refutation found only by a deeper search is never played.
         const reply = chooseReply(ctx, tried.state, { nodeLimit: LIVE_BUDGET.reply });
         if (!reply.refutes) fail(`try ${i + 1}: the live reply does not find the refutation`);

@@ -70,8 +70,8 @@ test('Phasing upkeep choice stays open, can be undone past, and the keyboard dri
   await expect(page.getByRole('button', { name: 'End turn' })).toBeVisible();
   await expect(page.locator('.progress-clock')).toContainText('released 2');
   // A S D F G H choose the purchase by element, as they do in the unit guide.
-  await page.keyboard.press('s'); await expect(page.getByRole('button', { name: /Summon Radi/ })).toHaveAttribute('aria-pressed', 'true');
-  await page.keyboard.press('Escape'); await expect(page.getByRole('button', { name: /Summon Radi/ })).toHaveAttribute('aria-pressed', 'false');
+  await page.keyboard.press('s'); await expect(page.getByRole('button', { name: /Start summoning Radi/ })).toHaveAttribute('aria-pressed', 'true');
+  await page.keyboard.press('Escape'); await expect(page.getByRole('button', { name: /Start summoning Radi/ })).toHaveAttribute('aria-pressed', 'false');
   await page.getByRole('button', { name: /Undo/ }).click();
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('checkbox', { name: /Ægirinn/ })).toBeChecked();

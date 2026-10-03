@@ -13,7 +13,7 @@ function formatAction(action: AIAction): string {
     case 'ATTACK':
       return `Attacked at (${action.targetPosition.x}, ${action.targetPosition.y})`;
     case 'BUY_UNIT':
-      return `Bought unit at (${action.position.x}, ${action.position.y})`;
+      return `Started summoning a unit at (${action.position.x}, ${action.position.y})`;
     case 'PROMOTE_UNIT':
       return 'Promoted a unit';
     case 'RESIGN':
@@ -67,7 +67,7 @@ export function AIRecap({ actions, onDismiss }: AIRecapProps) {
   const summaryParts: string[] = [];
   if (summary.moves > 0) summaryParts.push(`${summary.moves} move${summary.moves !== 1 ? 's' : ''}`);
   if (summary.attacks > 0) summaryParts.push(`${summary.attacks} attack${summary.attacks !== 1 ? 's' : ''}`);
-  if (summary.placed > 0) summaryParts.push(`${summary.placed} placed`);
+  if (summary.placed > 0) summaryParts.push(`${summary.placed} summon${summary.placed !== 1 ? 's' : ''} started`);
   if (summary.promoted > 0) summaryParts.push(`${summary.promoted} promoted`);
   if (summary.resigned > 0) summaryParts.push('resigned');
 

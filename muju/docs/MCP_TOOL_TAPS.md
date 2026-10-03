@@ -116,7 +116,7 @@ turn that no longer exists; these are the additions.
 | A piece of yours arrived this turn | It can act immediately in Act, **and** it may promote at that same turn's Prepare. This is the fastest legal climb; plan the promotion crystals before you spend in Act. |
 | You want this turn's income to fund a promotion | It does. Mining settles at `END_ACTION_PHASE`, before Prepare, so read `resources` *after* sending `END_ACTION_PHASE` and decide preparation then. |
 | Planning a home invasion | The invader must survive its own end-of-action upkeep before immediate home-checkmate is adjudicated. Preview `END_ACTION_PHASE` and any required `PAY_UPKEEP` first, or `checkmate` reports `unknown`. Also check the kill clock first: at `killClock.plies` = 7 or 8 (c = 8 or 9 after this hand-off) no mate can be proven — `checkmate` reports `not_applicable` — because the clock would pre-empt the defender's reply. |
-| Counting the kill clock | Summoning, arrival and refunds are **not** progress. Only a kill — an attack that removes a unit — resets the clock, to zero, and it only advances at `END_PLACE_PHASE`. It ends the game on mined totals, not a draw; read `killClock.minedTotals` and `killClock.leader`. |
+| Counting the kill clock | Summon commitments, arrivals and refunds are **not** progress. Only a kill — an attack that removes a unit — resets the clock, to zero, and it only advances at `END_PLACE_PHASE`. It ends the game on mined totals, not a draw; read `killClock.minedTotals` and `killClock.leader`. |
 
 ## Habits that cost the 2026-09-12 games
 

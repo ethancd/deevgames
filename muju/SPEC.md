@@ -273,7 +273,8 @@ flags.
 
 If the game continues, start the next player's turn in this order:
 
-- Check their home occupation and existing board elimination (§9).
+- Check their home-occupation win (a unit of theirs that has occupied the enemy
+  home until this turn start) and existing board elimination (§9).
 - Resolve all of their pending summons (§5.2) against that same board: a summon
   becomes an actual tier-1 piece when its square is empty and inside a current
   unblocked spawn rectangle (§5.3); otherwise it disappears and refunds its exact
@@ -365,9 +366,9 @@ This applies unconditionally to moved, attacked and newly arrived units; Mining 
   position decides whether it *survives*, so a temporary intrusion that has left
   again is harmless.
 - A pending summon is not a unit: it cannot occupy a square, block movement,
-  attack, be attacked, mine, promote, anchor or block a rectangle, occupy home,
-  incur upkeep, or postpone elimination. One own commitment per square; real
-  units may move through or stop on that square.
+  attack, be attacked, mine, promote, anchor or block a rectangle, count as an
+  invader on a home, incur upkeep, or postpone elimination. One own commitment
+  per square; real units may move through or stop on that square.
 - Commit any number, limited only by crystals and the legal squares defined
   above — empty, inside a current unblocked rectangle, one own commitment each.
   Committing costs no actions. Higher tiers cannot be bought. Ordinary
@@ -546,18 +547,22 @@ observation, belief, particle-filter and re-determinization rules in
 
 ## 9. Victory
 
-- **Home occupation:** at the start of your turn, before pending summons resolve
-  and before healing, if your unit occupies the opponent's home corner, you win.
-  White targets (9,9); Black targets (0,0). Entering the corner does not immediately
-  win: the opponent has one full turn to remove the invader. Any element or tier
-  qualifies; no additional action, countdown or occupation marker is required.
+- **Home occupation:** you win by occupying the opponent's home corner until
+  your next turn starts. At the start of your turn, before pending summons
+  resolve and before healing, if your unit stands on the opponent's home corner,
+  you win. White targets (9,9); Black targets (0,0). Stepping onto the corner
+  only starts the occupation: the opponent has one full turn to remove the
+  invader. Any element or tier qualifies; no additional action, countdown or
+  occupation marker is required.
   An enemy on the home corner blocks every reinforcement rectangle under the
   existing spawning rules, including every pending arrival. Existing units can
   still move, attack and promote.
-  An invader must survive its **own end-of-action upkeep** before immediate
-  home-checkmate can be adjudicated. The defender's rescue is judged on its
-  actual army and four actions, with no pre-action promotions and no upkeep
-  releases.
+  **Home checkmate (`#`):** if the defender has no legal reply that removes the
+  invader, it cannot be removed before its owner's next turn, and its owner wins
+  immediately. An invader must survive its **own end-of-action upkeep** before
+  immediate home-checkmate can be adjudicated. The defender's rescue is judged
+  on its actual army and four actions, with no pre-action promotions and no
+  upkeep releases.
   **The kill clock can pre-empt checkmate.** `#` is a prediction that the
   invader will still stand on the enemy home at the start of its own next turn;
   it may be awarded only when that turn start is guaranteed. Let `c` be the kill
@@ -582,11 +587,11 @@ observation, belief, particle-filter and re-determinization rules in
   failed summons are not kills. An attack kill resets the counter immediately
   and that turn ends at 0 — the killer's own turn is not counted. Each completed
   turn without a kill adds 1, even when it earns crystals. Chip attacks,
-  movement, summoning, arrival, refunds, promotion and upkeep removal do not
-  reset it — what counts as progress is unchanged since v3.0. The clock advances
-  once per turn, at `END_PLACE_PHASE`. Because the killer's turn is always ply
-  zero, the tenth ply is always the last killer's turn: the most recent killer
-  takes the final move before the count is judged.
+  movement, summon commitments, arrivals, refunds, promotion and upkeep removal
+  do not reset it — what counts as progress is unchanged since v3.0. The clock
+  advances once per turn, at `END_PLACE_PHASE`. Because the killer's turn is
+  always ply zero, the tenth ply is always the last killer's turn: the most
+  recent killer takes the final move before the count is judged.
   A player's **mined total** is the sum of every crystal their units have ever
   taken from the board over the whole game — never reduced by spending, upkeep,
   release or refund. **Black's starting handicap crystals count toward Black's

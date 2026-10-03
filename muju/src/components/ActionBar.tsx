@@ -12,19 +12,21 @@ interface ActionBarProps {
   onUndo?: () => void;
   canUndo?: boolean;
   readOnly?: boolean;
+  /** The Act button hands over in one press (a puzzle whose Prepare has nothing to offer). */
+  endsTurn?: boolean;
 }
 /** "1 action", "0 actions", "2 actions". */
 export const actionCount = (n: number) => `${n} ${n === 1 ? 'action' : 'actions'}`;
 
-export function ActionBar({ phasing = false, actionsRemaining, actionsPerTurn = DEFAULT_ACTIONS_PER_TURN, phase, onEndPlacePhase, onEndActionPhase, isPlayerTurn, onUndo, canUndo = false, readOnly = false }: ActionBarProps) {
+export function ActionBar({ phasing = false, actionsRemaining, actionsPerTurn = DEFAULT_ACTIONS_PER_TURN, phase, onEndPlacePhase, onEndActionPhase, isPlayerTurn, onUndo, canUndo = false, readOnly = false, endsTurn = false }: ActionBarProps) {
   return <div className="action-bar" data-phase={phase}>
     <div className="action-budget" aria-label={`${actionCount(actionsRemaining)} remaining`}>
-      <strong>{phase === 'action' ? actionCount(actionsRemaining) : phasing ? 'Summon & promote' : 'Buy & promote'}</strong>
+      <strong>{phase === 'action' ? actionCount(actionsRemaining) : phasing ? 'Prepare' : 'Buy & promote'}</strong>
       <span aria-hidden="true" data-active={phase === 'action'}>{Array.from({ length: actionsPerTurn }, (_, i) => <i key={i} className={i < actionsRemaining ? 'available' : ''} />)}</span>
     </div>
     {!readOnly && <><button onClick={onUndo} disabled={!canUndo || !isPlayerTurn} title="Undo (⌘Z)">↶ <span className="action-bar-label">Undo</span></button>
     <button className="primary" disabled={!isPlayerTurn} onClick={phase === 'place' ? onEndPlacePhase : onEndActionPhase}>
-      {phase === 'place' ? phasing ? 'End turn →' : 'Start actions →' : phasing ? 'Mine & prepare →' : 'End turn →'}
+      {phase === 'place' ? phasing ? 'End turn →' : 'Start actions →' : phasing && !endsTurn ? 'Mine & prepare →' : 'End turn →'}
     </button></>}
   </div>;
 }

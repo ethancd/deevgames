@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { applyAction } from '../ai/simulate';
+import { applyAction, transitionWithoutCheckmate } from '../ai/simulate';
 import type { AIAction } from '../ai/types';
 import { phaseEndAction } from '../game/legality';
+import { generateAllActions } from '../ai/moves';
 import type { GameState } from '../game/types';
 import { useGameState } from '../hooks/useGameState';
 import { getStartCorner } from '../game/board';
@@ -40,6 +41,13 @@ export interface RunOptions {
   demo?: readonly AIAction[] | null;
   cadence?: number;
   onSolved?: (state: GameState) => void;
+  /**
+   * A home checkmate ends a real game at once. In a home puzzle the defender
+   * still takes its turn, so you see it fail: the screen restarts the attempt
+   * from this position (the defender to move) and the win is judged at your
+   * next turn start.
+   */
+  onContinue?: (from: GameState) => void;
   /** "Show me" reached the goal: celebrate, without recording a solve. */
   onDemoSolved?: (state: GameState) => void;
   onDemoDone?: () => void;
@@ -64,6 +72,37 @@ function invading(ctx: PuzzleContext, state: GameState): boolean {
   return state.board.units.some(u => u.owner === ctx.hero && u.position.x === home.x && u.position.y === home.y);
 }
 
+/**
+ * The defender's turn that a home checkmate (`#`) skips: your turn handed over
+ * exactly as if the game had gone on. `#` proves the defender cannot remove the
+ * invader, so this always ends with you occupying the enemy home at your next
+ * turn start. Only for puzzles whose goal is the home itself; any other goal
+ * that happens to end by `#` keeps the real rule (the game is over).
+ */
+export function checkmateContinuation(ctx: PuzzleContext, state: GameState): GameState | null {
+  if (ctx.spec.goal.kind !== 'home' || state.phase !== 'victory' || state.winner !== ctx.hero || state.victoryReason !== 'home-checkmate') return null;
+  const prepared: GameState = { ...state, phase: 'playing', winner: null, victoryReason: undefined };
+  const handed = transitionWithoutCheckmate(prepared, { type: 'END_PLACE_PHASE' });
+  return handed !== prepared && handed.phase === 'playing' && handed.turn.currentPlayer === ctx.enemy ? handed : null;
+}
+
+/**
+ * True when Mine & prepare would leave nothing to choose in Prepare: no keep
+ * choice, nothing affordable to promote, and no shop (or nothing affordable in
+ * it). The puzzle's button then reads "End turn" and hands over in one press, so
+ * the Prepare step only appears once it has something to offer.
+ */
+export function prepareIsIdle(ctx: PuzzleContext, state: GameState): boolean {
+  if (state.phase !== 'playing' || state.turn.currentPlayer !== ctx.hero || state.turn.phase !== 'action') return false;
+  const mined = applyAction(state, { type: 'END_ACTION_PHASE' });
+  if (mined === state) return false;
+  if (mined.phase !== 'playing' || mined.turn.currentPlayer !== ctx.hero) return true;
+  if (mined.upkeepPending) return false;
+  // Before the economy arcs (homes hidden) there is no shop and no promotion on screen.
+  const economy = !!ctx.spec.homes;
+  return generateAllActions(mined, ctx.hero).every(a => a.type === 'END_PLACE_PHASE' || (!economy && (a.type === 'BUY_UNIT' || a.type === 'PROMOTE_UNIT')));
+}
+
 /** What a hint points at for the first action of a line. */
 export function hintTargetOf(action: AIAction | undefined): HintTarget | null {
   if (!action) return null;
@@ -81,7 +120,7 @@ const sleep = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, m
 const samePlay = (a: GameState, b: GameState) => a.board === b.board && a.players === b.players && a.turn === b.turn
   && a.phase === b.phase && a.pendingSummons === b.pendingSummons && a.upkeepPending === b.upkeepPending;
 
-export function usePuzzleRun({ ctx, start, solver, demo = null, cadence = PUZZLE_CADENCE_MS, onSolved, onDemoSolved, onDemoDone }: RunOptions) {
+export function usePuzzleRun({ ctx, start, solver, demo = null, cadence = PUZZLE_CADENCE_MS, onSolved, onContinue, onDemoSolved, onDemoDone }: RunOptions) {
   const game = useGameState({ initialState: start, persist: false });
   const { state } = game;
   const spec = ctx.spec;
@@ -98,7 +137,7 @@ export function usePuzzleRun({ ctx, start, solver, demo = null, cadence = PUZZLE
   /** The failure follows the enemy's turn: give its last blow time to land before the card. */
   const failedAfterReply = useRef(false);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
-  const callbacks = useRef({ onSolved, onDemoSolved, onDemoDone }); callbacks.current = { onSolved, onDemoSolved, onDemoDone };
+  const callbacks = useRef({ onSolved, onContinue, onDemoSolved, onDemoDone }); callbacks.current = { onSolved, onContinue, onDemoSolved, onDemoDone };
 
   // === Judge every state change ===
   useEffect(() => {
@@ -113,6 +152,13 @@ export function usePuzzleRun({ ctx, start, solver, demo = null, cadence = PUZZLE
     // Whatever is still being searched (a hint, a verdict) is about an earlier position.
     if (before && heroToMove) solver.cancel();
     const status = evaluate(ctx, state);
+    // `#` in a home puzzle: let the move land, then play the defender's turn instead of stopping here.
+    const continuation = status === 'solved' && callbacks.current.onContinue ? checkmateContinuation(ctx, state) : null;
+    if (continuation) {
+      setPhase('enemy'); setFailure(null);
+      setTimeout(() => { if (alive.current) callbacks.current.onContinue?.(continuation); }, cadence * 2);
+      return;
+    }
     if (status === 'solved') {
       solved.current = true;
       setPhase('solved'); setFailure(null);
@@ -138,7 +184,18 @@ export function usePuzzleRun({ ctx, start, solver, demo = null, cadence = PUZZLE
         if (verdict === 'no') { failedAfterReply.current = afterReply; setPhase('failed'); setFailure('stuck'); }
       }).catch(() => { /* superseded or cancelled: the next state asks again */ });
     }
-  }, [state, ctx, spec, start, solver, demo]);
+  }, [state, ctx, spec, start, solver, demo, cadence]);
+
+  // === "End turn" when Prepare has nothing to offer: Mine & prepare, then hand over ===
+  const autoEnd = useRef(false);
+  const endTurn = useCallback(() => { autoEnd.current = true; game.endActionPhase(); }, [game]);
+  useEffect(() => {
+    if (!autoEnd.current) return;
+    const inPrepare = state.phase === 'playing' && state.turn.currentPlayer === ctx.hero && state.turn.phase === 'place' && !state.upkeepPending;
+    if (state.turn.phase === 'action' && state.turn.currentPlayer === ctx.hero && state.phase === 'playing') return; // not yet mined
+    autoEnd.current = false;
+    if (inPrepare && !solved.current && evaluate(ctx, state) === 'pending') game.endPlacePhase();
+  }, [state, ctx, game]);
 
   // === Cards ===
   useEffect(() => {
@@ -242,7 +299,7 @@ export function usePuzzleRun({ ctx, start, solver, demo = null, cadence = PUZZLE
   const lastCheckpoint = checkpoints[checkpoints.length - 1];
   const rewindState = lastCheckpoint !== state ? lastCheckpoint : checkpoints[checkpoints.length - 2] ?? null;
 
-  return { game, phase, failure, cardShown, hint, demoSolved, requestHint, rewindState, locked: phase !== 'playing' };
+  return { game, phase, failure, cardShown, hint, demoSolved, requestHint, rewindState, endTurn, locked: phase !== 'playing' };
 }
 
 export type PuzzleRun = ReturnType<typeof usePuzzleRun>;

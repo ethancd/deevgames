@@ -35,6 +35,12 @@ export type Goal =
   | { kind: 'survive'; pieces?: Square[] }
   /** The enemy does not win in its turn after your last turn. */
   | { kind: 'hold' }
+  /**
+   * The enemy's pending summons (all of them, or those landing on these squares)
+   * are refunded instead of landing at its next turn start: stand on the landing
+   * square, put a piece inside every rectangle that supports it, or remove its anchors.
+   */
+  | { kind: 'deny'; at?: Square[] }
   /** Every listed goal at once. */
   | { kind: 'all'; goals: Goal[] };
 
@@ -78,7 +84,7 @@ export interface PuzzleSpec {
 
 export type PartId = 'basics' | 'combat' | 'elements' | 'economy' | 'winning' | 'review';
 export type ArcIcon = 'move' | 'mine' | 'attack' | 'elements' | 'team' | 'cleave' | 'safety'
-  | 'summon' | 'promote' | 'upkeep' | 'eliminate' | 'invade' | 'defend' | 'review' | 'exam'
+  | 'summon' | 'deny' | 'promote' | 'upkeep' | 'eliminate' | 'invade' | 'defend' | 'review' | 'exam'
   | 'fire' | 'lightning' | 'water' | 'shadow' | 'plant' | 'metal';
 
 export interface Arc {

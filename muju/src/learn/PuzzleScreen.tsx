@@ -10,7 +10,7 @@ import { goalMarks, goalText, makeContext, mineProgress, type PuzzleContext } fr
 import { playLine } from './notation';
 import { loadProgress, markSolved, saveProgress, type LearnProgress } from './progress';
 import type { Arc, PuzzleSpec } from './types';
-import { usePuzzleRun, type Failure, type HintTarget } from './usePuzzle';
+import { prepareIsIdle, usePuzzleRun, type Failure, type HintTarget } from './usePuzzle';
 import { LearnSolverClient } from './worker/client';
 import './learn.css';
 
@@ -57,7 +57,7 @@ export function PuzzleScreen({ spec, arc, index, onExit, onNext, onProgressChang
 
   return <PuzzleRun key={`${spec.id}:${attempt}`} ctx={ctx} arc={arc} index={index} start={start} demo={demo} solver={solver} cadence={cadence}
     usedHint={usedHint} hintArmed={hintArmed} onUseHint={() => setUsedHint(true)} onArmShowMe={() => setHintArmed(true)} onShowMe={showMe}
-    onRetry={() => restart()} onRewind={state => restart(state)} onDemoDone={onDemoDone} onSolved={onSolved} onExit={onExit} onNext={onNext} />;
+    onRetry={() => restart()} onRewind={state => restart(state)} onContinue={state => restart(state)} onDemoDone={onDemoDone} onSolved={onSolved} onExit={onExit} onNext={onNext} />;
 }
 
 /** "Show me" takes over the hint button only once the hint has been on screen this long, so a double tap cannot skip to the demo. */
@@ -66,11 +66,11 @@ export const SHOW_ME_ARM_MS = 1200;
 interface RunProps {
   ctx: PuzzleContext; arc: Arc; index: number; start: GameState; demo: AIAction[] | null; solver: LearnSolverClient; cadence?: number;
   usedHint: boolean; hintArmed: boolean; onUseHint: () => void; onArmShowMe: () => void; onShowMe: () => void;
-  onRetry: () => void; onRewind: (state: GameState) => void; onDemoDone: () => void; onSolved: () => void;
+  onRetry: () => void; onRewind: (state: GameState) => void; onContinue: (state: GameState) => void; onDemoDone: () => void; onSolved: () => void;
   onExit: () => void; onNext: (() => void) | null;
 }
 
-function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hintArmed, onUseHint, onArmShowMe, onShowMe, onRetry, onRewind, onDemoDone, onSolved, onExit, onNext }: RunProps) {
+function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hintArmed, onUseHint, onArmShowMe, onShowMe, onRetry, onRewind, onContinue, onDemoDone, onSolved, onExit, onNext }: RunProps) {
   const { spec, hero } = ctx;
   const boardEffects = useBoardEffects();
   const play = useSoundEffects();
@@ -81,7 +81,8 @@ function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hi
     for (const [i, p] of squares.entries()) setTimeout(() => boardEffects.emit({ kind: 'reveal', x: p.x, y: p.y }), i * 90);
   }, [play, boardEffects, hero, marks]);
   const celebrate = useCallback((state: GameState) => { sparkle(state); onSolved(); }, [sparkle, onSolved]);
-  const run = usePuzzleRun({ ctx, start, solver, demo, cadence, onSolved: celebrate, onDemoSolved: sparkle, onDemoDone });
+  // A home checkmate continues into the defender's turn (a fresh attempt from that position), so you see it fail.
+  const run = usePuzzleRun({ ctx, start, solver, demo, cadence, onSolved: celebrate, onContinue, onDemoSolved: sparkle, onDemoDone });
   const { game, phase, failure, cardShown, hint } = run;
   const { state } = game;
   // `?probe=1` exposes the live position to end-to-end tests that play every puzzle.
@@ -115,6 +116,7 @@ function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hi
     const heroAt = (p: Position) => state.board.units.some(u => u.owner === hero && u.position.x === p.x && u.position.y === p.y);
     for (const flag of marks.flags) add(flag, heroAt(flag) ? 'learn-flag is-reached' : 'learn-flag');
     if (marks.enemyHome) add(marks.enemyHome, 'learn-home-goal');
+    for (const square of marks.deny) add(square, 'learn-deny');
     for (const unit of state.board.units) {
       if (marks.targets.includes(unit.id)) add(unit.position, 'learn-target');
       if (marks.protect.includes(unit.id)) add(unit.position, 'learn-protect');
@@ -153,6 +155,8 @@ function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hi
     await run.requestHint();
     armTimer.current = setTimeout(onArmShowMe, SHOW_ME_ARM_MS);
   };
+  const endsTurn = useMemo(() => phase === 'playing' && state.phase === 'playing' && state.turn.currentPlayer === hero && state.turn.phase === 'action'
+    && (!spec.homes || prepareIsIdle(ctx, state)), [phase, state, hero, spec.homes, ctx]);
   const canUndo = game.canUndo || !!run.rewindState;
   const undo = () => { if (game.canUndo) game.undo(); else if (run.rewindState) onRewind(run.rewindState); };
 
@@ -180,8 +184,14 @@ function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hi
     title: <>{arc.title} <small className="puzzle-number">{index + 1} / {arc.puzzles.length}</small></>,
     goal, bar, overlay, narration,
     locked: run.locked, hideHomes: !spec.homes,
-    // Summoning is taught with the homes: before that, Prepare has no shop.
+    // Summoning and promotion are taught with the homes: before that, Prepare offers nothing.
     hideShop: !spec.homes,
+    hidePromotion: !spec.homes,
+    // When Prepare would offer nothing, one "End turn" press hands over (no Mine & prepare step).
+    endTurn: endsTurn ? run.endTurn : null,
+    // Not your turn: keep the label you were shown, so the button does not flicker to "Mine & prepare".
+    endTurnLabel: !spec.homes || state.turn.currentPlayer !== hero,
+    quietCheckmate: spec.goal.kind === 'home',
     // A lit hint replaces whatever was selected, so the lit piece is the only one marked;
     // a decided puzzle drops its selection, so the board shows only the position.
     clearSelection: phase === 'solved' || phase === 'failed' ? phase : hint,
@@ -193,7 +203,7 @@ function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hi
 const failureText = (failure: Failure | null) => failure === 'stuck' ? 'This line can no longer win. Undo or retry.'
   : failure === 'lost' ? 'The opponent won. Retry.' : 'The deadline passed. Undo or retry.';
 const hintText = (hint: HintTarget) => 'piece' in hint ? ' Hint: the lit piece moves first.'
-  : hint.control === 'end' ? ' Hint: end the phase.' : hint.control === 'shop' ? ' Hint: summon a piece.' : ' Hint: pay upkeep.';
+  : hint.control === 'end' ? ' Hint: end the phase.' : hint.control === 'shop' ? ' Hint: start summoning a piece.' : ' Hint: pay upkeep.';
 
 function SuccessCard({ arc, usedHint, onNext, onRetry, onExit }: { arc: Arc | null; usedHint: boolean; onNext: (() => void) | null; onRetry: () => void; onExit: () => void }) {
   const primary = useRef<HTMLButtonElement>(null);

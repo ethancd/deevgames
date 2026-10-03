@@ -20,7 +20,7 @@ const mountSpec = (spec: PuzzleSpec) =>
 const tap = (x: number, y: number) => fireEvent.click(screen.getByTestId(`cell-${x}-${y}`));
 
 describe('PuzzleScreen', () => {
-  it('shows the arc, the goal with live mining progress, and solves at Mine & prepare', async () => {
+  it('shows the arc, the goal with live mining progress, and solves at End turn (mining happens as the turn ends)', async () => {
     const onProgressChange = vi.fn();
     mount('fx-mine', 0, { onProgressChange });
     expect(screen.getByRole('heading', { name: /Fixtures/ })).toHaveTextContent('1 / 2');
@@ -43,7 +43,7 @@ describe('PuzzleScreen', () => {
     expect(screen.getByTestId('puzzle-progress')).toHaveTextContent('0 / 3');
     expect(screen.getByTestId('puzzle-projected')).toHaveTextContent('+3');
     expect(screen.getByTestId('puzzle-projected')).not.toHaveClass('is-empty');
-    fireEvent.click(screen.getByRole('button', { name: /Mine & prepare/ }));
+    fireEvent.click(screen.getByRole('button', { name: /End turn/ }));
     expect(screen.getByTestId('puzzle-progress')).toHaveTextContent('3 / 3');
     expect(screen.queryByTestId('puzzle-projected')).toBeNull();
     await waitFor(() => expect(screen.getByTestId('puzzle-success')).toBeInTheDocument(), { timeout: 3000 });
@@ -104,7 +104,7 @@ describe('PuzzleScreen', () => {
     const show = await screen.findByRole('button', { name: 'Show me' }, { timeout: SHOW_ME_ARM_MS + 2000 });
     expect(show).toHaveTextContent('Show me');
     tap(0, 0); tap(0, 1); tap(1, 1);
-    fireEvent.click(screen.getByRole('button', { name: /Mine & prepare/ }));
+    fireEvent.click(screen.getByRole('button', { name: /End turn/ }));
     await screen.findByTestId('puzzle-success', {}, { timeout: 3000 });
     expect(loadProgress().solved['fx-mine']).toMatchObject({ clean: false });
     expect(within(screen.getByTestId('puzzle-success')).getByRole('img', { name: 'Solved with a hint' })).toBeInTheDocument();
@@ -133,13 +133,22 @@ describe('PuzzleScreen', () => {
     expect(preview.textContent).not.toMatch(/NaN/);
   });
 
-  it('Prepare has no summon shop before homes (and summoning) are taught, but promotion stays', () => {
+  it('before the economy arcs (homes hidden) one End turn press hands over: no Prepare step, shop or promotion', () => {
+    mount('fx-capture', 0);
+    expect(screen.queryByRole('button', { name: /Mine & prepare/ })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: /End turn/ }));
+    expect(screen.queryByRole('button', { name: /^Start summoning / })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Promote/ })).toBeNull();
+  });
+
+  it('with the economy (homes shown) the button reads Mine & prepare exactly when Prepare has something to offer', () => {
     mount('fx-promote', 0);
+    // Nothing affordable from where the Muju stands: the turn simply ends.
+    expect(screen.getByRole('button', { name: /End turn/ })).toBeInTheDocument();
     tap(0, 0); tap(0, 1); tap(1, 1);
+    // On the 4 it will mine 3, so 1 + 3 pays for a promotion: Prepare has a choice.
     fireEvent.click(screen.getByRole('button', { name: /Mine & prepare/ }));
     expect(screen.getByRole('button', { name: /End turn/ })).toBeEnabled();
-    expect(screen.queryByRole('button', { name: /^Summon / })).toBeNull();
-    expect(document.querySelector('.decision-panel')).toHaveClass('is-quiet');
     tap(1, 1);
     expect(screen.getByRole('button', { name: /^Promote/ })).toBeInTheDocument();
   });
@@ -147,7 +156,7 @@ describe('PuzzleScreen', () => {
   it('a puzzle with homes keeps the shop in Prepare', () => {
     mount('fx-summon', 0);
     fireEvent.click(screen.getByRole('button', { name: /Mine & prepare/ }));
-    expect(screen.getByRole('button', { name: 'Summon Hi · 3 crystals' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Start summoning Hi · 3 crystals' })).toBeInTheDocument();
     expect(document.querySelector('.decision-panel')).not.toHaveClass('is-quiet');
   });
 

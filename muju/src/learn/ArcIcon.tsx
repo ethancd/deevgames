@@ -21,6 +21,7 @@ function glyph(icon: ArcIconId) {
     case 'cleave': return <><path d="m4 6 6 6-6 6" /><path d="m11 6 6 6-6 6" /><path d="m17 9 3 3-3 3" /></>;
     case 'safety': return <><path d="M12 3 5 6v6c0 4.5 3 7.5 7 9 4-1.5 7-4.5 7-9V6z" /><path d="m9 12 2 2 4-4" /></>;
     case 'summon': return <><circle cx="12" cy="13" r="7" strokeDasharray="3 2.2" /><path d="M12 9.5v7M8.5 13h7" /></>;
+    case 'deny': return <><circle cx="12" cy="12" r="8" strokeDasharray="3 2.2" /><path d="M12 8.5v7M8.5 12h7" /><path d="M5.5 18.5 18.5 5.5" /></>;
     case 'promote': return <><path d="m6 14 6-6 6 6" /><path d="M12 8v12" /><path d="M5 4h14" /></>;
     case 'upkeep': return <><path d="M12 3 18 8l-6 13L6 8z" /><path d="M6 8h12" /><path d="M16 17h5M18.5 14.5v5" /></>;
     case 'eliminate': return <><circle cx="12" cy="12" r="8" /><path d="m8.5 8.5 7 7M15.5 8.5l-7 7" /></>;

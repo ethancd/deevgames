@@ -31,7 +31,7 @@ describe('action count copy', () => {
   });
 
   it('keeps the Prepare label outside the action phase', () => {
-    expect(budget(1, 'place').querySelector('strong')!.textContent).toBe('Summon & promote');
+    expect(budget(1, 'place').querySelector('strong')!.textContent).toBe('Prepare');
   });
 
   it.each([[1, 'move costs 1 action'], [2, 'move costs 2 actions']])('board reach label for cost %i', (moveCost, fragment) => {

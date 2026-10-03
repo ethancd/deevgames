@@ -1,7 +1,8 @@
-# Learn to Play: a 164-puzzle course (2026-10-03)
+# Learn to Play: a 174-puzzle course (2026-10-03)
 
-Browser site only. No rule change, no rules-revision bump, and no change to the
-server, MCP or Academy. The design is in
+No rule change and no rules-revision bump. The course is browser-only. The
+wording change below also reaches the MCP host's rules and tool text, without
+changing any behavior or field. The Academy is unchanged. The design is in
 [`../learn/CURRICULUM.md`](../learn/CURRICULUM.md), the craft in
 [`../learn/AUTHORING.md`](../learn/AUTHORING.md), and the research behind both in
 [`../learn/research/`](../learn/research/).
@@ -9,13 +10,13 @@ server, MCP or Academy. The design is in
 ## What changed
 
 **Home screen.** **Learn to Play** is the first item, with the subtitle
-"164 puzzles" (or "k / 164 puzzles" once started). Play vs AI and Play online
+"174 puzzles" (or "k / 174 puzzles" once started). Play vs AI and Play online
 follow, then the collapsed **Other ways to play**, which still includes
 **Replay tutorial**. The old **Puzzles** button and `PuzzleList`, which only
 replayed the tutorial's three scenarios, are gone. The tutorial itself is
 unchanged and still ends on this screen.
 
-**The course.** 164 puzzles in 21 arcs and six parts. Each puzzle is a small
+**The course.** 174 puzzles in 22 arcs and six parts. Each puzzle is a small
 board with one goal line ("Mine 6 crystals this turn", "Capture the Sjór this
 turn", "Within 2 turns, occupy the enemy home until your next turn", "Start
 summoning a Hi on the flag this turn", "Keep all your pieces safe", "Don't
@@ -38,13 +39,41 @@ the board, not against a move list.
 | Plant | 84–89 | Muju / Mallki / Sach'akuna; Mining 3 / 5 / 8, big buckets on big squares; finishes Water and Shadow; loses to Fire |
 | Metal | 90–95 | Poṉ / Veḷḷi / Irumbu; Mining 3 / 4 / 5; tiers 1–2 do 0 to Fire and Lightning; hit and stand |
 | Summoning | 96–105 | Prepare after Mine & prepare; tier 1 only at 3 / 4 / 5; the rectangle from your home to any piece; an enemy inside blocks it; clear, then buy; income pays; the summon lands next turn or refunds; arrivals act at once; an enemy on your home blocks everything |
-| Promotion | 106–113 | 4 then 8 crystals in Prepare; once per piece per turn; income funds it; promote for a threshold or for defense; choose which piece; an arrival may promote |
-| Upkeep | 114–120 | Rent 1 / 2 after mining; tier 1 is free and always kept; the keep panel; a promotion's rent starts next turn; the bank after rent |
-| Elimination | 121–126 | The last capture wins at once; Cleave sweeps; count and assign; a pending summon is not a piece |
-| Invasion | 127–136 | `#` when their whole army cannot remove you; pick the invader they cannot hurt; plug both doors; clear the home; remove the rescuer; survive your own upkeep; the home's crystals pay rent; fortify in Prepare; a two-turn approach |
-| Defense | 137–144 | Remove the invader now; two doors, two attackers; make room; stop the runner; the front door before a juicy capture; plug the doors; a counter-invasion does not save you |
-| Mixed review | 145–158 | Unlabeled mixes: win now? capture? safe (including your own rent and pending summons)? earn? |
-| Final exam | 159–164 | 10×10 positions from the real map |
+| Stopping summons | 106–115 | Their summon lands only if its square is empty and a clear rectangle still covers it: stand on the landing square, step into the rectangle, kill the only anchor (a wound is not enough), kill two anchors, two pieces in two rectangles, one piece in the overlap, a piece on their home stops every summon, plug both doors when they sit on their home |
+| Promotion | 116–123 | 4 then 8 crystals in Prepare; once per piece per turn; income funds it; promote for a threshold or for defense; choose which piece; an arrival may promote |
+| Upkeep | 124–130 | Rent 1 / 2 after mining; tier 1 is free and always kept; the keep panel; a promotion's rent starts next turn; the bank after rent |
+| Elimination | 131–136 | The last capture wins at once; Cleave sweeps; count and assign; a pending summon is not a piece |
+| Invasion | 137–146 | `#` when their whole army cannot remove you; pick the invader they cannot hurt; plug both doors; clear the home; remove the rescuer; survive your own upkeep; the home's crystals pay rent; fortify in Prepare; a two-turn approach |
+| Defense | 147–154 | Remove the invader now; two doors, two attackers; make room; stop the runner; the front door before a juicy capture; plug the doors; a counter-invasion does not save you |
+| Mixed review | 155–168 | Unlabeled mixes: win now? capture? safe (including your own rent and pending summons)? earn? |
+| Final exam | 169–174 | 10×10 positions from the real map |
+
+**Later additions the same day.**
+
+- **Stopping summons.** A tenth arc of the economy part, with a new goal kind
+  (`deny`). It is judged right after your hand-over, when the enemy's pending
+  summons land or are refunded. Goal lines read "Stop the enemy Hi from landing",
+  and the enemy's landing squares get a dashed red ring.
+- **Home puzzles play the defender's turn.** A home checkmate ends a real game
+  at once. In a home puzzle, the defender still takes its turn, so you see it
+  fail. It goes after your invader (move-9's Sjór steps up next to the Hi), and
+  the win is judged when your occupation stands at your next turn start. The
+  checkmate moment is quiet, so there is one celebration. Other goals that end by
+  `#` keep the real rule.
+- **One-press End turn.** When Prepare would offer nothing, the Act button reads
+  "End turn" and hands over in one press. Before the economy arcs (homes hidden)
+  there is no shop and no promotion, so the turn always ends in one press;
+  from Summoning on, "Mine & prepare" appears exactly when Prepare has a choice.
+  The solver agrees: puzzles without homes never summon or promote.
+- **The home notice** in normal play now speaks to the human seat (vs AI,
+  online, puzzles) rather than to whoever is moving. During the AI's turn it no
+  longer tells you to "clear E5 this turn".
+- **Proof fixes:**
+  - an enemy that releases its last pieces at its own upkeep has lost;
+  - invade-3 and invade-8 bank Black's rent, so Black no longer loses at its own
+    upkeep whatever you play;
+  - a home goal's own win must be a real home win;
+  - lines already lost at the hand-over need no live refutation.
 
 **The Learn screens** (`src/learn/`):
 
@@ -79,12 +108,51 @@ the board, not against a move list.
 
 `tests/learn/catalog.test.ts` runs all of this in CI. `tools/learn-check.ts` is
 the author's tool (`--board`, `--live`). `e2e/learn-catalog.spec.ts` solves all
-164 puzzles by tapping the real board in Chrome, using the solver for later
+174 puzzles by tapping the real board in Chrome, using the solver for later
 turns from the live position.
 
 **Small changes to the shared game screen.** The home-occupation notice now
 respects `victoryRule`, and the attack preview no longer shows NaN for a
 Speed-0 piece attacking in place.
+
+## Wording
+
+Owner decision, 2026-10-03. Two actions each have two moments, and every string
+a player reads (in the browser or over MCP) now keeps them apart.
+
+- **Summoning.** Committing a summon in Prepare only starts it. The piece
+  arrives at your next turn start if its square is still empty and inside a
+  clear rectangle; otherwise it is refunded. The commitment is "start
+  summoning": the goal line "Start summoning a Hi on the flag this turn", shop
+  buttons named "Start summoning Hi · 3 crystals", the puzzle hint "Hint: start
+  summoning a piece.", the replay caption "Started summoning Hi at A1", and the
+  AI turn recap "Started summoning a unit at (x, y)" ("1 summon started"). The
+  arrival is "successfully summon", "arrives" or "lands", and arrival records
+  say "arrived" ("White’s summons · 1 arrived"). The bare verb "summon" (and
+  "summonable") is gone from player text; nouns such as "pending summon" and
+  "summon commitments" stay. The Prepare footer label "Summon & promote" is
+  now "Prepare", because any longer wording clipped End turn at 320 px. The
+  Prepare panel title "Place & upgrade" is also "Prepare", and observers read
+  "White is preparing (promotions and summon commitments)" instead of
+  "placing and promoting".
+- **Home.** Stepping onto the enemy home only starts occupying it. The win is
+  occupying it until your next turn: "Occupy the enemy home until your next
+  turn", the notice "Occupy J10 until your next turn", and the result "You
+  occupied the enemy home until your next turn!" Checkmate text says the
+  invader "cannot be removed before its owner’s next turn".
+
+This covers the How to play deck, MICRO MUJU's rules, the shop, the arrival
+status, the keep panel, the home notice and victory screen, the Learn hint,
+the tutorial's narration (stepping onto the home, then checkmate), the AI turn
+recap, the online agent prompt, `muju_rules` (`victory` and `checkmate`, for
+both the full game and MICRO MUJU), the `muju_play` description, three
+checkmate-analysis reasons, SPEC.md §2, §5.2 and §9 (which now defines home
+checkmate explicitly), the agent skill and the MCP TAPs.
+Machine-readable output is unchanged: `victoryReason` values,
+`lastSummoning.summoned`, `pendingSummons`, enum values and ids. Dated records
+and the Academy keep their words. The Academy narration never says "summon",
+and its home lesson already separates arriving from surviving ("Arrive.
+Survive."), so no Academy follow-up is needed.
 
 ## How it was made
 
@@ -98,32 +166,45 @@ The research and design are summarized in CURRICULUM.md. Process:
 
 ## Content DAG
 
-`python3 tools/muju-content-dag.py plan --kind ui`:
+`python3 tools/muju-content-dag.py plan --kind ui`, plus `--kind mcp` for the
+wording change:
 
 | Node | Disposition |
 |---|---|
-| browser-ui | Changed: mode screen, Learn map and puzzle screen, GameView puzzle seam, `useGameState` options. Verified by the unit, proof and e2e results below at phone and desktop sizes. |
+| browser-ui | Changed: mode screen, Learn map and puzzle screen, GameView puzzle seam, `useGameState` options, and the wording above. Verified by the unit, proof and e2e results below at phone and desktop sizes. |
+| mcp-tools | Changed, wording only: `muju_rules` `victory` and `checkmate` (full game and MICRO MUJU), the `muju_play` description and three `checkmate` analysis reasons. No tool, schema, field or behavior changed. Verified by both type checks and the server tests in the vitest run below. |
+| agent-guides | Changed: `public/skills/muju-hono-irumbu/SKILL.md` (three phrases) and one row of `docs/MCP_TOOL_TAPS.md`. The retired `muju-hono-tanka` copy keeps its old text. Not yet compared against a live host. |
 | academy-lessons, academy-audio, academy-video, academy-package, academy-deploy | Verified unchanged. No rule, stat or taught fact changed, and the lessons show no mode screen. |
-| advantage-explorer | Verified unchanged. No engine or rules input changed (`src/game` and `src/ai` are untouched). |
+| advantage-explorer | Affected by the wording change, not yet resolved. No engine or rule changed, but explorer prompts include the `rules` text in `server/observation.ts`, and the explorer source hash also covers `src/game/replay.ts` (the replay caption). Both edits change that hash, so `tests/server/explorer-provenance.test.ts` fails, and existing experiments would become review-only after a server release. Either audit the transition in `server/explorer/compatibility.ts` or keep the old text in those two files. Owner decision pending. |
 | game-validation | See Verification. |
 | static-package, static-deploy | Not yet released from this branch. |
-| server-package, server-deploy | No server code changed. |
+| server-package, server-deploy | Not yet released. The server's behavior is unchanged, but agents see the new MCP text only after the Node host is redeployed. |
 | release-verification | Pending release. |
 
 ## Verification
 
-- `node --import tsx tools/learn-check.ts`: 164 / 164 puzzles proved, with
+- `node --import tsx tools/learn-check.ts`: 174 / 174 puzzles proved, with
   every first-turn scan. `--live`: 148 of the 151 one-turn puzzles judge every
   position after one or two actions within the live budget. In safety-6,
   review-13 and exam-5, some positions are over budget; there the refutation is
   shown at the hand-over instead of at once.
-- `npx vitest run` (the whole repository): 257 files, 3715 tests passed, 17 skipped.
+- `npx vitest run` (the whole repository): 3723 tests passed, 17 skipped, 3 failed. The three failures are `tests/server/explorer-provenance.test.ts`, which waits on the advantage-explorer decision below.
 - `npx tsc --noEmit` is clean. `npx vite build` puts Learn in its own lazy chunk
   (38.7 kB JS, 15.7 kB CSS). Main JS went from 587.5 to 552.8 kB.
-- Playwright against the dev server: `e2e/learn-catalog.spec.ts` (all 164
-  puzzles solved by tapping), `e2e/learn.spec.ts` and `e2e/onboarding.spec.ts`
-  gave 202 passed and 1 failed. The failure is the onboarding "gold dot" test,
-  which fails at the same rate on the unmodified base commit.
+- Playwright against the dev server: `e2e/learn-catalog.spec.ts` (all 174
+  puzzles solved by tapping, including the defender's turn in home puzzles),
+  `e2e/learn.spec.ts` and `e2e/onboarding.spec.ts`: everything passes except
+  the onboarding "gold dot" test, which fails at the same rate on the unmodified
+  base commit.
+- The wording change: both `tsc` checks are clean. In the whole vitest run,
+  the only failure it causes is `tests/server/explorer-provenance.test.ts`
+  (see advantage-explorer above). Playwright against the dev server
+  (learn, learn-catalog, onboarding, mobile, phasing, sounds, upkeep-undo,
+  home-checkmate) passed every case that runs without the room API, except
+  the onboarding "gold dot" test noted above. The room cases (phone-playback,
+  the online phasing, sounds and MCP checkmate cases) were not run. Screenshots
+  at 320×568, 375×667, 390×844, 844×390 and 1280×800 checked the shop, the
+  Prepare footer and the How to play deck.
 - A browser playtest of 38 puzzles at 390×844, 1280×800, 844×390 and 320×568.
   Its findings were fixed, except these, which are left for later: board shift
   when the income and replay rows appear, wordy shop text, the keep panel at

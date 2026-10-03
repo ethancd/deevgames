@@ -23,7 +23,7 @@ The full reports are in `research/`. This section is the short version.
 - **lichess Learn is the model.** It has 110 levels in 18 stages of 3–9 levels
   each, a one-line goal per level, and success judged on the board rather than
   against a move list. Its map never locks anything. We use the same scale and
-  shape: about 165 puzzles in 21 arcs of 6–10 each.
+  shape: 174 puzzles in 22 arcs of 6–14 each.
 - **Isolate, then mix.** The Steps Method teaches each theme on its own sheet,
   then mixes the themes with no label. The tsume books (1-move before 3-move)
   and Kano's *Graded Go Problems* (a spiral of short sections) do the same.
@@ -61,7 +61,7 @@ The full reports are in `research/`. This section is the short version.
 
 ## The course
 
-The counts are the shipped catalog (164 puzzles); `src/learn/catalog/` is the truth.
+The counts are the shipped catalog (174 puzzles); `src/learn/catalog/` is the truth.
 
 | Part | Arc | Puzzles | What it teaches |
 |---|---|---|---|
@@ -74,6 +74,7 @@ The counts are the shipped catalog (164 puzzles); `src/learn/catalog/` is the tr
 | | Safety | 8 | The enemy's trip plus hit; step out of reach; edges and friends block; capture the threat; hit and run |
 | The six elements | Fire, Lightning, Water, Shadow, Plant, Metal | 6 each | Each element's three tiers and names, its stats and job, its matchups and one signature tactic |
 | Crystals | Summoning | 10 | Prepare after Mine & prepare; tier 1 only, 3/4/5; the spawn rectangle from your home to any piece of yours; an enemy inside blocks it; this turn's income pays; arrival next turn, refund if blocked; arrivals act at once |
+| | Stopping summons | 10 | Their summon lands only if its square is empty and some clear rectangle still supports it: stand on the landing square, step into the rectangle, remove the anchor (a kill, not a wound), block two rectangles, one piece in the overlap, their home is in every rectangle, both doors when they sit on their home |
 | | Promotion | 8 | 4 then 8 crystals, one tier, once per turn, in Prepare; income funds it; promote for a job (a threshold, a defense) |
 | | Upkeep | 7 | Rent 1 / 2 for tier 2 / 3 after mining; tier 1 is free; choose what to keep when short; plan income for rent |
 | Winning | Elimination | 6 | The last capture wins at once; sweep with Cleave; count the enemy |
@@ -266,6 +267,32 @@ matchups. Facts to build on (all from `units.ts`):
 8. Arrivals act at once: summon now, capture with it next turn.
 9. An enemy on your home blocks every rectangle: remove it first.
 10. Conclusion.
+
+### Stopping summons (`deny`)
+
+Goals are "Stop the enemy Hi from landing" or "Stop all 3 enemy summons from
+landing", judged right after your hand-over: the enemy's turn starts by landing
+its pending summons, and each one lands only if its square is empty and some
+clear rectangle (from its home to one of its pieces, with none of yours inside)
+still contains it; otherwise it vanishes and refunds. Keep a spare enemy piece
+whose own rectangle does not cover the summon, so that a kill is never a cheap
+elimination win.
+
+1. Stand on the landing square.
+2. Step into the rectangle anywhere, not on the square itself (the landing square
+   is out of reach or guarded).
+3. Kill the only anchor.
+4. A wound is not enough: chip damage leaves the anchor standing; kill it with the
+   right attacker, or block instead.
+5. Two anchors cover the square: remove both (Cleave helps), or block both rectangles.
+6. Two summons, two rectangles: two pieces step in.
+7. One piece in the overlap stops both: every rectangle contains their home
+   corner's neighborhood, so the rectangles overlap; the budget allows one piece.
+8. Their home is in every rectangle: a piece thrown onto their home stops every
+   summon at once (keep it removable, so it is not a `#` win instead).
+9. They sit on their own home: every other rectangle contains one of the home's
+   two neighbors, so plug both doors.
+10. Conclusion: several summons, kills and blocks combined, on a bigger board.
 
 ### Promotion (`promote`)
 

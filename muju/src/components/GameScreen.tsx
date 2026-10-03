@@ -66,8 +66,19 @@ export interface PuzzleChrome {
   /** The board is inert while the enemy replies, during "Show me", and once the puzzle is decided. */
   locked?: boolean;
   hideHomes?: boolean;
-  /** Prepare without the summon shop (puzzles before summoning is taught). Promotion stays. */
+  /** Prepare without the summon shop (puzzles before summoning is taught). */
   hideShop?: boolean;
+  /** No promote button either (puzzles before the economy arcs show no Prepare choices at all). */
+  hidePromotion?: boolean;
+  /**
+   * When Prepare would offer nothing, the Act button reads "End turn" and hands
+   * over in one press (Mine & prepare, then End turn); the Enter shortcut follows.
+   */
+  endTurn?: (() => void) | null;
+  /** The Act button reads "End turn" even when it is not yours to press (the opponent's turn in a puzzle without Prepare). */
+  endTurnLabel?: boolean;
+  /** A home checkmate here is not the end: the defender's turn plays on, and the win celebrates then. */
+  quietCheckmate?: boolean;
   /** Whenever this changes to a new truthy value, every selection and preview is cleared (a hint has lit something else). */
   clearSelection?: unknown;
   shellClassName?: string;
@@ -142,7 +153,8 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
   const shownBoard = playback ? replayFrame?.board ?? playback.replay.initialBoard : state.board;
   const ownBoardEffects = useBoardEffects();
   const boardEffects = puzzle?.boardEffects ?? ownBoardEffects;
-  useGameEffects({ board: shownBoard, state, quiet: !!analysis?.reviewing }, boardEffects.emit);
+  useGameEffects({ board: shownBoard, state, quiet: !!analysis?.reviewing
+    || (!!puzzle?.quietCheckmate && state.phase === 'victory' && state.victoryReason === 'home-checkmate') }, boardEffects.emit);
 
   const [viewedSummonId, setViewedSummonId] = useState<string | null>(null);
   const viewedSummon = state.pendingSummons?.find(s => s.id === viewedSummonId);
@@ -679,7 +691,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
       if (state.turn.phase === 'place') {
         endPlacePhase();
       } else if (state.turn.phase === 'action') {
-        endActionPhase();
+        (puzzle?.endTurn ?? endActionPhase)();
       }
       return;
     }
@@ -756,7 +768,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
     // === Place phase shortcuts ===
     if (state.turn.phase === 'place') {
       // P: Promote the selected unit
-      if (key === 'p' && selectedPlaceUnitId && !micro) {
+      if (key === 'p' && selectedPlaceUnitId && !micro && !puzzle?.hidePromotion) {
         e.preventDefault();
         const unit = getUnitById(state.board, selectedPlaceUnitId);
         if (unit) {
@@ -928,9 +940,13 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
     && !(state.turn.phase === 'place' && interactive && !puzzle.hideShop);
   const lastSquare = boardSize(state.board) - 1;
   const whiteHome = 'A1', blackHome = squareName({ x: lastSquare, y: lastSquare });
-  const homeNotice = state.victoryRule === 'elimination' ? '' : getHomeOccupier(state.board, state.turn.currentPlayer === 'white' ? 'black' : 'white')
-    ? `Clear ${state.turn.currentPlayer === 'white' ? whiteHome : blackHome} this turn or lose`
-    : getHomeOccupier(state.board, state.turn.currentPlayer) ? `Hold ${state.turn.currentPlayer === 'white' ? blackHome : whiteHome} until your next turn` : '';
+  // Spoken to the person at this screen: the human seat when there is exactly one
+  // (vs AI, online, a puzzle), otherwise whoever is moving (pass and play).
+  const noticeViewer = humanPlayer ?? state.turn.currentPlayer;
+  const noticeOpponent = noticeViewer === 'white' ? 'black' : 'white';
+  const homeNotice = state.victoryRule === 'elimination' ? '' : getHomeOccupier(state.board, noticeOpponent)
+    ? `Clear ${noticeViewer === 'white' ? whiteHome : blackHome} ${state.turn.currentPlayer === noticeViewer ? 'this turn' : 'on your next turn'} or lose`
+    : getHomeOccupier(state.board, noticeViewer) ? `Occupy ${noticeViewer === 'white' ? blackHome : whiteHome} until your next turn` : '';
   const canReplay = !online?.playingIncoming && (isCurrentPlayerHuman || observing) && !isThinking && state.phase === 'playing' && !showPassOverlay &&
     !showReplay && !!game.lastTurnReplay && game.lastTurnReplay.player !== state.turn.currentPlayer;
   const replayUnavailable = observing ? 'Watch the last completed turn.' : !game.lastTurnReplay ? 'Available after your opponent completes a turn.'
@@ -940,7 +956,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
       : ['MOVE', 'ATTACK'].includes(replayFrame.action.type) ? 'action' : null
     : state.turn.phase;
   const phaseHint = analysis?.reviewing ? 'Reviewing a saved position. Explore from here to try a private variation.' : analysis?.result ? analysis.result : showReplay ? 'Replaying the last completed turn…'
-    : observing ? !online.ready ? 'Waiting for both players to join.' : `${playerNames[state.turn.currentPlayer]} is ${state.upkeepPending ? 'choosing upkeep' : state.turn.phase === 'place' ? 'placing and promoting' : 'taking actions'}. Tap a unit to inspect it.`
+    : observing ? !online.ready ? 'Waiting for both players to join.' : `${playerNames[state.turn.currentPlayer]} is ${state.upkeepPending ? 'choosing upkeep' : state.turn.phase === 'place' ? !phasing ? 'placing and promoting' : micro ? 'preparing (summon commitments)' : 'preparing (promotions and summon commitments)' : 'taking actions'}. Tap a unit to inspect it.`
     : online && !online.ready ? 'Share your invitation to bring in the other player.'
     : online?.busy ? 'Confirming your move…'
     : puzzle?.locked ? (state.turn.currentPlayer !== humanPlayer && state.phase === 'playing' ? 'Opponent’s turn' : '')
@@ -1027,14 +1043,14 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
           : shownUnit || selectedPurchaseDefinitionId ? <UnitInfo phasingIn={!!summonPreview} unit={shownUnit} previewDefinitionId={selectedPurchaseDefinitionId}
               cellInfo={selectedUnitCell}
               isPlacePhase={state.turn.phase === 'place' && interactive} isActionPhase={state.turn.phase === 'action' && interactive}
-              resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView} inspectOnly={inspectOnly} showNextTier={observing}
+              resources={currentPlayerState.resources} onPromote={handlePromote} hidePromotion={!!puzzle?.hidePromotion} isEnemyView={isEnemyView} inspectOnly={inspectOnly} showNextTier={observing}
               onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer} actionsRemaining={state.turn.actionsRemaining}
-              showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} micro={micro} />
+              showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} micro={micro} phasing={phasing} />
           // A puzzle reads its goal line instead of instructions: idle, the panel stays quiet.
           : puzzle ? <div className="selection-hint is-puzzle">{puzzle.locked && phaseHint ? <strong>{phaseHint}</strong> : null}</div>
           : <div className={`selection-hint${showTurnTimer ? ' is-thinking' : ''}`}>
               {showTurnTimer && turnClock && <AIThinkingTimer budgetMs={turnClock.budgetMs} spentMs={turnClock.spentMs} searchingSince={turnClock.searchingSince} />}
-              <strong>{observing ? 'Watching live' : isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? micro ? 'Prepare' : 'Place & upgrade' : 'Your next move'}</strong>
+              <strong>{observing ? 'Watching live' : isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? micro || phasing ? 'Prepare' : 'Place & upgrade' : 'Your next move'}</strong>
               {/* SAY WHAT THE CLOCK MEANS. While a turn clock is running the
                   phase hint has nothing to do with the seat that is thinking,
                   and the engines legitimately move with part of the wedge left —
@@ -1042,7 +1058,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
                   third rephrasing of "thinking". */}
               <p>{turnClock ? `Up to ${formatTurnSeconds(Math.round(turnClock.budgetMs / 1000))} · moves as soon as it's ready` : phaseHint}</p>
               {/* The dial takes the third line's room; the advice returns with it. */}
-              {!showTurnTimer && !puzzle && <small>Hold the enemy home until your next turn, or eliminate every enemy unit.</small>}</div>}
+              {!showTurnTimer && !puzzle && <small>Occupy the enemy home until your next turn, or eliminate every enemy unit.</small>}</div>}
         </section>
       </div>
       <footer className="play-footer">
@@ -1056,7 +1072,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
         {!analysis?.reviewing && (() => {
           const bar = <ActionBar phasing={phasing} actionsRemaining={state.turn.actionsRemaining} actionsPerTurn={actionsPerTurn} phase={state.turn.phase}
             readOnly={observing}
-            onEndPlacePhase={endPlacePhase} onEndActionPhase={endActionPhase}
+            onEndPlacePhase={endPlacePhase} onEndActionPhase={puzzle?.endTurn ?? endActionPhase} endsTurn={!!puzzle?.endTurn || !!puzzle?.endTurnLabel}
             isPlayerTurn={interactive} onUndo={() => { setPreview(null); undo(); }} canUndo={canUndo && interactive} />;
           // A puzzle's thumb bar puts Retry and Hint beside the game's own action bar.
           return puzzle ? <div className="learn-thumb-bar">{puzzle.bar}{bar}</div> : bar;

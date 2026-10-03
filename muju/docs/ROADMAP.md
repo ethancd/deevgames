@@ -40,21 +40,10 @@ commitments; each becomes a dated `docs/changes/` record when it is executed.
     keep their wording.
   - **Code names:** internal identifiers (`cleave-status`, test names, lab
     tooling) can follow later.
-- **Say "start summoning" vs "successfully summon", and "start occupying" vs "occupy
-  until your next turn", everywhere** (added 2026-10-03). Learn to Play's goal
-  lines already do: "Start summoning a Hi on the flag this turn" means commit the
-  summon, "Successfully summon a Hi" means it lands at your next turn start,
-  and "Occupy the enemy home until your next turn" is the win, while merely
-  standing on it is "start occupying". Bring the rest of the game's wording in
-  line where it blurs these:
-  - the shop's "Summon Hi · 3 crystals" buttons only start a summon;
-  - home notices and the How to play deck should keep "arrive" separate from
-    "hold until your next turn";
-  - so should the MCP rules text and the Academy.
 
 ## Learn to Play follow-ups (added 2026-10-03)
 
-Left open when the 164-puzzle course shipped. See
+Left open when the 174-puzzle course shipped. See
 `docs/changes/2026-10-03-learn-to-play.md`, and the playtest and review notes
 behind it.
 
@@ -116,3 +105,155 @@ behind it.
 - **Proof tooling:** multi-turn puzzles report no "wins W/T" count, so a second
   solution there (mine-8 had one through the shop, now closed) is only found
   by hand. Count winning first turns for multi-turn puzzles too.
+
+## Learn to Play, the advanced course: about 200 more puzzles (added 2026-10-03)
+
+The beginner course teaches every rule, mostly one turn at a time. An advanced
+course would teach combinations: plans that take two or three turns, and that
+win against the opponent's best reply. Arc ideas are below, with example goal
+lines. Use the current vocabulary throughout: "Bonus Attacks", not "Cleave";
+"start summoning" versus "successfully summon"; "occupy the enemy home until
+your next turn". Counts are rough.
+
+### Economy over several turns
+
+- **Mining plans** (about 12). For example: "Mine 30 crystals in 3 turns".
+  - Relocate miners as squares run dry.
+  - Route a slow Plant through rich squares.
+  - Choose between the near 4 now and the far 16 later.
+  - "Mine 20 in 3 turns" with a Radi clearing the road.
+  - Mine while a raider threatens your best square.
+- **Invest or save** (about 12). For example: "Mine 25 crystals in 3 turns" from
+  a bank of 5.
+  - Buy a Muju now so it pays back by turn 3, or promote the Muju already on a 16.
+  - The Plant climb 3 + 5 + 8.
+  - "Keep 10 crystals in the bank in 3 turns" when rent eats into income.
+  - When saving beats spending.
+- **Starve and squeeze** (about 10).
+  - Stand on their income squares so their tier-3 piece cannot pay its rent and
+    is released (a new "release" goal: "Make them release the Kagari in 2 turns").
+  - Kill the miner that funds their wall.
+  - Trade one of your rents for two of theirs.
+- **The crystal race** (about 10). For example: "Mine more than Black in 3 turns"
+  (a new comparative goal).
+  - Deny the contested 16s.
+  - Block their route to the center 8s.
+  - Mine and deny with the same move.
+
+### Promotion and summon combinations
+
+- **Promote the right piece** (about 14). The promotion pays off next turn, so the
+  goal is the follow-up. For example: "Capture the Veḷḷi in 2 turns" with three
+  candidates and money for one.
+  - Hi → Honō to one-shot a Sjór or Veḷḷi.
+  - Sjór → Straumr to survive the reply.
+  - Poṉ → Veḷḷi to gain a step.
+  - Muju → Mallki to gain the 1 attack that finishes a Shadow piece.
+  - Radi → Umeme for the reach to invade.
+  - Promote the invader in Prepare for `#`.
+  - "Capture the Ægirinn in 3 turns" needs a Karanlık: summon a Loş, then promote
+    it twice. Each step is visible to the enemy and must survive its replies.
+- **Summon tactics** (about 12).
+  - Summon and strike: an arrival acts at once, so place it where it captures next
+    turn and cannot be blocked. For example: "Capture the Honō in 2 turns".
+  - Summon a wall in the door.
+  - Summon a second anchor for a deeper rectangle.
+  - Summon so a Bonus Attacks chain becomes possible.
+  - Protect your anchor so the summon is not refunded.
+  - Summon where their likely reply walks into it.
+- **Army building** (about 12). Choose purchases by matchup over several turns.
+  - Answer a Fire rush with Water.
+  - Answer a Water wall with Plant and Metal.
+  - Answer a Kimbunga raid with Shadow, which takes no damage from Lightning.
+
+### Combination tactics (the Steps Method's motifs, in Muju)
+
+- **Setup moves** (about 12): a quiet first turn after which every reply loses
+  something. For example: "Capture a piece in 2 turns" against every defense.
+- **Forks and double threats** (about 12).
+  - One piece threatens two captures.
+  - A capture threat and a home threat at once, so they cannot answer both.
+  - One summon threatens two squares.
+- **Decoy, deflection and overloading** (about 12).
+  - Lure the rescuer off its door with bait.
+  - One defender must guard both doors and cannot.
+  - Threaten their miner so the guard steps away.
+- **Clearance and interference** (about 10).
+  - Move your own blocker to open a lane or a door.
+  - Drop a piece into their rescue path.
+  - Use a Bonus Attacks chain to clear the road and arrive in the same turn.
+- **Tempo** (about 8).
+  - Win the action count: arrive with the hit still in hand.
+  - Make them spend actions on threats so their counterattack is one short.
+
+### Winning and defending over several turns
+
+- **Mates in 2 and 3** (about 16). For example: "Within 2 turns, occupy the enemy
+  home until your next turn", and the same within 3 turns.
+  - Plug the doors over two turns.
+  - Fortify the invader in time.
+  - Plan the invader's rent across turns.
+  - Break a high-defense guard with chip blows, then step in.
+  - Invade with an ATK-0 Muju that nothing can remove.
+- **Invasion races** (about 10).
+  - Count who lands first.
+  - The first occupation wins, and a counter-invasion does not save you.
+  - Win the race by removing their runner with a tempo move.
+  - Elimination beats occupation.
+- **Defense over two turns** (about 14). For example: "Don't let them win in 2
+  turns" (a two-turn `hold`).
+  - Keep a rescuer in reach.
+  - Plug the doors before the runner arrives.
+  - Stop a summon-and-strike.
+  - Counterattack instead of defending.
+  - Give up a piece to save the home.
+- **Endgames** (about 12): a few pieces each.
+  - The lone invader against the lone defender.
+  - Winning with only a Muju by occupation.
+  - Corner geometry, like the opposition in chess.
+  - Converting a material lead into a home win.
+
+### Real positions and practice
+
+- **The real map, 10×10** (about 10).
+  - Opening plans for the first three turns.
+  - Contesting the central 8s.
+  - Taking an expansion of 16s.
+  - Surviving an early Radi rush.
+- **From real games** (about 16). Harvest positions from AI-vs-AI and online games
+  where the solver proves a forced win in one or two turns, the way lichess
+  builds its puzzles from games, then curate them.
+- **Optimization with par** (about 10). For example: "Mine as many as you can this
+  turn" or "Capture all with the fewest actions", with stars against par
+  (lichess Learn's scoring), never pass or fail.
+- **Black's side** (mixed in, about 8): defend and invade toward a1.
+- **Optional clock and handicap arc.** It is out of the beginner course by owner
+  decision, but advanced players meet the kill clock. "Win on mined totals before
+  the clock" is a candidate if wanted.
+
+### What the framework needs first
+
+- **Three-turn search.** Today's exhaustive ∃∀∃ proof is fine for two turns on
+  small boards. Three turns need iterative deepening, move-order heuristics and a
+  persistent transposition table. Live hints and replies need it too, or
+  precomputed reply tables per puzzle.
+- **Enemy purchases in replies,** which matter from three turns on
+  (`opponentBuys`), with tight banks so the search stays small.
+- **New goal kinds:**
+  - comparative mining ("mine more than Black");
+  - enemy income caps;
+  - forcing a release at upkeep;
+  - "win by any means";
+  - multi-turn `hold`;
+  - par scoring.
+- **Uniqueness checks for multi-turn puzzles:** count winning first turns, as
+  one-turn puzzles already do, so cooks are found automatically.
+- **A position harvester:** scan recorded games for solver-proved forced wins,
+  rank them by how few winning lines there are, and tag motifs automatically
+  (fork, deflection, Bonus Attacks chain, door plug).
+- **Progress features at scale:**
+  - puzzle ratings, like lichess's puzzle Glicko;
+  - a review queue that resurfaces failed puzzles as near-variants (spaced
+    repetition, not rote repeats);
+  - practice by theme;
+  - a daily puzzle.

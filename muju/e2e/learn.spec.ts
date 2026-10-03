@@ -49,11 +49,17 @@ async function playByTapping(page: Page, spec: PuzzleSpec, line: readonly string
           await page.getByRole('button', { name: 'Confirm attack' }).click();
           break;
         }
-        case 'END_ACTION_PHASE': await page.getByRole('button', { name: /Mine & prepare/ }).click(); break;
-        case 'END_PLACE_PHASE': await page.getByRole('button', { name: /End turn/ }).click(); break;
+        // "Mine & prepare", or "End turn" when Prepare has nothing to offer (it then hands over in one press).
+        case 'END_ACTION_PHASE': await page.locator('.action-bar button.primary').click(); break;
+        case 'END_PLACE_PHASE': {
+          // Skip it when the one-press End turn has already handed over.
+          await page.waitForTimeout(250);
+          if (await page.locator('.action-bar[data-phase="place"]').count()) await page.getByRole('button', { name: /End turn/ }).click();
+          break;
+        }
         case 'BUY_UNIT': {
           const def = getUnitDefinition(action.definitionId);
-          await page.getByRole('button', { name: `Summon ${def.name} · ${def.cost} crystals`, exact: true }).click();
+          await page.getByRole('button', { name: `Start summoning ${def.name} · ${def.cost} crystals`, exact: true }).click();
           await cell(page, action.position.x, action.position.y).click();
           break;
         }
@@ -142,7 +148,9 @@ test('the first puzzle is solved by tapping, the check persists on the map, and 
   await expect(page.locator('.progress-clock')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'How to play' })).toHaveCount(0);
   await expect(page.locator('.score-strip')).toContainText('Opponent');
-  await expect(page.getByRole('button', { name: /Mine & prepare/ })).toBeVisible();
+  // Before the economy arcs the turn ends in one press: there is no Mine & prepare step.
+  await expect(page.getByRole('button', { name: /End turn/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Mine & prepare/ })).toHaveCount(0);
   await expect(page.getByTestId('puzzle-narration')).toContainText(goalText(first.puzzle));
   // The player's saved match is never touched.
   expect(await page.evaluate(() => localStorage.getItem('elemental-tactics-save'))).toBeNull();
@@ -237,10 +245,8 @@ test('the enemy replies through the real game: a survive goal is judged after it
   await expect(page.getByTestId('puzzle-goal')).toContainText('Keep all your pieces safe');
   // Standing still is already lost, but nothing says so yet: the turn may end, and the
   // opponent's turn is the explanation. The card comes after the Sjór's strike.
-  await playByTapping(page, spec, ['mine']);
-  await expect(page.getByRole('button', { name: /End turn/ })).toBeEnabled();
-  await expect(page.getByTestId('puzzle-failure')).toHaveCount(0);
-  await playByTapping(page, spec, ['end']);
+  // One End turn press hands over (no Prepare before the economy arcs); no card before the strike.
+  await playByTapping(page, spec, ['mine', 'end']);
   await expect(page.locator('.turn-strip')).toContainText('Opponent');
   const failure = page.getByTestId('puzzle-failure');
   await expect(failure).toBeVisible({ timeout: 12000 });
@@ -368,14 +374,15 @@ test('a Poṉ attacking from where it stands previews its cost, never NaN', asyn
 test('Prepare shows the summon shop only once homes (and summoning) are taught', async ({ page }) => {
   const bank = fixtureById('fx-bank')!;
   await page.goto('./?learn=fx-bank&fixture=1');
+  // Before the economy arcs the Act button is End turn: one press hands over, with no Prepare and no shop.
+  await expect(page.getByRole('button', { name: /Mine & prepare/ })).toHaveCount(0);
   await playByTapping(page, bank, ['a1-a2', 'a2-b2', 'mine']);
-  await expect(page.getByRole('button', { name: /End turn/ })).toBeEnabled();
-  await expect(page.getByRole('button', { name: /^Summon / })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^Start summoning / })).toHaveCount(0);
   // Summoning: walk the Hi past the flag (standing still could no longer win), then Prepare has the shop.
   await page.goto('./?learn=summon-2');
   const summon = PUZZLES.find(e => e.puzzle.id === 'summon-2')!.puzzle;
   await playByTapping(page, summon, ['b1-d3', 'mine']);
-  await expect(page.getByRole('button', { name: 'Summon Hi · 3 crystals', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Start summoning Hi · 3 crystals', exact: true })).toBeVisible();
   await expect(page.getByTestId('puzzle-failure')).toHaveCount(0);
 });
 
@@ -453,7 +460,7 @@ for (const [width, height] of [[390, 844], [375, 667], [844, 390], [1280, 800]] 
     const twoBoard = (await page.locator('.battle-board').boundingBox())!;
     await playByTapping(page, two, two.solution);
     await expect(page.locator('.turn-strip')).toContainText('Turn 2', { timeout: 10000 });
-    await expect(page.getByRole('button', { name: /Mine & prepare/ })).toBeEnabled({ timeout: 10000 });
+    await expect(page.locator('.action-bar button.primary')).toBeEnabled({ timeout: 10000 });
     await cell(page, 0, 4).click();
     await cell(page, 0, 5).click();
     const success = page.getByTestId('puzzle-success');

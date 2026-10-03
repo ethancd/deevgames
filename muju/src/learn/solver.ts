@@ -58,15 +58,16 @@ export class PuzzleSearch {
 
   /**
    * Your legal actions, minus Prepare verbs that cannot matter. A puzzle with
-   * its homes hidden has no shop on screen (summoning is taught later), so its
-   * hints and proofs never summon either.
+   * its homes hidden comes before the economy arcs: it shows no shop and no
+   * Prepare step at all (its button simply ends the turn), so its hints and
+   * proofs never summon or promote either.
    */
   heroActions(state: GameState): AIAction[] {
     const all = generateAllActions(state, this.ctx.hero);
     if (state.turn.phase !== 'place' || state.upkeepPending) return orderActions(all);
     const { buys, promotes } = this.prepareMatters(state);
-    const shop = buys && !!this.ctx.spec.homes;
-    return all.filter(a => (a.type !== 'BUY_UNIT' || shop) && (a.type !== 'PROMOTE_UNIT' || promotes));
+    const economy = !!this.ctx.spec.homes;
+    return all.filter(a => (a.type !== 'BUY_UNIT' || (buys && economy)) && (a.type !== 'PROMOTE_UNIT' || (promotes && economy)));
   }
 
   private enemyActions(state: GameState): AIAction[] {
@@ -175,16 +176,28 @@ function orderActions(actions: AIAction[]): AIAction[] {
   return [...actions].sort((a, b) => rank[a.type] - rank[b.type]);
 }
 
-/** How menacing an enemy reply looks: wins, then kills, then damage, then closing in. */
+/**
+ * How menacing an enemy reply looks, in priority order: it wins; it takes your
+ * pieces; it goes after your invader on its home (damage, then getting as close
+ * as it can, the way a defender actually tries); it damages your other pieces;
+ * it closes in on them. A reply that cannot refute your line is chosen by this,
+ * so the defender is seen to try.
+ */
 function replyScore(hero: PlayerId, before: GameState, after: GameState): number {
-  if (after.phase === 'victory' && after.winner !== hero) return 1e6;
+  if (after.phase === 'victory' && after.winner !== hero) return 1e12;
   const mine = (s: GameState) => s.board.units.filter(u => u.owner === hero);
-  const lost = mine(before).length - mine(after).length;
-  const damage = mine(after).reduce((sum, u) => sum + u.damageTaken, 0);
   const enemies = after.board.units.filter(u => u.owner !== hero);
-  const targets = mine(after);
-  const closeness = targets.length ? -enemies.reduce((sum, e) => sum + Math.min(...targets.map(t => Math.abs(t.position.x - e.position.x) + Math.abs(t.position.y - e.position.y))), 0) : 0;
-  return lost * 1000 + damage * 50 + closeness;
+  const distance = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+  const lost = mine(before).length - mine(after).length;
+  const size = before.board.cells.length;
+  const home = hero === 'white' ? { x: size - 1, y: size - 1 } : { x: 0, y: 0 };
+  const invaderBefore = mine(before).find(u => u.position.x === home.x && u.position.y === home.y);
+  const invader = invaderBefore && after.board.units.find(u => u.id === invaderBefore.id);
+  const onInvader = invader ? invader.damageTaken * 1e6 - Math.min(...enemies.map(e => distance(e.position, invader.position)), 99) * 1e4 : 0;
+  const others = mine(after).filter(u => u !== invader);
+  const damage = others.reduce((sum, u) => sum + u.damageTaken, 0);
+  const closeness = others.length ? -enemies.reduce((sum, e) => sum + Math.min(...others.map(t => distance(t.position, e.position))), 0) : 0;
+  return lost * 1e9 + onInvader + damage * 50 + closeness;
 }
 
 export type Verdict = 'yes' | 'no' | 'unknown';

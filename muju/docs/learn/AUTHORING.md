@@ -116,6 +116,7 @@ reply.
 | `{ kind: 'bank', atLeast: 4 }` | Keep 4 crystals in the bank this turn | when your last turn ends |
 | `{ kind: 'keep', pieces: ['b2'] }` | Keep the Irumbu this turn | when your last turn ends (survives upkeep) |
 | `{ kind: 'survive' }` / `{ kind: 'survive', pieces: ['b2'] }` | Keep all your pieces safe / Keep the Muju safe | after the enemy's reply |
+| `{ kind: 'deny' }` / `{ kind: 'deny', at: ['d4'] }` | Stop the enemy Hi from landing / Stop all 3 enemy summons from landing | right after your hand-over, when their summons land or are refunded (needs `homes: true` and enemy `pending` summons) |
 | `{ kind: 'hold' }` | Don't let them win | after the enemy's reply (needs `homes: true`) |
 | `{ kind: 'all', goals: [...] }` | joined with "and" | all at once |
 

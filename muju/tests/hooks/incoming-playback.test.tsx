@@ -35,7 +35,7 @@ it('reconstructs missed revisions and includes mining, summoning and handoff', (
   const summoned=advance(mined,[{type:'BUY_UNIT',definitionId:'fire_1',position:{x:0,y:0}}]);
   const ended=advance(summoned,[{type:'END_PLACE_PHASE'}]);
   const frames=incomingFrames(room,ended,'black');
-  expect(frames.map(f=>f.label)).toEqual([expect.stringMatching(/^Mined/),expect.stringMatching(/^Started phasing/),expect.stringMatching(/^Turn complete/)]);
+  expect(frames.map(f=>f.label)).toEqual([expect.stringMatching(/^Mined/),expect.stringMatching(/^Started summoning/),expect.stringMatching(/^Turn complete/)]);
   expect(frames[1].state.pendingSummons).toHaveLength(1);
   expect(frames.at(-1)?.state).toBe(ended.state);
 });

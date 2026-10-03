@@ -14,7 +14,7 @@ export const FIXTURES: readonly PuzzleSpec[] = [
   { id: 'fx-home', idea: 'home', homes: true, banks: { white: 2 }, board: ['.  .  .  .', '.  M3 .  .', '.  .  .  .', 'f1 .  .  .'], goal: { kind: 'home' }, solution: ['b2-d4', 'mine'] },
   { id: 'fx-summon', idea: 'summon', homes: true, banks: { white: 3 }, board: ['.  .  .  .', '.  P1 .  .', '.  .  .  .', '.  .  .  m1'], goal: { kind: 'summon', type: 'F1' }, solution: ['mine', '+F1@a1'] },
   { id: 'fx-arrive', idea: 'arrive', homes: true, banks: { white: 3 }, board: ['.  .  .  .  .  .', '.  P1 .  .  .  .', '.  .  .  .  .  .', '.  .  .  .  .  .', '.  .  .  .  .  .', '.  .  .  .  .  m1'], goal: { kind: 'summon', type: 'F1', arrive: true }, solution: ['mine', '+F1@a2', 'end'] },
-  { id: 'fx-promote', idea: 'promote', banks: { white: 1 }, board: ['P1 .  .', '.  4  .', '.  .  m1'], goal: { kind: 'promote', to: 'P2' }, solution: ['a1-a2', 'a2-b2', 'mine', '^b2'], tries: [['mine']] },
+  { id: 'fx-promote', idea: 'promote', homes: true, banks: { white: 1 }, board: ['P1 .  .', '.  4  .', '.  .  m1'], goal: { kind: 'promote', to: 'P2' }, solution: ['a1-a2', 'a2-b2', 'mine', '^b2'], tries: [['mine']] },
   { id: 'fx-bank', idea: 'bank', board: ['P1 .  .', '.  4  .', '.  .  m1'], goal: { kind: 'bank', atLeast: 3 }, solution: ['a1-a2', 'a2-b2', 'mine', 'end'], tries: [['mine', 'end']] },
   { id: 'fx-keep', idea: 'keep', board: ['M3 P1 .', '.  4  .', '.  .  m1'], goal: { kind: 'keep', pieces: ['a1'] }, solution: ['b1-b2', 'mine', 'end'], tries: [['mine', 'keep b1']] },
   { id: 'fx-survive', idea: 'survive', board: ['.  .  .  .  .', '.  F1 .  .  .', '.  .  .  .  .', '.  .  .  .  .', '.  .  w1 .  .'], goal: { kind: 'survive' }, solution: ['b2-a1', 'mine', 'end'], tries: [['mine', 'end']] },

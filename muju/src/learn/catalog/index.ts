@@ -13,6 +13,7 @@ import { ARC as SHADOW } from './shadow';
 import { ARC as PLANT } from './plant';
 import { ARC as METAL } from './metal';
 import { ARC as SUMMON } from './summon';
+import { ARC as DENY } from './deny';
 import { ARC as PROMOTE } from './promote';
 import { ARC as UPKEEP } from './upkeep';
 import { ARC as ELIMINATE } from './eliminate';
@@ -33,7 +34,7 @@ export const PARTS: { id: PartId; title: string }[] = [
 
 /** Every arc, in the recommended order. Nothing is locked; this is only the suggested path. */
 export const ARCS: readonly Arc[] = [
-  MOVE, MINE, ATTACK, ELEMENTS, TEAMWORK, CLEAVE, SAFETY, FIRE, LIGHTNING, WATER, SHADOW, PLANT, METAL, SUMMON, PROMOTE, UPKEEP, ELIMINATE, INVADE, DEFEND, REVIEW, EXAM,
+  MOVE, MINE, ATTACK, ELEMENTS, TEAMWORK, CLEAVE, SAFETY, FIRE, LIGHTNING, WATER, SHADOW, PLANT, METAL, SUMMON, DENY, PROMOTE, UPKEEP, ELIMINATE, INVADE, DEFEND, REVIEW, EXAM,
 ].filter(arc => arc.puzzles.length > 0);
 
 export { ARC_IDS } from './ids';

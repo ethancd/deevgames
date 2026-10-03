@@ -1,6 +1,6 @@
 import { getStartCorner, getUnitById } from '../game/board';
 import { getUnitDefinition } from '../game/units';
-import type { GameState, PlayerId, Position } from '../game/types';
+import type { GameState, PendingSummon, PlayerId, Position } from '../game/types';
 import { buildPuzzleState, enemyOf, heroOf, pieceIdAt, turnsOf } from './build';
 import { squareOf, typeOf } from './notation';
 import type { Goal, PuzzleSpec } from './types';
@@ -48,8 +48,11 @@ const at = (p: Position, q: Position) => p.x === q.x && p.y === q.y;
 /** One leaf goal against the current state. `final` is true once nothing more can happen. */
 /** Winning the game outright (not the empty-board upkeep win of a puzzle with no enemy). */
 export const DECISIVE = new Set(['elimination', 'home-checkmate', 'home-occupation']);
+/** An enemy that releases its last pieces at its own upkeep has also lost outright, but a
+ * puzzle that never had enemy pieces "wins" that way at Mine & prepare, which is not a win. */
 const decisiveWin = (ctx: PuzzleContext, state: GameState) =>
-  state.phase === 'victory' && state.winner === ctx.hero && DECISIVE.has(state.victoryReason ?? '');
+  state.phase === 'victory' && state.winner === ctx.hero && (DECISIVE.has(state.victoryReason ?? '')
+    || (state.victoryReason === 'upkeep-elimination' && ctx.start.board.units.some(u => u.owner === ctx.enemy)));
 
 function holds(ctx: PuzzleContext, state: GameState, goal: Goal): boolean {
   switch (goal.kind) {
@@ -65,7 +68,7 @@ function holds(ctx: PuzzleContext, state: GameState, goal: Goal): boolean {
     case 'eliminate':
       return !state.board.units.some(u => u.owner === ctx.enemy) || (!ctx.strict && decisiveWin(ctx, state));
     case 'home':
-      return decisiveWin(ctx, state) && (!ctx.strict || state.victoryReason !== 'elimination');
+      return decisiveWin(ctx, state) && (!ctx.strict || state.victoryReason === 'home-checkmate' || state.victoryReason === 'home-occupation');
     case 'promote': {
       const type = typeOf(goal.to);
       if (goal.piece) return getUnitById(state.board, pieceIdAt(ctx.spec, goal.piece))?.definitionId === type;
@@ -91,6 +94,9 @@ function holds(ctx: PuzzleContext, state: GameState, goal: Goal): boolean {
     }
     case 'hold':
       return !(state.phase === 'victory' && state.winner !== ctx.hero);
+    case 'deny':
+      // Judged right after your hand-over, when the enemy's summons have just landed or been refunded.
+      return decisiveWin(ctx, state) || deniedSummons(ctx.spec, goal).every(p => !state.board.units.some(u => u.id === p.id));
     case 'all':
       return goal.goals.every(g => holds(ctx, state, g));
   }
@@ -131,6 +137,12 @@ const isEnemyHome = (spec: PuzzleSpec, square: string) => {
   const corner = getStartCorner(enemyOf(spec), buildPuzzleState(spec).board.cells.length), at = squareOf(square);
   return corner.x === at.x && corner.y === at.y;
 };
+/** The enemy's pending summons at the start that a deny goal targets. */
+function deniedSummons(spec: PuzzleSpec, goal: Extract<Goal, { kind: 'deny' }>): PendingSummon[] {
+  const start = buildPuzzleState(spec);
+  const enemy = enemyOf(spec);
+  return (start.pendingSummons ?? []).filter(p => p.owner === enemy && (!goal.at || goal.at.some(s => { const q = squareOf(s); return q.x === p.position.x && q.y === p.position.y; })));
+}
 const joinAnd = (parts: string[]) => parts.length <= 1 ? parts.join('') : `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}`;
 
 function pieceList(spec: PuzzleSpec, squares: string[]): string {
@@ -165,6 +177,11 @@ function phrase(spec: PuzzleSpec, goal: Goal): string {
     case 'keep': return `Keep ${pieceList(spec, goal.pieces)}`;
     case 'survive': return goal.pieces ? `Keep ${pieceList(spec, goal.pieces)} safe` : 'Keep all your pieces safe';
     case 'hold': return 'Don’t let them win';
+    case 'deny': {
+      const targets = deniedSummons(spec, goal);
+      if (targets.length === 1) return `Stop the enemy ${nameOf(targets[0].definitionId)} from landing`;
+      return targets.length === 2 ? 'Stop both enemy summons from landing' : `Stop all ${targets.length} enemy summons from landing`;
+    }
     case 'all': return joinAnd(goal.goals.map(g => phrase(spec, g)).map((p, i) => i ? p[0].toLowerCase() + p.slice(1) : p));
   }
 }
@@ -174,8 +191,9 @@ export function goalText(spec: PuzzleSpec): string {
   if (spec.text) return spec.text;
   const turns = turnsOf(spec);
   const goals = leaves(spec.goal);
-  const now = goals.filter(g => !needsReply(g));
-  const later = goals.filter(needsReply);
+  // Goals settled at or after your hand-over carry no "this turn".
+  const later = goals.filter(g => needsReply(g) || g.kind === 'deny');
+  const now = goals.filter(g => !later.includes(g));
   const horizon = turns === 1 ? 'this turn' : `in ${turns} turns`;
   const parts: string[] = [];
   if (now.length) {
@@ -191,9 +209,9 @@ export function goalText(spec: PuzzleSpec): string {
 }
 
 /** What the board marks for the goal: flags, prey, pieces to protect, the enemy home. */
-export interface GoalMarks { flags: Position[]; targets: string[]; protect: string[]; enemyHome: Position | null }
+export interface GoalMarks { flags: Position[]; targets: string[]; protect: string[]; enemyHome: Position | null; deny: Position[] }
 export function goalMarks(ctx: PuzzleContext): GoalMarks {
-  const marks: GoalMarks = { flags: [], targets: [], protect: [], enemyHome: null };
+  const marks: GoalMarks = { flags: [], targets: [], protect: [], enemyHome: null, deny: [] };
   for (const goal of leaves(ctx.spec.goal)) {
     if (goal.kind === 'reach') marks.flags.push(...goal.flags.map(squareOf));
     if (goal.kind === 'summon' && goal.at) marks.flags.push(...goal.at.map(squareOf));
@@ -201,6 +219,7 @@ export function goalMarks(ctx: PuzzleContext): GoalMarks {
     if (goal.kind === 'keep') marks.protect.push(...goal.pieces.map(s => pieceIdAt(ctx.spec, s)));
     if (goal.kind === 'survive' && goal.pieces) marks.protect.push(...goal.pieces.map(s => pieceIdAt(ctx.spec, s)));
     if (goal.kind === 'home') marks.enemyHome = getStartCorner(ctx.enemy, ctx.start.board.cells.length);
+    if (goal.kind === 'deny') marks.deny.push(...deniedSummons(ctx.spec, goal).map(p => p.position));
   }
   return marks;
 }

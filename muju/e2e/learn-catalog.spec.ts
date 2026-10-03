@@ -47,11 +47,17 @@ async function tap(page: Page, state: GameState, action: AIAction) {
       await page.getByRole('button', { name: 'Confirm attack' }).click();
       return;
     }
-    case 'END_ACTION_PHASE': await page.getByRole('button', { name: /Mine & prepare/ }).click(); return;
-    case 'END_PLACE_PHASE': await page.getByRole('button', { name: /End turn/ }).click(); return;
+    // "Mine & prepare", or "End turn" when Prepare has nothing to offer (it then hands over in one press).
+        case 'END_ACTION_PHASE': await page.locator('.action-bar button.primary').click(); return;
+    case 'END_PLACE_PHASE': {
+          // Skip it when the one-press End turn has already handed over.
+          await page.waitForTimeout(250);
+          if (await page.locator('.action-bar[data-phase="place"]').count()) await page.getByRole('button', { name: /End turn/ }).click();
+          return;
+        }
     case 'BUY_UNIT': {
       const def = getUnitDefinition(action.definitionId);
-      await page.getByRole('button', { name: `Summon ${def.name} · ${def.cost} crystals`, exact: true }).click();
+      await page.getByRole('button', { name: `Start summoning ${def.name} · ${def.cost} crystals`, exact: true }).click();
       await cell(page, action.position.x, action.position.y).click();
       return;
     }

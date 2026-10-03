@@ -53,6 +53,8 @@ export const ARC: Arc = {
         '.  .  P1 .  .',
       ],
       homes: true,
+      // Black banks the Karanlık's rent, so it survives its own upkeep and the doors are the whole story.
+      banks: { black: 2 },
       goal: { kind: 'home' },
       solution: ['c4-e5', 'c5-d5', 'e3-e4', 'mine'],
       tries: [['c4-e5', 'c5-d5', 'mine', 'end'], ['c4-e5', 'e3-e4', 'mine', 'end'], ['c4-e5', 'mine', 'end']],
@@ -127,7 +129,8 @@ export const ARC: Arc = {
         'f2 .  .  .  .',
       ],
       homes: true,
-      banks: { white: 4 },
+      // Black banks the Honō's rent, so it survives its own upkeep.
+      banks: { white: 4, black: 1 },
       goal: { kind: 'home' },
       solution: ['e3-e5', 'mine', '^e5'],
       tries: [['e3-e5', 'mine', 'end'], ['e3-e5', 'c4-d5', 'mine', 'end']],

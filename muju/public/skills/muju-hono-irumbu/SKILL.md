@@ -37,10 +37,11 @@ default `muju_rules()` describes the full game and is wrong for these rooms.
 - **Two** shared actions per turn. Each unit attacks **at most once per turn**,
   even after a kill (no Cleave). Moves may repeat while actions remain.
 - Fire beats Plant, Plant beats Water, Water beats Fire (+1 / −1).
-- No kill clock or draw by time. Win by home occupation, home checkmate or
-  elimination. `killClock` is `null` in observations.
+- No kill clock or draw by time. Win by occupying the enemy home until your
+  next turn, by home checkmate, or by elimination. `killClock` is `null` in
+  observations.
 - The turn is otherwise the same: act, `END_ACTION_PHASE` (mining), then
-  `BUY_UNIT` summons and `END_PLACE_PHASE` to hand over.
+  `BUY_UNIT` summon commitments and `END_PLACE_PHASE` to hand over.
 - Hosted analysis (`muju_analyze`, `briefing:true`) returns
   `ANALYSIS_UNAVAILABLE`. Use `muju_legal_actions` (move costs, attack outcomes)
   and `muju_preview`.
@@ -286,7 +287,7 @@ Report the winner and stop. Clocks stop on any game result; undo never refunds t
   attacks against the same corner occupier require at least five actions, so only
   two attacks can land in a four-action reply. An invader must first
   survive its own outgoing mining/upkeep; defender rescue uses actual pieces in Act with
-  no pre-action promotion or upkeep release. Occupied home prevents pending arrivals. An inconclusive proof preserves the
+  no pre-action promotion or upkeep release. The invader on the defender's home blocks all of the defender's pending arrivals. An inconclusive proof preserves the
   ordinary reply turn. No checkmate is awarded when the kill clock would end the
   game at or before the defender's reply (the invading hand-off would produce the
   ninth or tenth kill-free ply); the clock decides on mined totals instead, unless
