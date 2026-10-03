@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { createInitialGameState } from '../src/game/board';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
 for(const width of [390,834]) test(`tier-three shop and terminal promotion at ${width}px`,async({page},info)=>{

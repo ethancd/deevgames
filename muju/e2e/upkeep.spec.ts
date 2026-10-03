@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 for (const viewport of [{width:390,height:844},{width:1280,height:800}]) {
   test(`automatic upkeep can be undone and reselected online at ${viewport.width}x${viewport.height}`, async ({page,request},testInfo) => {

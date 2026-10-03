@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './fixtures';
 import { createInitialGameState, createUnit } from '../src/game/board';
 import { UNIT_DEFINITIONS } from '../src/game/units';
 import { SCHEMA_VERSION } from '../src/utils/persistence';

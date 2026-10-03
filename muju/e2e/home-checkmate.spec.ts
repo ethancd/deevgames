@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { createInitialGameState, createUnit } from '../src/game/board';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
 
@@ -12,7 +12,7 @@ test('a phone shows and saves checkmate immediately on the winning move', async 
     sessionStorage.setItem('mate-seeded', 'true');
   }, { state, schemaVersion: SCHEMA_VERSION });
   await page.goto('./');
-  await page.getByRole('button', { name: 'vs AI Play against the computer', exact: true }).click();
+  await page.getByRole('button', { name: 'Play vs AI Play against the computer', exact: true }).click();
   await page.getByRole('button', { name: /Continue saved game/ }).click();
   const workers: string[] = [];
   page.on('worker', worker => workers.push(worker.url()));
@@ -28,7 +28,7 @@ test('a phone shows and saves checkmate immediately on the winning move', async 
   expect(workers).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath('phone-checkmate.png'), fullPage: true });
   await page.reload();
-  await page.getByRole('button', { name: 'vs AI Play against the computer', exact: true }).click();
+  await page.getByRole('button', { name: 'Play vs AI Play against the computer', exact: true }).click();
   await page.getByRole('button', { name: /Continue saved game/ }).click();
   await expect(page.getByText(/Checkmate!.*no legal reply/)).toBeVisible();
 });

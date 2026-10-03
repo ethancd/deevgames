@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 for (const width of [390, 1280]) test(`Phasing local lifecycle, undo, resume and accessible ghosts (${width}px)`, async ({ page }, info) => {
   await page.setViewportSize({ width, height: 900 });

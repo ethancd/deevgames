@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import type { RoomSnapshot, RoomAction } from '../src/online/types';
 
 for (const viewport of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) {

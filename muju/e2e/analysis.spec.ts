@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './fixtures';
 import { createInitialGameState } from '../src/game/board';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
 import { INACTIVITY_LIMIT } from '../src/game/inactivity';
@@ -71,7 +71,7 @@ for (const [width, height] of [[320, 568], [390, 664], [390, 844], [844, 390], [
 
 for (const scenario of [
   { mode: 'Pass & Play', width: 1280 }, { mode: 'Pass & Play', width: 390 },
-  { mode: 'vs AI', width: 390 }, { mode: 'Watch AI', width: 1280 },
+  { mode: 'Play vs AI', width: 390 }, { mode: 'Watch AI', width: 1280 },
 ]) {
   test(`${scenario.mode} can analyze a completed game and explore without changing its saved score at ${scenario.width}px`, async ({ page }, info) => {
     await page.setViewportSize({ width: scenario.width, height: 844 });

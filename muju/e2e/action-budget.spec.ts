@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { INACTIVITY_LIMIT } from '../src/game/inactivity';
 
 test('normal income-earning turns advance the kill clock and end it on mined totals', async ({page}) => {
@@ -66,7 +66,7 @@ for (const side of ['white','black'] as const) test(`four-action AI plays correc
       return Reflect.apply(original,this,args);
     };
   });
-  await page.goto('./');await page.getByRole('button',{name:'vs AI Play against the computer',exact:true}).click();
+  await page.goto('./');await page.getByRole('button',{name:'Play vs AI Play against the computer',exact:true}).click();
   await page.getByRole('radio',{name:side==='white'?'White':'Black',exact:true}).check();
   await page.getByLabel('AI Difficulty',{exact:true}).selectOption('easy');
   await page.getByRole('button',{name:'Start Game',exact:true}).click();

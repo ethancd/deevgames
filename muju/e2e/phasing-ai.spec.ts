@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './fixtures';
 
 /**
  * THE PHASING AI, in a real browser.
@@ -22,7 +22,7 @@ async function playHumanPhasingTurn(page: Page): Promise<void> {
 
 async function startPhasingVsAI(page: Page, difficulty: 'easy' | 'medium' | 'hard', pace: 'quick' | 'normal' | 'deep'): Promise<void> {
   await page.goto('./');
-  await page.getByRole('button', { name: 'vs AI Play against the computer', exact: true }).click();
+  await page.getByRole('button', { name: 'Play vs AI Play against the computer', exact: true }).click();
   await page.getByLabel('AI Difficulty').selectOption(difficulty);
   await page.getByLabel('Thinking time').selectOption(pace);
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
@@ -40,7 +40,7 @@ async function expectAITurnCompletes(page: Page, timeout: number): Promise<void>
 
 test('vs-AI starts under Phasing with no opt-in and no ruleset control', async ({ page }) => {
   await page.goto('./');
-  await page.getByRole('button', { name: 'vs AI Play against the computer', exact: true }).click();
+  await page.getByRole('button', { name: 'Play vs AI Play against the computer', exact: true }).click();
   // No ruleset control anywhere, no preview badge, and nothing to opt into:
   // Phasing is what the AI plays.
   await expect(page.getByRole('radio', { name: /Phasing/ })).toHaveCount(0);

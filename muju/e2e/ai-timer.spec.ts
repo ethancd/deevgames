@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './fixtures';
 
 /**
  * The AI's turn clock, in a real browser: the player picks a thinking time on
@@ -15,7 +15,7 @@ import { test, expect, type Page } from '@playwright/test';
  */
 async function startVsAI(page: Page, difficulty: 'easy' | 'medium' | 'hard', pace: 'quick' | 'normal' | 'deep'): Promise<void> {
   await page.goto('./');
-  await page.getByRole('button', { name: 'vs AI Play against the computer', exact: true }).click();
+  await page.getByRole('button', { name: 'Play vs AI Play against the computer', exact: true }).click();
   await page.getByLabel('AI Difficulty').selectOption(difficulty);
   await page.getByLabel('Thinking time').selectOption(pace);
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();

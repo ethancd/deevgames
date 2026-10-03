@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, seededContext } from './fixtures';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -10,7 +10,7 @@ import { createApp } from '../server/http';
 // server would refuse anything but Phasing.
 test('the same invitation moves the seat between browsers and the previous browser watches', async ({ browser, request }) => {
   const host = await (await request.post('/api/muju/rooms', { data: { name: 'Takeover host', side: 'black' } })).json();
-  const contexts = await Promise.all([browser.newContext(), browser.newContext({ viewport: { width: 390, height: 664 }, hasTouch: true })]);
+  const contexts = await Promise.all([seededContext(browser), seededContext(browser, { viewport: { width: 390, height: 664 }, hasTouch: true })]);
   const [first, second] = await Promise.all(contexts.map(context => context.newPage()));
   const link = `./?room=${host.room.id}#invite=${host.inviteCode}`;
   try {
@@ -123,7 +123,7 @@ test('forks a timed-out partial turn on a phone with new clocks and a working op
   await page.screenshot({ path: testInfo.outputPath('fork-phone-invitation.png') });
   await dialog.getByRole('link', { name: 'Open fork', exact: true }).click();
   await expect(page.getByText('Online · You are black', { exact: true })).toBeVisible();
-  const context = await browser.newContext(), opponent = await context.newPage();
+  const context = await seededContext(browser), opponent = await context.newPage();
   try {
     await opponent.goto(invitation);
     await opponent.getByRole('button', { name: 'Join room', exact: true }).click();

@@ -1,9 +1,9 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, seededContext } from './fixtures';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 
 test('configures clocks only when hosting and shows a live timeout to players and mobile observers', async ({ page, browser, request }, testInfo) => {
-  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const mobile = await seededContext(browser, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const phone = await mobile.newPage();
   try {
     await page.goto('./');
@@ -49,7 +49,7 @@ test('configures clocks only when hosting and shows a live timeout to players an
 });
 
 test('restores a full room on a fresh phone from pasted private credentials', async ({ page, browser, request }, testInfo) => {
-  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const mobile = await seededContext(browser, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const phone = await mobile.newPage();
   try {
     await page.goto('./');
@@ -89,7 +89,7 @@ test('restores a full room on a fresh phone from pasted private credentials', as
 test('multiple observers watch two MCP agents, inspect, replay, and reload without using a saved seat', async ({ page, browser }, testInfo) => {
   const white = new Client({ name: 'white-agent', version: '1' });
   const black = new Client({ name: 'black-agent', version: '1' });
-  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const mobile = await seededContext(browser, { viewport: { width: 390, height: 844 } });
   const phone = await mobile.newPage();
   for (const agent of [white, black]) await agent.connect(new StreamableHTTPClientTransport(new URL('http://127.0.0.1:8928/mcp')));
   const call = async (agent: Client, name: string, args: Record<string, unknown>) => {
@@ -167,7 +167,7 @@ test('multiple observers watch two MCP agents, inspect, replay, and reload witho
 });
 
 for (const actionsPerTurn of [4]) test(`${actionsPerTurn}-action independent browsers join, move, hand off and reconnect without a local save`, async ({ page, browser }) => {
-  const other = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const other = await seededContext(browser, { viewport: { width: 390, height: 844 } });
   const guest = await other.newPage();
   try {
     await page.goto('./');

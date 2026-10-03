@@ -1,9 +1,9 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './fixtures';
 import { createInitialGameState } from '../src/game/board';
 import type { GameState, PlayerId } from '../src/game/types';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
 
-const vsAI = 'vs AI Play against the computer';
+const vsAI = 'Play vs AI Play against the computer';
 /** Phasing is the only ruleset since 2026-09-21. */
 const phasing = () => createInitialGameState(undefined, undefined, 0, 'phasing');
 
