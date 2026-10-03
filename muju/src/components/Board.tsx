@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import type { BoardState, Position, PendingSummon } from '../game/types';
+import type { BoardState, Position, PendingSummon, Unit as UnitState } from '../game/types';
 import { UnitArtwork } from './UnitArtwork';
 import type { MovementRangePosition } from '../game/movement';
 import { boardSize, getUnitAt } from '../game/board';
@@ -29,6 +29,10 @@ interface BoardProps {
   onUnitClick: (unitId: string) => void;
   onSummonClick?: (summonId: string) => void;
   selectedSummon?: string | null;
+  /** Onboarding: hide the home corners and add per-unit / per-square classes. */
+  hideHomeMarkers?: boolean;
+  unitClassName?: (unit: UnitState) => string | undefined;
+  cellClassName?: (position: Position) => string | undefined;
 }
 
 export function Board({
@@ -48,6 +52,7 @@ export function Board({
   onCellClick,
   onUnitClick, onSummonClick, selectedSummon,
   previewPosition, previewUnitPosition, actionsRemaining = 4,
+  hideHomeMarkers = false, unitClassName, cellClassName,
 }: BoardProps) {
   const isValidMove = (pos: Position) =>
     validMoves.some((m) => m.x === pos.x && m.y === pos.y);
@@ -104,9 +109,9 @@ export function Board({
             }).join('; ');
 
             return (
-              <div key={`${x}-${y}`} className="board-square">
+              <div key={`${x}-${y}`} className={`board-square${cellClassName?.(pos) ? ` ${cellClassName(pos)}` : ''}`}>
                 <Cell
-                  cell={cell} boardSize={size}
+                  cell={cell} boardSize={size} hideHomeMarker={hideHomeMarkers}
                   isValidMove={isValidMove(pos)}
                   isValidAttack={isValidAttack(pos)}
                   isValidSpawn={isValidSpawn(pos)}
@@ -135,7 +140,7 @@ export function Board({
                 })}
                 {unit && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className={`unit-wrap${isSelected && previewUnit ? ' preview-origin' : ''}`}>
+                    <div className={`unit-wrap${isSelected && previewUnit ? ' preview-origin' : ''}${unitClassName?.(unit) ? ` ${unitClassName(unit)}` : ''}`}>
                       <Unit
                         unit={unit}
                         isSelected={isSelected}

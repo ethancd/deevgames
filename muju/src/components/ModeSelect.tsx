@@ -9,6 +9,11 @@ import { INACTIVITY_LIMIT } from '../game/inactivity';
 import { loadAIPace, loadGameState, loadRetiredSave } from '../utils/persistence';
 
 const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
+/** Remembers whether "Other ways to play" was left open. */
+const OTHER_MODES_KEY = 'muju:other-modes-open:v1';
+function loadOtherModesOpen(): boolean {
+  try { return localStorage.getItem(OTHER_MODES_KEY) === '1'; } catch { return false; }
+}
 
 /** "Quick · 10 s", "Deep · 1 min" — the allowance depends on the difficulty. */
 const paceOptionLabel = (difficulty: AIDifficulty, pace: AIPace): string =>
@@ -25,10 +30,20 @@ function loadPreferredSide(): PlayerId {
 interface ModeSelectProps {
   onStartGame: (config: GameConfig) => void;
   onOnline?: () => void;
+  onPuzzles?: () => void;
+  onReplayTutorial?: () => void;
+  /** Fade in from the tutorial's title. */
+  welcome?: boolean;
 }
 
-export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
+export function ModeSelect({ onStartGame, onOnline, onPuzzles, onReplayTutorial, welcome = false }: ModeSelectProps) {
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
+  const [otherOpen, setOtherOpen] = useState(loadOtherModesOpen);
+  const toggleOther = () => {
+    const next = !otherOpen;
+    setOtherOpen(next);
+    try { localStorage.setItem(OTHER_MODES_KEY, next ? '1' : '0'); } catch { /* Still toggles for this visit. */ }
+  };
   const [playerSide, setPlayerSide] = useState<PlayerId>(loadPreferredSide);
   const [playerDifficulty, setPlayerDifficulty] = useState<AIDifficulty>('medium');
   const [aiDifficulty, setAiDifficulty] = useState<AIDifficulty>('medium');
@@ -103,62 +118,75 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
   };
 
   return (
-    <div className="mode-select min-h-screen bg-gray-900 text-white flex items-center justify-center p-4">
+    <div className={`mode-select${welcome ? ' mode-select-welcome' : ''} min-h-screen bg-gray-900 text-white flex items-start justify-center p-4 pt-6 sm:pt-10`}>
       <div className="max-w-md w-full space-y-6">
         <div className="music-lobby-nav"><a href="https://deevgames.pages.dev/" className="text-sm text-cyan-300">← Deev Games</a><MusicButton /></div>
-        <h1 className="text-3xl font-bold text-center">Muju Hono Irumbu</h1>
-        <p className="text-gray-400 text-center">Select Game Mode</p>
+        <h1 className="mode-title text-3xl font-bold text-center">Muju Hono Irumbu</h1>
 
-        {/* Mode buttons */}
-        <div className="space-y-3">
-          {onOnline && <button onClick={onOnline} className="w-full p-4 rounded-lg border-2 border-cyan-700 hover:border-cyan-400 text-left">
-            <div className="font-semibold">Play online</div>
-            <div className="text-sm text-gray-400">Host, join, or watch a live game</div>
-          </button>}
+        {/* Three headline choices first; every other way to play stays one tap away below. */}
+        <div className="mode-primary space-y-3">
           <button
             onClick={() => setSelectedMode('vs-ai')}
-            className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+            aria-pressed={selectedMode === 'vs-ai'}
+            className={`mode-primary-button w-full p-5 rounded-xl border-2 transition-all text-left ${
               selectedMode === 'vs-ai'
                 ? 'border-blue-500 bg-blue-500/20'
-                : 'border-gray-700 hover:border-gray-500'
+                : 'border-gray-600 hover:border-gray-400'
             }`}
           >
-            <div className="font-semibold">vs AI</div>
+            <div className="text-lg font-semibold">Play vs AI</div>
             <div className="text-sm text-gray-400">Play against the computer</div>
           </button>
+          {onOnline && <button onClick={onOnline} className="mode-primary-button w-full p-5 rounded-xl border-2 border-cyan-700 hover:border-cyan-400 text-left">
+            <div className="text-lg font-semibold">Play online</div>
+            <div className="text-sm text-gray-400">Host, join, or watch a live game</div>
+          </button>}
+          {onPuzzles && <button onClick={onPuzzles} className="mode-primary-button w-full p-5 rounded-xl border-2 border-amber-700 hover:border-amber-400 text-left">
+            <div className="text-lg font-semibold">Puzzles</div>
+            <div className="text-sm text-gray-400">Short positions to solve, one turn each</div>
+          </button>}
+        </div>
 
+        <button type="button" onClick={toggleOther} aria-expanded={otherOpen} aria-controls="other-ways-to-play"
+          className="mode-other-toggle w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-300 hover:text-white">
+          Other ways to play <span aria-hidden="true" className={`mode-chevron${otherOpen ? ' is-open' : ''}`}>⌄</span>
+        </button>
+        {otherOpen && <div id="other-ways-to-play" className="mode-secondary grid grid-cols-2 gap-2">
           <button
             onClick={() => setSelectedMode('pass-play')}
-            className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+            aria-pressed={selectedMode === 'pass-play'}
+            className={`p-3 rounded-lg border transition-all text-left ${
               selectedMode === 'pass-play'
                 ? 'border-green-500 bg-green-500/20'
                 : 'border-gray-700 hover:border-gray-500'
             }`}
           >
-            <div className="font-semibold">Pass & Play</div>
-            <div className="text-sm text-gray-400">Two players, one device</div>
+            <div className="text-sm font-semibold">Pass & Play</div>
+            <div className="text-xs text-gray-400">Two players, one device</div>
           </button>
 
           <button
             onClick={() => setSelectedMode('ai-vs-ai')}
-            className={`w-full p-4 rounded-lg border-2 transition-all text-left ${
+            aria-pressed={selectedMode === 'ai-vs-ai'}
+            className={`p-3 rounded-lg border transition-all text-left ${
               selectedMode === 'ai-vs-ai'
                 ? 'border-purple-500 bg-purple-500/20'
                 : 'border-gray-700 hover:border-gray-500'
             }`}
           >
-            <div className="font-semibold">Watch AI</div>
-            <div className="text-sm text-gray-400">Spectate AI vs AI match</div>
+            <div className="text-sm font-semibold">Watch AI</div>
+            <div className="text-xs text-gray-400">Spectate AI vs AI match</div>
           </button>
-          <a href="/muju/analysis" className="block w-full p-4 rounded-lg border-2 border-gray-700 hover:border-cyan-400 text-left">
-            <div className="font-semibold">Analysis board</div>
-            <div className="text-sm text-gray-400">Control both sides, explore moves, or review a room</div>
+          <a href="/muju/analysis" className="block p-3 rounded-lg border border-gray-700 hover:border-cyan-400 text-left">
+            <div className="text-sm font-semibold">Analysis board</div>
+            <div className="text-xs text-gray-400">Control both sides, explore moves, or review a room</div>
           </a>
-          <a href="/muju/micro/" className="block w-full p-4 rounded-lg border-2 border-amber-700 hover:border-amber-400 text-left">
-            <div className="font-semibold">MICRO MUJU</div>
-            <div className="text-sm text-gray-400">6×6 pass &amp; play · three pieces, two actions, no clock</div>
+          <a href="/muju/micro/" className="block p-3 rounded-lg border border-amber-800 hover:border-amber-400 text-left">
+            <div className="text-sm font-semibold">MICRO MUJU</div>
+            <div className="text-xs text-gray-400">6×6 pass &amp; play · three pieces, two actions, no clock</div>
           </a>
-        </div>
+          {onReplayTutorial && <button type="button" onClick={onReplayTutorial} className="col-span-2 p-2 rounded-lg border border-gray-700 hover:border-cyan-400 text-sm text-cyan-300">Replay tutorial</button>}
+        </div>}
 
         {/* Side and difficulty selectors */}
         {selectedMode === 'vs-ai' && (
@@ -274,7 +302,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
 
         {/* Start button */}
         {selectedMode && <p className="text-sm text-gray-400">4 shared actions per turn · After {INACTIVITY_LIMIT} consecutive turns without a kill, higher mined crystals wins (a tie draws).</p>}
-        <button
+        {selectedMode && <button
           onClick={() => handleStart()}
           disabled={!selectedMode}
           className={`w-full p-3 rounded-lg font-semibold transition-all ${
@@ -284,7 +312,7 @@ export function ModeSelect({ onStartGame, onOnline }: ModeSelectProps) {
           }`}
         >
           Start Game
-        </button>
+        </button>}
         {savedGame && <button disabled={!selectedMode} onClick={() => handleStart(false)}
           className="w-full p-3 rounded-lg border border-gray-600 disabled:text-gray-500">
           Continue saved game · {getActionsPerTurn(savedGame)} actions

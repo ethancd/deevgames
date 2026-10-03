@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { UNEQUAL_ROUTES_MAP } from '../src/game/resourceMap';
 
 test.use({ hasTouch: true });

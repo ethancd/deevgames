@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './fixtures';
 import { createInitialGameState, createUnit } from '../src/game/board';
 import { phasingTacticalFixtures } from '../lab/ai/fixtures';
 import { applyActions } from '../src/ai/simulate';
@@ -12,7 +12,7 @@ const phasing = () => createInitialGameState(undefined, undefined, 0, 'phasing')
 async function start(page: Page, state: GameState, watch = false) {
   await page.addInitScript(({saved,schemaVersion}) => localStorage.setItem('elemental-tactics-save', JSON.stringify({schemaVersion,timestamp:Date.now(),state:saved})),{saved:state,schemaVersion:SCHEMA_VERSION});
   await page.goto('./');
-  await page.getByRole('button',{name:watch?'Watch AI Spectate AI vs AI match':'vs AI Play against the computer',exact:true}).click();
+  await page.getByRole('button',{name:watch?'Watch AI Spectate AI vs AI match':'Play vs AI Play against the computer',exact:true}).click();
   for (const select of await page.locator('select').filter({has:page.locator('option[value="hard"]')}).all()) await select.selectOption('hard');
   await page.getByRole('button',{name:/Continue saved game/}).click();
 }
@@ -43,7 +43,7 @@ test('menu responds during Hard search; mode switch terminates the old worker',a
   expect(elapsed).toBeLessThan(100);
   await expect(page.getByRole('dialog')).toBeVisible();await page.screenshot({path:info.outputPath('menu-during-search.png')});
   await page.getByRole('button',{name:'Choose game mode',exact:true}).click();await closed;
-  await expect(page.getByRole('button',{name:'Start Game',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:/^Play vs AI/})).toBeVisible();
   await info.attach('menu-response-ms',{body:JSON.stringify({elapsedMs:elapsed,browser:page.context().browser()?.version()}),contentType:'application/json'});
 });
 test('restart during search cannot dispatch an old result into the new game',async({page})=>{

@@ -11,7 +11,18 @@ const screenshots = process.env.QA_SCREENSHOTS;
   const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
   try {
     for (const width of [390, 834]) {
+      // A first visit gets the wordless tutorial; Skip lands on the three-button mode screen.
+      const fresh = await browser.newContext({viewport: {width, height: 1112}});
+      const first = await fresh.newPage();
+      await first.goto(base + '/muju/');
+      await first.locator('main.onboarding').waitFor();
+      assert.equal(await first.locator('[data-testid^="cell-"]').count(), 9);
+      await first.getByRole('button', {name: 'Skip Tutorial', exact: true}).click();
+      await first.getByRole('button', {name: /^Play vs AI/}).waitFor();
+      await fresh.close();
       const context = await browser.newContext({viewport: {width, height: 1112}});
+      // Everything below is a returning player.
+      await context.addInitScript(() => localStorage.setItem('muju:onboarding:v1', JSON.stringify({completed: true, at: '2026-10-02T00:00:00.000Z', version: 1})));
       const page = await context.newPage();
       const errors = [];
       page.on('pageerror', error => errors.push(error.message));
@@ -34,6 +45,7 @@ const screenshots = process.env.QA_SCREENSHOTS;
         'https://deevgames-muju.onrender.com/muju/');
       // Exercise this release's bundled game independently of the external host.
       await page.goto(base + '/muju/');
+      await page.getByRole('button', {name: 'Other ways to play', exact: true}).click();
       await page.getByRole('button', {name: 'Pass & Play Two players, one device', exact: true}).click();
       await page.getByRole('button', {name: 'Start Game', exact: true}).click();
       assert.equal(await page.locator('[data-testid^="cell-"]').count(), 100);
@@ -61,6 +73,7 @@ const screenshots = process.env.QA_SCREENSHOTS;
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem('elemental-tactics-save')));
       assert(saved, 'Muju must save after end-turn income');
       await page.reload();
+      // "Other ways to play" stays open across the reload.
       await page.getByRole('button', {name: 'Pass & Play Two players, one device', exact: true}).click();
       await page.getByRole('button', {name: /Continue saved game/}).click();
       const resumed = await page.evaluate(() => JSON.parse(localStorage.getItem('elemental-tactics-save')));

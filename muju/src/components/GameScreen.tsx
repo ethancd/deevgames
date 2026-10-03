@@ -1,6 +1,8 @@
 import { INITIAL_MAP_RESOURCES } from '../game/resourceMap';
 import { MusicButton } from '../music/MusicPlayer';
 import { useGameSounds } from '../sound/useGameSounds';
+import { BoardEffects, useBoardEffects } from '../effects/BoardEffects';
+import { useGameEffects } from '../effects/useGameEffects';
 import { INACTIVITY_LIMIT, INACTIVITY_WARNING, minedTotal } from '../game/inactivity';
 import { UpkeepPanel } from './UpkeepPanel';
 import { upkeepDue } from '../game/upkeep';
@@ -103,6 +105,9 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
   const replayFrame = playback && playback.step > 0 ? playback.replay.frames[playback.step - 1] : null;
   useGameSounds({ state, replay: playback, quiet: !!analysis?.reviewing,
     viewer: online ? online.player : config.mode === 'vs-ai' ? config.controls.white === 'human' ? 'white' : 'black' : null });
+  const shownBoard = playback ? replayFrame?.board ?? playback.replay.initialBoard : state.board;
+  const boardEffects = useBoardEffects();
+  useGameEffects({ board: shownBoard, state, quiet: !!analysis?.reviewing }, boardEffects.emit);
 
   const [viewedSummonId, setViewedSummonId] = useState<string | null>(null);
   const viewedSummon = state.pendingSummons?.find(s => s.id === viewedSummonId);
@@ -943,7 +948,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
       </aside>
       <div className={`play-area ${state.turn.phase === 'place' && (interactive || showReplay) ? 'is-placing' : ''}`}>
         <section className="board-stage" aria-label="Battlefield">
-          <Board pendingSummons={playback ? replayFrame?.pendingSummons ?? playback.replay.initialPendingSummons ?? [] : state.pendingSummons} board={playback ? replayFrame?.board ?? playback.replay.initialBoard : state.board}
+          <Board pendingSummons={playback ? replayFrame?.pendingSummons ?? playback.replay.initialPendingSummons ?? [] : state.pendingSummons} board={shownBoard}
             selectedUnit={showReplay ? replayFrame?.unitId ?? null : shownUnit?.id ?? (online?.playingIncoming ? online.incomingFrame?.unitId ?? null : null)}
             inspectOnly={inspectOnly}
             validMoves={showReplay || inspectOnly ? [] : state.validMoves}
@@ -955,6 +960,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis }: GameS
             previewPosition={showReplay ? replayFrame?.position : online?.playingIncoming ? online.incomingFrame?.position : preview?.position} previewUnitPosition={showReplay ? undefined : previewLanding}
             actionsRemaining={showingReach ? actionsPerTurn : state.turn.actionsRemaining}
             selectedSummon={viewedSummon?.id} onSummonClick={handleSummonClick} onCellClick={handleCellClick} onUnitClick={handleUnitClick} />
+          <BoardEffects handle={boardEffects.handle} />
         </section>
         <div className="board-key">
           <span role="status">{showReplay ? replayMode === 'step' ? 'Instant replay · Step through' : playback.paused ? 'Replay paused' : `Instant replay · ${replayMode === 'fast' ? '0.3s' : '1s'} per action` : homeNotice || (showingReach && showEnemyRange ? 'Red dots: attack frontier' : selectedPurchaseId ? '＋ Safe placement' : '● 1 action · ○ farther · ⊗ attack · ☠ eliminates · ⚠ danger')}</span>

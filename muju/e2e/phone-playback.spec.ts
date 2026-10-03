@@ -1,4 +1,4 @@
-import { test, expect, type Page, type APIRequestContext } from '@playwright/test';
+import { test, expect, type Page, type APIRequestContext } from './fixtures';
 
 async function fits(page: Page) {
   expect(await page.evaluate(() => ({ width:document.documentElement.scrollWidth <= innerWidth, height:document.documentElement.scrollHeight <= innerHeight + 1 })) ).toEqual({width:true,height:true});

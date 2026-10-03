@@ -31,6 +31,9 @@ vi.mock('../../src/ai/worker/client', () => ({
 }));
 import { useAI } from '../../src/hooks/useAI';
 
+/** Pass & Play and Watch AI sit under "Other ways to play", collapsed by default. */
+const openOtherWays = () => { const toggle = screen.queryByRole('button', { name: 'Other ways to play', expanded: false }); if (toggle) fireEvent.click(toggle); };
+
 const END_ACTION: AIAction = { type: 'END_ACTION_PHASE' };
 
 /** Runs one whole AI turn and reports what each search was funded with. */
@@ -200,7 +203,7 @@ it('records the running game’s pace on its save', () => {
 it('offers a thinking time per difficulty and starts the game with it', () => {
   const started = vi.fn();
   render(<ModeSelect onStartGame={started} />);
-  fireEvent.click(screen.getByRole('button', { name: /^vs AI/ }));
+  fireEvent.click(screen.getByRole('button', { name: /^Play vs AI/ }));
   const pace = screen.getByLabelText('Thinking time');
   // Medium is the default difficulty: 3 / 10 / 30 seconds.
   expect([...pace.querySelectorAll('option')].map(o => o.textContent)).toEqual(['Quick · 3 s', 'Normal · 10 s', 'Deep · 30 s']);
@@ -218,7 +221,7 @@ it('offers a thinking time per difficulty and starts the game with it', () => {
 it('gives each watched AI its own thinking time', () => {
   const started = vi.fn();
   render(<ModeSelect onStartGame={started} />);
-  fireEvent.click(screen.getByRole('button', { name: /^Watch AI/ }));
+  openOtherWays(); fireEvent.click(screen.getByRole('button', { name: /^Watch AI/ }));
   fireEvent.change(screen.getByLabelText('Player 1 AI'), { target: { value: 'easy' } });
   fireEvent.change(screen.getByLabelText('Player 1 thinking time'), { target: { value: 'deep' } });
   fireEvent.change(screen.getByLabelText('Player 2 thinking time'), { target: { value: 'normal' } });

@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './fixtures';
 import { createInitialGameState } from '../src/game/board';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
 import { PREPARE_RESERVE_DIVISOR } from '../src/ai/turnFunding';
@@ -121,7 +121,7 @@ async function start(page: Page, state: GameState, watch: boolean, difficulty: '
   // `?hardMs=<int>`). Nothing is set by default: the release flag is what
   // turns Hard on now.
   await page.goto(`./${query}`);
-  await page.getByRole('button', { name: watch ? 'Watch AI Spectate AI vs AI match' : 'vs AI Play against the computer', exact: true }).click();
+  await page.getByRole('button', { name: watch ? 'Watch AI Spectate AI vs AI match' : 'Play vs AI Play against the computer', exact: true }).click();
   for (const select of await page.locator('select').filter({ has: page.locator(`option[value="${difficulty}"]`) }).all()) await select.selectOption(difficulty);
   await page.getByRole('button', { name: /Continue saved game/ }).click();
 }

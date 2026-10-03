@@ -1,8 +1,8 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, seededContext } from './fixtures';
 
 test('phone lobby discovers games, watches with one tap, and refreshes after a result', async ({ browser, request }, testInfo) => {
   test.setTimeout(45000);
-  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+  const mobile = await seededContext(browser, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
   const phone = await mobile.newPage();
   // The lobby lists every active room on the host, so the names this test looks
   // for have to be unique to this run: a server that has already served it once

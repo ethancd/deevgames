@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 
 // Phasing opens every turn in the Act phase, whatever the handicap can afford,
 // so the granted crystals are read from Black's bank rather than from a place
@@ -54,7 +54,7 @@ for (const amount of [0.5, 18.5]) test(`online ${amount}-crystal handicap reache
 
 test('Hard safely finishes its turn with a 9.5 grant using the canonical fallback', async ({ page }) => {
   await page.goto('./?hardMs=1000');
-  await page.getByRole('button', { name: 'vs AI Play against the computer', exact: true }).click();
+  await page.getByRole('button', { name: 'Play vs AI Play against the computer', exact: true }).click();
   await page.getByRole('radio', { name: 'Black', exact: true }).check();
   await page.getByLabel('AI Difficulty', { exact: true }).selectOption('hard');
   await page.getByRole('combobox', { name: 'Black crystal handicap' }).selectOption('9.5');

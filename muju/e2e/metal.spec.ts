@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures';
 import { createInitialGameState, createUnit } from '../src/game/board';
 import { SCHEMA_VERSION } from '../src/utils/persistence';
 

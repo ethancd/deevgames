@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test } from './fixtures';
 for (const width of [1280, 390]) test(`explorer setup, independent forecasts, controls and reload at ${width}px`, async ({ page, request }, info) => {
   await page.setViewportSize({ width, height: 1000 });
   await page.goto('/muju/explorer');

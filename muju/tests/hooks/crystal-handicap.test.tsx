@@ -5,11 +5,14 @@ import { ModeSelect } from '../../src/components/ModeSelect';
 import { loadGameState } from '../../src/utils/persistence';
 import type { GameConfig } from '../../src/game/types';
 
+/** Pass & Play and Watch AI sit under "Other ways to play", collapsed by default. */
+const openOtherWays = () => { const toggle = screen.queryByRole('button', { name: 'Other ways to play', expanded: false }); if (toggle) fireEvent.click(toggle); };
+
 afterEach(() => { cleanup(); localStorage.clear(); });
 
 it.each([0.5, 2.5, 9.5, 18.5])('starts and resumes a %i-crystal game without regranting or overriding it', amount => {
   let view = render(<App />);
-  fireEvent.click(screen.getByRole('button', { name: /^Pass & Play/ }));
+  openOtherWays(); fireEvent.click(screen.getByRole('button', { name: /^Pass & Play/ }));
   const select = screen.getByRole('combobox', { name: 'Black crystal handicap' });
   expect(select.querySelectorAll('option')).toHaveLength(19);
   fireEvent.change(select, { target: { value: String(amount) } });
@@ -26,16 +29,16 @@ it.each([0.5, 2.5, 9.5, 18.5])('starts and resumes a %i-crystal game without reg
   // The handicap is not regranted at the start of black's turn either.
   expect(saved?.players.black.resources).toBe(amount);
   view.unmount(); view = render(<App />);
-  fireEvent.click(screen.getByRole('button', { name: /^Pass & Play/ }));
+  openOtherWays(); fireEvent.click(screen.getByRole('button', { name: /^Pass & Play/ }));
   fireEvent.change(screen.getByRole('combobox', { name: 'Black crystal handicap' }), { target: { value: '8.5' } });
   fireEvent.click(screen.getByRole('button', { name: /Continue saved game/ }));
   expect(loadGameState()).toEqual(saved);
 });
 
-it.each(['vs AI', 'Pass & Play', 'Watch AI'])('passes the handicap in %s setup', name => {
+it.each(['Play vs AI', 'Pass & Play', 'Watch AI'])('passes the handicap in %s setup', name => {
   let config: GameConfig | undefined;
   render(<ModeSelect onStartGame={value => { config = value; }} />);
-  fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${name}`) }));
+  openOtherWays(); fireEvent.click(screen.getByRole('button', { name: new RegExp(`^${name}`) }));
   fireEvent.change(screen.getByRole('combobox', { name: 'Black crystal handicap' }), { target: { value: '12.5' } });
   fireEvent.click(screen.getByRole('button', { name: 'Start Game' }));
   expect(config?.blackCrystalHandicap).toBe(12.5);

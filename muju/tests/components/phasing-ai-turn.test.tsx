@@ -36,6 +36,9 @@ vi.mock('../../src/ai/worker/client', () => ({
 import { ModeSelect } from '../../src/components/ModeSelect';
 import { GameScreen } from '../../src/components/GameScreen';
 
+/** Pass & Play and Watch AI sit under "Other ways to play", collapsed by default. */
+const openOtherWays = () => { const toggle = screen.queryByRole('button', { name: 'Other ways to play', expanded: false }); if (toggle) fireEvent.click(toggle); };
+
 const phasingConfig = (): GameConfig => ({
   mode: 'vs-ai', newGame: true, ruleset: 'phasing',
   controls: { white: 'ai', black: 'human' },
@@ -65,10 +68,10 @@ afterEach(() => { cleanup(); vi.restoreAllMocks(); localStorage.clear(); });
 /* ------------------------------ ModeSelect ------------------------------ */
 
 it('starts Phasing in every mode, with no ruleset control and no Standard copy', () => {
-  for (const [mode, label] of [[/^vs AI/, 'vs-ai'], [/^Watch AI/, 'ai-vs-ai'], [/^Pass & Play/, 'pass-play']] as const) {
+  for (const [mode, label] of [[/^Play vs AI/, 'vs-ai'], [/^Watch AI/, 'ai-vs-ai'], [/^Pass & Play/, 'pass-play']] as const) {
     const started = vi.fn();
     render(<ModeSelect onStartGame={started} />);
-    fireEvent.click(screen.getByRole('button', { name: mode }));
+    openOtherWays(); fireEvent.click(screen.getByRole('button', { name: mode }));
     expect(screen.queryByRole('radio', { name: /Phasing|Standard/ })).toBeNull();
     expect(screen.queryByText(/Standard/)).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Start Game', exact: true }));

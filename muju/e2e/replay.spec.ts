@@ -1,4 +1,4 @@
-import { test, expect, type Page } from '@playwright/test';
+import { test, expect, type Page } from './fixtures';
 
 const regions = ['.battle-board', '.board-stage', '.decision-panel', '.play-footer', '.instant-replay-launcher'];
 async function geometry(page: Page) {

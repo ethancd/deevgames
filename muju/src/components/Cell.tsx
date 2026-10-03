@@ -4,12 +4,12 @@ interface CellProps {
   cell: CellType; isValidMove: boolean; isValidAttack: boolean; isValidSpawn: boolean; isSelected: boolean;
   isInvalidSpawn?: boolean; isPendingMove?: boolean; movementRangeActions?: number; isAttackFrontier?: boolean;
   isPreview?: boolean; moveCost?: number; unitLabel?: string; previewLabel?: string;
-  pendingLabel?: string; isKoTarget?: boolean; isKoThreat?: boolean; boardSize?: number;
+  pendingLabel?: string; isKoTarget?: boolean; isKoThreat?: boolean; boardSize?: number; hideHomeMarker?: boolean;
   onClick: (position: Position) => void;
 }
-export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, isInvalidSpawn, isPendingMove, movementRangeActions, isAttackFrontier, isPreview, moveCost, unitLabel, previewLabel, pendingLabel, isKoTarget, isKoThreat, boardSize = 10, onClick }: CellProps) {
+export function Cell({ cell, isValidMove, isValidAttack, isValidSpawn, isSelected, isInvalidSpawn, isPendingMove, movementRangeActions, isAttackFrontier, isPreview, moveCost, unitLabel, previewLabel, pendingLabel, isKoTarget, isKoThreat, boardSize = 10, hideHomeMarker = false, onClick }: CellProps) {
   const last = boardSize - 1;
-  const home = cell.position.x === 0 && cell.position.y === 0 ? 'white' : cell.position.x === last && cell.position.y === last ? 'black' : null;
+  const home = hideHomeMarker ? null : cell.position.x === 0 && cell.position.y === 0 ? 'white' : cell.position.x === last && cell.position.y === last ? 'black' : null;
   const reach = movementRangeActions !== undefined;
   const coord = `${String.fromCharCode(65 + cell.position.x)}${cell.position.y + 1}`;
   const crystalDescription = describeCrystals(cell);
