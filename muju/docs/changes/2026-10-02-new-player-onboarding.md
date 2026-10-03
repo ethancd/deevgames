@@ -57,8 +57,16 @@ blows play lower. Everything follows the existing `muju:sfx:v1` toggle and level
   route (`glideMs`: 260 ms plus 140 ms per square, eased at both ends), however
   many actions it spends. The rules apply the moves at once; the slide is a
   transform animation that keeps its clock if the piece re-renders mid-slide.
-- Homes appear only on the 10×10 (hidden on the 3×3 and 6×6), as a large white or
-  black house pentagon in the centre of the square, drawn under any piece.
+- Before it is picked, the active piece bobs in a pulsing gold ring. Once picked it
+  lifts and grows slightly, holds still over a steady ring and a warm wash on its
+  square, stays lifted while it glides, and settles when it lands.
+- On the 3×3 the Muju fills its square instead of the usual 56 px piece cap.
+- Homes appear only on the 10×10 in the tutorial (hidden on the 3×3 and 6×6).
+
+**Home pentagons on every board.** Normal play, analysis, MICRO MUJU, the explorer
+and the tutorial mark each home with a large white or black house pentagon in the
+centre of the square, drawn under any piece (the old mark was a small ⌂ in the
+corner). The map painter keeps its corner mark.
 - `Onboarding` sequences intro → puzzle → name → zoom out → … → fade to the mode
   screen. The only visible words are a small **Skip Tutorial →** at the bottom right
   and each piece's name, which fades in at the top middle after its puzzle and fades

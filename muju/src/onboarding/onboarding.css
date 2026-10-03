@@ -33,6 +33,13 @@
 /* Guidance: the active piece breathes, the goal glows gold, dots light in sequence. */
 .unit-wrap.tutorial-active { animation: tutorial-bob 1.6s ease-in-out infinite; filter: drop-shadow(0 0 6px #f5d780cc); }
 .board-square:has(.tutorial-active) .board-cell { box-shadow: inset 0 0 0 2px #f5d780; animation: tutorial-ring 1.6s ease-in-out infinite; }
+.unit-wrap.tutorial-glider { transition: transform .22s ease-out, filter .22s ease-out; }
+.unit-wrap.tutorial-lifted { transform: translate(-4%, -10%) scale(1.18); filter: drop-shadow(0 9px 8px #000b) drop-shadow(0 0 12px #ffe08a); }
+.board-square:has(.tutorial-lifted:not(.is-gliding)) .board-cell { box-shadow: inset 0 0 0 3px #ffe08a, inset 0 0 0 999px #f5d78026, 0 0 20px #f5d78088; }
+
+/* Board 1 is the Muju's close-up: the piece fills its square instead of the usual 56 px cap. */
+.puzzle-muju .unit-wrap { width: 74%; height: 76%; }
+.puzzle-muju .unit-token { max-width: none; max-height: none; }
 .unit-wrap.tutorial-inert { opacity: .6; filter: saturate(.6); }
 .unit-wrap.tutorial-prey { animation: tutorial-prey 1.1s ease-in-out infinite; }
 .tutorial-goal .board-cell { box-shadow: inset 0 0 0 2px #f5d78088; }

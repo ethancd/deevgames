@@ -77,7 +77,12 @@ export function PuzzleBoard({ scenario, emit, play, paused, onSolved, onPhase }:
       selectedUnit={puzzle.phase === 'hint-target' && !puzzle.gliding ? puzzle.activeId : null}
       validMoves={puzzle.litPath} validAttacks={[]} validSpawns={[]}
       unitClassName={unit => inert.has(unit.id) ? 'tutorial-inert'
-        : unit.id === puzzle.activeId ? `tutorial-glider${hinting && !paused && !puzzle.gliding ? ' tutorial-active' : ''}`
+        : unit.id === puzzle.activeId ? ['tutorial-glider',
+          // Waiting to be picked: it bobs in a pulsing ring. Picked: it lifts and holds still,
+          // and stays lifted while it is carried; it settles when it lands.
+          !paused && puzzle.phase === 'hint-piece' ? 'tutorial-active' : '',
+          !paused && (puzzle.phase === 'hint-target' || puzzle.gliding) ? 'tutorial-lifted' : '',
+          puzzle.gliding ? 'is-gliding' : ''].filter(Boolean).join(' ')
         : puzzle.phase === 'hint-target' && same(unit.position, puzzle.goal) ? 'tutorial-prey' : undefined}
       cellClassName={pos => [
         puzzle.phase === 'hint-target' && same(pos, puzzle.goal) ? `tutorial-goal${puzzle.goalLit ? ' is-lit' : ''}` : '',
