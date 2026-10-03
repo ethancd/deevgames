@@ -1,5 +1,12 @@
-export const EFFECTS = ['move', 'attack', 'capture', 'phase', 'arrive', 'promote', 'turnEnd', 'turnStart', 'yourTurn', 'opponentAction'] as const;
+import type { Element } from '../game/types';
+export const EFFECTS = ['move', 'attack', 'capture', 'phase', 'arrive', 'promote', 'turnEnd', 'turnStart', 'yourTurn', 'opponentAction',
+  'hint', 'collect', 'reveal', 'checkmate', 'wrong',
+  'killFire', 'killLightning', 'killWater', 'killShadow', 'killPlant', 'killMetal'] as const;
 export type SoundEffect = typeof EFFECTS[number];
+/** One short kill layer per attacker element; `play(…, { rate })` pitches it by magnitude. */
+export const KILL_SOUND: Record<Element, SoundEffect> = {
+  fire: 'killFire', lightning: 'killLightning', water: 'killWater', shadow: 'killShadow', plant: 'killPlant', metal: 'killMetal',
+};
 
 /** Cues that must reach the player even on a hidden tab: a background-safe "your move"
  * chime and a soft tick for an opponent's in-progress action. Every other effect follows
@@ -11,6 +18,8 @@ const LENGTH: Record<SoundEffect, number> = {
   move: .085, attack: .095, capture: .12, phase: .14,
   arrive: .115, promote: .14, turnEnd: .075, turnStart: .12,
   yourTurn: .26, opponentAction: .055,
+  hint: .2, collect: .07, reveal: .28, checkmate: .3, wrong: .08,
+  killFire: .16, killLightning: .13, killWater: .15, killShadow: .18, killPlant: .14, killMetal: .2,
 };
 
 export function effectSamples(effect: SoundEffect, sampleRate: number): Float32Array {
@@ -22,6 +31,9 @@ export function effectSamples(effect: SoundEffect, sampleRate: number): Float32A
     return weight * envelope * (Math.sin(2 * Math.PI * frequency * t) * .65
       + Math.sin(2 * Math.PI * frequency * 2.73 * t) * .2 + softNoise * .35);
   };
+  // A pure bell partial for the chimes; no noise, so it reads as light rather than wood.
+  const tone = (t: number, frequency: number, decay: number, weight = 1) => t < 0 ? 0
+    : weight * Math.min(1, t / .002) * Math.exp(-t / decay) * (Math.sin(2 * Math.PI * frequency * t) * .8 + Math.sin(2 * Math.PI * frequency * 2 * t) * .12);
   for (let i = 0; i < samples.length; i++) {
     const t = i / sampleRate;
     seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0;
@@ -40,6 +52,19 @@ export function effectSamples(effect: SoundEffect, sampleRate: number): Float32A
       case 'yourTurn': value = tap(t, 480, .05, .6) + tap(t - .1, 720, .09, .65); break;
       // A single soft tick, quieter and shorter than an ordinary move.
       case 'opponentAction': value = tap(t, 300, .012, .4); break;
+      // Onboarding cues: a soft high chime, a crystal tick, a rising shimmer, a short fanfare, a dull miss.
+      case 'hint': value = tone(t, 880, .05, .35) + tone(t - .07, 1320, .06, .3); break;
+      case 'collect': value = tone(t, 1560, .012, .45) + tone(t - .022, 2340, .01, .3); break;
+      case 'reveal': value = tone(t, 523, .05, .3) + tone(t - .06, 659, .05, .3) + tone(t - .12, 784, .07, .35); break;
+      case 'checkmate': value = tap(t, 392, .03, .5) + tone(t - .05, 523, .04, .45) + tone(t - .1, 659, .04, .45) + tone(t - .15, 784, .06, .55) + tone(t - .15, 1047, .06, .3); break;
+      case 'wrong': value = tap(t, 150, .02, .55); break;
+      // Kill layers: one timbre per attacker element, laid over the existing capture tap.
+      case 'killFire': value = softNoise * Math.exp(-t / .05) * 1.4 + tap(t, 140, .03, .6); break;
+      case 'killLightning': value = Math.sin(2 * Math.PI * (2400 * t - 7000 * t * t)) * Math.exp(-t / .03) * .6 + softNoise * Math.exp(-t / .02); break;
+      case 'killWater': value = Math.sin(2 * Math.PI * (300 * t + 2600 * t * t)) * Math.exp(-t / .04) * .7 + tap(t - .03, 900, .012, .25); break;
+      case 'killShadow': value = Math.sin(2 * Math.PI * (220 * t - 280 * t * t)) * Math.min(1, t / .02) * Math.exp(-t / .07) * .7; break;
+      case 'killPlant': value = tap(t, 330, .014, .6) + tap(t - .04, 250, .018, .55) + tap(t - .075, 420, .012, .3); break;
+      case 'killMetal': value = Math.exp(-t / .07) * (Math.sin(2 * Math.PI * 1180 * t) * .35 + Math.sin(2 * Math.PI * 1710 * t) * .25 + Math.sin(2 * Math.PI * 2590 * t) * .15) * Math.min(1, t / .001) + tap(t, 200, .015, .4); break;
     }
     // Gentle onset and a forced fade to zero prevent clicks at buffer boundaries.
     const fade = Math.min(1, i / (sampleRate * .001), (samples.length - 1 - i) / (sampleRate * .012));
@@ -79,7 +104,8 @@ export class SoundEngine {
     } catch { /* Audio must never interrupt a game on an unsupported device. */ }
   };
 
-  play(effects: readonly SoundEffect[]) {
+  /** `rate` repitches the whole call (a heavier blow plays lower). */
+  play(effects: readonly SoundEffect[], options: { rate?: number } = {}) {
     const context = this.context;
     if (!this.enabled || !this.volume || context?.state !== 'running' || !this.gain) return;
     // Every other effect still follows the visible board; only the background-safe
@@ -99,6 +125,7 @@ export class SoundEngine {
         }
         const source = context.createBufferSource();
         source.buffer = buffer;
+        if (options.rate && options.rate !== 1 && source.playbackRate) source.playbackRate.value = options.rate;
         source.connect(this.gain!);
         source.onended = () => { this.sources.delete(source); source.disconnect(); };
         this.sources.add(source);

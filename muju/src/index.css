@@ -626,3 +626,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .micro-piece-name { display: flex; align-items: center; gap: .35em; }
 .micro-piece-name > :first-child { width: 1.8em; height: 1.8em; flex: none; }
 .micro-piece-table tbody th small { color: #9fb4c3; font-weight: 400; margin-left: .2em; }
+
+/* Hit, kill and celebration effects: one canvas over the board, never interactive. */
+.board-stage { position: relative; }
+.board-effects { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 40; }

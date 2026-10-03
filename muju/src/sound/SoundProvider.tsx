@@ -13,9 +13,9 @@ function readSettings() {
 const SoundContext = createContext<{
   enabled: boolean; volume: number;
   setEnabled: (value: boolean) => void; setVolume: (value: number) => void;
-  play: (effects: readonly SoundEffect[]) => void;
+  play: (effects: readonly SoundEffect[], options?: { rate?: number }) => void;
 } | null>(null);
-const quiet = (_effects: readonly SoundEffect[]) => {};
+const quiet = (_effects: readonly SoundEffect[], _options?: { rate?: number }) => {};
 export const useSoundEffects = () => useContext(SoundContext)?.play ?? quiet;
 
 export function SoundProvider({ children }: { children: ReactNode }) {
@@ -39,7 +39,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
     engine.current?.configure(settings.enabled, settings.volume);
     try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch { /* In-memory controls still work. */ }
   }, [settings]);
-  const play = useCallback((effects: readonly SoundEffect[]) => engine.current?.play(effects), []);
+  const play = useCallback((effects: readonly SoundEffect[], options?: { rate?: number }) => engine.current?.play(effects, options), []);
   const value = useMemo(() => ({ ...settings, play,
     setEnabled: (enabled: boolean) => {
       engine.current?.configure(enabled, settings.volume);
