@@ -139,6 +139,49 @@ behind it.
   Pieces that only made way (a Mining-0 Radi stepping aside) do not sparkle. Use
   the same rule for "Show me".
 
+### Decisions to make
+
+- **Should a puzzle end your turn automatically when you spend your fourth
+  action?** (raised by the owner, 2026-10-03)
+
+  **For:**
+  - With 0 actions left, nothing else can happen in Act, so the press is a
+    formality.
+  - It removes the "what do I do now?" moment of move-9, the first puzzle that
+    needs End turn.
+  - Correct lines pay off at once (crystals fly, the defender replies), so the
+    flow is faster on phones.
+
+  **Against:**
+  - It teaches a habit the real game does not have. SPEC §2 says spending every
+    action does not end the turn, and Prepare (summon, promote) follows. A
+    player who learns "the turn ends itself" will stall in real games.
+  - It removes the commit point. The mine-3 and mine-6 revisions make End turn
+    the moment the puzzle is judged, so the player can look, reconsider and Undo
+    the fourth action first. Auto-ending turns the last tap into an irreversible
+    hand-over (only the turn-start rewind remains).
+  - It is inconsistent:
+    - puzzles that start with fewer than four actions, or are won with fewer,
+      still need the button;
+    - from Summoning on, Prepare often has choices, so the rule would have to
+      become "auto Mine & prepare" there;
+    - in two-turn and reply puzzles, the enemy would start moving the instant
+      you tap, which feels like a misclick.
+  - Accidental taps become costly.
+
+  **Middle grounds:**
+  - **(a) Glow, don't press.** At 0 actions, the End turn button lights with the
+    spotlight from the move-9 item: strongly in the first arcs, subtly later.
+  - **(b) Auto-end only when ending wins.** This feels great, but it gives away
+    correctness: if the turn did not end, you must be wrong.
+  - **(c) A player setting**, which is overkill for now.
+
+  **Recommendation: (a).** Keep End turn as the press that commits, in line with
+  the real game and the mine-3 decision. At 0 actions, make it the brightest
+  thing on the screen, glowing strongly in Moving and Mining and more softly
+  afterwards, with Enter as the keyboard equivalent. Revisit (b) only if
+  playtests show people stuck at 0 actions even with the glow.
+
 ### Also noted by the reviewers
 
 - **exam-6 is the heaviest puzzle.** About 1.4M proof nodes, far over the live
