@@ -48,7 +48,7 @@ const MUJU: Scenario = {
  * Three pieces in all: the Muju walks, the black Honō eats it, the Irumbu invades. */
 const MINED_CORNER = [{ x: 2, y: 2, crystals: 5 }];
 const HONO: Scenario = {
-  id: 'hono', size: 6, hideHomeMarkers: false, active: 'hono',
+  id: 'hono', size: 6, hideHomeMarkers: true, active: 'hono',
   pieces: [
     { id: 'muju', owner: 'white', type: 'plant_1', x: 2, y: 2 },
     { id: 'hono', owner: 'black', type: 'fire_2', x: 5, y: 5 },

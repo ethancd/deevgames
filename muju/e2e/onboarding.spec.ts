@@ -51,12 +51,16 @@ test('a first visit plays three puzzles with no words but the piece names, then 
   await expect(cell(page, 2, 2)).toHaveAttribute('aria-label', /white Muju/);
   await expect(cell(page, 2, 2)).toHaveAttribute('aria-label', /5 crystals/);
   await expect(cell(page, 5, 5)).toHaveAttribute('aria-label', /black Honō/);
+  // Homes appear only on the full board.
+  await expect(page.locator('.puzzle-hono .home-marker')).toHaveCount(0);
   expect(await visibleWords(page)).toBe('Skip Tutorial');
   await solve(page, [5, 5], [2, 2], 'hono');
   // Three pieces in all: the Muju is gone and the Honō waits where it struck from.
   await expect(page.locator('[data-testid^="cell-"]')).toHaveCount(100);
   await expect(page.locator('[data-testid^="cell-"][aria-label*="Muju"]')).toHaveCount(0);
   await expect(cell(page, 2, 3)).toHaveAttribute('aria-label', /black Honō/);
+  await expect(page.locator('.puzzle-irumbu .home-white')).toHaveCount(1);
+  await expect(page.locator('.puzzle-irumbu .home-black')).toHaveCount(1);
   await solve(page, [9, 1], [9, 9], 'irumbu');
   await expect(page.getByRole('heading', { name: 'Muju Hono Irumbu' })).toBeVisible({ timeout: 6000 });
   for (const name of ['Play vs AI', 'Play online', 'Puzzles']) await expect(page.getByRole('button', { name: new RegExp(`^${name}`) })).toBeVisible();

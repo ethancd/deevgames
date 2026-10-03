@@ -57,8 +57,8 @@ blows play lower. Everything follows the existing `muju:sfx:v1` toggle and level
   route (`glideMs`: 260 ms plus 140 ms per square, eased at both ends), however
   many actions it spends. The rules apply the moves at once; the slide is a
   transform animation that keeps its clock if the piece re-renders mid-slide.
-- Home squares in the tutorial carry a large white or black house pentagon in the
-  centre, drawn under any piece.
+- Homes appear only on the 10×10 (hidden on the 3×3 and 6×6), as a large white or
+  black house pentagon in the centre of the square, drawn under any piece.
 - `Onboarding` sequences intro → puzzle → name → zoom out → … → fade to the mode
   screen. The only visible words are a small **Skip Tutorial →** at the bottom right
   and each piece's name, which fades in at the top middle after its puzzle and fades

@@ -123,6 +123,10 @@ describe('onboarding scenarios', () => {
     }
   });
 
+  it('shows homes only on the full board', () => {
+    expect(SCENARIOS.map(s => s.hideHomeMarkers)).toEqual([true, true, false]);
+  });
+
   it('splits paths into speed-sized hops of one action each', () => {
     expect(hopsAlong([{ x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }], 2)).toEqual([{ x: 0, y: 2 }, { x: 0, y: 3 }]);
     for (const scenario of SCENARIOS) {
