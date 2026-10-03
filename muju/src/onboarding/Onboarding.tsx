@@ -11,7 +11,7 @@ import type { ScenarioPhase } from './useScenario';
 import './onboarding.css';
 
 type Stage = 'intro' | 'puzzle' | 'reveal' | 'zoom' | 'out';
-const INTRO_MS = 900, ZOOM_MS = 1100, OUT_MS = 600;
+const INTRO_MS = 900, ZOOM_DELAY_MS = 150, ZOOM_MS = 1500, OUT_MS = 600;
 const reducedMotion = () => !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 /**
@@ -57,21 +57,25 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
     setStage('zoom');
   }, [index]);
 
-  // Zoom out: the next board starts scaled so its top-left cells sit exactly on
-  // the old ones, then shrinks to fit while the old board fades.
+  // Zoom out: the next board starts scaled so its top-left cells sit exactly on the
+  // old ones and shrinks to fit. The old board shrinks with it, pinned to the same
+  // point, so the two never drift apart while it fades.
   useLayoutEffect(() => {
     if (stage !== 'zoom') return;
     const done = () => { setPrevious(null); setStage('puzzle'); };
-    const wrap = zoomRef.current, old = oldRef.current;
+    const wrap = zoomRef.current, old = oldRef.current?.querySelector<HTMLElement>('.zoom-board');
     const fresh = wrap?.querySelector('[data-testid="cell-0-0"]')?.getBoundingClientRect();
     const prior = old?.querySelector('[data-testid="cell-0-0"]')?.getBoundingClientRect();
     if (reducedMotion() || !wrap || !old || !fresh || !prior || !wrap.animate) { done(); return; }
     const box = wrap.getBoundingClientRect();
     const scale = prior.width / fresh.width;
-    wrap.style.transformOrigin = `${fresh.left - box.left}px ${fresh.top - box.top}px`;
-    const easing = 'cubic-bezier(.5,0,.2,1)';
-    const zoom = wrap.animate([{ transform: `scale(${scale})` }, { transform: `scale(${scale})`, offset: .15 }, { transform: 'scale(1)' }], { duration: ZOOM_MS, easing });
-    old.animate([{ opacity: 1 }, { opacity: 1, offset: .15 }, { opacity: 0 }], { duration: ZOOM_MS * .7, easing: 'ease-out', fill: 'forwards' });
+    const origin = `${fresh.left - box.left}px ${fresh.top - box.top}px`;
+    wrap.style.transformOrigin = origin;
+    old.style.transformOrigin = origin;
+    const timing = { duration: ZOOM_MS, delay: ZOOM_DELAY_MS, easing: 'cubic-bezier(.65,0,.35,1)', fill: 'backwards' as const };
+    const zoom = wrap.animate([{ transform: `scale(${scale})` }, { transform: 'scale(1)' }], timing);
+    old.animate([{ transform: 'scale(1)' }, { transform: `scale(${1 / scale})` }], { ...timing, fill: 'both' });
+    oldRef.current?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ZOOM_MS * .55, delay: ZOOM_DELAY_MS, easing: 'ease-in-out', fill: 'both' });
     zoom.onfinish = done;
     return () => { zoom.onfinish = null; };
   }, [stage]);
@@ -91,7 +95,7 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
       </div>}
       <div className="onboarding-layer">
         <div ref={zoomRef} className="zoom-board">
-          <PuzzleBoard key={scenario.id} scenario={scenario} stage={stageRef} emit={effects.emit} play={play}
+          <PuzzleBoard key={scenario.id} scenario={scenario} emit={effects.emit} play={play}
             paused={stage !== 'puzzle'} onSolved={onSolved} onPhase={setPhase} />
         </div>
       </div>

@@ -3,7 +3,6 @@ import { applyAction } from '../ai/simulate';
 import { boardSize, createEmptyBoard, getStartCorner, getUnitById } from '../game/board';
 import { findAttackApproach, findPath } from '../game/movement';
 import { endOfTurnIncome } from '../game/mining';
-import { UNEQUAL_ROUTES_MAP } from '../game/resourceMap';
 import { getUnitDefinition } from '../game/units';
 import type { GameState, PlayerId, Position, Unit } from '../game/types';
 
@@ -30,13 +29,11 @@ export interface Scenario {
   goal: ScenarioGoal;
   /** `title` is the word's spelling inside the assembled game title (ASCII, SPEC §7). */
   reveal: { word: string; title: string; type: string };
+  /** Crystals already banked; nothing on screen shows them. */
+  banks?: Partial<Record<PlayerId, number>>;
   /** Screen-reader narration for each step. */
   narration: { piece: string; target: string; done: string };
 }
-
-const cellsOf = (size: number, layout: (x: number, y: number) => number) =>
-  Array.from({ length: size * size }, (_, i) => ({ x: i % size, y: Math.floor(i / size), crystals: layout(i % size, Math.floor(i / size)) }))
-    .filter(cell => cell.crystals > 0);
 
 const MUJU: Scenario = {
   id: 'muju', size: 3, hideHomeMarkers: true, active: 'muju',
@@ -47,29 +44,32 @@ const MUJU: Scenario = {
   narration: { piece: 'Tap the Muju in the top-left corner.', target: 'Tap the crystals in the far corner to move there.', done: 'The Muju mined three crystals.' },
 };
 
-/** After puzzle 1 the far corner holds 8 − 3 = 5; the 6×6 adds a few reserves of its own.
+/** The only crystals in the tutorial are the Muju's square: 8, then 8 − 3 = 5 once it has mined.
  * Three pieces in all: the Muju walks, the black Honō eats it, the Irumbu invades. */
-const HONO_RESERVES = [{ x: 2, y: 2, crystals: 5 }, { x: 5, y: 0, crystals: 4 }, { x: 0, y: 5, crystals: 4 }, { x: 4, y: 4, crystals: 4 }, { x: 5, y: 5, crystals: 8 }];
+const MINED_CORNER = [{ x: 2, y: 2, crystals: 5 }];
 const HONO: Scenario = {
   id: 'hono', size: 6, hideHomeMarkers: false, active: 'hono',
   pieces: [
     { id: 'muju', owner: 'white', type: 'plant_1', x: 2, y: 2 },
     { id: 'hono', owner: 'black', type: 'fire_2', x: 5, y: 5 },
   ],
-  reserves: HONO_RESERVES,
+  reserves: MINED_CORNER,
   goal: { kind: 'kill', target: 'muju' },
   reveal: { word: 'Honō', title: 'Hono', type: 'fire_2' },
   narration: { piece: 'Now you play Black. Tap the black Honō.', target: 'Tap the white Muju to attack it.', done: 'Fire burns plant. The Muju is eliminated.' },
 };
 
-/** The 10×10 keeps the 6×6 exactly in its top-left corner and the real map everywhere else. */
+/** The 10×10 keeps the 6×6 exactly in its top-left corner. */
 const IRUMBU: Scenario = {
   id: 'irumbu', size: 10, hideHomeMarkers: false, active: 'irumbu',
   pieces: [
     { id: 'hono', owner: 'black', type: 'fire_2', x: 2, y: 3, inert: true },
     { id: 'irumbu', owner: 'white', type: 'metal_3', x: 9, y: 1 },
   ],
-  reserves: cellsOf(10, (x, y) => x < 6 && y < 6 ? HONO_RESERVES.find(c => c.x === x && c.y === y)?.crystals ?? 0 : UNEQUAL_ROUTES_MAP[y * 10 + x]),
+  reserves: MINED_CORNER,
+  // The invader must survive its own upkeep (tier 3: 2 crystals) before `#` is
+  // awarded; with no crystals left to mine, White starts with exactly that.
+  banks: { white: 2 },
   goal: { kind: 'invade' },
   reveal: { word: 'Irumbu', title: 'Irumbu', type: 'metal_3' },
   narration: { piece: 'Now you play White again. Tap the Irumbu.', target: 'Tap the black home in the bottom-right corner to invade it.', done: 'Checkmate. The Honō cannot hurt the Irumbu, so the black home is lost.' },
@@ -91,7 +91,7 @@ export function buildScenarioState(scenario: Scenario): GameState {
     id: unitId(piece), definitionId: piece.type, owner: piece.owner, position: { x: piece.x, y: piece.y },
     hasMoved: false, hasAttacked: false, lastAttackKilled: false, canActThisTurn: true, damageTaken: 0, promotedThisPlacement: false,
   }));
-  const player = (id: PlayerId) => ({ id, resources: 0, startCorner: getStartCorner(id, size), resourcesGained: 0, resourcesUpkeep: 0 });
+  const player = (id: PlayerId) => ({ id, resources: scenario.banks?.[id] ?? 0, startCorner: getStartCorner(id, size), resourcesGained: 0, resourcesUpkeep: 0 });
   return {
     ruleset: 'phasing', actionsPerTurn: 4, pendingSummons: [], blackCrystalHandicap: 0,
     inactivityRule: 'off', inactivityPlies: 0, progressThisTurn: false,
@@ -138,6 +138,19 @@ export function scenarioPlan(state: GameState, scenario: Scenario): { path: Posi
   const actions: AIAction[] = hopsAlong(path, speed).map(to => ({ type: 'MOVE', unitId: unit.id, to }));
   if (scenario.goal.kind === 'kill') actions.push({ type: 'ATTACK', unitId: unit.id, targetPosition: goalSquare(scenario) });
   return { path, actions };
+}
+
+/** Squares on the route where the active piece may stop and still win: tapping a
+ * lit gold dot moves there. With exact budgets (speed 2, four actions) this keeps
+ * only the stops that waste nothing. */
+export function scenarioStops(state: GameState, scenario: Scenario): Position[] {
+  const { path } = scenarioPlan(state, scenario);
+  const unit = activeUnitId(scenario);
+  return path.filter(to => {
+    const next = applyAction(state, { type: 'MOVE', unitId: unit, to });
+    if (next === state) return false;
+    try { return scenarioPlan(next, scenario).actions.length <= next.turn.actionsRemaining; } catch { return false; }
+  });
 }
 
 /** Play the scripted line through the real reducer; throws if any step is illegal. */

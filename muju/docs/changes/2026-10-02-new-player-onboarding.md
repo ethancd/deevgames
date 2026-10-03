@@ -30,6 +30,8 @@ blows play lower. Everything follows the existing `muju:sfx:v1` toggle and level
   states with four actions, `inactivityRule: 'off'` and Black's bank at 0. Moves are
   played only through `applyAction`. Positions are never persisted, and
   `useGameState` is never used.
+- The only crystals in the tutorial are the Muju's square: 8 on the 3×3, then the
+  5 it leaves behind on every later board.
 - Puzzle 1, Muju: 3×3, home markers hidden. A1 to C3 costs four actions, then the
   real mining rule takes 3 of the 8 crystals.
 - Puzzle 2, Honō: 6×6, and the player plays **Black**. The black Honō on F6
@@ -37,20 +39,33 @@ blows play lower. Everything follows the existing `muju:sfx:v1` toggle and level
   (F5, D4, C4: three actions) and kills it with the fourth (fire on plant, 4 ≥ 3).
 - Puzzle 3, Irumbu: the real 10×10, keeping the 6×6 in its top-left corner. The
   Irumbu runs J2 to J10 in four hops of two. The only defender is the Honō, which
-  cannot hurt the Irumbu (4 < 5). The tutorial asks the real prover
+  cannot hurt the Irumbu (4 < 5). With nothing to mine, White starts with exactly
+  the Irumbu's upkeep (2) banked, because the prover only awards `#` to an invader
+  that survives its own upkeep. The tutorial asks the real prover
   (`END_ACTION_PHASE` through `applyAction`) and celebrates only on
   `home-checkmate`. Only three pieces appear in the whole tutorial: the white Muju,
   the black Honō and the white Irumbu.
 - `useScenario` runs `hint-piece → hint-target → playing → solved`. The active
-  piece pulses. After 2 s idle a ghost pointer taps it. Selecting lights the
-  path dots in sequence, and the goal pulses gold. A wrong tap shakes, plays
-  `wrong` and restarts the hint. Inert pieces ignore taps.
+  piece pulses. After 2 s idle a ghost fingertip taps it; the tip is anchored on
+  the square's centre, measured inside the board. Selecting lights gold dots in
+  sequence along the route, on exactly the squares where the piece can stop and
+  still win (`scenarioStops`: every square for the speed-1 Muju, every second
+  square for the Irumbu). Tapping a dot moves the piece there and the hint
+  continues; tapping the goal finishes. A wrong tap shakes, plays `wrong` and
+  restarts the hint. Inert pieces ignore taps.
+- Pieces glide: every move is one continuous slide through each square of its
+  route (`glideMs`: 260 ms plus 140 ms per square, eased at both ends), however
+  many actions it spends. The rules apply the moves at once; the slide is a
+  transform animation that keeps its clock if the piece re-renders mid-slide.
+- Home squares in the tutorial carry a large white or black house pentagon in the
+  centre, drawn under any piece.
 - `Onboarding` sequences intro → puzzle → name → zoom out → … → fade to the mode
   screen. The only visible words are a small **Skip Tutorial →** at the bottom right
   and each piece's name, which fades in at the top middle after its puzzle and fades
   away without leaving text behind. The zoom renders the next board underneath,
-  scaled so its top-left cells sit on the old ones (measured live), holds a beat,
-  then shrinks it to fit while the old board fades. Reduced motion cuts. An
+  scaled so its top-left cells sit on the old ones (measured live), and shrinks it
+  to fit over 1.5 s. The old board shrinks with it, pinned to the same point, so
+  the two never drift apart while it fades. Reduced motion cuts. An
   `aria-live` region narrates each step for screen readers. Keyboard players get
   focus moved to the square that matters next; pointer players get no focus ring.
 

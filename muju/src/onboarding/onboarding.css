@@ -33,7 +33,6 @@
 /* Guidance: the active piece breathes, the goal glows gold, dots light in sequence. */
 .unit-wrap.tutorial-active { animation: tutorial-bob 1.6s ease-in-out infinite; filter: drop-shadow(0 0 6px #f5d780cc); }
 .board-square:has(.tutorial-active) .board-cell { box-shadow: inset 0 0 0 2px #f5d780; animation: tutorial-ring 1.6s ease-in-out infinite; }
-.unit-wrap.tutorial-hop { animation: tutorial-hop .24s ease-out; }
 .unit-wrap.tutorial-inert { opacity: .6; filter: saturate(.6); }
 .unit-wrap.tutorial-prey { animation: tutorial-prey 1.1s ease-in-out infinite; }
 .tutorial-goal .board-cell { box-shadow: inset 0 0 0 2px #f5d78088; }
@@ -43,21 +42,13 @@
 .tutorial-wrong.wrong-1 .board-cell, .tutorial-wrong.wrong-1 .unit-wrap { animation-name: tutorial-shake-b; }
 
 .ghost-pointer {
-  position: absolute; z-index: 45; width: calc(var(--cell) * .62); max-width: 64px; min-width: 26px; pointer-events: none;
-  transform: translate(-20%, -8%); animation: ghost-tap 1.5s ease-in-out infinite;
+  position: absolute; z-index: 45; width: clamp(24px, calc(var(--cell) * .62), 60px); pointer-events: none;
+  /* The fingertip is at (47.5%, 0) of the drawing: put exactly that point on the square's centre. */
+  transform: translate(-47.5%, 0); animation: ghost-tap 1.5s ease-in-out infinite;
 }
 .ghost-pointer svg { display: block; width: 100%; fill: #ffffffd9; stroke: #0c141e; stroke-width: 1.5; filter: drop-shadow(0 3px 6px #0008); }
-.ghost-pointer::before { content: ''; position: absolute; left: 34%; top: 0; width: calc(var(--cell) * .5); height: calc(var(--cell) * .5); border-radius: 50%;
+.ghost-pointer::before { content: ''; position: absolute; left: 47.5%; top: 0; width: calc(var(--cell) * .55); height: calc(var(--cell) * .55); border-radius: 50%;
   border: 2px solid #fff; transform: translate(-50%, -50%) scale(.3); opacity: 0; animation: ghost-ripple 1.5s ease-out infinite; }
-
-.puzzle-grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
-.puzzle-grid button { width: 100%; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-  border-radius: 12px; border: 2px solid #374151; background: #111827; color: #f2efe4; }
-.puzzle-grid button:hover { border-color: #f5d780; }
-.puzzle-grid strong { font-family: "Iowan Old Style", Palatino, Georgia, serif; font-size: 22px; }
-.puzzle-grid small { color: #9ca3af; }
-.puzzle-glyph { width: 56px; height: 56px; display: inline-flex; }
-.puzzle-glyph svg { width: 100%; height: 100%; }
 
 @keyframes onboarding-in { from { opacity: 0; } }
 @keyframes onboarding-out { to { opacity: 0; } }
@@ -65,11 +56,23 @@
 @keyframes tutorial-fade-in { from { opacity: 0; transform: scale(.92); } }
 @keyframes tutorial-bob { 0%, 100% { transform: translate(-4%, -1%); } 50% { transform: translate(-4%, -7%); } }
 @keyframes tutorial-ring { 0%, 100% { box-shadow: inset 0 0 0 2px #f5d780; } 50% { box-shadow: inset 0 0 0 4px #f5d780, 0 0 18px #f5d78099; } }
-@keyframes tutorial-hop { 0% { transform: translate(-4%, -1%) scale(.9); } 55% { transform: translate(-4%, -14%) scale(1.04); } 100% { transform: translate(-4%, -1%); } }
 @keyframes tutorial-prey { 0%, 100% { filter: drop-shadow(0 0 0 #f5d780); } 50% { filter: drop-shadow(0 0 8px #f5d780); } }
 @keyframes tutorial-goal { 0%, 100% { box-shadow: inset 0 0 0 2px #f5d780, 0 0 0 #f5d780; } 50% { box-shadow: inset 0 0 0 4px #f5d780, 0 0 22px #f5d780aa; } }
 @keyframes tutorial-dot { from { transform: translate(-50%, -50%) scale(0); } 70% { transform: translate(-50%, -50%) scale(1.3); } }
 @keyframes tutorial-shake { 0%, 100% { translate: 0; } 20% { translate: -4px; } 40% { translate: 4px; } 60% { translate: -3px; } 80% { translate: 2px; } }
 @keyframes tutorial-shake-b { 0%, 100% { translate: 0; } 20% { translate: -4px; } 40% { translate: 4px; } 60% { translate: -3px; } 80% { translate: 2px; } }
-@keyframes ghost-tap { 0%, 100% { translate: 10% 30%; opacity: .0; } 15% { opacity: 1; } 45% { translate: 0 0; } 55% { translate: 0 6%; } 70% { translate: 0 0; opacity: 1; } 90% { opacity: 0; } }
+@keyframes ghost-tap { 0%, 100% { translate: 18% 40%; opacity: 0; } 15% { opacity: 1; } 45% { translate: 0 0; } 55% { translate: 0 5%; } 70% { translate: 0 0; opacity: 1; } 90% { opacity: 0; } }
 @keyframes ghost-ripple { 0%, 50% { opacity: 0; transform: translate(-50%, -50%) scale(.3); } 55% { opacity: .9; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); } }
+
+/* Homes: a large house pentagon in the centre of the square, white or black, under any piece. */
+.onboarding .home-marker {
+  top: 50%; left: 50%; width: 52%; height: 52%; transform: translate(-50%, -46%); z-index: 0;
+  font-size: 0; color: transparent; text-shadow: none;
+  clip-path: polygon(50% 0, 100% 44%, 100% 100%, 0 100%, 0 44%);
+}
+.onboarding .home-marker::after { content: ''; position: absolute; inset: 9%; clip-path: inherit; }
+.onboarding .home-white { background: #0c141e; }
+.onboarding .home-white::after { background: #f7f3e8; }
+.onboarding .home-black { background: #e8edf5; }
+.onboarding .home-black::after { background: #0b1119; }
+.onboarding .puzzle-board { position: relative; }

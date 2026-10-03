@@ -99,6 +99,30 @@ test('wrong taps shake and never advance; inert pieces ignore taps', async ({ pa
   expect(await puzzle(page)).toBe('irumbu');
 });
 
+test('tapping a gold dot glides the piece there; only winnable squares are lit', async ({ page }) => {
+  await page.goto('./');
+  await expect(page.locator('.puzzle-muju[data-phase="hint-piece"]')).toBeVisible();
+  await cell(page, 0, 0).click();
+  await expect(cell(page, 0, 1).locator('xpath=..').locator('.range-marker')).toBeVisible();
+  await cell(page, 0, 1).click();
+  await expect(cell(page, 0, 1)).toHaveAttribute('aria-label', /white Muju/);
+  // The piece slides rather than jumping: a transform animation is running on it.
+  expect(await page.locator('.tutorial-glider').evaluate(el => el.parentElement!.getAnimations().length)).toBeGreaterThan(0);
+  await expect(page.locator('.puzzle-muju')).toHaveAttribute('data-phase', 'hint-target');
+  await cell(page, 2, 2).click();
+  await expect(page.getByTestId('tutorial-word')).toHaveText('Muju', { timeout: 5000 });
+  await solve(page, [5, 5], [2, 2], 'hono');
+  // The Irumbu (speed 2, exactly four actions) may stop on every second square only.
+  await cell(page, 9, 1).click();
+  await expect(page.locator('.puzzle-irumbu .range-marker')).toHaveCount(3);
+  await cell(page, 9, 2).click();
+  await expect(page.locator('.tutorial-wrong')).toHaveCount(1);
+  await cell(page, 9, 5).click();
+  await expect(cell(page, 9, 5)).toHaveAttribute('aria-label', /white Irumbu/);
+  await cell(page, 9, 9).click();
+  await expect(page.getByTestId('tutorial-word')).toHaveText('Irumbu', { timeout: 6000 });
+});
+
 test('Skip sets the flag and shows the mode screen', async ({ page }) => {
   await page.goto('./');
   await page.getByRole('button', { name: 'Skip Tutorial' }).click();

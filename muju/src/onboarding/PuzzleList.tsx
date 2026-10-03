@@ -45,7 +45,7 @@ function PuzzlePlayer({ scenario, onBack }: { scenario: Scenario; onBack: () => 
     <div className="onboarding-word-band">{stage === 'reveal' && <Reveal word={scenario.reveal.word} onDone={() => setStage('done')} />}</div>
     <div ref={stageRef} className="onboarding-stage">
       <div className="onboarding-layer"><div className="zoom-board">
-        <PuzzleBoard key={round} scenario={scenario} stage={stageRef} emit={effects.emit} play={play} paused={stage !== 'puzzle'} onSolved={onSolved} onPhase={setPhase} />
+        <PuzzleBoard key={round} scenario={scenario} emit={effects.emit} play={play} paused={stage !== 'puzzle'} onSolved={onSolved} onPhase={setPhase} />
       </div></div>
       <BoardEffects handle={effects.handle} />
     </div>

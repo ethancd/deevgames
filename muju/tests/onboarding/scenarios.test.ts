@@ -1,11 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { transitionWithoutCheckmate } from '../../src/ai/simulate';
+import { applyAction, transitionWithoutCheckmate } from '../../src/ai/simulate';
 import { getUnitById } from '../../src/game/board';
 import { calculateAttackPower, calculateDefense } from '../../src/game/combat';
 import { analyzeHomeDefense } from '../../src/game/homeCheckmate';
 import { findAttackApproach, getMoveCost, movementActionCost } from '../../src/game/movement';
 import { getUnitDefinition } from '../../src/game/units';
-import { activeUnitId, buildScenarioState, goalSquare, hopsAlong, playScenario, scenarioById, scenarioPlan, SCENARIOS, targetUnitId, unitId } from '../../src/onboarding/scenarios';
+import { upkeepForTier } from '../../src/game/upkeep';
+import { finishScenario, scenarioStops, activeUnitId, buildScenarioState, goalSquare, hopsAlong, playScenario, scenarioById, scenarioPlan, SCENARIOS, targetUnitId, unitId } from '../../src/onboarding/scenarios';
 
 /** Every expectation is computed from the live catalogue, not hard-coded costs. */
 const muju = scenarioById('muju')!, hono = scenarioById('hono')!, irumbu = scenarioById('irumbu')!;
@@ -16,14 +17,14 @@ describe('onboarding scenarios', () => {
     expect(new Set(SCENARIOS.flatMap(s => s.pieces.map(p => unitId(p))))).toEqual(new Set(['tutorial-white-muju', 'tutorial-black-hono', 'tutorial-white-irumbu']));
   });
 
-  it('build positions with four actions, no kill clock and empty banks', () => {
+  it('build positions with four actions, no kill clock and only the listed banks', () => {
     for (const scenario of SCENARIOS) {
       const state = buildScenarioState(scenario);
       expect(state.board.cells).toHaveLength(scenario.size);
       expect(state.turn).toMatchObject({ phase: 'action', actionsRemaining: 4 });
       expect(state.inactivityRule).toBe('off');
       expect(state.players.black.resources).toBe(0);
-      expect(state.players.white.resources).toBe(0);
+      expect(state.players.white.resources).toBe(scenario.banks?.white ?? 0);
     }
   });
 
@@ -68,6 +69,8 @@ describe('onboarding scenarios', () => {
     // The only defender is the Honō, and it cannot pierce the Irumbu's defense.
     const defender = state.board.units.find(u => u.owner === 'black')!;
     expect(calculateAttackPower(defender, unit)).toBeLessThan(calculateDefense(unit));
+    // White mines nothing, so its bank must cover exactly the Irumbu's upkeep.
+    expect(irumbu.banks?.white).toBe(upkeepForTier(getUnitDefinition('metal_3').tier));
     const { frames, checkmate } = playScenario(irumbu);
     const invaded = frames.at(-1)!;
     expect(invaded.turn.actionsRemaining).toBe(0);
@@ -89,6 +92,35 @@ describe('onboarding scenarios', () => {
     expect(at(threeStart, mujuId)).toBeUndefined();
     expect(at(threeStart, honoId)).toEqual(at(two, honoId));
     expect(irumbu.pieces.find(p => p.id === 'hono')!.inert).toBe(true);
+  });
+
+  it('offers gold-dot stops only where the puzzle stays winnable', () => {
+    const key = (p: { x: number; y: number }) => `${p.x},${p.y}`;
+    // Speed 1 wastes nothing: every square of the Muju's walk is a stop.
+    const one = buildScenarioState(muju);
+    expect(scenarioStops(one, muju).map(key)).toEqual(scenarioPlan(one, muju).path.map(key));
+    // Speed 2 with an exact budget: the Irumbu may only stop on even squares.
+    const three = buildScenarioState(irumbu);
+    expect(scenarioStops(three, irumbu).map(key)).toEqual(['9,3', '9,5', '9,7', '9,9']);
+  });
+
+  it('wins from every chain of stops: always stopping at the first or last dot still finishes the puzzle', () => {
+    for (const scenario of SCENARIOS) for (const pick of ['first', 'last'] as const) {
+      let state = buildScenarioState(scenario);
+      for (let guard = 0; guard < 8; guard++) {
+        const stops = scenarioStops(state, scenario).filter(p => p.x !== goalSquare(scenario).x || p.y !== goalSquare(scenario).y);
+        if (!stops.length) break;
+        const to = pick === 'first' ? stops[0] : stops.at(-1)!;
+        const next = applyAction(state, { type: 'MOVE', unitId: activeUnitId(scenario), to });
+        expect(next).not.toBe(state);
+        state = next;
+      }
+      for (const action of scenarioPlan(state, scenario).actions) state = applyAction(state, action);
+      const finished = finishScenario(state, scenario);
+      if (scenario.goal.kind === 'invade') expect(finished.checkmate).toBe(true);
+      if (scenario.goal.kind === 'kill') expect(getUnitById(state.board, targetUnitId(scenario)!)).toBeNull();
+      if (scenario.goal.kind === 'move') expect(getUnitById(state.board, activeUnitId(scenario))!.position).toEqual(goalSquare(scenario));
+    }
   });
 
   it('splits paths into speed-sized hops of one action each', () => {
