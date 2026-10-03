@@ -23,14 +23,14 @@ test('a phone shows and saves checkmate immediately on the winning move', async 
   // handover and without the AI ever being asked to think.
   await page.getByRole('button', { name: 'Mine & prepare →' }).click();
   await expect(page.getByRole('heading', { name: 'You Win!', exact: true })).toBeVisible();
-  await expect(page.getByText(/Checkmate!.*no legal reply/)).toBeVisible();
+  await expect(page.getByText(/Checkmate!.*cannot be removed before/)).toBeVisible();
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('elemental-tactics-save')!).state.turn.currentPlayer)).toBe('white');
   expect(workers).toEqual([]);
   await page.screenshot({ path: testInfo.outputPath('phone-checkmate.png'), fullPage: true });
   await page.reload();
   await page.getByRole('button', { name: 'Play vs AI Play against the computer', exact: true }).click();
   await page.getByRole('button', { name: /Continue saved game/ }).click();
-  await expect(page.getByText(/Checkmate!.*no legal reply/)).toBeVisible();
+  await expect(page.getByText(/Checkmate!.*cannot be removed before/)).toBeVisible();
 });
 
 test('MCP checkmate ends a queued turn and updates observers immediately', async ({ page, request }) => {
@@ -71,5 +71,5 @@ test('MCP checkmate ends a queued turn and updates observers immediately', async
   // behind it in the same batch is cancelled rather than applied.
   expect(room.history.at(-1).actions.map((a: { type: string }) => a.type)).toEqual(['MOVE', 'END_ACTION_PHASE']);
   await expect(page.getByRole('heading', { name: 'White LLM Wins!', exact: true })).toBeVisible();
-  await expect(page.getByText(/Checkmate!.*no legal reply/)).toBeVisible();
+  await expect(page.getByText(/Checkmate!.*cannot be removed before/)).toBeVisible();
 });

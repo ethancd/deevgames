@@ -79,7 +79,7 @@ export function ForkRoomDialog({ serverUrl, roomId, position, defaultSide = 'whi
         <label>Free seconds per turn<input type="number" min="0" max="600" step="1" required value={delay} onChange={event => setDelay(event.target.value)} /></label>
         <label>Bank per player (minutes)<input type="number" min={1 / 60} max="240" step="any" required value={bank} onChange={event => setBank(event.target.value)} /></label>
       </div>}
-      <p>The original game stays saved. The fork keeps the board, resources, summons, and remaining actions.</p>
+      <p>The original game stays saved. The fork keeps the board, resources, pending summons, and remaining actions.</p>
       <button type="submit" disabled={!source || busy || !name.trim()}>{busy ? 'Creating…' : 'Create fork'}</button>
       </fieldset>
       {!source && !error && <p role="status">Loading source game…</p>}

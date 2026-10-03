@@ -55,7 +55,7 @@ for (const [width,height] of [[320,568],[375,667],[390,664],[390,844],[430,932],
   const host=await online(page,request);
   await fits(page);
   await page.getByRole('button',{name:'Mine & prepare'}).click();
-  await page.getByRole('button',{name:/Summon Hi/}).click();
+  await page.getByRole('button',{name:/Start summoning Hi/}).click();
   await page.getByTestId('cell-0-0').click();
   await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/phasing in/);
   await page.getByTestId('cell-0-0').click();

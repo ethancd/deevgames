@@ -16,9 +16,9 @@ export function UnitShop({ resources, player, selectedId, onSelectId, inspectOnl
   const def = selectedId ? getUnitDefinition(selectedId) : getUnitDefinition('fire_1');
   const tier = inspectOnly ? def.tier : 1;
   return <div className={`unit-shop ${inspectOnly ? '' : 'purchase-shop'}`}>
-    <div className="element-picker" role="group" aria-label={inspectOnly ? 'Unit element' : micro ? 'Summon a piece' : 'Buy tier 1'}>
+    <div className="element-picker" role="group" aria-label={inspectOnly ? 'Unit element' : micro ? 'Start summoning a piece' : phasing ? 'Start summoning a tier-1 piece' : 'Buy tier 1'}>
       {UNIT_DEFINITIONS.filter(d => d.tier === tier && (!micro || MICRO_CATALOGUE.includes(d.id))).map(d => <button key={d.id}
-        aria-label={`${inspectOnly ? 'Inspect' : phasing ? 'Summon' : 'Buy'} ${d.name}${inspectOnly ? '' : ` · ${d.cost} crystals`}`}
+        aria-label={`${inspectOnly ? 'Inspect' : phasing ? 'Start summoning' : 'Buy'} ${d.name}${inspectOnly ? '' : ` · ${d.cost} crystals`}`}
         disabled={!inspectOnly && resources < d.cost} aria-pressed={selectedId === d.id} onClick={() => onSelectId(d.id)}>
         <ElementIcon element={d.element} />{d.name}{!inspectOnly && <small>◆ {d.cost}</small>}
       </button>)}

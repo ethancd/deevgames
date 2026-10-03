@@ -78,7 +78,7 @@ export function recordAction(recording: ReplayRecording, before: GameState, acti
     case 'BUY_UNIT':
       position = action.position;
       unitId = after.board.units.find(u => u.position.x === position!.x && u.position.y === position!.y)?.id;
-      label = `${isPhasing(before) ? 'Started phasing' : 'Placed'} ${getUnitDefinition(action.definitionId).name} at ${square(position)}`; break;
+      label = `${isPhasing(before) ? 'Started summoning' : 'Placed'} ${getUnitDefinition(action.definitionId).name} at ${square(position)}`; break;
     case 'PROMOTE_UNIT':
       position = unit?.position;
       const promoted = after.board.units.find(u => u.id === unitId);

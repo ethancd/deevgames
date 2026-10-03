@@ -41,7 +41,7 @@ for(const [width,height] of [[320,568],[375,667],[390,664],[390,844],[430,932],[
  await page.getByTestId('cell-3-1').click();await expect(page.getByTestId('cell-3-1')).toHaveAttribute('aria-pressed','true');await expect(page.locator('.unit-detail')).toContainText('Takes 0 here at turn end');await fits(page);await page.screenshot({path:info.outputPath('moved.png')});
  // Prepare: mining and upkeep settle, then a summon is committed for next turn.
  await page.getByRole('button',{name:'Mine & prepare →'}).click();
- await page.getByRole('button',{name:'Summon Hi · 3 crystals',exact:true}).click();await page.getByTestId('cell-0-0').click();
+ await page.getByRole('button',{name:'Start summoning Hi · 3 crystals',exact:true}).click();await page.getByTestId('cell-0-0').click();
  await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label',/white Hi phasing in, not an occupant/);
  await page.getByTestId('cell-0-0').click();
  await expect(page.locator('.unit-detail')).toContainText('Reach after arrival');await fits(page);await page.screenshot({path:info.outputPath('place.png')});
@@ -75,7 +75,7 @@ test('passive reserves, public banks, live projection, recap and irreversible in
 test('commit a summon, promote it on arrival; haste and save persistence',async({page})=>{
  const s=phasing();s.players.white.resources=s.players.white.resourcesGained=10;await start(page,s);
  await page.getByRole('button',{name:'Mine & prepare →'}).click();
- await page.getByRole('button',{name:'Summon Hi · 3 crystals',exact:true}).click();await page.getByTestId('cell-0-0').click();
+ await page.getByRole('button',{name:'Start summoning Hi · 3 crystals',exact:true}).click();await page.getByTestId('cell-0-0').click();
  await page.getByTestId('cell-0-0').click();
  // A commitment is not a piece: there is nothing there to promote yet.
  await expect(page.getByRole('button',{name:/Promote ·/})).toHaveCount(0);

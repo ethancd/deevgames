@@ -9,11 +9,11 @@ for (const width of [390, 1280]) test(`Phasing local lifecycle, undo, resume and
   await page.getByRole('button', { name: 'Start Game', exact: true }).click();
   await expect(page.locator('.ruleset-badge')).toHaveText('Phasing');
   await page.getByRole('button', { name: 'Mine & prepare' }).click();
-  await expect(page.getByRole('button', { name: 'Summon Hi', exact: false })).toBeEnabled();
+  await expect(page.getByRole('button', { name: 'Start summoning Hi', exact: false })).toBeEnabled();
   await page.getByRole('button', { name: /Undo/ }).click();
   await expect(page.getByRole('button', { name: 'Mine & prepare' })).toBeVisible();
   await page.getByRole('button', { name: 'Mine & prepare' }).click();
-  await page.getByRole('button', { name: /Summon Hi/ }).click();
+  await page.getByRole('button', { name: /Start summoning Hi/ }).click();
   await page.getByTestId('cell-0-0').click();
   await expect(page.getByTestId('cell-0-0')).toHaveAttribute('aria-label', /white Hi phasing in, not an occupant/);
   await expect(page.getByRole('region', { name: 'Phasing summons' })).toContainText('3 ◆ committed');
@@ -55,7 +55,7 @@ test('Phasing online room, public observer, arrivals and analysis retain rules',
   const joined = await request.post(`/api/muju/rooms/${credentials.roomId}/join`, { data: { name: 'Black test', inviteCode: credentials.inviteCode } });
   const guest = await joined.json();
   await page.getByRole('button', { name: 'Mine & prepare' }).click();
-  await page.getByRole('button', { name: /Summon Hi/ }).click();
+  await page.getByRole('button', { name: /Start summoning Hi/ }).click();
   await page.getByTestId('cell-0-0').click();
   await page.getByRole('button', { name: 'End turn' }).click();
   const response = await request.get(`/api/muju/rooms/${credentials.roomId}`), room = await response.json();

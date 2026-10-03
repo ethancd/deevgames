@@ -24,8 +24,8 @@ export function MicroRulesSummary() {
     <li><b>{MICRO_ACTIONS_PER_TURN} shared actions</b> a turn: move (repeatable) or attack an adjacent enemy.</li>
     <li>Each piece attacks <b>at most once per turn</b>, even after a kill. No Cleave.</li>
     <li>Only Hi, Sjór and Muju. No promotions, no upkeep.</li>
-    <li>After acting, your pieces mine automatically. Then summon for next turn, and hand over the device.</li>
-    <li>Win by holding the enemy home until your next turn, by home checkmate, or by eliminating every enemy piece. No clock, and no draw by time.</li>
+    <li>After acting, your pieces mine automatically. Then start summoning pieces for next turn, and hand over the device.</li>
+    <li>Win by occupying the enemy home until your next turn, by home checkmate, or by eliminating every enemy piece. No clock, and no draw by time.</li>
   </ul>;
 }
 
@@ -33,7 +33,7 @@ export const MICRO_PAGES = [
   { title: 'MICRO MUJU', content: <>
     <p>A smaller Muju Hono Irumbu on a {MICRO_BOARD_SIZE}×{MICRO_BOARD_SIZE} board, for two players on one device. The pieces are unchanged from the full game. Some things are simply left out.</p>
     <p>White starts with Hi on B1, Sjór on B2 and Muju on A2. Black starts with Hi on E6, Sjór on E5 and Muju on F5. Nobody starts with crystals. White moves first.</p>
-    <p>The map holds {MICRO_MAP_RESOURCES} crystals, with reserves of {reserves.join(' / ')} per square. Empty squares are ordinary ground: walk on them and summon onto them.</p>
+    <p>The map holds {MICRO_MAP_RESOURCES} crystals, with reserves of {reserves.join(' / ')} per square. Empty squares are ordinary ground: walk on them, or start summoning a piece on one.</p>
   </> },
   { title: 'Your turn', content: <>
     <p>At the start of your turn your pending summons arrive (or are refunded) and your pieces heal. Then take up to {MICRO_ACTIONS_PER_TURN} shared actions.</p>
@@ -55,8 +55,8 @@ export const MICRO_PAGES = [
     <p>A pending summon is not a piece: it cannot anchor, block, mine, fight, or keep your army alive.</p>
   </> },
   { title: 'Winning', content: <>
-    <p>Occupy the enemy home (A1 or F6) and still be there at the start of your next turn: you win, before any arrivals or healing.</p>
-    <p>If the defender has no legal way to remove the invader on their reply, it is home checkmate and you win at once.</p>
+    <p>Occupy the enemy home (A1 or F6) until your next turn and you win as it starts, before any arrivals or healing. Stepping onto it only starts the occupation.</p>
+    <p>If the defender has no legal way to remove the invader before your next turn, it is home checkmate and you win at once.</p>
     <p>Losing your last piece loses immediately, whatever is in your bank or phasing in.</p>
     <p>There is no clock, kill counter or draw by time. If nobody wins, the game goes on.</p>
   </> },

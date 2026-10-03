@@ -13,6 +13,12 @@ export async function seedOnboarding(context: BrowserContext) {
     } catch { /* storage-less specs */ }
   }, ONBOARDING_SEEN);
 }
+/** Learn to Play progress (`muju:learn:v1`), for specs that start part-way through the course. */
+export async function seedLearn(context: BrowserContext, progress: { version: 1; solved: Record<string, { at: string; clean: boolean }>; last?: string }) {
+  await context.addInitScript(saved => {
+    try { localStorage.setItem('muju:learn:v1', saved); } catch { /* storage-less specs */ }
+  }, JSON.stringify(progress));
+}
 /** For specs that open their own contexts (phones, second players). */
 export async function seededContext(browser: Browser, options?: BrowserContextOptions) {
   const context = await browser.newContext(options);

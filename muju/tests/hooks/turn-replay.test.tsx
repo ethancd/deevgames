@@ -95,7 +95,7 @@ it('records placement and promotion results, omitting phase transitions', () => 
   const replay=result.current.lastTurnReplay!;
   expect(replay.frames.map(f=>f.action.type)).toEqual(['BUY_UNIT','PROMOTE_UNIT']);
   expect(replay.frames[0].position).toEqual({x:0,y:0});
-  expect(replay.frames[0].label).toContain('Started phasing');
+  expect(replay.frames[0].label).toContain('Started summoning');
   expect(replay.frames[0].pendingSummons?.map(p=>p.id)).toContain(committed.id);
   expect(replay.frames[0].board.units).toHaveLength(state.board.units.length);
   expect(replay.frames[0].board.units.find(u=>u.id===id)?.definitionId).toBe('fire_1');

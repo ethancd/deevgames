@@ -1,4 +1,4 @@
-import { cleanup, render } from '@testing-library/react';
+import { cleanup, render, screen } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { ActionBar, actionCount } from '../src/components/ActionBar';
 import { Cell } from '../src/components/Cell';
@@ -25,8 +25,13 @@ describe('action count copy', () => {
     expect(el.getAttribute('aria-label')).toBe(label);
   });
 
+  it('keeps the Undo button named "↶ Undo", as the match specs find it', () => {
+    budget(2);
+    expect(screen.getByRole('button', { name: '↶ Undo' })).toBeInTheDocument();
+  });
+
   it('keeps the Prepare label outside the action phase', () => {
-    expect(budget(1, 'place').querySelector('strong')!.textContent).toBe('Summon & promote');
+    expect(budget(1, 'place').querySelector('strong')!.textContent).toBe('Prepare');
   });
 
   it.each([[1, 'move costs 1 action'], [2, 'move costs 2 actions']])('board reach label for cost %i', (moveCost, fragment) => {

@@ -72,7 +72,7 @@ const IRUMBU: Scenario = {
   banks: { white: 2 },
   goal: { kind: 'invade' },
   reveal: { word: 'Irumbu', title: 'Irumbu', type: 'metal_3' },
-  narration: { piece: 'Now you play White again. Tap the Irumbu.', target: 'Tap the black home in the bottom-right corner to invade it.', done: 'Checkmate. The Honō cannot hurt the Irumbu, so the black home is lost.' },
+  narration: { piece: 'Now you play White again. Tap the Irumbu.', target: 'Tap the black home in the bottom-right corner to step onto it.', done: 'Checkmate. The Honō cannot hurt the Irumbu, so nothing can remove it before your next turn.' },
 };
 
 export const SCENARIOS: readonly Scenario[] = [MUJU, HONO, IRUMBU];

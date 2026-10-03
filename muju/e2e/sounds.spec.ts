@@ -32,7 +32,7 @@ test('phone sound controls persist independently of music; local movement, phasi
   await page.getByRole('button',{name:/Undo/}).click();
   expect(await starts(page)).toHaveLength(1);
   await page.getByRole('button',{name:'Mine & prepare'}).click();
-  await page.getByRole('button',{name:/Summon Hi/}).click();
+  await page.getByRole('button',{name:/Start summoning Hi/}).click();
   await page.getByTestId('cell-0-0').click();
   await expect.poll(async()=>(await starts(page)).length).toBe(2);
   expect((await starts(page))[1].duration).toBeCloseTo(.14,3);

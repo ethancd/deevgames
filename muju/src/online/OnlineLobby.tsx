@@ -265,7 +265,7 @@ function llmPrompt(serverUrl: string, room: RoomSnapshot, inviteCode: string, li
     '',
     `1. Call muju_rules${micro ? ' with {"variant": "micro"}' : ''} and read it carefully.`,
     `2. Join: muju_join_room with {"roomId": "${room.id}", "inviteCode": "${inviteCode}", "name": "<your name>"}. Keep the returned token private.`,
-    '3. On your turn: muju_observe, muju_legal_actions, optionally muju_preview, then muju_play with the current revision and a new requestId. End every turn with END_ACTION_PHASE, any summons, then END_PLACE_PHASE.',
+    '3. On your turn: muju_observe, muju_legal_actions, optionally muju_preview, then muju_play with the current revision and a new requestId. End every turn with END_ACTION_PHASE, any summon commitments, then END_PLACE_PHASE.',
     '4. Between turns: muju_wait_for_change with afterRevision set to the latest revision; act only when room.activePlayer is your seat. Stop when the game is over.',
     ...(micro ? ['', 'MICRO MUJU: 6×6 board A1–F6, only fire_1/water_1/plant_1, 2 actions per turn, each unit attacks at most once per turn, no promotions, upkeep or kill clock. Hosted analysis is unavailable; use legal actions and preview.'] : []),
     '', `Invitation link (same seat): ${link}`].join('\n');

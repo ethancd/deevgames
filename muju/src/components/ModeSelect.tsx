@@ -7,6 +7,7 @@ import { AI_PACES, AI_PACE_LABEL, AI_TURN_SECONDS, formatTurnSeconds, type AIPac
 import { getActionsPerTurn } from '../game/rules';
 import { INACTIVITY_LIMIT } from '../game/inactivity';
 import { loadAIPace, loadGameState, loadRetiredSave } from '../utils/persistence';
+import { PUZZLE_COUNT } from '../learn/count';
 
 const PREFERRED_SIDE_KEY = 'muju:preferred-player-side';
 /** Remembers whether "Other ways to play" was left open. */
@@ -30,13 +31,15 @@ function loadPreferredSide(): PlayerId {
 interface ModeSelectProps {
   onStartGame: (config: GameConfig) => void;
   onOnline?: () => void;
-  onPuzzles?: () => void;
+  /** Learn to Play: the puzzle course. `learnSolved` puzzles are already solved. */
+  onLearn?: () => void;
+  learnSolved?: number;
   onReplayTutorial?: () => void;
   /** Fade in from the tutorial's title. */
   welcome?: boolean;
 }
 
-export function ModeSelect({ onStartGame, onOnline, onPuzzles, onReplayTutorial, welcome = false }: ModeSelectProps) {
+export function ModeSelect({ onStartGame, onOnline, onLearn, learnSolved = 0, onReplayTutorial, welcome = false }: ModeSelectProps) {
   const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
   const [otherOpen, setOtherOpen] = useState(loadOtherModesOpen);
   const toggleOther = () => {
@@ -125,6 +128,10 @@ export function ModeSelect({ onStartGame, onOnline, onPuzzles, onReplayTutorial,
 
         {/* Three headline choices first; every other way to play stays one tap away below. */}
         <div className="mode-primary space-y-3">
+          {onLearn && <button onClick={onLearn} data-testid="mode-learn" className="mode-primary-button w-full p-5 rounded-xl border-2 border-emerald-700 hover:border-emerald-400 text-left">
+            <div className="text-lg font-semibold">Learn to Play</div>
+            <div className="text-sm text-gray-400">{learnSolved > 0 ? `${learnSolved} / ${PUZZLE_COUNT} puzzles` : `${PUZZLE_COUNT} puzzles`}</div>
+          </button>}
           <button
             onClick={() => setSelectedMode('vs-ai')}
             aria-pressed={selectedMode === 'vs-ai'}
@@ -140,10 +147,6 @@ export function ModeSelect({ onStartGame, onOnline, onPuzzles, onReplayTutorial,
           {onOnline && <button onClick={onOnline} className="mode-primary-button w-full p-5 rounded-xl border-2 border-cyan-700 hover:border-cyan-400 text-left">
             <div className="text-lg font-semibold">Play online</div>
             <div className="text-sm text-gray-400">Host, join, or watch a live game</div>
-          </button>}
-          {onPuzzles && <button onClick={onPuzzles} className="mode-primary-button w-full p-5 rounded-xl border-2 border-amber-700 hover:border-amber-400 text-left">
-            <div className="text-lg font-semibold">Puzzles</div>
-            <div className="text-sm text-gray-400">Short positions to solve, one turn each</div>
           </button>}
         </div>
 

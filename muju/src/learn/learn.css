@@ -1,0 +1,225 @@
+/* Learn to Play: the course map and the puzzle chrome over the real game screen.
+   Reduced motion is handled by the global rule in index.css (animations off). */
+
+/* === Map === */
+.learn-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.learn-total { font-size: 15px; font-weight: 650; color: #bfe9ca; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.learn-continue { width: 100%; min-height: 60px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 20px; border-radius: 16px;
+  background: #bfe9ca; color: #153525; font-size: 20px; font-weight: 750; letter-spacing: -.2px; box-shadow: 0 8px 24px #bfe9ca22; transition: transform .12s ease, box-shadow .12s ease; }
+.learn-continue:hover { transform: translateY(-1px); box-shadow: 0 10px 28px #bfe9ca33; }
+.learn-continue:active { transform: translateY(0); }
+.learn-continue-arrow { font-size: 22px; line-height: 1; }
+.learn-part { display: grid; gap: 10px; }
+.learn-part + .learn-part { margin-top: 6px; }
+.learn-part-title { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #8fa6ba; padding: 10px 0 0; }
+.learn-arc { padding: 12px; border-radius: 14px; border: 1px solid #2d3f50; background: #141f2d; display: grid; gap: 10px; }
+.learn-arc.is-complete { border-color: #3d6b53; }
+.learn-arc-row { display: flex; align-items: center; gap: 10px; }
+.learn-arc-title { flex: 1; min-width: 0; font-size: 16px; font-weight: 650; }
+.learn-arc-count { font-size: 13px; color: #a9bccf; font-variant-numeric: tabular-nums; }
+.is-complete .learn-arc-count { color: #bfe9ca; }
+.learn-arc-icon { width: 30px; height: 30px; flex: none; display: block; fill: none; stroke: #d6eee8; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; color: #d6eee8; }
+.learn-arc-icon-exam { fill: #f5d78044; stroke: #f5d780; }
+.learn-arc-icon-piece .unit-art { width: 30px; height: 32px; display: block; }
+/* Tiles wrap into balanced rows (9 → 5 + 4, 14 → 7 + 7): the arc sets its column counts for
+   rows of at most 7, 6 and 5 tiles, and the widest that fits the card is used. */
+.learn-arc { container-type: inline-size; }
+.learn-tiles { display: grid; grid-template-columns: repeat(var(--cols-7, 7), 42px); gap: 6px; list-style: none; margin: 0; padding: 0; }
+@container (max-width: 329px) { .learn-tiles { grid-template-columns: repeat(var(--cols-6, 6), 42px); } }
+@container (max-width: 281px) { .learn-tiles { grid-template-columns: repeat(var(--cols-5, 5), 42px); } }
+.learn-tile { width: 42px; height: 42px; border-radius: 11px; border: 1px solid #3b4b5b; background: #1b2939; color: #e8edf5; font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums;
+  display: grid; place-items: center; transition: background .12s ease, border-color .12s ease, transform .12s ease; }
+.learn-tile:hover { border-color: #67e8f9; transform: translateY(-1px); }
+.learn-tile.is-solved { background: #2b5a46; border-color: #4f8c6b; color: #d7f5e3; font-size: 18px; }
+.learn-tile.is-next { border-color: #f5d780; color: #fff3cf; box-shadow: 0 0 0 2px #f5d78055; animation: learn-tile-pulse 1.8s ease-in-out infinite; }
+@keyframes learn-tile-pulse { 0%, 100% { box-shadow: 0 0 0 2px #f5d78055; } 50% { box-shadow: 0 0 0 4px #f5d78099, 0 0 18px #f5d78066; } }
+.learn-footer { display: flex; justify-content: center; padding: 18px 0 8px; }
+.learn-reset { min-height: 40px; padding: 6px 14px; border-radius: 9px; color: #8fa1b4; font-size: 13px; background: transparent; }
+.learn-reset:hover { color: #ffb3b8; }
+.learn-reset-confirm { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #c9d6e2; flex-wrap: wrap; justify-content: center; }
+.learn-reset-confirm button { min-height: 40px; padding: 6px 14px; border-radius: 9px; background: #253448; color: #e8edf5; font-weight: 650; font-size: 13px; }
+.learn-reset-confirm .learn-reset-yes { background: #5a2a33; color: #ffd4d7; }
+
+/* === Puzzle shell === */
+.game-shell .game-header .game-back-link { width: auto; min-height: 36px; padding: 8px 2px; background: transparent; color: #a9bccf; font-size: 12px; font-weight: 500; letter-spacing: normal; white-space: nowrap; border-radius: 6px; }
+.game-shell .game-back-link:hover { color: #e8edf5; }
+.puzzle-title { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.puzzle-number { font-size: 12px; font-weight: 500; color: #a9bccf; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* The goal is the most prominent text on the screen. */
+.learn-goal { flex: none; display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 34px; padding: 5px 12px; border-radius: 10px;
+  background: linear-gradient(180deg, #1d3340, #16293a); border: 1px solid #2f4d5c; box-shadow: inset 0 1px 0 #ffffff0d; }
+.learn-goal-text { font-size: 15px; font-weight: 750; letter-spacing: -.2px; color: #fff3cf; text-align: center; text-wrap: balance; line-height: 1.2; }
+/* Mined so far, then (lighter, dashed: not yet collected) what Mine & prepare would add from where your pieces stand. */
+.learn-goal-meter { flex: none; display: inline-flex; align-items: center; gap: 4px; }
+.learn-goal-progress { flex: none; font-size: 13px; color: #bfe9ca; font-variant-numeric: tabular-nums; padding: 2px 8px; border-radius: 999px; background: #0f1d27; white-space: nowrap; }
+.learn-goal-progress b { font-size: 15px; color: #e9fff1; }
+.learn-goal-projected { flex: none; font-size: 13px; font-weight: 650; color: #bfe9caaa; font-variant-numeric: tabular-nums; padding: 1px 7px; border-radius: 999px; border: 1.5px dashed #bfe9ca66; white-space: nowrap; }
+.learn-goal-projected.is-empty { display: none; }
+.game-shell-puzzle .board-key { visibility: visible; }
+
+/* Thumb bar: retry and hint before the game's own action bar, all 44 px targets.
+   (index.css loads first; puzzle rules still carry one more class than the game's.) */
+.learn-thumb-bar { display: flex; align-items: center; gap: 6px; }
+.play-footer > .learn-thumb-bar { grid-column: 1 / -1; }
+.learn-thumb-bar .action-bar { flex: 1; min-width: 0; }
+.learn-controls { display: flex; gap: 6px; flex: none; }
+.game-shell-puzzle .learn-thumb-bar .learn-controls button { min-height: 44px; min-width: 44px; padding: 0 10px; font-size: 19px; line-height: 1; }
+.game-shell-puzzle .play-footer .action-bar button { min-height: 44px; }
+/* Prepare is already named by the turn strip ("2 Prepare"): the bar keeps its room for Undo and End turn. */
+.game-shell-puzzle .action-bar[data-phase=place] .action-budget strong { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+/* Show me: the glyph and its name, side by side where there is room, stacked in a phone's bar. */
+.game-shell-puzzle .learn-controls .learn-hint.is-armed { background: #f5d780; color: #3a2a06; font-size: 13px; font-weight: 750; gap: 6px; display: inline-flex; align-items: center; justify-content: center; }
+.game-shell-puzzle .learn-controls .learn-hint.is-armed .learn-hint-glyph { font-size: 15px; }
+.game-shell-puzzle .learn-controls .learn-hint.is-lit { box-shadow: inset 0 0 0 2px #ffffffcc; }
+/* On phones (portrait and landscape) the bar measures itself: the narrower it is, the more it
+   compacts, so no label is ever cut off. Desktop's tall side column is not a container. */
+@media not all and (min-width: 960px) and (min-height: 601px) and (orientation: landscape) {
+  .game-shell-puzzle .learn-thumb-bar { container: learn-thumb / inline-size; }
+}
+@container learn-thumb (max-width: 479px) {
+  .game-shell-puzzle .learn-thumb-bar .learn-controls .learn-hint.is-armed { flex-direction: column; gap: 3px; padding: 0 3px; min-width: 46px; }
+  .game-shell-puzzle .learn-controls .learn-hint.is-armed .learn-hint-glyph { font-size: 12px; line-height: 1; }
+  .game-shell-puzzle .learn-controls .learn-hint.is-armed .learn-hint-label { font-size: 10px; line-height: 1; letter-spacing: -.2px; white-space: nowrap; }
+}
+@container learn-thumb (max-width: 371px) {
+  .learn-thumb-bar, .learn-thumb-bar .learn-controls, .learn-thumb-bar .action-bar { gap: 4px; }
+}
+/* Narrow: a glyph-only Undo (it keeps its name "↶ Undo"). */
+@container learn-thumb (max-width: 351px) {
+  .game-shell-puzzle .action-bar-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+  .game-shell-puzzle .play-footer .action-bar button:not(.primary) { min-width: 44px; padding-inline: 8px; }
+}
+/* The narrowest (phones under 360 px): pips only. */
+@container learn-thumb (max-width: 343px) {
+  .game-shell-puzzle .action-budget { min-width: 0; }
+  .game-shell-puzzle .action-budget strong { display: none; }
+  .game-shell-puzzle .action-budget > span { margin-top: 0; }
+  .game-shell-puzzle .play-footer .action-bar button.primary { font-size: 11px; padding-inline: 5px; }
+  .game-shell-puzzle .learn-thumb-bar .learn-controls button { min-width: 40px; padding: 0 6px; }
+  .learn-thumb-bar, .learn-thumb-bar .learn-controls, .learn-thumb-bar .action-bar { gap: 3px; }
+}
+/* A puzzle with nothing to mine has no use for the income line. */
+.game-shell-puzzle.learn-no-mining .income-status { display: none; }
+
+/* Small boards stay compact so the pieces keep a sensible size; pieces fill their squares. */
+.game-shell-puzzle .battle-board { width: min(100cqw, 100cqh, 650px, calc(var(--board-size, 10) * 96px + 26px)); }
+.game-shell-puzzle .unit-token { max-width: none; max-height: none; }
+@media (orientation: landscape) and (max-height: 600px) {
+  .game-shell-puzzle .battle-board { --learn-board: min(100cqw, 100cqh, calc(100dvh - 32px), calc(var(--board-size, 10) * 96px + 26px)); width: var(--learn-board); height: var(--learn-board); }
+}
+@media (min-width: 960px) and (min-height: 601px) and (orientation: landscape) {
+  .game-shell-puzzle .battle-board { width: min(100cqw, 100cqh, calc(var(--board-size, 10) * 104px + 26px)); }
+  .game-shell-puzzle .board-stage { align-items: center; }
+  /* The goal is a band across the top of the center column, over the board (one line, two at most);
+     the board stage gives up that height. It stays in the overview in the DOM, after the title. */
+  .game-shell-puzzle { position: relative; --learn-goal-band: 60px; }
+  .game-shell-puzzle .learn-goal { position: absolute; z-index: 2; top: max(12px, env(safe-area-inset-top)); height: var(--learn-goal-band); min-height: 0;
+    left: calc(max(12px, env(safe-area-inset-left)) + var(--sidebar-width) + 8px); right: calc(max(12px, env(safe-area-inset-right)) + var(--sidebar-width) + 8px);
+    max-width: 680px; margin-inline: auto; padding: 6px 18px; gap: 14px; overflow: hidden; }
+  .game-shell-puzzle .learn-goal-text { font-size: 20px; line-height: 1.2; }
+  .game-shell-puzzle .board-stage { padding-top: calc(var(--learn-goal-band) + 12px); }
+  .game-shell-puzzle .learn-thumb-bar { flex-direction: column; align-items: stretch; }
+  .game-shell-puzzle .learn-controls { display: grid; grid-template-columns: 1fr 1fr; }
+  /* The left rail spans both rows (the key sits in the bottom 100 px), so the goal and both player cards fit without scrolling. */
+  .game-shell-puzzle .game-overview { grid-row: 1 / -1; height: calc(100% - 100px); align-self: start; gap: 12px; }
+  .game-shell-puzzle .board-key { grid-row: 2; }
+}
+/* Phone landscape: the overview is a flex column in the right-hand column (index.css), so the goal simply flows under the header. */
+@media (orientation: landscape) and (max-height: 600px) {
+  .game-shell-puzzle .learn-goal { min-height: 30px; padding-block: 2px; margin-block: 2px; }
+  .game-shell-puzzle .learn-goal-text { font-size: 13px; }
+}
+@media (max-height: 620px) and (orientation: portrait) {
+  .learn-goal { min-height: 30px; padding-block: 3px; }
+  .learn-goal-text { font-size: 14px; }
+}
+
+/* === Board marks === */
+/* A flag on every goal square (reach, summon-on). It stays while a piece stands there. */
+.board-square.learn-flag::before { content: ''; position: absolute; top: 4%; right: 5%; width: 34%; height: 34%; z-index: 7; pointer-events: none;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M5 3v18' stroke='%23fff3cf' stroke-width='2.6' stroke-linecap='round'/><path d='M6 4h12l-3.5 4.5L18 13H6z' fill='%23f5d780' stroke='%23fff3cf' stroke-width='.8'/></svg>") center / contain no-repeat;
+  filter: drop-shadow(0 1px 1px #000c) drop-shadow(0 0 4px #f5d78066); }
+.board-square.learn-flag .board-cell { box-shadow: inset 0 0 0 2px #f5d78066; }
+.board-square.learn-flag.is-reached .board-cell { box-shadow: inset 0 0 0 2px #f5d780, inset 0 0 14px #f5d78044; }
+/* A ring on every piece to capture (red) and every piece to protect (cyan). */
+.board-square.learn-target::after, .board-square.learn-protect::after { pointer-events: none; }
+/* An enemy summon to stop: a dashed red ring around its landing square, under the ghost piece. */
+.board-square.learn-deny .board-cell { box-shadow: inset 0 0 0 2px #ff7b8255; }
+.board-square.learn-deny .board-cell::before { content: ''; position: absolute; inset: 7%; border: 2px dashed #ff7b82; border-radius: 50%; pointer-events: none; z-index: 1; }
+.board-square.learn-target .board-cell::after { border: 3px solid #ff7b82; border-radius: 50%; inset: 5%; box-shadow: 0 0 8px #ff7b8299, inset 0 0 6px #ff7b8233; }
+.board-square.learn-protect .board-cell::after { border: 3px solid #9fe8ff; border-radius: 50%; inset: 5%; box-shadow: 0 0 8px #9fe8ff99, inset 0 0 6px #9fe8ff33; }
+.board-square.learn-target .board-cell.attack-target::after { border-color: #ffbeac; border-radius: 50%; }
+.board-square.learn-target .board-cell.ko-target::after { border-color: #ff1f2d; border-radius: 50%; }
+/* The enemy home glows for home goals. */
+.board-square.learn-home-goal .board-cell { box-shadow: inset 0 0 0 2px #f5d780, inset 0 0 16px #f5d78055; animation: learn-home-glow 2.2s ease-in-out infinite; }
+@keyframes learn-home-glow { 0%, 100% { box-shadow: inset 0 0 0 2px #f5d780, inset 0 0 16px #f5d78044; } 50% { box-shadow: inset 0 0 0 3px #fff3cf, inset 0 0 26px #f5d78099; } }
+
+/* === Hints: the piece to use wears a white ring that pings outward; a control to press pulses the same white ===
+   White is no other mark's color: selection is gold, flags are gold, prey red, pieces to protect cyan. */
+.unit-wrap.learn-hint-piece { position: relative; z-index: 9; animation: learn-hint-pulse 1.1s ease-in-out infinite; }
+.unit-wrap.learn-hint-piece::before, .unit-wrap.learn-hint-piece::after { content: ''; position: absolute; inset: -7%; border-radius: 50%; pointer-events: none; }
+.unit-wrap.learn-hint-piece::before { border: 3px solid #fff; box-shadow: 0 0 0 2px #0b1620b3, 0 0 16px 4px #ffffffb3, inset 0 0 10px #ffffff66; }
+.unit-wrap.learn-hint-piece::after { border: 3px solid #fff; animation: learn-hint-ping 1.1s ease-out infinite; }
+@keyframes learn-hint-pulse { 0%, 100% { transform: translate(-4%, -1%) scale(1); } 50% { transform: translate(-4%, -1%) scale(1.1); } }
+@keyframes learn-hint-ping { from { transform: scale(1); opacity: .95; } to { transform: scale(1.5); opacity: 0; } }
+.learn-hint-end .action-bar button.primary, .learn-hint-upkeep .upkeep-dialog button.primary { position: relative; z-index: 1; animation: learn-hint-bump 1.1s ease-in-out infinite; }
+.learn-hint-shop .unit-shop { animation: learn-hint-glow 1.1s ease-in-out infinite; border-radius: 11px; }
+@keyframes learn-hint-glow { 0%, 100% { box-shadow: 0 0 0 2px #ffffff, 0 0 6px 1px #ffffff66; } 50% { box-shadow: 0 0 0 4px #ffffff, 0 0 26px 6px #ffffffaa; } }
+@keyframes learn-hint-bump { 0%, 100% { box-shadow: 0 0 0 2px #ffffff, 0 0 6px 1px #ffffff66; transform: scale(1); } 50% { box-shadow: 0 0 0 4px #ffffff, 0 0 26px 6px #ffffffaa; transform: scale(1.05); } }
+/* Reduced motion: no pulse, but the ring and the glow stay on. */
+@media (prefers-reduced-motion: reduce) {
+  .learn-hint-end .action-bar button.primary, .learn-hint-upkeep .upkeep-dialog button.primary, .learn-hint-shop .unit-shop { box-shadow: 0 0 0 4px #ffffff, 0 0 20px 4px #ffffffaa; }
+}
+
+/* === The idle panel: nothing selected, so no box (the panel keeps its room, and the board never jumps) === */
+.game-shell-puzzle .decision-panel.is-quiet { background: transparent; border-color: transparent; }
+.game-shell-puzzle .decision-panel.is-quiet .selection-hint { align-items: center; }
+
+/* === Cards ===
+   The decided position is the lesson, so the card never covers the board: on phones it is a sheet
+   docked over the decision panel and the thumb bar; in landscape it takes the side column's lower
+   half; on desktop it sits in the right-hand panel. */
+.learn-card { position: fixed; z-index: 80; left: 50%; bottom: 0; transform: translateX(-50%); width: min(100%, 520px);
+  padding: 14px max(16px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+  border-radius: 20px 20px 0 0; background: #192636; border: 1px solid #546478; border-bottom: 0; box-shadow: 0 -12px 40px #0009, 0 0 0 1px #ffffff0a inset;
+  display: grid; grid-template-columns: 56px minmax(0, 1fr); grid-template-areas: "arc arc" "mark next" "mark row"; gap: 8px 14px; align-items: center;
+  animation: learn-sheet-in .3s cubic-bezier(.2, .9, .3, 1.1) both; }
+@keyframes learn-sheet-in { from { opacity: 0; transform: translate(-50%, 40%); } }
+.learn-card-failure { grid-template-areas: "mark row"; }
+.learn-card-demo { grid-template-columns: minmax(0, 1fr); grid-template-areas: "mark"; justify-items: center; }
+/* Under a docked card the footer (thumb bar, replay, references) would peek out above it: it keeps its room, unseen. */
+@media not all and (min-width: 960px) and (min-height: 601px) and (orientation: landscape) {
+  .learn-card-up .play-footer { visibility: hidden; }
+}
+.learn-card-mark { grid-area: mark; position: relative; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-size: 30px; font-weight: 800; line-height: 1; }
+.learn-card-success .learn-card-mark { background: #bfe9ca; color: #153525; box-shadow: 0 0 0 6px #bfe9ca2e, 0 0 28px #bfe9ca66; }
+.learn-card-failure .learn-card-mark { background: #3b2630; color: #ffb3b8; box-shadow: 0 0 0 6px #ff7b8226; font-size: 26px; }
+.learn-card-hinted { position: absolute; grid-area: mark; align-self: start; justify-self: start; margin: -8px 0 0 -8px; font-size: 16px; opacity: .85; }
+.learn-card-arc { grid-area: arc; display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 12px; border-radius: 12px; background: #243e3c; border: 1px solid #3d6b53; }
+.learn-card-arc strong { flex: 1; font-size: 15px; }
+.learn-card-arc span { color: #bfe9ca; font-variant-numeric: tabular-nums; font-size: 13px; }
+.learn-card-arc .learn-arc-icon { width: 28px; height: 28px; }
+.learn-card-arc .learn-arc-icon .unit-art { width: 28px; height: 30px; }
+.game-shell-puzzle .learn-card button.learn-card-next { grid-area: next; width: 100%; min-height: 52px; font-size: 19px; font-weight: 750; border-radius: 14px; background: #bfe9ca; color: #153525; }
+.learn-card-row { grid-area: row; display: flex; gap: 8px; width: 100%; }
+.game-shell-puzzle .learn-card .learn-card-row button { flex: 1; min-height: 44px; font-size: 14px; }
+.game-shell-puzzle .learn-card-row button[aria-label=Retry] { flex: 0 0 56px; font-size: 20px; }
+.game-shell-puzzle .learn-card-row button.learn-card-undo { background: #334e63; }
+.game-shell-puzzle .learn-card-failure .learn-card-row button { min-height: 52px; font-size: 16px; }
+.game-shell-puzzle .learn-card-failure button.learn-card-retry { background: #bfe9ca; color: #153525; }
+
+/* Phone landscape: the card fills the side column below the overview (decision panel and footer). */
+@media (orientation: landscape) and (max-height: 600px) {
+  .learn-card { position: relative; left: auto; bottom: auto; transform: none; width: auto; grid-column: 2; grid-row: 2 / -1; align-self: end; margin-bottom: 4px;
+    padding: 12px 14px; border-radius: 16px; border-bottom: 1px solid #546478; animation-name: learn-card-in; }
+}
+/* Desktop: the card stands in the right-hand panel, stacked. */
+@media (min-width: 960px) and (min-height: 601px) and (orientation: landscape) {
+  .learn-card { position: relative; left: auto; bottom: auto; transform: none; width: auto; grid-column: 3; grid-row: 1; align-self: start;
+    grid-template-columns: minmax(0, 1fr); grid-template-areas: "arc" "mark" "next" "row"; justify-items: center; gap: 12px;
+    padding: 20px 14px 14px; border-radius: 18px; border-bottom: 1px solid #546478; animation-name: learn-card-in; }
+  .learn-card-failure { grid-template-areas: "mark" "row"; }
+  .learn-card-mark { width: 64px; height: 64px; font-size: 34px; }
+  .learn-card-hinted { justify-self: center; margin: -6px 0 0 -58px; }
+}
+@keyframes learn-card-in { from { opacity: 0; transform: scale(.92); } }

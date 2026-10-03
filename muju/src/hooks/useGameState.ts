@@ -105,9 +105,18 @@ export function gameReducer(state: GameState, action: LocalAction): GameState {
   }
 }
 
-type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'blackCrystalHandicap' | 'newGame' | 'ruleset' | 'variant'>;
+type InitialGameOptions = Pick<GameConfig, 'actionsPerTurn' | 'blackCrystalHandicap' | 'newGame' | 'ruleset' | 'variant'> & {
+  /** Start from this exact position instead of a save or the opening (Learn to Play puzzles). */
+  initialState?: GameState;
+  /** `false` never reads or writes the saved match. Default true. */
+  persist?: boolean;
+};
 
 function getInitialSession(options: InitialGameOptions): ReplaySession {
+  if (options.initialState) {
+    return { state: options.initialState, history: startHistory(options.initialState, true), historyUndoLengths: [],
+      recording: emptyRecording(), undoLengths: [], turnStartUndo: null };
+  }
   if (options.variant === 'micro') {
     // Micro reads and writes only its own save slot.
     const saved = options.newGame ? null : loadGameHistory('micro');
@@ -181,9 +190,11 @@ export function useGameState(options: InitialGameOptions = {}) {
   const [session, dispatch] = useReducer(sessionReducer, options, getInitialSession);
   const state = session.state;
   const [undoHistory, setUndoHistory] = useState<GameState[]>([]);
+  // Read once: a puzzle never touches the player's saved match, not even on reset.
+  const [persist] = useState(() => options.persist !== false);
 
   // Save the score and position together. Selection changes do not alter history.
-  useEffect(() => { saveGameState(session.state, session.history); }, [session.history]);
+  useEffect(() => { if (persist) saveGameState(session.state, session.history); }, [session.history, persist]);
 
   // The new turn can undo its automatic upkeep, but never the opponent's turn.
   useEffect(() => {
@@ -259,9 +270,9 @@ export function useGameState(options: InitialGameOptions = {}) {
   }, []);
 
   const resetGame = useCallback(() => {
-    clearGameState(state.variant);
+    if (persist) clearGameState(state.variant);
     dispatchWithUndo({ type: 'RESET_GAME' });
-  }, [dispatchWithUndo, state.variant]);
+  }, [dispatchWithUndo, state.variant, persist]);
 
   const selectedUnitData = useMemo(() => {
     if (!state.selectedUnit) return null;
