@@ -70,6 +70,20 @@ behind it.
   at once. `node --import tsx tools/learn-check.ts --live` measures this.
   Either make the positions smaller or speed up the search.
 
+### Puzzle revisions queued for the next session
+
+- **move-7: "Reach the flag", not "Get the Hi to the flag"** (owner, 2026-10-03).
+  Today the flag (a1) is four squares from the row Muju (e1), so the goal must
+  name the Hi, or the Muju would simply walk there. Move the flag so it is
+  five squares from that Muju, out of its reach at Speed 1 with four actions,
+  and drop `piece` from the goal. The player then discovers by themselves that
+  the boxed-in Hi is the only piece that can make it, and that the Muju must
+  first step out of its way. Keep the lesson (friends block too; making way
+  costs one of the team's actions) and the tries (the Muju stepping along the
+  row; the other Muju moving; the Muju walking toward the flag). Re-prove with
+  `node --import tsx tools/learn-check.ts move --board --puzzle move-7`; the
+  only winning line should still be step aside, then run.
+
 ### Also noted by the reviewers
 
 - **exam-6 is the heaviest puzzle.** About 1.4M proof nodes, far over the live
