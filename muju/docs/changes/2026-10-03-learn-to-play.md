@@ -111,7 +111,19 @@ The research and design are summarized in CURRICULUM.md. Process:
 
 ## Verification
 
-- `node --import tsx tools/learn-check.ts`: 164 / 164 puzzles proved.
-- `npx vitest run tests/learn tests/onboarding tests/components tests/hooks`: pass.
-- `e2e/learn-catalog.spec.ts`: all 164 puzzles solved by tapping, plus
-  `e2e/learn.spec.ts` and `e2e/onboarding.spec.ts`.
+- `node --import tsx tools/learn-check.ts`: 164 / 164 puzzles proved, with
+  every first-turn scan. `--live`: 148 of the 151 one-turn puzzles judge every
+  position after one or two actions within the live budget. In safety-6,
+  review-13 and exam-5, some positions are over budget; there the refutation is
+  shown at the hand-over instead of at once.
+- `npx vitest run` (the whole repository): 257 files, 3715 tests passed, 17 skipped.
+- `npx tsc --noEmit` is clean. `npx vite build` puts Learn in its own lazy chunk
+  (38.7 kB JS, 15.7 kB CSS). Main JS went from 587.5 to 552.8 kB.
+- Playwright against the dev server: `e2e/learn-catalog.spec.ts` (all 164
+  puzzles solved by tapping), `e2e/learn.spec.ts` and `e2e/onboarding.spec.ts`
+  gave 202 passed and 1 failed. The failure is the onboarding "gold dot" test,
+  which fails at the same rate on the unmodified base commit.
+- A browser playtest of 38 puzzles at 390×844, 1280×800, 844×390 and 320×568.
+  Its findings were fixed, except these, which are left for later: board shift
+  when the income and replay rows appear, wordy shop text, the keep panel at
+  844×390, and no markers for enemy moves.
