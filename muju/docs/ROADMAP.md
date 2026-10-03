@@ -270,6 +270,32 @@ behind it.
 - **Proof tooling:** multi-turn puzzles report no "wins W/T" count, so a second
   solution there (mine-8 had one through the shop, now closed) is only found
   by hand. Count winning first turns for multi-turn puzzles too.
+- **Smaller known issues from the code review and playtest (2026-10-03):**
+  - **Stale hint fallback.** When the solver finds no line (a lost position, or
+    over the 100k budget), the hint lights the first piece of the *authored*
+    line from the start, which may have moved or been captured. Show nothing, or
+    offer Retry, instead.
+  - **Test hooks ship to players:** `?fixture=1` (the 14 fixtures) and `?probe=1`
+    (`window.__mujuLearn`). Both are harmless but should be dev-only, or gated
+    by a build flag.
+  - **The Back button during a local game.** Back is ignored while a vs-AI game is
+    open, so the URL can change to `?learn=1` underneath it, and a reload then
+    opens Learn. From the online lobby, Back into a `?learn=` entry changes the URL
+    but leaves the lobby on screen.
+  - **`useGameState({ persist: false })` without `initialState`** still reads the
+    saved match, contrary to its comment. No caller does this today; make it
+    start fresh or throw.
+  - **A reply goal combined with an immediate goal** (for example reach +
+    survive) can turn to failed during the opponent's turn, cutting the reply
+    short. No catalog puzzle does this yet.
+  - **Two live regions** (the status line and the puzzle narration) may both
+    announce "Opponent's turn".
+  - **The red capture ring next to the game's own red attack ring.** When a piece
+    is selected, they look alike (defend-1, promote-4). The gold enemy-home glow
+    also resembles the selection outline. Differentiate the goal marks.
+  - **Memory:** the heaviest hint searches grow the heap by about 140–220 MB
+    (exam-6, review-13, promote-4), which risks phones. Only one search runs at a
+    time now; consider smaller budgets on mobile.
 
 ## Learn to Play, the advanced course: about 200 more puzzles (added 2026-10-03)
 
