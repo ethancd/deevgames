@@ -86,6 +86,8 @@ export const unitId = (piece: Pick<ScenarioPiece, 'id' | 'owner'>) => `tutorial-
 export function buildScenarioState(scenario: Scenario): GameState {
   const { size } = scenario;
   const board = createEmptyBoard(size);
+  // `createEmptyBoard` fills every square; a scenario's reserves are the only crystals.
+  for (const row of board.cells) for (const cell of row) cell.resourceLayers = 0;
   for (const { x, y, crystals } of scenario.reserves) board.cells[y][x].resourceLayers = crystals;
   board.initialResourceLayers = board.cells.flat().map(cell => cell.resourceLayers);
   board.units = scenario.pieces.map((piece): Unit => ({

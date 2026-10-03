@@ -21,6 +21,17 @@ describe('onboarding scenarios', () => {
     }
   });
 
+  it('places crystals only where the scenario lists them; puzzle 1 has one reserve of 8 in the far corner', () => {
+    for (const scenario of SCENARIOS) {
+      const state = buildScenarioState(scenario);
+      for (const cell of state.board.cells.flat()) {
+        const listed = scenario.reserves.find(r => r.x === cell.position.x && r.y === cell.position.y)?.crystals ?? 0;
+        expect(cell.resourceLayers).toBe(listed);
+      }
+    }
+    expect(buildScenarioState(muju).board.cells.flat().map(c => c.resourceLayers)).toEqual([0, 0, 0, 0, 0, 0, 0, 0, 8]);
+  });
+
   it('puzzle 1: the Muju reaches the far corner with exactly the whole turn and mines from 8 crystals', () => {
     const state = buildScenarioState(muju);
     const unit = getUnitById(state.board, activeUnitId(muju))!;
