@@ -100,13 +100,18 @@ behind it.
 
   Keep it wordless, and respect reduced motion.
 
-- **mine-3: no fail grade before End turn** (owner, 2026-10-03). Today, walking
-  the Muju onto the 1 or the 2 shows the failure card at once, because the live
-  "can I still win?" check flags it. Instead, let the player press End turn and
-  watch the real consequence: the Muju mines 1 or 2 (the collect effect, and the
-  goal counter reading "1 / 3" or "2 / 3"). Only then show the failure card, after
-  the collect animation finishes. That is the min(Mining, reserve) lesson told by
-  the board.
+- **mine-3 and mine-6: no fail grade before End turn** (owner, 2026-10-03).
+  - **mine-3.** Today, walking the Muju onto the 1 or the 2 shows the failure card
+    at once, because the live "can I still win?" check flags it. Instead, let the
+    player press End turn and watch the real consequence: the Muju mines 1 or 2
+    (the collect effect, and the goal counter reading "1 / 3" or "2 / 3"). Only
+    then show the failure card, after the collect animation finishes. That is
+    the min(Mining, reserve) lesson told by the board.
+  - **mine-6** (match buckets to squares). The nearest-square assignment (the Muju
+    on the 2, the Sjór on the 4) is flagged the same way. After End turn it
+    should visibly mine 2 + 2 = 4, with crystals flying off both squares and the
+    counter stopping at "4 / 5". Then the card appears, so the player sees that
+    the Muju's bigger bucket was wasted on the small square.
   - Do this for every mining goal, and consider making End turn the commit point
     for all one-turn puzzles: the early check becomes a soft cue, such as Undo
     gently pulsing, rather than a verdict, so the end-of-turn consequence is
