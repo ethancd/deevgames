@@ -64,15 +64,4 @@
 @keyframes ghost-tap { 0%, 100% { translate: 18% 40%; opacity: 0; } 15% { opacity: 1; } 45% { translate: 0 0; } 55% { translate: 0 5%; } 70% { translate: 0 0; opacity: 1; } 90% { opacity: 0; } }
 @keyframes ghost-ripple { 0%, 50% { opacity: 0; transform: translate(-50%, -50%) scale(.3); } 55% { opacity: .9; } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); } }
 
-/* Homes: a large house pentagon in the centre of the square, white or black, under any piece. */
-.onboarding .home-marker {
-  top: 50%; left: 50%; width: 52%; height: 52%; transform: translate(-50%, -46%); z-index: 0;
-  font-size: 0; color: transparent; text-shadow: none;
-  clip-path: polygon(50% 0, 100% 44%, 100% 100%, 0 100%, 0 44%);
-}
-.onboarding .home-marker::after { content: ''; position: absolute; inset: 9%; clip-path: inherit; }
-.onboarding .home-white { background: #0c141e; }
-.onboarding .home-white::after { background: #f7f3e8; }
-.onboarding .home-black { background: #e8edf5; }
-.onboarding .home-black::after { background: #0b1119; }
 .onboarding .puzzle-board { position: relative; }

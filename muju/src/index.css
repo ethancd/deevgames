@@ -644,3 +644,17 @@ button:focus-visible, a:focus-visible { outline: 3px solid #67e8f9; outline-offs
 .effects-gallery-controls button { padding: 4px 8px; border-radius: 6px; background: #253448; }
 .mode-chevron { display: inline-block; font-size: 18px; line-height: 1; transform: translateY(-3px); transition: transform .2s ease; }
 .mode-chevron.is-open { transform: translateY(3px) rotate(180deg); }
+
+/* Homes on every game board (play, analysis, Micro, explorer, tutorial): a large house
+   pentagon in the centre of the square, white or black, drawn under any piece. The map
+   painter keeps its small corner mark. */
+.battle-board.coordinate-board .home-marker {
+  top: 50%; left: 50%; width: 52%; height: 52%; transform: translate(-50%, -46%); z-index: 0;
+  font-size: 0; color: transparent; text-shadow: none;
+  clip-path: polygon(50% 0, 100% 44%, 100% 100%, 0 100%, 0 44%);
+}
+.battle-board.coordinate-board .home-marker::after { content: ''; position: absolute; inset: 9%; clip-path: inherit; }
+.battle-board.coordinate-board .home-white { background: #0c141e; }
+.battle-board.coordinate-board .home-white::after { background: #f7f3e8; }
+.battle-board.coordinate-board .home-black { background: #e8edf5; }
+.battle-board.coordinate-board .home-black::after { background: #0b1119; }
