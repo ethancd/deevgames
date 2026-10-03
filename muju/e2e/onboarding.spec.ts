@@ -63,7 +63,8 @@ test('a first visit plays three puzzles with no words but the piece names, then 
   await expect(page.locator('.puzzle-irumbu .home-black')).toHaveCount(1);
   await solve(page, [9, 1], [9, 9], 'irumbu');
   await expect(page.getByRole('heading', { name: 'Muju Hono Irumbu' })).toBeVisible({ timeout: 6000 });
-  for (const name of ['Play vs AI', 'Play online', 'Puzzles']) await expect(page.getByRole('button', { name: new RegExp(`^${name}`) })).toBeVisible();
+  for (const name of ['Learn to Play', 'Play vs AI', 'Play online']) await expect(page.getByRole('button', { name: new RegExp(`^${name}`) })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Puzzles/ })).toHaveCount(0);
   const other = page.getByRole('button', { name: 'Other ways to play' });
   await expect(other).toHaveAttribute('aria-expanded', 'false');
   await expect(page.getByRole('button', { name: /Pass & Play/ })).toHaveCount(0);
@@ -190,16 +191,15 @@ test('keyboard users can finish a puzzle: focus follows the next square, and tap
   await expect(cell(page, 2, 2)).not.toBeFocused();
 });
 
-test('Puzzles lists every scenario and replays one with its reveal', async ({ page }) => {
+test('the tutorial\'s three scenarios are only in the tutorial: Learn to Play is the course, Replay tutorial replays them', async ({ page }) => {
   await page.addInitScript(key => localStorage.setItem(key, JSON.stringify({ completed: true, at: '2026-10-02T00:00:00Z', version: 1 })), KEY);
   await page.goto('./');
-  await page.getByRole('button', { name: /^Puzzles/ }).click();
-  for (const word of ['Muju', 'Honō', 'Irumbu']) await expect(page.getByRole('button', { name: new RegExp(word) })).toBeVisible();
-  await page.getByRole('button', { name: /Honō/ }).click();
-  await expect(page.locator('[data-testid^="cell-"]')).toHaveCount(36);
-  await solve(page, [5, 5], [2, 2], 'hono');
-  await page.getByRole('button', { name: 'Play again' }).click();
-  await expect(page.locator('.puzzle-hono[data-phase="hint-piece"]')).toBeVisible();
-  await page.getByRole('button', { name: 'All puzzles' }).click();
-  await expect(page.getByRole('button', { name: /Irumbu/ })).toBeVisible();
+  await page.getByRole('button', { name: /^Learn to Play/ }).click();
+  await expect(page.getByRole('heading', { name: 'Learn to Play' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Puzzle \d: / })).toHaveCount(0);
+  await expect(page.locator('main.onboarding')).toHaveCount(0);
+  await page.getByRole('button', { name: '← Modes' }).click();
+  await page.getByRole('button', { name: 'Other ways to play' }).click();
+  await page.getByRole('button', { name: 'Replay tutorial' }).click();
+  await expect(page.locator('.puzzle-muju[data-phase="hint-piece"]')).toBeVisible();
 });

@@ -14,6 +14,10 @@ tool, the rules facts you will need, and the quality bar.
    generous. From the twist on, the naive idea must fail.
 4. Repeat until the arc reads well in order. Then run
    `npx vitest run tests/learn` for the whole catalog.
+5. Play it: `npx vite`, then open `/muju/?learn=<id>` (or `/muju/?learn=1` for
+   the map). The screen is the real game with the puzzle chrome; the enemy's
+   reply, the early "can no longer win" check and the hints all run the solver
+   live, so a heavy position (see the `·` note) feels slow here too.
 
 ## The format
 

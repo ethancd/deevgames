@@ -22,7 +22,7 @@ export function ActionBar({ phasing = false, actionsRemaining, actionsPerTurn = 
       <strong>{phase === 'action' ? actionCount(actionsRemaining) : phasing ? 'Summon & promote' : 'Buy & promote'}</strong>
       <span aria-hidden="true" data-active={phase === 'action'}>{Array.from({ length: actionsPerTurn }, (_, i) => <i key={i} className={i < actionsRemaining ? 'available' : ''} />)}</span>
     </div>
-    {!readOnly && <><button onClick={onUndo} disabled={!canUndo || !isPlayerTurn} title="Undo (⌘Z)">↶ Undo</button>
+    {!readOnly && <><button onClick={onUndo} disabled={!canUndo || !isPlayerTurn} title="Undo (⌘Z)" aria-label="Undo">↶ <span className="action-bar-label">Undo</span></button>
     <button className="primary" disabled={!isPlayerTurn} onClick={phase === 'place' ? onEndPlacePhase : onEndActionPhase}>
       {phase === 'place' ? phasing ? 'End turn →' : 'Start actions →' : phasing ? 'Mine & prepare →' : 'End turn →'}
     </button></>}

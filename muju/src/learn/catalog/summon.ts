@@ -1,6 +1,160 @@
 import type { Arc } from '../types';
 
+/**
+ * Summoning: buy tier-1 pieces in Prepare, inside a rectangle from your home to
+ * one of your pieces. Every puzzle shows both homes (`homes: true`) because the
+ * rectangle starts at yours. A Black Poṉ on Black's home keeps the game going;
+ * it cannot move, so it never interferes unless a puzzle puts it in reach.
+ */
 export const ARC: Arc = {
   id: 'summon', title: 'Summoning', part: 'economy', icon: 'summon',
-  puzzles: [],
+  puzzles: [
+    {
+      id: 'summon-1', idea: 'Summoning happens in Prepare, after Mine & prepare: pay the Hi\'s 3 crystals and pick a square beside your home.',
+      board: [
+        '.  .  .  .',
+        '.  M1 .  .',
+        '.  .  .  .',
+        '.  .  .  m1',
+      ],
+      homes: true,
+      banks: { white: 3 },
+      goal: { kind: 'summon', type: 'F1', at: ['a2'] },
+      solution: ['mine', '+F1@a2', 'end'],
+    },
+    {
+      id: 'summon-2', idea: 'The summon rectangle runs from your home to one of your pieces: walk the Hi past the flag in both directions, then summon on it.',
+      board: [
+        '.  F1 .  .',
+        '.  .  .  .',
+        '.  .  .  .',
+        '.  .  .  m1',
+      ],
+      homes: true,
+      banks: { white: 3 },
+      goal: { kind: 'summon', type: 'F1', at: ['c3'] },
+      solution: ['b1-d3', 'mine', '+F1@c3', 'end'],
+      tries: [['b1-c2', 'mine', 'end'], ['b1-b3', 'mine', 'end']],
+    },
+    {
+      id: 'summon-3', idea: 'An enemy inside a rectangle blocks it: the Poṉ\'s rectangle holds the Loş, so the Hi must make a clear one that still covers the flag.',
+      board: [
+        '.  .  .  .  .',
+        '.  .  .  .  .',
+        '.  s1 .  .  .',
+        '.  .  .  M1 .',
+        '.  .  F1 .  .',
+      ],
+      homes: true,
+      banks: { white: 3 },
+      goal: { kind: 'summon', type: 'F1', at: ['c2'] },
+      solution: ['c5-d2', 'mine', '+F1@c2', 'end'],
+      tries: [['mine', 'end'], ['c5-c3', 'mine', 'end'], ['c5-e3', 'mine', 'end']],
+    },
+    {
+      id: 'summon-4', idea: 'Clear, then buy: every rectangle that covers the flag holds the Radi in the top row, so no anchor helps; the Hi removes it in Act and the Poṉ\'s rectangle opens in Prepare.',
+      board: [
+        '.  .  l1 .  .',
+        '.  .  .  .  M1',
+        '.  .  .  .  .',
+        'F1 .  .  .  .',
+        '.  .  .  .  m1',
+      ],
+      homes: true,
+      banks: { white: 3 },
+      goal: { kind: 'summon', type: 'F1', at: ['d2'] },
+      solution: ['a4-c2xc1', 'mine', '+F1@d2', 'end'],
+      tries: [['mine', 'end'], ['a4-d4', 'mine', 'end'], ['a4-d3', 'mine', 'end']],
+    },
+    {
+      id: 'summon-5', idea: 'This turn\'s income pays: the bank holds 1, the Muju mines 3 on the far square, and the Sjór (4) is bought in the same Prepare.',
+      board: [
+        '.  .  .  .',
+        '.  P1 2  .',
+        '.  .  .  .',
+        '.  3  .  m1',
+      ],
+      homes: true,
+      banks: { white: 1 },
+      goal: { kind: 'summon', type: 'W1' },
+      solution: ['b2-b4', 'mine', '+W1@a1', 'end'],
+      tries: [['mine', 'end'], ['b2-c2', 'mine', 'end']],
+    },
+    {
+      id: 'summon-6', idea: 'Prices are 3 / 4 / 5, and only tier 1 is for sale: the bank of 9 buys three pieces only if all three are Fire or Lightning (3 each); a Muju (5) or a Sjór (4) leaves too little. The Poṉ\'s rectangle has exactly three empty squares.',
+      board: [
+        '.  .  .  M1 .',
+        '.  .  .  .  .',
+        '.  .  .  .  .',
+        '.  .  .  .  .',
+        '.  .  .  .  m1',
+      ],
+      homes: true,
+      banks: { white: 9 },
+      goal: { kind: 'summon', count: 3 },
+      text: 'Summon 3 pieces this turn',
+      solution: ['mine', '+F1@a1', '+F1@b1', '+L1@c1', 'end'],
+      tries: [['mine', '+P1@a1', '+W1@b1', 'end'], ['mine', '+W1@a1', '+F1@b1', 'end']],
+    },
+    {
+      id: 'summon-7', idea: 'A summon lands at your next turn start, and the enemy moves first: the Sjór can step into the Muju\'s big rectangle, so the Hi vanishes (refunded) unless it lands in the Poṉ\'s small one, out of the Sjór\'s reach. The Muju must stay on its 3 to pay for the Hi.',
+      board: [
+        '.  .  .  .    .',
+        '.  M1 .  .    .',
+        '.  .  .  .    .',
+        '.  .  .  P1+3 .',
+        '.  .  .  .    w1',
+      ],
+      homes: true,
+      goal: { kind: 'summon', type: 'F1', arrive: true },
+      text: 'Land a new Hi',
+      solution: ['mine', '+F1@b1', 'end'],
+      tries: [['mine', '+F1@c3', 'end'], ['mine', '+F1@d3', 'end'], ['mine', '+F1@c4', 'end']],
+    },
+    {
+      id: 'summon-8', idea: 'Arrivals act at once: the Muju cannot hurt the Poṉ, so summon a Hi (2 + 1 = 3) now and it walks over and captures on its arrival turn. A Radi costs the same but does only 2.',
+      board: [
+        '.  .  .  .',
+        '.  P1 .  .',
+        '.  .  .  .',
+        '.  .  .  m1',
+      ],
+      homes: true,
+      turns: 2,
+      banks: { white: 3 },
+      goal: { kind: 'capture', targets: ['d4'] },
+      solution: ['mine', '+F1@a2', 'end'],
+      tries: [['mine', '+L1@a2', 'end'], ['b2-b4', 'mine', 'end']],
+    },
+    {
+      id: 'summon-9', idea: 'An enemy on your home blocks every rectangle, since every rectangle starts there: the Muju can step around the Radi near the flag, but the Hi on the home must go. The Loş (2 + 1) removes it.',
+      board: [
+        'f1 .  .  .  .',
+        '.  .  .  .  .',
+        '.  .  l1 .  .',
+        'S1 .  .  .  P1',
+        '.  .  .  .  m1',
+      ],
+      homes: true,
+      banks: { white: 3 },
+      goal: { kind: 'summon', type: 'F1', at: ['d2'] },
+      solution: ['a4-a2xa1', 'e4-e2', 'mine', '+F1@d2', 'end'],
+      tries: [['a4-b3xc3', 'e4-e2', 'mine', 'end'], ['e4-e2', 'mine', 'end']],
+    },
+    {
+      id: 'summon-10', idea: 'Conclusion: earn, clear, extend, buy. The Hi removes the Radi that blocks every rectangle over the flag, and the Muju walks onto the 3, which pays for the Sjór (1 + 3 = 4) and stretches its rectangle over the flag. The near 2 leaves only 3 crystals.',
+      board: [
+        'F1 .  .  .  .',
+        '.  .  .  P1 .',
+        '.  l1 .  2  .',
+        '.  .  .  3  .',
+        '.  .  .  .  m1',
+      ],
+      homes: true,
+      banks: { white: 1 },
+      goal: { kind: 'summon', type: 'W1', at: ['c4'] },
+      solution: ['a1-a3xb3', 'd2-d4', 'mine', '+W1@c4', 'end'],
+      tries: [['a1-a3xb3', 'd2-d3', 'mine', 'end'], ['d2-d4', 'mine', 'end']],
+    },
+  ],
 };
