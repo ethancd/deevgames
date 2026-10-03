@@ -17,8 +17,9 @@ import type { Goal } from './types';
 export class Budget extends Error { constructor() { super('Search budget exhausted'); } }
 
 export function stateKey(s: GameState): string {
-  const units = s.board.units.map(u => `${u.id}@${u.position.x},${u.position.y}:${u.definitionId}:${u.damageTaken}:${+u.canActThisTurn}${+!!u.lastAttackKilled}${+!!u.promotedThisPlacement}${+!!u.placedThisTurn}:${(u.attackedThisTurn ?? []).join('.')}`).sort().join('|');
-  const pending = (s.pendingSummons ?? []).map(p => `${p.id}@${p.position.x},${p.position.y}:${p.definitionId}`).sort().join('|');
+  const units = s.board.units.map(u => `${u.id}@${u.position.x},${u.position.y}:${u.definitionId}:${u.damageTaken}:${+u.canActThisTurn}${+!!u.lastAttackKilled}${+!!u.promotedThisPlacement}${+!!u.placedThisTurn}:${[...(u.attackedThisTurn ?? [])].sort().join('.')}`).sort().join('|');
+  // Summons are keyed by what and where, not by id: the same purchases in another order are one position.
+  const pending = (s.pendingSummons ?? []).map(p => `${p.owner}@${p.position.x},${p.position.y}:${p.definitionId}`).sort().join('|');
   let reserves = '';
   for (const row of s.board.cells) for (const c of row) reserves += c.resourceLayers.toString(36) + ',';
   const { white, black } = s.players;
@@ -133,24 +134,30 @@ export class PuzzleSearch {
     const key = stateKey(state);
     const cached = this.replies.get(key);
     if (cached) return cached;
+    // Breadth-first, so every ending is reached by its shortest line: the reply
+    // the player watches never wanders in and out.
     const ends = new Map<string, { end: GameState; line: AIAction[] }>();
-    const seen = new Set<string>();
-    const walk = (s: GameState, line: AIAction[]) => {
-      if (s.phase !== 'playing' || s.turn.currentPlayer !== this.ctx.enemy) {
-        const k = stateKey(s);
-        if (!ends.has(k)) ends.set(k, { end: s, line });
-        return;
+    const seen = new Set<string>([key]);
+    let frontier: { s: GameState; line: AIAction[] }[] = [{ s: state, line: [] }];
+    while (frontier.length) {
+      const next: typeof frontier = [];
+      for (const { s, line } of frontier) {
+        this.tick();
+        for (const action of this.enemyActions(s)) {
+          const n = applyAction(s, action);
+          if (n === s) continue;
+          const k = stateKey(n);
+          if (n.phase !== 'playing' || n.turn.currentPlayer !== this.ctx.enemy) {
+            if (!ends.has(k)) ends.set(k, { end: n, line: [...line, action] });
+            continue;
+          }
+          if (seen.has(k)) continue;
+          seen.add(k);
+          next.push({ s: n, line: [...line, action] });
+        }
       }
-      const k = stateKey(s);
-      if (seen.has(k)) return;
-      seen.add(k);
-      this.tick();
-      for (const action of this.enemyActions(s)) {
-        const next = applyAction(s, action);
-        if (next !== s) walk(next, [...line, action]);
-      }
-    };
-    walk(state, []);
+      frontier = next;
+    }
     const result = [...ends.values()].sort((a, b) => replyScore(this.ctx.hero, state, b.end) - replyScore(this.ctx.hero, state, a.end));
     this.replies.set(key, result);
     return result;

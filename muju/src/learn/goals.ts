@@ -18,6 +18,8 @@ export interface PuzzleContext {
   heroStartIds: readonly string[];
   /** When the goal can be judged: any time, at the end of your last turn, or after the enemy's reply to it. */
   timing: 'anytime' | 'turn-end' | 'reply';
+  /** Proofs only: home and eliminate goals count only their own kind of win (no cooks by another route). */
+  strict: boolean;
 }
 
 /** Goals judged the moment they become true. */
@@ -25,13 +27,13 @@ const ACHIEVEMENTS = new Set<Goal['kind']>(['reach', 'mine', 'capture', 'elimina
 const leaves = (goal: Goal): Goal[] => goal.kind === 'all' ? goal.goals.flatMap(leaves) : [goal];
 const needsReply = (g: Goal) => g.kind === 'survive' || g.kind === 'hold' || (g.kind === 'summon' && !!g.arrive);
 
-export function makeContext(spec: PuzzleSpec): PuzzleContext {
+export function makeContext(spec: PuzzleSpec, options: { strict?: boolean } = {}): PuzzleContext {
   const start = buildPuzzleState(spec);
   const goals = leaves(spec.goal);
   const timing = goals.some(needsReply) ? 'reply' : goals.every(g => ACHIEVEMENTS.has(g.kind)) ? 'anytime' : 'turn-end';
   const hero = heroOf(spec);
   return { spec, start, hero, enemy: enemyOf(spec), turns: turnsOf(spec), startIds: new Set(start.board.units.map(u => u.id)),
-    heroStartIds: start.board.units.filter(u => u.owner === hero).map(u => u.id), timing };
+    heroStartIds: start.board.units.filter(u => u.owner === hero).map(u => u.id), timing, strict: !!options.strict };
 }
 
 /** How many of your turns have been handed over since the puzzle began. */
@@ -44,8 +46,12 @@ const heroUnits = (ctx: PuzzleContext, state: GameState) => state.board.units.fi
 const at = (p: Position, q: Position) => p.x === q.x && p.y === q.y;
 
 /** One leaf goal against the current state. `final` is true once nothing more can happen. */
+/** Winning the game outright (not the empty-board upkeep win of a puzzle with no enemy). */
+export const DECISIVE = new Set(['elimination', 'home-checkmate', 'home-occupation']);
+const decisiveWin = (ctx: PuzzleContext, state: GameState) =>
+  state.phase === 'victory' && state.winner === ctx.hero && DECISIVE.has(state.victoryReason ?? '');
+
 function holds(ctx: PuzzleContext, state: GameState, goal: Goal): boolean {
-  const won = state.phase === 'victory' && state.winner === ctx.hero;
   switch (goal.kind) {
     case 'reach': {
       const mover = goal.piece ? pieceIdAt(ctx.spec, goal.piece) : null;
@@ -55,10 +61,11 @@ function holds(ctx: PuzzleContext, state: GameState, goal: Goal): boolean {
       return state.players[ctx.hero].resourcesGained - ctx.start.players[ctx.hero].resourcesGained >= goal.atLeast;
     case 'capture':
       return goal.targets.every(t => !getUnitById(state.board, pieceIdAt(ctx.spec, t)));
+    // Winning the game another way also wins these: nobody is told they failed after winning.
     case 'eliminate':
-      return !state.board.units.some(u => u.owner === ctx.enemy);
+      return !state.board.units.some(u => u.owner === ctx.enemy) || (!ctx.strict && decisiveWin(ctx, state));
     case 'home':
-      return won && (state.victoryReason === 'home-checkmate' || state.victoryReason === 'home-occupation');
+      return decisiveWin(ctx, state) && (!ctx.strict || state.victoryReason !== 'elimination');
     case 'promote': {
       const type = typeOf(goal.to);
       if (goal.piece) return getUnitById(state.board, pieceIdAt(ctx.spec, goal.piece))?.definitionId === type;
@@ -79,7 +86,6 @@ function holds(ctx: PuzzleContext, state: GameState, goal: Goal): boolean {
     case 'keep':
       return goal.pieces.every(s => !!getUnitById(state.board, pieceIdAt(ctx.spec, s)));
     case 'survive': {
-      if (won) return true;
       const ids = goal.pieces ? goal.pieces.map(s => pieceIdAt(ctx.spec, s)) : ctx.heroStartIds;
       return ids.every(id => !!getUnitById(state.board, id));
     }
@@ -108,6 +114,9 @@ export function evaluate(ctx: PuzzleContext, state: GameState): Status {
   if (ctx.timing === 'turn-end') return done >= ctx.turns ? ok ? 'solved' : 'failed' : 'pending';
   // Reply goals are judged when your next turn starts, after the enemy has answered.
   if (done >= ctx.turns && state.turn.currentPlayer === ctx.hero) return ok ? 'solved' : 'failed';
+  // At the hand-over, anything that is not judged after the reply is final: the
+  // enemy's turn can only take pieces away, never mine, capture or summon for you.
+  if (done >= ctx.turns && !leaves(ctx.spec.goal).filter(g => !needsReply(g)).every(g => holds(ctx, state, g))) return 'failed';
   return 'pending';
 }
 
@@ -136,8 +145,8 @@ function phrase(spec: PuzzleSpec, goal: Goal): string {
     case 'eliminate': return 'Capture every enemy piece';
     case 'home': return 'Occupy the enemy home';
     case 'summon': {
-      const what = goal.type ? nameOf(goal.type) : 'piece';
       const n = goal.count ?? 1;
+      const what = goal.type ? nameOf(goal.type) : n === 1 ? 'piece' : 'pieces';
       const where = goal.at ? goal.at.length === 1 ? ' on the flag' : ' on the flags' : '';
       if (goal.arrive) return n === 1 ? `Land a new ${what}${where}` : `Land ${n} new ${what}${where}`;
       return n === 1 ? `Summon a ${what}${where}` : `Summon ${n} ${what}${where}`;
@@ -156,8 +165,8 @@ export function goalText(spec: PuzzleSpec): string {
   if (spec.text) return spec.text;
   const turns = turnsOf(spec);
   const goals = leaves(spec.goal);
-  const now = goals.filter(g => g.kind !== 'survive' && g.kind !== 'hold');
-  const later = goals.filter(g => g.kind === 'survive' || g.kind === 'hold');
+  const now = goals.filter(g => !needsReply(g));
+  const later = goals.filter(needsReply);
   const horizon = turns === 1 ? 'this turn' : `in ${turns} turns`;
   const parts: string[] = [];
   if (now.length) parts.push(`${phrase(spec, now.length === 1 ? now[0] : { kind: 'all', goals: now })} ${horizon}`);

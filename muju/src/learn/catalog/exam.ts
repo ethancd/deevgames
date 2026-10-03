@@ -39,7 +39,7 @@ export const ARC: Arc = {
     },
     {
       id: 'exam-2',
-      idea: 'Can I capture? The Sach\'akuna is walled in by its own side. The Kagari does only 4 − 1 = 3 to the Ægirinn (DEF 4), so the Muju chips it first (0 + 1). Then the Kagari\'s blow kills, unlocks a second attack, steps into the gap and removes the Sach\'akuna (4 + 1 = 5). Hitting first closes the chain, and the way round through the Muju and the Poṉs costs too many actions.',
+      idea: 'Can I capture? The Sach\'akuna is walled in by its own side. The Kagari does only 4 − 1 = 3 to the Ægirinn (DEF 4), so the Muju chips it first (0 + 1). Then the Kagari\'s blow kills, unlocks a second attack, steps into the gap and removes the Sach\'akuna (4 + 1 = 5). Hitting first closes the chain, and the way round through the Muju and the Poṉs costs too many actions. Black\'s Poṉ sits on its home, so the Kagari cannot walk in (11 squares, all four actions) for a `#` instead.',
       board: [
         '8    M1+5 8    .     .     .     4  4  4    4',
         'M1+5 8    4    .     .     .     4  16 16   4',
@@ -49,8 +49,8 @@ export const ARC: Arc = {
         '4    4    4    m1+1  p3    m1+5  8  4  4    4',
         '4    4    4    4     m1+5  4     4  4  4    4',
         '4    16   16   4     .     .     .  4  4    8',
-        '4    16   16   4     .     .     .  4  m1+5 8',
-        '4    4    4    4     .     .     .  8  8    8',
+        '4    16   16   4     .     .     .  4  8    8',
+        '4    4    4    4     .     .     .  8  8    m1+5',
       ],
       homes: true,
       goal: { kind: 'capture', targets: ['e6'] },
@@ -133,7 +133,7 @@ export const ARC: Arc = {
     },
     {
       id: 'exam-6',
-      idea: 'Conclusion, two turns: the Sjór is Black\'s only rescuer, and it puts out Fire (2 + 1 = 3 against DEF 2). Capture it now (4 − 1 = 3) from h7, whose crystals pay the Kagari\'s rent; next turn the Kagari walks in, mines 1 on the home for the second rent, and the Poṉ does 0. Rushing to the home lets the Sjór capture the Kagari; waiting on d10 lets it slip to a rescue post; capturing from the empty g8, or staging on the mined-out d9 (from where every rescue post is in reach), leaves the bank empty and the Kagari is released at next turn\'s upkeep.',
+      idea: 'Conclusion, two turns: the Sjór is Black\'s only rescuer, and it puts out Fire (2 + 1 = 3 against DEF 2). Capture it now (4 − 1 = 3) from h7, whose crystals pay the Kagari\'s rent; next turn the Kagari walks in, mines 1 on the home for the second rent, and the Poṉ does 0. Rushing to the home lets the Sjór capture the Kagari; waiting on d10 lets it slip to a rescue post; capturing from the empty g8, or staging on the mined-out d9 (from where every rescue post is in reach), leaves the bank empty and the Kagari is released at next turn\'s upkeep. The far Poṉ on a10 keeps Black from being swept by elimination instead.',
       board: [
         '8    M1   8    .  .  .  4  4    4    4',
         'M1   8    4    .  .  .  4  16   16   4',
@@ -144,7 +144,7 @@ export const ARC: Arc = {
         '4    4    4    4  8  4  4  4    4    4',
         '4    16   16   4  .  .  .  w1+4 4    8',
         '4    16   16   .  .  .  .  4    4    m1',
-        '4    4    4    4  .  .  .  8    6    8',
+        'm1+4 4    4    4  .  .  .  8    6    8',
       ],
       homes: true,
       turns: 2,

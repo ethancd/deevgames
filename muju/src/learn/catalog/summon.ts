@@ -5,6 +5,8 @@ import type { Arc } from '../types';
  * one of your pieces. Every puzzle shows both homes (`homes: true`) because the
  * rectangle starts at yours. A Black Poṉ on Black's home keeps the game going;
  * it cannot move, so it never interferes unless a puzzle puts it in reach.
+ * Where your pieces could capture it (and so win by elimination before
+ * Prepare), the home piece is one they cannot remove instead.
  */
 export const ARC: Arc = {
   id: 'summon', title: 'Summoning', part: 'economy', icon: 'summon',
@@ -23,12 +25,12 @@ export const ARC: Arc = {
       solution: ['mine', '+F1@a2', 'end'],
     },
     {
-      id: 'summon-2', idea: 'The summon rectangle runs from your home to one of your pieces: walk the Hi past the flag in both directions, then summon on it.',
+      id: 'summon-2', idea: 'The summon rectangle runs from your home to one of your pieces: walk the Hi past the flag in both directions, then summon on it. Their home piece is a Sjór, which the Hi only chips (2 − 1 = 1 against DEF 2), so the turn cannot end early by elimination.',
       board: [
         '.  F1 .  .',
         '.  .  .  .',
         '.  .  .  .',
-        '.  .  .  m1',
+        '.  .  .  w1',
       ],
       homes: true,
       banks: { white: 3 },

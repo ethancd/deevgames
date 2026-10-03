@@ -28,7 +28,7 @@ import type { Square } from './types';
  *   c3xc4      the piece on c3 attacks c4
  *   c1-c3xc4   move, then attack from the landing square
  *   mine       Mine & prepare (END_ACTION_PHASE)
- *   keep b2 c3 keep exactly these pieces at upkeep (`keep` alone keeps none)
+ *   keep b2 c3 keep these tier-2/3 pieces at upkeep (tier 1 is always kept; `keep` alone keeps only tier 1)
  *   +F1@b2     summon a tier-1 piece on b2 (owner is the side to move)
  *   ^b2        promote the piece on b2
  *   end        End turn (END_PLACE_PHASE)
@@ -99,7 +99,10 @@ export function parseMove(state: GameState, move: string): AIAction[] {
   if (m === 'mine') return [{ type: 'END_ACTION_PHASE' }];
   if (m === 'end') return [{ type: 'END_PLACE_PHASE' }];
   if (m === 'keep' || m.startsWith('keep ')) {
-    return [{ type: 'PAY_UPKEEP', keepUnitIds: m.slice(4).trim().split(/[\s,]+/).filter(Boolean).map(s => unitOn(state, s).id) }];
+    // Tier-1 pieces are always kept, so they need not be listed.
+    const listed = m.slice(4).trim().split(/[\s,]+/).filter(Boolean).map(s => unitOn(state, s).id);
+    const free = state.board.units.filter(u => u.owner === state.turn.currentPlayer && getUnitDefinition(u.definitionId).tier === 1).map(u => u.id);
+    return [{ type: 'PAY_UPKEEP', keepUnitIds: [...new Set([...free, ...listed])] }];
   }
   let buy = /^\+([A-Za-z]\d|[a-z]+_\d)@([a-j]\d+)$/.exec(m);
   if (buy) return [{ type: 'BUY_UNIT', definitionId: typeOf(buy[1]), position: squareOf(buy[2]) }];
@@ -156,6 +159,10 @@ export function formatLine(state: GameState, actions: readonly AIAction[]): stri
   return out;
 }
 
+/** Pending summons, e.g. `black Hi lands on c3`. */
+export const renderPending = (state: GameState): string[] =>
+  (state.pendingSummons ?? []).map(p => `${p.owner} ${getUnitDefinition(p.definitionId).name} lands on ${nameSquare(p.position)}`);
+
 /** Render a state back to notation rows (for the check tool and tests). */
 export function renderBoard(state: GameState): string[] {
   const size = state.board.cells.length;
@@ -168,6 +175,7 @@ export function renderBoard(state: GameState): string[] {
       if (!unit) { tokens.push(crystals ? String(crystals) : '.'); continue; }
       let token = codeOf(unit.definitionId, unit.owner);
       if (unit.damageTaken) token += `!${unit.damageTaken}`;
+      if (!unit.canActThisTurn) token += '~';
       if (crystals) token += `+${crystals}`;
       tokens.push(token);
     }

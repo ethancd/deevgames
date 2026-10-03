@@ -63,14 +63,14 @@ export const ARC: Arc = {
     },
     {
       id: 'review-4',
-      idea: 'Rent comes out before Prepare: the Mallki on the 4 nets 4 − 1 = 3, a crystal short of a Sjór, so it walks to the 6 (5 − 1 = 4). Neither rectangle covers the flag, so the Hi steps past it to anchor one that does.',
+      idea: 'Rent comes out before Prepare: the Mallki on the 4 nets 4 − 1 = 3, a crystal short of a Sjór, so it walks to the 6 (5 − 1 = 4). Neither rectangle covers the flag, so the Hi steps past it to anchor one that does. Their Sjór keeps the turn from ending early: the Hi only chips it (2 − 1 = 1), the Mallki cannot reach it, and it removes a Hi that walks onto their home (2 + 1 = 3), so there is no elimination or checkmate shortcut.',
       board: [
         '.  .  .  .  F1 .',
         '.  .  .  .  .  .',
         '.  P2+4 .  .  .  .',
         '.  .  .  .  .  .',
         '.  6  .  .  .  .',
-        '.  .  .  .  m1 .',
+        '.  .  .  .  w1 .',
       ],
       homes: true,
       goal: { kind: 'summon', type: 'W1', at: ['e2'] },
@@ -226,7 +226,7 @@ export const ARC: Arc = {
     },
     {
       id: 'review-14',
-      idea: 'Conclusion, clear with one piece and hold with another: the Sjór would remove a Hi or a Kagari on the home, but does only 1 to an Irumbu. The Hi breaks the Muju off the home (2 + 1), the Irumbu walks in, and its 5 crystals mined there pay both tier-3 rents. The Kagari could clear the home and step in, but the Sjór removes it (2 + 1 = 3 against DEF 2), and it mines only 1 against 2 + 2 of rent.',
+      idea: 'Conclusion, clear with one piece and hold with another: the Sjór would remove a Hi or a Kagari on the home, but does only 1 to an Irumbu. The Hi breaks the Muju off the home (2 + 1), the Irumbu walks in, and its 5 crystals mined there pay both tier-3 rents. The Kagari could clear the home and step in, but the Sjór removes it (2 + 1 = 3 against DEF 2), and it mines only 1 against 2 + 2 of rent. The far Poṉ on a7 keeps Black from being swept by elimination instead: taking the Sjór and the Muju alone already costs all four actions.',
       board: [
         '.  .  .  .  .  .  .',
         '.  .  .  .  .  .  .',
@@ -234,7 +234,7 @@ export const ARC: Arc = {
         '.  .  F3 .  .  .  .',
         '.  .  .  .  .  F1 .',
         '.  .  .  .  w1 .  .',
-        '.  .  .  M3 .  .  p1+6',
+        'm1 .  .  M3 .  .  p1+6',
       ],
       homes: true,
       goal: { kind: 'home' },

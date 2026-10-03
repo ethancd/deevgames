@@ -80,6 +80,12 @@ function PuzzleRun({ ctx, arc, index, start, demo, solver, cadence, usedHint, hi
   const run = usePuzzleRun({ ctx, start, solver, demo, cadence, onSolved: celebrate, onDemoDone });
   const { game, phase, failure, cardShown, hint } = run;
   const { state } = game;
+  // `?probe=1` exposes the live position to end-to-end tests that play every puzzle.
+  useEffect(() => {
+    if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('probe')) {
+      (window as unknown as { __mujuLearn?: unknown }).__mujuLearn = { id: spec.id, phase, state };
+    }
+  }, [spec.id, phase, state]);
   const marks = useMemo(() => goalMarks(ctx), [ctx]);
 
   // Crystals leaving the squares your pieces mined, the moment Mine & prepare lands.

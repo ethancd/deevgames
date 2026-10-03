@@ -1019,6 +1019,8 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
               resources={currentPlayerState.resources} onPromote={handlePromote} isEnemyView={isEnemyView} inspectOnly={inspectOnly} showNextTier={observing}
               onClose={handleCloseUnitInfo} currentPlayer={state.turn.currentPlayer} actionsRemaining={state.turn.actionsRemaining}
               showEnemyRange={showEnemyRange} onToggleEnemyRange={() => setShowEnemyRange(!showEnemyRange)} micro={micro} />
+          // A puzzle reads its goal line instead of instructions: idle, the panel stays quiet.
+          : puzzle ? <div className="selection-hint is-puzzle">{puzzle.locked && phaseHint ? <strong>{phaseHint}</strong> : null}</div>
           : <div className={`selection-hint${showTurnTimer ? ' is-thinking' : ''}`}>
               {showTurnTimer && turnClock && <AIThinkingTimer budgetMs={turnClock.budgetMs} spentMs={turnClock.spentMs} searchingSince={turnClock.searchingSince} />}
               <strong>{observing ? 'Watching live' : isThinking ? 'Your opponent is thinking…' : state.turn.phase === 'place' ? micro ? 'Prepare' : 'Place & upgrade' : 'Your next move'}</strong>
@@ -1048,7 +1050,7 @@ export function GameView({ config, onBackToMenu, game, online, analysis, puzzle 
           // A puzzle's thumb bar puts Retry and Hint beside the game's own action bar.
           return puzzle ? <div className="learn-thumb-bar">{puzzle.bar}{bar}</div> : bar;
         })()}
-        {analysis ? analysis.bar : <ReplayLauncher mode={replayMode} onModeChange={setReplayMode} disabled={!canReplay} title={replayUnavailable}
+        {analysis ? analysis.bar : puzzle && !game.lastTurnReplay ? null : <ReplayLauncher mode={replayMode} onModeChange={setReplayMode} disabled={!canReplay} title={replayUnavailable}
           onStart={() => canReplay && game.lastTurnReplay && startReplay(game.lastTurnReplay)} />}
         <nav className="reference-bar" aria-label="Game references" inert={showReplay}>
           <button onClick={() => setShowUnitShopInspection(true)}>Units</button>

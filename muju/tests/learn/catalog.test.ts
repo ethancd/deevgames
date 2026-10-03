@@ -7,7 +7,8 @@ import { verifyPuzzle } from '../../src/learn/verify';
  * Every Learn to Play puzzle is proved against the live rules: it builds, the
  * goal is not already met, idling does not solve it (unless it is a declared
  * freebie), the author's line wins, every try is a dead end the live reply can
- * refute, the solver agrees, and a multi-turn puzzle cannot be done faster.
+ * refute, the solver agrees, a multi-turn puzzle cannot be done faster, and no
+ * first turn wins the game while failing the puzzle or wins by the wrong route.
  * A stat or rules change that breaks a puzzle fails here.
  */
 describe('Learn to Play catalog', () => {
@@ -23,9 +24,9 @@ describe('Learn to Play catalog', () => {
     describe(arc.title, () => {
       for (const spec of arc.puzzles) {
         it(`${spec.id}: ${goalText(spec)}`, () => {
-          const report = verifyPuzzle(spec, { outcomes: false });
+          const report = verifyPuzzle(spec);
           expect(report.errors).toEqual([]);
-        }, 60_000);
+        }, 180_000);
       }
     });
   }

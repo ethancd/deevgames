@@ -12,6 +12,10 @@ tool, the rules facts you will need, and the quality bar.
 3. Fix every `✗`. Read every `·` note. Look at `wins W/T`: of the T distinct
    ways a one-turn puzzle's turn can end, W solve it. Intro puzzles may be
    generous. From the twist on, the naive idea must fail.
+   Add `--live` to count the positions after your first one or two actions
+   where the app's live "can I still win?" check (30k nodes) runs out of budget.
+   There the app cannot flag a dead line at once, and waits for the hand-over
+   or the enemy's reply instead.
 4. Repeat until the arc reads well in order. Then run
    `npx vitest run tests/learn` for the whole catalog.
 5. Play it: `npx vite`, then open `/muju/?learn=<id>` (or `/muju/?learn=1` for
@@ -69,10 +73,16 @@ board as it stands at that moment:
 | `c3xc4` | the piece on c3 attacks c4 |
 | `c1-c3xc4` | move, then attack from the landing square |
 | `mine` | Mine & prepare: mining, then upkeep, then Prepare |
-| `keep b2 c3` | at an upkeep choice, keep exactly these pieces (`keep` alone keeps none) |
+| `keep b2 c3` | at an upkeep choice, keep these tier-2 and tier-3 pieces (tier 1 is always kept, so `keep` alone keeps only tier 1) |
 | `+F1@b2` | in Prepare, summon a tier-1 piece on b2 (it lands at your next turn start) |
 | `^b2` | in Prepare, promote the piece on b2 |
 | `end` | End turn |
+
+A line is played for whoever is to move. A multi-turn `try` may therefore
+spell out the enemy's turn too (for example `['mine', 'end', 'mine', 'end',
+'mine']`, where the middle `mine end` is the enemy passing), but a try that
+stops at your hand-over is usually clearer. The proof already checks every
+reply.
 
 **Puzzle fields** (`src/learn/types.ts`):
 
@@ -98,19 +108,23 @@ board as it stands at that moment:
 | `{ kind: 'reach', flags: ['c3'], piece: 'a1' }` | Get the Hi to the flag this turn | same, but that piece |
 | `{ kind: 'mine', atLeast: 6 }` | Mine 6 crystals this turn | crystals mined across your turns, so it can be met at Mine & prepare |
 | `{ kind: 'capture', targets: ['d4', 'e5'] }` | Capture the Sjór and the Hi this turn | the moment all are gone |
-| `{ kind: 'eliminate' }` | Capture every enemy piece this turn | the enemy has no pieces |
-| `{ kind: 'home' }` | Occupy the enemy home this turn | you win by home checkmate (`#`) or by occupation at your turn start |
+| `{ kind: 'eliminate' }` | Capture every enemy piece this turn | the enemy has no pieces, or you win the game any other way |
+| `{ kind: 'home' }` | Occupy the enemy home this turn | you win by home checkmate (`#`) or occupation at your turn start, or win the game any other way |
 | `{ kind: 'summon', type: 'F1', at: ['b3'], count: 1 }` | Summon a Hi on the flag this turn | the commitment in Prepare |
-| `{ kind: 'summon', type: 'F1', arrive: true }` | Land a new Hi this turn | after the enemy's reply: it actually arrived |
+| `{ kind: 'summon', type: 'F1', arrive: true }` | Land a new Hi | after the enemy's reply: it actually arrived |
 | `{ kind: 'promote', to: 'F2' }` | Promote to Honō this turn | one more Honō of yours than at the start |
 | `{ kind: 'bank', atLeast: 4 }` | Keep 4 crystals in the bank this turn | when your last turn ends |
 | `{ kind: 'keep', pieces: ['b2'] }` | Keep the Irumbu this turn | when your last turn ends (survives upkeep) |
 | `{ kind: 'survive' }` / `{ kind: 'survive', pieces: ['b2'] }` | Keep all your pieces safe / Keep the Muju safe | after the enemy's reply |
-| `{ kind: 'hold' }` | Don't let them win | after the enemy's reply |
+| `{ kind: 'hold' }` | Don't let them win | after the enemy's reply (needs `homes: true`) |
 | `{ kind: 'all', goals: [...] }` | joined with "and" | all at once |
 
 A loss always fails. Going past the deadline fails. A one-turn line that can
-no longer win is shown as failed at once in the app.
+no longer win is shown as failed at once in the app. A goal judged after the
+reply already fails at the hand-over if a part the enemy cannot change (a
+capture, a mine total, a summon) was missed. Winning the game outright always
+solves a home or eliminate goal, so nobody is told they failed after winning.
+`survive` counts pieces only: winning does not excuse a lost piece.
 
 **What the proof checks** (`src/learn/verify.ts`):
 
@@ -124,7 +138,11 @@ no longer win is shown as failed at once in the app.
 - pieces and enemies exist where the goal needs them (with no enemy piece, the
   game ends at Mine & prepare, so Prepare, replies and later turns never happen);
 - your own pieces are not pre-damaged; the id starts with the arc id; the
-  goal line is at most 64 characters.
+  goal line is at most 64 characters;
+- a home or eliminate goal can be won by its own kind of win, and no first
+  turn wins only by the other kind (a cook that skips the lesson);
+- no first turn of a one-turn puzzle wins the game while failing the puzzle
+  (for example, capturing Black's last piece in a summon puzzle).
 
 ## The quality bar
 
@@ -226,6 +244,31 @@ invader from a neighboring square; a corner has only two.
    pieces, including ones that moved or attacked.
 8. **Your own pieces heal** at your turn start, so never pre-damage them.
 9. **Ids:** never renumber or reuse an id once it has shipped. Progress is stored under it.
+10. **Enemy rent:** an enemy tier-2 or tier-3 piece with no bank and nothing to
+    mine is released at its own upkeep, which counts as captured and can end
+    the game by elimination. Bank exactly its rent (for example
+    `banks: { black: 1 }` for a Straumr).
+11. **A boxed target is not safe from a summoned second attacker.** The first
+    attacker hits, steps aside, and the arrival steps in and hits too.
+12. **With homes on, a mobile enemy near your home can refute a two-turn
+    puzzle** by its own home checkmate, a rule beginners meet only in the
+    Invasion arc. Keep enemies far from `a1` before then, or stand a piece of
+    yours on it.
+13. **`keep` goals work with no enemy piece** (judged when the turn ends, like
+    mine and capture).
+14. **Purchases on a non-final turn are always searched.** A big bank in a
+    two-turn puzzle can exhaust the search even when the goal never needs a
+    summon. Keep banks tight, or put an enemy piece inside every rectangle.
+
+## The app's live budgets
+
+The app runs the solver live, in a worker (`src/learn/worker/client.ts`):
+30k nodes for "can I still win?" after each of your actions, 120k for the
+enemy's reply, and 100k for a hint's line. The proof tool's budget is far
+larger, so a puzzle can prove fine and still be too big to judge live.
+`--live` measures this. Above budget the app degrades gracefully: no instant
+dead-line flag, the refutation shown at the hand-over, and the authored line
+used as the hint.
 
 ## Effective attack, every attacker against every defender at full health
 
