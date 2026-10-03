@@ -148,18 +148,19 @@ export function BoardEffects({ handle }: { handle: RefObject<BoardEffectsHandle 
       }
     } else if (effect.kind === 'checkmate') {
       const colors = ARMY_COLORS[effect.winner];
-      add({ shape: 'glow', color: '#f5d780', size: at.size * 1.2, grow: 2.5, life: reduced ? 300 : 900, alpha: .9 });
+      add({ shape: 'glow', color: '#f5d780', size: Math.max(at.size, origin.width / 9) * 1.2, grow: 2.5, life: reduced ? 300 : 900, alpha: .9 });
       if (reduced) return start();
       add({ shape: 'ring', color: '#f5d780', size: at.size * .3, grow: 9, life: 1000 });
-      const width = origin.width, height = origin.height;
-      for (let i = 0; i < 90; i++) {
-        const angle = rand(0, Math.PI * 2), speed = rand(2, 9) * s;
-        add({ shape: 'confetti', color: colors[i % colors.length], vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 3 * s,
-          gravity: .18 * s, drag: .965, size: at.size * rand(.08, .14), rot: rand(0, 6), vr: rand(-.25, .25), life: rand(1400, 2200) });
+      // Full-board burst: sized to the board, not the square, so a 10×10 celebrates as loudly as a 3×3.
+      const width = origin.width, height = origin.height, piece = Math.max(at.size, width / 9), k = piece / 60;
+      for (let i = 0; i < 110; i++) {
+        const angle = rand(0, Math.PI * 2), speed = rand(2, 10) * k;
+        add({ shape: 'confetti', color: colors[i % colors.length], vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 3 * k,
+          gravity: .18 * k, drag: .965, size: piece * rand(.12, .2), rot: rand(0, 6), vr: rand(-.25, .25), life: rand(1500, 2300) });
       }
-      for (let i = 0; i < 70; i++) add({ shape: 'confetti', color: colors[i % colors.length], x: rand(0, width), y: rand(-height * .3, -10),
-        vx: rand(-.6, .6), vy: rand(1, 3), gravity: .05, drag: .99, size: at.size * rand(.07, .12), rot: rand(0, 6), vr: rand(-.2, .2),
-        born: now + rand(0, 700), life: rand(1800, 2600) });
+      for (let i = 0; i < 90; i++) add({ shape: 'confetti', color: colors[i % colors.length], x: rand(0, width), y: rand(-height * .3, -10),
+        vx: rand(-.6, .6), vy: rand(1.5, 3.5) * k, gravity: .05 * k, drag: .99, size: piece * rand(.1, .17), rot: rand(0, 6), vr: rand(-.2, .2),
+        born: now + rand(0, 700), life: rand(1900, 2700) });
       shake(host, 4, 380);
     } else if (effect.kind === 'reveal') {
       add({ shape: 'glow', color: '#f5d780', size: at.size * 1.4, grow: 1.5, life: reduced ? 260 : 900, alpha: .7 });
