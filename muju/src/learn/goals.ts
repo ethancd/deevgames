@@ -127,6 +127,10 @@ const startType = (spec: PuzzleSpec, square: string) => {
   const unit = getUnitById(buildPuzzleState(spec).board, pieceIdAt(spec, square));
   return unit!.definitionId;
 };
+const isEnemyHome = (spec: PuzzleSpec, square: string) => {
+  const corner = getStartCorner(enemyOf(spec), buildPuzzleState(spec).board.cells.length), at = squareOf(square);
+  return corner.x === at.x && corner.y === at.y;
+};
 const joinAnd = (parts: string[]) => parts.length <= 1 ? parts.join('') : `${parts.slice(0, -1).join(', ')} and ${parts.at(-1)}`;
 
 function pieceList(spec: PuzzleSpec, squares: string[]): string {
@@ -138,18 +142,23 @@ function pieceList(spec: PuzzleSpec, squares: string[]): string {
 function phrase(spec: PuzzleSpec, goal: Goal): string {
   switch (goal.kind) {
     case 'reach':
+      // Standing on the enemy home is only the start of occupying it (the win is holding it until your next turn).
+      if (spec.homes && goal.flags.length === 1 && isEnemyHome(spec, goal.flags[0])) {
+        return goal.piece ? `Start occupying the enemy home with the ${nameOf(startType(spec, goal.piece))}` : 'Start occupying the enemy home';
+      }
       if (goal.piece) return `Get the ${nameOf(startType(spec, goal.piece))} to the flag`;
       return goal.flags.length === 1 ? 'Reach the flag' : goal.flags.length === 2 ? 'Reach both flags' : `Reach all ${goal.flags.length} flags`;
     case 'mine': return `Mine ${goal.atLeast} crystal${goal.atLeast === 1 ? '' : 's'}`;
     case 'capture': return `Capture ${pieceList(spec, goal.targets)}`;
     case 'eliminate': return 'Capture every enemy piece';
-    case 'home': return 'Occupy the enemy home';
+    case 'home': return 'Occupy the enemy home until your next turn';
     case 'summon': {
       const n = goal.count ?? 1;
       const what = goal.type ? nameOf(goal.type) : n === 1 ? 'piece' : 'pieces';
       const where = goal.at ? goal.at.length === 1 ? ' on the flag' : ' on the flags' : '';
-      if (goal.arrive) return n === 1 ? `Land a new ${what}${where}` : `Land ${n} new ${what}${where}`;
-      return n === 1 ? `Summon a ${what}${where}` : `Summon ${n} ${what}${where}`;
+      // Committing a summon only starts it; it succeeds when the piece lands at your next turn start.
+      if (goal.arrive) return n === 1 ? `Successfully summon a ${what}${where}` : `Successfully summon ${n} ${what}${where}`;
+      return n === 1 ? `Start summoning a ${what}${where}` : `Start summoning ${n} ${what}${where}`;
     }
     case 'promote': return goal.piece ? `Promote the ${nameOf(startType(spec, goal.piece))} to ${nameOf(goal.to)}` : `Promote to ${nameOf(goal.to)}`;
     case 'bank': return `Keep ${goal.atLeast} crystal${goal.atLeast === 1 ? '' : 's'} in the bank`;
@@ -169,9 +178,15 @@ export function goalText(spec: PuzzleSpec): string {
   const later = goals.filter(needsReply);
   const horizon = turns === 1 ? 'this turn' : `in ${turns} turns`;
   const parts: string[] = [];
-  if (now.length) parts.push(`${phrase(spec, now.length === 1 ? now[0] : { kind: 'all', goals: now })} ${horizon}`);
+  if (now.length) {
+    const said = phrase(spec, now.length === 1 ? now[0] : { kind: 'all', goals: now });
+    // "…until your next turn" already sets the time, so a home goal takes no "this turn",
+    // and a longer horizon leads: "Within 2 turns, occupy the enemy home until your next turn".
+    if (now.some(g => g.kind === 'home')) parts.push(turns === 1 ? said : `Within ${turns} turns, ${said[0].toLowerCase()}${said.slice(1)}`);
+    else parts.push(`${said} ${horizon}`);
+  }
   if (later.length) parts.push(phrase(spec, later.length === 1 ? later[0] : { kind: 'all', goals: later }));
-  const text = joinAnd(parts.map((p, i) => i ? p[0].toLowerCase() + p.slice(1) : p));
+  const text = joinAnd(parts.map((p, i) => i && !p.startsWith('Within') ? p[0].toLowerCase() + p.slice(1) : p));
   return text;
 }
 

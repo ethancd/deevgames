@@ -109,15 +109,22 @@ reply.
 | `{ kind: 'mine', atLeast: 6 }` | Mine 6 crystals this turn | crystals mined across your turns, so it can be met at Mine & prepare |
 | `{ kind: 'capture', targets: ['d4', 'e5'] }` | Capture the Sjór and the Hi this turn | the moment all are gone |
 | `{ kind: 'eliminate' }` | Capture every enemy piece this turn | the enemy has no pieces, or you win the game any other way |
-| `{ kind: 'home' }` | Occupy the enemy home this turn | you win by home checkmate (`#`) or occupation at your turn start, or win the game any other way |
-| `{ kind: 'summon', type: 'F1', at: ['b3'], count: 1 }` | Summon a Hi on the flag this turn | the commitment in Prepare |
-| `{ kind: 'summon', type: 'F1', arrive: true }` | Land a new Hi | after the enemy's reply: it actually arrived |
+| `{ kind: 'home' }` | Occupy the enemy home until your next turn (or "Within 2 turns, occupy…") | you win by home checkmate (`#`) or occupation at your turn start, or win the game any other way |
+| `{ kind: 'summon', type: 'F1', at: ['b3'], count: 1 }` | Start summoning a Hi on the flag this turn | the commitment in Prepare |
+| `{ kind: 'summon', type: 'F1', arrive: true }` | Successfully summon a Hi | after the enemy's reply: it actually arrived |
 | `{ kind: 'promote', to: 'F2' }` | Promote to Honō this turn | one more Honō of yours than at the start |
 | `{ kind: 'bank', atLeast: 4 }` | Keep 4 crystals in the bank this turn | when your last turn ends |
 | `{ kind: 'keep', pieces: ['b2'] }` | Keep the Irumbu this turn | when your last turn ends (survives upkeep) |
 | `{ kind: 'survive' }` / `{ kind: 'survive', pieces: ['b2'] }` | Keep all your pieces safe / Keep the Muju safe | after the enemy's reply |
 | `{ kind: 'hold' }` | Don't let them win | after the enemy's reply (needs `homes: true`) |
 | `{ kind: 'all', goals: [...] }` | joined with "and" | all at once |
+
+The wording keeps two pairs of ideas apart. **Start summoning** commits a
+summon in Prepare; **successfully summon** means it actually landed at your next
+turn start. **Start occupying the enemy home** is a `reach` goal whose flag is
+the enemy home (`homes: true`): standing there is enough. **Occupy the enemy home
+until your next turn** is the `home` goal, the actual win: the defender's turn
+cannot remove you (`#`).
 
 A loss always fails. Going past the deadline fails. A one-turn line that can
 no longer win is shown as failed at once in the app. A goal judged after the

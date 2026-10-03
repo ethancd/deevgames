@@ -3,9 +3,9 @@
 Learn to Play is a course of short puzzles that teaches every rule of Muju Hono
 Irumbu except the kill clock and Black's handicap. Each puzzle is a small board
 with one goal line and nothing else to read: "Mine 12 crystals this turn",
-"Capture the Sjór this turn", "Occupy the enemy home in 2 turns". The player
-uses the real game: tap a piece, tap a square, preview and confirm an attack,
-Mine & prepare, summon, promote, End turn. The board, the attack preview, the
+"Capture the Sjór this turn", "Within 2 turns, occupy the enemy home until your
+next turn". The player uses the real game: tap a piece, tap a square, preview and
+confirm an attack, Mine & prepare, summon, promote, End turn. The board, the attack preview, the
 crystal lights, Show reach and the ☠ / ⚠ badges do the explaining.
 
 It follows the wordless first-visit tutorial (`src/onboarding/`) but shares none
@@ -143,7 +143,7 @@ conclusion.
 8. Speed 0: a Poṉ stands right beside the flag but cannot move; a far Radi
    must go.
 9. A first look at winning: walk an Irumbu or Hi into the enemy home where no
-   enemy can reach it. Goal: "Occupy the enemy home this turn". Needs
+   enemy can reach it. Goal: "Occupy the enemy home until your next turn". Needs
    `homes: true` and one harmless enemy piece.
 
 ### Mining (`mine`)
@@ -261,7 +261,7 @@ matchups. Facts to build on (all from `units.ts`):
 4. Clear, then buy: remove the blocker in Act, then summon in Prepare.
 5. This turn's income pays: bank 1, mine 3, summon a Sjór (4).
 6. Prices are 3 / 4 / 5: spend the bank exactly on two pieces.
-7. Arrival is next turn: "Land a new Hi" while an enemy can occupy or block
+7. Arrival is next turn: "Successfully summon a Hi" while an enemy can occupy or block
    some squares; choose one it cannot reach.
 8. Arrivals act at once: summon now, capture with it next turn.
 9. An enemy on your home blocks every rectangle: remove it first.

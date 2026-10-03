@@ -17,7 +17,8 @@ unchanged and still ends on this screen.
 
 **The course.** 164 puzzles in 21 arcs and six parts. Each puzzle is a small
 board with one goal line ("Mine 6 crystals this turn", "Capture the Sjór this
-turn", "Occupy the enemy home in 2 turns", "Keep all your pieces safe", "Don't
+turn", "Within 2 turns, occupy the enemy home until your next turn", "Start
+summoning a Hi on the flag this turn", "Keep all your pieces safe", "Don't
 let them win"). It is played with the real game controls, and it is judged on
 the board, not against a move list.
 

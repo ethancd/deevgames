@@ -40,6 +40,17 @@ commitments; each becomes a dated `docs/changes/` record when it is executed.
     keep their wording.
   - **Code names:** internal identifiers (`cleave-status`, test names, lab
     tooling) can follow later.
+- **Say "start summoning" vs "successfully summon", and "start occupying" vs "occupy
+  until your next turn", everywhere** (added 2026-10-03). Learn to Play's goal
+  lines already do: "Start summoning a Hi on the flag this turn" means commit the
+  summon, "Successfully summon a Hi" means it lands at your next turn start,
+  and "Occupy the enemy home until your next turn" is the win, while merely
+  standing on it is "start occupying". Bring the rest of the game's wording in
+  line where it blurs these:
+  - the shop's "Summon Hi · 3 crystals" buttons only start a summon;
+  - home notices and the How to play deck should keep "arrive" separate from
+    "hold until your next turn";
+  - so should the MCP rules text and the Academy.
 
 ## Learn to Play follow-ups (added 2026-10-03)
 
