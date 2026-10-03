@@ -8,6 +8,7 @@ import { parseMove, playLine } from '../../src/learn/notation';
 import { solutionLine } from '../../src/learn/solver';
 import { hintTargetOf, usePuzzleRun, type PuzzleRun } from '../../src/learn/usePuzzle';
 import { LearnSolverClient } from '../../src/learn/worker/client';
+import { heldWorkers } from './held-worker';
 
 /**
  * The puzzle judging hook on the real game state, with the solver running
@@ -87,6 +88,48 @@ describe('usePuzzleRun', () => {
     // From c2 with two actions the Radi is reachable again (c2-b2 then b2xb1).
     play(hook, ['c2-b2', 'b2xb1']);
     await waitFor(() => expect(hook.result.current.phase).toBe('solved'), { timeout: 3000 });
+  });
+
+  it('a selection made while the solver thinks keeps its "can no longer win" verdict and its hint', async () => {
+    const ctx = makeContext(fx('fx-capture'));
+    let hook = mount(ctx);
+    play(hook, ['a1-c2', 'c2xc3']);
+    // Tapping a square before the verdict lands changes the state object, not the game.
+    act(() => hook.result.current.game.deselect());
+    await waitFor(() => expect(hook.result.current.phase).toBe('failed'), { timeout: 3000 });
+    expect(hook.result.current.failure).toBe('stuck');
+    cleanup();
+    hook = mount(makeContext(fx('fx-mine')));
+    play(hook, ['a1-a2']);
+    let asked!: Promise<void>;
+    act(() => { asked = hook.result.current.requestHint(); });
+    act(() => hook.result.current.game.selectUnit('p-white-a1'));
+    await act(async () => { await asked; });
+    expect(hook.result.current.hint).toEqual({ piece: 'p-white-a1' });
+  });
+
+  it('a new move, and the enemy’s turn, stop searches about earlier positions instead of queueing behind them', async () => {
+    const ctx = makeContext(fx('fx-two-turns'));
+    const { workers, factory } = heldWorkers();
+    const solver = new LearnSolverClient(factory);
+    const hook = renderHook(() => usePuzzleRun({ ctx, start: ctx.start, solver, cadence: 5 }));
+    play(hook, ['a1-a2']);
+    expect(workers[0].received.map(r => r.kind)).toEqual(['win']);
+    // The next move stops the first search rather than waiting for it.
+    play(hook, ['a2-a3']);
+    expect(workers[0].terminated).toBe(true);
+    expect(workers[1].received.map(r => r.kind)).toEqual(['win']);
+    // A hint search still running when the turn is handed over is stopped too.
+    play(hook, ['mine']);
+    act(() => { void hook.result.current.requestHint(); });
+    const busy = workers.at(-1)!;
+    expect(busy.received.map(r => r.kind)).toEqual(['win', 'line']);
+    play(hook, ['end']);
+    await waitFor(() => expect(workers.at(-1)!.received.map(r => r.kind)).toEqual(['reply']));
+    expect(busy.terminated).toBe(true);
+    const replier = workers.at(-1)!;
+    act(() => replier.answer(replier.received[0]));
+    await waitFor(() => expect(hook.result.current.game.state.turn.turnNumber).toBe(2), { timeout: 3000 });
   });
 
   it('fails at the deadline when the turn ends unsolved, with a rewind to the turn start', async () => {

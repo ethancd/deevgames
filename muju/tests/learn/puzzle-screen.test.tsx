@@ -86,7 +86,7 @@ describe('PuzzleScreen', () => {
     fireEvent.click(screen.getByRole('button', { name: /Mine & prepare/ }));
     await screen.findByTestId('puzzle-success', {}, { timeout: 3000 });
     expect(loadProgress().solved['fx-mine']).toMatchObject({ clean: false });
-    expect(document.querySelector('.learn-card-hinted')).not.toBeNull();
+    expect(within(screen.getByTestId('puzzle-success')).getByRole('img', { name: 'Solved with a hint' })).toBeInTheDocument();
   });
 
   it('Show me restarts, plays the authored line, then restarts again for the player', async () => {

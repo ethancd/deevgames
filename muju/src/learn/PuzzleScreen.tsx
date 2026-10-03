@@ -177,7 +177,7 @@ function SuccessCard({ arc, usedHint, onNext, onRetry, onExit }: { arc: Arc | nu
   useEffect(() => { primary.current?.focus({ preventScroll: true }); }, []);
   return <div className={`learn-card learn-card-success${arc ? ' is-arc-complete' : ''}`} role="dialog" aria-label="Solved" data-testid="puzzle-success">
     <div className="learn-card-mark" aria-hidden="true">✓</div>
-    {usedHint && <span className="learn-card-hinted" aria-label="Solved with a hint">💡</span>}
+    {usedHint && <span className="learn-card-hinted" role="img" aria-label="Solved with a hint">💡</span>}
     {arc && <div className="learn-card-arc"><ArcIcon icon={arc.icon} /><strong>{arc.title}</strong><span>{arc.puzzles.length} / {arc.puzzles.length}</span></div>}
     <button ref={primary} type="button" className="learn-card-next" onClick={onNext ?? onExit}>{onNext ? 'Next →' : 'All puzzles →'}</button>
     <div className="learn-card-row">

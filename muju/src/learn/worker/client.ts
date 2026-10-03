@@ -46,8 +46,13 @@ export class LearnSolverClient {
     return this.ask({ kind: 'line', spec, state, nodeLimit }).then(r => r.kind === 'line' ? r.line : null);
   }
 
-  /** Drop every unanswered request (their promises reject with `SolverCancelled`). */
+  /**
+   * Drop every unanswered request (their promises reject with `SolverCancelled`).
+   * A search cannot be interrupted, so a worker still busy with one is stopped and
+   * replaced on the next request: stale searches never delay the live ones.
+   */
   cancel(): void {
+    if (this.pending.size && this.worker) { this.worker.terminate(); this.worker = undefined; }
     for (const { reject } of this.pending.values()) reject(new SolverCancelled());
     this.pending.clear();
   }
@@ -76,6 +81,7 @@ export class LearnSolverClient {
       if ('error' in data) entry.reject(new Error(data.error)); else entry.resolve(data.result);
     };
     worker.onerror = event => {
+      if (this.worker !== worker) return;
       // A worker that cannot even load (old browser, blocked module) answers inline from now on.
       worker.terminate();
       this.worker = null;

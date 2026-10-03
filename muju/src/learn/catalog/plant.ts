@@ -67,6 +67,7 @@ export const ARC: Arc = {
         '8  P3 f1 .',
         '.  .  .  m1',
       ],
+      banks: { white: 3 },
       goal: { kind: 'all', goals: [{ kind: 'mine', atLeast: 16 }, { kind: 'survive' }] },
       solution: ['b3xc3', 'b3-a3', 'c2-d2', 'a1-b1', 'mine', 'end'],
       tries: [['b3-a3', 'c2-d2', 'a1-b1', 'mine', 'end'], ['c2xc3', 'b3-a3', 'c2-d2', 'a1-b1', 'mine', 'end']],

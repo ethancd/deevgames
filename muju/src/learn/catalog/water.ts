@@ -7,8 +7,9 @@ import type { Arc } from '../types';
  * Slow and steady: it mines where lighter pieces would sink.
  *
  * Rent: the Straumr owes 1 and the Ægirinn 2 at upkeep, which the course
- * teaches later. In the reply puzzles here the mining pays it in every winning
- * line, so no bank is shown.
+ * teaches later. In the reply puzzles here White banks exactly that rent, so a
+ * wrong line that mines short never opens the keep panel or loses a piece to
+ * a rule the player has not met; the winning lines pay it from mining anyway.
  */
 export const ARC: Arc = {
   id: 'water', title: 'Water', part: 'elements', icon: 'water',
@@ -31,6 +32,7 @@ export const ARC: Arc = {
         'W1 .  2  .',
         '.  .  .  f1',
       ],
+      banks: { white: 1 },
       goal: { kind: 'all', goals: [{ kind: 'mine', atLeast: 2 }, { kind: 'survive' }] },
       solution: ['a1-c3', 'mine', 'end'],
       tries: [['a3-c3', 'mine', 'end']],
@@ -81,6 +83,7 @@ export const ARC: Arc = {
         'W2 .  .  .  .',
         '2  .  .  .  .',
       ],
+      banks: { white: 3 },
       goal: { kind: 'all', goals: [{ kind: 'mine', atLeast: 7 }, { kind: 'survive' }] },
       solution: ['d1-b1', 'a3-a1', 'a4-a5', 'mine', 'end'],
       tries: [['d1-b1', 'a3-a2', 'a4-a5', 'mine', 'end']],

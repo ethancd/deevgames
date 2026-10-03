@@ -7,6 +7,7 @@ import { DECISIVE, evaluate, goalText, makeContext, type PuzzleContext } from '.
 import { formatLine, parseBoard, playLine } from './notation';
 import { Budget, PuzzleSearch, chooseReply, compressLine, stateKey } from './solver';
 import type { Goal, PuzzleSpec } from './types';
+import { LIVE_BUDGET } from './worker/client';
 
 /**
  * Proof obligations for one puzzle, shared by `tests/learn/catalog.test.ts`
@@ -100,7 +101,8 @@ export function verifyPuzzle(spec: PuzzleSpec, options: { nodeLimit?: number; ou
       if (tried.error) { fail(`try ${i + 1}: ${tried.error}`); continue; }
       if (search.wins(tried.state)) { fail(`try ${i + 1} [${attempt.join(' ')}] still wins`); continue; }
       if (tried.state.phase === 'playing' && tried.state.turn.currentPlayer === enemy) {
-        const reply = chooseReply(ctx, tried.state);
+        // At the app's own budget: a refutation found only by a deeper search is never played.
+        const reply = chooseReply(ctx, tried.state, { nodeLimit: LIVE_BUDGET.reply });
         if (!reply.refutes) fail(`try ${i + 1}: the live reply does not find the refutation`);
       }
     }
@@ -204,7 +206,7 @@ function routeCook(ctx: PuzzleContext, search: PuzzleSearch, strict: PuzzleSearc
 }
 
 /** The app's live budget for "can I still win?" (src/learn/worker/client.ts). */
-export const LIVE_WIN_BUDGET = 30_000;
+export const LIVE_WIN_BUDGET = LIVE_BUDGET.win;
 
 /** Run the live check from every position after your first one or two actions; count those it cannot settle in budget. */
 function liveChecks(ctx: PuzzleContext, search: PuzzleSearch): { over: number; total: number } {

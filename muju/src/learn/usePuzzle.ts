@@ -111,8 +111,11 @@ export function usePuzzleRun({ ctx, start, solver, demo = null, cadence = PUZZLE
     // flagged at once, while Undo can still fix it. The starting position is
     // proved solvable, so it is never asked.
     if (heroToMove && state !== start && !(showsRefutation(spec.goal) && invading(ctx, state))) {
+      // Whatever is still being searched is about an earlier position.
+      solver.cancel();
       solver.canStillWin(spec, state).then(verdict => {
-        if (!alive.current || latest.current !== state || solved.current) return;
+        // A selection made while the solver thought is not a move: the verdict still stands.
+        if (!alive.current || !samePlay(latest.current, state) || solved.current) return;
         if (verdict === 'no') { setPhase('failed'); setFailure('stuck'); }
       }).catch(() => { /* superseded or cancelled: the next state asks again */ });
     }
@@ -133,6 +136,8 @@ export function usePuzzleRun({ ctx, start, solver, demo = null, cadence = PUZZLE
     let cancelled = false;
     (async () => {
       let line: AIAction[] = [];
+      // Searches from your turn are stale now; the reply must not wait behind them.
+      solver.cancel();
       try { ({ line } = await solver.chooseReply(spec, from)); } catch { line = []; }
       if (cancelled) return;
       let current = from;
@@ -185,7 +190,7 @@ export function usePuzzleRun({ ctx, start, solver, demo = null, cadence = PUZZLE
     if (from === ctx.start || stateKey(from) === stateKey(ctx.start)) line = authored();
     else { try { line = await solver.solutionLine(spec, from); } catch { line = null; } }
     if (!line?.length) line = authored();
-    if (!alive.current || latest.current !== from) return;
+    if (!alive.current || !samePlay(latest.current, from)) return;
     setHint(hintTargetOf(line[0]));
   }, [phase, ctx, spec, solver]);
 

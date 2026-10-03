@@ -263,6 +263,24 @@ test('browser Back walks puzzle → map → modes; a deep link skips the tutoria
   await expect(page.getByRole('heading', { name: 'Learn to Play' })).toBeVisible();
 });
 
+test('← Learn and ← Modes step back through history, so browser Back never repeats a page', async ({ page }) => {
+  await page.goto('./');
+  await page.getByRole('button', { name: /^Learn to Play/ }).click();
+  await page.getByTestId(`learn-tile-${first.puzzle.id}`).click();
+  await expect(page.locator('.game-shell-puzzle')).toBeVisible();
+  await page.getByRole('button', { name: '← Learn' }).click();
+  await expect(page.getByRole('heading', { name: 'Learn to Play' })).toBeVisible();
+  await expect(page).toHaveURL(/learn=1/);
+  await page.goBack();
+  await expect(page.getByRole('button', { name: /^Play vs AI/ })).toBeVisible();
+  await expect(page).not.toHaveURL(/learn=/);
+  await page.goForward();
+  await page.getByRole('button', { name: '← Modes' }).click();
+  await expect(page.getByRole('button', { name: /^Play vs AI/ })).toBeVisible();
+  await page.goForward();
+  await expect(page.getByRole('heading', { name: 'Learn to Play' })).toBeVisible();
+});
+
 plain('a first visitor who follows a Learn link sees the puzzle, not the tutorial', async ({ page }) => {
   await page.goto(`./?learn=${first.puzzle.id}`);
   await expect(page.locator('main.onboarding')).toHaveCount(0);

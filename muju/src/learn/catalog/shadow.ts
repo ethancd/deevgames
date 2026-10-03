@@ -6,8 +6,9 @@ import type { Arc } from '../types';
  * loses a point against Plant and Metal, which also hit it +1: a Poṉ kills a
  * Karanlık.
  *
- * Banks: in the reply puzzles Black holds exactly the rent of its tier-2 and
- * tier-3 pieces, so an enemy never vanishes at its own upkeep.
+ * Banks: in the reply puzzles each side holds exactly the rent of its tier-2
+ * and tier-3 pieces, so an enemy never vanishes at its own upkeep, and a wrong
+ * line that mines short never opens the keep panel before Upkeep is taught.
  */
 export const ARC: Arc = {
   id: 'shadow', title: 'Shadow', part: 'elements', icon: 'shadow',
@@ -69,6 +70,7 @@ export const ARC: Arc = {
         '.  .  .  .  .',
         '.  .  .  S3 .',
       ],
+      banks: { white: 2 },
       goal: { kind: 'all', goals: [{ kind: 'mine', atLeast: 2 }, { kind: 'survive' }] },
       solution: ['d5-b2xb1', 'mine', 'end'],
       tries: [['d5-b2', 'mine', 'end']],
@@ -82,7 +84,7 @@ export const ARC: Arc = {
         'm1 2  .  S3 .',
         '.  .  .  .  m1',
       ],
-      banks: { black: 2 },
+      banks: { white: 3, black: 2 },
       goal: { kind: 'all', goals: [{ kind: 'mine', atLeast: 3 }, { kind: 'survive' }] },
       solution: ['d1xe1', 'e2-d2', 'd4-b4xa4', 'mine', 'end'],
       tries: [['e2xe1', 'd1-d2', 'd4-b4xa4', 'mine'], ['d1xe1', 'e2-d2', 'd4-b4', 'mine', 'end'], ['d4-b4xa4', 'e2-d2', 'mine', 'end']],

@@ -57,13 +57,22 @@ function GameApp() {
   const [progress, setProgress] = useState(loadProgress);
 
   // Learn to Play lives in the URL (`?learn=1`, `?learn=<id>`), so the browser's Back works.
+  // A Learn page the app pushed is marked, so its own back button can step back
+  // through history instead of stacking a copy of the page it returns to.
   const navigateLearn = useCallback((route: LearnRoute | null, replace = false) => {
     const url = learnUrl(route);
-    try { window.history[replace ? 'replaceState' : 'pushState'](null, '', url); } catch { /* A sandboxed frame still navigates in memory. */ }
+    try {
+      if (replace) window.history.replaceState(window.history.state, '', url);
+      else window.history.pushState(route ? { mujuLearnBack: true } : null, '', url);
+    } catch { /* A sandboxed frame still navigates in memory. */ }
     setLearnRoute(route);
     setScreen(route ? 'learn' : 'menu');
     if (route) setProgress(loadProgress());
   }, []);
+  const leaveLearn = useCallback((to: LearnRoute | null) => {
+    if ((window.history.state as { mujuLearnBack?: boolean } | null)?.mujuLearnBack) window.history.back();
+    else navigateLearn(to, to !== null);
+  }, [navigateLearn]);
   useEffect(() => {
     const onPop = () => {
       if (gameConfig) return;
@@ -100,12 +109,12 @@ function GameApp() {
   if (!gameConfig && screen === 'learn' && learnRoute) {
     const resolved = learnRoute.kind === 'puzzle' ? resolvePuzzle(learnRoute) : null;
     if (learnRoute.kind === 'map' || !resolved) {
-      return <LearnScreen progress={progress} onProgressChange={setProgress} onBack={() => navigateLearn(null)}
+      return <LearnScreen progress={progress} onProgressChange={setProgress} onBack={() => leaveLearn(null)}
         onOpen={id => navigateLearn({ kind: 'puzzle', id })} />;
     }
     const { entry, next } = resolved;
     return <PuzzleScreen key={entry.puzzle.id} spec={entry.puzzle} arc={entry.arc} index={entry.index} onProgressChange={setProgress}
-      onExit={() => navigateLearn({ kind: 'map' }, true)}
+      onExit={() => leaveLearn({ kind: 'map' })}
       onNext={next ? () => navigateLearn(next, true) : null} />;
   }
   if (!gameConfig) {

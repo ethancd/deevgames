@@ -67,7 +67,8 @@
   .game-shell-puzzle .action-budget { min-width: 0; }
   .game-shell-puzzle .action-budget strong { display: none; }
   .game-shell-puzzle .action-budget > span { margin-top: 0; }
-  .game-shell-puzzle .action-bar-label { display: none; }
+  /* Visually hidden, still read: the button keeps its name "↶ Undo". */
+  .game-shell-puzzle .action-bar-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
   .game-shell-puzzle .play-footer .action-bar button { padding-inline: 8px; }
   .game-shell-puzzle .play-footer .action-bar button.primary { font-size: 11px; padding-inline: 7px; }
   .game-shell-puzzle .learn-thumb-bar .learn-controls button { min-width: 40px; padding: 0 6px; }
